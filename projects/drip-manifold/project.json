@@ -1,0 +1,175 @@
+{
+  "project": {
+    "name": "Drip Irrigation Manifold",
+    "slug": "drip-manifold",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "A multi-outlet distributor for US micro-drip irrigation. Take one supply feed and split it to several 1/4 in barbed outlets — as an inline bar with outlets in a row, a compact radial star hub, or a simple Y-splitter. The 1/4 in drip barb (nominal 1/4 in tubing: ID ~4.3 mm, OD ~6.4 mm) is the same barb the drip-fitting cartridge produces, so hoses and fittings interoperate across the drip-irrigation family.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un distribuidor de varias salidas para riego por goteo de EE. UU. Toma una alimentacion y la divide en varias salidas con puas de 1/4 in — como barra en linea con salidas en fila, un concentrador radial en estrella compacto, o un divisor en Y simple. La pua de goteo de 1/4 in (tuberia nominal de 1/4 in: DI ~4.3 mm, DE ~6.4 mm) es la misma pua que produce el cartucho drip-fitting, por lo que mangueras y conexiones interoperan en la familia de riego por goteo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/drip-manifold.webp",
+    "tags": [
+      "drip",
+      "irrigation",
+      "manifold",
+      "distributor",
+      "barb",
+      "quarter-inch",
+      "garden",
+      "watering",
+      "infrastructure",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "manifold_bar",
+      "label": { "en": "Inline Bar Manifold", "es": "Manifold en Barra" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["manifold_bar"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "manifold_cross",
+      "label": { "en": "Radial Star Hub", "es": "Concentrador en Estrella" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["manifold_cross"],
+      "estimate": { "base_time": 18, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "manifold_wye",
+      "label": { "en": "Y-Splitter", "es": "Divisor en Y" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["manifold_wye"],
+      "estimate": { "base_time": 12, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "manifold_bar", "label": { "en": "Inline Bar Manifold", "es": "Manifold en Barra" }, "render_mode": 0, "color": "#2f7d57" },
+    { "id": "manifold_cross", "label": { "en": "Radial Star Hub", "es": "Concentrador en Estrella" }, "render_mode": 0, "color": "#3a8d63" },
+    { "id": "manifold_wye", "label": { "en": "Y-Splitter", "es": "Divisor en Y" }, "render_mode": 0, "color": "#489e70" }
+  ],
+  "parameter_groups": [
+    { "id": "barb", "label": { "en": "1/4in Barb Outlet", "es": "Salida con Pua 1/4in" } },
+    { "id": "supply", "label": { "en": "Supply Body", "es": "Cuerpo de Alimentacion" } },
+    { "id": "layout", "label": { "en": "Outlet Layout", "es": "Disposicion de Salidas" } }
+  ],
+  "parameters": [
+    {
+      "id": "outlets", "type": "slider", "default": 6, "min": 2, "max": 8, "step": 1,
+      "group": "layout", "modes": ["manifold_bar", "manifold_cross"],
+      "label": { "en": "Outlet Count", "es": "Numero de Salidas" },
+      "tooltip": { "en": "How many 1/4 in barbed outlets to distribute to.", "es": "Cuantas salidas con pua de 1/4 in distribuir." }
+    },
+    {
+      "id": "barb_od", "type": "slider", "default": 6.0, "min": 4.5, "max": 9.0, "step": 0.1,
+      "group": "barb", "modes": ["manifold_bar", "manifold_cross", "manifold_wye"],
+      "label": { "en": "Barb Ridge OD (mm)", "es": "DE de Pua (mm)" },
+      "tooltip": { "en": "Barb outer ridge diameter. 1/4 in tube ID is ~4.3 mm, so ~6 mm grips it.", "es": "Diametro exterior de la pua. El DI de tubo de 1/4 in es ~4.3 mm, ~6 mm lo sujeta." }
+    },
+    {
+      "id": "barb_lumen", "type": "slider", "default": 3.6, "min": 2.0, "max": 6.0, "step": 0.1,
+      "group": "barb", "modes": ["manifold_bar", "manifold_cross", "manifold_wye"], "advanced": true,
+      "label": { "en": "Outlet Lumen (mm)", "es": "Lumen de Salida (mm)" },
+      "tooltip": { "en": "Through-bore of each barb — the flow passage into the tube.", "es": "Perforacion pasante de cada pua — el paso de flujo hacia el tubo." }
+    },
+    {
+      "id": "barb_len", "type": "slider", "default": 12.0, "min": 8.0, "max": 20.0, "step": 0.5,
+      "group": "barb", "modes": ["manifold_bar", "manifold_cross", "manifold_wye"],
+      "label": { "en": "Barb Length (mm)", "es": "Largo de Pua (mm)" },
+      "tooltip": { "en": "Spigot length the tube pushes onto.", "es": "Largo del espigo sobre el que se inserta el tubo." }
+    },
+    {
+      "id": "inlet_od", "type": "slider", "default": 16.0, "min": 10.0, "max": 24.0, "step": 0.5,
+      "group": "supply", "modes": ["manifold_bar", "manifold_cross", "manifold_wye"],
+      "label": { "en": "Supply Body OD (mm)", "es": "DE del Cuerpo (mm)" },
+      "tooltip": { "en": "Diameter of the supply body / inlet. ~16 mm suits 1/2 in poly tubing.", "es": "Diametro del cuerpo de alimentacion / entrada. ~16 mm para tubo poly de 1/2 in." }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 5.0, "step": 0.25,
+      "group": "supply", "modes": ["manifold_bar", "manifold_cross", "manifold_wye"], "advanced": true,
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Wall of the supply body around the internal plenum.", "es": "Pared del cuerpo alrededor del plenum interno." }
+    },
+    {
+      "id": "spacing", "type": "slider", "default": 16.0, "min": 12.0, "max": 30.0, "step": 0.5,
+      "group": "layout", "modes": ["manifold_bar", "manifold_cross"],
+      "label": { "en": "Outlet Spacing (mm)", "es": "Separacion de Salidas (mm)" },
+      "tooltip": { "en": "Pitch between adjacent outlets along the bar / around the hub.", "es": "Paso entre salidas contiguas en la barra / alrededor del concentrador." }
+    }
+  ],
+  "presets": [
+    {
+      "id": "six_outlet_bar", "mode": "manifold_bar",
+      "label": { "en": "6-Outlet Bar", "es": "Barra de 6 Salidas" },
+      "values": { "outlets": 6, "barb_od": 6.0, "barb_len": 12.0, "inlet_od": 16.0, "spacing": 16.0 }
+    },
+    {
+      "id": "six_way_star", "mode": "manifold_cross",
+      "label": { "en": "6-Way Star Hub", "es": "Estrella de 6 Vias" },
+      "values": { "outlets": 6, "barb_od": 6.0, "barb_len": 12.0, "inlet_od": 16.0 }
+    },
+    {
+      "id": "simple_wye", "mode": "manifold_wye",
+      "label": { "en": "Simple Y-Splitter", "es": "Divisor en Y Simple" },
+      "values": { "barb_od": 6.0, "barb_len": 12.0, "inlet_od": 16.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "barb_lumen < barb_od",
+      "severity": "error",
+      "message": { "en": "Outlet lumen must be narrower than the barb ridge", "es": "El lumen de salida debe ser mas estrecho que la pua" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [140, 140, 110] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 16, "per_unit": 4, "per_part": 16,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "drip_barb_outlet",
+        "label": { "en": "1/4 in Drip Barb Outlet", "es": "Salida con Pua de Goteo 1/4 in" },
+        "geometry_type": "socket",
+        "standard": "1/4in drip",
+        "parameters": ["barb_od", "barb_lumen", "barb_len"],
+        "compatible_with": ["drip-fitting"]
+      },
+      {
+        "id": "supply_plenum",
+        "label": { "en": "Supply Plenum", "es": "Plenum de Alimentacion" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["inlet_od", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Micro-drip irrigation saves water by delivering it at the root, but off-the-shelf manifolds come in fixed outlet counts and layouts. A printable manifold sized to the exact number of drip lines a bed needs — inline, radial, or a simple wye — lets a gardener or smallholder branch a watering system on demand from a single 1/4 in barb standard, and repair a cracked distributor in the field instead of replacing the whole run.",
+      "es": "El riego por goteo ahorra agua al entregarla en la raiz, pero los manifolds comerciales vienen en numeros y disposiciones fijas de salidas. Un manifold impreso al numero exacto de lineas de goteo que necesita un bancal — en linea, radial o una Y simple — permite a un jardinero o pequeno productor ramificar el riego bajo demanda desde el estandar de pua de 1/4 in, y reparar un distribuidor agrietado en campo en vez de reemplazar todo el tramo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

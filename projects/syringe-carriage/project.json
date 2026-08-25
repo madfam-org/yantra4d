@@ -1,0 +1,166 @@
+{
+  "project": {
+    "name": "Syringe Pump Carriage",
+    "slug": "syringe-carriage",
+    "version": "1.0.0",
+    "description": {
+      "en": "The carriage set for a DIY lab syringe pump: a barrel clamp that cradles a standard Luer syringe (1/3/5/10/20 mL), a leadscrew-driven plunger pusher with a real threaded drive nut, and a barrel retainer block. Sized to standard syringe barrel diameters and common T8 / M8 leadscrews. A research / teaching build aid, not a certified infusion device — do not use for patient infusion.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El conjunto de carro para una bomba de jeringa de laboratorio DIY: una abrazadera de cuerpo que sostiene una jeringa Luer estándar (1/3/5/10/20 mL), un empujador de émbolo accionado por husillo con tuerca roscada real y un bloque retenedor del cuerpo. Dimensionado a los diámetros estándar de jeringa y a husillos comunes T8 / M8. Una ayuda de construcción para investigación / enseñanza, no un dispositivo de infusión certificado — no usar para infusión en pacientes.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/syringe-carriage.webp",
+    "difficulty": "advanced",
+    "tags": ["syringe", "pump", "carriage", "leadscrew", "lab", "medical", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Barrel channel and nut bore add the user 'clearance' per side; start at 0.35 mm and tune to your printer and leadscrew. Print the plunger pusher solid or high-infill for drive stiffness. This is a bench/teaching aid, not a certified infusion pump.",
+        "es": "El canal del cuerpo y el barreno de la tuerca suman la 'holgura' del usuario por lado; empieza en 0.35 mm y ajústalo a tu impresora y husillo. Imprime el empujador sólido o de alto relleno para rigidez del accionamiento. Es una ayuda de mesa/enseñanza, no una bomba de infusión certificada."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "syringe_barrel_socket",
+        "label": { "en": "Syringe Barrel Socket", "es": "Socket de Cuerpo de Jeringa" },
+        "geometry_type": "socket",
+        "standard": "Luer syringe barrel (1/3/5/10/20 mL)",
+        "parameters": ["syringe", "clearance"]
+      },
+      {
+        "id": "leadscrew_nut",
+        "label": { "en": "Leadscrew Drive Nut", "es": "Tuerca de Husillo" },
+        "geometry_type": "thread",
+        "standard": "T8 trapezoidal / M8 metric leadscrew",
+        "parameters": ["leadscrew", "clearance"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Open syringe-pump hardware lets teaching labs, makerspaces and low-resource research groups build precise fluid dosing for a fraction of a commercial pump, on standard syringes and leadscrews, printed on demand.",
+      "es": "El hardware abierto de bomba de jeringa permite a laboratorios de enseñanza, espacios maker y grupos de investigación con pocos recursos construir dosificación precisa de fluidos por una fracción de una bomba comercial, sobre jeringas y husillos estándar, impreso bajo demanda."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "barrel_clamp",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Barrel Clamp", "es": "Abrazadera de Cuerpo" },
+      "description": { "en": "Saddle block that cradles the syringe barrel and bolts to the pump bed." },
+      "parts": ["barrel_clamp"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "plunger_pusher",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Plunger Pusher", "es": "Empujador de Émbolo" },
+      "description": { "en": "Leadscrew carriage with a threaded drive nut and a slot that captures the plunger flange." },
+      "parts": ["plunger_pusher"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "barrel_block",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Barrel Retainer Block", "es": "Bloque Retenedor" },
+      "description": { "en": "Retainer with a barrel bore and a drop-in flange slot to fix the barrel end." },
+      "parts": ["barrel_block"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "barrel_clamp", "render_mode": 0, "label": { "en": "Barrel Clamp", "es": "Abrazadera de Cuerpo" }, "default_color": "#0d9488" },
+    { "id": "plunger_pusher", "render_mode": 0, "label": { "en": "Plunger Pusher", "es": "Empujador de Émbolo" }, "default_color": "#14b8a6" },
+    { "id": "barrel_block", "render_mode": 0, "label": { "en": "Barrel Retainer Block", "es": "Bloque Retenedor" }, "default_color": "#2dd4bf" }
+  ],
+  "parameters": [
+    {
+      "id": "syringe", "type": "select", "default": "10mL",
+      "options": [
+        { "value": "1mL", "label": "1 mL (Ø6.6 mm)" },
+        { "value": "3mL", "label": "3 mL (Ø9.7 mm)" },
+        { "value": "5mL", "label": "5 mL (Ø12.5 mm)" },
+        { "value": "10mL", "label": "10 mL (Ø15.9 mm)" },
+        { "value": "20mL", "label": "20 mL (Ø20.1 mm)" }
+      ],
+      "group": "syringe", "modes": ["barrel_clamp", "plunger_pusher", "barrel_block"],
+      "label": { "en": "Syringe Size", "es": "Tamaño de Jeringa" },
+      "tooltip": { "en": "Standard Luer syringe; sets the barrel channel / bore diameter.", "es": "Jeringa Luer estándar; define el diámetro del canal / barreno del cuerpo." }
+    },
+    {
+      "id": "leadscrew", "type": "select", "default": "T8",
+      "options": [
+        { "value": "T8", "label": "T8 trapezoidal (Ø8, lead 8)" },
+        { "value": "M8", "label": "M8 metric (Ø8, pitch 1.25)" }
+      ],
+      "group": "drive", "modes": ["plunger_pusher"],
+      "label": { "en": "Leadscrew", "es": "Husillo" },
+      "tooltip": { "en": "Drive screw the plunger pusher nut threads onto.", "es": "Husillo de accionamiento sobre el que se enrosca la tuerca del empujador." }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.35, "min": 0.15, "max": 0.8, "step": 0.05,
+      "group": "fit", "modes": ["barrel_clamp", "plunger_pusher", "barrel_block"],
+      "label": { "en": "Fit Clearance (mm/side)", "es": "Holgura de Ajuste (mm/lado)" },
+      "tooltip": { "en": "Per-side gap on the barrel channel and nut bore.", "es": "Espacio por lado en el canal del cuerpo y el barreno de la tuerca." }
+    },
+    {
+      "id": "block_w", "type": "slider", "default": 40.0, "min": 24.0, "max": 70.0, "step": 1.0,
+      "group": "body", "modes": ["barrel_clamp", "plunger_pusher", "barrel_block"],
+      "label": { "en": "Block Width (mm)", "es": "Ancho del Bloque (mm)" },
+      "tooltip": { "en": "Overall carriage width across the mounting bolts.", "es": "Ancho total del carro entre los pernos de montaje." },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "mount_bolt", "type": "slider", "default": 4.4, "min": 3.0, "max": 6.5, "step": 0.1,
+      "group": "body", "modes": ["barrel_clamp", "barrel_block"], "advanced": true,
+      "label": { "en": "Mount Bolt Hole (mm)", "es": "Orificio de Perno de Montaje (mm)" },
+      "tooltip": { "en": "Through-hole for the frame mounting bolts (4.4 = M4 clearance).", "es": "Agujero pasante para los pernos de montaje (4.4 = holgura M4)." }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "syringe", "label": { "en": "Syringe", "es": "Jeringa" } },
+    { "id": "drive", "label": { "en": "Leadscrew Drive", "es": "Accionamiento" } },
+    { "id": "fit", "label": { "en": "Fit", "es": "Ajuste" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "presets": [
+    {
+      "id": "clamp_10ml", "mode": "barrel_clamp",
+      "label": { "en": "10 mL Barrel Clamp", "es": "Abrazadera 10 mL" },
+      "values": { "syringe": "10mL", "clearance": 0.35 }
+    },
+    {
+      "id": "pusher_t8", "mode": "plunger_pusher",
+      "label": { "en": "T8 Plunger Pusher", "es": "Empujador T8" },
+      "values": { "syringe": "10mL", "leadscrew": "T8", "clearance": 0.35 }
+    },
+    {
+      "id": "block_20ml", "mode": "barrel_block",
+      "label": { "en": "20 mL Retainer Block", "es": "Bloque Retenedor 20 mL" },
+      "values": { "syringe": "20mL", "clearance": 0.35 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance <= 0.6",
+      "severity": "warning",
+      "message": { "en": "Large clearance lets the barrel and nut wander under drive", "es": "Una holgura grande deja que el cuerpo y la tuerca se muevan bajo carga" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 14,
+    "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "license": "CERN-OHL-W-2.0"
+}

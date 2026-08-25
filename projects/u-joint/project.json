@@ -1,0 +1,419 @@
+{
+  "project": {
+    "name": "Universal Joint (printable)",
+    "slug": "u-joint",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "advanced",
+    "description": {
+      "en": "A printable Cardan / universal joint that couples two 6-10 mm drive shafts — the same small-shaft bore range the shaft-spline commons family shares. Build a rigid inline coupler with the full cross-and-yoke geometry, a bent coupler frozen at a set angle to carry drive around a corner, or a single yoke half you print two of to key onto opposing shafts. Modelled as one fused, watertight, single-body manifold: the cross is bonded to the yokes through solid pin bridges, so it prints as a single rigid piece rather than a print-in-place mechanism.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una junta cardán / universal imprimible que acopla dos ejes de transmisión de 6-10 mm — el mismo rango de barreno pequeño que comparte la familia shaft-spline. Genera un acoplador recto rígido con la geometría completa de cruceta y horquillas, un acoplador acodado fijo a un ángulo para llevar la transmisión alrededor de una esquina, o media horquilla que imprimes dos veces para acoplarla a ejes opuestos. Modelada como un solo cuerpo estanco y fusionado: la cruceta se une a las horquillas mediante puentes de pasador macizos, así que se imprime como una pieza rígida única en vez de un mecanismo impreso en sitio.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/u-joint.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "u-joint",
+      "universal-joint",
+      "cardan",
+      "coupler",
+      "yoke",
+      "cross",
+      "6-10mm",
+      "shaft-spline",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "inline_joint",
+      "label": {
+        "en": "Inline Coupler (0°)",
+        "es": "Acoplador Recto (0°)"
+      },
+      "engine": "cadquery",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "inline_joint"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 4,
+        "per_part": 18
+      }
+    },
+    {
+      "id": "angled_joint",
+      "label": {
+        "en": "Angled Coupler",
+        "es": "Acoplador Acodado"
+      },
+      "engine": "cadquery",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "angled_joint"
+      ],
+      "estimate": {
+        "base_time": 20,
+        "per_unit": 4,
+        "per_part": 20
+      }
+    },
+    {
+      "id": "single_yoke",
+      "label": {
+        "en": "Single Yoke",
+        "es": "Horquilla Individual"
+      },
+      "engine": "cadquery",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "single_yoke"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "inline_joint",
+      "label": {
+        "en": "Inline Coupler",
+        "es": "Acoplador Recto"
+      },
+      "render_mode": 0,
+      "color": "#7a4a8f"
+    },
+    {
+      "id": "angled_joint",
+      "label": {
+        "en": "Angled Coupler",
+        "es": "Acoplador Acodado"
+      },
+      "render_mode": 0,
+      "color": "#8f5ba3"
+    },
+    {
+      "id": "single_yoke",
+      "label": {
+        "en": "Single Yoke",
+        "es": "Horquilla Individual"
+      },
+      "render_mode": 0,
+      "color": "#a36fbf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "shaft",
+      "label": {
+        "en": "Shaft & Yoke",
+        "es": "Eje y Horquilla"
+      }
+    },
+    {
+      "id": "cross",
+      "label": {
+        "en": "Cross & Pins",
+        "es": "Cruceta y Pasadores"
+      }
+    },
+    {
+      "id": "angle",
+      "label": {
+        "en": "Articulation",
+        "es": "Articulación"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bore_d",
+      "type": "slider",
+      "default": 8.0,
+      "min": 6.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "shaft",
+      "modes": [
+        "inline_joint",
+        "angled_joint",
+        "single_yoke"
+      ],
+      "label": {
+        "en": "Shaft Bore (mm)",
+        "es": "Barreno de Eje (mm)"
+      },
+      "tooltip": {
+        "en": "Drive shaft diameter each yoke keys onto. shaft-spline commons range 6-10 mm",
+        "es": "Diámetro del eje al que se acopla cada horquilla. Rango común shaft-spline 6-10 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "radial",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "yoke_wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 3.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "shaft",
+      "modes": [
+        "inline_joint",
+        "angled_joint",
+        "single_yoke"
+      ],
+      "label": {
+        "en": "Yoke Wall (mm)",
+        "es": "Pared de Horquilla (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the shaft barrel around the bore",
+        "es": "Grosor de pared del barril del eje alrededor del barreno"
+      }
+    },
+    {
+      "id": "ear_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 3.0,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "cross",
+      "modes": [
+        "inline_joint",
+        "angled_joint",
+        "single_yoke"
+      ],
+      "label": {
+        "en": "Ear Thickness (mm)",
+        "es": "Grosor de Oreja (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the yoke ears that straddle the cross",
+        "es": "Grosor de las orejas de la horquilla que abrazan la cruceta"
+      }
+    },
+    {
+      "id": "cross_d",
+      "type": "slider",
+      "default": 7.0,
+      "min": 4.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "cross",
+      "modes": [
+        "inline_joint",
+        "angled_joint",
+        "single_yoke"
+      ],
+      "label": {
+        "en": "Cross / Pin Ø (mm)",
+        "es": "Ø de Cruceta / Pasador (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the central cross arms and the pin bridges to the ears",
+        "es": "Diámetro de los brazos de la cruceta central y los puentes de pasador a las orejas"
+      }
+    },
+    {
+      "id": "set_d",
+      "type": "slider",
+      "default": 4.3,
+      "min": 2.5,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "shaft",
+      "modes": [
+        "inline_joint",
+        "angled_joint",
+        "single_yoke"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Setscrew Hole (mm)",
+        "es": "Orificio de Prisionero (mm)"
+      },
+      "tooltip": {
+        "en": "Radial setscrew clearance that pins each yoke to its shaft (M4 ~4.3 mm)",
+        "es": "Holgura del prisionero radial que fija cada horquilla a su eje (M4 ~4.3 mm)"
+      }
+    },
+    {
+      "id": "joint_ang",
+      "type": "slider",
+      "default": 25.0,
+      "min": 0.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "angle",
+      "modes": [
+        "angled_joint"
+      ],
+      "label": {
+        "en": "Joint Angle (deg)",
+        "es": "Ángulo de Junta (grados)"
+      },
+      "tooltip": {
+        "en": "Fixed angle between the two shafts for the angled coupler",
+        "es": "Ángulo fijo entre los dos ejes para el acoplador acodado"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "inline_8mm",
+      "mode": "inline_joint",
+      "label": {
+        "en": "8 mm Inline Coupler",
+        "es": "Acoplador Recto 8 mm"
+      },
+      "values": {
+        "bore_d": 8.0,
+        "yoke_wall": 4.0,
+        "ear_t": 4.0,
+        "cross_d": 7.0
+      }
+    },
+    {
+      "id": "angled_8mm_25",
+      "mode": "angled_joint",
+      "label": {
+        "en": "8 mm Coupler at 25°",
+        "es": "Acoplador 8 mm a 25°"
+      },
+      "values": {
+        "bore_d": 8.0,
+        "yoke_wall": 4.0,
+        "cross_d": 7.0,
+        "joint_ang": 25.0
+      }
+    },
+    {
+      "id": "yoke_6mm",
+      "mode": "single_yoke",
+      "label": {
+        "en": "6 mm Single Yoke",
+        "es": "Horquilla Individual 6 mm"
+      },
+      "values": {
+        "bore_d": 6.0,
+        "yoke_wall": 3.5,
+        "ear_t": 3.5,
+        "cross_d": 6.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "set_d < yoke_wall",
+      "severity": "warning",
+      "message": {
+        "en": "Setscrew hole should be narrower than the yoke wall so material remains around it",
+        "es": "El orificio del prisionero debe ser más estrecho que la pared de la horquilla para que quede material alrededor"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        90
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front",
+        "es": "Frontal"
+      },
+      "position": [
+        0,
+        -180,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 16,
+    "per_unit": 4,
+    "per_part": 16,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "shaft_bore_setscrew",
+        "label": {
+          "en": "6-10 mm Shaft Bore + Setscrew",
+          "es": "Barreno de Eje 6-10 mm + Prisionero"
+        },
+        "geometry_type": "socket",
+        "standard": "6-10mm shaft",
+        "parameters": [
+          "bore_d",
+          "set_d"
+        ],
+        "compatible_with": [
+          "spline-hub",
+          "knob-dshaft"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A universal joint that couples two misaligned shafts is a stock mechanical part that is awkward to source for an odd small-shaft size and rarely repairable when one yoke cracks. Printing an inline or angled coupler, or a single yoke to rebuild half a worn joint, to the same 6-10 mm shaft interface the rest of the shaft-spline commons keys to lets a maker transmit drive around a corner or between two small shafts on demand, and repair a joint in the field instead of replacing the whole assembly.",
+      "es": "Una junta universal que acopla dos ejes desalineados es una pieza mecánica de stock difícil de conseguir para un tamaño de eje pequeño inusual y rara vez reparable cuando una horquilla se agrieta. Imprimir un acoplador recto o acodado, o una sola horquilla para reconstruir la mitad de una junta gastada, a la misma interfaz de eje de 6-10 mm a la que se acopla el resto de la familia shaft-spline permite a un fabricante transmitir movimiento alrededor de una esquina o entre dos ejes pequeños bajo demanda, y reparar una junta en campo en vez de reemplazar todo el conjunto."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "license": "CERN-OHL-W-2.0",
+  "tags": [
+    "u-joint",
+    "universal-joint",
+    "cardan",
+    "coupler",
+    "yoke",
+    "cross",
+    "6-10mm",
+    "shaft-spline",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

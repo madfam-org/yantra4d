@@ -1,0 +1,448 @@
+{
+  "project": {
+    "name": "Gridfinity Baseplate (Screw-Down)",
+    "slug": "gridfinity-baseplate",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "A Gridfinity baseplate on the open 42 mm grid: an nx x ny field of cells, each with the standard stacked-chamfer socket a Gridfinity bin foot drops into (0.8 mm + 1.8 mm + 2.15 mm stack, 41.5 mm opening). Fix it down with countersunk screws, seat magnets under the cells, or add a weighted perimeter skirt. Mates the gridfinity family.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una base Gridfinity en la cuadrícula abierta de 42 mm: un campo de nx x ny celdas, cada una con el zócalo de chaflán escalonado estándar donde encaja el pie de un contenedor Gridfinity (pila de 0.8 mm + 1.8 mm + 2.15 mm, abertura de 41.5 mm). Fíjala con tornillos avellanados, coloca imanes bajo las celdas, o añade un faldón perimetral con peso. Compatible con la familia gridfinity.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/gridfinity-baseplate.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "gridfinity",
+      "42mm",
+      "baseplate",
+      "storage",
+      "organization",
+      "screw-down",
+      "household",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "screw_baseplate",
+      "label": {
+        "en": "Screw-Down Baseplate",
+        "es": "Base Atornillable"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "screw_baseplate"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "magnet_baseplate",
+      "label": {
+        "en": "Magnet Baseplate",
+        "es": "Base con Imanes"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "magnet_baseplate"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "weighted_frame",
+      "label": {
+        "en": "Weighted Frame",
+        "es": "Marco con Peso"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "weighted_frame"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 15,
+        "per_unit": 4,
+        "per_part": 13
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "screw_baseplate",
+      "label": {
+        "en": "Screw-Down Baseplate",
+        "es": "Base Atornillable"
+      },
+      "render_mode": 0,
+      "color": "#8f6f4a"
+    },
+    {
+      "id": "magnet_baseplate",
+      "label": {
+        "en": "Magnet Baseplate",
+        "es": "Base con Imanes"
+      },
+      "render_mode": 0,
+      "color": "#a0805b"
+    },
+    {
+      "id": "weighted_frame",
+      "label": {
+        "en": "Weighted Frame",
+        "es": "Marco con Peso"
+      },
+      "render_mode": 0,
+      "color": "#bf936f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "grid",
+      "label": {
+        "en": "Grid",
+        "es": "Cuadrícula"
+      }
+    },
+    {
+      "id": "fixing",
+      "label": {
+        "en": "Fixing",
+        "es": "Fijación"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "nx",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "group": "grid",
+      "modes": [
+        "screw_baseplate",
+        "magnet_baseplate",
+        "weighted_frame"
+      ],
+      "label": {
+        "en": "Cells X",
+        "es": "Celdas X"
+      },
+      "tooltip": {
+        "en": "Number of 42 mm cells across X",
+        "es": "Número de celdas de 42 mm en X"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "ny",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "group": "grid",
+      "modes": [
+        "screw_baseplate",
+        "magnet_baseplate",
+        "weighted_frame"
+      ],
+      "label": {
+        "en": "Cells Y",
+        "es": "Celdas Y"
+      },
+      "tooltip": {
+        "en": "Number of 42 mm cells across Y",
+        "es": "Número de celdas de 42 mm en Y"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "floor_th",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "grid",
+      "modes": [
+        "screw_baseplate",
+        "magnet_baseplate",
+        "weighted_frame"
+      ],
+      "label": {
+        "en": "Floor Thickness (mm)",
+        "es": "Grosor del Piso (mm)"
+      },
+      "tooltip": {
+        "en": "Solid floor below the cell sockets",
+        "es": "Piso sólido bajo los zócalos de las celdas"
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 4.4,
+      "min": 2.5,
+      "max": 7.0,
+      "step": 0.1,
+      "group": "fixing",
+      "modes": [
+        "screw_baseplate"
+      ],
+      "label": {
+        "en": "Screw Clearance (mm)",
+        "es": "Holgura de Tornillo (mm)"
+      },
+      "tooltip": {
+        "en": "Screw shank clearance hole (M4 ~4.4 mm)",
+        "es": "Orificio de holgura del vástago del tornillo (M4 ~4.4 mm)"
+      }
+    },
+    {
+      "id": "screw_head_d",
+      "type": "slider",
+      "default": 8.5,
+      "min": 5.0,
+      "max": 14.0,
+      "step": 0.1,
+      "group": "fixing",
+      "advanced": true,
+      "modes": [
+        "screw_baseplate"
+      ],
+      "label": {
+        "en": "Screw Head Bore (mm)",
+        "es": "Avellanado de Cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Counterbore diameter for the screw head",
+        "es": "Diámetro de avellanado para la cabeza del tornillo"
+      }
+    },
+    {
+      "id": "magnet_d",
+      "type": "slider",
+      "default": 6.2,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "fixing",
+      "modes": [
+        "magnet_baseplate"
+      ],
+      "label": {
+        "en": "Magnet Pocket Dia (mm)",
+        "es": "Diámetro de Bolsillo de Imán (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the magnet pockets (6 mm magnets ~6.2 mm)",
+        "es": "Diámetro de los bolsillos para imanes (imanes de 6 mm ~6.2 mm)"
+      }
+    },
+    {
+      "id": "magnet_h",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.0,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "fixing",
+      "advanced": true,
+      "modes": [
+        "magnet_baseplate"
+      ],
+      "label": {
+        "en": "Magnet Pocket Depth (mm)",
+        "es": "Profundidad de Bolsillo (mm)"
+      },
+      "tooltip": {
+        "en": "How deep the magnets seat under each cell",
+        "es": "Cuán profundo se asientan los imanes bajo cada celda"
+      }
+    },
+    {
+      "id": "skirt_h",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "fixing",
+      "modes": [
+        "weighted_frame"
+      ],
+      "label": {
+        "en": "Skirt Height (mm)",
+        "es": "Altura del Faldón (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of the perimeter skirt below the baseplate",
+        "es": "Profundidad del faldón perimetral bajo la base"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "drawer_2x3",
+      "mode": "screw_baseplate",
+      "label": {
+        "en": "2x3 Drawer Baseplate",
+        "es": "Base de Cajón 2x3"
+      },
+      "values": {
+        "nx": 2,
+        "ny": 3,
+        "floor_th": 4.0,
+        "screw_d": 4.4
+      }
+    },
+    {
+      "id": "magnet_2x2",
+      "mode": "magnet_baseplate",
+      "label": {
+        "en": "2x2 Magnet Baseplate",
+        "es": "Base con Imanes 2x2"
+      },
+      "values": {
+        "nx": 2,
+        "ny": 2,
+        "floor_th": 5.0,
+        "magnet_d": 6.2
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "magnet_h < floor_th",
+      "severity": "warning",
+      "message": {
+        "en": "Magnet pockets must stay shallower than the floor",
+        "es": "Los bolsillos de imán deben ser menos profundos que el piso"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        110
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        220
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 4,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "gridfinity_baseplate",
+        "label": {
+          "en": "Gridfinity 42 mm Baseplate",
+          "es": "Base Gridfinity de 42 mm"
+        },
+        "geometry_type": "grid",
+        "standard": "Gridfinity 42 mm",
+        "parameters": [
+          "nx",
+          "ny"
+        ],
+        "compatible_with": [
+          "grid-hub",
+          "gridfinity",
+          "cabinet-bin",
+          "cutlery-tray"
+        ]
+      },
+      {
+        "id": "fixing_pattern",
+        "label": {
+          "en": "Screw / Magnet Fixing",
+          "es": "Fijación por Tornillo / Imán"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": [
+          "screw_d",
+          "magnet_d"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Gridfinity is the open, community-owned 42 mm storage grid that any bin, tray or holder can share. A printed screw-down or magnet baseplate anchors a Gridfinity field to any drawer, bench or toolbox on demand, so a whole shop's small parts stay organised and reconfigurable using freely-licensed geometry instead of a proprietary drawer system.",
+      "es": "Gridfinity es la cuadrícula de almacenamiento abierta de 42 mm, de propiedad comunitaria, que cualquier contenedor, bandeja o soporte puede compartir. Una base atornillable o magnética impresa ancla un campo Gridfinity a cualquier cajón, banco o caja de herramientas bajo demanda, de modo que las piezas pequeñas de todo un taller quedan organizadas y reconfigurables con geometría de licencia libre en vez de un sistema de cajones propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "gridfinity",
+    "42mm",
+    "baseplate",
+    "storage",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

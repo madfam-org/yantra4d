@@ -1,0 +1,296 @@
+{
+  "project": {
+    "name": "SD / MicroSD Card Case",
+    "slug": "sd-case",
+    "version": "1.0.0",
+    "description": {
+      "en": "A parametric memory-card organizer for SD, microSD, and CompactFlash cards in a gridded array of slots. Part of the card-format family — the slot block shares the card-footprint pocket convention with the card holder and deck box. Print a full-size SD tray, a dense microSD tray, or a mixed combo case.",
+      "es": "Un organizador de tarjetas de memoria paramétrico para tarjetas SD, microSD y CompactFlash en un arreglo de ranuras en cuadrícula. Forma parte de la familia card-format — el bloque de ranuras comparte la convención de bolsillo de tarjeta con el portatarjetas y la caja de mazo. Imprime una bandeja SD de tamaño completo, una bandeja microSD densa o un estuche combinado."
+    },
+    "thumbnail": "/projects/sd-case.webp",
+    "tags": [
+      "sd-card",
+      "microsd",
+      "compactflash",
+      "memory-card",
+      "organizer",
+      "card-format",
+      "hyperobject",
+      "commons"
+    ],
+    "difficulty": "beginner",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "commercial",
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Slots carry ~0.4 mm per-side clearance so cards drop in and pull out; drop to ~0.25 mm for a snug hold in dimensionally stable filaments, or open to ~0.6 mm for recycled PLA.",
+        "es": "Las ranuras tienen ~0.4 mm de holgura por lado para que las tarjetas entren y salgan; baja a ~0.25 mm para un ajuste firme en filamentos estables, o abre a ~0.6 mm para PLA reciclado."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "card_slot_grid",
+        "label": {
+          "en": "Memory Card Slot Grid",
+          "es": "Cuadrícula de Ranuras de Tarjeta"
+        },
+        "geometry_type": "grid",
+        "standard": "SD 24x32 / microSD 11x15 / CF 43x36 mm",
+        "parameters": [
+          "card_type",
+          "cols",
+          "rows",
+          "clearance"
+        ],
+        "compatible_with": [
+          "card-holder",
+          "deck-box"
+        ]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Loose memory cards are easy to lose and damage; a printed grid case protects a working set of cards for pennies of filament and can be sized to whatever card mix a photographer, musician, or maker actually carries.",
+      "es": "Las tarjetas de memoria sueltas se pierden y dañan con facilidad; un estuche en cuadrícula impreso protege un conjunto de tarjetas por centavos de filamento y puede dimensionarse a la mezcla de tarjetas que un fotógrafo, músico o creador realmente lleva."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "sd_tray",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "SD Tray",
+        "es": "Bandeja SD"
+      },
+      "description": {
+        "en": "A rows×columns grid of full-size SD slots, each open to the top with a thumb notch to lift the card."
+      },
+      "parts": [
+        "sd_tray"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "micro_tray",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "MicroSD Tray",
+        "es": "Bandeja MicroSD"
+      },
+      "description": {
+        "en": "A denser grid of microSD slots (one extra row and column) for organizing a set of tiny cards."
+      },
+      "parts": [
+        "micro_tray"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "combo_case",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Combo Case",
+        "es": "Estuche Combinado"
+      },
+      "description": {
+        "en": "A single block with a bank of SD slots beside a bank of microSD slots, sharing a central wall."
+      },
+      "parts": [
+        "combo_case"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "sd_tray",
+      "render_mode": 0,
+      "label": {
+        "en": "SD Tray",
+        "es": "Bandeja SD"
+      },
+      "default_color": "#3f7d54"
+    },
+    {
+      "id": "micro_tray",
+      "render_mode": 0,
+      "label": {
+        "en": "MicroSD Tray",
+        "es": "Bandeja MicroSD"
+      },
+      "default_color": "#4f9268"
+    },
+    {
+      "id": "combo_case",
+      "render_mode": 0,
+      "label": {
+        "en": "Combo Case",
+        "es": "Estuche Combinado"
+      },
+      "default_color": "#5fa87c"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "card_type",
+      "type": "select",
+      "default": "SD",
+      "options": [
+        {
+          "value": "SD",
+          "label": "SD (24x32 mm)"
+        },
+        {
+          "value": "microSD",
+          "label": "microSD (11x15 mm)"
+        },
+        {
+          "value": "CF",
+          "label": "CompactFlash (43x36 mm)"
+        }
+      ],
+      "label": {
+        "en": "Card Type (SD Tray)",
+        "es": "Tipo de Tarjeta (Bandeja SD)"
+      },
+      "tooltip": {
+        "en": "Card format used by the SD Tray mode. The MicroSD and Combo modes have fixed formats.",
+        "es": "Formato de tarjeta usado por el modo Bandeja SD. Los modos MicroSD y Combinado tienen formatos fijos."
+      },
+      "group": "cards"
+    },
+    {
+      "id": "cols",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "label": {
+        "en": "Columns",
+        "es": "Columnas"
+      },
+      "group": "grid"
+    },
+    {
+      "id": "rows",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "label": {
+        "en": "Rows",
+        "es": "Filas"
+      },
+      "group": "grid"
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2,
+      "min": 1.2,
+      "max": 5,
+      "step": 0.2,
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "group": "build"
+    },
+    {
+      "id": "floor",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1,
+      "max": 5,
+      "step": 0.2,
+      "label": {
+        "en": "Floor Thickness (mm)",
+        "es": "Grosor de Base (mm)"
+      },
+      "group": "build"
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.15,
+      "max": 1,
+      "step": 0.05,
+      "label": {
+        "en": "Slot Clearance (mm)",
+        "es": "Holgura de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap between a card and its slot.",
+        "es": "Espacio por lado entre una tarjeta y su ranura."
+      },
+      "group": "build"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "cards",
+      "label": {
+        "en": "Card Format",
+        "es": "Formato de Tarjeta"
+      }
+    },
+    {
+      "id": "grid",
+      "label": {
+        "en": "Slot Grid",
+        "es": "Cuadrícula de Ranuras"
+      }
+    },
+    {
+      "id": "build",
+      "label": {
+        "en": "Build",
+        "es": "Construcción"
+      }
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 8,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  },
+  "license": "CERN-OHL-W-2.0"
+}

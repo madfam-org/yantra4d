@@ -1,0 +1,373 @@
+{
+  "project": {
+    "name": "PC Fan Filter Frame",
+    "slug": "fan-filter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "A snap-in dust filter frame for standard PC / printer fans. It mounts on the fan's intake face using the same 40 / 60 / 80 / 120 / 140 mm corner-hole square the fan uses, holding a cut disc of mesh or foam over the airflow bore behind a printed retaining grille. Choose a screw-mount frame, a screwless magnetic frame, or a two-stage stacked cartridge that captures a pre-filter and a fine filter in one part.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un marco de filtro antipolvo a presión para ventiladores estándar de PC / impresora. Se monta en la cara de admisión del ventilador usando el mismo cuadro de orificios de esquina de 40 / 60 / 80 / 120 / 140 mm que usa el ventilador, sujetando un disco recortado de malla o espuma sobre el orificio de flujo tras una rejilla de retención impresa. Elige un marco atornillado, un marco magnético sin tornillos, o un cartucho apilado de dos etapas que captura un prefiltro y un filtro fino en una sola pieza.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/fan-filter.webp",
+    "tags": [
+      "fan",
+      "filter",
+      "dust",
+      "pc-fan",
+      "cooling",
+      "mesh",
+      "grille",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "fan_screw_pattern",
+        "label": {
+          "en": "PC Fan Corner-Hole Square",
+          "es": "Cuadro de Orificios de Esquina de Ventilador PC"
+        },
+        "geometry_type": "grid",
+        "standard": "PC fan 40-140mm",
+        "parameters": ["fan_size"],
+        "compatible_with": ["fan-adapter", "dust-shroud"]
+      },
+      {
+        "id": "media_pocket",
+        "label": {
+          "en": "Filter Media Pocket",
+          "es": "Bolsillo de Medio Filtrante"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": ["media_pocket", "grille_bar", "grille_rings"]
+      },
+      {
+        "id": "magnet_pocket",
+        "label": {
+          "en": "Corner Magnet Pocket",
+          "es": "Bolsillo de Imán de Esquina"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["magnet_dia", "magnet_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A dusty fan clogs, overheats and dies; a filter frame extends the life of any PC, 3D printer or ventilation fan for pennies of filament plus a scrap of mesh. Because it mounts on the open PC-fan corner-hole square shared by dozens of makers, one printed frame fits the same fan a fan-adapter or dust-shroud already bolts to, and the media is a washable, replaceable consumable instead of a proprietary cartridge.",
+      "es": "Un ventilador con polvo se obstruye, se sobrecalienta y muere; un marco de filtro alarga la vida de cualquier ventilador de PC, impresora 3D o ventilación por unos centavos de filamento más un recorte de malla. Como se monta en el cuadro abierto de orificios de esquina de ventilador PC que comparten docenas de fabricantes, un marco impreso encaja en el mismo ventilador que un fan-adapter o dust-shroud ya atornilla, y el medio es un consumible lavable y reemplazable en vez de un cartucho propietario."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "filter_frame",
+      "label": {
+        "en": "Screw-Mount Frame",
+        "es": "Marco Atornillado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["filter_frame"],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "magnet_frame",
+      "label": {
+        "en": "Magnetic Frame",
+        "es": "Marco Magnético"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["magnet_frame"],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "stacked_filter",
+      "label": {
+        "en": "Two-Stage Cartridge",
+        "es": "Cartucho de Dos Etapas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["stacked_filter"],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "filter_frame",
+      "label": {
+        "en": "Screw-Mount Frame",
+        "es": "Marco Atornillado"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "magnet_frame",
+      "label": {
+        "en": "Magnetic Frame",
+        "es": "Marco Magnético"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "stacked_filter",
+      "label": {
+        "en": "Two-Stage Cartridge",
+        "es": "Cartucho de Dos Etapas"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "fan",
+      "label": {
+        "en": "Fan Size",
+        "es": "Tamaño de Ventilador"
+      }
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame & Grille",
+        "es": "Marco y Rejilla"
+      }
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "en": "Magnet Pockets",
+        "es": "Bolsillos de Imán"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "fan_size",
+      "type": "select",
+      "default": "120mm",
+      "group": "fan",
+      "modes": ["filter_frame", "magnet_frame", "stacked_filter"],
+      "label": {
+        "en": "Fan Size",
+        "es": "Tamaño de Ventilador"
+      },
+      "tooltip": {
+        "en": "Standard PC fan size; sets the corner-hole spacing and airflow bore",
+        "es": "Tamaño estándar de ventilador PC; fija el espaciado de orificios y el orificio de flujo"
+      },
+      "options": [
+        { "value": "40mm", "label": { "en": "40 mm", "es": "40 mm" } },
+        { "value": "60mm", "label": { "en": "60 mm", "es": "60 mm" } },
+        { "value": "80mm", "label": { "en": "80 mm", "es": "80 mm" } },
+        { "value": "120mm", "label": { "en": "120 mm", "es": "120 mm" } },
+        { "value": "140mm", "label": { "en": "140 mm", "es": "140 mm" } }
+      ]
+    },
+    {
+      "id": "frame_h",
+      "type": "slider",
+      "default": 6.0,
+      "min": 4.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": ["filter_frame", "magnet_frame", "stacked_filter"],
+      "label": {
+        "en": "Frame Height (mm)",
+        "es": "Altura de Marco (mm)"
+      },
+      "tooltip": {
+        "en": "Body height of the frame along the airflow axis",
+        "es": "Altura del cuerpo del marco a lo largo del eje de flujo"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "media_pocket",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": ["filter_frame", "magnet_frame", "stacked_filter"],
+      "label": {
+        "en": "Media Pocket Depth (mm)",
+        "es": "Profundidad de Bolsillo (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of the recess that holds the filter media disc",
+        "es": "Profundidad del hueco que sujeta el disco de medio filtrante"
+      }
+    },
+    {
+      "id": "grille_bar",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.4,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": ["filter_frame", "magnet_frame", "stacked_filter"],
+      "advanced": true,
+      "label": {
+        "en": "Grille Bar Width (mm)",
+        "es": "Ancho de Barra de Rejilla (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each retaining grille rib",
+        "es": "Ancho de cada nervadura de la rejilla de retención"
+      }
+    },
+    {
+      "id": "grille_rings",
+      "type": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "group": "frame",
+      "modes": ["filter_frame", "magnet_frame", "stacked_filter"],
+      "label": {
+        "en": "Grille Rings",
+        "es": "Anillos de Rejilla"
+      },
+      "tooltip": {
+        "en": "Number of concentric retaining rings across the bore",
+        "es": "Número de anillos de retención concéntricos sobre el orificio"
+      }
+    },
+    {
+      "id": "magnet_dia",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "magnet",
+      "modes": ["magnet_frame"],
+      "label": {
+        "en": "Magnet Diameter (mm)",
+        "es": "Diámetro de Imán (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the corner magnet pockets (magnetic frame only)",
+        "es": "Diámetro de los bolsillos de imán de esquina (solo marco magnético)"
+      }
+    },
+    {
+      "id": "magnet_h",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "magnet",
+      "modes": ["magnet_frame"],
+      "advanced": true,
+      "label": {
+        "en": "Magnet Pocket Depth (mm)",
+        "es": "Profundidad de Bolsillo de Imán (mm)"
+      },
+      "tooltip": {
+        "en": "Depth of the corner magnet pockets",
+        "es": "Profundidad de los bolsillos de imán de esquina"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_120",
+      "mode": "filter_frame",
+      "label": {
+        "en": "Standard 120 mm Filter",
+        "es": "Filtro Estándar 120 mm"
+      },
+      "values": {
+        "fan_size": "120mm",
+        "frame_h": 6.0,
+        "media_pocket": 3.0,
+        "grille_rings": 3
+      }
+    },
+    {
+      "id": "magnet_140",
+      "mode": "magnet_frame",
+      "label": {
+        "en": "Magnetic 140 mm Filter",
+        "es": "Filtro Magnético 140 mm"
+      },
+      "values": {
+        "fan_size": "140mm",
+        "frame_h": 7.0,
+        "magnet_dia": 8.0,
+        "magnet_h": 3.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "media_pocket < frame_h",
+      "severity": "error",
+      "message": {
+        "en": "Media pocket must be shallower than the frame height",
+        "es": "El bolsillo de medio debe ser menos profundo que la altura del marco"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [140, 140, 120]
+    },
+    {
+      "id": "top",
+      "label": { "en": "Top", "es": "Superior" },
+      "position": [0, 0, 240]
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "license": "CERN-OHL-W-2.0"
+}

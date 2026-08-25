@@ -1,0 +1,416 @@
+{
+  "project": {
+    "name": "Knurled Thumb Screw",
+    "slug": "thumb-screw",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Printable hand-turned fasteners on real ISO metric threads (M5 or M6): a knurled thumb screw, a knurled thumb nut, and a two-wing screw. The thread is a genuine single-start helix built from volumetric fused ribs — not a cosmetic groove — so a printed thumb screw threads into the same tapped hole or heat-set insert as a bought M5/M6 screw, and mates the iso-m6 family (the M6 bolt circle of the sentinel-gripper flange).\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Sujetadores girables a mano impresos con roscas métricas ISO reales (M5 o M6): un tornillo de mariposa moleteado, una tuerca de mariposa moleteada, y un tornillo de dos alas. La rosca es una hélice de un solo inicio genuina construida con nervaduras volumétricas fusionadas — no una ranura cosmética — de modo que un tornillo de mariposa impreso enrosca en el mismo agujero roscado o inserto termofijable que un tornillo M5/M6 comercial, y encaja con la familia iso-m6 (el círculo de pernos M6 de la brida del sentinel-gripper).\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/thumb-screw.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "thumb-screw",
+      "thumb-nut",
+      "wing-screw",
+      "knurled",
+      "iso-metric",
+      "m5",
+      "m6",
+      "thread",
+      "fastener",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "thumb_screw",
+      "label": {
+        "en": "Thumb Screw",
+        "es": "Tornillo de Mariposa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "thumb_screw"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "thumb_nut",
+      "label": {
+        "en": "Thumb Nut",
+        "es": "Tuerca de Mariposa"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "thumb_nut"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "wing_screw",
+      "label": {
+        "en": "Wing Screw",
+        "es": "Tornillo de Alas"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "wing_screw"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "thumb_screw",
+      "label": {
+        "en": "Thumb Screw",
+        "es": "Tornillo de Mariposa"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "thumb_nut",
+      "label": {
+        "en": "Thumb Nut",
+        "es": "Tuerca de Mariposa"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    },
+    {
+      "id": "wing_screw",
+      "label": {
+        "en": "Wing Screw",
+        "es": "Tornillo de Alas"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "thread",
+      "label": {
+        "en": "Thread",
+        "es": "Rosca"
+      }
+    },
+    {
+      "id": "head",
+      "label": {
+        "en": "Head",
+        "es": "Cabeza"
+      }
+    },
+    {
+      "id": "shaft",
+      "label": {
+        "en": "Shaft",
+        "es": "Vástago"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "thread_size",
+      "type": "select",
+      "default": "M6",
+      "group": "thread",
+      "modes": [
+        "thumb_screw",
+        "thumb_nut",
+        "wing_screw"
+      ],
+      "options": [
+        { "value": "M5", "label": { "en": "M5 (0.8 mm pitch)", "es": "M5 (paso 0.8 mm)" } },
+        { "value": "M6", "label": { "en": "M6 (1.0 mm pitch)", "es": "M6 (paso 1.0 mm)" } }
+      ],
+      "label": {
+        "en": "Thread Size",
+        "es": "Tamaño de Rosca"
+      },
+      "tooltip": {
+        "en": "ISO metric coarse thread (major diameter / pitch)",
+        "es": "Rosca métrica ISO gruesa (diámetro mayor / paso)"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.0,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "thread",
+      "advanced": true,
+      "modes": [
+        "thumb_screw",
+        "thumb_nut",
+        "wing_screw"
+      ],
+      "label": {
+        "en": "Thread Fit Clearance (mm/side)",
+        "es": "Holgura de Ajuste de Rosca (mm/lado)"
+      },
+      "tooltip": {
+        "en": "Per-side fit slop for the printed thread (male cut thinner, female cut wider)",
+        "es": "Holgura por lado para la rosca impresa (macho más delgado, hembra más ancho)"
+      }
+    },
+    {
+      "id": "engage_turns",
+      "type": "slider",
+      "default": 3.5,
+      "min": 1.5,
+      "max": 4.5,
+      "step": 1.0,
+      "group": "thread",
+      "advanced": true,
+      "modes": [
+        "thumb_screw",
+        "thumb_nut",
+        "wing_screw"
+      ],
+      "label": {
+        "en": "Thread Engagement (turns)",
+        "es": "Enganche de Rosca (vueltas)"
+      },
+      "tooltip": {
+        "en": "Thread turns (snapped to a half-integer for a well-conditioned helical sweep)",
+        "es": "Vueltas de rosca (ajustadas a un semientero para un barrido helicoidal bien condicionado)"
+      }
+    },
+    {
+      "id": "head_dia",
+      "type": "slider",
+      "default": 20.0,
+      "min": 10.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "head",
+      "modes": [
+        "thumb_screw",
+        "thumb_nut",
+        "wing_screw"
+      ],
+      "label": {
+        "en": "Head Diameter (mm)",
+        "es": "Diámetro de Cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Knurled head / knob diameter (wing span for the wing screw)",
+        "es": "Diámetro de la cabeza / perilla moleteada (envergadura de alas para el tornillo de alas)"
+      }
+    },
+    {
+      "id": "head_h",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "head",
+      "modes": [
+        "thumb_screw",
+        "thumb_nut",
+        "wing_screw"
+      ],
+      "label": {
+        "en": "Head Thickness (mm)",
+        "es": "Grosor de Cabeza (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the head / knob",
+        "es": "Grosor de la cabeza / perilla"
+      }
+    },
+    {
+      "id": "knurl_teeth",
+      "type": "slider",
+      "default": 24,
+      "min": 8,
+      "max": 48,
+      "step": 1,
+      "group": "head",
+      "advanced": true,
+      "modes": [
+        "thumb_screw",
+        "thumb_nut"
+      ],
+      "label": {
+        "en": "Knurl Flutes",
+        "es": "Estrías del Moleteado"
+      },
+      "tooltip": {
+        "en": "Number of grip flutes around the knurled head",
+        "es": "Número de estrías de agarre alrededor de la cabeza moleteada"
+      }
+    },
+    {
+      "id": "shaft_len",
+      "type": "slider",
+      "default": 16.0,
+      "min": 6.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "shaft",
+      "modes": [
+        "thumb_screw",
+        "wing_screw"
+      ],
+      "label": {
+        "en": "Shaft Length (mm)",
+        "es": "Longitud del Vástago (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the threaded shaft below the head",
+        "es": "Longitud del vástago roscado debajo de la cabeza"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "m6_thumb_screw",
+      "mode": "thumb_screw",
+      "label": {
+        "en": "M6 Thumb Screw",
+        "es": "Tornillo de Mariposa M6"
+      },
+      "values": {
+        "thread_size": "M6",
+        "clearance": 0.35,
+        "shaft_len": 16.0,
+        "head_dia": 20.0,
+        "head_h": 6.0
+      }
+    },
+    {
+      "id": "m6_thumb_nut",
+      "mode": "thumb_nut",
+      "label": {
+        "en": "M6 Thumb Nut",
+        "es": "Tuerca de Mariposa M6"
+      },
+      "values": {
+        "thread_size": "M6",
+        "clearance": 0.35,
+        "head_dia": 20.0,
+        "head_h": 6.0
+      }
+    },
+    {
+      "id": "m5_wing_screw",
+      "mode": "wing_screw",
+      "label": {
+        "en": "M5 Wing Screw",
+        "es": "Tornillo de Alas M5"
+      },
+      "values": {
+        "thread_size": "M5",
+        "clearance": 0.35,
+        "shaft_len": 14.0,
+        "head_dia": 24.0,
+        "head_h": 6.0
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [60, 60, 55]
+    },
+    {
+      "id": "front",
+      "label": { "en": "Front", "es": "Frontal" },
+      "position": [0, -120, 10]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 48,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "iso_metric_thread",
+        "label": {
+          "en": "ISO Metric Thread (M5/M6)",
+          "es": "Rosca Métrica ISO (M5/M6)"
+        },
+        "geometry_type": "thread",
+        "standard": "M5/M6",
+        "parameters": [
+          "thread_size",
+          "clearance",
+          "engage_turns"
+        ],
+        "compatible_with": [
+          "sentinel-gripper-hyperobject"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Hand-turned fasteners let a print be opened and re-clamped with no tools — for jigs, covers, tripod feet and assistive devices where a screwdriver is a barrier. Building them on the real M5/M6 ISO metric thread means a printed thumb screw and a bought bolt are interchangeable, so a lost knob can be replaced from a printer in minutes and the same knob fits any M5/M6 tapped hole or heat-set insert in the commons.",
+      "es": "Los sujetadores girables a mano permiten abrir y reapretar una pieza sin herramientas — para plantillas, tapas, patas de trípode y dispositivos de asistencia donde un destornillador es una barrera. Construirlos sobre la rosca métrica ISO M5/M6 real hace que un tornillo de mariposa impreso y un perno comercial sean intercambiables, de modo que una perilla perdida se reemplaza desde una impresora en minutos y la misma perilla encaja en cualquier agujero roscado o inserto termofijable M5/M6 del commons."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "thumb-screw",
+    "thumb-nut",
+    "wing-screw",
+    "knurled",
+    "iso-metric",
+    "thread",
+    "fastener",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

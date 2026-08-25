@@ -1,0 +1,288 @@
+{
+  "project": {
+    "name": "18650 Battery Caddy",
+    "slug": "battery-caddy",
+    "version": "1.0.0",
+    "description": {
+      "en": "A parametric Li-ion cell caddy for 18650 and 21700 cells. Part of the battery-cell family — the cradle array shares the cell form-factor convention with the battery holder and media caddy, so a carrier sized here matches their cell pockets. Print a single-row caddy, a dual-row pack carrier, or a single-cell protective sleeve.",
+      "es": "Un soporte de celdas Li-ion paramétrico para celdas 18650 y 21700. Forma parte de la familia battery-cell — el arreglo de cunas comparte la convención de formato de celda con el soporte de baterías y el media caddy, de modo que un portador dimensionado aquí coincide con sus bolsillos de celda. Imprime un soporte de una fila, un portador de dos filas o una funda protectora de una celda."
+    },
+    "thumbnail": "/projects/battery-caddy.webp",
+    "tags": [
+      "18650",
+      "21700",
+      "battery",
+      "li-ion",
+      "cell-holder",
+      "battery-cell",
+      "hyperobject",
+      "commons"
+    ],
+    "difficulty": "beginner",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "industrial",
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Cradle bores carry ~0.5 mm per-side clearance for a drop-in fit; tighten for a snap grip in PETG or open for recycled PLA. Do not print the sleeve in brittle filament — a cell impact should flex, not shatter, the wall.",
+        "es": "Las cunas tienen ~0.5 mm de holgura por lado para un ajuste de inserción; ajústala para un agarre a presión en PETG o ábrela para PLA reciclado. No imprimas la funda en filamento quebradizo — un impacto de celda debe flexar, no romper, la pared."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "cell_cradle_array",
+        "label": {
+          "en": "Li-ion Cell Cradle Array",
+          "es": "Arreglo de Cunas de Celda Li-ion"
+        },
+        "geometry_type": "socket",
+        "standard": "18650 Ø18.4x65 / 21700 Ø21.2x70 mm",
+        "parameters": [
+          "cell",
+          "count",
+          "clearance"
+        ],
+        "compatible_with": [
+          "battery-holder",
+          "media-caddy"
+        ]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Loose 18650 and 21700 cells are a short-circuit and fire risk when carried in a pocket or drawer; a printed caddy keeps terminals apart and cells organized for a few grams of filament, and the sleeve mode protects a single spare cell in a bag.",
+      "es": "Las celdas 18650 y 21700 sueltas son un riesgo de cortocircuito e incendio al llevarlas en un bolsillo o cajón; un soporte impreso mantiene los terminales separados y las celdas organizadas por unos gramos de filamento, y el modo funda protege una celda de repuesto en una mochila."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "caddy",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Single-Row Caddy",
+        "es": "Soporte de Una Fila"
+      },
+      "description": {
+        "en": "A single row of open cell cradles with a contact window at each cell end for bus strips."
+      },
+      "parts": [
+        "caddy"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "dual_row",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Dual-Row Carrier",
+        "es": "Portador de Dos Filas"
+      },
+      "description": {
+        "en": "Two cradle rows joined across a central spine for a fuller pack carrier."
+      },
+      "parts": [
+        "dual_row"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "sleeve",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Single-Cell Sleeve",
+        "es": "Funda de Una Celda"
+      },
+      "description": {
+        "en": "A protective open-ended tube for one cell, with grip flats so it does not roll."
+      },
+      "parts": [
+        "sleeve"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "caddy",
+      "render_mode": 0,
+      "label": {
+        "en": "Single-Row Caddy",
+        "es": "Soporte de Una Fila"
+      },
+      "default_color": "#8f5b4a"
+    },
+    {
+      "id": "dual_row",
+      "render_mode": 0,
+      "label": {
+        "en": "Dual-Row Carrier",
+        "es": "Portador de Dos Filas"
+      },
+      "default_color": "#a5684f"
+    },
+    {
+      "id": "sleeve",
+      "render_mode": 0,
+      "label": {
+        "en": "Single-Cell Sleeve",
+        "es": "Funda de Una Celda"
+      },
+      "default_color": "#bf7c5f"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "cell",
+      "type": "select",
+      "default": "18650",
+      "options": [
+        {
+          "value": "18650",
+          "label": "18650 (Ø18.4 x 65 mm)"
+        },
+        {
+          "value": "21700",
+          "label": "21700 (Ø21.2 x 70 mm)"
+        }
+      ],
+      "label": {
+        "en": "Cell Size",
+        "es": "Tamaño de Celda"
+      },
+      "group": "cells"
+    },
+    {
+      "id": "count",
+      "type": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "label": {
+        "en": "Cells per Row",
+        "es": "Celdas por Fila"
+      },
+      "group": "cells"
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.2,
+      "max": 5,
+      "step": 0.2,
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "group": "build"
+    },
+    {
+      "id": "cradle_frac",
+      "type": "slider",
+      "default": 0.62,
+      "min": 0.4,
+      "max": 0.85,
+      "step": 0.01,
+      "label": {
+        "en": "Cradle Wrap",
+        "es": "Envoltura de Cuna"
+      },
+      "tooltip": {
+        "en": "How far the cradle wraps up around the cell (higher = more retention).",
+        "es": "Cuánto envuelve la cuna alrededor de la celda (mayor = más retención)."
+      },
+      "group": "build"
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.5,
+      "min": 0.2,
+      "max": 1.2,
+      "step": 0.05,
+      "label": {
+        "en": "Bore Clearance (mm)",
+        "es": "Holgura de Cuna (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side gap between a cell and its cradle.",
+        "es": "Espacio por lado entre una celda y su cuna."
+      },
+      "group": "build"
+    },
+    {
+      "id": "contact_w",
+      "type": "slider",
+      "default": 9,
+      "min": 4,
+      "max": 14,
+      "step": 0.5,
+      "label": {
+        "en": "Contact Window (mm)",
+        "es": "Ventana de Contacto (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the end window that exposes each cell terminal.",
+        "es": "Ancho de la ventana de extremo que expone cada terminal de celda."
+      },
+      "group": "build"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "cells",
+      "label": {
+        "en": "Cells",
+        "es": "Celdas"
+      }
+    },
+    {
+      "id": "build",
+      "label": {
+        "en": "Build",
+        "es": "Construcción"
+      }
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 9,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60
+  },
+  "license": "CERN-OHL-W-2.0"
+}

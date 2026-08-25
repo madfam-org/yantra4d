@@ -1,0 +1,272 @@
+{
+  "project": {
+    "name": "Business Card Holder",
+    "slug": "card-tray",
+    "version": "1.0.0",
+    "description": {
+      "en": "A parametric business-card holder for the desk or wall. Part of the card-format family — it shares the business-card footprint groove with the card holder and deck box, so a stack sized for one seats cleanly in another. Print an angled display tray, a wall pocket, or an upright divider box.",
+      "es": "Un portatarjetas de presentación paramétrico para escritorio o pared. Forma parte de la familia card-format — comparte la ranura del formato de tarjeta con el portatarjetas y la caja de mazo, de modo que un bloque dimensionado para uno encaja en otro. Imprime una bandeja de exhibición inclinada, un bolsillo de pared o una caja divisoria vertical."
+    },
+    "thumbnail": "/projects/card-tray.webp",
+    "tags": [
+      "business-card",
+      "card",
+      "desk",
+      "office",
+      "organizer",
+      "card-format",
+      "hyperobject",
+      "commons"
+    ],
+    "difficulty": "beginner",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "commercial",
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The card groove carries ~0.6 mm per-side slip clearance so a real stack drops in; tighten it for stiff filaments and open it for recycled PLA that prints slightly oversize.",
+        "es": "La ranura de tarjetas tiene ~0.6 mm de holgura por lado para que un bloque real entre; ajústala para filamentos rígidos y ábrela para PLA reciclado que imprime ligeramente sobredimensionado."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "card_groove",
+        "label": {
+          "en": "Business Card Footprint Groove",
+          "es": "Ranura del Formato de Tarjeta de Presentación"
+        },
+        "geometry_type": "profile",
+        "standard": "business card 89x51mm (ISO 7810 ID-1)",
+        "parameters": [
+          "card_len",
+          "card_wid",
+          "stack_mm"
+        ],
+        "compatible_with": [
+          "card-holder",
+          "deck-box"
+        ]
+      }
+    ],
+    "societal_benefit": {
+      "en": "A printable card holder replaces a bought desk accessory with a few grams of filament and lets a small business match the holder to its exact card size, keeping presentation tidy at effectively zero marginal cost.",
+      "es": "Un portatarjetas imprimible reemplaza un accesorio comprado con unos gramos de filamento y permite a un negocio pequeño ajustar el soporte al tamaño exacto de su tarjeta, manteniendo la presentación ordenada a un costo marginal prácticamente nulo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "desk_tray",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Angled Desk Tray",
+        "es": "Bandeja de Escritorio Inclinada"
+      },
+      "description": {
+        "en": "A shallow tray whose back leans so a stack of cards fans forward for display, with a front retaining lip."
+      },
+      "parts": [
+        "desk_tray"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "wall_holder",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Wall Pocket",
+        "es": "Bolsillo de Pared"
+      },
+      "description": {
+        "en": "A flat-backed wall pocket with two screw holes and a front thumb window to lift the stack."
+      },
+      "parts": [
+        "wall_holder"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "stack_box",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Upright Divider Box",
+        "es": "Caja Divisoria Vertical"
+      },
+      "description": {
+        "en": "An upright box holding a full brick of cards on edge, with a scalloped front finger notch."
+      },
+      "parts": [
+        "stack_box"
+      ],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "desk_tray",
+      "render_mode": 0,
+      "label": {
+        "en": "Angled Desk Tray",
+        "es": "Bandeja de Escritorio Inclinada"
+      },
+      "default_color": "#4a7c8f"
+    },
+    {
+      "id": "wall_holder",
+      "render_mode": 0,
+      "label": {
+        "en": "Wall Pocket",
+        "es": "Bolsillo de Pared"
+      },
+      "default_color": "#5b8fb0"
+    },
+    {
+      "id": "stack_box",
+      "render_mode": 0,
+      "label": {
+        "en": "Upright Divider Box",
+        "es": "Caja Divisoria Vertical"
+      },
+      "default_color": "#6fa3bf"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "card_len",
+      "type": "slider",
+      "default": 89,
+      "min": 60,
+      "max": 120,
+      "step": 0.5,
+      "label": {
+        "en": "Card Length (mm)",
+        "es": "Largo de Tarjeta (mm)"
+      },
+      "tooltip": {
+        "en": "Long edge of the card. US/ISO business card is 88.9 mm.",
+        "es": "Borde largo de la tarjeta. La tarjeta US/ISO mide 88.9 mm."
+      },
+      "group": "card"
+    },
+    {
+      "id": "card_wid",
+      "type": "slider",
+      "default": 51,
+      "min": 40,
+      "max": 70,
+      "step": 0.5,
+      "label": {
+        "en": "Card Width (mm)",
+        "es": "Ancho de Tarjeta (mm)"
+      },
+      "tooltip": {
+        "en": "Short edge of the card. US business card is 50.8 mm; EU is 55 mm.",
+        "es": "Borde corto de la tarjeta. La tarjeta US mide 50.8 mm; la europea 55 mm."
+      },
+      "group": "card"
+    },
+    {
+      "id": "stack_mm",
+      "type": "slider",
+      "default": 12,
+      "min": 3,
+      "max": 40,
+      "step": 1,
+      "label": {
+        "en": "Stack Thickness (mm)",
+        "es": "Grosor del Bloque (mm)"
+      },
+      "tooltip": {
+        "en": "How thick a brick of cards the groove holds (~0.35 mm per card).",
+        "es": "Qué tan grueso es el bloque de tarjetas que sostiene la ranura (~0.35 mm por tarjeta)."
+      },
+      "group": "card"
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 3,
+      "min": 1.6,
+      "max": 6,
+      "step": 0.2,
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "group": "build"
+    },
+    {
+      "id": "lean_ang",
+      "type": "slider",
+      "default": 15,
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "label": {
+        "en": "Display Lean (deg)",
+        "es": "Inclinación de Exhibición (grados)"
+      },
+      "tooltip": {
+        "en": "How far the desk tray leans back so cards fan forward.",
+        "es": "Cuánto se inclina hacia atrás la bandeja para que las tarjetas se abran al frente."
+      },
+      "group": "build"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "card",
+      "label": {
+        "en": "Card Size",
+        "es": "Tamaño de Tarjeta"
+      }
+    },
+    {
+      "id": "build",
+      "label": {
+        "en": "Build",
+        "es": "Construcción"
+      }
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 8,
+    "per_unit": 2,
+    "per_part": 7,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

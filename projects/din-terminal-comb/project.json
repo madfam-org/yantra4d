@@ -1,0 +1,430 @@
+{
+  "project": {
+    "name": "DIN Rail Terminal Comb",
+    "slug": "din-terminal-comb",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Terminal-block accessories that clip onto standard top-hat DIN rail (TS35, DIN EN 60715 — 35 mm across the lips, 7.5 mm deep) and index against the terminal pitch: a jumper/feed comb that bridges adjacent terminals, an end-stop bracket that retains a row of blocks, and a marker carrier that presents labels at pitch. Mates the din-rail-35 family.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Accesorios de bloques de terminales que se enganchan en riel DIN de sombrero estándar (TS35, DIN EN 60715 — 35 mm entre labios, 7.5 mm de profundidad) e indexan según el paso de terminales: un peine puente que une terminales adyacentes, un tope de fin que retiene una fila de bloques, y un portamarcadores que presenta etiquetas al paso. Compatible con la familia din-rail-35.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/din-terminal-comb.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "din",
+      "din-rail",
+      "ts35",
+      "terminal",
+      "comb",
+      "jumper",
+      "en60715",
+      "infrastructure",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "feed_comb",
+      "label": {
+        "en": "Feed / Jumper Comb",
+        "es": "Peine de Puente"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "feed_comb"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "end_bracket",
+      "label": {
+        "en": "End Stop Bracket",
+        "es": "Tope de Fin"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "end_bracket"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 9
+      }
+    },
+    {
+      "id": "marker_carrier",
+      "label": {
+        "en": "Marker Carrier",
+        "es": "Portamarcadores"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "marker_carrier"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "feed_comb",
+      "label": {
+        "en": "Feed / Jumper Comb",
+        "es": "Peine de Puente"
+      },
+      "render_mode": 0,
+      "color": "#7a8f4a"
+    },
+    {
+      "id": "end_bracket",
+      "label": {
+        "en": "End Stop Bracket",
+        "es": "Tope de Fin"
+      },
+      "render_mode": 0,
+      "color": "#8fa05b"
+    },
+    {
+      "id": "marker_carrier",
+      "label": {
+        "en": "Marker Carrier",
+        "es": "Portamarcadores"
+      },
+      "render_mode": 0,
+      "color": "#a3bf6f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "terminal",
+      "label": {
+        "en": "Terminal Pitch",
+        "es": "Paso de Terminal"
+      }
+    },
+    {
+      "id": "features",
+      "label": {
+        "en": "Features",
+        "es": "Características"
+      }
+    },
+    {
+      "id": "clip",
+      "label": {
+        "en": "DIN Clip",
+        "es": "Clip DIN"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "pitch",
+      "type": "slider",
+      "default": 5.2,
+      "min": 3.5,
+      "max": 20.0,
+      "step": 0.1,
+      "group": "terminal",
+      "modes": [
+        "feed_comb",
+        "marker_carrier"
+      ],
+      "label": {
+        "en": "Terminal Pitch (mm)",
+        "es": "Paso de Terminal (mm)"
+      },
+      "tooltip": {
+        "en": "Centre-to-centre spacing of the terminal blocks (5.2 mm typical)",
+        "es": "Espaciado centro a centro de los bloques de terminales (5.2 mm típico)"
+      }
+    },
+    {
+      "id": "poles",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "group": "terminal",
+      "modes": [
+        "feed_comb",
+        "marker_carrier"
+      ],
+      "label": {
+        "en": "Poles",
+        "es": "Polos"
+      },
+      "tooltip": {
+        "en": "How many terminals the comb bridges / the strip labels",
+        "es": "Cuántos terminales une el peine / etiqueta la tira"
+      }
+    },
+    {
+      "id": "prong_d",
+      "type": "slider",
+      "default": 2.6,
+      "min": 1.2,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "features",
+      "modes": [
+        "feed_comb"
+      ],
+      "label": {
+        "en": "Prong Diameter (mm)",
+        "es": "Diámetro de Punta (mm)"
+      },
+      "tooltip": {
+        "en": "Jumper prong diameter that seats in the terminal screw port",
+        "es": "Diámetro de la punta puente que entra en el puerto del tornillo del terminal"
+      }
+    },
+    {
+      "id": "comb_h",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "features",
+      "modes": [
+        "feed_comb",
+        "end_bracket",
+        "marker_carrier"
+      ],
+      "label": {
+        "en": "Body Height (mm)",
+        "es": "Altura del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the comb bar / stop block / label frame above the clip",
+        "es": "Altura de la barra / bloque tope / marco de etiqueta sobre el clip"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "label_w",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "features",
+      "modes": [
+        "marker_carrier"
+      ],
+      "label": {
+        "en": "Label Window (mm)",
+        "es": "Ventana de Etiqueta (mm)"
+      },
+      "tooltip": {
+        "en": "Width of each label window along the rail",
+        "es": "Ancho de cada ventana de etiqueta a lo largo del riel"
+      }
+    },
+    {
+      "id": "plate_th",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "clip",
+      "advanced": true,
+      "modes": [
+        "feed_comb",
+        "end_bracket",
+        "marker_carrier"
+      ],
+      "label": {
+        "en": "Clip Plate (mm)",
+        "es": "Placa del Clip (mm)"
+      },
+      "tooltip": {
+        "en": "Mount-plate thickness of the DIN clip back",
+        "es": "Grosor de la placa de montaje del clip DIN"
+      }
+    },
+    {
+      "id": "screw_d",
+      "type": "slider",
+      "default": 3.4,
+      "min": 2.5,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "features",
+      "advanced": true,
+      "modes": [
+        "end_bracket"
+      ],
+      "label": {
+        "en": "Lock Screw (mm)",
+        "es": "Tornillo de Fijación (mm)"
+      },
+      "tooltip": {
+        "en": "End-stop locking screw clearance (M3 ~3.4 mm)",
+        "es": "Holgura del tornillo de fijación del tope (M3 ~3.4 mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_comb",
+      "mode": "feed_comb",
+      "label": {
+        "en": "6-Pole Comb (5.2mm)",
+        "es": "Peine 6 Polos (5.2mm)"
+      },
+      "values": {
+        "pitch": 5.2,
+        "poles": 6,
+        "prong_d": 2.6,
+        "comb_h": 10.0
+      }
+    },
+    {
+      "id": "label_strip",
+      "mode": "marker_carrier",
+      "label": {
+        "en": "12-Pole Marker Strip",
+        "es": "Tira Marcadora 12 Polos"
+      },
+      "values": {
+        "pitch": 5.2,
+        "poles": 12,
+        "label_w": 4.2
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "prong_d < pitch",
+      "severity": "error",
+      "message": {
+        "en": "Prong diameter must be smaller than the terminal pitch",
+        "es": "El diámetro de la punta debe ser menor que el paso del terminal"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        70
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front (Rail Profile)",
+        "es": "Frontal (Perfil del Riel)"
+      },
+      "position": [
+        -160,
+        0,
+        0
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 11,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "din_ts35_rail",
+        "label": {
+          "en": "DIN TS35 Rail Clip",
+          "es": "Clip de Riel DIN TS35"
+        },
+        "geometry_type": "rail",
+        "standard": "DIN EN 60715",
+        "parameters": [
+          "plate_th"
+        ],
+        "compatible_with": [
+          "din-module",
+          "busbar-support",
+          "devboard-tray",
+          "din-rail-clip"
+        ]
+      },
+      {
+        "id": "terminal_pitch",
+        "label": {
+          "en": "Terminal-Block Pitch",
+          "es": "Paso de Bloque de Terminal"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "pitch",
+          "poles"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "DIN rail is the universal open backbone of electrical control panels and consumer units worldwide, and terminal-block accessories — jumpers, end stops, marker strips — are proprietary, per-brand and easily lost. A printed comb, end bracket or marker carrier at the correct terminal pitch keeps a panel serviceable and re-labellable with commodity parts instead of ordering a manufacturer-specific accessory.",
+      "es": "El riel DIN es la columna vertebral abierta universal de los tableros de control eléctrico y los cuadros de consumo en todo el mundo, y los accesorios de bloques de terminales — puentes, topes, tiras marcadoras — son propietarios, por marca y fáciles de perder. Un peine, tope o portamarcadores impreso al paso correcto mantiene un tablero mantenible y re-etiquetable con piezas genéricas en lugar de pedir un accesorio específico del fabricante."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "din",
+    "din-rail",
+    "ts35",
+    "terminal",
+    "comb",
+    "infrastructure",
+    "hyperobject",
+    "commons"
+  ]
+}

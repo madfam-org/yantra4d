@@ -1,0 +1,494 @@
+{
+  "project": {
+    "name": "VESA Adapter Plate (75<->100)",
+    "slug": "vesa-plate-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Adapts a VESA MIS-D 75 x 75 mm display to a 100 x 100 mm arm (or the reverse). A flat conversion plate drilled with both square bolt patterns, a raised stand-off variant that clears a recessed monitor back, and a universal slotted plate for slightly off-spec displays. Mates the vesa family.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Adapta una pantalla VESA MIS-D de 75 x 75 mm a un brazo de 100 x 100 mm (o al revés). Una placa de conversión plana perforada con ambos patrones cuadrados de pernos, una variante elevada con separador que libera el respaldo hundido de un monitor, y una placa universal ranurada para pantallas ligeramente fuera de norma. Compatible con la familia vesa.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/vesa-plate-adapter.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "vesa",
+      "mis-d",
+      "monitor",
+      "mount",
+      "adapter",
+      "75",
+      "100",
+      "commercial",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "adapter_75_to_100",
+      "label": {
+        "en": "75->100 Flat Adapter",
+        "es": "Adaptador Plano 75->100"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "adapter_75_to_100"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "adapter_100_to_75",
+      "label": {
+        "en": "100->75 Stand-off Adapter",
+        "es": "Adaptador con Separador 100->75"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "adapter_100_to_75"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "combo_universal",
+      "label": {
+        "en": "Universal Slotted Plate",
+        "es": "Placa Universal Ranurada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "combo_universal"
+      ],
+      "engine": "cadquery",
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "adapter_75_to_100",
+      "label": {
+        "en": "75->100 Flat Adapter",
+        "es": "Adaptador Plano 75->100"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "adapter_100_to_75",
+      "label": {
+        "en": "100->75 Stand-off Adapter",
+        "es": "Adaptador con Separador 100->75"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "combo_universal",
+      "label": {
+        "en": "Universal Slotted Plate",
+        "es": "Placa Universal Ranurada"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "plate",
+      "label": {
+        "en": "Plate",
+        "es": "Placa"
+      }
+    },
+    {
+      "id": "vesa",
+      "label": {
+        "en": "VESA Patterns",
+        "es": "Patrones VESA"
+      }
+    },
+    {
+      "id": "features",
+      "label": {
+        "en": "Holes & Cable",
+        "es": "Orificios y Cable"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "adapter_75_to_100",
+        "adapter_100_to_75",
+        "combo_universal"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Base slab thickness. 5 mm is stiff for most monitors",
+        "es": "Grosor de la placa base. 5 mm es rígido para la mayoría de monitores"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "vesa_small",
+      "type": "slider",
+      "default": 75.0,
+      "min": 50.0,
+      "max": 90.0,
+      "step": 1,
+      "group": "vesa",
+      "modes": [
+        "adapter_75_to_100",
+        "adapter_100_to_75",
+        "combo_universal"
+      ],
+      "label": {
+        "en": "Small VESA Square (mm)",
+        "es": "Cuadro VESA Pequeño (mm)"
+      },
+      "tooltip": {
+        "en": "MIS-D 75 bolt-square spacing (75 mm standard)",
+        "es": "Separación del patrón MIS-D 75 (75 mm estándar)"
+      }
+    },
+    {
+      "id": "vesa_large",
+      "type": "slider",
+      "default": 100.0,
+      "min": 95.0,
+      "max": 140.0,
+      "step": 1,
+      "group": "vesa",
+      "modes": [
+        "adapter_75_to_100",
+        "adapter_100_to_75",
+        "combo_universal"
+      ],
+      "label": {
+        "en": "Large VESA Square (mm)",
+        "es": "Cuadro VESA Grande (mm)"
+      },
+      "tooltip": {
+        "en": "MIS-D 100 bolt-square spacing (100 mm standard)",
+        "es": "Separación del patrón MIS-D 100 (100 mm estándar)"
+      }
+    },
+    {
+      "id": "bolt_d",
+      "type": "slider",
+      "default": 4.5,
+      "min": 3.5,
+      "max": 7.0,
+      "step": 0.1,
+      "group": "features",
+      "advanced": true,
+      "modes": [
+        "adapter_75_to_100",
+        "adapter_100_to_75",
+        "combo_universal"
+      ],
+      "label": {
+        "en": "Bolt Clearance (mm)",
+        "es": "Holgura de Perno (mm)"
+      },
+      "tooltip": {
+        "en": "M4 clearance hole diameter (~4.5 mm)",
+        "es": "Diámetro de orificio de holgura M4 (~4.5 mm)"
+      }
+    },
+    {
+      "id": "cbore_d",
+      "type": "slider",
+      "default": 8.5,
+      "min": 6.0,
+      "max": 14.0,
+      "step": 0.1,
+      "group": "features",
+      "advanced": true,
+      "modes": [
+        "adapter_75_to_100",
+        "adapter_100_to_75"
+      ],
+      "label": {
+        "en": "Counterbore Dia (mm)",
+        "es": "Diámetro de Avellanado (mm)"
+      },
+      "tooltip": {
+        "en": "M4 head counterbore diameter (~8.5 mm)",
+        "es": "Diámetro de avellanado para cabeza M4 (~8.5 mm)"
+      }
+    },
+    {
+      "id": "cbore_depth",
+      "type": "slider",
+      "default": 2.5,
+      "min": 1.0,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "features",
+      "advanced": true,
+      "modes": [
+        "adapter_75_to_100",
+        "adapter_100_to_75"
+      ],
+      "label": {
+        "en": "Counterbore Depth (mm)",
+        "es": "Profundidad de Avellanado (mm)"
+      },
+      "tooltip": {
+        "en": "How deep the screw head sinks below the face",
+        "es": "Cuánto se hunde la cabeza del tornillo bajo la cara"
+      }
+    },
+    {
+      "id": "cable_d",
+      "type": "slider",
+      "default": 30.0,
+      "min": 0.0,
+      "max": 60.0,
+      "step": 1,
+      "group": "features",
+      "modes": [
+        "adapter_75_to_100",
+        "adapter_100_to_75",
+        "combo_universal"
+      ],
+      "label": {
+        "en": "Cable Pass-through (mm)",
+        "es": "Paso de Cable (mm)"
+      },
+      "tooltip": {
+        "en": "Central cable pass-through diameter (0 = none)",
+        "es": "Diámetro del paso de cable central (0 = ninguno)"
+      }
+    },
+    {
+      "id": "spacer_h",
+      "type": "slider",
+      "default": 8.0,
+      "min": 3.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "adapter_100_to_75"
+      ],
+      "label": {
+        "en": "Stand-off Height (mm)",
+        "es": "Altura del Separador (mm)"
+      },
+      "tooltip": {
+        "en": "How far the raised boss lifts the display off the arm",
+        "es": "Cuánto eleva el saliente la pantalla respecto al brazo"
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "plate",
+      "advanced": true,
+      "modes": [
+        "adapter_75_to_100",
+        "adapter_100_to_75",
+        "combo_universal"
+      ],
+      "label": {
+        "en": "Corner Radius (mm)",
+        "es": "Radio de Esquina (mm)"
+      },
+      "tooltip": {
+        "en": "Fillet radius on the plate corners",
+        "es": "Radio de redondeo en las esquinas de la placa"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_75_to_100",
+      "mode": "adapter_75_to_100",
+      "label": {
+        "en": "Standard 75->100",
+        "es": "Estándar 75->100"
+      },
+      "values": {
+        "plate_t": 5.0,
+        "vesa_small": 75.0,
+        "vesa_large": 100.0,
+        "cable_d": 30.0
+      }
+    },
+    {
+      "id": "standoff_100_to_75",
+      "mode": "adapter_100_to_75",
+      "label": {
+        "en": "Stand-off 100->75",
+        "es": "Separador 100->75"
+      },
+      "values": {
+        "plate_t": 5.0,
+        "vesa_small": 75.0,
+        "vesa_large": 100.0,
+        "spacer_h": 8.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "vesa_large > vesa_small",
+      "severity": "error",
+      "message": {
+        "en": "The large VESA square must exceed the small one",
+        "es": "El cuadro VESA grande debe ser mayor que el pequeño"
+      }
+    },
+    {
+      "expression": "cbore_depth < plate_t",
+      "severity": "warning",
+      "message": {
+        "en": "Counterbore should be shallower than the plate",
+        "es": "El avellanado debe ser menos profundo que la placa"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        140,
+        140,
+        120
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        240
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "vesa_mis_d_small",
+        "label": {
+          "en": "VESA MIS-D 75 Pattern",
+          "es": "Patrón VESA MIS-D 75"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "VESA MIS-D",
+        "parameters": [
+          "vesa_small",
+          "bolt_d"
+        ],
+        "compatible_with": [
+          "vesa-mount",
+          "vesa-arm-extender",
+          "framing-hyperobject"
+        ]
+      },
+      {
+        "id": "vesa_mis_d_large",
+        "label": {
+          "en": "VESA MIS-D 100 Pattern",
+          "es": "Patrón VESA MIS-D 100"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "VESA MIS-D",
+        "parameters": [
+          "vesa_large",
+          "bolt_d"
+        ],
+        "compatible_with": [
+          "vesa-mount",
+          "vesa-arm-extender",
+          "framing-hyperobject"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The VESA FDMI flat-display mounting interface is the universal open standard for monitor and TV mounting, but the 75 mm and 100 mm patterns rarely match between a display and its arm. A printed adapter plate reconciles the two on demand, so any monitor mounts to any arm without buying a proprietary bracket, and rescues an out-of-production mount in minutes.",
+      "es": "La interfaz de montaje de pantallas planas VESA FDMI es el estándar abierto universal para montar monitores y televisores, pero los patrones de 75 mm y 100 mm rara vez coinciden entre una pantalla y su brazo. Una placa adaptadora impresa reconcilia ambos bajo demanda, de modo que cualquier monitor se monta en cualquier brazo sin comprar un soporte propietario, y rescata un montaje descatalogado en minutos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "vesa",
+    "mis-d",
+    "monitor",
+    "mount",
+    "adapter",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

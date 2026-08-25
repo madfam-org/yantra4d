@@ -1,0 +1,154 @@
+{
+  "project": {
+    "name": "Test-Tube Centrifuge Adapter",
+    "slug": "centrifuge-tube-adapter",
+    "version": "1.0.0",
+    "description": {
+      "en": "Sleeve adapters that let 15 mL or 50 mL conical (Falcon-type) centrifuge tubes spin safely in a larger rotor bore or bucket, plus a conical-tip cushion that supports the tube point against g-force. Sized to the 15 mL (Ø17 mm) and 50 mL (Ø30 mm) conical standard, so tubes interoperate with the centrifuge-adapter cartridge. Verify balance and rotor rating before spinning.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Adaptadores de manguito que permiten a tubos cónicos (tipo Falcon) de 15 mL o 50 mL girar de forma segura en un barreno o cangilón de rotor más grande, más un cojín de punta cónica que apoya la punta del tubo contra la fuerza g. Dimensionado al estándar cónico de 15 mL (Ø17 mm) y 50 mL (Ø30 mm), de modo que los tubos son interoperables con el cartucho centrifuge-adapter. Verifica el balance y la clasificación del rotor antes de centrifugar.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/centrifuge-tube-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": ["centrifuge", "tube", "adapter", "conical", "falcon", "lab", "medical", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The bore adds the user 'clearance' per side; start at 0.4 mm. Print dense (>=40% infill) so the sleeve survives rotor g-force, and always balance opposing buckets. This is a bench aid — confirm the tube, adapter and rotor are rated for your speed.",
+        "es": "El barreno suma la 'holgura' del usuario por lado; empieza en 0.4 mm. Imprime denso (>=40% relleno) para que el manguito resista la fuerza g del rotor, y siempre balancea cangilones opuestos. Es una ayuda de mesa — confirma que el tubo, el adaptador y el rotor estén clasificados para tu velocidad."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "conical_tube_socket",
+        "label": { "en": "15/50 mL Conical Tube Socket", "es": "Socket de Tubo Cónico 15/50 mL" },
+        "geometry_type": "socket",
+        "standard": "15/50 mL conical (Falcon)",
+        "parameters": ["tube_dia", "rotor_bore", "clearance", "depth"],
+        "compatible_with": ["centrifuge-adapter"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "One printed sleeve lets a lab run small conical tubes in whatever centrifuge and rotor it already owns, instead of buying a dedicated set of adapters per tube size, extending equipment life at the cost of filament.",
+      "es": "Un manguito impreso permite a un laboratorio usar tubos cónicos pequeños en la centrífuga y rotor que ya posee, en vez de comprar un juego dedicado de adaptadores por tamaño de tubo, prolongando la vida del equipo al costo del filamento."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "adapter_15",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "15 mL Adapter", "es": "Adaptador 15 mL" },
+      "description": { "en": "Sleeve seating a 15 mL conical tube (Ø17 mm) in a larger rotor bore." },
+      "parts": ["adapter_15"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "adapter_50",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "50 mL Adapter", "es": "Adaptador 50 mL" },
+      "description": { "en": "Sleeve seating a 50 mL conical tube (Ø30 mm) in a larger rotor bore." },
+      "parts": ["adapter_50"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "cushion",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Conical-Tip Cushion", "es": "Cojín de Punta Cónica" },
+      "description": { "en": "Bucket-bottom insert with a conical seat that supports and centres the tube tip." },
+      "parts": ["cushion"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "adapter_15", "render_mode": 0, "label": { "en": "15 mL Adapter", "es": "Adaptador 15 mL" }, "default_color": "#0369a1" },
+    { "id": "adapter_50", "render_mode": 0, "label": { "en": "50 mL Adapter", "es": "Adaptador 50 mL" }, "default_color": "#0284c7" },
+    { "id": "cushion", "render_mode": 0, "label": { "en": "Conical-Tip Cushion", "es": "Cojín de Punta Cónica" }, "default_color": "#0ea5e9" }
+  ],
+  "parameters": [
+    {
+      "id": "tube_dia", "type": "slider", "default": 17.0, "min": 10.0, "max": 34.0, "step": 0.5,
+      "group": "tube", "modes": ["adapter_15", "adapter_50", "cushion"],
+      "label": { "en": "Tube Diameter (mm)", "es": "Diámetro de Tubo (mm)" },
+      "tooltip": { "en": "Outer diameter of the conical tube (15 mL ~17 mm, 50 mL ~30 mm).", "es": "Diámetro exterior del tubo cónico (15 mL ~17 mm, 50 mL ~30 mm)." }
+    },
+    {
+      "id": "rotor_bore", "type": "slider", "default": 30.0, "min": 18.0, "max": 50.0, "step": 0.5,
+      "group": "tube", "modes": ["adapter_15", "adapter_50", "cushion"],
+      "label": { "en": "Rotor Bore (mm)", "es": "Barreno de Rotor (mm)" },
+      "tooltip": { "en": "Diameter of the rotor bore / bucket the sleeve drops into.", "es": "Diámetro del barreno / cangilón del rotor donde entra el manguito." },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 0.5 }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "fit", "modes": ["adapter_15", "adapter_50", "cushion"],
+      "label": { "en": "Slip Clearance (mm/side)", "es": "Holgura (mm/lado)" },
+      "tooltip": { "en": "Per-side gap so the tube drops in and out.", "es": "Espacio por lado para que el tubo entre y salga." }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 90.0, "min": 30.0, "max": 120.0, "step": 1.0,
+      "group": "body", "modes": ["adapter_15", "adapter_50"],
+      "label": { "en": "Sleeve Length (mm)", "es": "Largo del Manguito (mm)" },
+      "tooltip": { "en": "How far the sleeve runs down the rotor bore.", "es": "Cuánto recorre el manguito el barreno del rotor." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "floor", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "body", "modes": ["adapter_15", "adapter_50", "cushion"],
+      "label": { "en": "Floor Thickness (mm)", "es": "Grosor de Piso (mm)" },
+      "tooltip": { "en": "Solid material under the tube tip.", "es": "Material sólido bajo la punta del tubo." }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "tube", "label": { "en": "Tube & Rotor", "es": "Tubo y Rotor" } },
+    { "id": "fit", "label": { "en": "Fit", "es": "Ajuste" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "presets": [
+    {
+      "id": "std_15", "mode": "adapter_15",
+      "label": { "en": "15 mL in 30 mm Rotor", "es": "15 mL en Rotor 30 mm" },
+      "values": { "tube_dia": 17.0, "rotor_bore": 30.0, "depth": 100.0 }
+    },
+    {
+      "id": "std_50", "mode": "adapter_50",
+      "label": { "en": "50 mL in 40 mm Rotor", "es": "50 mL en Rotor 40 mm" },
+      "values": { "tube_dia": 30.0, "rotor_bore": 40.0, "depth": 100.0 }
+    },
+    {
+      "id": "tip_cushion", "mode": "cushion",
+      "label": { "en": "Conical-Tip Cushion", "es": "Cojín de Punta Cónica" },
+      "values": { "tube_dia": 17.0, "rotor_bore": 30.0, "floor": 5.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "tube_dia < rotor_bore",
+      "severity": "error",
+      "message": { "en": "The tube must be smaller than the rotor bore", "es": "El tubo debe ser menor que el barreno del rotor" }
+    },
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": { "en": "Large clearance lets the tube shift and unbalance the rotor", "es": "Una holgura grande deja que el tubo se desplace y desbalancee el rotor" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 130] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -160, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 2, "per_part": 12,
+    "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "license": "CERN-OHL-W-2.0"
+}

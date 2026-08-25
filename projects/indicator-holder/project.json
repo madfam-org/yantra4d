@@ -1,0 +1,193 @@
+{
+  "project": {
+    "name": "Dial Indicator Holder",
+    "slug": "indicator-holder",
+    "version": "1.0.0",
+    "author": "Yantra4D",
+    "description": {
+      "en": "An articulated holder for a dial or test indicator that grips the industry-standard 8 mm indicator stem (Mitutoyo Series 2 / AGD Group 2; also 3/8 in). Print a stem clamp (the business end), a snug reach arm with a stem clamp on one end and a post clamp on the other, and a heavy base with a vertical post — together a rigid stand that puts a gauge exactly where the measurement is. Shares the 8 mm stem socket with the Indicator Base cartridge.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte articulado para comparador o palpador que sujeta la tija estándar de 8 mm (Mitutoyo Serie 2 / AGD Grupo 2; también 3/8 in). Imprime una mordaza de tija (el extremo útil), un brazo de alcance con mordaza de tija en un extremo y mordaza de poste en el otro, y una base pesada con poste vertical — juntos un soporte rígido que coloca la galga exactamente donde está la medición. Comparte el alojamiento de tija de 8 mm con el cartucho Base de Comparador.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/indicator-holder.webp",
+    "difficulty": "beginner",
+    "tags": ["metrology", "dial-indicator", "gauge", "holder", "articulated", "mitutoyo", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true,
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    }
+  },
+  "modes": [
+    {
+      "id": "stem_clamp",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Stem Clamp", "es": "Mordaza de Tija" },
+      "description": {
+        "en": "The business end: a saw-cut split clamp gripping the 8 mm indicator stem in a cross-bore, closed by a cross screw, on a short mount tab with a bolt hole.",
+        "es": "El extremo útil: una mordaza partida con corte de sierra que sujeta la tija de 8 mm en un barreno transversal, cerrada por un tornillo, sobre una pestaña con agujero de perno."
+      },
+      "parts": ["stem_clamp"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "snug_arm",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Reach Arm", "es": "Brazo de Alcance" },
+      "description": {
+        "en": "An articulated arm: a stem clamp at one end and a post clamp at the other, joined by a solid bar. Grip the stem at one end, clamp onto the post at the other, and swing the gauge over the work.",
+        "es": "Un brazo articulado: mordaza de tija en un extremo y mordaza de poste en el otro, unidos por una barra sólida. Sujeta la tija en un extremo, aprieta el poste en el otro, y lleva la galga sobre la pieza."
+      },
+      "parts": ["snug_arm"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "base_post",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": { "en": "Base + Post", "es": "Base + Poste" },
+      "description": {
+        "en": "The stand: a heavy filleted base plate with a vertical post rising from the centre and four mount holes. The reach arm's post clamp slips over this post.",
+        "es": "El soporte: una placa base pesada y redondeada con un poste vertical desde el centro y cuatro agujeros de montaje. La mordaza de poste del brazo se desliza sobre este poste."
+      },
+      "parts": ["base_post"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "stem_clamp", "render_mode": 0, "label": { "en": "Stem Clamp", "es": "Mordaza de Tija" },  "default_color": "#2f3e46" },
+    { "id": "snug_arm",   "render_mode": 0, "label": { "en": "Reach Arm",  "es": "Brazo de Alcance" }, "default_color": "#52796f" },
+    { "id": "base_post",  "render_mode": 0, "label": { "en": "Base + Post", "es": "Base + Poste" },     "default_color": "#84a98c" }
+  ],
+  "parameters": [
+    {
+      "id": "stem_dia", "type": "slider", "default": 8.0, "min": 6.0, "max": 10.0, "step": 0.1,
+      "label": { "en": "Indicator Stem Diameter (mm)", "es": "Diámetro de la Tija (mm)" },
+      "tooltip": {
+        "en": "Standard dial-indicator stem = 8 mm (Mitutoyo Series 2 / AGD Group 2). 3/8 in = 9.525 mm for imperial stems. The bore is cut at nominal + 0.1 mm.",
+        "es": "Tija estándar de comparador = 8 mm (Mitutoyo Serie 2 / AGD Grupo 2). 3/8 in = 9.525 mm para tijas imperiales. El barreno se corta a nominal + 0.1 mm."
+      },
+      "group": "gauge"
+    },
+    {
+      "id": "post_dia", "type": "slider", "default": 12.0, "min": 8.0, "max": 20.0, "step": 0.5,
+      "label": { "en": "Post Diameter (mm)", "es": "Diámetro del Poste (mm)" },
+      "tooltip": { "en": "Diameter of the vertical post the arm clamps onto. The post clamp bore is +0.25 mm for a slip fit.", "es": "Diámetro del poste vertical sobre el que se aprieta el brazo. El barreno de la mordaza es +0.25 mm para ajuste deslizante." },
+      "group": "post"
+    },
+    {
+      "id": "arm_len", "type": "slider", "default": 70.0, "min": 30.0, "max": 140.0, "step": 1.0,
+      "label": { "en": "Arm Reach (mm)", "es": "Alcance del Brazo (mm)" },
+      "tooltip": { "en": "Centre-to-centre length of the reach arm (stem clamp to post clamp).", "es": "Longitud centro a centro del brazo (mordaza de tija a mordaza de poste)." },
+      "group": "post", "visible_in_modes": ["snug_arm"]
+    },
+    {
+      "id": "wall", "type": "slider", "default": 5.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "label": { "en": "Wall Thickness (mm)", "es": "Espesor de Pared (mm)" },
+      "tooltip": { "en": "Wall thickness around the clamp bores and bodies. More wall = stiffer grip.", "es": "Espesor de pared alrededor de los barrenos y cuerpos. Más pared = agarre más rígido." },
+      "group": "gauge"
+    },
+    {
+      "id": "clamp_screw_d", "type": "slider", "default": 3.4, "min": 2.2, "max": 6.0, "step": 0.1,
+      "label": { "en": "Clamp Screw Diameter (mm)", "es": "Diámetro del Tornillo (mm)" },
+      "tooltip": { "en": "Clearance for the clamp / mount screws (M3 ~3.4 mm).", "es": "Holgura para los tornillos de apriete / montaje (M3 ~3.4 mm)." },
+      "group": "gauge", "advanced": true
+    },
+    {
+      "id": "post_height", "type": "slider", "default": 90.0, "min": 40.0, "max": 160.0, "step": 1.0,
+      "label": { "en": "Post Height (mm)", "es": "Altura del Poste (mm)" },
+      "tooltip": { "en": "Height of the base post above the plate.", "es": "Altura del poste de la base sobre la placa." },
+      "group": "base", "visible_in_modes": ["base_post"]
+    },
+    {
+      "id": "base_width", "type": "slider", "default": 60.0, "min": 40.0, "max": 110.0, "step": 1.0,
+      "label": { "en": "Base Width (mm)", "es": "Ancho de la Base (mm)" },
+      "tooltip": { "en": "Footprint width. Wider = more tip-over stability.", "es": "Ancho de la huella. Más ancho = más estabilidad." },
+      "group": "base", "visible_in_modes": ["base_post"]
+    }
+  ],
+  "parameter_groups": [
+    { "id": "gauge", "label": { "en": "Gauge Interface", "es": "Interfaz de Galga" } },
+    { "id": "post",  "label": { "en": "Post / Arm",      "es": "Poste / Brazo" } },
+    { "id": "base",  "label": { "en": "Base",            "es": "Base" } }
+  ],
+  "presets": [
+    {
+      "id": "stem_clamp_8mm", "mode": "stem_clamp",
+      "label": { "en": "8 mm Stem Clamp", "es": "Mordaza de Tija 8 mm" },
+      "values": { "stem_dia": 8.0, "wall": 5.0, "clamp_screw_d": 3.4 }
+    },
+    {
+      "id": "reach_arm_70", "mode": "snug_arm",
+      "label": { "en": "70 mm Reach Arm", "es": "Brazo de 70 mm" },
+      "values": { "stem_dia": 8.0, "post_dia": 12.0, "arm_len": 70.0, "wall": 5.0 }
+    },
+    {
+      "id": "bench_stand", "mode": "base_post",
+      "label": { "en": "Bench Stand", "es": "Soporte de Banco" },
+      "values": { "post_dia": 12.0, "post_height": 90.0, "base_width": 60.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clamp_screw_d < stem_dia",
+      "severity": "error",
+      "message": {
+        "en": "The clamp screw must be narrower than the stem it closes onto",
+        "es": "El tornillo de apriete debe ser más estrecho que la tija que cierra"
+      }
+    },
+    {
+      "expression": "wall >= 3.5",
+      "severity": "warning",
+      "message": {
+        "en": "Thin walls flex under gauge pressure and lose reading stability",
+        "es": "Paredes delgadas flexan bajo la presión de la galga y pierden estabilidad de lectura"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso",   "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -180, 40] },
+    { "id": "top",   "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "indicator_stem_socket",
+        "label": { "en": "8 mm Indicator Stem Socket", "es": "Alojamiento de Tija de 8 mm" },
+        "geometry_type": "socket",
+        "standard": "8 mm indicator stem (Mitutoyo Series 2 / AGD Group 2)",
+        "parameters": ["stem_dia"],
+        "compatible_with": ["indicator-base"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The saw-cut clamp grips by print stiffness: print in PETG or PLA at ≥40% infill so the split ring actually pinches the 8 mm stem — a too-flexible TPU clamp will not hold a reading. Print the stem bore at nominal 8 mm + the built-in 0.1 mm clearance and ream to a true 8 mm if your printer runs tight. Same-material printing keeps the stem and post fits consistent.",
+        "es": "La mordaza de corte de sierra agarra por rigidez de impresión: imprime en PETG o PLA con ≥40% de relleno para que el anillo partido apriete la tija de 8 mm — una mordaza de TPU demasiado flexible no mantendrá la lectura. Imprime el barreno a 8 mm nominal + la holgura de 0.1 mm y escaria a 8 mm reales si va apretado."
+      }
+    },
+    "societal_benefit": {
+      "en": "A commercial articulating indicator holder and stand runs $30–$150. A printed stem clamp, reach arm and base post give any hobby or school workshop a rigid, gauge-exact holder for the price of filament — and because it shares the 8 mm stem socket with the Indicator Base cartridge, one gauge fits the whole printed metrology kit.",
+      "es": "Un soporte articulado comercial cuesta $30–$150. Una mordaza de tija, un brazo y una base impresos dan a cualquier taller casero o escolar un soporte rígido y exacto por el precio del filamento — y como comparte el alojamiento de tija de 8 mm con el cartucho Base de Comparador, una galga sirve para todo el kit de metrología impreso."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "license": "CERN-OHL-W-2.0"
+}

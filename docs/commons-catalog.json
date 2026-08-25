@@ -2,30 +2,36 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 465,
-    "with_cdg_interfaces": 451,
-    "with_commons_license": 465,
+    "cartridges": 484,
+    "with_cdg_interfaces": 470,
+    "with_commons_license": 484,
     "dual_engine": 22
   },
   "domains": {
     "household": 124,
-    "industrial": 105,
+    "industrial": 108,
     "commercial": 75,
-    "wearable": 70,
-    "medical": 37,
+    "wearable": 71,
+    "medical": 41,
     "infrastructure": 26,
     "hybrid": 14,
     "uncategorized": 13,
-    "soft-robotics": 1
+    "soft-robotics": 7,
+    "consumer": 2,
+    "agriculture": 1,
+    "construction": 1,
+    "energy": 1
   },
   "standards": [
     "#1–#60 wire-gauge drill set",
     "0–3 mm pin-vise collet",
+    "1 in (25.4 mm) webbing cross-section",
     "1 in / 25 mm round rail",
     "1-inch pegboard / IKEA SKÅDIS",
     "1/2-3/4 in IPS stub slip (PVC sched 40)",
     "1/2in & 3/4in IPS pipe",
     "1/4 in hex driver bit (6.35 mm A/F)",
+    "1/4\"-20 UNC — major Ø6.35 mm, pitch 1.27 mm, minor Ø4.976 mm",
     "1/4in & 1/2in drip",
     "1/4in drip",
     "10 mm path / 12.5 mm square cuvette",
@@ -46,7 +52,9 @@
     "18650 Ø18.4x65 / 21700 Ø21.2x70 mm",
     "18650/21700/AA",
     "19mm/20mm dog hole",
+    "2\" (Ø50 mm) and 3\" (Ø76 mm) net-cup rim seat",
     "2/3in net cup",
+    "20-55 mm belt webbing channel",
     "20/25/38mm webbing",
     "20/25mm compass",
     "20/25mm webbing",
@@ -66,6 +74,7 @@
     "3/4/6mm / TT hex",
     "3/4in T-track (19.05 mm slot; 1/4-20 stud)",
     "3/4in x 3/8in miter slot; 19mm T-track",
+    "3/8\"-16 UNC — major Ø9.525 mm, pitch 1.5875 mm, minor Ø7.749 mm",
     "3/8-3/4 in tube barb",
     "34 mm flask neck OD (250/500 mL)",
     "38-400 continuous-thread finish",
@@ -98,6 +107,7 @@
     "ASME B1.1 1/4-20 & 3/8-16 UNC",
     "ASME B1.1 1/4-20 UNC",
     "ASME B1.1 3/8-16 UNC",
+    "Arca-Swiss 38 mm quick-release dovetail, ~45° flanks",
     "Arca-Swiss 38mm",
     "Arduino form factors",
     "Citadel/Vallejo/dropper",
@@ -106,6 +116,7 @@
     "Custom mounting pattern",
     "D-shaft / spline bore",
     "DIN 3975",
+    "DIN 3975 cylindrical worm gear pair",
     "DIN 5480 (spline) / keyway",
     "DIN EN 60715",
     "DIN EN 60715 TS35",
@@ -136,6 +147,7 @@
     "ISO 15 (623/625/6900)",
     "ISO 15 (625/608)",
     "ISO 23509",
+    "ISO 23509 bevel and hypoid gear geometry",
     "ISO 261 / ISO 965",
     "ISO 261 M3",
     "ISO 261 M3/M4/M5",
@@ -152,27 +164,35 @@
     "ISO 53",
     "ISO 53 / DIN 867 (20 deg)",
     "ISO 53 / DIN 867 (20° involute)",
+    "ISO 53 / DIN 867 involute tooth form",
     "ISO 7045 M3",
     "ISO 7045 M4",
     "ISO 8037-1 (25.4x76.2mm)",
     "ISO 8037-1:2003",
+    "ISO 8536 gravity infusion set (nominal 15-22 mm body)",
     "ISO 8820-3 ATO/Mini",
     "ISO 9409-1-50-4-M6",
     "ISO handlebar Ø 22.2/25.4/31.8",
     "ISO metric (M2/M2.5/M3)",
+    "Kratky / DWC raft spacing (hole pitch derived from cup diameter)",
     "Kurt-style vise bolt pattern",
     "Luer barrel",
+    "Luer hub nominal Ø 7.5 mm",
     "Luer syringe barrel (1/3/5/10/20 mL)",
     "M22x1 / M24x1 aerator",
     "M3-M8 insert",
+    "M4 clearance (Ø4.4 mm) surface fixing",
     "M4/M5 hex nut",
     "M46-M82 x 0.75",
     "M49-M82 x 0.75",
+    "M5 (5.3 mm clearance, 8.1 mm AF nut)",
     "M5/M6",
     "MC4",
+    "MC4 PV connector body, Ø16 mm nominal barrel",
     "MGN9/12/15",
     "MIL-STD-1913 / M-LOK",
     "MIL-STD-1913 Picatinny",
+    "MIL-W-17337 / A-A-55301 PALS: 25.4 mm webbing, 25.4 mm row pitch",
     "MOLLE/PALS MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
     "Meanwell LRS/RS",
     "Multiboard 25 mm",
@@ -188,6 +208,7 @@
     "PCO 1881 / SP-400 finish series",
     "PG7-PG21 / M12-M25",
     "PTFE stir bars 12/20/25/38/50 mm",
+    "PV lead 4-6 mm², Ø6.5 mm nominal",
     "PVC sched (nominal)",
     "Pegboard 1 in / 6.35 mm",
     "RMS W0.800in x 36 TPI (20.32 mm, DIN 58888) / M25 x 0.75",
@@ -209,6 +230,7 @@
     "T8 trapezoidal / M8 metric leadscrew",
     "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
     "US / metric knitting needle sizes (2.0-12.0 mm)",
+    "US bar designations #3 (9.5 mm), #4 (12.7 mm), #5 (15.9 mm)",
     "US junction box",
     "US register 4x10/4x12/6x10/6x12 in",
     "US round duct 4/5/6 in",
@@ -229,17 +251,26 @@
     "XT60/USB/RJ45/GX16",
     "aero/square crossbar",
     "breadboard 2.54mm",
+    "bucket / tote mouth, annular downstand",
     "business card",
     "business card 89x51mm (ISO 7810 ID-1)",
     "carboy/bucket bore",
     "clarinet / alto / tenor mouthpiece (~30-36 mm)",
+    "concrete cover depth (slab through footing values)",
     "construction brick 8mm",
     "cylindrical NdFeB magnet Ø8-16 mm",
     "dry-erase marker",
     "e-NABLE / OSL 4-bolt",
+    "epicyclic meshing constraint: ring = sun + 2 × planet",
     "fine-tool slot array (tweezer/probe body 1.5–8 mm)",
     "handlebar 7/8-1in (22.2-25.4mm)",
+    "internal (19 / 22 / 25 mm ward poles)",
+    "internal (2 / 3 / 4 mm tube ID)",
+    "internal (20 / 30 / 40 mm)",
+    "internal (mates iv-pole-clamp accessory face)",
     "internal (round / D-flat)",
+    "internal (shared bucket / carboy bore)",
+    "internal (shared leg-tube series, glide variant)",
     "internal bond socket",
     "internal peg grid 8mm",
     "internal solids 40mm",
@@ -249,6 +280,7 @@
     "low / high shank (19 / 32 mm bar-to-plate)",
     "none",
     "optics dovetail (60°, Thorlabs RC/XT class)",
+    "plain round shaft (metric nominal)",
     "playing card 63x88mm",
     "ppf-contact-solver (SIGGRAPH Asia 2024)",
     "router bushing (Porter-Cable universal — 1-3/8 in flange)",
@@ -266,6 +298,7 @@
     "suction cup",
     "tabletop base sizes",
     "tape core",
+    "tennis ball nominal Ø 67 mm (ITF)",
     "water-bottle boss",
     "Ø1 in (25.4 mm) / Ø25 mm optic",
     "Ø1/2 in (12.7 mm) optical post"
@@ -2012,6 +2045,96 @@
       }
     },
     {
+      "slug": "bellows-actuator",
+      "name": "Pneumatic Bellows Actuator",
+      "domain": "soft-robotics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "outer_dia",
+        "inner_dia",
+        "convolutions",
+        "conv_pitch",
+        "wall",
+        "cap_th",
+        "tube_id",
+        "bore",
+        "flange_dia",
+        "bolt_dia",
+        "bolt_count"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Every soft-robotics build starts with a bellows, and every tutorial starts by telling you to mould one in silicone — a two-day process needing a mould, a vacuum chamber, and a material with a shelf life. A printed convoluted bellows collapses that to an afternoon on a machine a school or clinic already owns, and because its stroke axis and inlet are published interfaces, the same part serves as a lift, a gripper drive, and a valve actuator instead of being a one-off.",
+        "es": "Todo proyecto de robótica blanda comienza con un fuelle, y todo tutorial comienza diciéndote que lo moldees en silicón — un proceso de dos días que requiere molde, cámara de vacío y un material con caducidad. Un fuelle corrugado impreso reduce eso a una tarde en una máquina que una escuela o clínica ya posee, y como su eje de carrera y su entrada son interfaces publicadas, la misma pieza sirve como elevador, accionamiento de pinza y actuador de válvula en lugar de ser un objeto único."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pneumatic_barb_series",
+          "label": "Pneumatic Barb Series",
+          "geometry_type": "profile",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "bore"
+          ]
+        },
+        {
+          "id": "stroke_axis",
+          "label": "Linear Stroke Axis",
+          "geometry_type": "rail",
+          "standard": "internal",
+          "parameters": [
+            "convolutions",
+            "conv_pitch",
+            "inner_dia",
+            "cap_th"
+          ]
+        },
+        {
+          "id": "base_bolt_flange",
+          "label": "Base Bolt Flange",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "flange_dia",
+            "bolt_dia",
+            "bolt_count"
+          ]
+        }
+      ],
+      "standards": [
+        "internal (2 / 3 / 4 mm tube ID)"
+      ],
+      "source": {
+        "manifest": "projects/bellows-actuator/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bellows-actuator"
+      }
+    },
+    {
       "slug": "belt-buckle",
       "name": "Belt Buckle",
       "domain": "wearable",
@@ -2477,6 +2600,98 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bevel-gear"
+      }
+    },
+    {
+      "slug": "bevel-pair",
+      "name": "Bevel Gear Pair",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "m",
+        "teeth",
+        "ratio",
+        "pressure_angle",
+        "shaft_angle",
+        "face_width",
+        "back_height",
+        "bore",
+        "flank_pts"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Right-angle gearing is the joint that lets a motor drive a shaft it does not point at — the heart of hand drills, mixers, sailboat winches, tracking mounts and every small machine that turns a corner. Commercial bevel sets are cast, matched pairs sold as a unit, so a single stripped tooth condemns both. Generating the pair from the ISO 23509 pitch cone means a broken gear is a reprint, not a purchase, and it lets a repairer match an odd ratio or shaft angle no catalogue stocks. The mesh demonstrator is deliberately included: it shows the geometry rolling before anyone commits filament to a drivetrain.",
+        "es": "El engranaje en ángulo recto es la articulación que permite a un motor mover un eje al que no apunta — el corazón de taladros, batidoras, winches de vela, monturas de seguimiento y toda máquina pequeña que dobla una esquina. Los juegos cónicos comerciales son fundidos, pares emparejados vendidos como unidad, así que un solo diente roto condena ambos. Generar el par desde el cono primitivo ISO 23509 convierte un engrane roto en una reimpresión, no una compra, y permite a un reparador igualar una relación o ángulo raro que ningún catálogo tiene. El demostrador de engrane se incluye a propósito: muestra la geometría rodando antes de comprometer filamento en una transmisión."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "involute_tooth",
+          "label": "Involute Tooth (module + pressure angle)",
+          "geometry_type": "profile",
+          "standard": "ISO 53 / DIN 867 involute tooth form",
+          "parameters": [
+            "m",
+            "teeth",
+            "pressure_angle",
+            "flank_pts"
+          ]
+        },
+        {
+          "id": "bevel_pitch_cone",
+          "label": "Bevel Pitch Cone (shaft angle)",
+          "geometry_type": "surface",
+          "standard": "ISO 23509 bevel and hypoid gear geometry",
+          "parameters": [
+            "m",
+            "teeth",
+            "ratio",
+            "shaft_angle",
+            "face_width"
+          ]
+        },
+        {
+          "id": "shaft_bore",
+          "label": "Shaft Bore",
+          "geometry_type": "socket",
+          "standard": "plain round shaft (metric nominal)",
+          "parameters": [
+            "bore",
+            "back_height"
+          ]
+        }
+      ],
+      "standards": [
+        "ISO 23509 bevel and hypoid gear geometry",
+        "ISO 53 / DIN 867 involute tooth form",
+        "plain round shaft (metric nominal)"
+      ],
+      "source": {
+        "manifest": "projects/bevel-pair/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bevel-pair"
       }
     },
     {
@@ -9259,6 +9474,97 @@
       }
     },
     {
+      "slug": "drip-chamber-holder",
+      "name": "Drip Chamber Holder",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "chamber_dia",
+        "chamber_fit",
+        "cradle_h",
+        "wall",
+        "mouth_frac",
+        "dove_w",
+        "dove_h",
+        "dove_angle",
+        "stack_gap",
+        "tube_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Gravity infusion is still the dominant delivery method wherever infusion pumps are scarce, and in that setting the drop count IS the flow measurement. A chamber that swings or tilts makes that measurement wrong in a way nobody notices, so the improvised fix — taping the chamber to the pole — is both universal and unreliable. A cradle sized to the ISO 8536 chamber range that clips onto a pole clamp already in the family gives a clinic a repeatable vertical hold for the cost of a few grams of filament. It holds the chamber; it does not regulate flow, and nothing here replaces a clinician reading the actual drip rate.",
+        "es": "La infusion por gravedad sigue siendo el metodo dominante donde escasean las bombas, y en ese contexto el conteo de gotas ES la medicion del flujo. Una camara que oscila o se inclina vuelve esa medicion incorrecta de un modo que nadie nota, por eso el arreglo improvisado — pegar la camara al poste con cinta — es a la vez universal y poco confiable. Un soporte dimensionado al rango de camaras ISO 8536 que se monta en una abrazadera de poste ya existente en la familia da a una clinica una sujecion vertical repetible por unos gramos de filamento. Sostiene la camara; no regula el flujo, y nada aqui sustituye a un clinico leyendo la tasa real de goteo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "accessory_dovetail",
+          "label": "Accessory Dovetail Tongue",
+          "geometry_type": "rail",
+          "standard": "internal (mates iv-pole-clamp accessory face)",
+          "parameters": [
+            "dove_w",
+            "dove_h",
+            "dove_angle"
+          ]
+        },
+        {
+          "id": "chamber_bore_series",
+          "label": "Drip Chamber Bore Series",
+          "geometry_type": "socket",
+          "standard": "ISO 8536 gravity infusion set (nominal 15-22 mm body)",
+          "parameters": [
+            "chamber_dia",
+            "chamber_fit",
+            "wall",
+            "cradle_h",
+            "mouth_frac"
+          ]
+        },
+        {
+          "id": "tube_route_guide",
+          "label": "Tubing Route Guide",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "tube_dia",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "ISO 8536 gravity infusion set (nominal 15-22 mm body)",
+        "internal (mates iv-pole-clamp accessory face)"
+      ],
+      "source": {
+        "manifest": "projects/drip-chamber-holder/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/drip-chamber-holder"
+      }
+    },
+    {
       "slug": "drip-fitting",
       "name": "Drip-Irrigation Fitting",
       "domain": "household",
@@ -12221,6 +12527,79 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/fridge-dispenser"
+      }
+    },
+    {
+      "slug": "frog-closure",
+      "name": "Frog Closure 盤扣",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "span",
+        "knots",
+        "knot_dia",
+        "loop_id",
+        "gap",
+        "tail_w",
+        "tail_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The pánkòu is the defining fastener of a clothing tradition that Western pattern libraries do not model, and the skill of knotting one by hand is thinning. A printable frog turns it into an open, made-to-measure finding: a maker who cannot hand-knot a ball can still close a changpao, a qipao or a magua correctly, sized to the garment rather than to whatever a shop happened to stock. Sized by span it is simultaneously a Fashion Cabinet notion and a Yantra4D solid, keeping the heritage lane buildable by everyone.",
+        "es": "El pánkòu es el cierre que define una tradición de vestir que las bibliotecas de patrones occidentales no modelan, y el oficio de anudarlo a mano se está perdiendo. Un alamar imprimible lo convierte en un herraje abierto y a la medida: quien no sabe anudar una bola a mano puede cerrar correctamente un changpao, un qipao o un magua, dimensionado a la prenda y no a lo que hubiera en la tienda. Dimensionado por el vano es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D, manteniendo la vía del patrimonio construible por todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_tail",
+          "label": "Sewn Tail Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "span",
+            "tail_w",
+            "tail_t"
+          ]
+        },
+        {
+          "id": "knot_catch",
+          "label": "Knot-and-Loop Catch",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "knot_dia",
+            "loop_id",
+            "gap"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/frog-closure/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/frog-closure"
       }
     },
     {
@@ -16024,6 +16403,98 @@
       }
     },
     {
+      "slug": "iv-pole-clamp",
+      "name": "IV Pole Clamp",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "pole_dia",
+        "grip_fit",
+        "wall",
+        "clamp_h",
+        "kerf",
+        "bolt_dia",
+        "nut_af",
+        "dove_w",
+        "dove_h",
+        "dove_angle",
+        "hook_len"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Ward equipment mounting is a permanent low-grade improvisation: tape, gauze ties, and bent coat hangers holding things onto IV poles because the manufacturer's bracket is proprietary, discontinued, or costs more than the item it holds. Publishing the pole-diameter series and the dovetail face as separate interfaces means a clinic can print one clamp per pole and then any number of accessories against a face whose geometry never changes — the accessory author never has to know the pole size. It is a printed convenience mount, not a certified device: nothing whose fall would injure a patient belongs on it.",
+        "es": "El montaje de equipo en sala es una improvisacion cronica: cinta, ataduras de gasa y ganchos doblados sosteniendo cosas en los portasueros porque el soporte del fabricante es propietario, esta descontinuado o cuesta mas que lo que sostiene. Publicar la serie de diametros y la cara de cola de milano como interfaces separadas permite a una clinica imprimir una abrazadera por poste y luego cualquier cantidad de accesorios contra una cara cuya geometria no cambia — quien disena el accesorio nunca necesita saber el diametro del poste. Es un montaje impreso de conveniencia, no un dispositivo certificado: nada cuya caida pueda lesionar a un paciente debe colgarse de el."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pole_diameter_series",
+          "label": "IV Pole Diameter Series",
+          "geometry_type": "socket",
+          "standard": "internal (19 / 22 / 25 mm ward poles)",
+          "parameters": [
+            "pole_dia",
+            "grip_fit",
+            "wall",
+            "clamp_h"
+          ]
+        },
+        {
+          "id": "accessory_dovetail",
+          "label": "Accessory Dovetail Face",
+          "geometry_type": "rail",
+          "standard": "internal",
+          "parameters": [
+            "dove_w",
+            "dove_h",
+            "dove_angle"
+          ]
+        },
+        {
+          "id": "pinch_bolt_pattern",
+          "label": "Pinch Bolt & Captive Nut",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+          "parameters": [
+            "bolt_dia",
+            "nut_af",
+            "kerf"
+          ]
+        }
+      ],
+      "standards": [
+        "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+        "internal (19 / 22 / 25 mm ward poles)"
+      ],
+      "source": {
+        "manifest": "projects/iv-pole-clamp/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/iv-pole-clamp"
+      }
+    },
+    {
       "slug": "jar-adapter",
       "name": "Wide-Mouth Jar Adapter",
       "domain": "household",
@@ -18933,6 +19404,95 @@
       }
     },
     {
+      "slug": "mc4-junction",
+      "name": "MC4 Junction Bracket",
+      "domain": "energy",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "body_d",
+        "lead_d",
+        "clearance",
+        "plate_th",
+        "wall",
+        "count",
+        "pitch"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Every rooftop and off-grid array ends in a nest of MC4 connectors, and the connectors themselves are the only part anyone specifies — the mechanical job of holding them off the roof membrane, out of standing water and free of cable strain is left to zip ties and hope. Unrelieved leads work-harden at the gland and eventually fail in a way that is expensive to find. A printed cradle costs grams and turns that hidden failure mode into a solved one, which matters most in exactly the installations that cannot afford a service call: small rural, community and self-built systems. The part is deliberately non-conductive and non-structural — it organizes, and lets the certified connectors do all the electrical work.",
+        "es": "Todo arreglo en techo o aislado termina en un nido de conectores MC4, y los conectores mismos son lo único que alguien especifica — el trabajo mecánico de sostenerlos fuera de la membrana del techo, lejos del agua estancada y libres de tensión del cable se deja a cinchos y esperanza. Los cables sin alivio se endurecen por trabajo en el prensaestopas y fallan de una forma cara de encontrar. Una cuna impresa cuesta gramos y convierte ese modo de falla oculto en uno resuelto, lo que importa más justo en las instalaciones que no pueden pagar una visita técnica: sistemas rurales, comunitarios y autoconstruidos. La pieza es deliberadamente no conductora y no estructural — organiza, y deja que los conectores certificados hagan todo el trabajo eléctrico."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "mc4_socket",
+          "label": "MC4 Body Socket",
+          "geometry_type": "socket",
+          "standard": "MC4 PV connector body, Ø16 mm nominal barrel",
+          "parameters": [
+            "body_d",
+            "clearance",
+            "wall"
+          ]
+        },
+        {
+          "id": "pv_lead_passthrough",
+          "label": "PV Lead Pass-Through",
+          "geometry_type": "pocket",
+          "standard": "PV lead 4-6 mm², Ø6.5 mm nominal",
+          "parameters": [
+            "lead_d",
+            "clearance",
+            "count",
+            "pitch"
+          ]
+        },
+        {
+          "id": "m4_mount_holes",
+          "label": "Surface Mount Holes",
+          "geometry_type": "bolt_pattern",
+          "standard": "M4 clearance (Ø4.4 mm) surface fixing",
+          "parameters": [
+            "plate_th",
+            "wall",
+            "pitch"
+          ]
+        }
+      ],
+      "standards": [
+        "M4 clearance (Ø4.4 mm) surface fixing",
+        "MC4 PV connector body, Ø16 mm nominal barrel",
+        "PV lead 4-6 mm², Ø6.5 mm nominal"
+      ],
+      "source": {
+        "manifest": "projects/mc4-junction/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/mc4-junction"
+      }
+    },
+    {
       "slug": "measuring-scoop",
       "name": "Volumetric Measuring Scoop",
       "domain": "household",
@@ -19863,6 +20423,96 @@
       }
     },
     {
+      "slug": "molle-pouch",
+      "name": "MOLLE Utility Pouch & Clip",
+      "domain": "consumer",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "row_h",
+        "row_pitch",
+        "strap_t",
+        "weave_rows",
+        "pouch_w",
+        "pouch_d",
+        "pouch_h",
+        "wall",
+        "belt_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "PALS is a rare thing: a load-carriage grid that is genuinely open, unpatented and stitched onto millions of packs, vests, bags and panels already in circulation. That makes it the most durable attachment standard a maker can target — anything built to it stays useful across brands and decades. What the ecosystem lacks is the small hardware, because pouches are sold as complete sewn goods and a single broken clip means replacing the whole pouch. Printing the clip, the loop and a simple pouch body to the actual PALS pitch turns a fixed product into an adaptable system: a wheelchair user can hang a specific tool where they can reach it, a field medic can lay out a kit their own way, and a worn bag gets a new clip rather than a landfill trip.",
+        "es": "PALS es algo raro: una rejilla de carga genuinamente abierta, sin patente y cosida en millones de mochilas, chalecos, bolsas y paneles ya en circulación. Eso la convierte en el estándar de sujeción más duradero al que un fabricante puede apuntar — lo construido para ella sigue siendo útil entre marcas y décadas. Lo que falta en el ecosistema es el herraje pequeño, porque las bolsas se venden como artículos cosidos completos y un solo clip roto obliga a reemplazar la bolsa entera. Imprimir el clip, la presilla y un cuerpo de bolsa simple al paso real de PALS convierte un producto fijo en un sistema adaptable: una persona en silla de ruedas puede colgar una herramienta donde la alcance, un paramédico puede acomodar su kit a su manera, y una bolsa gastada recibe un clip nuevo en vez de un viaje al relleno sanitario."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pals_grid",
+          "label": "PALS Webbing Grid",
+          "geometry_type": "grid",
+          "standard": "MIL-W-17337 / A-A-55301 PALS: 25.4 mm webbing, 25.4 mm row pitch",
+          "parameters": [
+            "row_h",
+            "row_pitch",
+            "weave_rows",
+            "strap_t"
+          ]
+        },
+        {
+          "id": "weave_strap",
+          "label": "Weave Strap Profile",
+          "geometry_type": "profile",
+          "standard": "1 in (25.4 mm) webbing cross-section",
+          "parameters": [
+            "row_h",
+            "strap_t"
+          ]
+        },
+        {
+          "id": "belt_channel",
+          "label": "Belt Channel",
+          "geometry_type": "rail",
+          "standard": "20-55 mm belt webbing channel",
+          "parameters": [
+            "belt_w",
+            "strap_t",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "1 in (25.4 mm) webbing cross-section",
+        "20-55 mm belt webbing channel",
+        "MIL-W-17337 / A-A-55301 PALS: 25.4 mm webbing, 25.4 mm row pitch"
+      ],
+      "source": {
+        "manifest": "projects/molle-pouch/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/molle-pouch"
+      }
+    },
+    {
       "slug": "motor-mount",
       "name": "NEMA Motor Mount",
       "domain": "industrial",
@@ -20642,6 +21292,96 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/net-cup"
+      }
+    },
+    {
+      "slug": "net-cup-lid",
+      "name": "Hydroponic Net Cup Lid",
+      "domain": "agriculture",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "hole_dia",
+        "lip_seat",
+        "lid_thick",
+        "lid_dia",
+        "skirt_h",
+        "wall",
+        "cols",
+        "rows"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Kratky and deep-water culture are the cheapest routes to reliable food from a small footprint: a bucket, water, nutrient and a lid. The lid is the only part with no standard — growers hole-saw storage tote lids by hand, which is imprecise, wasteful of the tote, and the reason a cup sits crooked and drops its plant. Printing the lid to the actual net-cup rim seat makes the vessel a choice rather than a constraint, lets a grower retrofit a lid already owned with the collar mode instead of buying another, and scales from one bucket on a balcony to a multi-site raft. Recycled PETG or PP is appropriate here, and the toggle says so.",
+        "es": "Kratky y el cultivo en agua profunda son las rutas más baratas a comida confiable en poco espacio: una cubeta, agua, nutriente y una tapa. La tapa es la única pieza sin estándar — los cultivadores perforan tapas de contenedor a mano, lo que es impreciso, desperdicia el contenedor, y es la razón de que una canastilla quede chueca y suelte su planta. Imprimir la tapa al asiento real del borde convierte el recipiente en una elección y no una restricción, permite adaptar una tapa que ya se tiene con el modo collarín en vez de comprar otra, y escala de una cubeta en un balcón a una balsa de varios sitios. PETG o PP reciclado es apropiado aquí, y el interruptor lo dice."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "net_cup_taper",
+          "label": "Net-Cup Rim Seat",
+          "geometry_type": "socket",
+          "standard": "2\" (Ø50 mm) and 3\" (Ø76 mm) net-cup rim seat",
+          "parameters": [
+            "hole_dia",
+            "lip_seat",
+            "lid_thick"
+          ]
+        },
+        {
+          "id": "vessel_rim_skirt",
+          "label": "Vessel Rim Locating Skirt",
+          "geometry_type": "rail",
+          "standard": "bucket / tote mouth, annular downstand",
+          "parameters": [
+            "lid_dia",
+            "skirt_h",
+            "wall"
+          ]
+        },
+        {
+          "id": "raft_hole_grid",
+          "label": "Raft Hole Grid",
+          "geometry_type": "grid",
+          "standard": "Kratky / DWC raft spacing (hole pitch derived from cup diameter)",
+          "parameters": [
+            "cols",
+            "rows",
+            "hole_dia",
+            "lip_seat"
+          ]
+        }
+      ],
+      "standards": [
+        "2\" (Ø50 mm) and 3\" (Ø76 mm) net-cup rim seat",
+        "Kratky / DWC raft spacing (hole pitch derived from cup diameter)",
+        "bucket / tote mouth, annular downstand"
+      ],
+      "source": {
+        "manifest": "projects/net-cup-lid/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/net-cup-lid"
       }
     },
     {
@@ -23272,6 +24012,99 @@
       }
     },
     {
+      "slug": "planetary-stage",
+      "name": "Planetary Gear Stage",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "module",
+        "teeth_sun",
+        "teeth_planet",
+        "pressure_angle",
+        "gear_thick",
+        "sun_bore",
+        "planet_bore",
+        "ring_backlash",
+        "ring_rim",
+        "flank_pts"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A planetary stage packs a large reduction into a coaxial cylinder, which is why it sits inside cordless drills, printer extruders, camera pan heads and every actuator that must be strong and short at once. Buying one means buying a sealed gearbox: when a single nylon planet strips, the whole unit is scrap. Printing the three gears from one shared module turns that into a ten-gram reprint, and because the tooth counts are exposed rather than fixed, a maker can retune the ratio to the job instead of gearing the job to the catalogue. It is also the cheapest honest way to teach epicyclic motion — the ratio is visible in the tooth counts, not hidden in a datasheet.",
+        "es": "Una etapa planetaria concentra una gran reducción en un cilindro coaxial, por eso vive dentro de taladros inalámbricos, extrusores de impresora, cabezales de cámara y todo actuador que deba ser fuerte y corto a la vez. Comprar una es comprar una caja sellada: cuando un solo planeta de nylon se barre, la unidad entera es chatarra. Imprimir los tres engranes desde un módulo compartido convierte eso en una reimpresión de diez gramos, y como los números de dientes están expuestos y no fijos, un fabricante puede reajustar la relación al trabajo en vez de ajustar el trabajo al catálogo. Es también la forma honesta más barata de enseñar movimiento epicíclico — la relación se ve en los dientes, no oculta en una hoja de datos."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "involute_tooth",
+          "label": "Involute Tooth (module + pressure angle)",
+          "geometry_type": "profile",
+          "standard": "ISO 53 / DIN 867 involute tooth form",
+          "parameters": [
+            "module",
+            "teeth_sun",
+            "teeth_planet",
+            "pressure_angle",
+            "flank_pts"
+          ]
+        },
+        {
+          "id": "planetary_tooth_sum",
+          "label": "Planetary Tooth-Count Constraint",
+          "geometry_type": "custom",
+          "standard": "epicyclic meshing constraint: ring = sun + 2 × planet",
+          "parameters": [
+            "teeth_sun",
+            "teeth_planet",
+            "ring_backlash"
+          ]
+        },
+        {
+          "id": "shaft_bore",
+          "label": "Shaft & Bearing Bore",
+          "geometry_type": "socket",
+          "standard": "plain round shaft (metric nominal)",
+          "parameters": [
+            "sun_bore",
+            "planet_bore",
+            "gear_thick"
+          ]
+        }
+      ],
+      "standards": [
+        "ISO 53 / DIN 867 involute tooth form",
+        "epicyclic meshing constraint: ring = sun + 2 × planet",
+        "plain round shaft (metric nominal)"
+      ],
+      "source": {
+        "manifest": "projects/planetary-stage/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/planetary-stage"
+      }
+    },
+    {
       "slug": "plant-clip",
       "name": "Trellis / Plant Clip",
       "domain": "household",
@@ -23602,6 +24435,179 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/plate-frame"
+      }
+    },
+    {
+      "slug": "pneu-net-finger",
+      "name": "PneuNet Bending Finger",
+      "domain": "soft-robotics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 12,
+      "parameter_ids": [
+        "finger_len",
+        "finger_w",
+        "chamber_h",
+        "chamber_pitch",
+        "chamber_gap",
+        "wall",
+        "strain_th",
+        "channel_w",
+        "tube_id",
+        "bore",
+        "root_len",
+        "bolt_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "PneuNet fingers are the reason soft grippers can pick a ripe tomato, a petri dish, or a human hand without a force sensor — the compliance is in the geometry, not in a control loop. Every published PneuNet is a silicone mould recipe, which locks the design behind a mould-making shop. A printable PneuNet whose bend is a slider, not a remould, puts a compliant gripper inside the reach of a classroom, a rehab clinic, or a smallholder packing shed.",
+        "es": "Los dedos PneuNet son la razón por la que una pinza blanda puede levantar un jitomate maduro, una caja de Petri o una mano humana sin sensor de fuerza — la conformidad está en la geometría, no en un lazo de control. Cada PneuNet publicado es una receta de molde de silicón, lo que encierra el diseño tras un taller de moldeo. Un PneuNet imprimible cuya curvatura es un deslizador, no un remoldeo, pone una pinza conforme al alcance de un aula, una clínica de rehabilitación o una bodega de empaque pequeña."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "chamber_pitch_profile",
+          "label": "Chamber Pitch Bend Profile",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "chamber_pitch",
+            "chamber_gap",
+            "chamber_h",
+            "finger_len",
+            "strain_th"
+          ]
+        },
+        {
+          "id": "root_bolt_pattern",
+          "label": "Root Bolt Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "root_len",
+            "finger_w",
+            "bolt_dia"
+          ]
+        },
+        {
+          "id": "pneumatic_barb_series",
+          "label": "Pneumatic Barb Series",
+          "geometry_type": "profile",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "bore"
+          ]
+        }
+      ],
+      "standards": [
+        "internal (2 / 3 / 4 mm tube ID)"
+      ],
+      "source": {
+        "manifest": "projects/pneu-net-finger/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pneu-net-finger"
+      }
+    },
+    {
+      "slug": "pneumatic-barb-port",
+      "name": "Pneumatic Barb Port",
+      "domain": "soft-robotics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "tube_id",
+        "barb_count",
+        "barb_pitch",
+        "barb_rise",
+        "bore",
+        "wall",
+        "flange_dia",
+        "flange_th",
+        "bolt_dia",
+        "bolt_count"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Soft-robotics tutorials assume a drawer of commercial push-to-connect fittings that costs more than the actuator it feeds and is unobtainable in much of the world. A barb port parameterised on tube inner diameter turns any tubing on hand into a working pneumatic connection, and — because every actuator in this family speaks the same barb series — makes six otherwise isolated printable objects into one interoperable kit.",
+        "es": "Los tutoriales de robótica blanda asumen un cajón de conectores rápidos comerciales que cuesta más que el actuador al que alimentan y que es inconseguible en buena parte del mundo. Un puerto de espiga parametrizado por el diámetro interior de la manguera convierte cualquier tubo disponible en una conexión neumática funcional y — al hablar todos los actuadores de esta familia la misma serie de espiga — convierte seis objetos imprimibles aislados en un kit interoperable."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pneumatic_barb_series",
+          "label": "Pneumatic Barb Series",
+          "geometry_type": "profile",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "barb_count",
+            "barb_pitch",
+            "barb_rise",
+            "bore"
+          ]
+        },
+        {
+          "id": "port_bolt_flange",
+          "label": "Port Bolt Flange",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "flange_dia",
+            "flange_th",
+            "bolt_dia",
+            "bolt_count"
+          ]
+        }
+      ],
+      "standards": [
+        "internal (2 / 3 / 4 mm tube ID)"
+      ],
+      "source": {
+        "manifest": "projects/pneumatic-barb-port/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pneumatic-barb-port"
       }
     },
     {
@@ -24726,6 +25732,83 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/reagent-clip"
+      }
+    },
+    {
+      "slug": "rebar-chair",
+      "name": "Rebar Chair / Spacer",
+      "domain": "construction",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "bar_dia",
+        "cover",
+        "clip_wall",
+        "snap_grip",
+        "leg_t",
+        "base_w",
+        "wheel_od"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Concrete cover is the single cheapest determinant of how long a reinforced structure lasts: steel set too shallow rusts, the rust expands, and the concrete spalls off decades before it should. Bar chairs are the humble part that guarantees the cover, and on small and self-built jobs they are routinely improvised from stones, brick fragments or nothing at all, which is exactly how a slab ends up with its steel resting on the form. They are also a commodity sold in bulk quantities that make a small job buy far more than it needs. Printing them to the actual bar size and the cover the local code asks for — in recycled material, which is entirely appropriate for a part that is cast into concrete and never seen again — puts correct cover within reach of the jobs most likely to skip it.",
+        "es": "El recubrimiento de concreto es el determinante más barato de cuánto dura una estructura reforzada: el acero colocado muy superficial se oxida, el óxido expande, y el concreto se desprende décadas antes de lo debido. Las silletas son la pieza humilde que garantiza el recubrimiento, y en obras pequeñas y autoconstruidas se improvisan rutinariamente con piedras, pedazos de tabique o nada, que es exactamente como una losa termina con su acero apoyado en la cimbra. Además se venden a granel en cantidades que obligan a una obra pequeña a comprar mucho más de lo que necesita. Imprimirlas al diámetro real de varilla y al recubrimiento que pide el reglamento local — en material reciclado, del todo apropiado para una pieza que se cuela en concreto y nunca se vuelve a ver — pone el recubrimiento correcto al alcance de las obras que más tienden a omitirlo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "rebar_snap_saddle",
+          "label": "Rebar Snap Saddle",
+          "geometry_type": "snap",
+          "standard": "US bar designations #3 (9.5 mm), #4 (12.7 mm), #5 (15.9 mm)",
+          "parameters": [
+            "bar_dia",
+            "clip_wall",
+            "snap_grip"
+          ]
+        },
+        {
+          "id": "concrete_cover_height",
+          "label": "Concrete Cover Height",
+          "geometry_type": "rail",
+          "standard": "concrete cover depth (slab through footing values)",
+          "parameters": [
+            "cover",
+            "leg_t",
+            "base_w",
+            "wheel_od"
+          ]
+        }
+      ],
+      "standards": [
+        "US bar designations #3 (9.5 mm), #4 (12.7 mm), #5 (15.9 mm)",
+        "concrete cover depth (slab through footing values)"
+      ],
+      "source": {
+        "manifest": "projects/rebar-chair/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/rebar-chair"
       }
     },
     {
@@ -27162,6 +28245,99 @@
       }
     },
     {
+      "slug": "sharps-lid",
+      "name": "Sharps Container Lid",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "bore_dia",
+        "clearance",
+        "wall",
+        "skirt_h",
+        "top_th",
+        "slot_w",
+        "slot_l",
+        "chute_off",
+        "chute_h",
+        "hub_dia",
+        "thread_pitch"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Needlestick injury is a preventable occupational and household harm, and the barrier is almost never knowledge — it is that a certified sharps bin is unavailable, unaffordable, or simply not where the injection happens. Diabetics, veterinary and field clinics, and harm-reduction programs improvise with soda bottles that a needle can be shaken back out of. A lid whose baffle is genuinely one-way, sized to the bucket or jar already on hand, turns a container people already have into a safer one. It is a harm-reduction aid, not a certified FDA/NOM sharps container, and the sealed container still belongs in a proper waste stream.",
+        "es": "El pinchazo accidental es un dano ocupacional y domestico prevenible, y la barrera casi nunca es el conocimiento: es que un contenedor certificado no esta disponible, no es costeable o no esta donde ocurre la inyeccion. Personas con diabetes, clinicas veterinarias y de campo, y programas de reduccion de danos improvisan con botellas de las que una aguja puede volver a salir. Una tapa con deflector realmente unidireccional, dimensionada a la cubeta o frasco que ya se tiene, convierte un recipiente comun en uno mas seguro. Es una ayuda de reduccion de danos, no un contenedor certificado FDA/NOM, y el recipiente sellado sigue debiendo ir a un flujo de residuos adecuado."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "vessel_bore_series",
+          "label": "Bucket / Carboy Bore Series",
+          "geometry_type": "socket",
+          "standard": "internal (shared bucket / carboy bore)",
+          "parameters": [
+            "bore_dia",
+            "clearance",
+            "wall",
+            "skirt_h"
+          ]
+        },
+        {
+          "id": "oneway_baffle_profile",
+          "label": "One-Way Baffle Profile",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "slot_w",
+            "slot_l",
+            "chute_off",
+            "chute_h",
+            "top_th"
+          ]
+        },
+        {
+          "id": "needle_hub_slot",
+          "label": "Needle Hub Slot",
+          "geometry_type": "pocket",
+          "standard": "Luer hub nominal Ø 7.5 mm",
+          "parameters": [
+            "hub_dia",
+            "top_th"
+          ]
+        }
+      ],
+      "standards": [
+        "Luer hub nominal Ø 7.5 mm",
+        "internal (shared bucket / carboy bore)"
+      ],
+      "source": {
+        "manifest": "projects/sharps-lid/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/sharps-lid"
+      }
+    },
+    {
       "slug": "shelf-bracket",
       "name": "Shelf Bracket",
       "domain": "household",
@@ -28239,6 +29415,97 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/soft-finger"
+      }
+    },
+    {
+      "slug": "soft-gripper-pad",
+      "name": "Compliant Gripper Pad",
+      "domain": "soft-robotics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 12,
+      "parameter_ids": [
+        "pad_len",
+        "pad_w",
+        "back_th",
+        "rib_pitch",
+        "rib_w",
+        "rib_h",
+        "rib_taper",
+        "vee_angle",
+        "bolt_span",
+        "bolt_dia",
+        "dove_w",
+        "dove_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A gripper pad is the part that actually touches the work, so it is the part that wears out — and on commercial tooling it is sold as a proprietary consumable, which is why a marred workpiece is usually cheaper to accept than to fix. Printing the pad in TPU makes the wear item local, and making rib pitch a slider means the same jaw can hold a machined shaft in the morning and a piece of fruit in the afternoon without buying a second set of tooling.",
+        "es": "La almohadilla de una pinza es la pieza que realmente toca el trabajo, y por tanto la que se desgasta — en herramental comercial se vende como consumible propietario, razón por la cual suele salir más barato aceptar una pieza marcada que corregirla. Imprimir la almohadilla en TPU vuelve local el consumible, y hacer del paso de nervadura un deslizador permite que la misma mordaza sostenga un eje maquinado por la mañana y una fruta por la tarde sin comprar un segundo juego de herramental."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "rib_compliance_profile",
+          "label": "Rib Compliance Profile",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "rib_pitch",
+            "rib_w",
+            "rib_h",
+            "rib_taper"
+          ]
+        },
+        {
+          "id": "jaw_bolt_pattern",
+          "label": "Jaw Bolt Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "bolt_span",
+            "bolt_dia",
+            "pad_len",
+            "pad_w"
+          ]
+        },
+        {
+          "id": "accessory_dovetail",
+          "label": "Accessory Dovetail Tongue",
+          "geometry_type": "rail",
+          "standard": "internal",
+          "parameters": [
+            "dove_w",
+            "dove_h",
+            "back_th"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/soft-gripper-pad/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/soft-gripper-pad"
       }
     },
     {
@@ -29893,6 +31160,96 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/stud-bracket"
+      }
+    },
+    {
+      "slug": "suction-cup-bellows",
+      "name": "Bellows Suction Cup",
+      "domain": "soft-robotics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "cup_dia",
+        "lip_th",
+        "lip_h",
+        "neck_dia",
+        "convolutions",
+        "conv_pitch",
+        "conv_depth",
+        "wall",
+        "tube_id",
+        "bore",
+        "bolt_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Vacuum cups are consumables: the lip abrades, the bellows cracks, and a replacement is a proprietary part number with a minimum order quantity. A parametric cup printed in TPU restores a stalled pick-and-place line, a lab automation rig, or a school robotics project the same day, at a cup diameter chosen for the part actually being picked rather than for whatever the supplier still stocks.",
+        "es": "Las ventosas son consumibles: el labio se desgasta, el fuelle se agrieta, y el repuesto es un número de parte propietario con pedido mínimo. Una ventosa paramétrica impresa en TPU devuelve al servicio una línea de pick-and-place detenida, un equipo de automatización de laboratorio o un proyecto escolar de robótica el mismo día, con el diámetro elegido para la pieza que realmente se levanta y no para lo que el proveedor aún tenga en existencia."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pneumatic_barb_series",
+          "label": "Pneumatic Barb Series",
+          "geometry_type": "profile",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "bore"
+          ]
+        },
+        {
+          "id": "cup_diameter_series",
+          "label": "Pick-and-Place Cup Series",
+          "geometry_type": "profile",
+          "standard": "internal (20 / 30 / 40 mm)",
+          "parameters": [
+            "cup_dia",
+            "lip_th",
+            "lip_h"
+          ]
+        },
+        {
+          "id": "neck_press_socket",
+          "label": "Neck Press Socket",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "neck_dia",
+            "wall",
+            "bolt_dia"
+          ]
+        }
+      ],
+      "standards": [
+        "internal (2 / 3 / 4 mm tube ID)",
+        "internal (20 / 30 / 40 mm)"
+      ],
+      "source": {
+        "manifest": "projects/suction-cup-bellows/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/suction-cup-bellows"
       }
     },
     {
@@ -31983,6 +33340,95 @@
       }
     },
     {
+      "slug": "tripod-hub",
+      "name": "Universal Tripod Hub",
+      "domain": "consumer",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "plate_w",
+        "plate_h",
+        "n_quarter",
+        "ring_dia",
+        "thread_len",
+        "clearance",
+        "turns"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Photography and field optics run on three interfaces that are all effectively open — the two UNC camera threads are older than any company still selling them, and Arca-Swiss is a de-facto standard no one enforces — yet the small adapters that join them are sold as machined metal at prices set by scarcity rather than cost. A rig ends up with a drawer of one-purpose bushings, and a missing 3/8-to-1/4 reducer can strand an otherwise working setup in the field. Generating them from the nominal thread geometry makes the adapter layer free and, more usefully, makes it composable: the hub plate is a part no catalogue sells, because it only makes sense when you can define your own combination of sockets rather than buy someone's.",
+        "es": "La fotografía y la óptica de campo funcionan sobre tres interfaces efectivamente abiertas — las dos roscas UNC de cámara son más antiguas que cualquier empresa que aún las venda, y Arca-Swiss es un estándar de facto que nadie hace cumplir — y sin embargo los pequeños adaptadores que las unen se venden como metal maquinado a precios fijados por la escasez y no por el costo. Un equipo termina con un cajón de bujes de un solo propósito, y un reductor de 3/8 a 1/4 faltante puede inutilizar un montaje que por lo demás funciona, en pleno campo. Generarlos desde la geometría nominal de la rosca vuelve gratuita la capa de adaptadores y, más útil aún, la vuelve componible: la placa concentradora es una pieza que ningún catálogo vende, porque solo tiene sentido cuando puedes definir tu propia combinación de alojamientos en vez de comprar la de alguien más."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "arca_swiss_dovetail",
+          "label": "Arca-Swiss Dovetail",
+          "geometry_type": "profile",
+          "standard": "Arca-Swiss 38 mm quick-release dovetail, ~45° flanks",
+          "parameters": [
+            "plate_w",
+            "plate_h"
+          ]
+        },
+        {
+          "id": "quarter_20_thread",
+          "label": "1/4\"-20 UNC Camera Thread",
+          "geometry_type": "thread",
+          "standard": "1/4\"-20 UNC — major Ø6.35 mm, pitch 1.27 mm, minor Ø4.976 mm",
+          "parameters": [
+            "thread_len",
+            "clearance",
+            "turns",
+            "n_quarter",
+            "ring_dia"
+          ]
+        },
+        {
+          "id": "three_eighths_16_thread",
+          "label": "3/8\"-16 UNC Heavy Mount Thread",
+          "geometry_type": "thread",
+          "standard": "3/8\"-16 UNC — major Ø9.525 mm, pitch 1.5875 mm, minor Ø7.749 mm",
+          "parameters": [
+            "thread_len",
+            "clearance",
+            "turns"
+          ]
+        }
+      ],
+      "standards": [
+        "1/4\"-20 UNC — major Ø6.35 mm, pitch 1.27 mm, minor Ø4.976 mm",
+        "3/8\"-16 UNC — major Ø9.525 mm, pitch 1.5875 mm, minor Ø7.749 mm",
+        "Arca-Swiss 38 mm quick-release dovetail, ~45° flanks"
+      ],
+      "source": {
+        "manifest": "projects/tripod-hub/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tripod-hub"
+      }
+    },
+    {
       "slug": "trouser-hook-bar",
       "name": "Trouser Hook & Bar",
       "domain": "wearable",
@@ -32913,6 +34359,95 @@
       }
     },
     {
+      "slug": "vacuum-manifold-block",
+      "name": "Vacuum Manifold Block",
+      "domain": "soft-robotics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "block_len",
+        "block_w",
+        "block_h",
+        "port_pitch",
+        "plenum_dia",
+        "tube_id",
+        "bore",
+        "barb_rise",
+        "wall",
+        "mount_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A soft-pneumatic rig is only as useful as its plumbing. Commercial vacuum manifolds are sold per-port at machine-shop prices, which is why teaching labs and small pick-and-place builds end up with a tangle of tees. An open manifold whose port pitch and barb series are published as interfaces lets a lab print exactly the number of outlets it needs, at the pitch its cup array already uses, and know it will mate the rest of the family without measuring anything.",
+        "es": "Un equipo neumatico blando vale lo que vale su plomeria. Los colectores de vacio comerciales se venden por puerto a precio de taller, por eso los laboratorios docentes y los montajes pequenos de pick-and-place terminan con una marana de tes. Un colector abierto cuyo paso de puertos y serie de espigas se publican como interfaces permite imprimir exactamente las salidas necesarias, al paso que ya usa el arreglo de ventosas, con la certeza de que acoplara con el resto de la familia sin medir nada."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pneumatic_barb_series",
+          "label": "Pneumatic Barb Series",
+          "geometry_type": "profile",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "bore",
+            "barb_rise"
+          ]
+        },
+        {
+          "id": "port_pitch_grid",
+          "label": "Outlet Pitch Grid",
+          "geometry_type": "grid",
+          "standard": "internal",
+          "parameters": [
+            "port_pitch",
+            "block_len",
+            "block_w"
+          ]
+        },
+        {
+          "id": "plenum_gallery",
+          "label": "Plenum Gallery",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "plenum_dia",
+            "wall",
+            "block_h"
+          ]
+        }
+      ],
+      "standards": [
+        "internal (2 / 3 / 4 mm tube ID)"
+      ],
+      "source": {
+        "manifest": "projects/vacuum-manifold-block/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/vacuum-manifold-block"
+      }
+    },
+    {
       "slug": "vbelt-pulley",
       "name": "V-Belt / Round-Belt Pulley",
       "domain": "industrial",
@@ -33600,6 +35135,95 @@
       }
     },
     {
+      "slug": "walker-glide-cup",
+      "name": "Walker Glide Cup",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "tube_dia",
+        "clearance",
+        "wall",
+        "socket_h",
+        "wear_th",
+        "glide_dia",
+        "dome_rise",
+        "ball_dia",
+        "rim_th"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The improvised tennis ball on a walker's front legs is one of the most widespread assistive hacks in the world, and it exists because commercial glides are a recurring consumable that is hard to source in the right diameter. Splitting glide from grip matters clinically: a front leg that grips instead of sliding is a trip hazard, which is why the rear tip and the front glide are genuinely different parts. Publishing the wear face as a parameter rather than hiding it lets a user thicken the consumable for their floor and their weight, and reprint on their own schedule. A printable mobility aid for personal use, not a certified medical device — a glide that slips is a fall risk, so test it on your floor under your weight before relying on it.",
+        "es": "La pelota de tenis improvisada en las patas delanteras de una andadera es uno de los apanos asistivos mas extendidos del mundo, y existe porque los tacos comerciales son un consumible recurrente dificil de conseguir en el diametro correcto. Separar deslizamiento de agarre importa clinicamente: una pata delantera que agarra en vez de deslizar es un riesgo de tropiezo, por eso la puntera trasera y el taco delantero son piezas realmente distintas. Publicar la cara de desgaste como parametro en lugar de ocultarla permite engrosar el consumible segun el piso y el peso del usuario, y reimprimir cuando convenga. Es una ayuda de movilidad imprimible para uso personal, no un dispositivo certificado — un taco que resbala es riesgo de caida, pruebalo en tu piso y con tu peso antes de confiar en el."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "leg_tube_socket",
+          "label": "Leg Tube Socket",
+          "geometry_type": "socket",
+          "standard": "internal (shared leg-tube series, glide variant)",
+          "parameters": [
+            "tube_dia",
+            "clearance",
+            "wall",
+            "socket_h"
+          ]
+        },
+        {
+          "id": "wear_face_profile",
+          "label": "Wear Face Profile",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "wear_th",
+            "glide_dia",
+            "dome_rise"
+          ]
+        },
+        {
+          "id": "ball_seat",
+          "label": "Ball Seat",
+          "geometry_type": "pocket",
+          "standard": "tennis ball nominal Ø 67 mm (ITF)",
+          "parameters": [
+            "ball_dia",
+            "rim_th"
+          ]
+        }
+      ],
+      "standards": [
+        "internal (shared leg-tube series, glide variant)",
+        "tennis ball nominal Ø 67 mm (ITF)"
+      ],
+      "source": {
+        "manifest": "projects/walker-glide-cup/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/walker-glide-cup"
+      }
+    },
+    {
       "slug": "wall-device-mount",
       "name": "Universal Device Wall Mount",
       "domain": "household",
@@ -34177,6 +35801,99 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/worm-gear"
+      }
+    },
+    {
+      "slug": "worm-wheel",
+      "name": "Worm & Wheel Set",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "m",
+        "starts",
+        "worm_dia",
+        "worm_turns",
+        "teeth",
+        "pressure_angle",
+        "thickness",
+        "worm_bore",
+        "wheel_bore",
+        "flank_pts"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A worm pair does two jobs no other single stage does: it turns a corner and it holds. Single-start worms are self-locking, so the load cannot back-drive the motor — which is why they sit inside gate openers, wheelchair drives, telescope mounts, tuning pegs and every hoist that must not run away when power is lost. That safety property is bought commercially inside sealed bronze gearboxes at a price that puts it out of reach of small repairs. Generating the pair from DIN 3975 geometry puts a self-locking reduction inside reach of a spool of filament, and exposing starts and lead angle lets the maker decide deliberately whether the drive should hold or should coast.",
+        "es": "Un par sinfín hace dos trabajos que ninguna otra etapa hace sola: dobla una esquina y sostiene. Los sinfines de una entrada son autobloqueantes, así que la carga no puede retroimpulsar el motor — por eso viven dentro de abrepuertas, sillas de ruedas, monturas de telescopio, clavijas de afinación y todo polipasto que no debe soltarse al perder energía. Esa propiedad de seguridad se compra comercialmente dentro de cajas selladas de bronce a un precio que la aleja de las reparaciones pequeñas. Generar el par desde la geometría DIN 3975 pone una reducción autobloqueante al alcance de un carrete de filamento, y exponer entradas y ángulo de avance permite al fabricante decidir deliberadamente si la transmisión debe sostener o debe rodar libre."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "worm_pair_lead",
+          "label": "Worm Pair (module + starts + lead angle)",
+          "geometry_type": "thread",
+          "standard": "DIN 3975 cylindrical worm gear pair",
+          "parameters": [
+            "m",
+            "starts",
+            "worm_dia",
+            "pressure_angle"
+          ]
+        },
+        {
+          "id": "involute_tooth",
+          "label": "Involute Tooth (module + pressure angle)",
+          "geometry_type": "profile",
+          "standard": "ISO 53 / DIN 867 involute tooth form",
+          "parameters": [
+            "m",
+            "teeth",
+            "pressure_angle",
+            "flank_pts"
+          ]
+        },
+        {
+          "id": "shaft_bore",
+          "label": "Shaft Bore",
+          "geometry_type": "socket",
+          "standard": "plain round shaft (metric nominal)",
+          "parameters": [
+            "worm_bore",
+            "wheel_bore",
+            "thickness"
+          ]
+        }
+      ],
+      "standards": [
+        "DIN 3975 cylindrical worm gear pair",
+        "ISO 53 / DIN 867 involute tooth form",
+        "plain round shaft (metric nominal)"
+      ],
+      "source": {
+        "manifest": "projects/worm-wheel/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/worm-wheel"
       }
     },
     {

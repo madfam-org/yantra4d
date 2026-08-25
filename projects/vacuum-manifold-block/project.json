@@ -1,0 +1,206 @@
+{
+  "project": {
+    "name": "Vacuum Manifold Block",
+    "slug": "vacuum-manifold-block",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The middle of the soft-pneumatic chain: source to manifold to actuator. A solid prism drilled with one plenum running its length, an inlet at one end, and N outlet ports on a fixed pitch. Every port speaks the shared barb series from pneumatic-barb-port, so a manifold generated at one tube ID mates every cartridge in the family generated at the same tube ID. Feed it vacuum and it drives an array of suction-cup-bellows; feed it pressure and it drives bellows-actuator or pneu-net-finger.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El centro de la cadena neumatica blanda: fuente, colector y actuador. Un prisma solido perforado con un plenum a lo largo, una entrada en un extremo y N puertos de salida a paso fijo. Cada puerto usa la serie de espigas compartida de pneumatic-barb-port, asi que un colector generado con un diametro interior de tubo acopla con toda la familia generada con el mismo valor. Con vacio impulsa un arreglo de suction-cup-bellows; con presion impulsa bellows-actuator o pneu-net-finger.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/vacuum-manifold-block.webp",
+    "difficulty": "intermediate",
+    "tags": ["vacuum", "manifold", "plenum", "pneumatic", "barb", "soft-robotics", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "inline_manifold",
+      "label": { "en": "Inline Manifold", "es": "Colector en Linea" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["inline_manifold"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 15 }
+    },
+    {
+      "id": "dual_manifold",
+      "label": { "en": "Dual-Face Manifold", "es": "Colector de Doble Cara" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dual_manifold"],
+      "estimate": { "base_time": 17, "per_unit": 5, "per_part": 18 }
+    },
+    {
+      "id": "blank_plug",
+      "label": { "en": "Blanking Plug", "es": "Tapon Ciego" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["blank_plug"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    { "id": "inline_manifold", "label": { "en": "Inline Manifold", "es": "Colector en Linea" }, "render_mode": 0, "color": "#3d6f86" },
+    { "id": "dual_manifold", "label": { "en": "Dual-Face Manifold", "es": "Colector de Doble Cara" }, "render_mode": 0, "color": "#2c5b70" },
+    { "id": "blank_plug", "label": { "en": "Blanking Plug", "es": "Tapon Ciego" }, "render_mode": 0, "color": "#5d90a4" }
+  ],
+  "parameter_groups": [
+    { "id": "block", "label": { "en": "Block", "es": "Bloque" } },
+    { "id": "ports", "label": { "en": "Ports & Plenum", "es": "Puertos y Plenum" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "block_len", "type": "slider", "default": 90.0, "min": 20.0, "max": 300.0, "step": 1,
+      "group": "block", "modes": ["inline_manifold", "dual_manifold"],
+      "label": { "en": "Block Length (mm)", "es": "Largo del Bloque (mm)" },
+      "tooltip": { "en": "Length of the manifold body — with the port pitch this sets how many outlets fit", "es": "Largo del cuerpo del colector — con el paso de puertos define cuantas salidas caben" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "block_w", "type": "slider", "default": 18.0, "min": 8.0, "max": 80.0, "step": 0.5,
+      "group": "block", "modes": ["inline_manifold", "dual_manifold"],
+      "label": { "en": "Block Width (mm)", "es": "Ancho del Bloque (mm)" },
+      "tooltip": { "en": "Width across the block — must leave a wall around the plenum", "es": "Ancho del bloque — debe dejar pared alrededor del plenum" },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 1.0 }
+    },
+    {
+      "id": "block_h", "type": "slider", "default": 16.0, "min": 8.0, "max": 80.0, "step": 0.5,
+      "group": "block", "modes": ["inline_manifold", "dual_manifold"],
+      "label": { "en": "Block Height (mm)", "es": "Alto del Bloque (mm)" },
+      "tooltip": { "en": "Height of the block", "es": "Alto del bloque" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "port_pitch", "type": "slider", "default": 20.0, "min": 6.0, "max": 100.0, "step": 0.5,
+      "group": "ports", "modes": ["inline_manifold", "dual_manifold"],
+      "label": { "en": "Port Pitch (mm)", "es": "Paso de Puertos (mm)" },
+      "tooltip": { "en": "Centre spacing between outlets — the published CDG grid an actuator array is laid out against", "es": "Separacion entre centros de salidas — la retícula CDG publicada contra la que se distribuye un arreglo de actuadores" }
+    },
+    {
+      "id": "plenum_dia", "type": "slider", "default": 6.0, "min": 2.0, "max": 40.0, "step": 0.2,
+      "group": "ports", "modes": ["inline_manifold", "dual_manifold"],
+      "label": { "en": "Plenum Bore (mm)", "es": "Barreno del Plenum (mm)" },
+      "tooltip": { "en": "Internal gallery running the block — auto-clamped to keep a wall on every side", "es": "Galeria interna a lo largo del bloque — se limita automaticamente para conservar pared en cada lado" }
+    },
+    {
+      "id": "tube_id", "type": "slider", "default": 4.0, "min": 1.5, "max": 12.0, "step": 0.1,
+      "group": "ports", "modes": ["inline_manifold", "dual_manifold", "blank_plug"],
+      "label": { "en": "Tubing Inner Dia (mm)", "es": "Diametro Interior del Tubo (mm)" },
+      "tooltip": { "en": "Inner diameter of the tubing the barbs accept — the shared barb series (2 / 3 / 4 mm)", "es": "Diametro interior de la manguera que aceptan las espigas — la serie de espigas compartida (2 / 3 / 4 mm)" }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 2.6, "min": 0.8, "max": 10.0, "step": 0.1,
+      "group": "ports", "modes": ["inline_manifold", "dual_manifold", "blank_plug"],
+      "label": { "en": "Port Passage (mm)", "es": "Paso del Puerto (mm)" },
+      "tooltip": { "en": "Flow diameter through each port — clamped against the plenum and the stem wall", "es": "Diametro de flujo por cada puerto — limitado contra el plenum y la pared de la espiga" }
+    },
+    {
+      "id": "barb_rise", "type": "slider", "default": 0.7, "min": 0.2, "max": 2.0, "step": 0.05,
+      "group": "ports", "modes": ["inline_manifold", "dual_manifold", "blank_plug"], "advanced": true,
+      "label": { "en": "Barb Ridge Height (mm)", "es": "Altura de la Cresta (mm)" },
+      "tooltip": { "en": "How far each ridge stands proud — the tube grip", "es": "Cuanto sobresale cada cresta — el agarre del tubo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 1.0, "max": 15.0, "step": 0.1,
+      "group": "ports", "modes": ["inline_manifold", "dual_manifold"], "advanced": true,
+      "label": { "en": "Minimum Wall (mm)", "es": "Pared Minima (mm)" },
+      "tooltip": { "en": "Minimum material kept around every bore — a printed manifold leaks at thin walls", "es": "Material minimo conservado alrededor de cada barreno — un colector impreso fuga en paredes delgadas" }
+    },
+    {
+      "id": "mount_dia", "type": "slider", "default": 4.3, "min": 1.5, "max": 12.0, "step": 0.1,
+      "group": "mount", "modes": ["inline_manifold", "dual_manifold"], "advanced": true,
+      "label": { "en": "Mount Hole Dia (mm)", "es": "Diametro de Barreno de Montaje (mm)" },
+      "tooltip": { "en": "End mounting-hole clearance (4.3 = M4). Holes are skipped if the block is too narrow to clear the plenum", "es": "Holgura del barreno de montaje en los extremos (4.3 = M4). Se omiten si el bloque es muy angosto para librar el plenum" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "four_way_vacuum", "mode": "inline_manifold",
+      "label": { "en": "4-Way Vacuum Bar", "es": "Barra de Vacio de 4 Vias" },
+      "values": { "block_len": 90, "port_pitch": 20, "tube_id": 4.0, "bore": 2.6 }
+    },
+    {
+      "id": "eight_way_dual", "mode": "dual_manifold",
+      "label": { "en": "8-Way Dual Row", "es": "Doble Fila de 8 Vias" },
+      "values": { "block_len": 90, "block_w": 24, "port_pitch": 22, "tube_id": 4.0 }
+    },
+    {
+      "id": "micro_3mm", "mode": "inline_manifold",
+      "label": { "en": "Micro 3 mm Bar", "es": "Barra Micro 3 mm" },
+      "values": { "block_len": 50, "block_w": 14, "block_h": 12, "port_pitch": 12, "tube_id": 3.0, "bore": 2.0 }
+    },
+    {
+      "id": "spare_plug", "mode": "blank_plug",
+      "label": { "en": "Spare Blanking Plug", "es": "Tapon Ciego de Repuesto" },
+      "values": { "tube_id": 4.0, "bore": 2.6 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "warning",
+      "message": { "en": "Below 2 mm a printed manifold leaks at the layer seams", "es": "Por debajo de 2 mm un colector impreso fuga en las uniones de capa" }
+    },
+    {
+      "expression": "bore < plenum_dia",
+      "severity": "warning",
+      "message": { "en": "A port wider than the plenum starves the ports further down the bar", "es": "Un puerto mas ancho que el plenum deja sin flujo a los puertos siguientes" }
+    },
+    {
+      "expression": "port_pitch >= 10",
+      "severity": "warning",
+      "message": { "en": "Pitches under 10 mm can leave the barb stems touching", "es": "Pasos menores a 10 mm pueden dejar las espigas tocandose" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [110, 90, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 20, 170] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [160, 0, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 4, "per_part": 15,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "soft-robotics",
+    "cdg_interfaces": [
+      {
+        "id": "pneumatic_barb_series",
+        "label": { "en": "Pneumatic Barb Series", "es": "Serie de Espiga Neumatica" },
+        "geometry_type": "profile",
+        "standard": "internal (2 / 3 / 4 mm tube ID)",
+        "parameters": ["tube_id", "bore", "barb_rise"],
+        "compatible_with": ["pneumatic-barb-port", "bellows-actuator", "pneu-net-finger", "suction-cup-bellows"]
+      },
+      {
+        "id": "port_pitch_grid",
+        "label": { "en": "Outlet Pitch Grid", "es": "Retícula de Paso de Salidas" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["port_pitch", "block_len", "block_w"],
+        "compatible_with": ["suction-cup-bellows"]
+      },
+      {
+        "id": "plenum_gallery",
+        "label": { "en": "Plenum Gallery", "es": "Galeria de Plenum" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["plenum_dia", "wall", "block_h"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A soft-pneumatic rig is only as useful as its plumbing. Commercial vacuum manifolds are sold per-port at machine-shop prices, which is why teaching labs and small pick-and-place builds end up with a tangle of tees. An open manifold whose port pitch and barb series are published as interfaces lets a lab print exactly the number of outlets it needs, at the pitch its cup array already uses, and know it will mate the rest of the family without measuring anything.",
+      "es": "Un equipo neumatico blando vale lo que vale su plomeria. Los colectores de vacio comerciales se venden por puerto a precio de taller, por eso los laboratorios docentes y los montajes pequenos de pick-and-place terminan con una marana de tes. Un colector abierto cuyo paso de puertos y serie de espigas se publican como interfaces permite imprimir exactamente las salidas necesarias, al paso que ya usa el arreglo de ventosas, con la certeza de que acoplara con el resto de la familia sin medir nada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["vacuum", "manifold", "pneumatic", "barb", "soft-robotics", "hyperobject", "commons", "cdg"]
+}

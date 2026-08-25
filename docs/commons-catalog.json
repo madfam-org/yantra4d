@@ -2,23 +2,23 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 494,
-    "with_cdg_interfaces": 480,
-    "with_commons_license": 494,
+    "cartridges": 500,
+    "with_cdg_interfaces": 486,
+    "with_commons_license": 500,
     "dual_engine": 22
   },
   "domains": {
-    "household": 124,
+    "household": 125,
     "industrial": 108,
     "commercial": 75,
     "wearable": 72,
-    "medical": 43,
+    "medical": 44,
     "infrastructure": 33,
     "hybrid": 14,
     "uncategorized": 13,
     "soft-robotics": 7,
+    "agriculture": 5,
     "consumer": 2,
-    "agriculture": 1,
     "construction": 1,
     "energy": 1
   },
@@ -36,6 +36,7 @@
     "1/4in & 1/2in drip",
     "1/4in drip",
     "10 mm path / 12.5 mm square cuvette",
+    "10-50 mm round handle-stock series",
     "1020 tray",
     "10mm cuvette",
     "12 mm / 1/2 in support rod",
@@ -67,6 +68,7 @@
     "26mm crown cap",
     "28-410 / 24-410",
     "28mm/bottle (28-410 / PCO-1881)",
+    "3-30 mm stem Ø series; mouth declared as a fraction of bore Ø, capped at 2r-0.8 mm",
     "3-8mm shaft (round/D-flat/hex)",
     "3.5mm AT switch",
     "3/16-1/4in tube",
@@ -90,6 +92,7 @@
     "58/54/51mm basket",
     "6-10mm shaft",
     "6-12mm shaft",
+    "6-30 mm seed Ø series (maize ~8-12, common bean ~10-14, squash ~12-18)",
     "6/8mm ferro rod",
     "6/8mm shaft + magnets",
     "608 bearing (ISO 15 — 8×22×7)",
@@ -135,6 +138,7 @@
     "GHT 3/4",
     "GHT 3/4 / M22-M24 aerator",
     "GHT 3/4 / NPT 1/2 / BSP 1/2 / ISO M20 / M24",
+    "GPI/SPI continuous-thread finishes 63-400 / 70-400 / 89-400 (pitch 4.23 mm)",
     "GT2 (2mm) / HTD 3M/5M",
     "GT2 2mm / HTD 3M",
     "GT2 2mm belt",
@@ -180,8 +184,11 @@
     "ISO metric (M2/M2.5/M3)",
     "Kratky / DWC raft spacing (hole pitch derived from cup diameter)",
     "Kurt-style vise bolt pattern",
+    "Langstroth frame pitch 35 mm (ten-frame) / 38 mm (nine-frame spread); top bar 482.6 mm across deep, medium and shallow",
+    "Langstroth lug nominal 25.4 mm (1 in) wide x ~9.5 mm thick, resting on the hive-body frame rest",
     "Luer barrel",
     "Luer hub nominal Ø 7.5 mm",
+    "Luer hub nominal Ø 7.5 mm floor; 22 mm hard ceiling so a hand cannot enter; needle gauge series 14G-30G",
     "Luer syringe barrel (1/3/5/10/20 mL)",
     "M22x1 / M24x1 aerator",
     "M3-M8 insert",
@@ -258,6 +265,7 @@
     "XT60/USB/RJ45/GX16",
     "aero/square crossbar",
     "anodised PV module frame lip",
+    "bee space 6.0-9.5 mm (Langstroth 1852); below is propolised, above is bridged with comb",
     "breadboard 2.54mm",
     "bucket / tote mouth, annular downstand",
     "business card",
@@ -268,6 +276,10 @@
     "concrete cover depth (slab through footing values)",
     "construction brick 8mm",
     "cylindrical NdFeB magnet Ø8-16 mm",
+    "declared air gap + wall, with a wall floor set by material class (PLA 4.0 / PETG 3.5 / ABS 3.0 / PP 3.2 / PA 3.0 mm)",
+    "declared open-area ratio; strut solved as s = pitch x (1 - sqrt(ratio)) for a square grid, clamped to a 1.0 mm printable minimum",
+    "declared row x hill pitch (mm); near-square block layout for wind pollination",
+    "declared union Ø = max(scion, rootstock) + 0.25 x min(scion, rootstock)",
     "dry-erase marker",
     "e-NABLE / OSL 4-bolt",
     "epicyclic meshing constraint: ring = sun + 2 × planet",
@@ -284,8 +296,12 @@
     "internal bond socket",
     "internal peg grid 8mm",
     "internal solids 40mm",
+    "internal — cradle lip sized from tray rim and stack height",
     "internal — hand-tool slot, clamped inside the plug",
+    "internal — living-hinge flap seat, sized from the jar bore",
     "internal — mouth as a fraction of bore Ø",
+    "internal — mouth capped so two retaining legs always survive",
+    "internal — one-way catch ring; opens only by destruction",
     "internal — pitch floored at slot width plus a 2 mm bar",
     "internal/aocl",
     "iso_8559",
@@ -299,6 +315,8 @@
     "plain round shaft (metric nominal)",
     "playing card 63x88mm",
     "ppf-contact-solver (SIGGRAPH Asia 2024)",
+    "rectangular male spigot / female rim socket, 0.35 mm printed clearance per side",
+    "rectangular strap stock series, 10-45 mm wide x 2-12 mm thick",
     "round outlet series 50 / 68 / 75 / 87 / 100 / 110 mm",
     "router bushing (Porter-Cable universal — 1-3/8 in flange)",
     "single-channel micropipette (Ø3.8-6.0 mm shaft)",
@@ -319,6 +337,7 @@
     "tape core",
     "tennis ball nominal Ø 67 mm (ITF)",
     "water-bottle boss",
+    "whip 20 deg / cleft 35 deg / saddle 14 deg reference wedge",
     "Ø1 in (25.4 mm) / Ø25 mm optic",
     "Ø1/2 in (12.7 mm) optical post"
   ],
@@ -6448,6 +6467,94 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/collar-stay"
+      }
+    },
+    {
+      "slug": "comal-handle-guard",
+      "name": "Comal Handle Guard",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "handle_width_mm",
+        "handle_thickness_mm",
+        "grip_length_mm",
+        "arc_radius_mm",
+        "wall",
+        "air_gap_mm",
+        "material_temp_class"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Kitchen burns are among the most common household injuries anywhere, and they fall disproportionately on the people who cook daily over open flame — overwhelmingly women, and often with a child nearby. The comal is not a marginal object: it is in daily use in millions of kitchens across Mexico and Central America, and the steel version sold in every market is a plain disc with a bare strap handle welded to its rim, because insulation would cost more than the pan. The improvised answer is a rag, and a rag is genuinely dangerous when damp, because water conducts heat to the hand far faster than the still air trapped in a dry cloth. A clamped guard removes the improvisation: it is always there, it cannot be picked up wet by mistake, and it does not need to be found in a hurry with full hands. This is not a novel mechanism and it is not clever — it is a part that costs a few pesos of filament and is simply not sold for the pan most people actually own.",
+        "es": "Las quemaduras de cocina están entre las lesiones domésticas más comunes en cualquier parte, y recaen de forma desproporcionada sobre quienes cocinan a diario sobre fuego abierto — mayoritariamente mujeres, y a menudo con un niño cerca. El comal no es un objeto marginal: está en uso diario en millones de cocinas de México y Centroamérica, y la versión de acero que se vende en cualquier mercado es un disco liso con un asa de solera desnuda soldada al borde, porque aislarla costaría más que el comal. La respuesta improvisada es un trapo, y un trapo es realmente peligroso cuando está húmedo, porque el agua conduce el calor a la mano mucho más rápido que el aire quieto atrapado en una tela seca. Un protector abrazado elimina la improvisación: siempre está ahí, no se puede tomar mojado por error y no hay que buscarlo de prisa con las manos ocupadas. No es un mecanismo novedoso ni ingenioso — es una pieza que cuesta unos pesos de filamento y que sencillamente no se vende para el comal que la mayoría tiene."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "flat_handle_stock",
+          "label": "Flat Handle Stock",
+          "geometry_type": "profile",
+          "standard": "rectangular strap stock series, 10-45 mm wide x 2-12 mm thick",
+          "parameters": [
+            "handle_width_mm",
+            "handle_thickness_mm",
+            "air_gap_mm"
+          ]
+        },
+        {
+          "id": "clamp_jaw_mouth",
+          "label": "Clamp Jaw Mouth",
+          "geometry_type": "snap",
+          "standard": "internal — mouth capped so two retaining legs always survive",
+          "parameters": [
+            "handle_width_mm",
+            "wall",
+            "air_gap_mm"
+          ]
+        },
+        {
+          "id": "thermal_standoff",
+          "label": "Thermal Standoff",
+          "geometry_type": "profile",
+          "standard": "declared air gap + wall, with a wall floor set by material class (PLA 4.0 / PETG 3.5 / ABS 3.0 / PP 3.2 / PA 3.0 mm)",
+          "parameters": [
+            "air_gap_mm",
+            "wall",
+            "material_temp_class"
+          ]
+        }
+      ],
+      "standards": [
+        "declared air gap + wall, with a wall floor set by material class (PLA 4.0 / PETG 3.5 / ABS 3.0 / PP 3.2 / PA 3.0 mm)",
+        "internal — mouth capped so two retaining legs always survive",
+        "rectangular strap stock series, 10-45 mm wide x 2-12 mm thick"
+      ],
+      "source": {
+        "manifest": "projects/comal-handle-guard/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/comal-handle-guard"
       }
     },
     {
@@ -14328,6 +14435,93 @@
       }
     },
     {
+      "slug": "graft-clip",
+      "name": "Grafting Union Clip",
+      "domain": "agriculture",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "scion_diameter_mm",
+        "rootstock_diameter_mm",
+        "clip_wall",
+        "spring_gap",
+        "clip_length_mm",
+        "taper_style"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Grafting is how a household turns a wild or worthless seedling into a tree that bears known fruit, and how a variety survives at all — fruit trees do not come true from seed, so every apple, citrus and avocado of a named kind that has ever existed was grafted. The skill is free and widely taught. The clip is not: it is a moulded consumable, bought by the hundred, lost in the field, and priced per unit in hard currency, which in practice rations how many grafts a smallholder or a community nursery attempts in a season. Printing it moves the binding constraint back to skill and scion wood, where it belongs. The taper gauge addresses the other half of the same problem — most failed grafts fail because the two cut faces were not the same angle, so the cambium lines crossed instead of running together, and that is a mistake a physical reference prevents far more reliably than an instruction does.",
+        "es": "El injerto es como un hogar convierte un plantón silvestre o sin valor en un árbol que da fruta conocida, y es como sobrevive una variedad: los frutales no salen fieles de semilla, así que toda manzana, cítrico y aguacate de variedad nombrada que ha existido fue injertado. La técnica es gratuita y se enseña ampliamente. La pinza no: es un consumible moldeado, se compra por cientos, se pierde en el campo y se cotiza por unidad en divisa dura, lo que en la práctica raciona cuántos injertos intenta un pequeño productor o un vivero comunitario por temporada. Imprimirla devuelve la restricción a la destreza y a la madera de púa, que es donde corresponde. El calibrador de bisel atiende la otra mitad del mismo problema — la mayoría de los injertos fallidos fallan porque las dos caras de corte no tenían el mismo ángulo, de modo que las líneas de cámbium se cruzaron en vez de correr juntas, y ese error lo evita una referencia física mucho mejor que una instrucción."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "stem_c_jaw",
+          "label": "Stem C-Jaw",
+          "geometry_type": "snap",
+          "standard": "3-30 mm stem Ø series; mouth declared as a fraction of bore Ø, capped at 2r-0.8 mm",
+          "parameters": [
+            "scion_diameter_mm",
+            "rootstock_diameter_mm",
+            "spring_gap",
+            "clip_wall"
+          ]
+        },
+        {
+          "id": "union_envelope",
+          "label": "Graft Union Envelope",
+          "geometry_type": "profile",
+          "standard": "declared union Ø = max(scion, rootstock) + 0.25 x min(scion, rootstock)",
+          "parameters": [
+            "scion_diameter_mm",
+            "rootstock_diameter_mm"
+          ]
+        },
+        {
+          "id": "cut_taper_reference",
+          "label": "Cut Taper Reference",
+          "geometry_type": "profile",
+          "standard": "whip 20 deg / cleft 35 deg / saddle 14 deg reference wedge",
+          "parameters": [
+            "taper_style",
+            "scion_diameter_mm",
+            "rootstock_diameter_mm"
+          ]
+        }
+      ],
+      "standards": [
+        "3-30 mm stem Ø series; mouth declared as a fraction of bore Ø, capped at 2r-0.8 mm",
+        "declared union Ø = max(scion, rootstock) + 0.25 x min(scion, rootstock)",
+        "whip 20 deg / cleft 35 deg / saddle 14 deg reference wedge"
+      ],
+      "source": {
+        "manifest": "projects/graft-clip/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/graft-clip"
+      }
+    },
+    {
       "slug": "grid-hub",
       "name": "Modular Grid Interoperability Hub",
       "domain": "household",
@@ -15756,6 +15950,91 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/hitch-plug-holder"
+      }
+    },
+    {
+      "slug": "hive-frame-spacer",
+      "name": "Hive Frame Spacer",
+      "domain": "agriculture",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "frame_std",
+        "bee_space_mm",
+        "lug_width_mm",
+        "lug_thickness_mm",
+        "spacer_count",
+        "rail_thickness"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Beekeeping is among the cheapest ways a household or a village can add both cash income and a pollination service to land it already works, and the biology asks very little. What it asks instead is dimensional discipline: the entire removable-frame hive — the invention that made beekeeping non-destructive, and that every managed colony on earth now uses — rests on holding one gap inside a band of about three millimetres. Miss it and the colony glues the box into a solid mass that cannot be opened without destroying comb and killing bees, and a beekeeper who cannot inspect cannot detect disease, manage swarming or harvest without loss. Commercial spacers are cheap per unit and completely unavailable in many of the places where a few hives would matter most. Printing them turns an import into a local part, and publishing the standard alongside the geometry means a beekeeper who has never seen a catalogue can still hit the pitch that the equipment they already own was built around.",
+        "es": "La apicultura es de las formas más baratas en que un hogar o un pueblo puede añadir ingreso en efectivo y servicio de polinización a la tierra que ya trabaja, y la biología pide muy poco. Lo que sí pide es disciplina dimensional: la colmena de marcos móviles entera — el invento que hizo no destructiva la apicultura, y que hoy usa toda colonia manejada del mundo — descansa en mantener un solo hueco dentro de una banda de unos tres milímetros. Si se falla, la colonia pega la caja en una masa sólida que no se puede abrir sin destruir panal y matar abejas, y un apicultor que no puede revisar no puede detectar enfermedad, manejar la enjambrazón ni cosechar sin pérdida. Los separadores comerciales son baratos por unidad y del todo inconseguibles en muchos de los lugares donde unas pocas colmenas más importarían. Imprimirlos convierte una importación en una pieza local, y publicar la norma junto con la geometría permite que un apicultor que nunca ha visto un catálogo acierte igual el paso para el que se construyó el equipo que ya tiene."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "langstroth_frame_pitch",
+          "label": "Langstroth Frame Pitch",
+          "geometry_type": "rail",
+          "standard": "Langstroth frame pitch 35 mm (ten-frame) / 38 mm (nine-frame spread); top bar 482.6 mm across deep, medium and shallow",
+          "parameters": [
+            "frame_std",
+            "spacer_count",
+            "bee_space_mm"
+          ]
+        },
+        {
+          "id": "frame_lug_seat",
+          "label": "Frame Lug Seat",
+          "geometry_type": "pocket",
+          "standard": "Langstroth lug nominal 25.4 mm (1 in) wide x ~9.5 mm thick, resting on the hive-body frame rest",
+          "parameters": [
+            "lug_width_mm",
+            "lug_thickness_mm",
+            "rail_thickness"
+          ]
+        },
+        {
+          "id": "bee_space_gap",
+          "label": "Bee Space Gap",
+          "geometry_type": "profile",
+          "standard": "bee space 6.0-9.5 mm (Langstroth 1852); below is propolised, above is bridged with comb",
+          "parameters": [
+            "bee_space_mm"
+          ]
+        }
+      ],
+      "standards": [
+        "Langstroth frame pitch 35 mm (ten-frame) / 38 mm (nine-frame spread); top bar 482.6 mm across deep, medium and shallow",
+        "Langstroth lug nominal 25.4 mm (1 in) wide x ~9.5 mm thick, resting on the hive-body frame rest",
+        "bee space 6.0-9.5 mm (Langstroth 1852); below is propolised, above is bridged with comb"
+      ],
+      "source": {
+        "manifest": "projects/hive-frame-spacer/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/hive-frame-spacer"
       }
     },
     {
@@ -20174,6 +20453,93 @@
       "clone": {
         "kind": "submodule",
         "command": "git clone https://github.com/madfam-org/microscope-slide-hyperobject.git"
+      }
+    },
+    {
+      "slug": "milpa-seed-plate",
+      "name": "Milpa Seed Spacing Plate",
+      "domain": "agriculture",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "row_spacing_mm",
+        "hill_spacing_mm",
+        "hole_count",
+        "seed_diameter_mm",
+        "plate_thickness",
+        "handle_style",
+        "depth_stop_mm",
+        "dibber_dia_mm"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The milpa is not a crop, it is a system: maize gives the bean a pole, the bean fixes nitrogen the maize spends, the squash shades the ground and holds moisture. The system only works at the right spacing, and spacing is precisely what is lost when sowing is done by eye across a season, a slope, and several pairs of hands. Extension services teach spacing in numbers that a smallholder has no cheap instrument to apply. This plate is that instrument: it converts a number on paper into a physical pattern that an inexperienced or tired hand reproduces exactly, and it costs filament rather than a purchase. Getting the block right also protects yield directly — maize sown in a single line pollinates itself badly and sets a visibly gap-toothed cob, an entirely avoidable loss that falls hardest on the households with the least margin to absorb it.",
+        "es": "La milpa no es un cultivo, es un sistema: el maíz da tutor al frijol, el frijol fija el nitrógeno que el maíz gasta, la calabaza sombrea el suelo y retiene humedad. El sistema sólo funciona con el espaciamiento correcto, y el espaciamiento es justo lo que se pierde al sembrar a ojo a lo largo de una temporada, una ladera y varias manos distintas. Los servicios de extensión enseñan el espaciamiento en cifras que el pequeño productor no tiene instrumento barato para aplicar. Esta plantilla es ese instrumento: convierte un número en papel en un patrón físico que una mano inexperta o cansada reproduce con exactitud, y cuesta filamento en vez de una compra. Acertar el bloque también protege el rendimiento directamente — el maíz sembrado en una sola línea poliniza mal y da mazorca visiblemente desgranada, una pérdida del todo evitable que golpea más fuerte a los hogares con menos margen."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sowing_grid",
+          "label": "Sowing Grid",
+          "geometry_type": "grid",
+          "standard": "declared row x hill pitch (mm); near-square block layout for wind pollination",
+          "parameters": [
+            "row_spacing_mm",
+            "hill_spacing_mm",
+            "hole_count"
+          ]
+        },
+        {
+          "id": "seed_drop_bore",
+          "label": "Seed Drop Bore",
+          "geometry_type": "socket",
+          "standard": "6-30 mm seed Ø series (maize ~8-12, common bean ~10-14, squash ~12-18)",
+          "parameters": [
+            "seed_diameter_mm",
+            "plate_thickness"
+          ]
+        },
+        {
+          "id": "dibber_collar",
+          "label": "Dibber Collar",
+          "geometry_type": "socket",
+          "standard": "10-50 mm round handle-stock series",
+          "parameters": [
+            "dibber_dia_mm",
+            "depth_stop_mm"
+          ]
+        }
+      ],
+      "standards": [
+        "10-50 mm round handle-stock series",
+        "6-30 mm seed Ø series (maize ~8-12, common bean ~10-14, squash ~12-18)",
+        "declared row x hill pitch (mm); near-square block layout for wind pollination"
+      ],
+      "source": {
+        "manifest": "projects/milpa-seed-plate/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/milpa-seed-plate"
       }
     },
     {
@@ -28856,6 +29222,105 @@
       }
     },
     {
+      "slug": "sharps-lid-adapter",
+      "name": "Sharps Container Lid Adapter",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "jar_thread_std",
+        "clearance",
+        "slot_width_mm",
+        "needle_gauge_max",
+        "one_way_baffle",
+        "lock_style",
+        "wall"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Needlestick injury is the most common occupational exposure in health care and the route by which bloodborne infection reaches the people least able to absorb it: cleaners, waste handlers, community health workers, and the family members of anyone injecting at home. The engineering answer has been settled for decades — a rigid, puncture-resistant container that admits sharps and does not give them back — and it is one of the few safety interventions whose effectiveness is not seriously disputed. What is not settled is availability. Purpose-made containers are a recurring purchase in hard currency, and when a clinic's supply lapses the substitute is not nothing, it is a soft drink bottle or a tin with an open mouth, which is worse than useless because it invites reaching in and recapping. The scarce component is never the vessel; it is the lid. Publishing the lid as printable geometry, keyed to jar finishes that already exist in every kitchen and pharmacy, removes the imported part from the chain and leaves only the jar — which is free.",
+        "es": "El pinchazo con aguja es la exposición ocupacional más común en salud y la vía por la que la infección de transmisión sanguínea llega a quienes menos pueden absorberla: personal de limpieza, manejadores de residuos, promotores de salud y los familiares de quien se inyecta en casa. La respuesta de ingeniería está resuelta desde hace décadas — un contenedor rígido y resistente a punción que admite punzocortantes y no los devuelve — y es de las pocas intervenciones de seguridad cuya eficacia no se discute en serio. Lo que no está resuelto es la disponibilidad. Los contenedores de fábrica son una compra recurrente en divisa dura, y cuando falla el abasto de una clínica el sustituto no es nada, es una botella de refresco o una lata de boca abierta, que es peor que inútil porque invita a meter la mano y a reencapuchar. El componente escaso nunca es el recipiente; es la tapa. Publicar la tapa como geometría imprimible, referida a acabados de frasco que ya existen en cualquier cocina y farmacia, saca la pieza importada de la cadena y deja sólo el frasco — que es gratis."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "jar_ct_thread",
+          "label": "Jar CT Thread",
+          "geometry_type": "thread",
+          "standard": "GPI/SPI continuous-thread finishes 63-400 / 70-400 / 89-400 (pitch 4.23 mm)",
+          "parameters": [
+            "jar_thread_std",
+            "clearance",
+            "wall"
+          ]
+        },
+        {
+          "id": "sharps_entry_slot",
+          "label": "Sharps Entry Slot",
+          "geometry_type": "pocket",
+          "standard": "Luer hub nominal Ø 7.5 mm floor; 22 mm hard ceiling so a hand cannot enter; needle gauge series 14G-30G",
+          "parameters": [
+            "slot_width_mm",
+            "needle_gauge_max"
+          ]
+        },
+        {
+          "id": "one_way_baffle_seat",
+          "label": "One-Way Baffle Seat",
+          "geometry_type": "socket",
+          "standard": "internal — living-hinge flap seat, sized from the jar bore",
+          "parameters": [
+            "one_way_baffle",
+            "wall",
+            "jar_thread_std"
+          ]
+        },
+        {
+          "id": "permanent_closure_bead",
+          "label": "Permanent Closure Bead",
+          "geometry_type": "snap",
+          "standard": "internal — one-way catch ring; opens only by destruction",
+          "parameters": [
+            "lock_style",
+            "wall",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "GPI/SPI continuous-thread finishes 63-400 / 70-400 / 89-400 (pitch 4.23 mm)",
+        "Luer hub nominal Ø 7.5 mm floor; 22 mm hard ceiling so a hand cannot enter; needle gauge series 14G-30G",
+        "internal — living-hinge flap seat, sized from the jar bore",
+        "internal — one-way catch ring; opens only by destruction"
+      ],
+      "source": {
+        "manifest": "projects/sharps-lid-adapter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/sharps-lid-adapter"
+      }
+    },
+    {
       "slug": "shelf-bracket",
       "name": "Shelf Bracket",
       "domain": "household",
@@ -30212,6 +30677,96 @@
       "clone": {
         "kind": "submodule",
         "command": "git clone https://github.com/madfam-org/soft-jaw.git"
+      }
+    },
+    {
+      "slug": "solar-dryer-tray",
+      "name": "Stacking Solar Dryer Tray",
+      "domain": "agriculture",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "tray_width_mm",
+        "tray_depth_mm",
+        "mesh_pitch_mm",
+        "airflow_open_ratio",
+        "wall",
+        "stack_height_mm",
+        "rim_style"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Somewhere around a third of what smallholders grow is lost between the field and the plate, and the largest single share of that is microbial spoilage in the first days after harvest — which is a failure of water control, not of yield. Every additional kilogram saved at that point is a kilogram that needed no extra land, seed, water or labour, which is why post-harvest handling returns more per unit of effort than almost any intervention upstream of it. Sun drying is the oldest answer and needs no power, but drying on a mat or a roof is slow, exposed to rain, dust, insects and birds, and dries unevenly enough that part of a batch spoils anyway. A tray is what turns a dryer cabinet into a system: it holds the food in a thin layer, off the ground, with air moving across every piece. Publishing the open-area ratio as the governing parameter rather than leaving mesh density to chance is the substantive contribution here, because the common failure mode of a home-built dryer is not too little heat but too little airflow — and a hot, stagnant cabinet case-hardens the surface, sealing wet flesh behind a dry skin that then spoils from the inside while looking finished.",
+        "es": "Cerca de un tercio de lo que producen los pequeños agricultores se pierde entre la parcela y el plato, y la mayor parte de eso es deterioro microbiano en los primeros días tras la cosecha — una falla de control del agua, no de rendimiento. Cada kilogramo salvado en ese punto es un kilogramo que no necesitó más tierra, semilla, agua ni trabajo, y por eso el manejo poscosecha rinde más por unidad de esfuerzo que casi cualquier intervención anterior. El secado al sol es la respuesta más antigua y no requiere energía, pero secar sobre un petate o una azotea es lento, queda expuesto a lluvia, polvo, insectos y aves, y seca de forma tan despareja que parte del lote se echa a perder igual. Una bandeja es lo que convierte una cámara de secado en un sistema: sostiene el alimento en capa delgada, fuera del suelo, con aire moviéndose sobre cada pieza. Publicar la razón de área abierta como el parámetro que gobierna, en vez de dejar la densidad de malla al azar, es la aportación de fondo, porque la falla común de un secador casero no es poco calor sino poco flujo de aire — y una cámara caliente y estancada endurece la superficie, sellando carne húmeda tras una piel seca que luego se pudre por dentro mientras aparenta estar lista."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "open_area_mesh",
+          "label": "Open-Area Mesh",
+          "geometry_type": "grid",
+          "standard": "declared open-area ratio; strut solved as s = pitch x (1 - sqrt(ratio)) for a square grid, clamped to a 1.0 mm printable minimum",
+          "parameters": [
+            "mesh_pitch_mm",
+            "airflow_open_ratio",
+            "wall"
+          ]
+        },
+        {
+          "id": "tray_stack_spigot",
+          "label": "Tray Stack Spigot",
+          "geometry_type": "rail",
+          "standard": "rectangular male spigot / female rim socket, 0.35 mm printed clearance per side",
+          "parameters": [
+            "tray_width_mm",
+            "tray_depth_mm",
+            "stack_height_mm",
+            "rim_style",
+            "wall"
+          ]
+        },
+        {
+          "id": "stack_lift_foot",
+          "label": "Stack Lift Foot",
+          "geometry_type": "socket",
+          "standard": "internal — cradle lip sized from tray rim and stack height",
+          "parameters": [
+            "stack_height_mm",
+            "tray_width_mm",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "declared open-area ratio; strut solved as s = pitch x (1 - sqrt(ratio)) for a square grid, clamped to a 1.0 mm printable minimum",
+        "internal — cradle lip sized from tray rim and stack height",
+        "rectangular male spigot / female rim socket, 0.35 mm printed clearance per side"
+      ],
+      "source": {
+        "manifest": "projects/solar-dryer-tray/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/solar-dryer-tray"
       }
     },
     {

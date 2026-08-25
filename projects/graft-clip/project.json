@@ -1,0 +1,182 @@
+{
+  "project": {
+    "name": "Grafting Union Clip",
+    "slug": "graft-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A spring clip that holds a graft union closed while it knits. A graft only takes if the two cambium layers stay pressed together and immobile for the weeks it takes them to fuse, and a clip is what supplies that pressure. Parameterised on the two diameters that matter — the scion going on and the rootstock it goes onto — with the jaw built around the larger stem plus a share of the smaller, because a real union is wider than either alone. Reuses the published plant-clip C-jaw profile and stem-Ø series rather than inventing a second one. Ships with a tape-slotted wrap band for oversized unions and a taper gauge for cutting matched whips.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una pinza de resorte que mantiene cerrada la unión de injerto mientras suelda. Un injerto sólo prende si las dos capas de cámbium quedan presionadas e inmóviles durante las semanas que tardan en fusionarse, y la pinza es lo que aporta esa presión. Se parametriza con los dos diámetros que importan — la púa que se coloca y el patrón que la recibe — con la mordaza construida alrededor del tallo mayor más una parte del menor, porque una unión real es más ancha que cualquiera de los dos. Reutiliza el perfil de mordaza en C y la serie de Ø de tallo del plant-clip publicado en vez de inventar otra. Incluye una banda ranurada para uniones grandes y un calibrador de bisel para cortar púas parejas.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/graft-clip.webp",
+    "difficulty": "beginner",
+    "tags": ["grafting", "graft-clip", "scion", "rootstock", "cambium", "nursery", "horticulture", "agriculture", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "clip",
+      "label": { "en": "Spring Clip", "es": "Pinza de Resorte" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["clip"],
+      "estimate": { "base_time": 5, "per_unit": 2, "per_part": 7 }
+    },
+    {
+      "id": "wrap_band",
+      "label": { "en": "Wrap Band", "es": "Banda de Amarre" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["wrap_band"],
+      "estimate": { "base_time": 5, "per_unit": 2, "per_part": 7 }
+    },
+    {
+      "id": "taper_gauge",
+      "label": { "en": "Taper Gauge", "es": "Calibrador de Bisel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["taper_gauge"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "clip", "label": { "en": "Spring Clip", "es": "Pinza" }, "render_mode": 0, "color": "#4d7c4a" },
+    { "id": "wrap_band", "label": { "en": "Wrap Band", "es": "Banda" }, "render_mode": 0, "color": "#5f9159" },
+    { "id": "taper_gauge", "label": { "en": "Taper Gauge", "es": "Calibrador" }, "render_mode": 0, "color": "#74a86c" }
+  ],
+  "parameter_groups": [
+    { "id": "graft", "label": { "en": "Graft Pair", "es": "Par de Injerto" } },
+    { "id": "clip", "label": { "en": "Clip Body", "es": "Cuerpo de la Pinza" } },
+    { "id": "gauge", "label": { "en": "Cut Gauge", "es": "Calibrador de Corte" } }
+  ],
+  "parameters": [
+    {
+      "id": "scion_diameter_mm", "type": "slider", "default": 8.0, "min": 3.0, "max": 25.0, "step": 0.5,
+      "group": "graft", "modes": ["clip", "wrap_band", "taper_gauge"],
+      "label": { "en": "Scion Ø (mm)", "es": "Ø de la Púa (mm)" },
+      "tooltip": { "en": "The shoot going on. Dormant fruit-wood scions are usually pencil-thick, 6-10 mm", "es": "El brote que se coloca. Las púas de madera latente suelen ser del grosor de un lápiz, 6-10 mm" }
+    },
+    {
+      "id": "rootstock_diameter_mm", "type": "slider", "default": 10.0, "min": 3.0, "max": 30.0, "step": 0.5,
+      "group": "graft", "modes": ["clip", "wrap_band", "taper_gauge"],
+      "label": { "en": "Rootstock Ø (mm)", "es": "Ø del Patrón (mm)" },
+      "tooltip": { "en": "The stem it goes onto. The jaw is built around the larger of the pair plus a share of the smaller, because a union is wider than either stem alone", "es": "El tallo que la recibe. La mordaza se construye sobre el mayor del par más una parte del menor, porque la unión es más ancha que cualquiera de los dos" }
+    },
+    {
+      "id": "clip_wall", "type": "slider", "default": 2.2, "min": 1.2, "max": 5.0, "step": 0.1,
+      "group": "clip", "modes": ["clip", "wrap_band", "taper_gauge"],
+      "label": { "en": "Jaw Wall (mm)", "es": "Pared de la Mordaza (mm)" },
+      "tooltip": { "en": "Wall thickness. Thicker grips harder but springs less and can crush a soft green scion", "es": "Espesor de pared. Más grueso sujeta más fuerte pero cede menos y puede aplastar una púa herbácea" }
+    },
+    {
+      "id": "spring_gap", "type": "slider", "default": 0.55, "min": 0.25, "max": 0.85, "step": 0.05,
+      "group": "clip", "modes": ["clip"],
+      "label": { "en": "Mouth Opening (fraction of bore Ø)", "es": "Abertura de Boca (fracción del Ø)" },
+      "tooltip": { "en": "Mouth width as a fraction of bore diameter. Narrow grips tighter; wide slips on more easily but holds less", "es": "Ancho de boca como fracción del diámetro. Estrecha sujeta más; amplia entra más fácil pero sostiene menos" }
+    },
+    {
+      "id": "clip_length_mm", "type": "slider", "default": 22.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "clip", "modes": ["clip", "wrap_band"],
+      "label": { "en": "Jaw Length (mm)", "es": "Largo de Mordaza (mm)" },
+      "tooltip": { "en": "Length along the stem. It should span the whole cut face, not just its middle", "es": "Largo a lo largo del tallo. Debe cubrir toda la cara del corte, no sólo su centro" }
+    },
+    {
+      "id": "taper_style", "type": "select", "default": "whip",
+      "options": [
+        { "value": "whip", "label": "Whip / whip-and-tongue (20 deg)" },
+        { "value": "cleft", "label": "Cleft (35 deg)" },
+        { "value": "saddle", "label": "Saddle (14 deg)" }
+      ],
+      "group": "gauge", "modes": ["taper_gauge"],
+      "label": { "en": "Graft Cut Style", "es": "Tipo de Corte" },
+      "tooltip": { "en": "Which cut the gauge references. Shallower angles give more cambium contact but are harder to cut cleanly by hand", "es": "Qué corte referencia el calibrador. Ángulos menores dan más contacto de cámbium pero cuestan más cortar limpio a mano" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "matched_pencil", "mode": "clip",
+      "label": { "en": "Matched Pencil-Thick (8/8 mm)", "es": "Par Parejo Grosor Lápiz (8/8 mm)" },
+      "values": { "scion_diameter_mm": 8.0, "rootstock_diameter_mm": 8.0, "clip_wall": 2.2, "spring_gap": 0.55 }
+    },
+    {
+      "id": "mismatched", "mode": "clip",
+      "label": { "en": "Mismatched Pair (8/14 mm)", "es": "Par Disparejo (8/14 mm)" },
+      "values": { "scion_diameter_mm": 8.0, "rootstock_diameter_mm": 14.0, "clip_wall": 2.4, "spring_gap": 0.5 }
+    },
+    {
+      "id": "soft_green", "mode": "clip",
+      "label": { "en": "Soft Green Wood (thin wall)", "es": "Madera Herbácea (pared delgada)" },
+      "values": { "scion_diameter_mm": 5.0, "rootstock_diameter_mm": 5.0, "clip_wall": 1.4, "spring_gap": 0.65 }
+    },
+    {
+      "id": "whip_gauge", "mode": "taper_gauge",
+      "label": { "en": "Whip Cut Gauge (20 deg)", "es": "Calibrador de Bisel Whip (20 grados)" },
+      "values": { "taper_style": "whip", "scion_diameter_mm": 8.0, "rootstock_diameter_mm": 10.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clip_wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Jaw wall must be at least 1.2 mm or the clip has no spring left to give", "es": "La pared de la mordaza debe ser de al menos 1.2 mm o la pinza pierde todo su resorte" }
+    },
+    {
+      "expression": "spring_gap <= 0.7",
+      "severity": "warning",
+      "message": { "en": "A mouth wider than 0.7 of the bore barely retains; the clip will walk off the union", "es": "Una boca mayor a 0.7 del barreno casi no retiene; la pinza se saldrá de la unión" }
+    },
+    {
+      "expression": "clip_length_mm >= 15.0",
+      "severity": "warning",
+      "message": { "en": "A jaw shorter than 15 mm may not span the whole cut face, leaving part of the union unpressed", "es": "Una mordaza menor a 15 mm puede no cubrir toda la cara del corte, dejando parte de la unión sin presión" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [48, 48, 40] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 70] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 5, "per_unit": 2, "per_part": 8,
+    "fn_factor": 64, "wasm_multiplier": 3, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "agriculture",
+    "cdg_interfaces": [
+      {
+        "id": "stem_c_jaw",
+        "label": { "en": "Stem C-Jaw", "es": "Mordaza en C para Tallo" },
+        "geometry_type": "snap",
+        "standard": "3-30 mm stem Ø series; mouth declared as a fraction of bore Ø, capped at 2r-0.8 mm",
+        "parameters": ["scion_diameter_mm", "rootstock_diameter_mm", "spring_gap", "clip_wall"],
+        "compatible_with": ["plant-clip", "garment-clip", "oxygen-tubing-clip"]
+      },
+      {
+        "id": "union_envelope",
+        "label": { "en": "Graft Union Envelope", "es": "Envolvente de la Unión" },
+        "geometry_type": "profile",
+        "standard": "declared union Ø = max(scion, rootstock) + 0.25 x min(scion, rootstock)",
+        "parameters": ["scion_diameter_mm", "rootstock_diameter_mm"]
+      },
+      {
+        "id": "cut_taper_reference",
+        "label": { "en": "Cut Taper Reference", "es": "Referencia de Bisel" },
+        "geometry_type": "profile",
+        "standard": "whip 20 deg / cleft 35 deg / saddle 14 deg reference wedge",
+        "parameters": ["taper_style", "scion_diameter_mm", "rootstock_diameter_mm"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Grafting is how a household turns a wild or worthless seedling into a tree that bears known fruit, and how a variety survives at all — fruit trees do not come true from seed, so every apple, citrus and avocado of a named kind that has ever existed was grafted. The skill is free and widely taught. The clip is not: it is a moulded consumable, bought by the hundred, lost in the field, and priced per unit in hard currency, which in practice rations how many grafts a smallholder or a community nursery attempts in a season. Printing it moves the binding constraint back to skill and scion wood, where it belongs. The taper gauge addresses the other half of the same problem — most failed grafts fail because the two cut faces were not the same angle, so the cambium lines crossed instead of running together, and that is a mistake a physical reference prevents far more reliably than an instruction does.",
+      "es": "El injerto es como un hogar convierte un plantón silvestre o sin valor en un árbol que da fruta conocida, y es como sobrevive una variedad: los frutales no salen fieles de semilla, así que toda manzana, cítrico y aguacate de variedad nombrada que ha existido fue injertado. La técnica es gratuita y se enseña ampliamente. La pinza no: es un consumible moldeado, se compra por cientos, se pierde en el campo y se cotiza por unidad en divisa dura, lo que en la práctica raciona cuántos injertos intenta un pequeño productor o un vivero comunitario por temporada. Imprimirla devuelve la restricción a la destreza y a la madera de púa, que es donde corresponde. El calibrador de bisel atiende la otra mitad del mismo problema — la mayoría de los injertos fallidos fallan porque las dos caras de corte no tenían el mismo ángulo, de modo que las líneas de cámbium se cruzaron en vez de correr juntas, y ese error lo evita una referencia física mucho mejor que una instrucción."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["grafting", "graft-clip", "scion", "rootstock", "cambium", "nursery", "horticulture", "agriculture", "hyperobject", "commons"]
+}

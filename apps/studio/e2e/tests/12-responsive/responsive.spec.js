@@ -27,7 +27,7 @@ async function goToStudioMobile(page, slug = 'test') {
   const activeTab = page.locator('[role="tab"][data-state="active"]')
   if (await activeTab.count() === 0) {
     const firstTab = page.locator('[role="tab"]:visible').first()
-    if (await firstTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await firstTab.isVisible({ timeout: 10000 }).catch(() => false)) {
       await firstTab.click()
       await expect(activeTab.first()).toBeVisible({ timeout: 10_000 }).catch(() => { })
     }
@@ -100,7 +100,7 @@ test.describe('Responsive Design', () => {
     await expect(tablist).toBeVisible({ timeout: 10000 })
     // Should have at least 2 mode tabs
     const tabs = tablist.locator('[role="tab"]')
-    await expect(tabs.first()).toBeVisible({ timeout: 3000 })
+    await expect(tabs.first()).toBeVisible({ timeout: 10000 })
     const count = await tabs.count()
     expect(count).toBeGreaterThanOrEqual(2)
   })
@@ -133,7 +133,7 @@ test.describe('Responsive Design', () => {
     await goToStudioMobile(page)
     // Open AI panel if the toggle button is visible
     const aiToggle = page.locator('button').filter({ hasText: /AI configurator/i }).first()
-    if (await aiToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await aiToggle.isVisible({ timeout: 10000 }).catch(() => false)) {
       await aiToggle.click()
       await page.waitForTimeout(300)
       // Check for dismiss backdrop
@@ -332,12 +332,12 @@ test.describe('Responsive Design', () => {
     await goToStudioMobile(page)
     const consoleToggle = page.getByTestId('main').getByLabel('Toggle console panel').first()
     const logArea = page.locator('[role="log"]').first()
-    if (await consoleToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await consoleToggle.isVisible({ timeout: 10000 }).catch(() => false)) {
       await expect(logArea).toBeHidden()
       await consoleToggle.click()
-      await expect(logArea).toBeVisible({ timeout: 3000 })
+      await expect(logArea).toBeVisible({ timeout: 10000 })
       await consoleToggle.click()
-      await expect(logArea).toBeHidden({ timeout: 3000 })
+      await expect(logArea).toBeHidden({ timeout: 10000 })
     } else {
       await expect(logArea).toBeHidden()
     }
@@ -386,10 +386,10 @@ test.describe('Landing Responsive', () => {
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
     await menuBtn.click()
     const menu = page.locator('#mobile-menu')
-    await expect(menu).toBeVisible({ timeout: 3000 })
+    await expect(menu).toBeVisible({ timeout: 10000 })
     // Press Escape to close
     await page.keyboard.press('Escape')
-    await expect(menu).toBeHidden({ timeout: 3000 })
+    await expect(menu).toBeHidden({ timeout: 10000 })
   })
 
   test('carousel canvas survives viewport resize', async ({ page }) => {

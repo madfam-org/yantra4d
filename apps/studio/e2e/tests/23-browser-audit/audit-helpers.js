@@ -133,7 +133,7 @@ export async function clickGenerateWithWarning(sidebar, page) {
   const renderAnywayBtn = page.locator('[role="alertdialog"] button', { hasText: /Render Anyway/i })
 
   // If dialog is already showing (from mode switch), click Render Anyway
-  if (await dialog.isVisible({ timeout: 3000 }).catch(() => false)) {
+  if (await dialog.isVisible({ timeout: 10000 }).catch(() => false)) {
     await renderAnywayBtn.click()
     await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
     return
@@ -144,7 +144,7 @@ export async function clickGenerateWithWarning(sidebar, page) {
     await sidebar.generateButton.click({ timeout: 5000 })
   } catch {
     // Dialog likely appeared during click attempt — dismiss it
-    if (await dialog.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await dialog.isVisible({ timeout: 10000 }).catch(() => false)) {
       await renderAnywayBtn.click()
       await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
       return

@@ -53,8 +53,23 @@ RENDER_WORKER_HEARTBEAT_TTL_SECONDS = int(os.environ.get(
 logger = logging.getLogger(__name__)
 
 STATIC_FOLDER = str(Config.STATIC_DIR)
-RENDER_STREAM_PART_TIMEOUT_SECONDS = 120
+
+# Per-part SSE deadline. Env-tunable, default raised 120 -> 180: cold
+# made-to-measure body lofts legitimately run 30-90s per part, and shared-runner
+# contention pushes multi-part cold renders uncomfortably close to the old 120s
+# figure. The subprocess ceiling RENDER_TIMEOUT_S (services/engine/render_engine.py,
+# default 300) still bounds the actual render, so this only widens the window in
+# which the stream is willing to wait for a legitimately slow part.
+RENDER_STREAM_PART_TIMEOUT_SECONDS = int(os.getenv('RENDER_STREAM_PART_TIMEOUT_SECONDS', '180'))
 RENDER_PART_WAIT_TIMEOUT_SECONDS = 120
+
+# When truthy, payload shapes that deviate from the documented contract
+# ({mode, parameters, parts, export_format?, project?}) are rejected with a 400
+# instead of being silently tolerated. Default off so legacy callers keep
+# working; flip on after fleet observation of the deprecation warnings below.
+def _strict_payload_enabled() -> bool:
+    """Read RENDER_STRICT_PAYLOAD at call time so tests/env changes take effect."""
+    return os.getenv('RENDER_STRICT_PAYLOAD', '').strip().lower() in ('1', 'true', 'yes', 'on')
 
 
 # ──────────────────────────────────────────────
@@ -67,6 +82,20 @@ class RenderPayloadError:
     def __init__(self, message: str, bad_name: str | None = None):
         self.message = message
         self.bad_name = bad_name
+
+
+def _request_origin() -> str:
+    """Best-effort description of the caller (route + remote addr) for deprecation logs.
+
+    Safe to call outside a Flask request context (unit tests, worker paths).
+    """
+    try:
+        from flask import has_request_context, request
+        if not has_request_context():
+            return "no-request-context"
+        return f"{request.method} {request.path} from {request.remote_addr}"
+    except Exception:
+        return "unknown"
 
 
 def resolve_render_context(data: dict):
@@ -90,7 +119,26 @@ def resolve_render_context(data: dict):
             logger.warning("Deprecated: 'scad_file' parameter used instead of 'mode'. Update client to use 'mode'.")
             mode_id = "legacy"
         else:
-            mode_id = manifest.modes[0]["id"]
+            # No 'mode' in the payload. The documented contract requires one; we
+            # silently fall through to modes[0] and return HTTP 200, which has
+            # masked client bugs (wrong geometry rendered, never surfaced).
+            fallback_mode = manifest.modes[0]["id"]
+            if _strict_payload_enabled():
+                return RenderPayloadError(
+                    "Missing required 'mode' in render payload. The documented "
+                    "contract is {mode, parameters, parts, export_format?, project?}. "
+                    f"Refusing to silently render the first manifest mode "
+                    f"('{fallback_mode}') under RENDER_STRICT_PAYLOAD."
+                )
+            logger.warning(
+                "Deprecated render payload: no 'mode' supplied; silently rendering "
+                "first manifest mode '%s'. project=%s origin=%s. "
+                "Send an explicit 'mode' — this will 400 once RENDER_STRICT_PAYLOAD is on.",
+                fallback_mode,
+                project_slug or "<default>",
+                _request_origin(),
+            )
+            mode_id = fallback_mode
             scad_filename = manifest.modes[0]["scad_file"]
         parts_map = manifest.get_parts_map()
         parts = parts_map.get(scad_filename, manifest.modes[0]["parts"])
@@ -123,7 +171,34 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
     if export_format not in ALLOWED_EXPORT_FORMATS:
         export_format = 'stl'
 
-    params = validate_params(data.get('parameters', data), project_slug or None)
+    # Documented contract nests render parameters under 'parameters'. A flattened
+    # payload (params spread at the top level) silently "works" but produces a
+    # different param_hash — and therefore a different cache key — than the same
+    # parameters sent nested, and loses fields only read from the nested form
+    # (e.g. target_material below). That divergence cost an 8-layer cross-service
+    # debug chain on 2026-08-22.
+    raw_params = data.get('parameters')
+    if raw_params is None:
+        if _strict_payload_enabled():
+            return RenderPayloadError(
+                "Missing required 'parameters' object in render payload. The "
+                "documented contract is {mode, parameters, parts, export_format?, "
+                "project?} with render parameters NESTED under 'parameters'. "
+                "Refusing the flattened top-level form under RENDER_STRICT_PAYLOAD."
+            )
+        logger.warning(
+            "Deprecated render payload: no 'parameters' key; treating the whole "
+            "request body as the parameter map. project=%s mode=%s origin=%s. "
+            "This yields a different param_hash (cache key) than the nested form "
+            "and drops 'target_material'. Nest parameters under 'parameters' — "
+            "this will 400 once RENDER_STRICT_PAYLOAD is on.",
+            project_slug or "<default>",
+            mode_id,
+            _request_origin(),
+        )
+        raw_params = data
+
+    params = validate_params(raw_params, project_slug or None)
 
     raw_hash = json.dumps({"s": scad_filename, "p": params}, sort_keys=True)
     param_hash = hashlib.sha256(raw_hash.encode()).hexdigest()[:10]
@@ -131,8 +206,9 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
     base_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
     stl_prefix = f"{base_prefix}{param_hash}_"
 
-    # Inject Material Hyperobject Compensations
-    target_mat = data.get('parameters', {}).get('target_material')
+    # Inject Material Hyperobject Compensations. Read from the resolved parameter
+    # container so a flattened legacy payload no longer silently loses this field.
+    target_mat = raw_params.get('target_material') if isinstance(raw_params, dict) else None
     if target_mat:
         _inject_material_compensations(params, target_mat)
 

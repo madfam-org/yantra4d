@@ -99,7 +99,11 @@ export async function fetchAssemblyGeometries(
   const hash = paramHash(params, geometryKeys) + (project ? '|' + project : '')
   if (cache.has(hash)) return cache.get(hash)!
 
-  const payload: Record<string, unknown> = { ...params, mode: 'assembly' }
+  // Documented /api/render contract: {mode, parameters, parts, export_format?, project?}
+  // — render parameters NESTED under 'parameters'. The previous flattened form
+  // ({ ...params, mode }) was silently tolerated by the server but produced a
+  // different param_hash (cache key) and dropped target_material.
+  const payload: Record<string, unknown> = { mode: 'assembly', parameters: params }
   if (project) payload.project = project
   const response = await apiFetch(`${API_BASE}/api/render`, {
     method: 'POST',

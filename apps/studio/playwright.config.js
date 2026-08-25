@@ -3,6 +3,11 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
   timeout: 60_000,
+  // Global floor for expect()/toBeVisible() auto-retry. Playwright's default is
+  // 5s; WebKit on the self-hosted ARC pods renders slower and tripped tight
+  // waits across shards (PR #41, #55). Individual specs no longer hard-code a
+  // tighter 3s override — they inherit this — so the floor is meaningful.
+  expect: { timeout: 10_000 },
   testDir: './e2e/tests',
   testIgnore: [],
   fullyParallel: true,

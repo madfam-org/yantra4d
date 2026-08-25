@@ -79,7 +79,7 @@ test.describe('Tablaco — Browser Audit', () => {
   test('adjusting size slider to 25 updates value', async ({ page, sidebar }) => {
     await goToRealProject(page, 'tablaco', 'Tablaco Studio')
     await sidebar.editSliderValue('size', 25)
-    await expect(sidebar.sliderValue('size')).toHaveText('25', { timeout: 3000 })
+    await expect(sidebar.sliderValue('size')).toHaveText('25', { timeout: 10000 })
   })
 
   test('toggling show_base checkbox works', async ({ page, sidebar }) => {
@@ -95,15 +95,15 @@ test.describe('Tablaco — Browser Audit', () => {
   test('applies Standard preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'tablaco', 'Tablaco Studio')
     await sidebar.applyPreset('Standard')
-    await expect(sidebar.sliderValue('size')).toHaveText('20', { timeout: 3000 })
-    await expect(sidebar.sliderValue('thick')).toHaveText('2.5', { timeout: 3000 })
+    await expect(sidebar.sliderValue('size')).toHaveText('20', { timeout: 10000 })
+    await expect(sidebar.sliderValue('thick')).toHaveText('2.5', { timeout: 10000 })
   })
 
   test('applies Mini preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'tablaco', 'Tablaco Studio')
     await sidebar.applyPreset('Mini')
-    await expect(sidebar.sliderValue('size')).toHaveText('5', { timeout: 3000 })
-    await expect(sidebar.sliderValue('thick')).toHaveText('0.8', { timeout: 3000 })
+    await expect(sidebar.sliderValue('size')).toHaveText('5', { timeout: 10000 })
+    await expect(sidebar.sliderValue('thick')).toHaveText('0.8', { timeout: 10000 })
   })
 
   test('visibility toggle reveals advanced controls', async ({ page, sidebar }) => {
@@ -115,8 +115,8 @@ test.describe('Tablaco — Browser Audit', () => {
       await page.waitForTimeout(500)
     }
     // Advanced visibility params should now be visible
-    await expect(sidebar.checkbox('show_wall_left')).toBeVisible({ timeout: 3000 })
-    await expect(sidebar.checkbox('show_mech_base_ring')).toBeVisible({ timeout: 3000 })
+    await expect(sidebar.checkbox('show_wall_left')).toBeVisible({ timeout: 10000 })
+    await expect(sidebar.checkbox('show_mech_base_ring')).toBeVisible({ timeout: 10000 })
   })
 
   test('letter_bottom text input accepts single character', async ({ page, sidebar }) => {
@@ -299,7 +299,7 @@ test.describe('Tablaco — Browser Audit', () => {
       await nextBtn.click()
       await page.waitForTimeout(300)
     }
-    await expect(page.locator('text=/Step 3|Paso 3/')).toBeVisible({ timeout: 3000 })
+    await expect(page.locator('text=/Step 3|Paso 3/')).toBeVisible({ timeout: 10000 })
   })
 
   // ── F. URL & Camera ─────────────────────────────────────────

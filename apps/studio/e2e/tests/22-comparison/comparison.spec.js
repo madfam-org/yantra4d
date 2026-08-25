@@ -32,13 +32,13 @@ test.describe('Comparison View', () => {
 
     // Click "Add current" button
     const addBtn = page.locator('button', { hasText: /Add current/ })
-    if (await addBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await addBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
       await addBtn.click()
       await page.waitForTimeout(300)
 
       // Should show at least one slot with a remove button
       const removeBtn = page.locator('button[aria-label="Remove slot"]')
-      await expect(removeBtn.first()).toBeVisible({ timeout: 3000 })
+      await expect(removeBtn.first()).toBeVisible({ timeout: 10000 })
     }
   })
 
@@ -51,13 +51,13 @@ test.describe('Comparison View', () => {
     await page.waitForTimeout(300)
 
     const addBtn = page.locator('button', { hasText: /Add current/ })
-    if (await addBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await addBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
       await addBtn.click()
       await page.waitForTimeout(300)
 
       // Remove the slot
       const removeBtn = page.locator('button[aria-label="Remove slot"]').first()
-      if (await removeBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await removeBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
         await removeBtn.click()
         await page.waitForTimeout(300)
 

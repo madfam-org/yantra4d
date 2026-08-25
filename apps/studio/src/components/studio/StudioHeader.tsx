@@ -73,8 +73,23 @@ export default function StudioHeader({
     }
   }, [])
 
+  /*
+   * Header sizing — do NOT reintroduce a fixed `h-*` here.
+   *
+   * `h-12`/`landscape:h-11` set the BORDER-box height (Tailwind preflight sets
+   * `box-sizing: border-box`), so `border-b` ate 1px of the content box: a 44px
+   * header had only 43px to lay children out in. The icon buttons carry
+   * `min-h-[44px]` for WCAG 2.5.8, so `items-center` split the 1px deficit
+   * evenly and every button came back at top:-0.5 / bottom:43.5 — half a pixel
+   * above the viewport. Firefox then refused the click outright (Playwright's
+   * scroll-into-view has nowhere to scroll a non-scrollable header to, so both
+   * click() and click({force:true}) time out).
+   *
+   * `min-h-*` lets the header grow to contain its children instead of clipping
+   * them, so the 44px targets stay 44px and still sit fully inside the header.
+   */
   return (
-    <header className="h-12 landscape:h-11 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
+    <header className="min-h-12 landscape:min-h-11 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
       <div className="flex items-center gap-3 min-w-0">
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-2 min-w-0">

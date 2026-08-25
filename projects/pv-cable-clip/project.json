@@ -1,0 +1,186 @@
+{
+  "project": {
+    "name": "PV Cable Clip",
+    "slug": "pv-cable-clip",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Cable management for photovoltaic strings. The channel bore lands on the real PV lead outside diameter series (4-6 mm2 double-insulated solar cable, ~5-7 mm), the same lead the published mc4-holder strain block expects, and the jaw lands on real anodised module-frame lip thicknesses. Dress leads along a panel edge, saddle a bundle to a rail, or pair the + and - leads of a string so they run together. Includes a frame-lip C-jaw, a screw-mount rail saddle and a twin figure-of-eight bundler.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Manejo de cable para cadenas fotovoltaicas. El barreno del canal coincide con la serie real de diámetros exteriores del cable solar (4-6 mm2 de doble aislamiento, ~5-7 mm), el mismo cable que espera el bloque aliviador del mc4-holder publicado, y la mordaza coincide con espesores reales del labio del marco anodizado. Acomoda cables al borde de un panel, sujeta un haz a un riel, o aparea los cables + y - de una cadena para que corran juntos. Incluye mordaza en C para labio de marco, silleta de riel atornillada y agrupador gemelo en ocho.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pv-cable-clip.webp",
+    "difficulty": "beginner",
+    "tags": ["pv", "solar", "cable", "clip", "cable-management", "electrical", "infrastructure", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "frame_clip",
+      "label": { "en": "Frame-Lip Clip", "es": "Clip de Labio de Marco" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["frame_clip"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "rail_clip",
+      "label": { "en": "Rail Saddle", "es": "Silleta de Riel" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["rail_clip"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "twin_bundle",
+      "label": { "en": "Twin Bundler", "es": "Agrupador Gemelo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["twin_bundle"],
+      "estimate": { "base_time": 5, "per_unit": 2, "per_part": 7 }
+    }
+  ],
+  "parts": [
+    { "id": "frame_clip", "label": { "en": "Frame-Lip Clip", "es": "Clip de Labio" }, "render_mode": 0, "color": "#1f2a3a" },
+    { "id": "rail_clip", "label": { "en": "Rail Saddle", "es": "Silleta de Riel" }, "render_mode": 0, "color": "#2b3849" },
+    { "id": "twin_bundle", "label": { "en": "Twin Bundler", "es": "Agrupador Gemelo" }, "render_mode": 0, "color": "#374658" }
+  ],
+  "parameter_groups": [
+    { "id": "cable", "label": { "en": "Cable", "es": "Cable" } },
+    { "id": "clip", "label": { "en": "Clip Body", "es": "Cuerpo del Clip" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "cable_dia", "type": "slider", "default": 6.5, "min": 3.0, "max": 12.0, "step": 0.5,
+      "group": "cable", "modes": ["frame_clip", "rail_clip", "twin_bundle"],
+      "label": { "en": "PV Lead Ø (mm)", "es": "Ø de Cable PV (mm)" },
+      "tooltip": { "en": "Solar cable diameter (4 mm2 ~6.0, 6 mm2 ~6.5-7.2)", "es": "Diámetro del cable solar (4 mm2 ~6.0, 6 mm2 ~6.5-7.2)" }
+    },
+    {
+      "id": "cable_count", "type": "slider", "default": 2, "min": 1, "max": 4, "step": 1,
+      "group": "cable", "modes": ["frame_clip", "rail_clip"],
+      "label": { "en": "Leads Carried", "es": "Cables Alojados" },
+      "tooltip": { "en": "How many leads the clip holds", "es": "Cuántos cables sujeta el clip" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "cable", "modes": ["frame_clip", "rail_clip", "twin_bundle"], "advanced": true,
+      "label": { "en": "Clearance (mm)", "es": "Holgura (mm)" },
+      "tooltip": { "en": "Gap per side around the cable and the frame lip", "es": "Espacio por lado alrededor del cable y del labio" }
+    },
+    {
+      "id": "mouth", "type": "slider", "default": 0.70, "min": 0.45, "max": 0.90, "step": 0.05,
+      "group": "cable", "modes": ["frame_clip", "rail_clip", "twin_bundle"], "advanced": true,
+      "label": { "en": "Snap Mouth (fraction of Ø)", "es": "Boca de Encaje (fracción del Ø)" },
+      "tooltip": { "en": "Channel opening as a fraction of bore Ø; lower grips harder", "es": "Abertura del canal como fracción del Ø; menor sujeta más fuerte" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.6, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "clip", "modes": ["frame_clip", "rail_clip", "twin_bundle"],
+      "label": { "en": "Clip Wall (mm)", "es": "Pared del Clip (mm)" },
+      "tooltip": { "en": "Wall around the channels and the jaw legs", "es": "Pared alrededor de los canales y las patas" }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 14.0, "min": 6.0, "max": 40.0, "step": 1.0,
+      "group": "clip", "modes": ["frame_clip", "rail_clip", "twin_bundle"],
+      "label": { "en": "Clip Length (mm)", "es": "Largo del Clip (mm)" },
+      "tooltip": { "en": "Length along the cable run", "es": "Largo a lo largo del cable" }
+    },
+    {
+      "id": "lip_t", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.1,
+      "group": "mount", "modes": ["frame_clip"],
+      "label": { "en": "Frame Lip Thickness (mm)", "es": "Espesor del Labio (mm)" },
+      "tooltip": { "en": "Module frame lip the jaw hooks over (1.5-3.0 typical)", "es": "Labio del marco que abraza la mordaza (1.5-3.0 típico)" }
+    },
+    {
+      "id": "jaw_depth", "type": "slider", "default": 12.0, "min": 5.0, "max": 30.0, "step": 1.0,
+      "group": "mount", "modes": ["frame_clip"],
+      "label": { "en": "Jaw Reach (mm)", "es": "Alcance de la Mordaza (mm)" },
+      "tooltip": { "en": "How far the jaw reaches over the frame lip", "es": "Qué tanto abraza la mordaza el labio del marco" }
+    },
+    {
+      "id": "screw_dia", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "mount", "modes": ["rail_clip"],
+      "label": { "en": "Mount Screw Ø (mm)", "es": "Ø de Tornillo (mm)" },
+      "tooltip": { "en": "Mounting screw clearance diameter", "es": "Diámetro de holgura del tornillo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "panel_edge_pair", "mode": "frame_clip",
+      "label": { "en": "Panel Edge, 2 Leads", "es": "Borde de Panel, 2 Cables" },
+      "values": { "cable_dia": 6.5, "cable_count": 2, "lip_t": 2.0 }
+    },
+    {
+      "id": "rail_quad", "mode": "rail_clip",
+      "label": { "en": "Rail Saddle, 4 Leads", "es": "Silleta de Riel, 4 Cables" },
+      "values": { "cable_dia": 6.5, "cable_count": 4 }
+    },
+    {
+      "id": "string_pair", "mode": "twin_bundle",
+      "label": { "en": "String +/- Pair", "es": "Par +/- de Cadena" },
+      "values": { "cable_dia": 6.5, "mouth": 0.65 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    },
+    {
+      "expression": "mouth <= 0.9",
+      "severity": "warning",
+      "message": { "en": "A mouth above 0.9 barely retains the cable", "es": "Una boca mayor a 0.9 apenas retiene el cable" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [70, 70, 60] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -120, 0] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6, "per_unit": 2, "per_part": 8,
+    "fn_factor": 32, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "pv_lead_channel",
+        "label": { "en": "PV Lead Channel", "es": "Canal de Cable PV" },
+        "geometry_type": "socket",
+        "standard": "H1Z2Z2-K 4-6 mm2 solar lead OD series",
+        "parameters": ["cable_dia", "clearance", "mouth"],
+        "compatible_with": ["mc4-holder", "conduit-clip", "cable-gland"]
+      },
+      {
+        "id": "module_frame_lip",
+        "label": { "en": "Module Frame Lip Jaw", "es": "Mordaza de Labio de Marco" },
+        "geometry_type": "profile",
+        "standard": "anodised PV module frame lip",
+        "parameters": ["lip_t", "jaw_depth", "clearance", "wall"],
+        "compatible_with": ["solar-mount"]
+      },
+      {
+        "id": "saddle_bolt_pattern",
+        "label": { "en": "Saddle Screw Mount", "es": "Montaje Atornillado de Silleta" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["screw_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "PV leads left hanging under an array chafe against the module frame, pool water at the connector, and enclose a large loop area that raises induced-surge voltage in a lightning event. Zip ties are the usual field fix and they perish in UV within a couple of seasons, dropping the cable back onto the roof. Printed clips sized to the real lead and the real frame lip dress the run properly, pair the string conductors to shrink loop area, and can be reprinted on site from UV-stable filament. Better cable support is one of the cheapest ways to extend the service life of an off-grid or rooftop array and keep it inspectable.",
+      "es": "Los cables PV colgando bajo un arreglo se rozan contra el marco del módulo, acumulan agua en el conector y encierran un área de lazo grande que eleva el voltaje inducido por sobretensión en un evento de rayo. Las cinchos de plástico son el arreglo usual en campo y se degradan por UV en un par de temporadas, dejando caer el cable al techo. Los clips impresos al cable real y al labio real del marco acomodan el tendido correctamente, aparean los conductores de la cadena para reducir el área de lazo, y se pueden reimprimir en sitio con filamento estable a UV. Mejor soporte de cable es de las formas más baratas de alargar la vida de un arreglo fuera de red o de techo y mantenerlo inspeccionable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pv", "solar", "cable", "clip", "cable-management", "electrical", "infrastructure", "hyperobject", "commons"]
+}

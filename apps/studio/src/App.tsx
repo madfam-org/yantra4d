@@ -379,7 +379,7 @@ function App() {
               aria-hidden="true"
             />
           )}
-          <div className="fixed right-0 top-12 landscape:top-10 bottom-0 w-full sm:w-80 z-40 border-l border-border shadow-lg bg-background max-h-[calc(100dvh-3rem)] landscape:max-h-[calc(100dvh-2.5rem)] pb-safe pr-safe">
+          <div className="fixed right-0 top-12 phone-landscape:top-10 bottom-0 w-full sm:w-80 z-40 border-l border-border shadow-lg bg-background max-h-[calc(100dvh-3rem)] phone-landscape:max-h-[calc(100dvh-2.5rem)] pb-safe pr-safe">
             <ErrorBoundary t={t}>
               <Suspense fallback={<div className="flex items-center justify-center h-full text-sm text-muted-foreground">Loading AI...</div>}>
                 <AiChatPanel

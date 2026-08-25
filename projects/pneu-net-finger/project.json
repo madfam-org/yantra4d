@@ -1,0 +1,217 @@
+{
+  "project": {
+    "name": "PneuNet Bending Finger",
+    "slug": "pneu-net-finger",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The canonical soft bending actuator. A row of thin-walled chambers sharing one supply channel sits on a thick, inextensible strain-limiting layer; pressurise the network and the chamber walls push against each other while the bottom refuses to stretch, so the whole finger curls into a hook. No joints, no tendons. Chamber pitch is the published bend parameter — closer chambers curl tighter at the same pressure.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El actuador flexor blando canónico. Una fila de cámaras de pared delgada que comparten un canal de alimentación se asienta sobre una capa limitadora de deformación gruesa e inextensible; al presurizar la red, las paredes de las cámaras se empujan entre sí mientras la base se niega a estirarse, y el dedo entero se enrosca en gancho. Sin articulaciones ni tendones. El paso de cámara es el parámetro de curvatura publicado — cámaras más cercanas se enroscan más a la misma presión.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pneu-net-finger.webp",
+    "difficulty": "intermediate",
+    "tags": ["pneunet", "finger", "bending", "actuator", "gripper", "soft-robotics", "tpu", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "finger",
+      "label": { "en": "Finger", "es": "Dedo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["finger"],
+      "estimate": { "base_time": 13, "per_unit": 3, "per_part": 15 }
+    },
+    {
+      "id": "finger_pair",
+      "label": { "en": "Finger Pair", "es": "Par de Dedos" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["finger_pair"],
+      "estimate": { "base_time": 22, "per_unit": 5, "per_part": 26 }
+    },
+    {
+      "id": "root_flange",
+      "label": { "en": "Root Flange", "es": "Brida de Raíz" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["root_flange"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "finger", "label": { "en": "Finger", "es": "Dedo" }, "render_mode": 0, "color": "#7c3aed" },
+    { "id": "finger_pair", "label": { "en": "Finger Pair", "es": "Par de Dedos" }, "render_mode": 0, "color": "#8b5cf6" },
+    { "id": "root_flange", "label": { "en": "Root Flange", "es": "Brida de Raíz" }, "render_mode": 0, "color": "#a78bfa" }
+  ],
+  "parameter_groups": [
+    { "id": "form", "label": { "en": "Finger Form", "es": "Forma del Dedo" } },
+    { "id": "network", "label": { "en": "Chamber Network", "es": "Red de Cámaras" } },
+    { "id": "inlet", "label": { "en": "Air Inlet", "es": "Entrada de Aire" } },
+    { "id": "root", "label": { "en": "Root", "es": "Raíz" } }
+  ],
+  "parameters": [
+    {
+      "id": "finger_len", "type": "slider", "default": 90.0, "min": 25.0, "max": 220.0, "step": 1.0,
+      "group": "form", "modes": ["finger", "finger_pair"],
+      "label": { "en": "Active Length (mm)", "es": "Longitud Activa (mm)" },
+      "tooltip": { "en": "Length of the chamber network. With chamber pitch, this sets how many chambers there are and therefore the total curl", "es": "Longitud de la red de cámaras. Junto con el paso de cámara define cuántas cámaras hay y por tanto el enroscado total" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "finger_w", "type": "slider", "default": 20.0, "min": 8.0, "max": 60.0, "step": 0.5,
+      "group": "form", "modes": ["finger", "finger_pair", "root_flange"],
+      "label": { "en": "Finger Width (mm)", "es": "Ancho del Dedo (mm)" },
+      "tooltip": { "en": "Width across the finger. Wider fingers make more force and grip flatter objects", "es": "Ancho transversal del dedo. Dedos más anchos hacen más fuerza y agarran objetos más planos" }
+    },
+    {
+      "id": "chamber_h", "type": "slider", "default": 14.0, "min": 5.0, "max": 40.0, "step": 0.5,
+      "group": "network", "modes": ["finger", "finger_pair"],
+      "label": { "en": "Chamber Height (mm)", "es": "Altura de Cámara (mm)" },
+      "tooltip": { "en": "Height of the chamber block above the strain layer. Taller chambers give more bend moment", "es": "Altura del bloque de cámaras sobre la capa limitadora. Cámaras más altas dan más momento de flexión" }
+    },
+    {
+      "id": "chamber_pitch", "type": "slider", "default": 8.0, "min": 3.0, "max": 25.0, "step": 0.2,
+      "group": "network", "modes": ["finger", "finger_pair"],
+      "label": { "en": "Chamber Pitch (mm)", "es": "Paso de Cámara (mm)" },
+      "tooltip": { "en": "Centre spacing of chambers — the BEND parameter. Smaller pitch packs more chambers into the same length and curls tighter", "es": "Separación entre centros de cámara — el parámetro de CURVATURA. Un paso menor mete más cámaras en la misma longitud y enrosca más" }
+    },
+    {
+      "id": "chamber_gap", "type": "slider", "default": 1.4, "min": 0.6, "max": 8.0, "step": 0.1,
+      "group": "network", "modes": ["finger", "finger_pair"],
+      "label": { "en": "Divider Wall (mm)", "es": "Pared Divisoria (mm)" },
+      "tooltip": { "en": "Material between adjacent chambers — the walls that push each other apart", "es": "Material entre cámaras adyacentes — las paredes que se empujan entre sí" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.4, "min": 0.6, "max": 5.0, "step": 0.1,
+      "group": "network", "modes": ["finger", "finger_pair"],
+      "label": { "en": "Chamber Wall (mm)", "es": "Pared de Cámara (mm)" },
+      "tooltip": { "en": "Side and roof wall of each chamber. Thinner walls balloon more but burst sooner", "es": "Pared lateral y superior de cada cámara. Paredes delgadas se inflan más pero revientan antes" }
+    },
+    {
+      "id": "strain_th", "type": "slider", "default": 3.0, "min": 1.2, "max": 10.0, "step": 0.1,
+      "group": "network", "modes": ["finger", "finger_pair", "root_flange"],
+      "label": { "en": "Strain Layer (mm)", "es": "Capa Limitadora (mm)" },
+      "tooltip": { "en": "The inextensible bottom layer. It must NOT stretch — that asymmetry is what makes the finger curl instead of just inflating", "es": "La capa inferior inextensible. NO debe estirarse — esa asimetría es lo que hace que el dedo se enrosque en vez de solo inflarse" }
+    },
+    {
+      "id": "channel_w", "type": "slider", "default": 3.0, "min": 1.0, "max": 12.0, "step": 0.1,
+      "group": "inlet", "modes": ["finger", "finger_pair"],
+      "label": { "en": "Supply Channel (mm)", "es": "Canal de Alimentación (mm)" },
+      "tooltip": { "en": "Width of the channel that links every chamber to the inlet", "es": "Ancho del canal que une cada cámara con la entrada" }
+    },
+    {
+      "id": "tube_id", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "inlet", "modes": ["finger", "finger_pair"],
+      "label": { "en": "Tubing Inner Diameter (mm)", "es": "Diámetro Interior de Manguera (mm)" },
+      "tooltip": { "en": "The shared barb series — match this to the pneumatic-barb-port and manifold feeding it", "es": "La serie de espiga compartida — iguala este valor al del puerto de espiga y del colector que lo alimentan" }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 1.8, "min": 0.8, "max": 8.0, "step": 0.1,
+      "group": "inlet", "modes": ["finger", "finger_pair"],
+      "label": { "en": "Air Passage (mm)", "es": "Paso de Aire (mm)" },
+      "tooltip": { "en": "Inlet bore. Auto-clamped so it never breaches the channel walls", "es": "Perforación de entrada. Se limita automáticamente para no romper las paredes del canal" }
+    },
+    {
+      "id": "root_len", "type": "slider", "default": 16.0, "min": 6.0, "max": 60.0, "step": 0.5,
+      "group": "root", "modes": ["finger", "finger_pair", "root_flange"],
+      "label": { "en": "Root Length (mm)", "es": "Longitud de Raíz (mm)" },
+      "tooltip": { "en": "Solid, chamber-free section that carries the bolt pattern", "es": "Sección sólida sin cámaras que lleva el patrón de tornillos" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 3.4, "min": 1.5, "max": 8.0, "step": 0.1,
+      "group": "root", "modes": ["finger", "finger_pair", "root_flange"],
+      "label": { "en": "Bolt Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Root bolt hole diameter (3.4 mm = M3 clearance). Shared with soft-gripper-pad and tool-gripper", "es": "Diámetro del barreno de raíz (3.4 mm = holgura M3). Compartido con soft-gripper-pad y tool-gripper" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_finger", "mode": "finger",
+      "label": { "en": "Standard Finger", "es": "Dedo Estándar" },
+      "values": { "finger_len": 90, "finger_w": 20, "chamber_pitch": 8, "chamber_h": 14 }
+    },
+    {
+      "id": "tight_curl", "mode": "finger",
+      "label": { "en": "Tight Curl (5 mm pitch)", "es": "Enroscado Cerrado (paso 5 mm)" },
+      "values": { "finger_len": 90, "chamber_pitch": 5, "chamber_gap": 1.0, "wall": 1.2 }
+    },
+    {
+      "id": "wide_grip", "mode": "finger",
+      "label": { "en": "Wide Flat Grip", "es": "Agarre Ancho y Plano" },
+      "values": { "finger_w": 34, "chamber_h": 11, "chamber_pitch": 10, "strain_th": 3.5 }
+    },
+    {
+      "id": "minimal_gripper", "mode": "finger_pair",
+      "label": { "en": "Minimal Two-Jaw Gripper", "es": "Pinza Mínima de Dos Mordazas" },
+      "values": { "finger_len": 70, "finger_w": 18, "chamber_pitch": 7 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "chamber_gap < chamber_pitch",
+      "severity": "error",
+      "message": { "en": "The divider wall must be narrower than the chamber pitch or there is no chamber left", "es": "La pared divisoria debe ser más angosta que el paso de cámara o no queda cámara" }
+    },
+    {
+      "expression": "wall < chamber_h",
+      "severity": "error",
+      "message": { "en": "Chamber wall must be thinner than the chamber height", "es": "La pared de cámara debe ser más delgada que la altura de cámara" }
+    },
+    {
+      "expression": "strain_th >= wall * 1.5",
+      "severity": "warning",
+      "message": { "en": "The strain layer should be clearly thicker than the chamber wall, or the finger inflates instead of curling", "es": "La capa limitadora debe ser claramente más gruesa que la pared de cámara, o el dedo se infla en vez de enroscarse" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 90, 80] },
+    { "id": "side", "label": { "en": "Side", "es": "Lateral" }, "position": [60, -180, 20] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [55, 0, 170] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 13, "per_unit": 3, "per_part": 15,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "soft-robotics",
+    "cdg_interfaces": [
+      {
+        "id": "chamber_pitch_profile",
+        "label": { "en": "Chamber Pitch Bend Profile", "es": "Perfil de Curvatura por Paso de Cámara" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["chamber_pitch", "chamber_gap", "chamber_h", "finger_len", "strain_th"]
+      },
+      {
+        "id": "root_bolt_pattern",
+        "label": { "en": "Root Bolt Pattern", "es": "Patrón de Tornillos de Raíz" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["root_len", "finger_w", "bolt_dia"],
+        "compatible_with": ["soft-gripper-pad", "tool-gripper"]
+      },
+      {
+        "id": "pneumatic_barb_series",
+        "label": { "en": "Pneumatic Barb Series", "es": "Serie de Espiga Neumática" },
+        "geometry_type": "profile",
+        "standard": "internal (2 / 3 / 4 mm tube ID)",
+        "parameters": ["tube_id", "bore"],
+        "compatible_with": ["pneumatic-barb-port", "vacuum-manifold-block"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "PneuNet fingers are the reason soft grippers can pick a ripe tomato, a petri dish, or a human hand without a force sensor — the compliance is in the geometry, not in a control loop. Every published PneuNet is a silicone mould recipe, which locks the design behind a mould-making shop. A printable PneuNet whose bend is a slider, not a remould, puts a compliant gripper inside the reach of a classroom, a rehab clinic, or a smallholder packing shed.",
+      "es": "Los dedos PneuNet son la razón por la que una pinza blanda puede levantar un jitomate maduro, una caja de Petri o una mano humana sin sensor de fuerza — la conformidad está en la geometría, no en un lazo de control. Cada PneuNet publicado es una receta de molde de silicón, lo que encierra el diseño tras un taller de moldeo. Un PneuNet imprimible cuya curvatura es un deslizador, no un remoldeo, pone una pinza conforme al alcance de un aula, una clínica de rehabilitación o una bodega de empaque pequeña."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pneunet", "finger", "bending", "actuator", "gripper", "soft-robotics", "hyperobject", "commons"]
+}

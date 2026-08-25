@@ -1,0 +1,211 @@
+{
+  "project": {
+    "name": "IV Pole Clamp",
+    "slug": "iv-pole-clamp",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The mounting spine of the ward. A split clamp that grips a round IV pole (19-25 mm is the usual range) and presents a DOVETAIL accessory face; anything that speaks the same dovetail — starting with drip-chamber-holder — slides on and locks without a second tool. The pole-diameter series is published as a CDG socket so a clamp and an accessory generated at the same pole diameter are guaranteed to share a pole, and the dovetail is published separately so accessories can be authored against the face without knowing the pole size at all.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La columna de montaje de la sala. Una abrazadera partida que sujeta un portasueros redondo (19-25 mm es el rango habitual) y presenta una cara de accesorios tipo COLA DE MILANO; cualquier pieza que hable la misma cola de milano — empezando por drip-chamber-holder — se desliza y queda fija sin otra herramienta. La serie de diametros de tubo se publica como casquillo CDG, de modo que una abrazadera y un accesorio generados con el mismo diametro comparten el mismo poste, y la cola de milano se publica aparte para que los accesorios se disenen contra la cara sin conocer el diametro.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/iv-pole-clamp.webp",
+    "difficulty": "intermediate",
+    "tags": ["iv-pole", "clamp", "dovetail", "ward", "mount", "medical", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "dovetail_clamp",
+      "label": { "en": "Dovetail Clamp", "es": "Abrazadera con Cola de Milano" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dovetail_clamp"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "hook_clamp",
+      "label": { "en": "Bag-Hook Clamp", "es": "Abrazadera con Gancho" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hook_clamp"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 15 }
+    },
+    {
+      "id": "dovetail_shoe",
+      "label": { "en": "Dovetail Shoe", "es": "Zapata de Cola de Milano" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dovetail_shoe"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 7 }
+    }
+  ],
+  "parts": [
+    { "id": "dovetail_clamp", "label": { "en": "Dovetail Clamp", "es": "Abrazadera con Cola de Milano" }, "render_mode": 0, "color": "#4a7f9b" },
+    { "id": "hook_clamp", "label": { "en": "Bag-Hook Clamp", "es": "Abrazadera con Gancho" }, "render_mode": 0, "color": "#376376" },
+    { "id": "dovetail_shoe", "label": { "en": "Dovetail Shoe", "es": "Zapata de Cola de Milano" }, "render_mode": 0, "color": "#6a9db6" }
+  ],
+  "parameter_groups": [
+    { "id": "pole", "label": { "en": "Pole Fit", "es": "Ajuste al Poste" } },
+    { "id": "pinch", "label": { "en": "Pinch Bolt", "es": "Tornillo de Apriete" } },
+    { "id": "accessory", "label": { "en": "Accessory Face", "es": "Cara de Accesorios" } }
+  ],
+  "parameters": [
+    {
+      "id": "pole_dia", "type": "slider", "default": 22.0, "min": 10.0, "max": 60.0, "step": 0.5,
+      "group": "pole", "modes": ["dovetail_clamp", "hook_clamp"],
+      "label": { "en": "Pole Diameter (mm)", "es": "Diametro del Poste (mm)" },
+      "tooltip": { "en": "Outer diameter of the IV pole — 19-25 mm covers most ward poles", "es": "Diametro exterior del portasueros — 19-25 mm cubre la mayoria de los postes de sala" },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "grip_fit", "type": "slider", "default": 0.3, "min": 0.0, "max": 2.0, "step": 0.05,
+      "group": "pole", "modes": ["dovetail_clamp", "hook_clamp"],
+      "label": { "en": "Bore Clearance (mm)", "es": "Holgura del Barreno (mm)" },
+      "tooltip": { "en": "Per-side gap over the pole before the bolt is pinched", "es": "Holgura por lado sobre el poste antes de apretar el tornillo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 6.0, "min": 2.5, "max": 20.0, "step": 0.2,
+      "group": "pole", "modes": ["dovetail_clamp", "hook_clamp", "dovetail_shoe"],
+      "label": { "en": "Ring Wall (mm)", "es": "Pared del Anillo (mm)" },
+      "tooltip": { "en": "Thickness of the clamp ring — this carries the whole load", "es": "Grosor del anillo de la abrazadera — soporta toda la carga" }
+    },
+    {
+      "id": "clamp_h", "type": "slider", "default": 26.0, "min": 8.0, "max": 90.0, "step": 0.5,
+      "group": "pole", "modes": ["dovetail_clamp", "hook_clamp", "dovetail_shoe"],
+      "label": { "en": "Clamp Height (mm)", "es": "Alto de la Abrazadera (mm)" },
+      "tooltip": { "en": "Height along the pole — taller resists tipping under an offset load", "es": "Alto a lo largo del poste — mas alto resiste el vuelco con carga desplazada" },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "kerf", "type": "slider", "default": 2.2, "min": 0.8, "max": 10.0, "step": 0.1,
+      "group": "pinch", "modes": ["dovetail_clamp", "hook_clamp"],
+      "label": { "en": "Split Kerf (mm)", "es": "Ranura de Corte (mm)" },
+      "tooltip": { "en": "Width of the split that lets the ring close — auto-clamped narrower than the wall so the ring can never be severed", "es": "Ancho de la ranura que permite cerrar el anillo — se limita a menos que la pared para que el anillo nunca se corte" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 5.3, "min": 2.0, "max": 12.0, "step": 0.1,
+      "group": "pinch", "modes": ["dovetail_clamp", "hook_clamp"],
+      "label": { "en": "Pinch Bolt Dia (mm)", "es": "Diametro del Tornillo (mm)" },
+      "tooltip": { "en": "Clearance for the pinch bolt (5.3 = M5)", "es": "Holgura para el tornillo de apriete (5.3 = M5)" }
+    },
+    {
+      "id": "nut_af", "type": "slider", "default": 8.1, "min": 3.0, "max": 22.0, "step": 0.1,
+      "group": "pinch", "modes": ["dovetail_clamp", "hook_clamp"], "advanced": true,
+      "label": { "en": "Nut Across-Flats (mm)", "es": "Entre Caras de la Tuerca (mm)" },
+      "tooltip": { "en": "Captive nut pocket, across flats (8.1 = M5 nut)", "es": "Alojamiento de tuerca cautiva, entre caras (8.1 = tuerca M5)" }
+    },
+    {
+      "id": "dove_w", "type": "slider", "default": 18.0, "min": 6.0, "max": 80.0, "step": 0.5,
+      "group": "accessory", "modes": ["dovetail_clamp", "dovetail_shoe"],
+      "label": { "en": "Dovetail Width (mm)", "es": "Ancho de Cola de Milano (mm)" },
+      "tooltip": { "en": "Width at the widest point — the published accessory interface; keep it equal on the clamp and the accessory", "es": "Ancho en el punto mas ancho — la interfaz de accesorios publicada; mantenlo igual en la abrazadera y el accesorio" }
+    },
+    {
+      "id": "dove_h", "type": "slider", "default": 8.0, "min": 2.0, "max": 40.0, "step": 0.2,
+      "group": "accessory", "modes": ["dovetail_clamp", "dovetail_shoe"],
+      "label": { "en": "Dovetail Depth (mm)", "es": "Profundidad de Cola de Milano (mm)" },
+      "tooltip": { "en": "How far the dovetail projects from the back face", "es": "Cuanto sobresale la cola de milano de la cara trasera" }
+    },
+    {
+      "id": "dove_angle", "type": "slider", "default": 60.0, "min": 40.0, "max": 80.0, "step": 1,
+      "group": "accessory", "modes": ["dovetail_clamp", "dovetail_shoe"], "advanced": true,
+      "label": { "en": "Dovetail Angle (deg)", "es": "Angulo de Cola de Milano (grados)" },
+      "tooltip": { "en": "Flank angle — shallower angles lock harder but are fussier to print", "es": "Angulo del flanco — angulos menores fijan mas pero son mas dificiles de imprimir" }
+    },
+    {
+      "id": "hook_len", "type": "slider", "default": 26.0, "min": 8.0, "max": 90.0, "step": 0.5,
+      "group": "accessory", "modes": ["hook_clamp"],
+      "label": { "en": "Hook Reach (mm)", "es": "Alcance del Gancho (mm)" },
+      "tooltip": { "en": "How far the bag hook reaches out from the ring", "es": "Cuanto se extiende el gancho desde el anillo" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_22mm", "mode": "dovetail_clamp",
+      "label": { "en": "Standard 22 mm Pole", "es": "Poste Estandar 22 mm" },
+      "values": { "pole_dia": 22, "wall": 6, "clamp_h": 26, "dove_w": 18, "dove_h": 8 }
+    },
+    {
+      "id": "slim_19mm", "mode": "dovetail_clamp",
+      "label": { "en": "Slim 19 mm Pole", "es": "Poste Delgado 19 mm" },
+      "values": { "pole_dia": 19, "wall": 5.5, "clamp_h": 24, "dove_w": 16 }
+    },
+    {
+      "id": "bag_hook_25mm", "mode": "hook_clamp",
+      "label": { "en": "Bag Hook (25 mm)", "es": "Gancho para Bolsa (25 mm)" },
+      "values": { "pole_dia": 25, "wall": 6.5, "clamp_h": 30, "hook_len": 30 }
+    },
+    {
+      "id": "accessory_shoe", "mode": "dovetail_shoe",
+      "label": { "en": "Accessory Shoe Blank", "es": "Zapata de Accesorio en Blanco" },
+      "values": { "dove_w": 18, "dove_h": 8, "dove_angle": 60, "clamp_h": 26 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 4.0",
+      "severity": "warning",
+      "message": { "en": "A thin ring will crack when the pinch bolt is tightened", "es": "Un anillo delgado se agrieta al apretar el tornillo" }
+    },
+    {
+      "expression": "kerf < wall",
+      "severity": "warning",
+      "message": { "en": "A kerf as wide as the wall leaves nothing to clamp with", "es": "Una ranura tan ancha como la pared no deja material para apretar" }
+    },
+    {
+      "expression": "clamp_h >= 18",
+      "severity": "warning",
+      "message": { "en": "A short clamp tips on the pole under an offset load", "es": "Una abrazadera corta se inclina en el poste con carga desplazada" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isometrico" }, "position": [70, 70, 60] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 15, 120] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [120, 0, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 13, "per_unit": 4, "per_part": 14,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "pole_diameter_series",
+        "label": { "en": "IV Pole Diameter Series", "es": "Serie de Diametros de Portasueros" },
+        "geometry_type": "socket",
+        "standard": "internal (19 / 22 / 25 mm ward poles)",
+        "parameters": ["pole_dia", "grip_fit", "wall", "clamp_h"],
+        "compatible_with": ["drip-chamber-holder"]
+      },
+      {
+        "id": "accessory_dovetail",
+        "label": { "en": "Accessory Dovetail Face", "es": "Cara de Accesorios Cola de Milano" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["dove_w", "dove_h", "dove_angle"],
+        "compatible_with": ["drip-chamber-holder", "rail-mount"]
+      },
+      {
+        "id": "pinch_bolt_pattern",
+        "label": { "en": "Pinch Bolt & Captive Nut", "es": "Tornillo de Apriete y Tuerca Cautiva" },
+        "geometry_type": "bolt_pattern",
+        "standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+        "parameters": ["bolt_dia", "nut_af", "kerf"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Ward equipment mounting is a permanent low-grade improvisation: tape, gauze ties, and bent coat hangers holding things onto IV poles because the manufacturer's bracket is proprietary, discontinued, or costs more than the item it holds. Publishing the pole-diameter series and the dovetail face as separate interfaces means a clinic can print one clamp per pole and then any number of accessories against a face whose geometry never changes — the accessory author never has to know the pole size. It is a printed convenience mount, not a certified device: nothing whose fall would injure a patient belongs on it.",
+      "es": "El montaje de equipo en sala es una improvisacion cronica: cinta, ataduras de gasa y ganchos doblados sosteniendo cosas en los portasueros porque el soporte del fabricante es propietario, esta descontinuado o cuesta mas que lo que sostiene. Publicar la serie de diametros y la cara de cola de milano como interfaces separadas permite a una clinica imprimir una abrazadera por poste y luego cualquier cantidad de accesorios contra una cara cuya geometria no cambia — quien disena el accesorio nunca necesita saber el diametro del poste. Es un montaje impreso de conveniencia, no un dispositivo certificado: nada cuya caida pueda lesionar a un paciente debe colgarse de el."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["iv-pole", "clamp", "dovetail", "ward", "mount", "medical", "hyperobject", "commons", "cdg"]
+}

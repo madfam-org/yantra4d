@@ -66,13 +66,25 @@ Two house lessons are load-bearing in this geometry:
   small radii a garment frog uses, swept arcs degenerate outright ("Arc radius is not
   large enough").
 
-The loop's mouth is deliberately narrower than the knot is wide and stops short of the
-ring centre, so the two horns it leaves stay joined through the ring's far arc. The sew
-tail starts *inside* the ring's solid material (at the far arc, which the mouth never
-touches) and runs back past both horns, so one strip fuses the C into a single
-watertight body regardless of how wide the mouth is cut. Cutting through the centre, or
-starting the tail at the near rim, severs the part into two bodies — which is how this
-part first rendered.
+The loop's mouth is bounded on **both** sides, and both bounds were found by rendering
+the parameter extremes rather than by inspection. Cut too wide, it severs the ring into
+two arcs. Cut too close to the bore diameter, its side walls land tangent to the ring's
+own inner wall and shave a zero-thickness sliver that opens the mesh. Holding the mouth
+to a fraction of the *bore* (not of the knot) keeps a real wall on each horn everywhere
+in the envelope.
+
+The sew tail starts *inside* the ring's solid material — at the far arc, which the
+mouth never touches — and runs back past both horns, so one strip fuses the C into a
+single watertight body regardless of how wide the mouth is cut. Starting it at the near
+rim instead leaves the horns joined only through the arc and the tail bridging nothing,
+which is how this part first rendered as two bodies.
+
+Two more extremes-only failures shaped the clamp block. The knot's neck stem must be
+strictly narrower than the ball's flat bottom cap (`CAP_FRAC`, shared by both builders
+so they cannot drift apart) — a wider neck exits through the loft's base rim and meets
+the flank tangentially. And `tail_w` is capped against the **final** `loop_id` and
+`ring_w`, which is why that clamp sits last: `loop_id` is adjusted twice further up, and
+capping against the earlier value lets a max-width tail outgrow the ring it mounts.
 
 In `pair` mode the two halves are joined by a thin sprue at their tail ends, the way a
 printed findings card holds its pieces until they are cut apart: the part is one

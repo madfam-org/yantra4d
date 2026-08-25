@@ -2,16 +2,16 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 465,
-    "with_cdg_interfaces": 451,
-    "with_commons_license": 465,
+    "cartridges": 466,
+    "with_cdg_interfaces": 452,
+    "with_commons_license": 466,
     "dual_engine": 22
   },
   "domains": {
     "household": 124,
     "industrial": 105,
     "commercial": 75,
-    "wearable": 70,
+    "wearable": 71,
     "medical": 37,
     "infrastructure": 26,
     "hybrid": 14,
@@ -12221,6 +12221,79 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/fridge-dispenser"
+      }
+    },
+    {
+      "slug": "frog-closure",
+      "name": "Frog Closure 盤扣",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "span",
+        "knots",
+        "knot_dia",
+        "loop_id",
+        "gap",
+        "tail_w",
+        "tail_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The pánkòu is the defining fastener of a clothing tradition that Western pattern libraries do not model, and the skill of knotting one by hand is thinning. A printable frog turns it into an open, made-to-measure finding: a maker who cannot hand-knot a ball can still close a changpao, a qipao or a magua correctly, sized to the garment rather than to whatever a shop happened to stock. Sized by span it is simultaneously a Fashion Cabinet notion and a Yantra4D solid, keeping the heritage lane buildable by everyone.",
+        "es": "El pánkòu es el cierre que define una tradición de vestir que las bibliotecas de patrones occidentales no modelan, y el oficio de anudarlo a mano se está perdiendo. Un alamar imprimible lo convierte en un herraje abierto y a la medida: quien no sabe anudar una bola a mano puede cerrar correctamente un changpao, un qipao o un magua, dimensionado a la prenda y no a lo que hubiera en la tienda. Dimensionado por el vano es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D, manteniendo la vía del patrimonio construible por todas las personas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "sew_tail",
+          "label": "Sewn Tail Edge",
+          "geometry_type": "flange",
+          "standard": "internal",
+          "parameters": [
+            "span",
+            "tail_w",
+            "tail_t"
+          ]
+        },
+        {
+          "id": "knot_catch",
+          "label": "Knot-and-Loop Catch",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "knot_dia",
+            "loop_id",
+            "gap"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/frog-closure/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/frog-closure"
       }
     },
     {

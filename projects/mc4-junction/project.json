@@ -1,0 +1,271 @@
+{
+  "project": {
+    "name": "MC4 Junction Bracket",
+    "slug": "mc4-junction",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Organizes and mounts MC4 photovoltaic connectors around the real MC4 body standard, so a solar array's DC connectors are held, strain-relieved and surface-mounted instead of dangling. The interface is the MC4 body cradle (Ø16 mm nominal) and the PV lead pass-through (Ø6.5 mm) that mate the same connector the mc4-holder cartridge holds. Choose a four-up junction plate, a compact back-to-back pair bracket, or a strain-relief comb. Printed PV mounts carry no current — this is a mechanical organizer only.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Organiza y monta conectores fotovoltaicos MC4 alrededor del estándar real del cuerpo MC4, para que los conectores CC de un arreglo solar queden sujetos, con alivio de tensión y montados en superficie en vez de colgando. La interfaz es la cuna del cuerpo MC4 (Ø16 mm nominal) y el paso del cable PV (Ø6.5 mm) que acoplan el mismo conector que sostiene el cartucho mc4-holder. Elige una placa de unión para cuatro, un soporte compacto para un par acoplado, o un peine de alivio de tensión. Los soportes PV impresos no conducen corriente — esto es solo un organizador mecánico.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/mc4-junction.webp",
+    "tags": [
+      "mc4",
+      "solar",
+      "photovoltaic",
+      "connector",
+      "strain-relief",
+      "cable-management",
+      "energy",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "junction_4",
+      "label": { "en": "Four-Up Junction Plate", "es": "Placa de Unión para Cuatro" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["junction_4"],
+      "estimate": { "base_time": 10, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "pair_bracket",
+      "label": { "en": "Mated Pair Bracket", "es": "Soporte de Par Acoplado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["pair_bracket"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 7 }
+    },
+    {
+      "id": "strain_comb",
+      "label": { "en": "Strain-Relief Comb", "es": "Peine de Alivio de Tensión" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["strain_comb"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "junction_4",
+      "label": { "en": "Four-Up Junction Plate", "es": "Placa de Unión para Cuatro" },
+      "render_mode": 0,
+      "color": "#3f7f6f"
+    },
+    {
+      "id": "pair_bracket",
+      "label": { "en": "Mated Pair Bracket", "es": "Soporte de Par Acoplado" },
+      "render_mode": 0,
+      "color": "#4f8f7f"
+    },
+    {
+      "id": "strain_comb",
+      "label": { "en": "Strain-Relief Comb", "es": "Peine de Alivio de Tensión" },
+      "render_mode": 0,
+      "color": "#356f60"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "mc4", "label": { "en": "MC4 Interface", "es": "Interfaz MC4" } },
+    { "id": "body", "label": { "en": "Bracket Body", "es": "Cuerpo del Soporte" } },
+    { "id": "layout", "label": { "en": "Layout", "es": "Distribución" } }
+  ],
+  "parameters": [
+    {
+      "id": "body_d",
+      "type": "slider",
+      "default": 16.0,
+      "min": 10.0,
+      "max": 24.0,
+      "step": 0.5,
+      "group": "mc4",
+      "modes": ["junction_4", "pair_bracket"],
+      "label": { "en": "MC4 Body Diameter (mm)", "es": "Diámetro del Cuerpo MC4 (mm)" },
+      "tooltip": {
+        "en": "Connector barrel diameter the cradle grips — MC4 is Ø16 mm nominal",
+        "es": "Diámetro del barril del conector que sujeta la cuna — MC4 es Ø16 mm nominal"
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "lead_d",
+      "type": "slider",
+      "default": 6.5,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "mc4",
+      "modes": ["strain_comb"],
+      "label": { "en": "PV Lead Diameter (mm)", "es": "Diámetro del Cable PV (mm)" },
+      "tooltip": {
+        "en": "PV cable diameter the comb slots grip — 4-6 mm² lead is Ø6.5 mm",
+        "es": "Diámetro del cable PV que sujetan las ranuras — un cable de 4-6 mm² es Ø6.5 mm"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.4,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "group": "mc4",
+      "advanced": true,
+      "modes": ["junction_4", "pair_bracket", "strain_comb"],
+      "label": { "en": "Printed Fit (mm)", "es": "Ajuste Impreso (mm)" },
+      "tooltip": {
+        "en": "Slop added per side so the printed cradle actually accepts the connector",
+        "es": "Holgura por lado para que la cuna impresa realmente acepte el conector"
+      }
+    },
+    {
+      "id": "plate_th",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": ["junction_4"],
+      "label": { "en": "Base Plate Thickness (mm)", "es": "Espesor de la Placa Base (mm)" },
+      "tooltip": {
+        "en": "Thickness of the mounting plate under the cradles",
+        "es": "Espesor de la placa de montaje bajo las cunas"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": ["junction_4", "pair_bracket", "strain_comb"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Espesor de Pared (mm)" },
+      "tooltip": {
+        "en": "Cradle / comb wall — thicker grips harder and prints stiffer",
+        "es": "Pared de la cuna o del peine — más gruesa sujeta más y se imprime más rígida"
+      }
+    },
+    {
+      "id": "count",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "group": "layout",
+      "modes": ["strain_comb"],
+      "label": { "en": "Comb Slots", "es": "Ranuras del Peine" },
+      "tooltip": {
+        "en": "Number of lead slots in the strain-relief comb",
+        "es": "Número de ranuras para cable en el peine de alivio"
+      }
+    },
+    {
+      "id": "pitch",
+      "type": "slider",
+      "default": 22.0,
+      "min": 14.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "layout",
+      "modes": ["junction_4", "strain_comb"],
+      "label": { "en": "Centre Spacing (mm)", "es": "Espaciado entre Centros (mm)" },
+      "tooltip": {
+        "en": "Centre-to-centre spacing between cradles or comb slots",
+        "es": "Espaciado centro a centro entre cunas o ranuras del peine"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "combiner_tidy",
+      "mode": "junction_4",
+      "label": { "en": "Combiner-Box Tidy", "es": "Ordenador de Caja Combinadora" },
+      "values": { "body_d": 16.0, "clearance": 0.4, "plate_th": 4.0, "wall": 3.0, "pitch": 22.0 }
+    },
+    {
+      "id": "inline_pair",
+      "mode": "pair_bracket",
+      "label": { "en": "Inline Mated Pair", "es": "Par Acoplado en Línea" },
+      "values": { "body_d": 16.0, "clearance": 0.4, "wall": 3.0 }
+    },
+    {
+      "id": "six_lead_comb",
+      "mode": "strain_comb",
+      "label": { "en": "Six-Lead Comb", "es": "Peine de Seis Cables" },
+      "values": { "lead_d": 6.5, "clearance": 0.4, "wall": 3.0, "count": 6, "pitch": 18.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "pitch > body_d",
+      "severity": "warning",
+      "message": {
+        "en": "Spacing smaller than the connector body will merge adjacent cradles",
+        "es": "Un espaciado menor al cuerpo del conector fusionará cunas adyacentes"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [100, 100, 80] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 180] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9,
+    "per_unit": 2,
+    "per_part": 9,
+    "fn_factor": 24,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "energy",
+    "cdg_interfaces": [
+      {
+        "id": "mc4_socket",
+        "label": { "en": "MC4 Body Socket", "es": "Alojamiento del Cuerpo MC4" },
+        "geometry_type": "socket",
+        "standard": "MC4 PV connector body, Ø16 mm nominal barrel",
+        "parameters": ["body_d", "clearance", "wall"],
+        "compatible_with": ["mc4-holder"]
+      },
+      {
+        "id": "pv_lead_passthrough",
+        "label": { "en": "PV Lead Pass-Through", "es": "Paso de Cable PV" },
+        "geometry_type": "pocket",
+        "standard": "PV lead 4-6 mm², Ø6.5 mm nominal",
+        "parameters": ["lead_d", "clearance", "count", "pitch"],
+        "compatible_with": ["mc4-holder"]
+      },
+      {
+        "id": "m4_mount_holes",
+        "label": { "en": "Surface Mount Holes", "es": "Orificios de Montaje en Superficie" },
+        "geometry_type": "bolt_pattern",
+        "standard": "M4 clearance (Ø4.4 mm) surface fixing",
+        "parameters": ["plate_th", "wall", "pitch"],
+        "compatible_with": []
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Every rooftop and off-grid array ends in a nest of MC4 connectors, and the connectors themselves are the only part anyone specifies — the mechanical job of holding them off the roof membrane, out of standing water and free of cable strain is left to zip ties and hope. Unrelieved leads work-harden at the gland and eventually fail in a way that is expensive to find. A printed cradle costs grams and turns that hidden failure mode into a solved one, which matters most in exactly the installations that cannot afford a service call: small rural, community and self-built systems. The part is deliberately non-conductive and non-structural — it organizes, and lets the certified connectors do all the electrical work.",
+      "es": "Todo arreglo en techo o aislado termina en un nido de conectores MC4, y los conectores mismos son lo único que alguien especifica — el trabajo mecánico de sostenerlos fuera de la membrana del techo, lejos del agua estancada y libres de tensión del cable se deja a cinchos y esperanza. Los cables sin alivio se endurecen por trabajo en el prensaestopas y fallan de una forma cara de encontrar. Una cuna impresa cuesta gramos y convierte ese modo de falla oculto en uno resuelto, lo que importa más justo en las instalaciones que no pueden pagar una visita técnica: sistemas rurales, comunitarios y autoconstruidos. La pieza es deliberadamente no conductora y no estructural — organiza, y deja que los conectores certificados hagan todo el trabajo eléctrico."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

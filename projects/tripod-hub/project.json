@@ -1,0 +1,282 @@
+{
+  "project": {
+    "name": "Universal Tripod Hub",
+    "slug": "tripod-hub",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "advanced",
+    "description": {
+      "en": "A capstone multi-standard hub that bridges the three interfaces every photo, video and optics rig is built around but which never all meet in one part: the 1/4\"-20 UNC camera screw, the 3/8\"-16 UNC heavy-mount screw, and the Arca-Swiss 38 mm quick-release dovetail. Threads are real swept helices at nominal UNC pitch, not cosmetic grooves. Choose a distribution plate that puts a ring of 1/4-20 sockets on one Arca head, an Arca plate carrying a male 1/4-20 stud, or the classic 3/8-16-to-1/4-20 reducer bushing.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un concentrador multiestándar que une las tres interfaces alrededor de las cuales se construye todo equipo fotográfico, de video y óptico pero que nunca coinciden en una sola pieza: el tornillo de cámara 1/4\"-20 UNC, el tornillo de montaje pesado 3/8\"-16 UNC, y la cola de milano de liberación rápida Arca-Swiss de 38 mm. Las roscas son hélices barridas reales al paso UNC nominal, no ranuras cosméticas. Elige una placa distribuidora que pone un anillo de alojamientos 1/4-20 sobre una cabeza Arca, una placa Arca con un perno macho 1/4-20, o el clásico buje reductor de 3/8-16 a 1/4-20.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tripod-hub.webp",
+    "tags": [
+      "tripod",
+      "arca-swiss",
+      "quarter-20",
+      "three-eighths-16",
+      "unc",
+      "camera",
+      "quick-release",
+      "photography",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "hub_plate",
+      "label": { "en": "Distribution Hub Plate", "es": "Placa Distribuidora" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["hub_plate"],
+      "estimate": { "base_time": 26, "per_unit": 5, "per_part": 26 }
+    },
+    {
+      "id": "quarter_to_arca",
+      "label": { "en": "Arca Plate with 1/4-20 Stud", "es": "Placa Arca con Perno 1/4-20" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["quarter_to_arca"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "reducer_bushing",
+      "label": { "en": "3/8-16 to 1/4-20 Reducer", "es": "Reductor 3/8-16 a 1/4-20" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["reducer_bushing"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    {
+      "id": "hub_plate",
+      "label": { "en": "Distribution Hub Plate", "es": "Placa Distribuidora" },
+      "render_mode": 0,
+      "color": "#3f4550"
+    },
+    {
+      "id": "quarter_to_arca",
+      "label": { "en": "Arca Plate with 1/4-20 Stud", "es": "Placa Arca con Perno 1/4-20" },
+      "render_mode": 0,
+      "color": "#4f5560"
+    },
+    {
+      "id": "reducer_bushing",
+      "label": { "en": "3/8-16 to 1/4-20 Reducer", "es": "Reductor 3/8-16 a 1/4-20" },
+      "render_mode": 0,
+      "color": "#5f6570"
+    }
+  ],
+  "parameter_groups": [
+    { "id": "plate", "label": { "en": "Arca Plate", "es": "Placa Arca" } },
+    { "id": "sockets", "label": { "en": "Socket Ring", "es": "Anillo de Alojamientos" } },
+    { "id": "thread", "label": { "en": "Threads", "es": "Roscas" } }
+  ],
+  "parameters": [
+    {
+      "id": "plate_w",
+      "type": "slider",
+      "default": 60.0,
+      "min": 30.0,
+      "max": 100.0,
+      "step": 1,
+      "group": "plate",
+      "modes": ["hub_plate", "quarter_to_arca"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de la Placa (mm)" },
+      "tooltip": {
+        "en": "Hub plate width and length; the Arca platform is capped at the 38 mm standard",
+        "es": "Ancho y largo de la placa; la plataforma Arca se limita al estándar de 38 mm"
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 1.0 }
+    },
+    {
+      "id": "plate_h",
+      "type": "slider",
+      "default": 9.0,
+      "min": 6.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": ["hub_plate", "quarter_to_arca"],
+      "label": { "en": "Dovetail Height (mm)", "es": "Altura de la Cola de Milano (mm)" },
+      "tooltip": {
+        "en": "Arca dovetail block height — 9 mm is the nominal standard",
+        "es": "Altura del bloque de cola de milano Arca — 9 mm es el estándar nominal"
+      },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "n_quarter",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "group": "sockets",
+      "modes": ["hub_plate"],
+      "label": { "en": "1/4-20 Socket Count", "es": "Número de Alojamientos 1/4-20" },
+      "tooltip": {
+        "en": "How many 1/4-20 female sockets sit around the ring",
+        "es": "Cuántos alojamientos hembra 1/4-20 rodean el anillo"
+      }
+    },
+    {
+      "id": "ring_dia",
+      "type": "slider",
+      "default": 40.0,
+      "min": 16.0,
+      "max": 90.0,
+      "step": 1,
+      "group": "sockets",
+      "modes": ["hub_plate"],
+      "label": { "en": "Socket Ring Diameter (mm)", "es": "Diámetro del Anillo (mm)" },
+      "tooltip": {
+        "en": "Bolt-circle diameter of the 1/4-20 ring; auto-limited to fit the plate",
+        "es": "Diámetro del círculo de alojamientos; se limita solo para caber en la placa"
+      }
+    },
+    {
+      "id": "thread_len",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "thread",
+      "modes": ["hub_plate", "quarter_to_arca", "reducer_bushing"],
+      "label": { "en": "Thread Length (mm)", "es": "Longitud de Rosca (mm)" },
+      "tooltip": {
+        "en": "Stud height or socket depth; sockets are auto-capped to the plate thickness",
+        "es": "Altura del perno o profundidad del alojamiento; se limita al espesor de la placa"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.0,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "thread",
+      "advanced": true,
+      "modes": ["hub_plate", "quarter_to_arca", "reducer_bushing"],
+      "label": { "en": "Printed Thread Fit (mm)", "es": "Ajuste de Rosca Impresa (mm)" },
+      "tooltip": {
+        "en": "Thread slop per side — tune this until your printer's threads run smoothly",
+        "es": "Holgura de rosca por lado — ajústala hasta que las roscas de tu impresora corran suaves"
+      }
+    },
+    {
+      "id": "turns",
+      "type": "slider",
+      "default": 4.0,
+      "min": 1.5,
+      "max": 4.5,
+      "step": 0.5,
+      "group": "thread",
+      "advanced": true,
+      "modes": ["hub_plate", "quarter_to_arca", "reducer_bushing"],
+      "label": { "en": "Thread Engagement Turns", "es": "Vueltas de Enrosque" },
+      "tooltip": {
+        "en": "Requested engagement turns; snapped to a half-integer and capped at 4.5 for a watertight sweep",
+        "es": "Vueltas de enrosque solicitadas; se ajusta a semi-entero y se limita a 4.5 para un barrido estanco"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "six_socket_hub",
+      "mode": "hub_plate",
+      "label": { "en": "Six-Socket Accessory Hub", "es": "Concentrador de Seis Alojamientos" },
+      "values": { "plate_w": 60.0, "plate_h": 9.0, "n_quarter": 6, "ring_dia": 40.0, "thread_len": 8.0 }
+    },
+    {
+      "id": "arca_quarter_stud",
+      "mode": "quarter_to_arca",
+      "label": { "en": "Arca → 1/4-20 Stud Plate", "es": "Placa Arca → Perno 1/4-20" },
+      "values": { "plate_w": 50.0, "plate_h": 9.0, "thread_len": 8.0, "clearance": 0.35 }
+    },
+    {
+      "id": "classic_reducer",
+      "mode": "reducer_bushing",
+      "label": { "en": "Classic 3/8→1/4 Reducer", "es": "Reductor Clásico 3/8→1/4" },
+      "values": { "thread_len": 8.0, "clearance": 0.35, "turns": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "ring_dia < plate_w - 10",
+      "severity": "warning",
+      "message": {
+        "en": "The socket ring is auto-limited so the sockets stay inside the plate",
+        "es": "El anillo de alojamientos se limita solo para que queden dentro de la placa"
+      }
+    },
+    {
+      "expression": "thread_len < plate_h",
+      "severity": "warning",
+      "message": {
+        "en": "Socket depth is auto-capped to the dovetail height so the bottom stays closed",
+        "es": "La profundidad se limita a la altura de la cola de milano para que el fondo quede cerrado"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [110, 110, 90] },
+    { "id": "front", "label": { "en": "Front (Dovetail)", "es": "Frontal (Cola de Milano)" }, "position": [0, -160, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 20,
+    "per_unit": 5,
+    "per_part": 20,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 150
+  },
+  "hyperobject": {
+    "domain": "consumer",
+    "cdg_interfaces": [
+      {
+        "id": "arca_swiss_dovetail",
+        "label": { "en": "Arca-Swiss Dovetail", "es": "Cola de Milano Arca-Swiss" },
+        "geometry_type": "profile",
+        "standard": "Arca-Swiss 38 mm quick-release dovetail, ~45° flanks",
+        "parameters": ["plate_w", "plate_h"],
+        "compatible_with": ["arca-l-bracket", "arca-gopro-bridge"]
+      },
+      {
+        "id": "quarter_20_thread",
+        "label": { "en": "1/4\"-20 UNC Camera Thread", "es": "Rosca de Cámara 1/4\"-20 UNC" },
+        "geometry_type": "thread",
+        "standard": "1/4\"-20 UNC — major Ø6.35 mm, pitch 1.27 mm, minor Ø4.976 mm",
+        "parameters": ["thread_len", "clearance", "turns", "n_quarter", "ring_dia"],
+        "compatible_with": ["arca-l-bracket"]
+      },
+      {
+        "id": "three_eighths_16_thread",
+        "label": { "en": "3/8\"-16 UNC Heavy Mount Thread", "es": "Rosca de Montaje Pesado 3/8\"-16 UNC" },
+        "geometry_type": "thread",
+        "standard": "3/8\"-16 UNC — major Ø9.525 mm, pitch 1.5875 mm, minor Ø7.749 mm",
+        "parameters": ["thread_len", "clearance", "turns"],
+        "compatible_with": []
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Photography and field optics run on three interfaces that are all effectively open — the two UNC camera threads are older than any company still selling them, and Arca-Swiss is a de-facto standard no one enforces — yet the small adapters that join them are sold as machined metal at prices set by scarcity rather than cost. A rig ends up with a drawer of one-purpose bushings, and a missing 3/8-to-1/4 reducer can strand an otherwise working setup in the field. Generating them from the nominal thread geometry makes the adapter layer free and, more usefully, makes it composable: the hub plate is a part no catalogue sells, because it only makes sense when you can define your own combination of sockets rather than buy someone's.",
+      "es": "La fotografía y la óptica de campo funcionan sobre tres interfaces efectivamente abiertas — las dos roscas UNC de cámara son más antiguas que cualquier empresa que aún las venda, y Arca-Swiss es un estándar de facto que nadie hace cumplir — y sin embargo los pequeños adaptadores que las unen se venden como metal maquinado a precios fijados por la escasez y no por el costo. Un equipo termina con un cajón de bujes de un solo propósito, y un reductor de 3/8 a 1/4 faltante puede inutilizar un montaje que por lo demás funciona, en pleno campo. Generarlos desde la geometría nominal de la rosca vuelve gratuita la capa de adaptadores y, más útil aún, la vuelve componible: la placa concentradora es una pieza que ningún catálogo vende, porque solo tiene sentido cuando puedes definir tu propia combinación de alojamientos en vez de comprar la de alguien más."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

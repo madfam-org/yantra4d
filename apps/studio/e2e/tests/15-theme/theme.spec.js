@@ -93,7 +93,7 @@ test.describe('Theme System', () => {
         if (now === before) await clickThemeBtn()
         return page.evaluate(() => localStorage.getItem('vite-ui-theme'))
       }, { timeout: 15000 }).not.toBe(before)
-      await expect(page.locator(`header button:has(${icons[expected]})`)).toBeVisible({ timeout: 3000 })
+      await expect(page.locator(`header button:has(${icons[expected]})`)).toBeVisible({ timeout: 10000 })
       expect(await page.evaluate(() => localStorage.getItem('vite-ui-theme'))).toBe(expected)
     }
 

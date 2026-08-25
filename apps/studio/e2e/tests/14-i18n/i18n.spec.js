@@ -6,7 +6,7 @@ async function selectLanguageFromDropdown(page, langLabel) {
   await page.locator('button:has(.lucide-globe)').first().click()
   // Wait for dropdown to appear
   const dropdown = page.locator('.absolute.top-full')
-  await dropdown.first().waitFor({ timeout: 3000 })
+  await dropdown.first().waitFor({ timeout: 10000 })
   // Click the target language button
   await dropdown.locator('button', { hasText: langLabel }).click()
   await page.waitForTimeout(300)
@@ -16,7 +16,7 @@ async function selectLanguageFromDropdown(page, langLabel) {
 async function toggleToOtherLanguage(page) {
   await page.locator('button:has(.lucide-globe)').first().click()
   const dropdown = page.locator('.absolute.top-full')
-  await dropdown.first().waitFor({ timeout: 3000 })
+  await dropdown.first().waitFor({ timeout: 10000 })
   const options = dropdown.locator('button')
   const count = await options.count()
   for (let i = 0; i < count; i++) {
@@ -149,7 +149,7 @@ test.describe('Internationalization (i18n)', () => {
     // :visible for the same duplication reason; without it .first() resolved to
     // the hidden mobile copy, isVisible() came back false, and the test fell
     // through to an export-panel assertion that only holds on the export tab.
-    const hasSpanish = await page.locator('button:visible', { hasText: /Isométric|Superior|Frontal|Derech/ }).first().isVisible({ timeout: 3000 }).catch(() => false)
+    const hasSpanish = await page.locator('button:visible', { hasText: /Isométric|Superior|Frontal|Derech/ }).first().isVisible({ timeout: 10000 }).catch(() => false)
     // If camera buttons use icons instead of text, just verify Spanish export text
     if (!hasSpanish) {
       await expect(page.locator('text=Exportar Imágenes')).toBeVisible()

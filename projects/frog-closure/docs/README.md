@@ -60,8 +60,8 @@ Two house lessons are load-bearing in this geometry:
 - **The knot ball is a flat-capped loft, never a sphere.** A sphere meets its stem at a
   pole, and a pole is a degenerate vertex that turns the union into a non-manifold
   shell. Three ruled sections (flat base → full-diameter equator → flat top) give a
-  watertight barrel that also prints capless-of-support and reads as the flattened ball
-  a real pánkòu actually is.
+  watertight barrel that also prints without support and reads as the flattened ball a
+  real pánkòu actually is.
 - **The loop is a `makeTorus` box-cut to an open C, never a swept `radiusArc`.** At the
   small radii a garment frog uses, swept arcs degenerate outright ("Arc radius is not
   large enough").

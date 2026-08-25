@@ -308,7 +308,7 @@ export default function ProjectCarousel3D({
     const activeProject = carouselProjects[activeIndex];
 
     return (
-        <div className="relative w-full h-[60vh] landscape:h-[70vh] sm:h-[60vh] lg:h-[70vh] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xl flex flex-col hide-scrollcontrols-scrollbar">
+        <div className="relative w-full h-[60vh] phone-landscape:h-[70vh] sm:h-[60vh] lg:h-[70vh] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xl flex flex-col hide-scrollcontrols-scrollbar">
             {/* Top glassmorphic filter bar overlay */}
             <div className="absolute top-4 left-4 right-4 z-20 pointer-events-none flex flex-col gap-2">
                 <div className="flex flex-col gap-3 items-stretch sm:flex-row sm:items-center sm:justify-between">

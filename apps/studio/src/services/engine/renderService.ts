@@ -439,7 +439,12 @@ async function renderBackend(
   ignoreCache?: boolean,
   exportFormat?: string
 ): Promise<RenderPart[]> {
-  const payload: Record<string, unknown> = { ...params, mode }
+  // Documented /api/render-stream contract:
+  // {mode, parameters, parts, export_format?, project?} — parameters NESTED.
+  // The previous flattened form ({ ...params, mode }) was silently tolerated by
+  // the server but produced a different param_hash (cache key) than the nested
+  // form and dropped target_material.
+  const payload: Record<string, unknown> = { mode, parameters: params }
   if (project) payload.project = project
   if (ignoreCache) payload.ignore_cache = true
 

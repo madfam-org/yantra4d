@@ -224,9 +224,7 @@ def is_machine_token(claims: dict | None) -> bool:
     if claims.get("actor_type") == "service_account":
         return True
     sub = claims.get("sub")
-    if isinstance(sub, str) and sub.startswith("service-account:"):
-        return True
-    return False
+    return isinstance(sub, str) and sub.startswith("service-account:")
 
 
 def machine_client_id(claims: dict | None) -> str:

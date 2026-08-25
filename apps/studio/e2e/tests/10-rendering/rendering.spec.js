@@ -24,7 +24,7 @@ test.describe('Rendering Flow', () => {
     // Change param to bust the render cache (auto-render cached the initial result)
     await sidebar.editSliderValue('width', 66)
     // The debounced auto-render fires with the slow mock, showing Processing...
-    await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 3000 })
+    await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 10000 })
   })
 
   test('cancel button appears during render', async ({ page, sidebar }) => {

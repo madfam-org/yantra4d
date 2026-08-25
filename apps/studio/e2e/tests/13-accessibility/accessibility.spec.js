@@ -134,7 +134,10 @@ test.describe('Accessibility', () => {
     // Open globe dropdown and select a different language
     await page.locator('button:has(.lucide-globe)').first().click()
     const dropdown = page.locator('.absolute.top-full')
-    await dropdown.first().waitFor({ timeout: 3000 })
+    // 10s, not 3s: WebKit renders the dropdown slower than Chromium and this
+    // wait exhausted all 3 retries on the webkit shard (per the config's own
+    // note that tight timeouts flake across shards). A passing run is unaffected.
+    await dropdown.first().waitFor({ timeout: 10000 })
     const options = dropdown.locator('button')
     const count = await options.count()
     for (let i = 0; i < count; i++) {

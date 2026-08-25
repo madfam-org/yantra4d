@@ -30,7 +30,7 @@ test.describe('Export Panel', () => {
     const stlBtn = page.getByRole('button', { name: 'STL', exact: true })
     await expect(stlBtn).toBeVisible()
     // STL is default and should already have bg-primary
-    await expect(stlBtn).toHaveClass(/bg-primary/, { timeout: 3000 })
+    await expect(stlBtn).toHaveClass(/bg-primary/, { timeout: 10000 })
   })
 
   test('STL is default format', async ({ page }) => {

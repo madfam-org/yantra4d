@@ -79,6 +79,97 @@ def get_model(id):
         # Return read-only public view
 ```
 
+### `@require_render_scope`
+
+Requires the `yantra4d:render` scope — **on machine tokens only**. Layer it directly
+below `@optional_auth`, which must already have populated `request.auth_claims`.
+
+```python
+@render_bp.route('/api/render', methods=['POST'])
+@optional_auth
+@require_render_scope
+def render_stl():
+    # ...
+```
+
+Applied to `/api/render`, `/api/render-stream`, `/api/estimate`, and
+`/api/render-cancel`. The generic form is
+`require_scope_for_machine_tokens("<scope>")`.
+
+---
+
+## Machine tokens and render scope
+
+Janua mints two token shapes against the `yantra4d-api` audience:
+
+| | Human (`authorization_code` / `refresh`) | Machine (`client_credentials`) |
+|---|---|---|
+| `sub` | user UUID | `service-account:{client_id}` |
+| `token_use` | *(absent)* | `client_credentials` |
+| `actor_type` | *(absent)* | `service_account` |
+| `client_id` | *(absent)* | the OAuth client id |
+| `scope` | *(absent)* | space-delimited, e.g. `yantra4d:render` |
+| `yantra4d_tier` | from the user's entitlements | **derived from the `yantra4d:` scope namespace** (`madfam`) |
+
+Source of truth: janua `apps/api/app/routers/v1/oauth_provider.py`
+(`_get_client_credentials_claims`, `_handle_client_credentials_grant`).
+
+The last row is why this check exists. Janua synthesises `yantra4d_tier: "madfam"`
+for any machine client holding a `yantra4d:`-namespaced scope, but the *specific*
+scope was never checked here — so a machine client provisioned for a different
+`yantra4d:` capability could render, and the `yantra4d:render` scope Janua mints
+for Fashion Cabinet was decorative server-side. Ruled 2026-08-25.
+
+### Semantics
+
+| Caller | `log` mode (default) | `enforce` mode |
+|---|---|---|
+| Anonymous (no token) | **unchanged** — guest tier, rate-limited | **unchanged** |
+| Human token | **unchanged** — `yantra4d_tier` as today | **unchanged** |
+| Machine token **with** `yantra4d:render` | **unchanged** — `yantra4d_tier` as today | **unchanged** |
+| Machine token **without** the scope | structured warning, request **allowed** | **403** `missing_scope` |
+
+Only the last row ever changes behaviour. Anonymous and human access to the render
+routes stays exactly tier/rate-limit driven; a conformant machine token resolves its
+tier through the same `resolve_tier` path as before.
+
+Detection keys on the union of `token_use == "client_credentials"`,
+`actor_type == "service_account"`, and a `service-account:` prefixed `sub`. Any one
+suffices, so a partial claim set fails toward *machine* rather than slipping through
+the human path. Human tokens carry none of these markers.
+
+### Observation window
+
+In `log` mode, a non-conformant machine token emits one warning per request on the
+`middleware.auth` logger:
+
+```
+render.scope_missing client_id=<id> missing_scope=yantra4d:render \
+  present_scopes=<a,b> path=/api/render mode=log outcome=allowed
+```
+
+The token itself is never logged. Grep `render.scope_missing` to enumerate which
+clients would break before flipping the switch.
+
+### Flip playbook
+
+Mirrors the `RENDER_STRICT_PAYLOAD` rollout: ship in `log`, observe, then enforce.
+
+1. Deploy with `RENDER_SCOPE_ENFORCEMENT` unset (defaults to `log`).
+2. Watch `render.scope_missing` for a quiet observation window — a full billing
+   cycle of machine traffic is the safe minimum, since some service clients run on
+   monthly cadences.
+3. For each `client_id` that appears, add the `yantra4d:render` scope to that OAuth
+   client in Janua and have the consumer re-mint. Service tokens live one hour, so
+   a re-mint propagates within the hour with no redeploy.
+4. When the window is quiet, set `RENDER_SCOPE_ENFORCEMENT=enforce`.
+5. Rollback is a single env flip back to `log` — no code change, no redeploy of
+   consumers.
+
+Fashion Cabinet is already conformant: `fashion-cabinet/apps/api/body_render.py`
+mints with `scope=yantra4d:render` against `aud=yantra4d-api`, so it passes in both
+modes. This is pinned by a test using FC's exact token shape.
+
 ---
 
 ## Configuration
@@ -90,6 +181,7 @@ Auth settings are defined in `apps/api/config.py`.
 | `JANUA_ISSUER` | `https://auth.madfam.io` | The JWT `iss` claim value and base URL for JWKS discovery. |
 | `JANUA_AUDIENCE` | `yantra4d-api` | The expected JWT `aud` claim. Must match the audience registered in the Janua seed script. |
 | `AUTH_ENABLED` | `true` | Set to `false` to disable all auth checks for local development. |
+| `RENDER_SCOPE_ENFORCEMENT` | `log` | `log` warns and allows machine tokens missing `yantra4d:render`; `enforce` returns 403. Read from the environment at call time, not via `Config`. See [Machine tokens and render scope](#machine-tokens-and-render-scope). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
 

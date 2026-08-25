@@ -12,7 +12,7 @@ from flask import Blueprint, Response, jsonify, request
 import rate_limits
 from extensions import limiter
 from manifest import get_manifest
-from middleware.auth import optional_auth
+from middleware.auth import optional_auth, require_render_scope
 from services.core.tier_service import (
     export_format_allowed,
     get_render_limit,
@@ -87,6 +87,7 @@ def _rate_limit_key() -> str:
 
 @render_bp.route('/api/estimate', methods=['POST'])
 @optional_auth
+@require_render_scope
 @limiter.limit(rate_limits.ESTIMATE)
 @require_json_body
 def estimate_render_time():
@@ -130,6 +131,7 @@ def estimate_render_time():
 
 @render_bp.route('/api/render', methods=['POST'])
 @optional_auth
+@require_render_scope
 @limiter.limit(_get_tiered_limit, key_func=_rate_limit_key)
 @require_json_body
 @handle_exceptions
@@ -188,6 +190,7 @@ def render_stl():
 
 @render_bp.route('/api/render-stream', methods=['POST'])
 @optional_auth
+@require_render_scope
 @limiter.limit(_get_tiered_limit, key_func=_rate_limit_key)
 @require_json_body
 def render_stl_stream():
@@ -223,6 +226,7 @@ def render_stl_stream():
 
 @render_bp.route('/api/render-cancel', methods=['POST'])
 @optional_auth
+@require_render_scope
 def cancel_render_endpoint():
     """Cancel the active render process."""
     cancelled = cancel_all_renders()

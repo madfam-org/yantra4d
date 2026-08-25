@@ -1,0 +1,252 @@
+{
+  "project": {
+    "name": "Nebulizer Mask Strap Buckle",
+    "slug": "nebulizer-mask-strap",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Head-strap hardware that re-straps a nebulizer or aerosol mask with ordinary webbing after the original elastic perishes. A three-bar friction adjuster, a hook that captures the mask's moulded strap staple without modifying the mask, and a Y yoke that splits one back-of-head strap into two mask ears. The webbing interface is deliberately the SAME 20/25 mm slot the wearables closures wave already published, so these parts interoperate with the existing buckles and sliders instead of inventing a second standard.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Herrajes de cinta para la cabeza que permiten volver a sujetar una mascarilla de nebulizador o aerosol con cincha común cuando el elástico original se degrada. Incluye un ajustador de fricción de tres barras, un gancho que captura la grapa moldeada de la mascarilla sin modificarla, y un yugo en Y que divide una sola cinta trasera en dos orejas. La interfaz de cincha es deliberadamente la MISMA ranura de 20/25 mm ya publicada en la ola de cierres wearables, para que estas piezas convivan con las hebillas y correderas existentes en vez de inventar un segundo estándar.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/nebulizer-mask-strap.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "nebulizer",
+      "mask",
+      "respiratory",
+      "strap",
+      "buckle",
+      "webbing",
+      "assistive",
+      "medical",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": { "is_hyperobject": true },
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tri_slide",
+      "label": { "en": "Three-Bar Strap Adjuster", "es": "Ajustador de Cincha de Tres Barras" },
+      "description": {
+        "en": "The length adjuster: the strap passes over the first rail, under the centre bar and back over the far rail, so tension pinches it and holds the setting."
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["tri_slide"],
+      "estimate": { "base_time": 5, "per_unit": 1, "per_part": 5 }
+    },
+    {
+      "id": "mask_hook",
+      "label": { "en": "Mask Staple Hook", "es": "Gancho para Grapa de Mascarilla" },
+      "description": {
+        "en": "Captures the mask's moulded strap staple in a snap throat on one end and carries the standard webbing slot on the other — no modification to the mask itself."
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["mask_hook"],
+      "estimate": { "base_time": 6, "per_unit": 1, "per_part": 6 }
+    },
+    {
+      "id": "split_yoke",
+      "label": { "en": "Split Yoke", "es": "Yugo Divisor" },
+      "description": {
+        "en": "A Y yoke that takes one webbing tail at the back of the head and splits it into two, so a single adjuster drives both mask ears."
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": ["split_yoke"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "tri_slide", "label": { "en": "Three-Bar Adjuster", "es": "Ajustador de Tres Barras" }, "default_color": "#e5e7eb" },
+    { "id": "mask_hook", "label": { "en": "Mask Staple Hook", "es": "Gancho de Grapa" }, "default_color": "#e5e7eb" },
+    { "id": "split_yoke", "label": { "en": "Split Yoke", "es": "Yugo Divisor" }, "default_color": "#e5e7eb" }
+  ],
+  "parameter_groups": [
+    { "id": "webbing", "label": { "en": "Webbing Interface", "es": "Interfaz de Cincha" } },
+    { "id": "frame", "label": { "en": "Frame", "es": "Marco" } },
+    { "id": "mask", "label": { "en": "Mask Fit", "es": "Ajuste a la Mascarilla" } }
+  ],
+  "parameters": [
+    {
+      "id": "webbing",
+      "type": "select",
+      "default": "25mm",
+      "options": [
+        { "value": "20mm", "label": "20 mm webbing" },
+        { "value": "25mm", "label": "25 mm webbing" }
+      ],
+      "group": "webbing",
+      "label": { "en": "Webbing Width", "es": "Ancho de Cincha" },
+      "tooltip": {
+        "en": "Nominal webbing width. The same 20/25 mm series published by the wearables closures cartridges, so these parts share strap stock with them.",
+        "es": "Ancho nominal de cincha. La misma serie 20/25 mm publicada por los cartuchos de cierres wearables, para compartir la misma cincha."
+      }
+    },
+    {
+      "id": "web_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "webbing",
+      "label": { "en": "Webbing Thickness (mm)", "es": "Espesor de Cincha (mm)" },
+      "tooltip": {
+        "en": "Measured thickness of your strap. Light polypropylene runs ~1.2 mm; a stiff seatbelt-weight strap runs ~2.5 mm.",
+        "es": "Espesor medido de su cincha. El polipropileno ligero ronda 1.2 mm; una cincha rígida tipo cinturón ronda 2.5 mm."
+      }
+    },
+    {
+      "id": "slot_clear",
+      "type": "slider",
+      "default": 0.6,
+      "min": 0.2,
+      "max": 1.2,
+      "step": 0.05,
+      "group": "webbing",
+      "advanced": true,
+      "label": { "en": "Slot Clearance (mm)", "es": "Holgura de Ranura (mm)" },
+      "tooltip": {
+        "en": "Added to both slot dimensions. Lower values grip harder and hold the setting better; raise it if the strap will not thread.",
+        "es": "Se suma a ambas dimensiones de la ranura. Valores bajos sujetan mejor el ajuste; auméntelo si la cincha no pasa."
+      }
+    },
+    {
+      "id": "bar_w",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "frame",
+      "modes": ["tri_slide"],
+      "label": { "en": "Centre Bar Width (mm)", "es": "Ancho de Barra Central (mm)" },
+      "tooltip": {
+        "en": "The bar the strap pinches against. Wider bars hold heavier straps but make the adjuster longer.",
+        "es": "La barra contra la que se aprieta la cincha. Barras más anchas sujetan cinchas pesadas pero alargan el ajustador."
+      }
+    },
+    {
+      "id": "frame_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 9.0,
+      "step": 0.25,
+      "group": "frame",
+      "label": { "en": "Frame Thickness (mm)", "es": "Espesor del Marco (mm)" },
+      "tooltip": {
+        "en": "Slab thickness through which the slots are cut. Raised automatically if the slot itself would be thicker.",
+        "es": "Espesor de la placa donde se cortan las ranuras. Se eleva automáticamente si la ranura fuese más gruesa."
+      }
+    },
+    {
+      "id": "rail_t",
+      "type": "slider",
+      "default": 3.2,
+      "min": 2.0,
+      "max": 7.0,
+      "step": 0.2,
+      "group": "frame",
+      "label": { "en": "Rail Thickness (mm)", "es": "Espesor del Riel (mm)" },
+      "tooltip": {
+        "en": "Material outboard of each slot. This is what actually carries the strap load.",
+        "es": "Material por fuera de cada ranura. Es lo que realmente soporta la carga de la cincha."
+      }
+    },
+    {
+      "id": "staple_w",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 26.0,
+      "step": 0.5,
+      "group": "mask",
+      "modes": ["mask_hook"],
+      "label": { "en": "Mask Staple Width (mm)", "es": "Ancho de Grapa de Mascarilla (mm)" },
+      "tooltip": {
+        "en": "Width of the moulded strap staple on your mask, measured across the opening.",
+        "es": "Ancho de la grapa moldeada de la mascarilla, medida a lo ancho de la abertura."
+      }
+    },
+    {
+      "id": "staple_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 8.0,
+      "step": 0.25,
+      "group": "mask",
+      "modes": ["mask_hook"],
+      "label": { "en": "Mask Staple Bar Ø (mm)", "es": "Ø de Barra de la Grapa (mm)" },
+      "tooltip": {
+        "en": "Thickness of the staple bar the hook snaps over.",
+        "es": "Espesor de la barra de la grapa sobre la que se engancha."
+      }
+    },
+    {
+      "id": "yoke_angle",
+      "type": "slider",
+      "default": 35.0,
+      "min": 15.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "frame",
+      "modes": ["split_yoke"],
+      "label": { "en": "Yoke Split Angle (deg)", "es": "Ángulo de Apertura del Yugo (grados)" },
+      "tooltip": {
+        "en": "Half-angle each arm fans out from the stem. Wider angles suit a shallow mask; narrower angles suit a tall one.",
+        "es": "Semiángulo de apertura de cada brazo. Ángulos amplios convienen a mascarillas bajas; estrechos a mascarillas altas."
+      }
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 6,
+    "per_unit": 1,
+    "per_part": 6,
+    "wasm_multiplier": 2,
+    "warning_threshold_seconds": 40
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "webbing_slot",
+        "label": { "en": "Webbing Slot", "es": "Ranura de Cincha" },
+        "geometry_type": "rail",
+        "standard": "20/25mm webbing",
+        "parameters": ["webbing", "web_t", "slot_clear"],
+        "compatible_with": ["strap-buckle", "tri-glide-slider", "ladder-lock", "cam-buckle", "side-release-buckle"]
+      },
+      {
+        "id": "mask_staple",
+        "label": { "en": "Mask Strap Staple", "es": "Grapa de Cincha de Mascarilla" },
+        "geometry_type": "snap",
+        "standard": "moulded aerosol-mask strap staple",
+        "parameters": ["staple_w", "staple_t", "slot_clear"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A nebulizer mask is normally discarded when its elastic perishes, even though the mask body is intact — the elastic lives in a warm humid airstream and gets washed. Printable strap hardware on the existing webbing standard lets a carer re-strap the same mask with stock webbing, and makes the fit adjustable for a child or a patient who cannot tolerate the factory loop.",
+      "es": "Una mascarilla de nebulizador suele desecharse cuando su elástico se degrada, aunque el cuerpo esté intacto — el elástico vive en un flujo cálido y húmedo y se lava. Los herrajes imprimibles sobre el estándar de cincha existente permiten volver a sujetar la misma mascarilla con cincha común y hacen el ajuste regulable para un niño o un paciente que no tolera el elástico de fábrica."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

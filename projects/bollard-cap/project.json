@@ -1,0 +1,186 @@
+{
+  "project": {
+    "name": "Bollard Cap",
+    "slug": "bollard-cap",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Caps that close the open top of a steel pipe bollard. An uncapped bollard fills with rainwater, freezes, rusts from the inside and stains the pavement below — and the factory cap is usually the first part to go missing after a vehicle strike. The skirt bore lands on real NPS schedule 40 steel pipe outside diameters, the same pipe-OD series the published pipe-clip and pipe-fitting families already use. Includes a domed slip-over cap, a flat cap with a chamfered rim, and a flat cap with a recessed band for retroreflective tape.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Tapas que cierran el extremo abierto de un bolardo de tubo de acero. Un bolardo sin tapa se llena de agua de lluvia, se congela, se oxida por dentro y mancha el pavimento debajo — y la tapa de fábrica suele ser la primera pieza que desaparece tras un impacto vehicular. El barreno de la falda coincide con diámetros exteriores reales de tubo de acero NPS cédula 40, la misma serie de Ø de tubo que ya usan las familias pipe-clip y pipe-fitting publicadas. Incluye tapa abovedada, tapa plana con borde biselado y tapa plana con banda rebajada para cinta retrorreflejante.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bollard-cap.webp",
+    "difficulty": "beginner",
+    "tags": ["bollard", "cap", "streetscape", "street-furniture", "pipe", "municipal", "infrastructure", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "dome_cap",
+      "label": { "en": "Domed Cap", "es": "Tapa Abovedada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["dome_cap"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "flat_cap",
+      "label": { "en": "Flat Cap", "es": "Tapa Plana" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flat_cap"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 10 }
+    },
+    {
+      "id": "reflect_cap",
+      "label": { "en": "Reflective-Band Cap", "es": "Tapa con Banda Reflejante" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["reflect_cap"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "dome_cap", "label": { "en": "Domed Cap", "es": "Tapa Abovedada" }, "render_mode": 0, "color": "#2a2f33" },
+    { "id": "flat_cap", "label": { "en": "Flat Cap", "es": "Tapa Plana" }, "render_mode": 0, "color": "#363c41" },
+    { "id": "reflect_cap", "label": { "en": "Reflective Cap", "es": "Tapa Reflejante" }, "render_mode": 0, "color": "#43494f" }
+  ],
+  "parameter_groups": [
+    { "id": "pipe", "label": { "en": "Bollard Pipe", "es": "Tubo del Bolardo" } },
+    { "id": "cap", "label": { "en": "Cap Body", "es": "Cuerpo de la Tapa" } },
+    { "id": "band", "label": { "en": "Reflective Band", "es": "Banda Reflejante" } },
+    { "id": "drain", "label": { "en": "Drainage", "es": "Drenaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "pipe", "type": "select", "default": "nps_4",
+      "options": [
+        { "value": "nps_3", "label": "NPS 3 sch 40 (88.90 mm OD)" },
+        { "value": "nps_4", "label": "NPS 4 sch 40 (114.30 mm OD)" },
+        { "value": "nps_5", "label": "NPS 5 sch 40 (141.30 mm OD)" },
+        { "value": "nps_6", "label": "NPS 6 sch 40 (168.28 mm OD)" },
+        { "value": "nps_8", "label": "NPS 8 sch 40 (219.08 mm OD)" }
+      ],
+      "group": "pipe", "modes": ["dome_cap", "flat_cap", "reflect_cap"],
+      "label": { "en": "Bollard Pipe Size", "es": "Tamaño de Tubo del Bolardo" },
+      "tooltip": { "en": "Steel pipe the bollard is made from (NPS schedule 40 OD)", "es": "Tubo de acero del bolardo (Ø exterior NPS cédula 40)" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.8, "min": 0.0, "max": 3.0, "step": 0.1,
+      "group": "pipe", "modes": ["dome_cap", "flat_cap", "reflect_cap"],
+      "label": { "en": "Slip Fit (mm)", "es": "Ajuste Deslizante (mm)" },
+      "tooltip": { "en": "Radial gap over the pipe OD; more for a painted or rusted bollard", "es": "Holgura radial sobre el Ø del tubo; más para un bolardo pintado u oxidado" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.0, "max": 10.0, "step": 0.5,
+      "group": "cap", "modes": ["dome_cap", "flat_cap", "reflect_cap"],
+      "label": { "en": "Cap Wall (mm)", "es": "Pared de la Tapa (mm)" },
+      "tooltip": { "en": "Skirt and top thickness", "es": "Espesor de la falda y del techo" }
+    },
+    {
+      "id": "skirt", "type": "slider", "default": 30.0, "min": 8.0, "max": 90.0, "step": 1.0,
+      "group": "cap", "modes": ["dome_cap", "flat_cap", "reflect_cap"],
+      "label": { "en": "Skirt Drop (mm)", "es": "Caída de la Falda (mm)" },
+      "tooltip": { "en": "How far the skirt hangs past the cut edge of the pipe", "es": "Qué tanto baja la falda del borde cortado del tubo" }
+    },
+    {
+      "id": "dome_rise", "type": "slider", "default": 0.45, "min": 0.15, "max": 0.90, "step": 0.05,
+      "group": "cap", "modes": ["dome_cap"],
+      "label": { "en": "Dome Rise (fraction of R)", "es": "Altura del Domo (fracción del R)" },
+      "tooltip": { "en": "Dome height as a fraction of cap radius; higher sheds water faster", "es": "Altura del domo como fracción del radio; mayor desaloja agua más rápido" }
+    },
+    {
+      "id": "band_depth", "type": "slider", "default": 1.2, "min": 0.4, "max": 3.0, "step": 0.1,
+      "group": "band", "modes": ["reflect_cap"],
+      "label": { "en": "Band Recess (mm)", "es": "Rebaje de la Banda (mm)" },
+      "tooltip": { "en": "How deep the tape sits below the skirt surface", "es": "Qué tan profunda queda la cinta bajo la superficie" }
+    },
+    {
+      "id": "band_width", "type": "slider", "default": 50.0, "min": 10.0, "max": 90.0, "step": 1.0,
+      "group": "band", "modes": ["reflect_cap"],
+      "label": { "en": "Band Height (mm)", "es": "Altura de la Banda (mm)" },
+      "tooltip": { "en": "Height of the tape band (clamped inside the skirt)", "es": "Altura de la banda de cinta (limitada dentro de la falda)" }
+    },
+    {
+      "id": "drain_count", "type": "slider", "default": 4, "min": 0, "max": 8, "step": 1,
+      "group": "drain", "modes": ["dome_cap", "flat_cap", "reflect_cap"],
+      "label": { "en": "Drain Slots", "es": "Ranuras de Drenaje" },
+      "tooltip": { "en": "Slots through the skirt so trapped water escapes (0 = none)", "es": "Ranuras en la falda para que escape el agua (0 = ninguna)" }
+    },
+    {
+      "id": "drain_w", "type": "slider", "default": 6.0, "min": 2.0, "max": 20.0, "step": 0.5,
+      "group": "drain", "modes": ["dome_cap", "flat_cap", "reflect_cap"], "advanced": true,
+      "label": { "en": "Drain Slot Width (mm)", "es": "Ancho de Ranura (mm)" },
+      "tooltip": { "en": "Slot width; auto-narrowed if the slots would meet", "es": "Ancho de ranura; se reduce si las ranuras se tocarían" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_dome", "mode": "dome_cap",
+      "label": { "en": "NPS 4 Domed", "es": "NPS 4 Abovedada" },
+      "values": { "pipe": "nps_4", "skirt": 30.0, "dome_rise": 0.45 }
+    },
+    {
+      "id": "sign_seat", "mode": "flat_cap",
+      "label": { "en": "NPS 6 Flat Seat", "es": "NPS 6 Asiento Plano" },
+      "values": { "pipe": "nps_6", "skirt": 40.0, "wall": 5.0 }
+    },
+    {
+      "id": "hi_vis", "mode": "reflect_cap",
+      "label": { "en": "High-Visibility Band", "es": "Banda de Alta Visibilidad" },
+      "values": { "pipe": "nps_4", "skirt": 70.0, "band_width": 50.0, "band_depth": 1.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.0 mm", "es": "La pared debe ser de al menos 2.0 mm" }
+    },
+    {
+      "expression": "band_depth <= 3.0",
+      "severity": "warning",
+      "message": { "en": "Band recess is clamped to half the wall so it cannot break through", "es": "El rebaje se limita a la mitad de la pared para que no atraviese" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [200, 200, 160] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -300, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 3, "per_part": 11,
+    "fn_factor": 48, "wasm_multiplier": 3, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "pipe_od_slip",
+        "label": { "en": "Steel Pipe OD Slip Fit", "es": "Ajuste Deslizante sobre Ø de Tubo" },
+        "geometry_type": "socket",
+        "standard": "NPS schedule 40 steel pipe OD (3, 4, 5, 6, 8 in)",
+        "parameters": ["pipe", "clearance", "skirt", "wall"],
+        "compatible_with": ["pipe-clip", "pipe-fitting", "sign-post-bracket"]
+      },
+      {
+        "id": "reflective_band",
+        "label": { "en": "Retroreflective Tape Recess", "es": "Rebaje para Cinta Retrorreflejante" },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": ["band_depth", "band_width"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "An open bollard is a slow structural failure and a maintenance cost nobody budgets for: it collects rain, holds it against the inside wall where no paint reaches, and rusts outward from the bore until the post has to be replaced rather than repainted. In freezing climates the trapped water splits the pipe outright. Replacement caps are a proprietary, per-manufacturer part that a small municipality or a property owner often cannot source at all for an older bollard, so the top simply stays open. Printing a cap to the measured pipe size closes the water path in an afternoon, and the reflective-band variant adds night visibility to a post that was installed to be seen. This is the cheapest possible intervention at the point where street furniture actually fails.",
+      "es": "Un bolardo abierto es una falla estructural lenta y un costo de mantenimiento que nadie presupuesta: junta lluvia, la retiene contra la pared interior donde no llega la pintura, y se oxida desde el barreno hacia afuera hasta que el poste debe reemplazarse en vez de repintarse. En climas de helada el agua atrapada parte el tubo. Las tapas de repuesto son una pieza propietaria por fabricante que un municipio pequeño o un propietario a menudo no puede conseguir para un bolardo viejo, así que el extremo simplemente queda abierto. Imprimir una tapa a la medida real del tubo cierra la ruta del agua en una tarde, y la variante con banda reflejante agrega visibilidad nocturna a un poste que se instaló para ser visto. Es la intervención más barata posible justo donde el mobiliario urbano realmente falla."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bollard", "cap", "streetscape", "street-furniture", "pipe", "municipal", "infrastructure", "hyperobject", "commons"]
+}

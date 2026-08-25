@@ -2,20 +2,20 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 400,
-    "with_cdg_interfaces": 386,
-    "with_commons_license": 400,
+    "cartridges": 465,
+    "with_cdg_interfaces": 451,
+    "with_commons_license": 465,
     "dual_engine": 22
   },
   "domains": {
-    "household": 113,
-    "industrial": 84,
+    "household": 124,
+    "industrial": 105,
+    "commercial": 75,
     "wearable": 70,
-    "commercial": 63,
-    "medical": 29,
-    "infrastructure": 20,
+    "medical": 37,
+    "infrastructure": 26,
+    "hybrid": 14,
     "uncategorized": 13,
-    "hybrid": 7,
     "soft-robotics": 1
   },
   "standards": [
@@ -27,17 +27,23 @@
     "1/2in & 3/4in IPS pipe",
     "1/4 in hex driver bit (6.35 mm A/F)",
     "1/4in & 1/2in drip",
+    "1/4in drip",
+    "10 mm path / 12.5 mm square cuvette",
     "1020 tray",
     "10mm cuvette",
     "12 mm / 1/2 in support rod",
     "12-24 UNC (5.49 mm, 24 TPI) / M5",
     "12.5 mm square, 10 mm path-length cuvette",
     "12.7 mm (1/2 in) feeler blade",
+    "15/50 mL conical (Falcon)",
     "15/50mL Falcon",
     "15mm LWS rod",
     "16/19mm cam lock (furniture)",
+    "16/19mm cam-lock",
+    "16in wall stud",
     "16x16 / 19x19 / 9x9 brushless motor mount",
     "18/20/22mm lug",
+    "18650 Ø18.4x65 / 21700 Ø21.2x70 mm",
     "18650/21700/AA",
     "19mm/20mm dog hole",
     "2/3in net cup",
@@ -45,30 +51,43 @@
     "20/25mm compass",
     "20/25mm webbing",
     "2020 T-slot (6 mm slot)",
+    "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
     "20mm T-slot (2020)",
     "24T Futaba / 25T Spektrum",
     "25mm webbing",
     "26mm crown cap",
+    "28-410 / 24-410",
     "28mm/bottle (28-410 / PCO-1881)",
+    "3-8mm shaft (round/D-flat/hex)",
     "3.5mm AT switch",
     "3/16-1/4in tube",
+    "3/4-1in mobility tube",
     "3/4-1in tube",
     "3/4/6mm / TT hex",
+    "3/4in T-track (19.05 mm slot; 1/4-20 stud)",
     "3/4in x 3/8in miter slot; 19mm T-track",
     "3/8-3/4 in tube barb",
     "34 mm flask neck OD (250/500 mL)",
+    "38-400 continuous-thread finish",
     "4 in safety-pattern hasp (No.8/M4 screws)",
+    "4/6mm pneumatic tube",
     "5/8-27 mic thread",
     "5/8in (16mm) baby pin",
     "5050/2835 strip",
     "52mm/60mm gauge",
     "550 paracord (~4mm)",
     "58/54/51mm basket",
+    "6-10mm shaft",
+    "6-12mm shaft",
     "6/8mm ferro rod",
+    "6/8mm shaft + magnets",
+    "608 bearing (ISO 15 — 8×22×7)",
     "608 bearing OD 22 mm / plain shaft bore",
     "60° V-groove bench block",
     "60° lever-indicator dovetail",
     "6mm dia × 2mm N52 neodymium",
+    "70-450 / 86-450 mason CT finish",
+    "8 mm indicator stem (Mitutoyo Series 2 / AGD Group 2)",
     "8 mm indicator stem (Mitutoyo Series 2)",
     "830-pt breadboard",
     "90mm petri",
@@ -104,6 +123,7 @@
     "GHT 3/4 / NPT 1/2 / BSP 1/2 / ISO M20 / M24",
     "GT2 (2mm) / HTD 3M/5M",
     "GT2 2mm / HTD 3M",
+    "GT2 2mm belt",
     "GU10 / IEC 60061 B22d",
     "GoPro action-cam mount",
     "Gridfinity (42 mm module)",
@@ -117,6 +137,7 @@
     "ISO 15 (625/608)",
     "ISO 23509",
     "ISO 261 / ISO 965",
+    "ISO 261 M3",
     "ISO 261 M3/M4/M5",
     "ISO 273 medium clearance",
     "ISO 286 (shaft/hole tolerance)",
@@ -141,11 +162,17 @@
     "ISO metric (M2/M2.5/M3)",
     "Kurt-style vise bolt pattern",
     "Luer barrel",
+    "Luer syringe barrel (1/3/5/10/20 mL)",
     "M22x1 / M24x1 aerator",
+    "M3-M8 insert",
+    "M4/M5 hex nut",
+    "M46-M82 x 0.75",
     "M49-M82 x 0.75",
+    "M5/M6",
     "MC4",
     "MGN9/12/15",
     "MIL-STD-1913 / M-LOK",
+    "MIL-STD-1913 Picatinny",
     "MOLLE/PALS MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
     "Meanwell LRS/RS",
     "Multiboard 25 mm",
@@ -169,6 +196,7 @@
     "SAE J1128 4/7-pin",
     "SAE J1962",
     "SBS 9mm pitch (small)",
+    "SD 24x32 / microSD 11x15 / CF 43x36 mm",
     "SG90/MG996R",
     "SMA / U.FL",
     "SPI 20-410 / 24-410 / 28-410 (8 TPI)",
@@ -177,8 +205,11 @@
     "STEMFIE fastener spec",
     "T-slot / 3/4in miter",
     "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
+    "T8 leadscrew (8 mm major, 2 mm pitch, 8 mm lead)",
+    "T8 trapezoidal / M8 metric leadscrew",
     "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
     "US / metric knitting needle sizes (2.0-12.0 mm)",
+    "US junction box",
     "US register 4x10/4x12/6x10/6x12 in",
     "US round duct 4/5/6 in",
     "US tubular 1-1/4 / 1-1/2 in slip",
@@ -199,6 +230,7 @@
     "aero/square crossbar",
     "breadboard 2.54mm",
     "business card",
+    "business card 89x51mm (ISO 7810 ID-1)",
     "carboy/bucket bore",
     "clarinet / alto / tenor mouthpiece (~30-36 mm)",
     "construction brick 8mm",
@@ -207,23 +239,31 @@
     "e-NABLE / OSL 4-bolt",
     "fine-tool slot array (tweezer/probe body 1.5–8 mm)",
     "handlebar 7/8-1in (22.2-25.4mm)",
+    "internal (round / D-flat)",
     "internal bond socket",
     "internal peg grid 8mm",
     "internal solids 40mm",
     "internal/aocl",
     "iso_8559",
+    "kinematic (Maxwell / Kelvin) 3-ball coupling",
     "low / high shank (19 / 32 mm bar-to-plate)",
     "none",
+    "optics dovetail (60°, Thorlabs RC/XT class)",
     "playing card 63x88mm",
     "ppf-contact-solver (SIGGRAPH Asia 2024)",
+    "router bushing (Porter-Cable universal — 1-3/8 in flange)",
     "single-channel micropipette (Ø3.8-6.0 mm shaft)",
     "slotted cam-lock tailpiece",
+    "standard 12oz can",
+    "standard 150 mm caliper beam (DIN 862 class)",
     "standard can Ø",
     "standard key (Kwikset KW1 / Schlage SC1)",
     "standard pen",
     "standard strike (#8/#10 wood screw, ANSI A156.2 body)",
     "standard tuner button (~14-19 mm), 6 mm post",
+    "standard utensil handle",
     "standard/mini/tarot card",
+    "suction cup",
     "tabletop base sizes",
     "tape core",
     "water-bottle boss",
@@ -231,6 +271,69 @@
     "Ø1/2 in (12.7 mm) optical post"
   ],
   "cartridges": [
+    {
+      "slug": "aerator-adapter",
+      "name": "Faucet Aerator Adapter",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "aerator_std",
+        "mate_std",
+        "hose_id",
+        "clearance",
+        "wall",
+        "body_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printed aerator adapter turns the tap you already have into a hose bib, a bidet feed or a filter mount without a plumber or a proprietary fitting, and by standardizing on the same M22/M24 threads the aerator-cache cartridge uses it lets the whole commons interchange parts — repairing or repurposing a faucet instead of replacing it.",
+        "es": "Un adaptador de aireador impreso convierte el grifo que ya tienes en una toma de manguera, una alimentación de bidé o un soporte de filtro sin plomero ni accesorio propietario, y al estandarizar en las mismas roscas M22/M24 que usa el cartucho aerator-cache permite que todo el procomún intercambie piezas — reparando o reutilizando una llave en vez de reemplazarla."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "aerator_thread",
+          "label": "M22 / M24 Aerator Thread",
+          "geometry_type": "thread",
+          "standard": "M22x1 / M24x1 aerator",
+          "parameters": [
+            "aerator_std",
+            "mate_std",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "M22x1 / M24x1 aerator"
+      ],
+      "source": {
+        "manifest": "projects/aerator-adapter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/aerator-adapter"
+      }
+    },
     {
       "slug": "aerator-cache",
       "name": "Faucet Aerator / Cache",
@@ -430,6 +533,82 @@
       }
     },
     {
+      "slug": "antibacklash-nut",
+      "name": "Lead Screw Anti-Backlash Nut",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "screw",
+        "body_dia",
+        "height",
+        "clearance",
+        "spring_od",
+        "spring_len",
+        "flange_dia",
+        "bolt_dia",
+        "hole_count"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Backlash is the enemy of precision: a worn or loose lead-screw nut turns a printer or CNC into a dimension lottery. A printed T8 anti-backlash nut with a preload spring restores lost-motion-free travel for the cost of a few grams of filament, replacing a proprietary metal nut that can cost more than the machine's screw. It is the canonical repair part for the ubiquitous T8 Z axis, and the tuned `clearance` lets any printer make a nut that fits its own screw.",
+        "es": "La holgura es enemiga de la precisión: una tuerca de husillo gastada o floja convierte una impresora o CNC en una lotería dimensional. Una tuerca anti-holgura T8 impresa con resorte de precarga restaura el movimiento sin juego por el costo de unos gramos de filamento, reemplazando una tuerca metálica propietaria que puede costar más que el husillo de la máquina. Es la pieza de reparación canónica para el ubicuo eje Z T8, y el `clearance` ajustable permite a cualquier impresora hacer una tuerca que encaje en su propio husillo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "t8_trapezoidal_thread",
+          "label": "T8 Trapezoidal Thread",
+          "geometry_type": "thread",
+          "standard": "T8 leadscrew (8 mm major, 2 mm pitch, 8 mm lead)",
+          "parameters": [
+            "screw",
+            "height",
+            "clearance"
+          ]
+        },
+        {
+          "id": "spring_preload_seat",
+          "label": "Spring Preload Seat",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "spring_od",
+            "spring_len"
+          ]
+        }
+      ],
+      "standards": [
+        "T8 leadscrew (8 mm major, 2 mm pitch, 8 mm lead)"
+      ],
+      "source": {
+        "manifest": "projects/antibacklash-nut/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/antibacklash-nut"
+      }
+    },
+    {
       "slug": "aquarium-fitting",
       "name": "Aquarium Fitting",
       "domain": "household",
@@ -490,6 +669,162 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/aquarium-fitting"
+      }
+    },
+    {
+      "slug": "arca-gopro-bridge",
+      "name": "Arca-to-GoPro Adapter",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "plate_w",
+        "flank_ang",
+        "plate_h",
+        "plate_len",
+        "finger_thick",
+        "finger_gap",
+        "knuckle_d",
+        "bolt_hole_d",
+        "reach"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The Arca-Swiss dovetail and the GoPro finger mount are two of the most widespread open camera interfaces, but they never meet on a shop shelf without a proprietary adapter. This bridge is that adapter, printable on demand and shaped to any body — so a tripod head can carry an action cam, or an action-cam cage can hang from a ball head. As a shared node touching both families, it lets the whole Arca and GoPro accessory ecosystems interoperate.",
+        "es": "La cola de milano Arca-Swiss y la montura de dedos GoPro son dos de las interfaces de cámara abiertas más extendidas, pero nunca se encuentran en una tienda sin un adaptador propietario. Este puente es ese adaptador, imprimible bajo demanda y con la forma de cualquier cuerpo — para que una rótula de trípode pueda llevar una cámara de acción, o una jaula de cámara de acción pueda colgar de una rótula. Como nodo compartido que toca ambas familias, permite que todo el ecosistema de accesorios Arca y GoPro interopere."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "arca_swiss_dovetail",
+          "label": "Arca-Swiss Dovetail",
+          "geometry_type": "profile",
+          "standard": "Arca-Swiss 38mm",
+          "parameters": [
+            "plate_w",
+            "flank_ang",
+            "plate_h"
+          ]
+        },
+        {
+          "id": "gopro_finger_clevis",
+          "label": "GoPro Finger Clevis",
+          "geometry_type": "snap",
+          "standard": "GoPro action-cam mount",
+          "parameters": [
+            "finger_thick",
+            "finger_gap",
+            "knuckle_d",
+            "bolt_hole_d"
+          ]
+        }
+      ],
+      "standards": [
+        "Arca-Swiss 38mm",
+        "GoPro action-cam mount"
+      ],
+      "source": {
+        "manifest": "projects/arca-gopro-bridge/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/arca-gopro-bridge"
+      }
+    },
+    {
+      "slug": "arca-l-bracket",
+      "name": "Arca-Swiss L-Bracket",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "plate_w",
+        "flank_ang",
+        "plate_h",
+        "base_len",
+        "slot_w",
+        "slot_len",
+        "wing_h",
+        "wing_len",
+        "foot_len"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An Arca L-bracket lets a photographer switch a camera between landscape and portrait on any Arca-Swiss head in seconds without dropping the lens axis off-centre — and print one shaped to their exact body instead of buying a proprietary bracket per camera. Because it shares the open 38 mm dovetail, it interoperates with every Arca clamp, plate and ball head, and a lost or broken bracket can be reprinted in the field.",
+        "es": "Un soporte en L Arca permite a un fotógrafo cambiar una cámara entre horizontal y vertical en cualquier rótula Arca-Swiss en segundos sin descentrar el eje de la lente, e imprimir uno con la forma exacta de su cuerpo en vez de comprar un soporte propietario por cámara. Al compartir la cola de milano abierta de 38 mm, interopera con cualquier mordaza, placa y rótula Arca, y un soporte perdido o roto puede reimprimirse en el campo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "arca_swiss_dovetail",
+          "label": "Arca-Swiss Dovetail",
+          "geometry_type": "profile",
+          "standard": "Arca-Swiss 38mm",
+          "parameters": [
+            "plate_w",
+            "flank_ang",
+            "plate_h"
+          ]
+        },
+        {
+          "id": "quarter_20_slot",
+          "label": "1/4-20 Camera Slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "ASME B1.1 1/4-20 UNC",
+          "parameters": [
+            "slot_w",
+            "slot_len"
+          ]
+        }
+      ],
+      "standards": [
+        "ASME B1.1 1/4-20 UNC",
+        "Arca-Swiss 38mm"
+      ],
+      "source": {
+        "manifest": "projects/arca-l-bracket/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/arca-l-bracket"
       }
     },
     {
@@ -1229,6 +1564,73 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/barend-mount"
+      }
+    },
+    {
+      "slug": "battery-caddy",
+      "name": "18650 Battery Caddy",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "cell",
+        "count",
+        "wall",
+        "cradle_frac",
+        "clearance",
+        "contact_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Loose 18650 and 21700 cells are a short-circuit and fire risk when carried in a pocket or drawer; a printed caddy keeps terminals apart and cells organized for a few grams of filament, and the sleeve mode protects a single spare cell in a bag.",
+        "es": "Las celdas 18650 y 21700 sueltas son un riesgo de cortocircuito e incendio al llevarlas en un bolsillo o cajón; un soporte impreso mantiene los terminales separados y las celdas organizadas por unos gramos de filamento, y el modo funda protege una celda de repuesto en una mochila."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "Cradle bores carry ~0.5 mm per-side clearance for a drop-in fit; tighten for a snap grip in PETG or open for recycled PLA. Do not print the sleeve in brittle filament — a cell impact should flex, not shatter, the wall.",
+          "es": "Las cunas tienen ~0.5 mm de holgura por lado para un ajuste de inserción; ajústala para un agarre a presión en PETG o ábrela para PLA reciclado. No imprimas la funda en filamento quebradizo — un impacto de celda debe flexar, no romper, la pared."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "cell_cradle_array",
+          "label": "Li-ion Cell Cradle Array",
+          "geometry_type": "socket",
+          "standard": "18650 Ø18.4x65 / 21700 Ø21.2x70 mm",
+          "parameters": [
+            "cell",
+            "count",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "18650 Ø18.4x65 / 21700 Ø21.2x70 mm"
+      ],
+      "source": {
+        "manifest": "projects/battery-caddy/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/battery-caddy"
       }
     },
     {
@@ -3093,6 +3495,72 @@
       }
     },
     {
+      "slug": "bottle-coupler",
+      "name": "Bottle-to-Bottle Coupler",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "clearance",
+        "turns",
+        "wall",
+        "web_th",
+        "bore_margin",
+        "vortex_dia",
+        "funnel_dia",
+        "funnel_h",
+        "funnel_wall"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A coupler turns two abundant PET bottles into a bigger closed system with no new vessel: invert-and-store to save fridge space, run the tornado-tube vortex as a free science demonstration, or decant through the funnel end. All from bottles that would otherwise be waste, with a printed part that costs a few grams of filament.",
+        "es": "Un acoplador convierte dos botellas PET abundantes en un sistema cerrado más grande sin recipiente nuevo: invertir-y-almacenar para ahorrar espacio, usar el vórtice del tubo tornado como demostración científica gratuita, o trasvasar por el extremo embudo. Todo a partir de botellas que de otro modo serían residuos, con una pieza impresa que cuesta unos gramos de filamento."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pco1881_neck_thread",
+          "label": "PCO-1881 Neck Thread (×2)",
+          "geometry_type": "thread",
+          "standard": "PCO 1881",
+          "parameters": [
+            "clearance",
+            "turns",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "PCO 1881"
+      ],
+      "source": {
+        "manifest": "projects/bottle-coupler/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bottle-coupler"
+      }
+    },
+    {
       "slug": "bottle-thread",
       "name": "Bottle-Thread Cap & Coupler",
       "domain": "household",
@@ -4237,6 +4705,73 @@
       }
     },
     {
+      "slug": "caliper-stand",
+      "name": "Caliper Base Stand",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "beam_w",
+        "beam_t",
+        "fit_clear",
+        "base_len",
+        "base_thick",
+        "wall",
+        "clamp_screw_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A hobbyist rarely owns a caliper stand or a height gauge — they cost $30–$120 and gather dust. A printed cradle turns any bench caliper into a hands-free comparator, the clamp locks it against a reference for go/no-go checks, and the depth base turns a 150 mm caliper into a rough height gauge, all for the price of filament.",
+        "es": "Un aficionado rara vez tiene un soporte de calibre o un calibre de altura — cuestan $30–$120 y acumulan polvo. Una cuna impresa convierte cualquier calibre de banco en un comparador sin manos, la mordaza lo bloquea contra una referencia para verificaciones pasa/no-pasa, y la base de profundidad convierte un calibre de 150 mm en un calibre de altura básico, todo por el precio del filamento."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "Measure your own caliper beam with the caliper itself and set beam_w / beam_t to those numbers — beams vary between makers. Print in PETG or PLA at ≥30% infill so the pocket walls stay rigid; the clamp variant needs stiffness to actually pinch. Same-material printing keeps the pocket consistent with the measured fit; open the pocket 0.1 mm with a file if your printer runs tight.",
+          "es": "Mide tu propio calibre con el propio calibre y ajusta beam_w / beam_t a esos números — los cuerpos varían entre fabricantes. Imprime en PETG o PLA con ≥30% de relleno para que las paredes del bolsillo sean rígidas; la variante de mordaza necesita rigidez para apretar. Abre el bolsillo 0.1 mm con una lima si va apretado."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "caliper_beam_pocket",
+          "label": "Caliper Beam Pocket",
+          "geometry_type": "pocket",
+          "standard": "standard 150 mm caliper beam (DIN 862 class)",
+          "parameters": [
+            "beam_w",
+            "beam_t"
+          ]
+        }
+      ],
+      "standards": [
+        "standard 150 mm caliper beam (DIN 862 class)"
+      ],
+      "source": {
+        "manifest": "projects/caliper-stand/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/caliper-stand"
+      }
+    },
+    {
       "slug": "cam-buckle",
       "name": "Cam Buckle",
       "domain": "wearable",
@@ -4461,6 +4996,131 @@
       }
     },
     {
+      "slug": "camlock-latch",
+      "name": "Cam-Lock Latch Set",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "body_d",
+        "plate_t",
+        "cam_clear",
+        "keep_h",
+        "hole_d",
+        "screw_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Cabinet cam locks are sold as a cam plus a body, but the parts that wear or go missing are the frame-side pieces: the strike the cam catches, a bushing when the mounting hole gets over-drilled, or a keeper for a door that no longer latches. Printing those companions to the same 16/19 mm body standard the lock-cam cartridge keys to lets a maker or a cabinet repair keep an old lock working — extending the life of furniture instead of replacing a whole latch set for one worn part.",
+        "es": "Las cerraduras de leva de gabinete se venden como leva más cuerpo, pero las piezas que se desgastan o se pierden son las del lado del marco: el cierre que engancha la leva, un buje cuando el agujero de montaje se sobreperfora, o un retén para una puerta que ya no cierra. Imprimir esos complementos al mismo estándar de cuerpo de 16/19 mm al que se acopla el cartucho lock-cam permite a un fabricante o a una reparación de gabinete mantener una cerradura vieja funcionando — extendiendo la vida del mueble en vez de reemplazar todo el juego por una sola pieza gastada."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "camlock_body_socket",
+          "label": "16/19 mm Cam-Lock Body",
+          "geometry_type": "socket",
+          "standard": "16/19mm cam-lock",
+          "parameters": [
+            "body_d",
+            "hole_d"
+          ]
+        }
+      ],
+      "standards": [
+        "16/19mm cam-lock"
+      ],
+      "source": {
+        "manifest": "projects/camlock-latch/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/camlock-latch"
+      }
+    },
+    {
+      "slug": "can-dispenser",
+      "name": "Can Storage Dispenser",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "can_dia",
+        "can_len",
+        "capacity",
+        "clearance",
+        "front_lip",
+        "wall"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A can rack turns a shelf of loose cans into a self-ordering queue that reclaims space and keeps the oldest cans forward, and because it is sized by can diameter it grows the beverage-can commons — the same 66 mm socket the fridge-dispenser uses — so a maker adapts it to soda, seltzer or slim cans without a new product.",
+        "es": "Un rack de latas convierte un estante de latas sueltas en una fila auto-ordenada que recupera espacio y mantiene las más viejas al frente, y como se dimensiona por el diámetro de la lata amplía el procomún de latas — el mismo zócalo de 66 mm que usa el fridge-dispenser — para adaptarlo a refresco, agua mineral o latas delgadas sin un producto nuevo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "can_socket",
+          "label": "Standard Can Socket",
+          "geometry_type": "socket",
+          "standard": "standard 12oz can",
+          "parameters": [
+            "can_dia",
+            "can_len",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "standard 12oz can"
+      ],
+      "source": {
+        "manifest": "projects/can-dispenser/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/can-dispenser"
+      }
+    },
+    {
       "slug": "capo",
       "name": "Capo / Slide (parametric)",
       "domain": "commercial",
@@ -4520,6 +5180,77 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/capo"
+      }
+    },
+    {
+      "slug": "captive-nut",
+      "name": "Captive Nut Channel",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "nut_size",
+        "nut_clear",
+        "wall",
+        "depth_clear",
+        "body_len"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A captive nut converts a plastic print into a strong, repeatedly-serviceable bolted joint — plastic threads strip, a trapped steel nut does not. Standardizing the nut pocket on the common M4/M5 hex sizes means printed brackets, panels and frames all take the same hardware a maker already has, so joints can be assembled and re-opened by hand, from one side, without adhesives or specialist inserts.",
+        "es": "Una tuerca cautiva convierte una pieza impresa en una unión atornillada fuerte y reparable — las roscas de plástico se barren, una tuerca de acero atrapada no. Estandarizar el alojamiento en los tamaños hexagonales comunes M4/M5 significa que soportes, paneles y marcos impresos aceptan el mismo herraje que un fabricante ya tiene, permitiendo ensamblar y reabrir uniones a mano, desde un lado, sin adhesivos ni insertos especializados."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "hex_nut_pocket",
+          "label": "Hex Nut Pocket",
+          "geometry_type": "pocket",
+          "standard": "M4/M5 hex nut",
+          "parameters": [
+            "nut_size",
+            "nut_clear",
+            "depth_clear"
+          ]
+        },
+        {
+          "id": "screw_clearance_bore",
+          "label": "Machine Screw Clearance Bore",
+          "geometry_type": "socket",
+          "standard": "M4/M5 hex nut",
+          "parameters": [
+            "nut_size"
+          ]
+        }
+      ],
+      "standards": [
+        "M4/M5 hex nut"
+      ],
+      "source": {
+        "manifest": "projects/captive-nut/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/captive-nut"
       }
     },
     {
@@ -4716,6 +5447,72 @@
       }
     },
     {
+      "slug": "card-tray",
+      "name": "Business Card Holder",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "card_len",
+        "card_wid",
+        "stack_mm",
+        "wall",
+        "lean_ang"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A printable card holder replaces a bought desk accessory with a few grams of filament and lets a small business match the holder to its exact card size, keeping presentation tidy at effectively zero marginal cost.",
+        "es": "Un portatarjetas imprimible reemplaza un accesorio comprado con unos gramos de filamento y permite a un negocio pequeño ajustar el soporte al tamaño exacto de su tarjeta, manteniendo la presentación ordenada a un costo marginal prácticamente nulo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The card groove carries ~0.6 mm per-side slip clearance so a real stack drops in; tighten it for stiff filaments and open it for recycled PLA that prints slightly oversize.",
+          "es": "La ranura de tarjetas tiene ~0.6 mm de holgura por lado para que un bloque real entre; ajústala para filamentos rígidos y ábrela para PLA reciclado que imprime ligeramente sobredimensionado."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "card_groove",
+          "label": "Business Card Footprint Groove",
+          "geometry_type": "profile",
+          "standard": "business card 89x51mm (ISO 7810 ID-1)",
+          "parameters": [
+            "card_len",
+            "card_wid",
+            "stack_mm"
+          ]
+        }
+      ],
+      "standards": [
+        "business card 89x51mm (ISO 7810 ID-1)"
+      ],
+      "source": {
+        "manifest": "projects/card-tray/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/card-tray"
+      }
+    },
+    {
       "slug": "center-finder",
       "name": "Center Finder / Marking Gauge",
       "domain": "industrial",
@@ -4847,6 +5644,73 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/centrifuge-adapter"
+      }
+    },
+    {
+      "slug": "centrifuge-tube-adapter",
+      "name": "Test-Tube Centrifuge Adapter",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "tube_dia",
+        "rotor_bore",
+        "clearance",
+        "depth",
+        "floor"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "One printed sleeve lets a lab run small conical tubes in whatever centrifuge and rotor it already owns, instead of buying a dedicated set of adapters per tube size, extending equipment life at the cost of filament.",
+        "es": "Un manguito impreso permite a un laboratorio usar tubos cónicos pequeños en la centrífuga y rotor que ya posee, en vez de comprar un juego dedicado de adaptadores por tamaño de tubo, prolongando la vida del equipo al costo del filamento."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The bore adds the user 'clearance' per side; start at 0.4 mm. Print dense (>=40% infill) so the sleeve survives rotor g-force, and always balance opposing buckets. This is a bench aid — confirm the tube, adapter and rotor are rated for your speed.",
+          "es": "El barreno suma la 'holgura' del usuario por lado; empieza en 0.4 mm. Imprime denso (>=40% relleno) para que el manguito resista la fuerza g del rotor, y siempre balancea cangilones opuestos. Es una ayuda de mesa — confirma que el tubo, el adaptador y el rotor estén clasificados para tu velocidad."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "conical_tube_socket",
+          "label": "15/50 mL Conical Tube Socket",
+          "geometry_type": "socket",
+          "standard": "15/50 mL conical (Falcon)",
+          "parameters": [
+            "tube_dia",
+            "rotor_bore",
+            "clearance",
+            "depth"
+          ]
+        }
+      ],
+      "standards": [
+        "15/50 mL conical (Falcon)"
+      ],
+      "source": {
+        "manifest": "projects/centrifuge-tube-adapter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/centrifuge-tube-adapter"
       }
     },
     {
@@ -6502,6 +7366,73 @@
       }
     },
     {
+      "slug": "cuvette-sleeve",
+      "name": "Cuvette Adapter Sleeve",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "cuvette_size",
+        "holder_size",
+        "sleeve_h",
+        "clearance",
+        "floor_th",
+        "riser"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A single printed sleeve lets teaching and field labs reuse a spectrophotometer or cuvette rack across cuvette sizes and round vials instead of buying dedicated adapters, standardising sample handling on the universal 12.5 mm slot at the cost of filament.",
+        "es": "Un solo manguito impreso permite a laboratorios de enseñanza y de campo reutilizar un espectrofotómetro o gradilla de cubetas con distintos tamaños de cubeta y viales redondos en vez de comprar adaptadores dedicados, estandarizando el manejo de muestras en la ranura universal de 12.5 mm al costo del filamento."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The pocket adds the user 'clearance' per side so the cuvette slips in and out; start at 0.4 mm. For optical work print opaque and matte to avoid stray light in the beam path. This is a bench aid, not a calibrated optical accessory.",
+          "es": "El hueco suma la 'holgura' del usuario por lado para que la cubeta entre y salga; empieza en 0.4 mm. Para trabajo óptico imprime opaco y mate para evitar luz parásita en el paso del haz. Es una ayuda de mesa, no un accesorio óptico calibrado."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "cuvette_socket",
+          "label": "10 mm Cuvette to 12.5 mm Holder Socket",
+          "geometry_type": "socket",
+          "standard": "10 mm path / 12.5 mm square cuvette",
+          "parameters": [
+            "cuvette_size",
+            "holder_size",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "10 mm path / 12.5 mm square cuvette"
+      ],
+      "source": {
+        "manifest": "projects/cuvette-sleeve/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/cuvette-sleeve"
+      }
+    },
+    {
       "slug": "d-ring",
       "name": "D-Ring",
       "domain": "wearable",
@@ -7313,6 +8244,152 @@
       }
     },
     {
+      "slug": "din-relay",
+      "name": "DIN Rail Relay Holder",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "relay_w",
+        "relay_l",
+        "relay_h",
+        "wall",
+        "fin_count",
+        "fin_h",
+        "vent_w",
+        "plate_th"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Relays and SSRs are the switching muscle of control panels, but off-the-shelf DIN holders are brand-specific and finger-safe guards are often missing on retrofits. A printed cradle, louvred guard or finned SSR mount at the relay's own dimensions keeps switching gear on the rail, touch-safe and cooled, using commodity parts rather than a proprietary socket.",
+        "es": "Los relés y SSR son el músculo de conmutación de los tableros de control, pero los soportes DIN comerciales son específicos por marca y las guardas a prueba de dedos suelen faltar en las adaptaciones. Una cuna, guarda con persianas o montaje SSR con aletas impreso a las dimensiones del propio relé mantiene el equipo de conmutación en el riel, seguro al tacto y refrigerado, usando piezas genéricas en vez de un zócalo propietario."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "din_ts35_rail",
+          "label": "DIN TS35 Rail Clip",
+          "geometry_type": "rail",
+          "standard": "DIN EN 60715",
+          "parameters": [
+            "plate_th"
+          ]
+        },
+        {
+          "id": "relay_cradle",
+          "label": "Relay Body Cradle",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "relay_w",
+            "relay_l",
+            "relay_h"
+          ]
+        }
+      ],
+      "standards": [
+        "DIN EN 60715"
+      ],
+      "source": {
+        "manifest": "projects/din-relay/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/din-relay"
+      }
+    },
+    {
+      "slug": "din-terminal-comb",
+      "name": "DIN Rail Terminal Comb",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "pitch",
+        "poles",
+        "prong_d",
+        "comb_h",
+        "label_w",
+        "plate_th",
+        "screw_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "DIN rail is the universal open backbone of electrical control panels and consumer units worldwide, and terminal-block accessories — jumpers, end stops, marker strips — are proprietary, per-brand and easily lost. A printed comb, end bracket or marker carrier at the correct terminal pitch keeps a panel serviceable and re-labellable with commodity parts instead of ordering a manufacturer-specific accessory.",
+        "es": "El riel DIN es la columna vertebral abierta universal de los tableros de control eléctrico y los cuadros de consumo en todo el mundo, y los accesorios de bloques de terminales — puentes, topes, tiras marcadoras — son propietarios, por marca y fáciles de perder. Un peine, tope o portamarcadores impreso al paso correcto mantiene un tablero mantenible y re-etiquetable con piezas genéricas en lugar de pedir un accesorio específico del fabricante."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "din_ts35_rail",
+          "label": "DIN TS35 Rail Clip",
+          "geometry_type": "rail",
+          "standard": "DIN EN 60715",
+          "parameters": [
+            "plate_th"
+          ]
+        },
+        {
+          "id": "terminal_pitch",
+          "label": "Terminal-Block Pitch",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "pitch",
+            "poles"
+          ]
+        }
+      ],
+      "standards": [
+        "DIN EN 60715"
+      ],
+      "source": {
+        "manifest": "projects/din-terminal-comb/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/din-terminal-comb"
+      }
+    },
+    {
       "slug": "dock-hook",
       "name": "Monitor / Laptop Dock Hook",
       "domain": "commercial",
@@ -7633,6 +8710,75 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/dovetail-joint"
+      }
+    },
+    {
+      "slug": "dovetail-slide",
+      "name": "Dovetail Optics Slide",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "dovetail_w",
+        "dovetail_ang",
+        "rail_h",
+        "rail_len",
+        "carriage_len",
+        "fit_clear",
+        "wall",
+        "bolt_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Commercial optical dovetail rails and carriers cost $30–$120 each and lock a lab into one vendor's catalogue. A printed 60° dovetail slide gives a school, a hobby optics bench or a field kit a real translation stage — rail, sliding carriage and locking carriage — for the price of filament, and the parametric profile keeps every printed part interoperable on the same rail.",
+        "es": "Los rieles y portadores de cola de milano ópticos comerciales cuestan $30–$120 cada uno y atan un laboratorio al catálogo de un fabricante. Una corredera de cola de milano a 60° impresa da a una escuela, un banco óptico casero o un kit de campo una etapa de traslación real —riel, carro deslizante y carro de bloqueo— por el precio del filamento, y el perfil paramétrico mantiene interoperables todas las piezas impresas sobre el mismo riel."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The sliding fit lives or dies on the per-side clearance. Print rail and carriage in the same material so their shrinkage matches, and tune fit_clear to your printer: 0.25 mm for a well-calibrated machine, 0.35–0.4 mm for a loose one. PETG or PLA at ≥30% infill keeps the gib jaw stiff enough to actually clamp; a soft TPU carriage will not lock.",
+          "es": "El ajuste deslizante depende de la holgura por lado. Imprime riel y carro en el mismo material para igualar contracción, y ajusta fit_clear a tu impresora: 0.25 mm si está bien calibrada, 0.35–0.4 mm si va holgada. PETG o PLA con ≥30% de relleno mantiene la mordaza de gib rígida; un carro de TPU blando no bloqueará."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "optics_dovetail_60",
+          "label": "60° Optics Dovetail",
+          "geometry_type": "rail",
+          "standard": "optics dovetail (60°, Thorlabs RC/XT class)",
+          "parameters": [
+            "dovetail_w",
+            "dovetail_ang",
+            "rail_h"
+          ]
+        }
+      ],
+      "standards": [
+        "optics dovetail (60°, Thorlabs RC/XT class)"
+      ],
+      "source": {
+        "manifest": "projects/dovetail-slide/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/dovetail-slide"
       }
     },
     {
@@ -7957,6 +9103,79 @@
       }
     },
     {
+      "slug": "drill-fence",
+      "name": "Drill Press Fence",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "stud",
+        "fence_len",
+        "fence_h",
+        "fence_t",
+        "channel_w",
+        "mount_slot",
+        "stop_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A drill-press fence with a flip stop turns a bare drill table into a repeatable boring jig — shelf-pin rows, dowel joints, hardware patterns all land on the mark. Printed on demand, it fits any drill or router table with 3/4 in T-track, and the flip stop and mount bracket reprint in minutes if lost. It clamps to the same track as bench dogs and featherboards, growing the miter/T-track commons.",
+        "es": "Una guía de taladro con tope abatible convierte una mesa de taladro simple en una plantilla de barrenado repetible — hileras de pernos de estante, uniones de espiga, patrones de herrajes caen en la marca. Impresa bajo demanda, encaja en cualquier mesa de taladro o router con riel en T de 3/4 in, y el tope y el soporte se reimprimen en minutos si se pierden. Se sujeta al mismo riel que los perros de banco y los peines, haciendo crecer el común de riel en T / inglete."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "ttrack_mount_rail",
+          "label": "3/4 in T-Track Mount Rail",
+          "geometry_type": "rail",
+          "standard": "3/4in T-track (19.05 mm slot; 1/4-20 stud)",
+          "parameters": [
+            "stud",
+            "mount_slot"
+          ]
+        },
+        {
+          "id": "stop_channel_rail",
+          "label": "Flip-Stop Channel Rail",
+          "geometry_type": "rail",
+          "standard": "internal",
+          "parameters": [
+            "channel_w",
+            "fence_len"
+          ]
+        }
+      ],
+      "standards": [
+        "3/4in T-track (19.05 mm slot; 1/4-20 stud)"
+      ],
+      "source": {
+        "manifest": "projects/drill-fence/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/drill-fence"
+      }
+    },
+    {
       "slug": "drill-guide",
       "name": "Drill Guide / Bushing Jig",
       "domain": "industrial",
@@ -8102,6 +9321,80 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/drip-fitting"
+      }
+    },
+    {
+      "slug": "drip-manifold",
+      "name": "Drip Irrigation Manifold",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "outlets",
+        "barb_od",
+        "barb_lumen",
+        "barb_len",
+        "inlet_od",
+        "wall",
+        "spacing"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Micro-drip irrigation saves water by delivering it at the root, but off-the-shelf manifolds come in fixed outlet counts and layouts. A printable manifold sized to the exact number of drip lines a bed needs — inline, radial, or a simple wye — lets a gardener or smallholder branch a watering system on demand from a single 1/4 in barb standard, and repair a cracked distributor in the field instead of replacing the whole run.",
+        "es": "El riego por goteo ahorra agua al entregarla en la raiz, pero los manifolds comerciales vienen en numeros y disposiciones fijas de salidas. Un manifold impreso al numero exacto de lineas de goteo que necesita un bancal — en linea, radial o una Y simple — permite a un jardinero o pequeno productor ramificar el riego bajo demanda desde el estandar de pua de 1/4 in, y reparar un distribuidor agrietado en campo en vez de reemplazar todo el tramo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "drip_barb_outlet",
+          "label": "1/4 in Drip Barb Outlet",
+          "geometry_type": "socket",
+          "standard": "1/4in drip",
+          "parameters": [
+            "barb_od",
+            "barb_lumen",
+            "barb_len"
+          ]
+        },
+        {
+          "id": "supply_plenum",
+          "label": "Supply Plenum",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "inlet_od",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "1/4in drip"
+      ],
+      "source": {
+        "manifest": "projects/drip-manifold/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/drip-manifold"
       }
     },
     {
@@ -9155,6 +10448,172 @@
       }
     },
     {
+      "slug": "fan-duct",
+      "name": "Fan-to-Duct Adapter",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "fan_size",
+        "duct_len",
+        "outlet_dia",
+        "duct_wall",
+        "flange_t",
+        "barb_dia",
+        "barb_count"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Moving air where you need it — venting a 3D-printer enclosure, capturing solder fumes, dust-collecting a bench tool, cooling a server nook — usually means a proprietary shroud that fits exactly one product. A printed fan-to-duct adapter turns any surplus PC fan into a targeted air mover: it bolts to the open PC-fan corner-hole square shared by dozens of makers (the same square a fan-adapter, dust-shroud or fan-filter uses) and transitions to the round duct, hose or elbow the job actually needs.",
+        "es": "Mover aire donde se necesita — ventilar un gabinete de impresora 3D, capturar humos de soldadura, recolectar polvo de una herramienta de banco, enfriar un rincón de servidor — normalmente implica una cubierta propietaria que encaja en un solo producto. Un adaptador impreso de ventilador a ducto convierte cualquier ventilador de PC sobrante en un movedor de aire dirigido: se atornilla al cuadro abierto de orificios de esquina de ventilador PC que comparten docenas de fabricantes (el mismo cuadro que usa un fan-adapter, dust-shroud o fan-filter) y transiciona al ducto redondo, manguera o codo que el trabajo realmente necesita."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "fan_screw_pattern",
+          "label": "PC Fan Corner-Hole Square",
+          "geometry_type": "bolt_pattern",
+          "standard": "PC fan 40-140mm",
+          "parameters": [
+            "fan_size",
+            "flange_t"
+          ]
+        },
+        {
+          "id": "round_outlet",
+          "label": "Round Duct Outlet",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "outlet_dia",
+            "duct_wall"
+          ]
+        },
+        {
+          "id": "hose_barb",
+          "label": "Push-On Hose Barb",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "barb_dia",
+            "barb_count"
+          ]
+        }
+      ],
+      "standards": [
+        "PC fan 40-140mm"
+      ],
+      "source": {
+        "manifest": "projects/fan-duct/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/fan-duct"
+      }
+    },
+    {
+      "slug": "fan-filter",
+      "name": "PC Fan Filter Frame",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "fan_size",
+        "frame_h",
+        "media_pocket",
+        "grille_bar",
+        "grille_rings",
+        "magnet_dia",
+        "magnet_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A dusty fan clogs, overheats and dies; a filter frame extends the life of any PC, 3D printer or ventilation fan for pennies of filament plus a scrap of mesh. Because it mounts on the open PC-fan corner-hole square shared by dozens of makers, one printed frame fits the same fan a fan-adapter or dust-shroud already bolts to, and the media is a washable, replaceable consumable instead of a proprietary cartridge.",
+        "es": "Un ventilador con polvo se obstruye, se sobrecalienta y muere; un marco de filtro alarga la vida de cualquier ventilador de PC, impresora 3D o ventilación por unos centavos de filamento más un recorte de malla. Como se monta en el cuadro abierto de orificios de esquina de ventilador PC que comparten docenas de fabricantes, un marco impreso encaja en el mismo ventilador que un fan-adapter o dust-shroud ya atornilla, y el medio es un consumible lavable y reemplazable en vez de un cartucho propietario."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "fan_screw_pattern",
+          "label": "PC Fan Corner-Hole Square",
+          "geometry_type": "grid",
+          "standard": "PC fan 40-140mm",
+          "parameters": [
+            "fan_size"
+          ]
+        },
+        {
+          "id": "media_pocket",
+          "label": "Filter Media Pocket",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "media_pocket",
+            "grille_bar",
+            "grille_rings"
+          ]
+        },
+        {
+          "id": "magnet_pocket",
+          "label": "Corner Magnet Pocket",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "magnet_dia",
+            "magnet_h"
+          ]
+        }
+      ],
+      "standards": [
+        "PC fan 40-140mm"
+      ],
+      "source": {
+        "manifest": "projects/fan-filter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/fan-filter"
+      }
+    },
+    {
       "slug": "fascinator-base",
       "name": "Fascinator Base",
       "domain": "wearable",
@@ -9642,6 +11101,71 @@
       }
     },
     {
+      "slug": "filter-step-ring",
+      "name": "Lens Filter Step Ring",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "thread_a",
+        "thread_b",
+        "thread_turns",
+        "clearance",
+        "wall",
+        "top_th",
+        "grip_teeth"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Every photographer accumulates filters and lenses in mismatched thread sizes, and a wallet of proprietary step rings to bridge them. A printable step ring — in any of the nine common sizes, in step, coupler or reverse form — lets someone make the exact adapter a shot needs from a single part, reuse an expensive filter across every lens, and replace a lost ring in the field. Sharing the filter-thread standard, it screws onto any filter-thread part and is a companion for the filter-thread family.",
+        "es": "Todo fotógrafo acumula filtros y lentes con tamaños de rosca dispares, y una cartera de anillos escalonadores propietarios para unirlos. Un anillo escalonador imprimible — en cualquiera de los nueve tamaños comunes, en forma escalonadora, acopladora o inversora — permite fabricar el adaptador exacto que una toma necesita con una sola pieza, reutilizar un filtro caro en cada lente y reemplazar un anillo perdido en el campo. Al compartir el estándar de rosca de filtro, se enrosca en cualquier pieza de rosca de filtro y es un compañero para la familia de rosca de filtro."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "filter_thread",
+          "label": "Filter Thread",
+          "geometry_type": "thread",
+          "standard": "M46-M82 x 0.75",
+          "parameters": [
+            "thread_a",
+            "thread_b",
+            "thread_turns",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "M46-M82 x 0.75"
+      ],
+      "source": {
+        "manifest": "projects/filter-step-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/filter-step-ring"
+      }
+    },
+    {
       "slug": "filter-straw",
       "name": "Water Filter / Straw Adapter",
       "domain": "household",
@@ -9853,6 +11377,84 @@
       }
     },
     {
+      "slug": "finray-gripper",
+      "name": "Fin-Ray Gripper Jaw",
+      "domain": "hybrid",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "fin_len",
+        "fin_base",
+        "fin_th",
+        "rib_count",
+        "rib_w",
+        "spline",
+        "hub_d",
+        "tooth_h",
+        "pin_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Fin-Ray fingers grip fragile, irregular objects passively — no sensors, no control loop — which is why they dominate food handling and assistive grippers. Commercial Fin-Ray jaws are proprietary and sold per-robot; an open, parametric jaw that also mates the ubiquitous 24T/25T servo spline lets a maker or lab fit a compliant gripper to any hobby servo and tune the wrap stiffness for the task.",
+        "es": "Los dedos Fin-Ray agarran objetos fragiles e irregulares de forma pasiva — sin sensores ni lazo de control — por eso dominan el manejo de alimentos y las pinzas de asistencia. Las mordazas Fin-Ray comerciales son propietarias y se venden por robot; una mordaza abierta y parametrica que ademas encaja en el estriado de servo ubicuo 24T/25T permite a un maker o laboratorio adaptar una pinza compatible a cualquier servo y ajustar la rigidez de envoltura a la tarea."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "finray_profile",
+          "label": "Fin-Ray Rib Profile",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "fin_len",
+            "fin_base",
+            "rib_count",
+            "rib_w"
+          ]
+        },
+        {
+          "id": "servo_spline",
+          "label": "Servo Spline",
+          "geometry_type": "spline",
+          "standard": "24T Futaba / 25T Spektrum",
+          "parameters": [
+            "spline",
+            "hub_d",
+            "tooth_h"
+          ]
+        }
+      ],
+      "standards": [
+        "24T Futaba / 25T Spektrum"
+      ],
+      "source": {
+        "manifest": "projects/finray-gripper/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/finray-gripper"
+      }
+    },
+    {
       "slug": "flange-plate",
       "name": "Bolt-Circle Flange Plate",
       "domain": "industrial",
@@ -10004,6 +11606,79 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/flask-clamp"
+      }
+    },
+    {
+      "slug": "flexure-mount",
+      "name": "Compliant Flexure Mount",
+      "domain": "hybrid",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "body_w",
+        "body_d",
+        "thickness",
+        "blade_t",
+        "frame_w",
+        "travel",
+        "m3_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Flexures replace bearings and slides with elastic bending, giving play-free, wear-free, lubrication-free precision motion — the basis of optical mounts, force probes and micro-positioners. Commercial flexure stages cost hundreds to thousands; an open, parametric flexure that bolts to the standard M3 fastener grid lets a lab or maker print a precision stage tuned to the load and travel they need, democratising metrology and optics tooling.",
+        "es": "Las flexuras reemplazan rodamientos y guias con flexion elastica, dando movimiento de precision sin holgura, sin desgaste y sin lubricacion — la base de monturas opticas, sondas de fuerza y microposicionadores. Las etapas de flexura comerciales cuestan cientos a miles; una flexura abierta y parametrica que se atornilla a la reticula de tornillos M3 estandar permite a un laboratorio o maker imprimir una etapa de precision ajustada a la carga y recorrido que necesitan, democratizando la metrologia y el instrumental optico."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "flexure_blades",
+          "label": "Flexure Blades",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "blade_t",
+            "travel",
+            "frame_w"
+          ]
+        },
+        {
+          "id": "m3_mount",
+          "label": "M3 Mounting Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "ISO 261 M3",
+          "parameters": [
+            "m3_d"
+          ]
+        }
+      ],
+      "standards": [
+        "ISO 261 M3"
+      ],
+      "source": {
+        "manifest": "projects/flexure-mount/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/flexure-mount"
       }
     },
     {
@@ -11938,6 +13613,162 @@
       }
     },
     {
+      "slug": "gopro-arm",
+      "name": "GoPro Extension Arm",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "finger_thick",
+        "finger_gap",
+        "knuckle_d",
+        "bolt_hole_d",
+        "reach",
+        "arm_len",
+        "arm_th"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The GoPro finger mount is the open lingua franca of action-cam accessories, but off-the-shelf extension arms come in fixed lengths. Printing an arm to the exact reach and offset a rig needs — and a male-to-male coupler to join two female mounts back-to-back — means a creator builds a custom camera rig from a handful of printed links instead of buying and stacking proprietary pieces. It shares the GoPro clevis, so it chains with every GoPro mount and accessory.",
+        "es": "La montura de dedos GoPro es la lingua franca abierta de los accesorios de cámara de acción, pero los brazos de extensión comerciales vienen en longitudes fijas. Imprimir un brazo con el alcance y desplazamiento exactos que necesita un montaje — y un acoplador macho-macho para unir dos monturas hembra — permite a un creador construir un rig de cámara a medida con unos pocos enlaces impresos en vez de comprar y apilar piezas propietarias. Comparte la horquilla GoPro, por lo que se encadena con cualquier montura y accesorio GoPro."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "gopro_finger_clevis",
+          "label": "GoPro Finger Clevis",
+          "geometry_type": "snap",
+          "standard": "GoPro action-cam mount",
+          "parameters": [
+            "finger_thick",
+            "finger_gap",
+            "knuckle_d",
+            "bolt_hole_d"
+          ]
+        }
+      ],
+      "standards": [
+        "GoPro action-cam mount"
+      ],
+      "source": {
+        "manifest": "projects/gopro-arm/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/gopro-arm"
+      }
+    },
+    {
+      "slug": "gopro-ballhead",
+      "name": "GoPro Ball-Head Mount",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "ball_d",
+        "stem_d",
+        "wall",
+        "grip_clear",
+        "finger_thick",
+        "finger_gap",
+        "knuckle_d",
+        "bolt_hole_d",
+        "reach",
+        "quarter20_d",
+        "quarter20_depth"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Action cameras mount rigidly by default; adding a tilt axis usually means buying a proprietary ball head. A printable ball-and-socket that speaks the GoPro finger language lets a creator drop an articulating joint anywhere in a GoPro rig — angle the camera, pinch to lock — and screw a ball onto any tripod with the 1/4-20 variant. It gives the gopro-mount family an angle-adjustable companion.",
+        "es": "Las cámaras de acción se montan rígidas por defecto; añadir un eje de inclinación suele implicar comprar una rótula propietaria. Una rótula imprimible que habla el lenguaje de dedos GoPro permite a un creador colocar una articulación en cualquier parte de un rig GoPro — inclinar la cámara, apretar para fijar — y atornillar una bola a cualquier trípode con la variante 1/4-20. Da a la familia gopro-mount un compañero ajustable en ángulo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "gopro_finger_clevis",
+          "label": "GoPro Finger Clevis",
+          "geometry_type": "snap",
+          "standard": "GoPro action-cam mount",
+          "parameters": [
+            "finger_thick",
+            "finger_gap",
+            "knuckle_d",
+            "bolt_hole_d"
+          ]
+        },
+        {
+          "id": "ball_socket_detent",
+          "label": "Ball & Socket Detent",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "ball_d",
+            "grip_clear",
+            "wall"
+          ]
+        },
+        {
+          "id": "quarter_20_socket",
+          "label": "1/4-20 Tripod Socket",
+          "geometry_type": "bolt_pattern",
+          "standard": "ASME B1.1 1/4-20 UNC",
+          "parameters": [
+            "quarter20_d",
+            "quarter20_depth"
+          ]
+        }
+      ],
+      "standards": [
+        "ASME B1.1 1/4-20 UNC",
+        "GoPro action-cam mount"
+      ],
+      "source": {
+        "manifest": "projects/gopro-ballhead/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/gopro-ballhead"
+      }
+    },
+    {
       "slug": "gopro-mount",
       "name": "GoPro-Style Mount Fingers",
       "domain": "commercial",
@@ -12245,6 +14076,153 @@
       }
     },
     {
+      "slug": "gridfinity-baseplate",
+      "name": "Gridfinity Baseplate (Screw-Down)",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "nx",
+        "ny",
+        "floor_th",
+        "screw_d",
+        "screw_head_d",
+        "magnet_d",
+        "magnet_h",
+        "skirt_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Gridfinity is the open, community-owned 42 mm storage grid that any bin, tray or holder can share. A printed screw-down or magnet baseplate anchors a Gridfinity field to any drawer, bench or toolbox on demand, so a whole shop's small parts stay organised and reconfigurable using freely-licensed geometry instead of a proprietary drawer system.",
+        "es": "Gridfinity es la cuadrícula de almacenamiento abierta de 42 mm, de propiedad comunitaria, que cualquier contenedor, bandeja o soporte puede compartir. Una base atornillable o magnética impresa ancla un campo Gridfinity a cualquier cajón, banco o caja de herramientas bajo demanda, de modo que las piezas pequeñas de todo un taller quedan organizadas y reconfigurables con geometría de licencia libre en vez de un sistema de cajones propietario."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "gridfinity_baseplate",
+          "label": "Gridfinity 42 mm Baseplate",
+          "geometry_type": "grid",
+          "standard": "Gridfinity 42 mm",
+          "parameters": [
+            "nx",
+            "ny"
+          ]
+        },
+        {
+          "id": "fixing_pattern",
+          "label": "Screw / Magnet Fixing",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "screw_d",
+            "magnet_d"
+          ]
+        }
+      ],
+      "standards": [
+        "Gridfinity 42 mm"
+      ],
+      "source": {
+        "manifest": "projects/gridfinity-baseplate/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/gridfinity-baseplate"
+      }
+    },
+    {
+      "slug": "gridfinity-tool",
+      "name": "Gridfinity Tool Holder",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "nx",
+        "ny",
+        "body_h",
+        "bore_d",
+        "bore_pitch",
+        "wall",
+        "slot_ang"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Gridfinity is the open, community-owned 42 mm storage grid, and a tool holder that seats in any Gridfinity baseplate turns a drawer into a reconfigurable tool wall. A printed bit block, plier rack or pen cup sized to the tools on hand keeps a workspace tidy and modular using freely-licensed geometry rather than a fixed, proprietary organiser.",
+        "es": "Gridfinity es la cuadrícula de almacenamiento abierta de 42 mm, de propiedad comunitaria, y un portaherramientas que se asienta en cualquier base Gridfinity convierte un cajón en un panel de herramientas reconfigurable. Un bloque de puntas, soporte de pinzas o vaso impreso a la medida de las herramientas a mano mantiene un espacio de trabajo ordenado y modular con geometría de licencia libre en lugar de un organizador fijo y propietario."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "gridfinity_foot",
+          "label": "Gridfinity 42 mm Foot",
+          "geometry_type": "grid",
+          "standard": "Gridfinity 42 mm",
+          "parameters": [
+            "nx",
+            "ny"
+          ]
+        },
+        {
+          "id": "tool_bores",
+          "label": "Tool Bores",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "bore_d",
+            "bore_pitch"
+          ]
+        }
+      ],
+      "standards": [
+        "Gridfinity 42 mm"
+      ],
+      "source": {
+        "manifest": "projects/gridfinity-tool/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/gridfinity-tool"
+      }
+    },
+    {
       "slug": "grip-aid",
       "name": "Key / Zipper Grip Aid",
       "domain": "medical",
@@ -12305,6 +14283,160 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/grip-aid"
+      }
+    },
+    {
+      "slug": "growler-cap",
+      "name": "Growler Cap / Handle",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "clearance",
+        "turns",
+        "wall",
+        "top_th",
+        "grip_knurl",
+        "handle_w",
+        "handle_h",
+        "handle_t",
+        "port_dia",
+        "boss_dia",
+        "boss_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Growler caps are routinely lost or their liners perish, retiring an otherwise-good glass or steel growler. An on-demand 38-400 cap keeps the vessel in service; the handle variant makes a heavy full growler easy to carry, and the carbonation variant lets homebrewers carbonate and serve without buying proprietary hardware — reuse over replacement, at a few grams of filament.",
+        "es": "Las tapas de growler se pierden con frecuencia o sus juntas se degradan, retirando un growler de vidrio o acero que aún sirve. Una tapa 38-400 bajo demanda mantiene el recipiente en uso; la variante con asa facilita cargar un growler lleno y pesado, y la variante de carbonatación permite a los cerveceros caseros carbonatar y servir sin comprar hardware propietario — reutilizar en vez de reemplazar, por unos gramos de filamento."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "growler_38_400_thread",
+          "label": "38-400 Growler Thread",
+          "geometry_type": "thread",
+          "standard": "38-400 continuous-thread finish",
+          "parameters": [
+            "clearance",
+            "turns",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "38-400 continuous-thread finish"
+      ],
+      "source": {
+        "manifest": "projects/growler-cap/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/growler-cap"
+      }
+    },
+    {
+      "slug": "gt2-idler",
+      "name": "GT2 Belt Idler Bracket",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "belt_type",
+        "teeth",
+        "belt_width",
+        "od",
+        "flange_h",
+        "arm_len",
+        "slot_len",
+        "bolt_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "GT2 is the open belt standard of desktop fabrication — printers, laser cutters, plotters and small CNCs all run it. Printed idlers and tensioner brackets let a builder route and tension a belt around any corner on a 608 bearing, replacing proprietary idler kits and repairing a snapped tensioner in minutes. They mesh the same GT2 profile as belt-clamp and timing-pulley and ride the same 608 seat as bearing-housing and linear-wheel, knitting the timing-belt and bearing commons together.",
+        "es": "GT2 es el estándar abierto de correa de la fabricación de escritorio — impresoras, cortadoras láser, plóters y CNC pequeños lo usan. Poleas y soportes tensores impresos permiten enrutar y tensar una correa en cualquier esquina sobre un rodamiento 608, reemplazando kits de polea propietarios y reparando un tensor roto en minutos. Engranan el mismo perfil GT2 que belt-clamp y timing-pulley y giran sobre el mismo asiento 608 que bearing-housing y linear-wheel, uniendo los comunes de correa síncrona y rodamiento."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "gt2_tooth_profile",
+          "label": "GT2 Tooth Profile",
+          "geometry_type": "profile",
+          "standard": "GT2 2mm belt",
+          "parameters": [
+            "belt_type",
+            "teeth",
+            "belt_width"
+          ]
+        },
+        {
+          "id": "idler_608_seat",
+          "label": "608 Idler Seat",
+          "geometry_type": "socket",
+          "standard": "608 bearing (ISO 15 — 8×22×7)",
+          "parameters": [
+            "belt_width"
+          ]
+        },
+        {
+          "id": "frame_tension_slots",
+          "label": "Frame Tension Bolt Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "arm_len",
+            "slot_len",
+            "bolt_dia"
+          ]
+        }
+      ],
+      "standards": [
+        "608 bearing (ISO 15 — 8×22×7)",
+        "GT2 2mm belt"
+      ],
+      "source": {
+        "manifest": "projects/gt2-idler/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/gt2-idler"
       }
     },
     {
@@ -13417,6 +15549,70 @@
       }
     },
     {
+      "slug": "idler-608",
+      "name": "608 Bearing Idler Pulley",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "bearing",
+        "od",
+        "width",
+        "flange_h",
+        "flange_t",
+        "groove_dia",
+        "press_fit"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The 608 skate bearing is the world's most available motion component — pennies each, in every hardware store. Printed idlers turn a 608 and an M8 bolt into a belt tensioner, cord guide, or roller for a printer, CNC, loom or conveyor, replacing proprietary pulleys that cost many times more. They share the same 22 mm seat as the linear-wheel and bearing-housing cartridges, so a builder stocks one bearing and prints whatever runs on it.",
+        "es": "El rodamiento 608 de patín es el componente de movimiento más disponible del mundo — centavos cada uno, en cualquier ferretería. Las poleas impresas convierten un 608 y un tornillo M8 en un tensor de correa, guía de cuerda o rodillo para una impresora, CNC, telar o transportador, reemplazando poleas propietarias que cuestan mucho más. Comparten el mismo asiento de 22 mm que los cartuchos linear-wheel y bearing-housing, así el constructor tiene un solo rodamiento e imprime lo que corra sobre él."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "bearing_608_seat",
+          "label": "608 Press-Fit Seat",
+          "geometry_type": "socket",
+          "standard": "608 bearing (ISO 15 — 8×22×7)",
+          "parameters": [
+            "bearing",
+            "press_fit",
+            "width"
+          ]
+        }
+      ],
+      "standards": [
+        "608 bearing (ISO 15 — 8×22×7)"
+      ],
+      "source": {
+        "manifest": "projects/idler-608/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/idler-608"
+      }
+    },
+    {
       "slug": "implicit-lattice-hyperobject",
       "name": "Maths: TPMS Implicit Lattice",
       "domain": "industrial",
@@ -13549,6 +15745,135 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/indicator-base"
+      }
+    },
+    {
+      "slug": "indicator-holder",
+      "name": "Dial Indicator Holder",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "stem_dia",
+        "post_dia",
+        "arm_len",
+        "wall",
+        "clamp_screw_d",
+        "post_height",
+        "base_width"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A commercial articulating indicator holder and stand runs $30–$150. A printed stem clamp, reach arm and base post give any hobby or school workshop a rigid, gauge-exact holder for the price of filament — and because it shares the 8 mm stem socket with the Indicator Base cartridge, one gauge fits the whole printed metrology kit.",
+        "es": "Un soporte articulado comercial cuesta $30–$150. Una mordaza de tija, un brazo y una base impresos dan a cualquier taller casero o escolar un soporte rígido y exacto por el precio del filamento — y como comparte el alojamiento de tija de 8 mm con el cartucho Base de Comparador, una galga sirve para todo el kit de metrología impreso."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The saw-cut clamp grips by print stiffness: print in PETG or PLA at ≥40% infill so the split ring actually pinches the 8 mm stem — a too-flexible TPU clamp will not hold a reading. Print the stem bore at nominal 8 mm + the built-in 0.1 mm clearance and ream to a true 8 mm if your printer runs tight. Same-material printing keeps the stem and post fits consistent.",
+          "es": "La mordaza de corte de sierra agarra por rigidez de impresión: imprime en PETG o PLA con ≥40% de relleno para que el anillo partido apriete la tija de 8 mm — una mordaza de TPU demasiado flexible no mantendrá la lectura. Imprime el barreno a 8 mm nominal + la holgura de 0.1 mm y escaria a 8 mm reales si va apretado."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "indicator_stem_socket",
+          "label": "8 mm Indicator Stem Socket",
+          "geometry_type": "socket",
+          "standard": "8 mm indicator stem (Mitutoyo Series 2 / AGD Group 2)",
+          "parameters": [
+            "stem_dia"
+          ]
+        }
+      ],
+      "standards": [
+        "8 mm indicator stem (Mitutoyo Series 2 / AGD Group 2)"
+      ],
+      "source": {
+        "manifest": "projects/indicator-holder/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/indicator-holder"
+      }
+    },
+    {
+      "slug": "insert-jig",
+      "name": "Threaded Insert Jig",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "insert_size",
+        "melt_fit",
+        "wall",
+        "seat_depth",
+        "block_h",
+        "gauge_boss_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Heat-set inserts turn a plastic print into a serviceable, repeatedly openable assembly — the difference between a throwaway part and a repairable product. But hand-seating them crooked or too deep ruins the boss and the print. A printed jig makes square, flush, depth-controlled insertion reproducible for anyone with a soldering iron, so ISO metric threads can be added reliably to community-made parts without a press or specialist tooling.",
+        "es": "Los insertos termofijables convierten una pieza impresa en un ensamble reparable y reabrible — la diferencia entre una pieza desechable y un producto reparable. Pero colocarlos torcidos o demasiado profundos a mano arruina el relieve y la pieza. Una plantilla impresa hace reproducible la inserción recta, al ras y con profundidad controlada para cualquiera con un cautín, permitiendo añadir roscas métricas ISO de forma fiable a piezas comunitarias sin prensa ni herramientas especializadas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "insert_boss_socket",
+          "label": "Heat-Set Insert Boss Socket",
+          "geometry_type": "socket",
+          "standard": "M3-M8 insert",
+          "parameters": [
+            "insert_size",
+            "melt_fit",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "M3-M8 insert"
+      ],
+      "source": {
+        "manifest": "projects/insert-jig/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/insert-jig"
       }
     },
     {
@@ -13699,6 +16024,86 @@
       }
     },
     {
+      "slug": "jar-adapter",
+      "name": "Wide-Mouth Jar Adapter",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "jar_size",
+        "clearance",
+        "jar_turns",
+        "wall",
+        "top_th",
+        "pco_turns",
+        "pco_clearance",
+        "bore_dia",
+        "hole_dia",
+        "hole_rings"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The mason jar and the PET bottle are the two most abundant standardized household vessels, but their threads never met. This adapter bridges them: a jar becomes a refill reservoir for any PCO-1881 bottle system, and the plain and sifter lids replace lost or rusted metal mason lids on demand — one printed part unlocking the whole cross-family ecosystem.",
+        "es": "El frasco mason y la botella PET son los dos recipientes domésticos estandarizados más abundantes, pero sus roscas nunca se encontraron. Este adaptador los une: un frasco se vuelve depósito de recarga para cualquier sistema de botella PCO-1881, y las tapas simple y espolvoreadora reemplazan tapas mason metálicas perdidas u oxidadas bajo demanda — una pieza impresa que desbloquea todo el ecosistema entre familias."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pco1881_neck_thread",
+          "label": "PCO-1881 Male Stub Thread",
+          "geometry_type": "thread",
+          "standard": "PCO 1881",
+          "parameters": [
+            "pco_turns",
+            "pco_clearance",
+            "bore_dia"
+          ]
+        },
+        {
+          "id": "mason_jar_thread",
+          "label": "Mason Jar Continuous Thread",
+          "geometry_type": "thread",
+          "standard": "70-450 / 86-450 mason CT finish",
+          "parameters": [
+            "jar_size",
+            "jar_turns",
+            "clearance",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "70-450 / 86-450 mason CT finish",
+        "PCO 1881"
+      ],
+      "source": {
+        "manifest": "projects/jar-adapter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/jar-adapter"
+      }
+    },
+    {
       "slug": "jar-rack",
       "name": "Spice / Jar Rack",
       "domain": "household",
@@ -13770,6 +16175,80 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/jar-rack"
+      }
+    },
+    {
+      "slug": "jbox-ears",
+      "name": "Junction Box Mounting Ears",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "device_pitch",
+        "device_screw",
+        "gang_w",
+        "plate_t",
+        "ring_h",
+        "wall_screw",
+        "ear_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Electrical retrofit is full of boxes that sit too deep, mount to crumbling plaster, or lack a fixing point after a remodel. Printable ears, standoffs and mud rings on the standard #6-32 device pattern let an installer or DIYer salvage an existing box — bring it flush to a new wall finish, lift it off a rough surface, or add a wall flange — instead of cutting a new opening, using code-standard geometry.",
+        "es": "El retrofit electrico esta lleno de cajas demasiado profundas, montadas en yeso desmoronado o sin punto de fijacion tras una remodelacion. Orejas, separadores y anillos impresos sobre el patron estandar #6-32 permiten a un instalador o aficionado recuperar una caja existente — dejarla al ras de un nuevo acabado, levantarla de una superficie irregular o agregar una brida de pared — sin cortar una nueva abertura, con geometria segun norma."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "device_screw_pattern",
+          "label": "US Junction Box Device Screws",
+          "geometry_type": "bolt_pattern",
+          "standard": "US junction box",
+          "parameters": [
+            "device_pitch",
+            "device_screw",
+            "gang_w"
+          ]
+        },
+        {
+          "id": "wall_mount_pattern",
+          "label": "Wall Ear Screws",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "wall_screw",
+            "ear_w"
+          ]
+        }
+      ],
+      "standards": [
+        "US junction box"
+      ],
+      "source": {
+        "manifest": "projects/jbox-ears/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/jbox-ears"
       }
     },
     {
@@ -14157,6 +16636,72 @@
       }
     },
     {
+      "slug": "kinematic-mount",
+      "name": "Kinematic Mount 3-Ball",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "plate_dia",
+        "plate_thick",
+        "ball_dia",
+        "bolt_circle",
+        "center_bore",
+        "mount_bolt_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Commercial kinematic mounts and bases cost $80–$400 and lock repeatability behind a vendor. A printed 3-ball coupling plus a handful of cheap bearing balls gives any optics bench, camera rig or fixture true kinematic re-seating — remove a sensor, a mirror or a probe and put it back to the same position — for the price of filament, with both the Kelvin and Maxwell standards in one cartridge.",
+        "es": "Los soportes cinemáticos comerciales cuestan $80–$400 y encierran la repetibilidad tras un fabricante. Un acoplamiento de 3 bolas impreso más unas bolas de rodamiento baratas da a cualquier banco óptico, plató o utillaje un reasentamiento cinemático real — quita un sensor, un espejo o un palpador y devuélvelo a la misma posición — por el precio del filamento, con los estándares Kelvin y Maxwell en un solo cartucho."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "Repeatability depends on the seats holding their shape under load. Print both plates in the SAME material so their scale matches, at ≥40% infill in PETG or PLA — a soft or low-infill plate will creep and lose repeatability. The balls are NOT printed: press or epoxy 6–10 mm precision steel bearing balls into the top-plate cups. Print seats slightly rich and clean the cone/vee flanks with a deburr tool if your printer over-extrudes; the ball must touch the seat WALLS, not bottom out.",
+          "es": "La repetibilidad depende de que los asientos mantengan su forma bajo carga. Imprime ambas placas en el MISMO material, con ≥40% de relleno en PETG o PLA — una placa blanda o de bajo relleno fluirá y perderá repetibilidad. Las bolas NO se imprimen: presiona o pega con epoxi bolas de acero de precisión de 6–10 mm en los casquetes. La bola debe tocar las PAREDES del asiento, no el fondo."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "kinematic_3ball_seat",
+          "label": "3-Ball Kinematic Seat",
+          "geometry_type": "socket",
+          "standard": "kinematic (Maxwell / Kelvin) 3-ball coupling",
+          "parameters": [
+            "ball_dia",
+            "bolt_circle"
+          ]
+        }
+      ],
+      "standards": [
+        "kinematic (Maxwell / Kelvin) 3-ball coupling"
+      ],
+      "source": {
+        "manifest": "projects/kinematic-mount/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/kinematic-mount"
+      }
+    },
+    {
       "slug": "kiss-lock-frame",
       "name": "Kiss-Lock Frame",
       "domain": "wearable",
@@ -14514,6 +17059,156 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/ladder-lock"
+      }
+    },
+    {
+      "slug": "lamp-adapter-kit",
+      "name": "Lamp Standard Adapter Kit",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "edison_a",
+        "edison_b",
+        "clearance",
+        "wall",
+        "turns",
+        "bore",
+        "puck_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The four dominant lamp bases — E26, E27, GU10 and B22 — split the world by geography and fixture type, so a bulb bought in one region or for one lamp often will not fit the socket you have. A printed any-to-any base adapter lets a household reuse bulbs and fixtures across all four standards instead of discarding them, and revive a lamp whose socket standard was orphaned. Caution: mains-voltage wiring is involved — see the electrical-safety note in the docs.",
+        "es": "Las cuatro bases de lámpara dominantes — E26, E27, GU10 y B22 — dividen el mundo por geografía y tipo de luminaria, así que un foco comprado en una región o para una lámpara a menudo no encaja en el portalámparas que tienes. Un adaptador de base universal impreso permite a un hogar reutilizar focos y luminarias entre los cuatro estándares en vez de desecharlos, y revivir una lámpara cuyo estándar de casquillo quedó huérfano. Precaución: implica cableado de voltaje de red — véase la nota de seguridad eléctrica en la documentación."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "edison_screw_thread",
+          "label": "Edison Screw Thread (E26/E27)",
+          "geometry_type": "thread",
+          "standard": "IEC 60061 E26 / E27 (7 TPI)",
+          "parameters": [
+            "edison_a",
+            "edison_b",
+            "clearance",
+            "turns"
+          ]
+        },
+        {
+          "id": "bayonet_twist_lock",
+          "label": "Bayonet Twist-Lock (GU10/B22)",
+          "geometry_type": "snap",
+          "standard": "GU10 / IEC 60061 B22d",
+          "parameters": [
+            "puck_h"
+          ]
+        },
+        {
+          "id": "central_bore",
+          "label": "Central Wiring Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "bore"
+          ]
+        }
+      ],
+      "standards": [
+        "GU10 / IEC 60061 B22d",
+        "IEC 60061 E26 / E27 (7 TPI)"
+      ],
+      "source": {
+        "manifest": "projects/lamp-adapter-kit/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/lamp-adapter-kit"
+      }
+    },
+    {
+      "slug": "lamp-socket-extender",
+      "name": "E26/E27 Socket Extender",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "edison_a",
+        "edison_b",
+        "turns",
+        "clearance",
+        "wall",
+        "drop",
+        "bore",
+        "collar_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The Edison medium screw base (E26/E27) is the de-facto open lamp interface — billions of sockets and bulbs worldwide share it. Printed extenders, base adapters and device shells let anyone lower a bulb into a shallow shade, fit an E26 bulb into an E27 fixture (or the reverse), or turn a lamp socket into a mount for a sensor or holder, instead of hunting for a proprietary part. The threaded interface interoperates with the lampshade and socket-adapter cartridges in the same commons family.",
+        "es": "La base media Edison (E26/E27) es la interfaz de lámpara abierta de facto — miles de millones de portalámparas y bombillas la comparten. Extensores, adaptadores de base y carcasas de dispositivo impresos permiten bajar una bombilla en una pantalla poco profunda, adaptar una bombilla E26 a un casquillo E27 (o al revés), o convertir un portalámparas en soporte para un sensor, en vez de buscar una pieza propietaria. La interfaz roscada interopera con los cartuchos lampshade y socket-adapter de la misma familia del commons."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "edison_screw_base",
+          "label": "Edison Screw Base",
+          "geometry_type": "thread",
+          "standard": "IEC 60061 E26 / E27 (7 TPI)",
+          "parameters": [
+            "edison_a",
+            "edison_b",
+            "turns",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "IEC 60061 E26 / E27 (7 TPI)"
+      ],
+      "source": {
+        "manifest": "projects/lamp-socket-extender/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/lamp-socket-extender"
       }
     },
     {
@@ -15653,6 +18348,84 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/magnetic-clasp"
+      }
+    },
+    {
+      "slug": "magnetic-coupling",
+      "name": "Magnetic Coupling Hub",
+      "domain": "hybrid",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "hub_d",
+        "hub_h",
+        "shaft_dia",
+        "bore_type",
+        "flat_depth",
+        "setscrew_dia",
+        "n_magnets",
+        "magnet_d",
+        "magnet_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Magnetic couplings transmit torque with no physical contact — so they drive pumps and stirrers through a sealed wall (no leaking shaft seal), and slip safely instead of breaking on overload. Off-the-shelf magnetic couplings are expensive and fixed to one shaft size; an open, parametric hub that takes standard disc magnets and the same round/D-flat 6/8 mm shaft fit as the knob-dshaft family lets a maker or lab build a contactless drive to their exact shaft, for sealed fluidics, robotics and safe-slip drives.",
+        "es": "Los acoplamientos magneticos transmiten par sin contacto fisico — asi accionan bombas y agitadores a traves de una pared sellada (sin sello de eje que gotee), y resbalan de forma segura en vez de romperse ante sobrecarga. Los acoplamientos magneticos comerciales son caros y fijos a un tamano de eje; un cubo abierto y parametrico que toma imanes de disco estandar y el mismo ajuste de eje redondo/plano D de 6/8 mm que la familia knob-dshaft permite a un maker o laboratorio construir una transmision sin contacto a su eje exacto, para fluidica sellada, robotica y transmisiones de resbalamiento seguro."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "magnet_ring",
+          "label": "Disc-Magnet Ring",
+          "geometry_type": "socket",
+          "standard": "6/8mm shaft + magnets",
+          "parameters": [
+            "n_magnets",
+            "magnet_d",
+            "magnet_h"
+          ]
+        },
+        {
+          "id": "shaft_bore",
+          "label": "Shaft Bore",
+          "geometry_type": "socket",
+          "standard": "internal (round / D-flat)",
+          "parameters": [
+            "shaft_dia",
+            "bore_type",
+            "flat_depth"
+          ]
+        }
+      ],
+      "standards": [
+        "6/8mm shaft + magnets",
+        "internal (round / D-flat)"
+      ],
+      "source": {
+        "manifest": "projects/magnetic-coupling/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/magnetic-coupling"
       }
     },
     {
@@ -17733,6 +20506,78 @@
       }
     },
     {
+      "slug": "nema-damper",
+      "name": "NEMA Damper Mount",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "nema",
+        "plate_t",
+        "grommet_d",
+        "grommet_depth",
+        "margin",
+        "leg_h",
+        "frame_bolt_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Steppers are the motion muscle of printers, CNC and robotics, and their high-frequency vibration radiates as noise and blurs precision. A printed damper mount at the exact NEMA bolt pattern isolates the motor through commodity rubber grommets, cutting noise and resonance on any machine without buying a motor-specific anti-vibration mount, and lets a builder retrofit isolation onto an existing frame.",
+        "es": "Los motores paso a paso son el músculo de movimiento de impresoras, CNC y robótica, y su vibración de alta frecuencia se irradia como ruido y difumina la precisión. Un montaje amortiguador impreso al patrón exacto de pernos NEMA aísla el motor mediante pasacables de goma genéricos, reduciendo el ruido y la resonancia en cualquier máquina sin comprar un montaje antivibración específico, y permite adaptar aislamiento a un bastidor existente."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "nema_bolt_pattern",
+          "label": "NEMA Bolt Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "NEMA 17/23",
+          "parameters": [
+            "nema"
+          ]
+        },
+        {
+          "id": "grommet_isolator",
+          "label": "Rubber Grommet Isolator",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "grommet_d",
+            "grommet_depth"
+          ]
+        }
+      ],
+      "standards": [
+        "NEMA 17/23"
+      ],
+      "source": {
+        "manifest": "projects/nema-damper/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/nema-damper"
+      }
+    },
+    {
       "slug": "net-cup",
       "name": "Net Cup / Hydroponic Collar",
       "domain": "household",
@@ -17940,6 +20785,72 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/objective-case"
+      }
+    },
+    {
+      "slug": "objective-turret",
+      "name": "Microscope Objective Turret",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "thread_standard",
+        "port_count",
+        "clearance",
+        "pivot_bore",
+        "turret_thick"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Restores usable magnification changing to old, teaching and self-built microscopes whose turrets are lost or broken, at the cost of filament, and lets makers build multi-objective scopes on the open RMS standard so any RMS objective interoperates.",
+        "es": "Restaura el cambio de aumento útil en microscopios antiguos, de enseñanza y de construcción propia cuyos revólveres se han perdido o roto, al costo del filamento, y permite construir microscopios multi-objetivo sobre el estándar abierto RMS para que cualquier objetivo RMS sea interoperable."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "Female objective ports add the user 'clearance' per side over the nominal major diameter; start at 0.25 mm and tune to your printer. This is a hobbyist/repair aid, not a certified optical instrument — objective parfocality and centration are not guaranteed on a printed turret.",
+          "es": "Los puertos hembra suman la 'holgura' del usuario por lado sobre el diámetro mayor nominal; empieza en 0.25 mm y ajústalo a tu impresora. Es una ayuda para aficionados/reparación, no un instrumento óptico certificado — la parfocalidad y centrado de los objetivos no están garantizados en un revólver impreso."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "objective_thread_port",
+          "label": "RMS / M25 Objective Thread Port",
+          "geometry_type": "thread",
+          "standard": "RMS W0.800in x 36 TPI (20.32 mm, DIN 58888) / M25 x 0.75",
+          "parameters": [
+            "thread_standard",
+            "clearance",
+            "port_count"
+          ]
+        }
+      ],
+      "standards": [
+        "RMS W0.800in x 36 TPI (20.32 mm, DIN 58888) / M25 x 0.75"
+      ],
+      "source": {
+        "manifest": "projects/objective-turret/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/objective-turret"
       }
     },
     {
@@ -18973,6 +21884,73 @@
       }
     },
     {
+      "slug": "pco-cap",
+      "name": "PCO-1881 Bottle Cap",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "clearance",
+        "turns",
+        "wall",
+        "top_th",
+        "skirt_h",
+        "grip_knurl",
+        "tether_len",
+        "ring_id",
+        "spout_dia",
+        "spout_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A lost or broken bottle cap normally sends an otherwise-good bottle to the bin. Printing a PCO-1881 cap on demand keeps the bottle in service, and the tethered and sport variants turn a throwaway soda bottle into a durable reusable drinking bottle — closing a common single-use waste loop with a part that costs a few grams of filament.",
+        "es": "Una tapa perdida o rota normalmente manda a la basura una botella que aún sirve. Imprimir una tapa PCO-1881 bajo demanda mantiene la botella en uso, y las variantes con correa y deportiva convierten una botella de refresco desechable en una botella reutilizable y duradera — cerrando un ciclo común de residuos de un solo uso con una pieza que cuesta unos gramos de filamento."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pco1881_neck_thread",
+          "label": "PCO-1881 Neck Thread",
+          "geometry_type": "thread",
+          "standard": "PCO 1881",
+          "parameters": [
+            "clearance",
+            "turns",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "PCO 1881"
+      ],
+      "source": {
+        "manifest": "projects/pco-cap/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pco-cap"
+      }
+    },
+    {
       "slug": "pedal-mount",
       "name": "Pedalboard Pedal Mount",
       "domain": "commercial",
@@ -19194,6 +22172,83 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pen-holder"
+      }
+    },
+    {
+      "slug": "peristaltic-rotor",
+      "name": "Peristaltic Pump Rotor",
+      "domain": "hybrid",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "tube",
+        "rotor_d",
+        "n_rollers",
+        "rotor_h",
+        "shaft_d",
+        "roller_d",
+        "pin_d",
+        "wall"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Peristaltic pumps dose fluids without contamination because the pump never touches the liquid — only the disposable tube does, which is why they run dialysis, IV lines, lab reagents and aquaria. Commercial pump heads are proprietary and priced per tube size; an open, parametric rotor and race sized for standard 3/16 and 1/4 in tubing let a lab or maker build a dosing pump to the flow they need and swap the tube instead of the pump.",
+        "es": "Las bombas peristalticas dosifican fluidos sin contaminacion porque la bomba nunca toca el liquido — solo el tubo desechable, por eso mueven dialisis, lineas IV, reactivos de laboratorio y acuarios. Los cabezales comerciales son propietarios y se cobran por tamano de tubo; un rotor y pista abiertos y parametricos dimensionados para tubo estandar de 3/16 y 1/4 pulg permiten a un laboratorio o maker construir una bomba de dosificacion al flujo que necesitan y cambiar el tubo en vez de la bomba."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "tube_race_channel",
+          "label": "Tube Race Channel",
+          "geometry_type": "socket",
+          "standard": "3/16-1/4in tube",
+          "parameters": [
+            "tube",
+            "rotor_d",
+            "roller_d",
+            "wall"
+          ]
+        },
+        {
+          "id": "roller_shaft",
+          "label": "Roller & Shaft Bores",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "shaft_d",
+            "pin_d",
+            "roller_d"
+          ]
+        }
+      ],
+      "standards": [
+        "3/16-1/4in tube"
+      ],
+      "source": {
+        "manifest": "projects/peristaltic-rotor/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/peristaltic-rotor"
       }
     },
     {
@@ -19710,6 +22765,72 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pill-cutter"
+      }
+    },
+    {
+      "slug": "pill-insert",
+      "name": "Pill Organizer Insert",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "cols",
+        "rows",
+        "cell",
+        "depth",
+        "wall",
+        "clearance"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A pill organiser sized to the exact schedule and compartment size a person needs — bigger cells for arthritic hands, more columns for complex regimens — printed at home instead of settling for a fixed store layout, supporting medication adherence and independence.",
+        "es": "Un organizador de pastillas dimensionado al horario y tamaño de compartimento exactos que una persona necesita — celdas más grandes para manos con artritis, más columnas para regímenes complejos — impreso en casa en vez de conformarse con un diseño fijo de tienda, apoyando la adherencia a la medicación y la independencia."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The lid slips over the tray by the user 'clearance' and holds by friction; start at 0.4 mm and tune to your printer. Print in food-safe-handled PLA/PETG and wash before use. This is an organising aid, not a certified dosing device.",
+          "es": "La tapa se desliza sobre la bandeja con la 'holgura' del usuario y sujeta por fricción; empieza en 0.4 mm y ajústalo a tu impresora. Imprime en PLA/PETG de manejo apto para alimentos y lava antes de usar. Es una ayuda de organización, no un dispositivo de dosificación certificado."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "compartment_grid",
+          "label": "Compartment Grid",
+          "geometry_type": "grid",
+          "standard": "internal",
+          "parameters": [
+            "cols",
+            "rows",
+            "cell",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/pill-insert/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pill-insert"
       }
     },
     {
@@ -20885,6 +24006,82 @@
       }
     },
     {
+      "slug": "prosthetic-wrist",
+      "name": "Prosthetic Wrist Adapter",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "plate_dia",
+        "bolt_circle_dia",
+        "bolt_dia",
+        "plate_th",
+        "disc_dia",
+        "flex_angle"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Lets an upper-limb prosthesis user swap hands and tools in seconds on the open e-NABLE interface, printed locally for a fraction of clinical cost, so components interoperate across the humanitarian-prosthetics commons instead of locking to one vendor's wrist.",
+        "es": "Permite a un usuario de prótesis de miembro superior cambiar manos y herramientas en segundos sobre la interfaz abierta e-NABLE, impresa localmente por una fracción del costo clínico, de modo que los componentes sean interoperables en el commons de prótesis humanitarias en vez de atarse a la muñeca de un solo fabricante."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The keyed post is printed under the socket by a fixed clearance so it seats and rotates out; tune bolt_dia to your fasteners. Print load-bearing wrist parts solid or high-infill in PETG/PA. Fit is user-specific: an occupational therapist or prosthetist must approve the assembly before use.",
+          "es": "El poste con llave se imprime bajo el socket con una holgura fija para que asiente y gire; ajusta bolt_dia a tus tornillos. Imprime las piezas de muñeca que soportan carga sólidas o de alto relleno en PETG/PA. El ajuste es específico del usuario: un terapeuta ocupacional o protesista debe aprobar el ensamble antes de usarlo."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "terminal_4bolt",
+          "label": "e-NABLE / OSL 4-Bolt Terminal",
+          "geometry_type": "bolt_pattern",
+          "standard": "e-NABLE / OSL 4-bolt",
+          "parameters": [
+            "bolt_circle_dia",
+            "bolt_dia",
+            "plate_dia"
+          ]
+        },
+        {
+          "id": "quick_disconnect",
+          "label": "Keyed Quick-Disconnect",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "disc_dia"
+          ]
+        }
+      ],
+      "standards": [
+        "e-NABLE / OSL 4-bolt"
+      ],
+      "source": {
+        "manifest": "projects/prosthetic-wrist/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/prosthetic-wrist"
+      }
+    },
+    {
       "slug": "psu-mount",
       "name": "Power Supply / PSU Mount",
       "domain": "industrial",
@@ -21246,6 +24443,87 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/radiator-vent"
+      }
+    },
+    {
+      "slug": "rail-bridge",
+      "name": "Rail Standard Bridge",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "slots",
+        "dovetail_len",
+        "core_th",
+        "relief_d",
+        "grip_notch"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Picatinny, NATO and Arca-Swiss rails each dominate a different world — optics/firearms, tactical accessories, and photography — and none of them mate. A printed double-sided bridge lets a photographer clamp an Arca head onto a NATO rail, or a maker mount a Picatinny accessory to a tripod plate, without buying a proprietary cross-adapter for every pairing. One open block collapses three incompatible ecosystems into an interoperable one.",
+        "es": "Los rieles Picatinny, NATO y Arca-Swiss dominan cada uno un mundo distinto — óptica/armas, accesorios tácticos y fotografía — y ninguno encaja con los demás. Un puente impreso de doble cara permite a un fotógrafo sujetar una rótula Arca en un riel NATO, o a un maker montar un accesorio Picatinny en una placa de trípode, sin comprar un adaptador cruzado propietario para cada combinación. Un bloque abierto colapsa tres ecosistemas incompatibles en uno interoperable."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "picatinny_1913_rail",
+          "label": "Picatinny MIL-STD-1913 Rail",
+          "geometry_type": "rail",
+          "standard": "MIL-STD-1913 Picatinny",
+          "parameters": [
+            "slots"
+          ]
+        },
+        {
+          "id": "nato_accessory_rail",
+          "label": "NATO Accessory Dovetail",
+          "geometry_type": "rail",
+          "standard": "NATO accessory rail",
+          "parameters": [
+            "dovetail_len",
+            "grip_notch"
+          ]
+        },
+        {
+          "id": "arca_swiss_dovetail",
+          "label": "Arca-Swiss 38 mm Dovetail",
+          "geometry_type": "profile",
+          "standard": "Arca-Swiss 38mm",
+          "parameters": [
+            "dovetail_len"
+          ]
+        }
+      ],
+      "standards": [
+        "Arca-Swiss 38mm",
+        "MIL-STD-1913 Picatinny",
+        "NATO accessory rail"
+      ],
+      "source": {
+        "manifest": "projects/rail-bridge/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/rail-bridge"
       }
     },
     {
@@ -21709,6 +24987,84 @@
       }
     },
     {
+      "slug": "rod-bridge",
+      "name": "15mm Rod Bridge Plate",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "rod_d",
+        "rod_clear",
+        "rod_spacing",
+        "body_th",
+        "wall",
+        "clamp_bolt_d",
+        "slit_w",
+        "plate_th",
+        "face_hole_d",
+        "riser_h",
+        "face_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The 15 mm LWS rod system is the open backbone of camera rigging, but bridge plates and top plates are pricey machined parts. A printable rod bridge that clamps both rails at the 60 mm standard — as a cheese plate, a riser, or an upright face — lets an owner-operator build the exact accessory platform a shoot needs and repair a rig in the field. Sharing the 15 mm bore, it rides the same rails as any rod clamp and grows the cinema-rod family.",
+        "es": "El sistema de varillas LWS de 15 mm es la columna vertebral abierta del rigging de cámara, pero las placas puente y superiores son piezas mecanizadas caras. Un puente de varillas imprimible que sujeta ambos rieles al estándar de 60 mm — como placa quesera, elevador o cara vertical — permite a un operador construir la plataforma de accesorios exacta que necesita un rodaje y reparar un rig en el campo. Al compartir el orificio de 15 mm, corre sobre los mismos rieles que cualquier abrazadera de varilla y hace crecer la familia de varillas de cine."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "lws_15mm_rod",
+          "label": "15 mm LWS Rod Socket",
+          "geometry_type": "socket",
+          "standard": "15mm LWS rod",
+          "parameters": [
+            "rod_d",
+            "rod_clear",
+            "rod_spacing"
+          ]
+        },
+        {
+          "id": "quarter_20_accessory",
+          "label": "1/4-20 Accessory Holes",
+          "geometry_type": "bolt_pattern",
+          "standard": "ASME B1.1 1/4-20 UNC",
+          "parameters": [
+            "face_hole_d"
+          ]
+        }
+      ],
+      "standards": [
+        "15mm LWS rod",
+        "ASME B1.1 1/4-20 UNC"
+      ],
+      "source": {
+        "manifest": "projects/rod-bridge/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/rod-bridge"
+      }
+    },
+    {
       "slug": "rod-holder",
       "name": "Fishing Rod Holder",
       "domain": "commercial",
@@ -21999,6 +25355,83 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/roller-bracket"
+      }
+    },
+    {
+      "slug": "router-guide",
+      "name": "Router Template Guide",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "barrel",
+        "barrel_len",
+        "bit_clear",
+        "wall",
+        "plate_dia",
+        "bolt_circle",
+        "bolt_dia",
+        "hole_count",
+        "offset"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The Porter-Cable guide-bushing flange is the open standard of template routing — dovetail jigs, inlay kits, hinge templates and sign stencils all reference it. A lost or odd-size bushing stops a job cold; printing the exact barrel OD, a baseplate adapter to fit a non-standard router, or a precise offset collar restores the cut in minutes and costs pennies, instead of buying a whole bushing set. The tuned `wall` and `bit_clear` let a maker dial a bushing to a specific bit and template offset.",
+        "es": "La brida de casquillo Porter-Cable es el estándar abierto del fresado con plantilla — plantillas de cola de milano, kits de incrustación, plantillas de bisagra y plantillas de letreros la referencian. Un casquillo perdido o de tamaño raro detiene un trabajo; imprimir el DE de barril exacto, un adaptador de base para una fresadora no estándar, o un collar de desplazamiento preciso restaura el corte en minutos y cuesta centavos, en vez de comprar un juego completo. El `wall` y `bit_clear` ajustables permiten adaptar un casquillo a una broca y un desplazamiento de plantilla específicos."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "router_bushing_flange",
+          "label": "Universal Router-Bushing Flange",
+          "geometry_type": "socket",
+          "standard": "router bushing (Porter-Cable universal — 1-3/8 in flange)",
+          "parameters": [
+            "barrel",
+            "barrel_len",
+            "wall"
+          ]
+        },
+        {
+          "id": "subbase_bolt_circle",
+          "label": "Sub-Base Bolt Circle",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "bolt_circle",
+            "bolt_dia",
+            "hole_count"
+          ]
+        }
+      ],
+      "standards": [
+        "router bushing (Porter-Cable universal — 1-3/8 in flange)"
+      ],
+      "source": {
+        "manifest": "projects/router-guide/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/router-guide"
       }
     },
     {
@@ -22636,6 +26069,74 @@
       "clone": {
         "kind": "submodule",
         "command": "git clone https://github.com/madfam-org/scara-robotics.git"
+      }
+    },
+    {
+      "slug": "sd-case",
+      "name": "SD / MicroSD Card Case",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "card_type",
+        "cols",
+        "rows",
+        "wall",
+        "floor",
+        "clearance"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Loose memory cards are easy to lose and damage; a printed grid case protects a working set of cards for pennies of filament and can be sized to whatever card mix a photographer, musician, or maker actually carries.",
+        "es": "Las tarjetas de memoria sueltas se pierden y dañan con facilidad; un estuche en cuadrícula impreso protege un conjunto de tarjetas por centavos de filamento y puede dimensionarse a la mezcla de tarjetas que un fotógrafo, músico o creador realmente lleva."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "Slots carry ~0.4 mm per-side clearance so cards drop in and pull out; drop to ~0.25 mm for a snug hold in dimensionally stable filaments, or open to ~0.6 mm for recycled PLA.",
+          "es": "Las ranuras tienen ~0.4 mm de holgura por lado para que las tarjetas entren y salgan; baja a ~0.25 mm para un ajuste firme en filamentos estables, o abre a ~0.6 mm para PLA reciclado."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "card_slot_grid",
+          "label": "Memory Card Slot Grid",
+          "geometry_type": "grid",
+          "standard": "SD 24x32 / microSD 11x15 / CF 43x36 mm",
+          "parameters": [
+            "card_type",
+            "cols",
+            "rows",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "SD 24x32 / microSD 11x15 / CF 43x36 mm"
+      ],
+      "source": {
+        "manifest": "projects/sd-case/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/sd-case"
       }
     },
     {
@@ -23367,6 +26868,68 @@
       }
     },
     {
+      "slug": "shaft-collar",
+      "name": "Keyed Shaft Collar",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "bore_d",
+        "wall",
+        "collar_h",
+        "set_d",
+        "flange_ext",
+        "flange_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A shaft collar is a tiny part that fails at the worst time and is rarely sold on its own for an odd shaft size. Printing a set collar, split clamp collar or flanged stop to the exact 6-12 mm bore lets a maker or repair tech set an axial stop, space a bearing, or lock a hub on any small drive shaft in the field, reusing the same shaft interface the rest of the shaft-spline commons keys to instead of ordering a specific metric collar and waiting for it.",
+        "es": "Un collar de eje es una pieza diminuta que falla en el peor momento y rara vez se vende suelto para un tamaño de eje inusual. Imprimir un collar de prisionero, un collar de apriete partido o un tope con brida al barreno exacto de 6-12 mm permite a un fabricante o técnico de reparación fijar un tope axial, espaciar un rodamiento o bloquear un cubo en cualquier eje de transmisión pequeño en campo, reutilizando la misma interfaz de eje a la que se acopla el resto de la familia shaft-spline en vez de pedir un collar métrico específico y esperar."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "shaft_bore_setscrew",
+          "label": "6-12 mm Shaft Bore + Setscrew",
+          "geometry_type": "socket",
+          "standard": "6-12mm shaft",
+          "parameters": [
+            "bore_d",
+            "set_d"
+          ]
+        }
+      ],
+      "standards": [
+        "6-12mm shaft"
+      ],
+      "source": {
+        "manifest": "projects/shaft-collar/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shaft-collar"
+      }
+    },
+    {
       "slug": "shaft-coupler",
       "name": "Universal / D-Shaft Coupler",
       "domain": "industrial",
@@ -23441,6 +27004,92 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shaft-coupler"
+      }
+    },
+    {
+      "slug": "shaft-coupler-kit",
+      "name": "Shaft Coupler Kit",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "bore_a",
+        "bore_b",
+        "shaft_a",
+        "shaft_b",
+        "body_len",
+        "wall",
+        "flat_depth",
+        "setscrew",
+        "setscrew_dia",
+        "bolt_circle"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Small drivetrains are a Tower of Babel of shaft profiles — 5 mm D motor shafts, 6 mm round encoders, 1/4 in hex bits — and a mismatch normally means an expensive machined coupler or abandoning a repair. A printable any-to-any coupler with independently selectable round/D/hex bores lets a maker join whatever two shafts they have, or step a worn bore down to a fresh one, keeping motors, knobs and appliances in service.",
+        "es": "Las transmisiones pequeñas son una Torre de Babel de perfiles de eje — ejes D de motor de 5 mm, encoders redondos de 6 mm, puntas hexagonales de 1/4 in — y una incompatibilidad normalmente implica un acoplador mecanizado caro o abandonar una reparación. Un acoplador universal imprimible con barrenos redondo/D/hex seleccionables de forma independiente permite a un maker unir los dos ejes que tenga, o reducir un barreno gastado a uno nuevo, manteniendo motores, perillas y electrodomésticos en servicio."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "shaft_bore_a",
+          "label": "Shaft Bore A (round/D/hex)",
+          "geometry_type": "socket",
+          "standard": "3-8mm shaft (round/D-flat/hex)",
+          "parameters": [
+            "bore_a",
+            "shaft_a",
+            "flat_depth"
+          ]
+        },
+        {
+          "id": "shaft_bore_b",
+          "label": "Shaft Bore B (round/D/hex)",
+          "geometry_type": "socket",
+          "standard": "3-8mm shaft (round/D-flat/hex)",
+          "parameters": [
+            "bore_b",
+            "shaft_b"
+          ]
+        },
+        {
+          "id": "flange_bolt_circle",
+          "label": "Flange Bolt Circle",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "bolt_circle"
+          ]
+        }
+      ],
+      "standards": [
+        "3-8mm shaft (round/D-flat/hex)"
+      ],
+      "source": {
+        "manifest": "projects/shaft-coupler-kit/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shaft-coupler-kit"
       }
     },
     {
@@ -23651,6 +27300,85 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shoe-accessory"
+      }
+    },
+    {
+      "slug": "shoe-bar",
+      "name": "Cold-Shoe Extension Bar",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "foot_width",
+        "channel_w",
+        "flange_th",
+        "shoe_len",
+        "corner_r",
+        "base_th",
+        "base_pad",
+        "quarter_d",
+        "bar_span",
+        "wall",
+        "clearance"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A camera has one accessory shoe, but a working rig needs a light, a mic and a monitor all at once — usually a stack of proprietary brackets. A printable shoe bar that carries three ISO 518 feet, plus a relocator and a shoe-and-screw rail, lets an owner-operator fan out a single shoe into the exact accessory layout a shoot needs and repair a bracket in the field. Sharing the ISO 518 shoe, it mates any accessory-shoe socket and grows the shoe family.",
+        "es": "Una cámara tiene una sola zapata de accesorios, pero un rig de trabajo necesita una luz, un micrófono y un monitor a la vez — normalmente una pila de soportes propietarios. Una barra de zapatas imprimible que lleva tres pies ISO 518, más un reubicador y un riel de zapata y tornillos, permite a un operador desplegar una sola zapata en la distribución exacta de accesorios que necesita un rodaje y reparar un soporte en el campo. Al compartir la zapata ISO 518, se acopla a cualquier casquillo de zapata de accesorios y hace crecer la familia de zapatas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "iso_518_accessory_shoe",
+          "label": "ISO 518 Accessory Shoe",
+          "geometry_type": "rail",
+          "standard": "ISO 518",
+          "parameters": [
+            "foot_width",
+            "channel_w",
+            "flange_th",
+            "corner_r"
+          ]
+        },
+        {
+          "id": "quarter_20_accessory",
+          "label": "1/4-20 Accessory Holes",
+          "geometry_type": "bolt_pattern",
+          "standard": "ASME B1.1 1/4-20 UNC",
+          "parameters": [
+            "quarter_d"
+          ]
+        }
+      ],
+      "standards": [
+        "ASME B1.1 1/4-20 UNC",
+        "ISO 518"
+      ],
+      "source": {
+        "manifest": "projects/shoe-bar/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/shoe-bar"
       }
     },
     {
@@ -24436,6 +28164,81 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/socket-adapter"
+      }
+    },
+    {
+      "slug": "soft-finger",
+      "name": "Soft Pneumatic Finger",
+      "domain": "hybrid",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "finger_len",
+        "finger_w",
+        "body_h",
+        "n_ribs",
+        "wall",
+        "chamber_w",
+        "barb_od",
+        "barb_id"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Soft pneumatic fingers grip fragile or irregular objects that rigid grippers crush — fruit, tissue, lab samples. Commercial soft actuators are costly and closed; an open, parametric finger with a standard 4/6 mm air port lets a lab or maker cast or print a gripper to size and repair it in the field, lowering the barrier to soft-robotics research and assistive devices.",
+        "es": "Los dedos neumaticos blandos agarran objetos fragiles o irregulares que los pinzas rigidas aplastan — fruta, tejido, muestras de laboratorio. Los actuadores blandos comerciales son costosos y cerrados; un dedo abierto y parametrico con un puerto de aire estandar de 4/6 mm permite a un laboratorio o maker fundir o imprimir una pinza a medida y repararla en campo, bajando la barrera para la robotica blanda y dispositivos de asistencia."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "air_port_barb",
+          "label": "Pneumatic Air Port",
+          "geometry_type": "socket",
+          "standard": "4/6mm pneumatic tube",
+          "parameters": [
+            "barb_od",
+            "barb_id"
+          ]
+        },
+        {
+          "id": "bellows_chamber",
+          "label": "Bellows Chamber",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "n_ribs",
+            "chamber_w",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "4/6mm pneumatic tube"
+      ],
+      "source": {
+        "manifest": "projects/soft-finger/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/soft-finger"
       }
     },
     {
@@ -25225,6 +29028,77 @@
       }
     },
     {
+      "slug": "squeeze-nozzle",
+      "name": "Squeeze Bottle Nozzle",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 13,
+      "parameter_ids": [
+        "neck",
+        "clearance",
+        "turns",
+        "wall",
+        "top_th",
+        "grip_knurl",
+        "cone_h",
+        "tip_dia",
+        "needle_len",
+        "needle_od",
+        "needle_id",
+        "drip_dia",
+        "dome_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Commercial precision nozzles are sold pre-set to one orifice and one length, and are thrown away with the bottle. A printed 410 nozzle lets anyone match the tip exactly to the task — a fine needle for glue, a controlled drip for dosing, a cuttable cone for sealants — and refit it to any refill bottle, turning a disposable dispenser into a precise, reusable tool.",
+        "es": "Las boquillas de precisión comerciales se venden fijadas a un orificio y una longitud, y se tiran con la botella. Una boquilla 410 impresa permite ajustar la punta exactamente a la tarea — una aguja fina para pegamento, un goteo controlado para dosificar, un cono recortable para selladores — y reajustarla a cualquier botella de recarga, convirtiendo un dispensador desechable en una herramienta precisa y reutilizable."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "dispenser_410_thread",
+          "label": "410 Dispenser Neck Thread",
+          "geometry_type": "thread",
+          "standard": "28-410 / 24-410",
+          "parameters": [
+            "neck",
+            "clearance",
+            "turns",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "28-410 / 24-410"
+      ],
+      "source": {
+        "manifest": "projects/squeeze-nozzle/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/squeeze-nozzle"
+      }
+    },
+    {
       "slug": "stacking-bin",
       "name": "Stackable Tray / Sorting Bin",
       "domain": "household",
@@ -25945,6 +29819,160 @@
       }
     },
     {
+      "slug": "stud-bracket",
+      "name": "Stud-Mount Bracket Kit",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "stud_pitch",
+        "bays",
+        "plate_h",
+        "plate_t",
+        "screw_dia",
+        "screw_head",
+        "shelf_depth",
+        "hook_len",
+        "hook_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The 16 in wall-stud pitch is the load-bearing skeleton of nearly every North American home. Printable stud brackets, shelves and hooks let a renter or homeowner hang real weight off the framing — shelving, tools, bikes, cable — without buying a proprietary rail system per fixture, and repair or extend a wall-storage layout on demand.",
+        "es": "El paso de montante de 16 in es el esqueleto portante de casi toda vivienda norteamericana. Soportes, repisas y ganchos impresos permiten a un inquilino o propietario colgar peso real de la estructura — estantes, herramientas, bicicletas, cable — sin comprar un sistema de riel propietario por accesorio, y reparar o ampliar un almacenamiento de pared bajo demanda."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "stud_mount_pattern",
+          "label": "16 in Wall Stud Mount",
+          "geometry_type": "bolt_pattern",
+          "standard": "16in wall stud",
+          "parameters": [
+            "stud_pitch",
+            "bays",
+            "screw_dia",
+            "screw_head"
+          ]
+        },
+        {
+          "id": "keyhole_hang",
+          "label": "Keyhole Hanging Slot",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "screw_dia",
+            "screw_head"
+          ]
+        }
+      ],
+      "standards": [
+        "16in wall stud"
+      ],
+      "source": {
+        "manifest": "projects/stud-bracket/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/stud-bracket"
+      }
+    },
+    {
+      "slug": "suction-mount",
+      "name": "Vacuum Suction Cup Mount",
+      "domain": "hybrid",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "cup_d",
+        "cup_h",
+        "lip_t",
+        "bore_d",
+        "thread_d",
+        "boss_h",
+        "n_conv",
+        "n_cups"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Vacuum suction is the workhorse of pick-and-place — it lifts flat, smooth, fragile parts (glass, PCBs, sheet) that jaws would mark or crack. Commercial cup-and-fitting sets are proprietary and priced per format; an open, parametric cup with a standard barbed vacuum port and a 1/4-20 mount lets a lab or small line build an end-effector to the exact part size and expand it into a multi-cup array without buying a new gripper.",
+        "es": "El vacio por ventosa es el caballo de batalla del pick-and-place — levanta piezas planas, lisas y fragiles (vidrio, PCBs, lamina) que las pinzas marcarian o romperian. Los juegos de ventosa y racor comerciales son propietarios y se cobran por formato; una ventosa abierta y parametrica con un puerto de vacio de espiga estandar y montaje 1/4-20 permite a un laboratorio o linea pequena construir un efector final al tamano exacto de la pieza y expandirlo a un arreglo de varias ventosas sin comprar una pinza nueva."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "suction_cup",
+          "label": "Suction Cup",
+          "geometry_type": "socket",
+          "standard": "suction cup",
+          "parameters": [
+            "cup_d",
+            "cup_h",
+            "lip_t",
+            "bore_d"
+          ]
+        },
+        {
+          "id": "quarter_20_mount",
+          "label": "1/4-20 Mount",
+          "geometry_type": "bolt_pattern",
+          "standard": "ASME B1.1 1/4-20 UNC",
+          "parameters": [
+            "thread_d",
+            "boss_h"
+          ]
+        }
+      ],
+      "standards": [
+        "ASME B1.1 1/4-20 UNC",
+        "suction cup"
+      ],
+      "source": {
+        "manifest": "projects/suction-mount/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/suction-mount"
+      }
+    },
+    {
       "slug": "superformula",
       "name": "Superformula Vase",
       "domain": null,
@@ -26128,6 +30156,82 @@
       }
     },
     {
+      "slug": "syringe-carriage",
+      "name": "Syringe Pump Carriage",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 5,
+      "parameter_ids": [
+        "syringe",
+        "leadscrew",
+        "clearance",
+        "block_w",
+        "mount_bolt"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Open syringe-pump hardware lets teaching labs, makerspaces and low-resource research groups build precise fluid dosing for a fraction of a commercial pump, on standard syringes and leadscrews, printed on demand.",
+        "es": "El hardware abierto de bomba de jeringa permite a laboratorios de enseñanza, espacios maker y grupos de investigación con pocos recursos construir dosificación precisa de fluidos por una fracción de una bomba comercial, sobre jeringas y husillos estándar, impreso bajo demanda."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "Barrel channel and nut bore add the user 'clearance' per side; start at 0.35 mm and tune to your printer and leadscrew. Print the plunger pusher solid or high-infill for drive stiffness. This is a bench/teaching aid, not a certified infusion pump.",
+          "es": "El canal del cuerpo y el barreno de la tuerca suman la 'holgura' del usuario por lado; empieza en 0.35 mm y ajústalo a tu impresora y husillo. Imprime el empujador sólido o de alto relleno para rigidez del accionamiento. Es una ayuda de mesa/enseñanza, no una bomba de infusión certificada."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "syringe_barrel_socket",
+          "label": "Syringe Barrel Socket",
+          "geometry_type": "socket",
+          "standard": "Luer syringe barrel (1/3/5/10/20 mL)",
+          "parameters": [
+            "syringe",
+            "clearance"
+          ]
+        },
+        {
+          "id": "leadscrew_nut",
+          "label": "Leadscrew Drive Nut",
+          "geometry_type": "thread",
+          "standard": "T8 trapezoidal / M8 metric leadscrew",
+          "parameters": [
+            "leadscrew",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "Luer syringe barrel (1/3/5/10/20 mL)",
+        "T8 trapezoidal / M8 metric leadscrew"
+      ],
+      "source": {
+        "manifest": "projects/syringe-carriage/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/syringe-carriage"
+      }
+    },
+    {
       "slug": "tape-dispenser",
       "name": "Label / Tape Dispenser",
       "domain": "household",
@@ -26191,6 +30295,78 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tape-dispenser"
+      }
+    },
+    {
+      "slug": "tendon-knuckle",
+      "name": "Tendon-Driven Knuckle",
+      "domain": "hybrid",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "seg_len",
+        "seg_w",
+        "seg_h",
+        "pin_d",
+        "tendon_d",
+        "wall",
+        "pulley_d",
+        "shaft_d"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Tendon-driven fingers are the basis of low-cost prosthetic and research hands — one motor pulls a cable to curl a whole finger, and an elastic returns it. Off-the-shelf articulated hands cost thousands; an open, parametric knuckle with a standard tendon channel and pin joint lets a maker or clinic size a hand to a wearer and reprint a broken segment, cutting the cost of assistive and research robotics.",
+        "es": "Los dedos accionados por tendon son la base de manos protesicas y de investigacion de bajo costo — un motor tira de un cable para flexionar todo un dedo, y un elastico lo regresa. Las manos articuladas comerciales cuestan miles; una articulacion abierta y parametrica con un canal de tendon estandar y una articulacion de pasador permite a un maker o clinica ajustar una mano a un usuario y reimprimir un segmento roto, reduciendo el costo de la robotica de asistencia e investigacion."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "tendon_channel",
+          "label": "Tendon Channel",
+          "geometry_type": "custom",
+          "standard": "internal",
+          "parameters": [
+            "tendon_d",
+            "wall"
+          ]
+        },
+        {
+          "id": "pin_joint",
+          "label": "Pin Joint",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "pin_d",
+            "seg_h"
+          ]
+        }
+      ],
+      "standards": [],
+      "source": {
+        "manifest": "projects/tendon-knuckle/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tendon-knuckle"
       }
     },
     {
@@ -26632,6 +30808,70 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/threaded-boss"
+      }
+    },
+    {
+      "slug": "thumb-screw",
+      "name": "Knurled Thumb Screw",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 7,
+      "parameter_ids": [
+        "thread_size",
+        "clearance",
+        "engage_turns",
+        "head_dia",
+        "head_h",
+        "knurl_teeth",
+        "shaft_len"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Hand-turned fasteners let a print be opened and re-clamped with no tools — for jigs, covers, tripod feet and assistive devices where a screwdriver is a barrier. Building them on the real M5/M6 ISO metric thread means a printed thumb screw and a bought bolt are interchangeable, so a lost knob can be replaced from a printer in minutes and the same knob fits any M5/M6 tapped hole or heat-set insert in the commons.",
+        "es": "Los sujetadores girables a mano permiten abrir y reapretar una pieza sin herramientas — para plantillas, tapas, patas de trípode y dispositivos de asistencia donde un destornillador es una barrera. Construirlos sobre la rosca métrica ISO M5/M6 real hace que un tornillo de mariposa impreso y un perno comercial sean intercambiables, de modo que una perilla perdida se reemplaza desde una impresora en minutos y la misma perilla encaja en cualquier agujero roscado o inserto termofijable M5/M6 del commons."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "iso_metric_thread",
+          "label": "ISO Metric Thread (M5/M6)",
+          "geometry_type": "thread",
+          "standard": "M5/M6",
+          "parameters": [
+            "thread_size",
+            "clearance",
+            "engage_turns"
+          ]
+        }
+      ],
+      "standards": [
+        "M5/M6"
+      ],
+      "source": {
+        "manifest": "projects/thumb-screw/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/thumb-screw"
       }
     },
     {
@@ -27881,6 +32121,135 @@
       }
     },
     {
+      "slug": "tslot-corner",
+      "name": "T-Slot Corner Bracket",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "series",
+        "thickness",
+        "leg_len",
+        "width",
+        "bolt_dia",
+        "fillet_r"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The 20 mm T-slot extrusion grid is the open standard of the maker world — 3D-printer frames, CNC gantries, workbenches and enclosures all bolt together on it. Printed corner brackets replace proprietary die-cast joiners at a fraction of the cost, let a builder brace an odd angle no catalogue part covers, and repair a stripped joint in the field. They grow the t-slot-extrusion commons alongside the extrusion itself, featherboards and V-slot wheels.",
+        "es": "La cuadrícula de perfil T-slot de 20 mm es el estándar abierto del mundo maker — bastidores de impresoras 3D, pórticos CNC, bancos de trabajo y gabinetes se ensamblan sobre ella. Los soportes de esquina impresos reemplazan uniones de fundición propietarias a una fracción del costo, permiten reforzar un ángulo raro que ninguna pieza de catálogo cubre, y reparar una unión dañada en el campo. Hacen crecer el común de t-slot-extrusion junto al propio perfil, los peines y las ruedas V-slot."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "tslot_bolt_grid",
+          "label": "T-Slot M5 Bolt Grid",
+          "geometry_type": "profile",
+          "standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+          "parameters": [
+            "series",
+            "leg_len",
+            "width",
+            "bolt_dia"
+          ]
+        }
+      ],
+      "standards": [
+        "2020/2040 extrusion (20 mm module, 6 mm slot, M5)"
+      ],
+      "source": {
+        "manifest": "projects/tslot-corner/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/tslot-corner"
+      }
+    },
+    {
+      "slug": "ttrack-clamp",
+      "name": "T-Track Hold-Down Clamp",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 8,
+      "parameter_ids": [
+        "stud",
+        "body_len",
+        "body_w",
+        "body_h",
+        "reach",
+        "slot_len",
+        "steps",
+        "counterbore"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "3/4 in T-track is the shared standard of shop jigs, fences, sleds and drill tables. Printed hold-downs, step blocks and push stops let a woodworker fixture any workpiece to any track-equipped jig without buying a proprietary clamp set, and print a replacement the moment one cracks. They ride the same track as bench dogs and featherboards, growing the miter/T-track commons.",
+        "es": "El riel en T de 3/4 in es el estándar compartido de plantillas, vallas, trineos y mesas de taladro. Sujeciones, bloques escalonados y topes impresos permiten al carpintero fijar cualquier pieza a cualquier plantilla con riel sin comprar un juego de prensas propietario, e imprimir un repuesto en cuanto una se rompe. Corren por el mismo riel que los perros de banco y los peines, haciendo crecer el común de riel en T / inglete."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "ttrack_stud_rail",
+          "label": "3/4 in T-Track Stud Rail",
+          "geometry_type": "rail",
+          "standard": "3/4in T-track (19.05 mm slot; 1/4-20 stud)",
+          "parameters": [
+            "stud",
+            "body_w",
+            "slot_len"
+          ]
+        }
+      ],
+      "standards": [
+        "3/4in T-track (19.05 mm slot; 1/4-20 stud)"
+      ],
+      "source": {
+        "manifest": "projects/ttrack-clamp/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/ttrack-clamp"
+      }
+    },
+    {
       "slug": "tube-rack",
       "name": "Test-Tube / Vial Rack",
       "domain": "medical",
@@ -28244,6 +32613,68 @@
       }
     },
     {
+      "slug": "u-joint",
+      "name": "Universal Joint (printable)",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "bore_d",
+        "yoke_wall",
+        "ear_t",
+        "cross_d",
+        "set_d",
+        "joint_ang"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A universal joint that couples two misaligned shafts is a stock mechanical part that is awkward to source for an odd small-shaft size and rarely repairable when one yoke cracks. Printing an inline or angled coupler, or a single yoke to rebuild half a worn joint, to the same 6-10 mm shaft interface the rest of the shaft-spline commons keys to lets a maker transmit drive around a corner or between two small shafts on demand, and repair a joint in the field instead of replacing the whole assembly.",
+        "es": "Una junta universal que acopla dos ejes desalineados es una pieza mecánica de stock difícil de conseguir para un tamaño de eje pequeño inusual y rara vez reparable cuando una horquilla se agrieta. Imprimir un acoplador recto o acodado, o una sola horquilla para reconstruir la mitad de una junta gastada, a la misma interfaz de eje de 6-10 mm a la que se acopla el resto de la familia shaft-spline permite a un fabricante transmitir movimiento alrededor de una esquina o entre dos ejes pequeños bajo demanda, y reparar una junta en campo en vez de reemplazar todo el conjunto."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "shaft_bore_setscrew",
+          "label": "6-10 mm Shaft Bore + Setscrew",
+          "geometry_type": "socket",
+          "standard": "6-10mm shaft",
+          "parameters": [
+            "bore_d",
+            "set_d"
+          ]
+        }
+      ],
+      "standards": [
+        "6-10mm shaft"
+      ],
+      "source": {
+        "manifest": "projects/u-joint/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/u-joint"
+      }
+    },
+    {
       "slug": "undershelf-mount",
       "name": "Under-Shelf / Under-Desk Mount",
       "domain": "household",
@@ -28331,6 +32762,72 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/undershelf-mount"
+      }
+    },
+    {
+      "slug": "utensil-cuff",
+      "name": "Grip-Aid Utensil Cuff",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "palm_dia",
+        "handle_dia",
+        "band_wall",
+        "band_w",
+        "clearance",
+        "strap_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Restores independent eating, writing and self-care for people with reduced hand strength or grip — printed to their hand and utensils for a few pesos of filament instead of a costly catalogue adaptive aid.",
+        "es": "Restaura la independencia para comer, escribir y el autocuidado en personas con fuerza o agarre de mano reducidos — impreso a su mano y utensilios por unos pesos de filamento en vez de una ayuda adaptativa costosa de catálogo."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The palm band and utensil socket add the user 'clearance' per side; print the band in flexible TPU for comfort and grip, and set palm_dia and handle_dia to the individual. This is an adaptive aid, not certified medical equipment — an occupational therapist should confirm the fit.",
+          "es": "La banda palmar y el socket suman la 'holgura' del usuario por lado; imprime la banda en TPU flexible para comodidad y agarre, y ajusta palm_dia y handle_dia a la persona. Es una ayuda adaptativa, no equipo médico certificado — un terapeuta ocupacional debe confirmar el ajuste."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "utensil_socket",
+          "label": "Utensil Handle Socket",
+          "geometry_type": "socket",
+          "standard": "standard utensil handle",
+          "parameters": [
+            "handle_dia",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "standard utensil handle"
+      ],
+      "source": {
+        "manifest": "projects/utensil-cuff/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/utensil-cuff"
       }
     },
     {
@@ -28910,6 +33407,157 @@
       }
     },
     {
+      "slug": "vesa-plate-adapter",
+      "name": "VESA Adapter Plate (75<->100)",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "plate_t",
+        "vesa_small",
+        "vesa_large",
+        "bolt_d",
+        "cbore_d",
+        "cbore_depth",
+        "cable_d",
+        "spacer_h",
+        "corner_r"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The VESA FDMI flat-display mounting interface is the universal open standard for monitor and TV mounting, but the 75 mm and 100 mm patterns rarely match between a display and its arm. A printed adapter plate reconciles the two on demand, so any monitor mounts to any arm without buying a proprietary bracket, and rescues an out-of-production mount in minutes.",
+        "es": "La interfaz de montaje de pantallas planas VESA FDMI es el estándar abierto universal para montar monitores y televisores, pero los patrones de 75 mm y 100 mm rara vez coinciden entre una pantalla y su brazo. Una placa adaptadora impresa reconcilia ambos bajo demanda, de modo que cualquier monitor se monta en cualquier brazo sin comprar un soporte propietario, y rescata un montaje descatalogado en minutos."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "vesa_mis_d_small",
+          "label": "VESA MIS-D 75 Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "VESA MIS-D",
+          "parameters": [
+            "vesa_small",
+            "bolt_d"
+          ]
+        },
+        {
+          "id": "vesa_mis_d_large",
+          "label": "VESA MIS-D 100 Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "VESA MIS-D",
+          "parameters": [
+            "vesa_large",
+            "bolt_d"
+          ]
+        }
+      ],
+      "standards": [
+        "VESA MIS-D"
+      ],
+      "source": {
+        "manifest": "projects/vesa-plate-adapter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/vesa-plate-adapter"
+      }
+    },
+    {
+      "slug": "vesa-thinclient",
+      "name": "VESA Thin-Client Mount",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "vesa_sq",
+        "plate_t",
+        "bolt_d",
+        "dev_w",
+        "dev_h",
+        "dev_t",
+        "wall",
+        "lip",
+        "corner_r"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Thin-clients, mini-PCs and single-board computers ship without a VESA mount, and off-the-shelf cradles rarely fit a specific enclosure. A printed VESA-100 mount cradles any device box behind a monitor on demand, clearing desk space and reusing the monitor's own mounting interface instead of buying a device-specific bracket.",
+        "es": "Los clientes ligeros, mini-PCs y computadoras de placa única se venden sin montaje VESA, y las cunas comerciales rara vez encajan en una carcasa específica. Un montaje VESA-100 impreso sostiene cualquier caja de dispositivo detrás de un monitor bajo demanda, liberando espacio de escritorio y reutilizando la interfaz de montaje del propio monitor en vez de comprar un soporte específico."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "vesa_mis_d_mount",
+          "label": "VESA MIS-D Mount Face",
+          "geometry_type": "bolt_pattern",
+          "standard": "VESA MIS-D",
+          "parameters": [
+            "vesa_sq",
+            "bolt_d"
+          ]
+        },
+        {
+          "id": "device_cradle",
+          "label": "Device Cradle",
+          "geometry_type": "pocket",
+          "standard": "internal",
+          "parameters": [
+            "dev_w",
+            "dev_h",
+            "dev_t"
+          ]
+        }
+      ],
+      "standards": [
+        "VESA MIS-D"
+      ],
+      "source": {
+        "manifest": "projects/vesa-thinclient/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/vesa-thinclient"
+      }
+    },
+    {
       "slug": "voronoi",
       "name": "Voronoi Generator",
       "domain": null,
@@ -29382,6 +34030,73 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/wheel-hub"
+      }
+    },
+    {
+      "slug": "wheelchair-cup",
+      "name": "Wheelchair Cup Holder",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 6,
+      "parameter_ids": [
+        "tube_dia",
+        "cup_dia",
+        "clamp_wall",
+        "clearance",
+        "cup_wall",
+        "cup_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Keeps a drink within reach for wheelchair, walker and rollator users, printed to fit their exact frame tube for a few pesos of filament instead of a costly proprietary holder, and interoperable with the wider mobility-accessory family.",
+        "es": "Mantiene una bebida al alcance de usuarios de sillas de ruedas, andadores y rollators, impreso a la medida exacta del tubo de su marco por unos pesos de filamento en vez de un portavasos propietario costoso, e interoperable con la familia mobility-accessory."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "The C-clamp bore adds the user 'clearance' per side and grips by spring; set tube_dia to your frame and print in PETG so the clamp flexes without cracking. This is an adaptive aid, not certified medical equipment — check the grip before hanging a full cup.",
+          "es": "El barreno de la abrazadera C suma la 'holgura' del usuario por lado y sujeta por resorte; ajusta tube_dia a tu marco e imprime en PETG para que la abrazadera flexione sin romperse. Es una ayuda adaptativa, no equipo médico certificado — verifica la sujeción antes de colgar un vaso lleno."
+        }
+      },
+      "cdg_interfaces": [
+        {
+          "id": "mobility_tube_clamp",
+          "label": "Mobility Tube Clamp",
+          "geometry_type": "socket",
+          "standard": "3/4-1in mobility tube",
+          "parameters": [
+            "tube_dia",
+            "clamp_wall",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "3/4-1in mobility tube"
+      ],
+      "source": {
+        "manifest": "projects/wheelchair-cup/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/wheelchair-cup"
       }
     },
     {

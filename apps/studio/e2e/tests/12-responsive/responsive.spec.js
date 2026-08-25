@@ -153,7 +153,7 @@ test.describe('Responsive Design', () => {
     await expect(header).toBeVisible()
     const box = await header.boundingBox()
     if (box) {
-      // landscape:h-10 = 40px, should be at most 48px
+      // phone-landscape:min-h-11 = 44px (+1px border), should be at most 48px
       expect(box.height).toBeLessThanOrEqual(48)
     }
   })

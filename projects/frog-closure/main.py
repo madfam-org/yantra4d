@@ -92,13 +92,12 @@ loop_id = min(loop_id, max(knot_dia + 2.0 * gap, span - knot_dia - 4.0))
 # it never vanishes at thin settings nor swamps a small loop.
 ring_w = max(1.2, min(tail_t, loop_id / 3.0))
 
-# LAST, because it depends on the final loop_id and ring_w: the tail must be no wider
-# than the ring it mounts. A tail wider than the ring's OUTER diameter has its side
-# walls land outside the ring entirely while its top face stays flush with the ring's
-# flank — a tangential meeting rather than an overlap, which fuses into an open shell.
-# This is how tail_w=max(16.0) first failed against a 16mm-outer ring. Capped here
-# rather than inside the loop builder so the knot half, the loop half and the pair all
-# share one tail width and the closure stays visually coherent.
+# LAST, because it depends on the final loop_id and ring_w: the tail is held no wider
+# than the ring it mounts, so the strip always meets the ring across solid material
+# instead of running past it on both sides. tail_w=max(16.0) against a 16mm-outer ring
+# was one of the extremes-sweep failures. Capped here rather than inside the loop
+# builder so the knot half, the loop half and the pair all share one tail width and the
+# closure stays visually coherent.
 tail_w = min(tail_w, (loop_id + 2.0 * ring_w) * 0.8)
 tail_w = max(tail_w, 3.0)
 
@@ -162,12 +161,10 @@ def build_knot():
     # Neck stem: a short cylinder from the tail up into the ball. It overlaps BOTH
     # neighbours, which is what makes the three-way union a single watertight body.
     #
-    # The neck must be strictly NARROWER than the ball's flat bottom cap. If it is
-    # wider, its wall exits through the loft's base rim and meets the loft's flank
-    # tangentially — a non-manifold kiss, not an overlap, and the union comes back as
-    # an open shell. That is precisely how knot_dia=min(5.0) first failed: cap_r was
-    # 1.05mm while the neck wanted 1.5mm. Bounding the neck by the cap keeps the stem
-    # buried inside the ball at every knot size the manifest allows.
+    # The neck is held strictly NARROWER than the ball's flat bottom cap so the stem
+    # stays buried inside the loft rather than exiting through its base rim, where its
+    # wall would meet the loft's flank tangentially. `CAP_FRAC` is shared with `_ball`
+    # so the bound and the cap it is measured against cannot drift apart.
     cap_r = ball_r * CAP_FRAC
     neck_r = min(tail_w * 0.35, ball_r * 0.6, cap_r * 0.8)
     neck_r = max(0.5, neck_r)
@@ -200,24 +197,22 @@ def build_loop():
     )
     ring = cq.Workplane(obj=torus)
 
-    # Open the C: cut a notch out of the ring's -Y side so the knot can enter. The notch
-    # is a mouth, not a bisection — it leaves two horns still joined through the ring's
-    # +Y arc.
-    #
-    # Its width is bounded on BOTH sides, and both bounds were found by the extremes
-    # sweep rather than by inspection:
-    #   * too wide  → the cut severs the ring into two arcs (the original 2-body fail);
-    #   * too close to the bore → the cut's side walls land tangent to the ring's own
-    #     inner wall, shaving a zero-thickness sliver that opens the mesh. That is how
-    #     knot_dia=min(5.0) failed, where a 4.5mm mouth met a ~5.4mm bore.
-    # Holding the mouth to a fraction of the BORE (not of the knot) keeps a real wall on
-    # each horn at every combination the manifest allows.
-    mouth_w = min(loop_id * 0.62, knot_dia * 0.9, loop_id - 1.2)
-    mouth_w = max(mouth_w, min(1.0, loop_id * 0.3))
+    # Open the C: cut a notch out of the ring's -Y side so the knot can enter, leaving
+    # two horns still joined through the ring's +Y arc. The mouth is sized to admit the
+    # knot but kept well inside the bore — cut as wide as the bore and the notch severs
+    # the ring into two arcs, which the tail then cannot rejoin (the original 2-body
+    # failure).
+    mouth_w = min(loop_id * 0.62, knot_dia * 0.9)
+    mouth_w = max(mouth_w, min(1.5, loop_id * 0.3))
+
+    # The cut enters from outside the rim and stops in the bore's empty middle rather
+    # than level with the ring centre, so its end face never grazes the far tube.
+    y_start = -(r_out + ring_w)
+    box_len = ring_w * 3.0
     mouth = (
         cq.Workplane("XY")
-        .box(mouth_w, r_out * 2.0, ring_w * 4.0, centered=(True, False, True))
-        .translate((0.0, -r_out * 2.0, z_mid))
+        .box(mouth_w, box_len, ring_w * 4.0, centered=(True, False, True))
+        .translate((0.0, y_start, z_mid))
     )
     ring = ring.cut(mouth)
 
@@ -227,7 +222,23 @@ def build_loop():
     # both horns at once, fusing the C into one watertight body no matter how wide
     # the mouth is cut. Starting it at the -Y rim instead leaves the horns joined only
     # through the arc and the tail bridging nothing — the 2-body failure.
-    tail = _tail(tail_len + r_mid * 2.0, -(tail_len + r_mid))
+    #
+    # The tail is built here rather than via `_tail` because it must STRADDLE the ring's
+    # tube in Z. The tube spans z ∈ [z_mid ± ring_w/2] = [0, ring_w]; the plain tail
+    # spans z ∈ [0, tail_t]. Whenever ring_w == tail_t those two spans are IDENTICAL,
+    # so the tail's top and bottom faces are coplanar with the tube's extremes and the
+    # union fuses tangentially into an open shell. That is the real knot_dia=min(5.0)
+    # failure — nothing to do with the knot, which build_loop never uses for anything
+    # but the mouth width; ring_w happened to equal tail_t there. Extending the tail a
+    # little past the tube on BOTH sides makes the intersection volumetric at every
+    # combination of ring_w and tail_t.
+    straddle = max(0.2, ring_w * 0.1)
+    tail_h = max(tail_t, ring_w) + 2.0 * straddle
+    tail = (
+        cq.Workplane("XY")
+        .box(tail_w, tail_len + r_mid * 2.0, tail_h, centered=(True, False, False))
+        .translate((0.0, -(tail_len + r_mid), -straddle))
+    )
 
     return ring.union(tail)
 

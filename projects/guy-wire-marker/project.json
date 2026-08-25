@@ -1,0 +1,208 @@
+{
+  "project": {
+    "name": "Guy Wire Marker",
+    "slug": "guy-wire-marker",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "High-visibility markers that make the guy wire of a utility pole visible. A guy anchors a pole against line tension and runs at a shallow angle down to a ground anchor — thin, unlit, and at head height across a sidewalk, verge or driveway approach, where it is struck by pedestrians, cyclists and mowers. The wire bore lands on real EHS galvanised guy strand diameters (3/16 to 1/2 in) and the snap mouth follows the same fraction-of-bore convention as the published pv-cable-clip. Includes a two-part clamshell guard, a one-piece snap-on C-section, and a disc flag marker.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Marcadores de alta visibilidad que hacen visible el tensor de un poste de servicio. Un tensor ancla el poste contra la tensión de la línea y baja en ángulo bajo hasta un anclaje a tierra — delgado, sin iluminación y a la altura de la cabeza al cruzar una banqueta, camellón o entrada de cochera, donde lo golpean peatones, ciclistas y podadoras. El barreno del cable coincide con diámetros reales de cable tensor EHS galvanizado (3/16 a 1/2 pulg) y la boca de encaje sigue la misma convención de fracción del barreno que el pv-cable-clip publicado. Incluye guarda tipo concha de dos partes, sección C de una pieza a presión y marcador de disco.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/guy-wire-marker.webp",
+    "difficulty": "beginner",
+    "tags": ["guy-wire", "utility-pole", "marker", "high-visibility", "safety", "pole-line", "infrastructure", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "shell_pin",
+      "label": { "en": "Clamshell Half — Pin", "es": "Media Concha — Perno" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["shell_pin"],
+      "estimate": { "base_time": 7, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "shell_socket",
+      "label": { "en": "Clamshell Half — Socket", "es": "Media Concha — Alojamiento" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["shell_socket"],
+      "estimate": { "base_time": 7, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "snap_shell",
+      "label": { "en": "Snap-On C-Section", "es": "Sección C a Presión" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["snap_shell"],
+      "estimate": { "base_time": 6, "per_unit": 3, "per_part": 9 }
+    },
+    {
+      "id": "flag_disc",
+      "label": { "en": "Disc Flag Marker", "es": "Marcador de Disco" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flag_disc"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "shell_pin", "label": { "en": "Clamshell Pin Half", "es": "Media Concha Perno" }, "render_mode": 0, "color": "#c8a415" },
+    { "id": "shell_socket", "label": { "en": "Clamshell Socket Half", "es": "Media Concha Alojamiento" }, "render_mode": 0, "color": "#b8970f" },
+    { "id": "snap_shell", "label": { "en": "Snap C-Section", "es": "Sección C" }, "render_mode": 0, "color": "#d4b02a" },
+    { "id": "flag_disc", "label": { "en": "Disc Marker", "es": "Marcador de Disco" }, "render_mode": 0, "color": "#e0bc38" }
+  ],
+  "parameter_groups": [
+    { "id": "wire", "label": { "en": "Guy Strand", "es": "Cable Tensor" } },
+    { "id": "shell", "label": { "en": "Marker Body", "es": "Cuerpo del Marcador" } },
+    { "id": "disc", "label": { "en": "Disc Flag", "es": "Disco" } },
+    { "id": "mate", "label": { "en": "Half Mating", "es": "Acoplamiento" } }
+  ],
+  "parameters": [
+    {
+      "id": "strand", "type": "select", "default": "ehs_1_4",
+      "options": [
+        { "value": "ehs_3_16", "label": "EHS 3/16 in (4.76 mm)" },
+        { "value": "ehs_1_4", "label": "EHS 1/4 in (6.35 mm)" },
+        { "value": "ehs_5_16", "label": "EHS 5/16 in (7.94 mm)" },
+        { "value": "ehs_3_8", "label": "EHS 3/8 in (9.53 mm)" },
+        { "value": "ehs_1_2", "label": "EHS 1/2 in (12.70 mm)" }
+      ],
+      "group": "wire", "modes": ["shell_pin", "shell_socket", "snap_shell", "flag_disc"],
+      "label": { "en": "Guy Strand Size", "es": "Tamaño del Cable Tensor" },
+      "tooltip": { "en": "EHS galvanised steel guy strand nominal diameter", "es": "Diámetro nominal del cable tensor EHS galvanizado" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.6, "min": 0.0, "max": 2.5, "step": 0.1,
+      "group": "wire", "modes": ["shell_pin", "shell_socket", "snap_shell", "flag_disc"],
+      "label": { "en": "Bore Clearance (mm)", "es": "Holgura del Barreno (mm)" },
+      "tooltip": { "en": "Slop over the strand; more for a served or taped wire", "es": "Holgura sobre el cable; más si está forrado o encintado" }
+    },
+    {
+      "id": "mouth", "type": "slider", "default": 0.62, "min": 0.40, "max": 0.85, "step": 0.01,
+      "group": "wire", "modes": ["snap_shell", "flag_disc"],
+      "label": { "en": "Snap Mouth (fraction of Ø)", "es": "Boca de Encaje (fracción del Ø)" },
+      "tooltip": { "en": "Mouth opening as a fraction of bore Ø; lower grips harder", "es": "Abertura como fracción del Ø; menor sujeta más fuerte" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "shell", "modes": ["shell_pin", "shell_socket", "snap_shell", "flag_disc"],
+      "label": { "en": "Shell Wall (mm)", "es": "Pared del Cuerpo (mm)" },
+      "tooltip": { "en": "Minimum material around the bore", "es": "Material mínimo alrededor del barreno" }
+    },
+    {
+      "id": "outer_dia", "type": "slider", "default": 50.0, "min": 16.0, "max": 120.0, "step": 1.0,
+      "group": "shell", "modes": ["shell_pin", "shell_socket", "snap_shell", "flag_disc"],
+      "label": { "en": "Marker Outside Ø (mm)", "es": "Ø Exterior del Marcador (mm)" },
+      "tooltip": { "en": "Outside diameter; raised automatically if the wall demands it", "es": "Diámetro exterior; se eleva solo si la pared lo exige" }
+    },
+    {
+      "id": "length", "type": "slider", "default": 120.0, "min": 25.0, "max": 300.0, "step": 5.0,
+      "group": "shell", "modes": ["shell_pin", "shell_socket", "snap_shell"],
+      "label": { "en": "Section Length (mm)", "es": "Largo de la Sección (mm)" },
+      "tooltip": { "en": "Length along the wire; stack sections to cover the run", "es": "Largo sobre el cable; apila secciones para cubrir el tramo" }
+    },
+    {
+      "id": "disc_dia", "type": "slider", "default": 150.0, "min": 50.0, "max": 300.0, "step": 5.0,
+      "group": "disc", "modes": ["flag_disc"],
+      "label": { "en": "Disc Ø (mm)", "es": "Ø del Disco (mm)" },
+      "tooltip": { "en": "Flag disc diameter", "es": "Diámetro del disco" }
+    },
+    {
+      "id": "disc_t", "type": "slider", "default": 4.0, "min": 2.0, "max": 12.0, "step": 0.5,
+      "group": "disc", "modes": ["flag_disc"],
+      "label": { "en": "Disc Thickness (mm)", "es": "Espesor del Disco (mm)" },
+      "tooltip": { "en": "Disc plate thickness", "es": "Espesor de la placa del disco" }
+    },
+    {
+      "id": "pin_dia", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 0.5,
+      "group": "mate", "modes": ["shell_pin", "shell_socket"], "advanced": true,
+      "label": { "en": "Alignment Pin Ø (mm)", "es": "Ø del Perno de Alineación (mm)" },
+      "tooltip": { "en": "Keying pin between the halves; capped to the wall thickness", "es": "Perno de alineación entre mitades; limitado al espesor de pared" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "std_guard_pin", "mode": "shell_pin",
+      "label": { "en": "1/4 in Guard — Pin Half", "es": "Guarda 1/4 pulg — Mitad Perno" },
+      "values": { "strand": "ehs_1_4", "length": 120.0, "outer_dia": 50.0 }
+    },
+    {
+      "id": "std_guard_socket", "mode": "shell_socket",
+      "label": { "en": "1/4 in Guard — Socket Half", "es": "Guarda 1/4 pulg — Mitad Alojamiento" },
+      "values": { "strand": "ehs_1_4", "length": 120.0, "outer_dia": 50.0 }
+    },
+    {
+      "id": "retrofit_snap", "mode": "snap_shell",
+      "label": { "en": "Retrofit Snap-On", "es": "Sección a Presión" },
+      "values": { "strand": "ehs_1_4", "length": 150.0, "mouth": 0.6 }
+    },
+    {
+      "id": "eye_level_disc", "mode": "flag_disc",
+      "label": { "en": "Eye-Level Disc", "es": "Disco a la Vista" },
+      "values": { "disc_dia": 150.0, "disc_t": 4.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2.0 mm", "es": "La pared debe ser de al menos 2.0 mm" }
+    },
+    {
+      "expression": "mouth <= 0.85",
+      "severity": "warning",
+      "message": { "en": "A mouth above 0.85 will not retain the marker on the wire", "es": "Una boca mayor a 0.85 no retiene el marcador en el cable" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 160, 180] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 300] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 3, "per_part": 10,
+    "fn_factor": 40, "wasm_multiplier": 3, "warning_threshold_seconds": 75
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "guy_strand_bore",
+        "label": { "en": "Guy Strand Bore", "es": "Barreno de Cable Tensor" },
+        "geometry_type": "socket",
+        "standard": "EHS galvanised guy strand (3/16, 1/4, 5/16, 3/8, 1/2 in)",
+        "parameters": ["strand", "clearance", "wall"],
+        "compatible_with": ["pv-cable-clip", "conduit-clip"]
+      },
+      {
+        "id": "snap_mouth",
+        "label": { "en": "Snap Mouth", "es": "Boca de Encaje" },
+        "geometry_type": "snap",
+        "standard": "internal — mouth as a fraction of bore Ø",
+        "parameters": ["mouth", "clearance"],
+        "compatible_with": ["pv-cable-clip"]
+      },
+      {
+        "id": "half_keying",
+        "label": { "en": "Clamshell Pin Keying", "es": "Acoplamiento de Mitades" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["pin_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A guy wire is the least visible hazard on a pole line: a taut steel strand crossing head height at a shallow angle, often over a sidewalk or a driveway approach, with nothing to catch the eye. Pedestrians and cyclists walk into them, and mower operators cut them. The standard remedy is a moulded yellow guy guard, but it is a proprietary per-utility part that goes missing after roadworks and that a rural co-op, a farm, an amateur-radio mast owner or a private pole owner frequently cannot source at all — so the wire simply stays bare. Printing a guard to the measured strand size restores the marking in an afternoon, from UV-stable filament, without touching the guy tension or needing a lineman. The disc variant adds a second cue at eye height where the strand is thinnest.",
+      "es": "Un cable tensor es el peligro menos visible de una línea de postes: un cable de acero tenso que cruza a la altura de la cabeza en ángulo bajo, a menudo sobre una banqueta o entrada de cochera, sin nada que llame la atención. Peatones y ciclistas chocan con ellos, y los operadores de podadoras los cortan. El remedio estándar es una guarda amarilla moldeada, pero es una pieza propietaria por empresa que desaparece tras obras viales y que una cooperativa rural, una granja, el dueño de una antena de radioaficionado o un propietario particular con frecuencia no puede conseguir — así que el cable queda desnudo. Imprimir una guarda a la medida real del cable restaura el señalamiento en una tarde, con filamento estable a UV, sin tocar la tensión del tensor ni requerir un linero. La variante de disco agrega una segunda señal a la altura de la vista, donde el cable es más delgado."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["guy-wire", "utility-pole", "marker", "high-visibility", "safety", "pole-line", "infrastructure", "hyperobject", "commons"]
+}

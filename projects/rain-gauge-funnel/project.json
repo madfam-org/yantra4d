@@ -1,0 +1,208 @@
+{
+  "project": {
+    "name": "Rain Gauge Funnel",
+    "slug": "rain-gauge-funnel",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A calibrated rain-gauge collector that screws onto an ordinary PET bottle. Rainfall is a depth, not a volume: a bare bottle catches whatever its own neck happens to be — tiny and unknown — so the water it holds means nothing. A funnel of known aperture converts collected volume to depth exactly (depth_mm = mL x 1000 / area_mm2). At the default 100 mm aperture, 1 mm of rain = 7.854 mL. The outlet lands on the published PCO-1881 bottle-neck thread, reusing the bottle-thread family's interface rather than inventing a new attachment. Includes the calibrated funnel, a splash-suppressing throat insert, and a post clip that holds the bottle level.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un colector pluviométrico calibrado que se enrosca en una botella PET común. La lluvia es una profundidad, no un volumen: una botella desnuda capta lo que su propio cuello mida — diminuto y desconocido — así que el agua que junta no significa nada. Un embudo de apertura conocida convierte el volumen captado en profundidad exactamente (prof_mm = mL x 1000 / área_mm2). Con la apertura predeterminada de 100 mm, 1 mm de lluvia = 7.854 mL. La salida coincide con la rosca de cuello PCO-1881 publicada, reutilizando la interfaz de la familia bottle-thread en vez de inventar un acople nuevo. Incluye el embudo calibrado, un inserto antisalpicadura y una abrazadera de poste que mantiene la botella a nivel.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/rain-gauge-funnel.webp",
+    "difficulty": "intermediate",
+    "tags": ["rain-gauge", "pluviometer", "hydrology", "citizen-science", "weather", "bottle-thread", "pco-1881", "infrastructure", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "funnel",
+      "label": { "en": "Calibrated Funnel", "es": "Embudo Calibrado" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["funnel"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "splash_ring",
+      "label": { "en": "Splash Insert", "es": "Inserto Antisalpicadura" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["splash_ring"],
+      "estimate": { "base_time": 5, "per_unit": 2, "per_part": 7 }
+    },
+    {
+      "id": "mount_clip",
+      "label": { "en": "Post Mount Clip", "es": "Abrazadera de Poste" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["mount_clip"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "funnel", "label": { "en": "Calibrated Funnel", "es": "Embudo Calibrado" }, "render_mode": 0, "color": "#2d4a5a" },
+    { "id": "splash_ring", "label": { "en": "Splash Insert", "es": "Inserto" }, "render_mode": 0, "color": "#3a5b6d" },
+    { "id": "mount_clip", "label": { "en": "Post Clip", "es": "Abrazadera" }, "render_mode": 0, "color": "#476c80" }
+  ],
+  "parameter_groups": [
+    { "id": "calibration", "label": { "en": "Calibration", "es": "Calibración" } },
+    { "id": "body", "label": { "en": "Funnel Body", "es": "Cuerpo del Embudo" } },
+    { "id": "neck", "label": { "en": "Bottle Neck", "es": "Cuello de Botella" } },
+    { "id": "mount", "label": { "en": "Mounting", "es": "Montaje" } }
+  ],
+  "parameters": [
+    {
+      "id": "aperture", "type": "slider", "default": 100.0, "min": 50.0, "max": 200.0, "step": 1.0,
+      "group": "calibration", "modes": ["funnel"],
+      "label": { "en": "Collector Aperture Ø (mm)", "es": "Ø de Apertura del Colector (mm)" },
+      "tooltip": { "en": "THE calibration: area = pi(Ø/2)^2, and 1 mm rain = area/1000 mL. 100 mm gives 7.854 mL per mm", "es": "LA calibración: área = pi(Ø/2)^2, y 1 mm de lluvia = área/1000 mL. 100 mm da 7.854 mL por mm" }
+    },
+    {
+      "id": "rim_t", "type": "slider", "default": 0.8, "min": 0.4, "max": 3.0, "step": 0.1,
+      "group": "calibration", "modes": ["funnel"],
+      "label": { "en": "Knife Rim Thickness (mm)", "es": "Espesor del Borde (mm)" },
+      "tooltip": { "en": "A thick blunt rim collects its own drops and over-reads; keep it sharp", "es": "Un borde grueso capta gotas propias y sobreestima; manténlo filoso" }
+    },
+    {
+      "id": "cone_angle", "type": "slider", "default": 55.0, "min": 25.0, "max": 75.0, "step": 1.0,
+      "group": "body", "modes": ["funnel"],
+      "label": { "en": "Cone Angle (deg)", "es": "Ángulo del Cono (grados)" },
+      "tooltip": { "en": "Steeper sheds water faster and evaporates less; shallower prints without support", "es": "Más inclinado desaloja más rápido y evapora menos; menos inclinado imprime sin soporte" }
+    },
+    {
+      "id": "throat_dia", "type": "slider", "default": 12.0, "min": 5.0, "max": 30.0, "step": 0.5,
+      "group": "body", "modes": ["funnel", "splash_ring"],
+      "label": { "en": "Throat Ø (mm)", "es": "Ø de la Garganta (mm)" },
+      "tooltip": { "en": "Outlet bore; narrow throats slow evaporation but can block with debris", "es": "Barreno de salida; gargantas estrechas evaporan menos pero se tapan con basura" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.2,
+      "group": "body", "modes": ["funnel", "splash_ring", "mount_clip"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)" },
+      "tooltip": { "en": "Funnel wall thickness", "es": "Espesor de pared del embudo" }
+    },
+    {
+      "id": "neck_standard", "type": "select", "default": "PCO-1881",
+      "options": [
+        { "value": "PCO-1881", "label": "PCO-1881 (soda / water bottle)" },
+        { "value": "PCO-1810", "label": "PCO-1810 (taller engagement)" },
+        { "value": "28-410", "label": "28-410 (personal care)" },
+        { "value": "38-400", "label": "38-400 (wide mouth)" }
+      ],
+      "group": "neck", "modes": ["funnel"],
+      "label": { "en": "Bottle Neck Finish", "es": "Acabado del Cuello" },
+      "tooltip": { "en": "Bottle thread the funnel screws onto", "es": "Rosca de botella en la que se enrosca el embudo" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.0, "max": 1.0, "step": 0.05,
+      "group": "neck", "modes": ["funnel"], "advanced": true,
+      "label": { "en": "Thread Fit (mm)", "es": "Ajuste de Rosca (mm)" },
+      "tooltip": { "en": "Printed-thread slop; raise if the funnel binds on the bottle", "es": "Holgura de rosca impresa; auméntala si el embudo se atora" }
+    },
+    {
+      "id": "skirt_len", "type": "slider", "default": 16.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "neck", "modes": ["funnel"],
+      "label": { "en": "Threaded Skirt (mm)", "es": "Falda Roscada (mm)" },
+      "tooltip": { "en": "Length of the threaded skirt over the bottle neck", "es": "Largo de la falda roscada sobre el cuello" }
+    },
+    {
+      "id": "post_dia", "type": "slider", "default": 25.0, "min": 10.0, "max": 80.0, "step": 1.0,
+      "group": "mount", "modes": ["mount_clip"],
+      "label": { "en": "Mount Post Ø (mm)", "es": "Ø del Poste (mm)" },
+      "tooltip": { "en": "Post or rail the clip grips", "es": "Poste o riel que sujeta la abrazadera" }
+    },
+    {
+      "id": "bottle_dia", "type": "slider", "default": 65.0, "min": 40.0, "max": 120.0, "step": 1.0,
+      "group": "mount", "modes": ["mount_clip"],
+      "label": { "en": "Bottle Body Ø (mm)", "es": "Ø del Cuerpo de la Botella (mm)" },
+      "tooltip": { "en": "Bottle diameter where the cradle grips it", "es": "Diámetro de la botella donde la sujeta la cuna" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "wmo_100", "mode": "funnel",
+      "label": { "en": "100 mm Aperture (7.854 mL/mm)", "es": "Apertura 100 mm (7.854 mL/mm)" },
+      "values": { "aperture": 100.0, "cone_angle": 55.0, "throat_dia": 12.0, "neck_standard": "PCO-1881" }
+    },
+    {
+      "id": "compact_80", "mode": "funnel",
+      "label": { "en": "80 mm Compact (5.027 mL/mm)", "es": "Compacto 80 mm (5.027 mL/mm)" },
+      "values": { "aperture": 80.0, "cone_angle": 60.0, "throat_dia": 10.0 }
+    },
+    {
+      "id": "throat_insert", "mode": "splash_ring",
+      "label": { "en": "12 mm Throat Insert", "es": "Inserto de Garganta 12 mm" },
+      "values": { "throat_dia": 12.0 }
+    },
+    {
+      "id": "fence_post", "mode": "mount_clip",
+      "label": { "en": "Fence Post Mount", "es": "Montaje en Poste" },
+      "values": { "post_dia": 25.0, "bottle_dia": 65.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 1.6 mm", "es": "La pared debe ser de al menos 1.6 mm" }
+    },
+    {
+      "expression": "aperture >= 100.0",
+      "severity": "warning",
+      "message": { "en": "WMO guidance favours an aperture of at least 100 mm; smaller apertures lose accuracy in light rain", "es": "La guía de la OMM prefiere una apertura de al menos 100 mm; aperturas menores pierden exactitud con lluvia ligera" }
+    },
+    {
+      "expression": "rim_t <= 1.5",
+      "severity": "warning",
+      "message": { "en": "A rim thicker than 1.5 mm collects its own drops and over-reads", "es": "Un borde de más de 1.5 mm capta gotas propias y sobreestima" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [180, 180, 140] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -260, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 11, "per_unit": 4, "per_part": 15,
+    "fn_factor": 48, "wasm_multiplier": 3, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "bottle_neck_thread",
+        "label": { "en": "Bottle Neck Thread", "es": "Rosca de Cuello de Botella" },
+        "geometry_type": "thread",
+        "standard": "PCO-1881 / PCO-1810 / 28-410 / 38-400 bottle finishes",
+        "parameters": ["neck_standard", "clearance", "skirt_len"],
+        "compatible_with": ["bottle-thread", "pco-cap", "bottle-coupler", "jar-adapter", "faircap-filter"]
+      },
+      {
+        "id": "calibrated_aperture",
+        "label": { "en": "Calibrated Aperture", "es": "Apertura Calibrada" },
+        "geometry_type": "profile",
+        "standard": "stated mm-per-mL ratio: 1 mm rain = pi(aperture/2)^2 / 1000 mL",
+        "parameters": ["aperture", "rim_t"]
+      },
+      {
+        "id": "throat_bore",
+        "label": { "en": "Throat Bore", "es": "Barreno de Garganta" },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": ["throat_dia", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Rainfall is the most locally variable quantity in hydrology and the most sparsely measured: official gauge networks are thin outside cities, and in much of the world a farmer, a watershed group or a school has no rainfall record for their own ground at all. The barrier is not the container — every household has bottles — it is calibration, because a measurement without a known collection area is not data. This funnel supplies exactly that missing piece: a stated aperture, a sharp rim so the reading is not inflated, and a thread that fits a bottle anyone already has. A class or a community group can field a comparable network for the cost of filament, and their numbers can be pooled because every funnel of the same aperture reports on the same scale. Local rainfall records are what underwrite flood warning, irrigation scheduling and drought claims.",
+      "es": "La lluvia es la cantidad más variable localmente en hidrología y la menos medida: las redes oficiales de pluviómetros son escasas fuera de las ciudades, y en gran parte del mundo un agricultor, un grupo de cuenca o una escuela no tiene ningún registro de lluvia de su propio terreno. La barrera no es el recipiente — toda casa tiene botellas — es la calibración, porque una medición sin área de captación conocida no es un dato. Este embudo aporta justo esa pieza faltante: una apertura declarada, un borde filoso para que la lectura no se infle, y una rosca que entra en una botella que cualquiera ya tiene. Un grupo escolar o comunitario puede desplegar una red comparable por el costo del filamento, y sus números se pueden agregar porque todo embudo de la misma apertura reporta en la misma escala. Los registros locales de lluvia son la base del aviso de inundación, la programación de riego y los reclamos por sequía."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["rain-gauge", "pluviometer", "hydrology", "citizen-science", "weather", "bottle-thread", "pco-1881", "infrastructure", "hyperobject", "commons"]
+}

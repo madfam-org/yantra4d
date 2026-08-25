@@ -2,18 +2,18 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 484,
-    "with_cdg_interfaces": 470,
-    "with_commons_license": 484,
+    "cartridges": 494,
+    "with_cdg_interfaces": 480,
+    "with_commons_license": 494,
     "dual_engine": 22
   },
   "domains": {
     "household": 124,
     "industrial": 108,
     "commercial": 75,
-    "wearable": 71,
-    "medical": 41,
-    "infrastructure": 26,
+    "wearable": 72,
+    "medical": 43,
+    "infrastructure": 33,
     "hybrid": 14,
     "uncategorized": 13,
     "soft-robotics": 7,
@@ -25,6 +25,7 @@
   "standards": [
     "#1–#60 wire-gauge drill set",
     "0–3 mm pin-vise collet",
+    "1 in (25.4 mm) punching pitch",
     "1 in (25.4 mm) webbing cross-section",
     "1 in / 25 mm round rail",
     "1-inch pegboard / IKEA SKÅDIS",
@@ -74,6 +75,7 @@
     "3/4/6mm / TT hex",
     "3/4in T-track (19.05 mm slot; 1/4-20 stud)",
     "3/4in x 3/8in miter slot; 19mm T-track",
+    "3/8 in (9.53 mm) punched blank, 100 / 150 / 304.8 mm centres",
     "3/8\"-16 UNC — major Ø9.525 mm, pitch 1.5875 mm, minor Ø7.749 mm",
     "3/8-3/4 in tube barb",
     "34 mm flask neck OD (250/500 mL)",
@@ -122,6 +124,7 @@
     "DIN EN 60715 TS35",
     "DIN terminal",
     "E26/E27 socket",
+    "EHS galvanised guy strand (3/16, 1/4, 5/16, 3/8, 1/2 in)",
     "EMT 1/2-1in / 16-25mm",
     "ER / straight-shank",
     "ETA 2824-2 (25.6 mm / 11.5 ligne)",
@@ -142,6 +145,7 @@
     "Gridfinity 42 mm",
     "Gridfinity baseplate socket (0.25 mm clearance)",
     "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+    "H1Z2Z2-K 4-6 mm2 solar lead OD series",
     "IEC 60061 E26 / E27 (7 TPI)",
     "ISO 15 (608/625/6900)",
     "ISO 15 (623/625/6900)",
@@ -201,11 +205,13 @@
     "NEMA 17/23",
     "NEMA 17/23/34",
     "NEMA motor face spec",
+    "NPS schedule 40 steel pipe OD (3, 4, 5, 6, 8 in)",
     "Omron SS/D2F",
     "OpenBuilds V-slot",
     "PC fan 40-140mm",
     "PCO 1881",
     "PCO 1881 / SP-400 finish series",
+    "PCO-1881 / PCO-1810 / 28-410 / 38-400 bottle finishes",
     "PG7-PG21 / M12-M25",
     "PTFE stir bars 12/20/25/38/50 mm",
     "PV lead 4-6 mm², Ø6.5 mm nominal",
@@ -229,6 +235,7 @@
     "T8 leadscrew (8 mm major, 2 mm pitch, 8 mm lead)",
     "T8 trapezoidal / M8 metric leadscrew",
     "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
+    "U-channel signage post, 2 / 3 / 4 lb per ft",
     "US / metric knitting needle sizes (2.0-12.0 mm)",
     "US bar designations #3 (9.5 mm), #4 (12.7 mm), #5 (15.9 mm)",
     "US junction box",
@@ -250,12 +257,14 @@
     "Wall Stud Mount",
     "XT60/USB/RJ45/GX16",
     "aero/square crossbar",
+    "anodised PV module frame lip",
     "breadboard 2.54mm",
     "bucket / tote mouth, annular downstand",
     "business card",
     "business card 89x51mm (ISO 7810 ID-1)",
     "carboy/bucket bore",
     "clarinet / alto / tenor mouthpiece (~30-36 mm)",
+    "commons garment-clip jaw profile",
     "concrete cover depth (slab through footing values)",
     "construction brick 8mm",
     "cylindrical NdFeB magnet Ø8-16 mm",
@@ -264,6 +273,7 @@
     "epicyclic meshing constraint: ring = sun + 2 × planet",
     "fine-tool slot array (tweezer/probe body 1.5–8 mm)",
     "handlebar 7/8-1in (22.2-25.4mm)",
+    "home-oxygen supply tubing OD 4-7 mm",
     "internal (19 / 22 / 25 mm ward poles)",
     "internal (2 / 3 / 4 mm tube ID)",
     "internal (20 / 30 / 40 mm)",
@@ -274,18 +284,26 @@
     "internal bond socket",
     "internal peg grid 8mm",
     "internal solids 40mm",
+    "internal — hand-tool slot, clamped inside the plug",
+    "internal — mouth as a fraction of bore Ø",
+    "internal — pitch floored at slot width plus a 2 mm bar",
     "internal/aocl",
     "iso_8559",
     "kinematic (Maxwell / Kelvin) 3-ball coupling",
     "low / high shank (19 / 32 mm bar-to-plate)",
+    "measured municipal meter-box mouth (round ~180-380 mm, rect ~250x180-380x300 mm)",
+    "moulded aerosol-mask strap staple",
+    "moulded zipper slider casting, #3-#10 series",
     "none",
     "optics dovetail (60°, Thorlabs RC/XT class)",
     "plain round shaft (metric nominal)",
     "playing card 63x88mm",
     "ppf-contact-solver (SIGGRAPH Asia 2024)",
+    "round outlet series 50 / 68 / 75 / 87 / 100 / 110 mm",
     "router bushing (Porter-Cable universal — 1-3/8 in flange)",
     "single-channel micropipette (Ø3.8-6.0 mm shaft)",
     "slotted cam-lock tailpiece",
+    "square tube post 1.75 / 2.00 / 2.25 in and 60 mm metric",
     "standard 12oz can",
     "standard 150 mm caliper beam (DIN 862 class)",
     "standard can Ø",
@@ -295,6 +313,7 @@
     "standard tuner button (~14-19 mm), 6 mm post",
     "standard utensil handle",
     "standard/mini/tarot card",
+    "stated mm-per-mL ratio: 1 mm rain = pi(aperture/2)^2 / 1000 mL",
     "suction cup",
     "tabletop base sizes",
     "tape core",
@@ -3340,6 +3359,83 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/body-form"
+      }
+    },
+    {
+      "slug": "bollard-cap",
+      "name": "Bollard Cap",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "pipe",
+        "clearance",
+        "wall",
+        "skirt",
+        "dome_rise",
+        "band_depth",
+        "band_width",
+        "drain_count",
+        "drain_w"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open bollard is a slow structural failure and a maintenance cost nobody budgets for: it collects rain, holds it against the inside wall where no paint reaches, and rusts outward from the bore until the post has to be replaced rather than repainted. In freezing climates the trapped water splits the pipe outright. Replacement caps are a proprietary, per-manufacturer part that a small municipality or a property owner often cannot source at all for an older bollard, so the top simply stays open. Printing a cap to the measured pipe size closes the water path in an afternoon, and the reflective-band variant adds night visibility to a post that was installed to be seen. This is the cheapest possible intervention at the point where street furniture actually fails.",
+        "es": "Un bolardo abierto es una falla estructural lenta y un costo de mantenimiento que nadie presupuesta: junta lluvia, la retiene contra la pared interior donde no llega la pintura, y se oxida desde el barreno hacia afuera hasta que el poste debe reemplazarse en vez de repintarse. En climas de helada el agua atrapada parte el tubo. Las tapas de repuesto son una pieza propietaria por fabricante que un municipio pequeño o un propietario a menudo no puede conseguir para un bolardo viejo, así que el extremo simplemente queda abierto. Imprimir una tapa a la medida real del tubo cierra la ruta del agua en una tarde, y la variante con banda reflejante agrega visibilidad nocturna a un poste que se instaló para ser visto. Es la intervención más barata posible justo donde el mobiliario urbano realmente falla."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pipe_od_slip",
+          "label": "Steel Pipe OD Slip Fit",
+          "geometry_type": "socket",
+          "standard": "NPS schedule 40 steel pipe OD (3, 4, 5, 6, 8 in)",
+          "parameters": [
+            "pipe",
+            "clearance",
+            "skirt",
+            "wall"
+          ]
+        },
+        {
+          "id": "reflective_band",
+          "label": "Retroreflective Tape Recess",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "band_depth",
+            "band_width"
+          ]
+        }
+      ],
+      "standards": [
+        "NPS schedule 40 steel pipe OD (3, 4, 5, 6, 8 in)"
+      ],
+      "source": {
+        "manifest": "projects/bollard-cap/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bollard-cap"
       }
     },
     {
@@ -14819,6 +14915,93 @@
       }
     },
     {
+      "slug": "guy-wire-marker",
+      "name": "Guy Wire Marker",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 4,
+      "parts": 4,
+      "parameters": 9,
+      "parameter_ids": [
+        "strand",
+        "clearance",
+        "mouth",
+        "wall",
+        "outer_dia",
+        "length",
+        "disc_dia",
+        "disc_t",
+        "pin_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A guy wire is the least visible hazard on a pole line: a taut steel strand crossing head height at a shallow angle, often over a sidewalk or a driveway approach, with nothing to catch the eye. Pedestrians and cyclists walk into them, and mower operators cut them. The standard remedy is a moulded yellow guy guard, but it is a proprietary per-utility part that goes missing after roadworks and that a rural co-op, a farm, an amateur-radio mast owner or a private pole owner frequently cannot source at all — so the wire simply stays bare. Printing a guard to the measured strand size restores the marking in an afternoon, from UV-stable filament, without touching the guy tension or needing a lineman. The disc variant adds a second cue at eye height where the strand is thinnest.",
+        "es": "Un cable tensor es el peligro menos visible de una línea de postes: un cable de acero tenso que cruza a la altura de la cabeza en ángulo bajo, a menudo sobre una banqueta o entrada de cochera, sin nada que llame la atención. Peatones y ciclistas chocan con ellos, y los operadores de podadoras los cortan. El remedio estándar es una guarda amarilla moldeada, pero es una pieza propietaria por empresa que desaparece tras obras viales y que una cooperativa rural, una granja, el dueño de una antena de radioaficionado o un propietario particular con frecuencia no puede conseguir — así que el cable queda desnudo. Imprimir una guarda a la medida real del cable restaura el señalamiento en una tarde, con filamento estable a UV, sin tocar la tensión del tensor ni requerir un linero. La variante de disco agrega una segunda señal a la altura de la vista, donde el cable es más delgado."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "guy_strand_bore",
+          "label": "Guy Strand Bore",
+          "geometry_type": "socket",
+          "standard": "EHS galvanised guy strand (3/16, 1/4, 5/16, 3/8, 1/2 in)",
+          "parameters": [
+            "strand",
+            "clearance",
+            "wall"
+          ]
+        },
+        {
+          "id": "snap_mouth",
+          "label": "Snap Mouth",
+          "geometry_type": "snap",
+          "standard": "internal — mouth as a fraction of bore Ø",
+          "parameters": [
+            "mouth",
+            "clearance"
+          ]
+        },
+        {
+          "id": "half_keying",
+          "label": "Clamshell Pin Keying",
+          "geometry_type": "snap",
+          "standard": "internal",
+          "parameters": [
+            "pin_dia",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "EHS galvanised guy strand (3/16, 1/4, 5/16, 3/8, 1/2 in)",
+        "internal — mouth as a fraction of bore Ø"
+      ],
+      "source": {
+        "manifest": "projects/guy-wire-marker/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/guy-wire-marker"
+      }
+    },
+    {
       "slug": "guyline-adapter",
       "name": "Guy-Line Adapter Set",
       "domain": "household",
@@ -21020,6 +21203,84 @@
       }
     },
     {
+      "slug": "nebulizer-mask-strap",
+      "name": "Nebulizer Mask Strap Buckle",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "webbing",
+        "web_t",
+        "slot_clear",
+        "bar_w",
+        "frame_t",
+        "rail_t",
+        "staple_w",
+        "staple_t",
+        "yoke_angle"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A nebulizer mask is normally discarded when its elastic perishes, even though the mask body is intact — the elastic lives in a warm humid airstream and gets washed. Printable strap hardware on the existing webbing standard lets a carer re-strap the same mask with stock webbing, and makes the fit adjustable for a child or a patient who cannot tolerate the factory loop.",
+        "es": "Una mascarilla de nebulizador suele desecharse cuando su elástico se degrada, aunque el cuerpo esté intacto — el elástico vive en un flujo cálido y húmedo y se lava. Los herrajes imprimibles sobre el estándar de cincha existente permiten volver a sujetar la misma mascarilla con cincha común y hacen el ajuste regulable para un niño o un paciente que no tolera el elástico de fábrica."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "webbing_slot",
+          "label": "Webbing Slot",
+          "geometry_type": "rail",
+          "standard": "20/25mm webbing",
+          "parameters": [
+            "webbing",
+            "web_t",
+            "slot_clear"
+          ]
+        },
+        {
+          "id": "mask_staple",
+          "label": "Mask Strap Staple",
+          "geometry_type": "snap",
+          "standard": "moulded aerosol-mask strap staple",
+          "parameters": [
+            "staple_w",
+            "staple_t",
+            "slot_clear"
+          ]
+        }
+      ],
+      "standards": [
+        "20/25mm webbing",
+        "moulded aerosol-mask strap staple"
+      ],
+      "source": {
+        "manifest": "projects/nebulizer-mask-strap/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/nebulizer-mask-strap"
+      }
+    },
+    {
       "slug": "needle-gauge",
       "name": "Crochet / Knitting Needle Gauge",
       "domain": "household",
@@ -21873,6 +22134,86 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/overall-buckle"
+      }
+    },
+    {
+      "slug": "oxygen-tubing-clip",
+      "name": "Oxygen Tubing Clip",
+      "domain": "medical",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "tube_od",
+        "tube_clear",
+        "grip",
+        "wall",
+        "length",
+        "bite_gap",
+        "jaw_len",
+        "jaw_t",
+        "rail_dia",
+        "screw_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Long-term home oxygen users trip over, roll over and snag their own supply line every day, and a snagged line pulls the cannula off the face — a fall risk and a therapy interruption at once. Printable clips on a real tube-Ø series let a household dress the run properly and, by choosing a wider channel mouth, make it release under a snag instead of yanking. The alternative in most homes is a clothes peg.",
+        "es": "Quienes usan oxígeno domiciliario a largo plazo tropiezan, pisan y enganchan su propia línea a diario, y una línea enganchada jala la cánula fuera de la cara — riesgo de caída e interrupción de la terapia a la vez. Los clips imprimibles sobre una serie real de Ø de tubo permiten guiar el recorrido y, al elegir una boca más abierta, que se libere ante un tirón en vez de jalar. La alternativa en la mayoría de los hogares es una pinza de ropa."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "o2_tube_channel",
+          "label": "Oxygen Tube Channel",
+          "geometry_type": "socket",
+          "standard": "home-oxygen supply tubing OD 4-7 mm",
+          "parameters": [
+            "tube_od",
+            "tube_clear",
+            "grip",
+            "wall"
+          ]
+        },
+        {
+          "id": "garment_edge_jaw",
+          "label": "Garment Edge Jaw",
+          "geometry_type": "snap",
+          "standard": "commons garment-clip jaw profile",
+          "parameters": [
+            "bite_gap",
+            "jaw_len",
+            "jaw_t"
+          ]
+        }
+      ],
+      "standards": [
+        "commons garment-clip jaw profile",
+        "home-oxygen supply tubing OD 4-7 mm"
+      ],
+      "source": {
+        "manifest": "projects/oxygen-tubing-clip/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/oxygen-tubing-clip"
       }
     },
     {
@@ -25323,6 +25664,95 @@
       }
     },
     {
+      "slug": "pv-cable-clip",
+      "name": "PV Cable Clip",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "cable_dia",
+        "cable_count",
+        "clearance",
+        "mouth",
+        "wall",
+        "depth",
+        "lip_t",
+        "jaw_depth",
+        "screw_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "PV leads left hanging under an array chafe against the module frame, pool water at the connector, and enclose a large loop area that raises induced-surge voltage in a lightning event. Zip ties are the usual field fix and they perish in UV within a couple of seasons, dropping the cable back onto the roof. Printed clips sized to the real lead and the real frame lip dress the run properly, pair the string conductors to shrink loop area, and can be reprinted on site from UV-stable filament. Better cable support is one of the cheapest ways to extend the service life of an off-grid or rooftop array and keep it inspectable.",
+        "es": "Los cables PV colgando bajo un arreglo se rozan contra el marco del módulo, acumulan agua en el conector y encierran un área de lazo grande que eleva el voltaje inducido por sobretensión en un evento de rayo. Las cinchos de plástico son el arreglo usual en campo y se degradan por UV en un par de temporadas, dejando caer el cable al techo. Los clips impresos al cable real y al labio real del marco acomodan el tendido correctamente, aparean los conductores de la cadena para reducir el área de lazo, y se pueden reimprimir en sitio con filamento estable a UV. Mejor soporte de cable es de las formas más baratas de alargar la vida de un arreglo fuera de red o de techo y mantenerlo inspeccionable."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pv_lead_channel",
+          "label": "PV Lead Channel",
+          "geometry_type": "socket",
+          "standard": "H1Z2Z2-K 4-6 mm2 solar lead OD series",
+          "parameters": [
+            "cable_dia",
+            "clearance",
+            "mouth"
+          ]
+        },
+        {
+          "id": "module_frame_lip",
+          "label": "Module Frame Lip Jaw",
+          "geometry_type": "profile",
+          "standard": "anodised PV module frame lip",
+          "parameters": [
+            "lip_t",
+            "jaw_depth",
+            "clearance",
+            "wall"
+          ]
+        },
+        {
+          "id": "saddle_bolt_pattern",
+          "label": "Saddle Screw Mount",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "screw_dia",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "H1Z2Z2-K 4-6 mm2 solar lead OD series",
+        "anodised PV module frame lip"
+      ],
+      "source": {
+        "manifest": "projects/pv-cable-clip/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pv-cable-clip"
+      }
+    },
+    {
       "slug": "rack-accessory",
       "name": "Roof-Rack / Crossbar Accessory",
       "domain": "commercial",
@@ -25606,6 +26036,94 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/rail-mount"
+      }
+    },
+    {
+      "slug": "rain-gauge-funnel",
+      "name": "Rain Gauge Funnel",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "aperture",
+        "rim_t",
+        "cone_angle",
+        "throat_dia",
+        "wall",
+        "neck_standard",
+        "clearance",
+        "skirt_len",
+        "post_dia",
+        "bottle_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Rainfall is the most locally variable quantity in hydrology and the most sparsely measured: official gauge networks are thin outside cities, and in much of the world a farmer, a watershed group or a school has no rainfall record for their own ground at all. The barrier is not the container — every household has bottles — it is calibration, because a measurement without a known collection area is not data. This funnel supplies exactly that missing piece: a stated aperture, a sharp rim so the reading is not inflated, and a thread that fits a bottle anyone already has. A class or a community group can field a comparable network for the cost of filament, and their numbers can be pooled because every funnel of the same aperture reports on the same scale. Local rainfall records are what underwrite flood warning, irrigation scheduling and drought claims.",
+        "es": "La lluvia es la cantidad más variable localmente en hidrología y la menos medida: las redes oficiales de pluviómetros son escasas fuera de las ciudades, y en gran parte del mundo un agricultor, un grupo de cuenca o una escuela no tiene ningún registro de lluvia de su propio terreno. La barrera no es el recipiente — toda casa tiene botellas — es la calibración, porque una medición sin área de captación conocida no es un dato. Este embudo aporta justo esa pieza faltante: una apertura declarada, un borde filoso para que la lectura no se infle, y una rosca que entra en una botella que cualquiera ya tiene. Un grupo escolar o comunitario puede desplegar una red comparable por el costo del filamento, y sus números se pueden agregar porque todo embudo de la misma apertura reporta en la misma escala. Los registros locales de lluvia son la base del aviso de inundación, la programación de riego y los reclamos por sequía."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "bottle_neck_thread",
+          "label": "Bottle Neck Thread",
+          "geometry_type": "thread",
+          "standard": "PCO-1881 / PCO-1810 / 28-410 / 38-400 bottle finishes",
+          "parameters": [
+            "neck_standard",
+            "clearance",
+            "skirt_len"
+          ]
+        },
+        {
+          "id": "calibrated_aperture",
+          "label": "Calibrated Aperture",
+          "geometry_type": "profile",
+          "standard": "stated mm-per-mL ratio: 1 mm rain = pi(aperture/2)^2 / 1000 mL",
+          "parameters": [
+            "aperture",
+            "rim_t"
+          ]
+        },
+        {
+          "id": "throat_bore",
+          "label": "Throat Bore",
+          "geometry_type": "socket",
+          "standard": "internal",
+          "parameters": [
+            "throat_dia",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "PCO-1881 / PCO-1810 / 28-410 / 38-400 bottle finishes",
+        "stated mm-per-mL ratio: 1 mm rain = pi(aperture/2)^2 / 1000 mL"
+      ],
+      "source": {
+        "manifest": "projects/rain-gauge-funnel/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/rain-gauge-funnel"
       }
     },
     {
@@ -28866,6 +29384,108 @@
       }
     },
     {
+      "slug": "sign-post-bracket",
+      "name": "Sign Post Bracket",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "u_section",
+        "sq_section",
+        "clearance",
+        "post_bolt",
+        "post_holes",
+        "wall",
+        "plate_h",
+        "sign_bolt",
+        "sign_spacing",
+        "arm_len",
+        "arm_t"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Signage hardware is where small public works quietly stall. The blank and the post are both cheap and standard, but the bracket between them is proprietary, sold in boxes of fifty, and specific to one post family — so a school crossing sign, a trailhead marker, a community garden nameplate or a village fingerpost waits on a minimum order that nobody will place. Because both sides of this part are genuine published patterns — the rolled post sections on one face and the punched blank spacing on the other — a printed bracket drops into existing stock instead of requiring new posts or drilled blanks. The post-section series is also the useful part for the commons: any future signage cartridge can key to it rather than inventing a fourth way to describe a sign post.",
+        "es": "La tornillería de señalización es donde se atoran calladamente las obras públicas pequeñas. La placa y el poste son baratos y estándar, pero la ménsula entre ambos es propietaria, se vende en cajas de cincuenta y es específica de una familia de postes — así que una señal de cruce escolar, un marcador de sendero, una placa de huerto comunitario o un poste indicador de pueblo espera un pedido mínimo que nadie va a hacer. Como ambos lados de esta pieza son patrones publicados reales — las secciones laminadas del poste en una cara y el espaciamiento punzonado de la placa en la otra — una ménsula impresa entra en el material existente en vez de exigir postes nuevos o placas barrenadas. La serie de secciones de poste es además lo valioso para el procomún: cualquier cartucho futuro de señalización puede acoplarse a ella en lugar de inventar una cuarta forma de describir un poste de señal."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "u_channel_section",
+          "label": "U-Channel Post Section",
+          "geometry_type": "profile",
+          "standard": "U-channel signage post, 2 / 3 / 4 lb per ft",
+          "parameters": [
+            "u_section",
+            "clearance",
+            "wall"
+          ]
+        },
+        {
+          "id": "square_tube_section",
+          "label": "Square Tube Post Section",
+          "geometry_type": "profile",
+          "standard": "square tube post 1.75 / 2.00 / 2.25 in and 60 mm metric",
+          "parameters": [
+            "sq_section",
+            "clearance",
+            "wall"
+          ]
+        },
+        {
+          "id": "sign_blank_holes",
+          "label": "Sign Blank Hole Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "3/8 in (9.53 mm) punched blank, 100 / 150 / 304.8 mm centres",
+          "parameters": [
+            "sign_bolt",
+            "sign_spacing"
+          ]
+        },
+        {
+          "id": "post_punch_pitch",
+          "label": "Post Punching Pitch",
+          "geometry_type": "bolt_pattern",
+          "standard": "1 in (25.4 mm) punching pitch",
+          "parameters": [
+            "post_bolt",
+            "post_holes"
+          ]
+        }
+      ],
+      "standards": [
+        "1 in (25.4 mm) punching pitch",
+        "3/8 in (9.53 mm) punched blank, 100 / 150 / 304.8 mm centres",
+        "U-channel signage post, 2 / 3 / 4 lb per ft",
+        "square tube post 1.75 / 2.00 / 2.25 in and 60 mm metric"
+      ],
+      "source": {
+        "manifest": "projects/sign-post-bracket/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/sign-post-bracket"
+      }
+    },
+    {
       "slug": "size-marker-ring",
       "name": "Size Marker Ring",
       "domain": "wearable",
@@ -30663,6 +31283,97 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/stirrbar-rack"
+      }
+    },
+    {
+      "slug": "stormwater-grate",
+      "name": "Stormwater Grate",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "frame_w",
+        "frame_l",
+        "plate_t",
+        "rim",
+        "slot_w",
+        "slot_pitch",
+        "outlet",
+        "clearance",
+        "spigot_len",
+        "dome_rise",
+        "lip_drop"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A missing gully grate is one of the few infrastructure faults that is simultaneously a flood risk, a trip hazard and an open hole a child or a dog can fall into — and it is extremely common, because cast grates are stolen for scrap and cracked ones are left in place for months waiting on a municipal order. The replacement is nearly always non-standard: gullies were laid over decades by different contractors, so the frame that needs filling is rarely a size anyone still stocks. A grate that is authored to the measured opening, with a slot pattern chosen for the traffic that actually crosses it, closes the hole the same week. The leaf dome addresses the other half of the problem: leaf fall, not silt, is what backs a gully up, and a guard is far cheaper than the flooding it prevents. A printed grate is an interim repair, not a traffic-rated casting — which is exactly the gap that currently sits open and unguarded.",
+        "es": "Una rejilla de sumidero faltante es de las pocas fallas de infraestructura que es a la vez riesgo de inundación, peligro de tropiezo y un hoyo abierto donde puede caer un niño o un perro — y es extremadamente común, porque las rejillas de fundición se roban para chatarra y las agrietadas se dejan meses esperando un pedido municipal. El reemplazo casi nunca es estándar: los sumideros se colocaron a lo largo de décadas por distintos contratistas, así que el marco a llenar rara vez es una medida que alguien siga surtiendo. Una rejilla trazada a la abertura medida, con un patrón de ranura elegido para el tránsito que realmente la cruza, cierra el hoyo esa misma semana. El domo atiende la otra mitad del problema: lo que tapa un sumidero es la hojarasca, no el azolve, y una guarda cuesta mucho menos que la inundación que evita. Una rejilla impresa es una reparación provisional, no una fundición con clasificación vehicular — que es justo el hueco que hoy queda abierto y sin proteger."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "dropin_outlet_bore",
+          "label": "Drop-In Outlet Bore",
+          "geometry_type": "socket",
+          "standard": "round outlet series 50 / 68 / 75 / 87 / 100 / 110 mm",
+          "parameters": [
+            "outlet",
+            "clearance",
+            "spigot_len"
+          ]
+        },
+        {
+          "id": "grate_frame_footprint",
+          "label": "Grate Frame Footprint",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "frame_w",
+            "frame_l",
+            "rim",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "slot_array",
+          "label": "Slot Array",
+          "geometry_type": "grid",
+          "standard": "internal — pitch floored at slot width plus a 2 mm bar",
+          "parameters": [
+            "slot_w",
+            "slot_pitch"
+          ]
+        }
+      ],
+      "standards": [
+        "internal — pitch floored at slot width plus a 2 mm bar",
+        "round outlet series 50 / 68 / 75 / 87 / 100 / 110 mm"
+      ],
+      "source": {
+        "manifest": "projects/stormwater-grate/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/stormwater-grate"
       }
     },
     {
@@ -35501,6 +36212,111 @@
       }
     },
     {
+      "slug": "water-meter-lid",
+      "name": "Water Meter Box Lid",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 14,
+      "parameter_ids": [
+        "bore_dia",
+        "box_w",
+        "box_l",
+        "clearance",
+        "ledge",
+        "lid_t",
+        "plug_h",
+        "rib_count",
+        "slot_l",
+        "slot_w",
+        "port_dia",
+        "tab_len",
+        "tab_w",
+        "screw_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open meter box is a small hazard that stays open for a long time. The lid is stolen for scrap or cracked by a vehicle, and the replacement is a moulded part specific to a box that a contractor installed decades ago, so it is quoted on a minimum order, back-ordered, or simply no longer made. In the meantime the hole sits in a verge or sidewalk where people walk, and the standard improvisation is a paving slab that nobody can lift for a reading. Because the interface is a measured opening rather than a proprietary catalogue number, a lid authored to the actual pit closes the hazard the same week and can be reprinted whenever it is stolen again. The reading port matters too: a lid that lets a meter be read without lifting removes the reason it gets left off after every visit.",
+        "es": "Una caja de medidor abierta es un peligro pequeño que permanece abierto mucho tiempo. La tapa se roba para chatarra o la parte un vehículo, y el repuesto es una pieza moldeada específica de una caja que un contratista instaló hace décadas, así que se cotiza por pedido mínimo, queda en espera, o simplemente ya no se fabrica. Mientras tanto el hoyo queda en banqueta o camellón donde camina la gente, y la improvisación estándar es una losa que nadie puede levantar para tomar la lectura. Como la interfaz es una abertura medida y no un número de catálogo propietario, una tapa trazada al registro real cierra el peligro esa misma semana y se puede reimprimir cada vez que la vuelvan a robar. El puerto de lectura también importa: una tapa que permite leer sin levantarla elimina la razón por la que la dejan fuera tras cada visita."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "meter_box_bore",
+          "label": "Meter Box Bore",
+          "geometry_type": "socket",
+          "standard": "measured municipal meter-box mouth (round ~180-380 mm, rect ~250x180-380x300 mm)",
+          "parameters": [
+            "bore_dia",
+            "box_w",
+            "box_l",
+            "clearance",
+            "plug_h"
+          ]
+        },
+        {
+          "id": "bearing_ledge",
+          "label": "Bearing Ledge",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "ledge",
+            "lid_t"
+          ]
+        },
+        {
+          "id": "lift_slot",
+          "label": "Lift Slot",
+          "geometry_type": "pocket",
+          "standard": "internal — hand-tool slot, clamped inside the plug",
+          "parameters": [
+            "slot_l",
+            "slot_w"
+          ]
+        },
+        {
+          "id": "lock_tab_pivot",
+          "label": "Lock Tab Pivot",
+          "geometry_type": "bolt_pattern",
+          "standard": "internal",
+          "parameters": [
+            "screw_dia",
+            "tab_len",
+            "tab_w"
+          ]
+        }
+      ],
+      "standards": [
+        "internal — hand-tool slot, clamped inside the plug",
+        "measured municipal meter-box mouth (round ~180-380 mm, rect ~250x180-380x300 mm)"
+      ],
+      "source": {
+        "manifest": "projects/water-meter-lid/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/water-meter-lid"
+      }
+    },
+    {
       "slug": "weather-mount",
       "name": "Weather-Instrument Mount",
       "domain": "infrastructure",
@@ -36167,6 +36983,88 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/zipper-pull"
+      }
+    },
+    {
+      "slug": "zipper-pull-assist",
+      "name": "Zipper Pull Assist Lever",
+      "domain": "wearable",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "body_l",
+        "body_w",
+        "body_h",
+        "clamp_clear",
+        "wall",
+        "retain",
+        "lever_len",
+        "lever_w",
+        "lever_t",
+        "bar_len",
+        "bar_dia"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Independent dressing is one of the first things lost to arthritis, hemiparesis or reduced pinch strength, and a zipper is often the specific barrier. Commercial zipper aids are sold at assistive-device prices for what is a few grams of plastic. A clamp on the slider body multiplies the available hand force by the length of the arm, and because the geometry is parameterised, it can be fitted to the user's own zipper and their own hand rather than to an average of both.",
+        "es": "Vestirse de forma independiente es de lo primero que se pierde con artritis, hemiparesia o pinza débil, y el cierre suele ser la barrera concreta. Las ayudas comerciales para cierres se venden a precio de dispositivo de asistencia por unos gramos de plástico. Una mordaza sobre el cuerpo del carro multiplica la fuerza disponible por la longitud del brazo y, al estar parametrizada, puede ajustarse al cierre y a la mano de la persona en vez de a un promedio de ambos."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "slider_body_clamp",
+          "label": "Zipper Slider Body Clamp",
+          "geometry_type": "socket",
+          "standard": "moulded zipper slider casting, #3-#10 series",
+          "parameters": [
+            "body_l",
+            "body_w",
+            "body_h",
+            "clamp_clear",
+            "wall",
+            "retain"
+          ]
+        },
+        {
+          "id": "pull_eye",
+          "label": "Pull Eye",
+          "geometry_type": "profile",
+          "standard": "internal",
+          "parameters": [
+            "lever_w",
+            "lever_t",
+            "lever_len"
+          ]
+        }
+      ],
+      "standards": [
+        "moulded zipper slider casting, #3-#10 series"
+      ],
+      "source": {
+        "manifest": "projects/zipper-pull-assist/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/zipper-pull-assist"
       }
     }
   ]

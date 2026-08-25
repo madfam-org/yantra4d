@@ -261,3 +261,292 @@ def test_render_parts_stream_emits_unavailable_error_when_worker_unavailable(mon
     assert events[0]["event"] == "error"
     assert events[0]["part"] == "body"
     assert events[1]["event"] == "complete"
+
+
+# ---------------------------------------------------------------------------
+# Payload contract: documented shape is
+#   {mode, parameters, parts, export_format?, project?}
+# The implementation has been silently tolerant of two deviations:
+#   1. flattened parameters (params at the top level, no 'parameters' key)
+#   2. a missing 'mode' (silently renders manifest.modes[0] with HTTP 200)
+# Both now log a structured deprecation warning by default, and return a
+# RenderPayloadError when RENDER_STRICT_PAYLOAD is enabled.
+# ---------------------------------------------------------------------------
+
+def _payload_error_cls():
+    """Resolve RenderPayloadError lazily (sys.path is set up by conftest)."""
+    from services.engine.render_orchestrator import RenderPayloadError
+    return RenderPayloadError
+
+
+class _ContractMockManifest:
+    """Minimal manifest double mirroring the pattern in tests/e2e/test_render_api.py."""
+
+    def __init__(self):
+        self.slug = "contract-project"
+        self.engine = "openscad"
+        self.modes = [
+            {"id": "unit", "parts": ["body"], "scad_file": "unit.scad"},
+            {"id": "assembly", "parts": ["body", "lid"], "scad_file": "assembly.scad"},
+        ]
+        self.parts = [{"id": "body", "render_mode": 0}, {"id": "lid", "render_mode": 1}]
+        self.parameters = []
+
+    def mode_engine(self, mode_id=None):
+        return self.engine
+
+    def get_scad_file_for_mode(self, mode_id):
+        for mode in self.modes:
+            if mode["id"] == mode_id:
+                return mode["scad_file"]
+        return None
+
+    def get_parts_for_mode(self, mode_id):
+        for mode in self.modes:
+            if mode["id"] == mode_id:
+                return mode["parts"]
+        return []
+
+    def get_parts_map(self):
+        return {"unit.scad": ["body"], "assembly.scad": ["body", "lid"]}
+
+    def get_allowed_files(self):
+        return {"unit.scad": "unit_path", "assembly.scad": "assembly_path"}
+
+    def get_mode_map(self):
+        return {"body": 0, "lid": 1}
+
+    def get_static_stl_map(self):
+        return {}
+
+
+@pytest.fixture
+def contract_env(monkeypatch):
+    """Patch the orchestrator's manifest/params/hash seams for payload-shape tests."""
+    monkeypatch.setattr(
+        "services.engine.render_orchestrator.get_manifest",
+        lambda *args: _ContractMockManifest(),
+    )
+    # validate_params echoes its input so tests can observe which container was used.
+    monkeypatch.setattr(
+        "services.engine.render_orchestrator.validate_params",
+        lambda raw, *args: dict(raw),
+    )
+    monkeypatch.setattr(
+        "services.engine.render_orchestrator.compute_scad_hash",
+        lambda *args: "deadbeef",
+    )
+    # Default state: strict mode off, regardless of the ambient environment.
+    monkeypatch.delenv("RENDER_STRICT_PAYLOAD", raising=False)
+
+
+class TestPayloadContractLenientDefault:
+    """Default behavior must stay byte-for-byte unchanged — only louder in the logs."""
+
+    def test_flattened_params_still_render(self, contract_env, caplog):
+        """A flat payload keeps working, but logs a deprecation warning."""
+        from services.engine.render_orchestrator import extract_render_payload
+
+        with caplog.at_level("WARNING"):
+            payload = extract_render_payload(
+                {"project": "contract-project", "mode": "unit", "size": 20}
+            )
+
+        assert not isinstance(payload, _payload_error_cls())
+        assert payload["params"]["size"] == 20
+        assert any("no 'parameters' key" in rec.message for rec in caplog.records)
+
+    def test_flat_deprecation_warning_names_project_and_origin(self, contract_env, caplog):
+        """The warning must carry the project slug and the caller's route."""
+        from services.engine.render_orchestrator import extract_render_payload
+
+        with caplog.at_level("WARNING"):
+            extract_render_payload({"project": "contract-project", "mode": "unit", "size": 20})
+
+        rendered = "\n".join(rec.getMessage() for rec in caplog.records)
+        assert "contract-project" in rendered
+        assert "origin=" in rendered
+
+    def test_nested_params_emit_no_deprecation_warning(self, contract_env, caplog):
+        """The documented shape is the quiet path."""
+        from services.engine.render_orchestrator import extract_render_payload
+
+        with caplog.at_level("WARNING"):
+            payload = extract_render_payload(
+                {"project": "contract-project", "mode": "unit", "parameters": {"size": 20}}
+            )
+
+        assert payload["params"] == {"size": 20}
+        assert not any("no 'parameters' key" in rec.message for rec in caplog.records)
+
+    def test_missing_mode_still_renders_first_mode(self, contract_env, caplog):
+        """Absent mode keeps falling through to modes[0], but logs a warning."""
+        from services.engine.render_orchestrator import extract_render_payload
+
+        with caplog.at_level("WARNING"):
+            payload = extract_render_payload(
+                {"project": "contract-project", "parameters": {"size": 20}}
+            )
+
+        assert payload["mode"] == "unit"
+        assert payload["scad_filename"] == "unit.scad"
+        assert any("no 'mode' supplied" in rec.message for rec in caplog.records)
+
+    def test_explicit_mode_emits_no_mode_warning(self, contract_env, caplog):
+        """An explicit mode is the quiet path."""
+        from services.engine.render_orchestrator import extract_render_payload
+
+        with caplog.at_level("WARNING"):
+            payload = extract_render_payload(
+                {"project": "contract-project", "mode": "assembly", "parameters": {"size": 20}}
+            )
+
+        assert payload["mode"] == "assembly"
+        assert not any("no 'mode' supplied" in rec.message for rec in caplog.records)
+
+    def test_present_but_unknown_mode_still_errors(self, contract_env):
+        """Unknown mode keeps its existing 400 path — unchanged by this work."""
+        from services.engine.render_orchestrator import extract_render_payload
+
+        result = extract_render_payload(
+            {"project": "contract-project", "mode": "nope", "parameters": {}}
+        )
+        assert isinstance(result, _payload_error_cls())
+        assert "Invalid mode id" in result.message
+
+    def test_flat_and_nested_param_hashes_diverge(self, contract_env):
+        """Documents the cache-key divergence that motivated this hardening."""
+        from services.engine.render_orchestrator import extract_render_payload
+
+        flat = extract_render_payload(
+            {"project": "contract-project", "mode": "unit", "size": 20}
+        )
+        nested = extract_render_payload(
+            {"project": "contract-project", "mode": "unit", "parameters": {"size": 20}}
+        )
+        # The flat form folds 'project'/'mode' into the parameter map, so the
+        # resulting stl_prefix (param_hash) is NOT the same as the nested form's.
+        assert flat["stl_prefix"] != nested["stl_prefix"]
+
+    def test_flat_payload_no_longer_drops_target_material(self, contract_env, monkeypatch):
+        """Flat callers now reach material compensation instead of silently losing it."""
+        seen = {}
+        monkeypatch.setattr(
+            "services.engine.render_orchestrator._inject_material_compensations",
+            lambda params, mat: seen.setdefault("mat", mat),
+        )
+
+        from services.engine.render_orchestrator import extract_render_payload
+
+        extract_render_payload(
+            {"project": "contract-project", "mode": "unit", "target_material": "pla"}
+        )
+        assert seen.get("mat") == "pla"
+
+    def test_nested_target_material_still_injected(self, contract_env, monkeypatch):
+        """The nested path keeps its existing behavior."""
+        seen = {}
+        monkeypatch.setattr(
+            "services.engine.render_orchestrator._inject_material_compensations",
+            lambda params, mat: seen.setdefault("mat", mat),
+        )
+
+        from services.engine.render_orchestrator import extract_render_payload
+
+        extract_render_payload({
+            "project": "contract-project",
+            "mode": "unit",
+            "parameters": {"size": 20, "target_material": "petg"},
+        })
+        assert seen.get("mat") == "petg"
+
+
+class TestPayloadContractStrictMode:
+    """RENDER_STRICT_PAYLOAD=true turns both tolerated shapes into 400s."""
+
+    def test_flattened_params_rejected(self, contract_env, monkeypatch):
+        monkeypatch.setenv("RENDER_STRICT_PAYLOAD", "true")
+        from services.engine.render_orchestrator import extract_render_payload
+
+        result = extract_render_payload(
+            {"project": "contract-project", "mode": "unit", "size": 20}
+        )
+        assert isinstance(result, _payload_error_cls())
+        assert "'parameters'" in result.message
+        assert "RENDER_STRICT_PAYLOAD" in result.message
+
+    def test_missing_mode_rejected(self, contract_env, monkeypatch):
+        monkeypatch.setenv("RENDER_STRICT_PAYLOAD", "true")
+        from services.engine.render_orchestrator import extract_render_payload
+
+        result = extract_render_payload(
+            {"project": "contract-project", "parameters": {"size": 20}}
+        )
+        assert isinstance(result, _payload_error_cls())
+        assert "'mode'" in result.message
+        assert "unit" in result.message  # names the mode it refused to assume
+
+    def test_documented_shape_accepted_under_strict(self, contract_env, monkeypatch):
+        """Strict mode must not reject the contract it is enforcing."""
+        monkeypatch.setenv("RENDER_STRICT_PAYLOAD", "true")
+        from services.engine.render_orchestrator import extract_render_payload
+
+        payload = extract_render_payload({
+            "project": "contract-project",
+            "mode": "assembly",
+            "parameters": {"size": 20},
+            "parts": ["body", "lid"],
+            "export_format": "stl",
+        })
+        assert not isinstance(payload, _payload_error_cls())
+        assert payload["mode"] == "assembly"
+        assert payload["params"] == {"size": 20}
+
+    @pytest.mark.parametrize("value", ["1", "true", "TRUE", "yes", "on"])
+    def test_truthy_flag_values_enable_strict(self, contract_env, monkeypatch, value):
+        monkeypatch.setenv("RENDER_STRICT_PAYLOAD", value)
+        from services.engine.render_orchestrator import extract_render_payload
+
+        result = extract_render_payload({"project": "contract-project", "mode": "unit", "size": 1})
+        assert isinstance(result, _payload_error_cls())
+
+    @pytest.mark.parametrize("value", ["", "0", "false", "off", "no"])
+    def test_falsy_flag_values_keep_lenient_default(self, contract_env, monkeypatch, value):
+        monkeypatch.setenv("RENDER_STRICT_PAYLOAD", value)
+        from services.engine.render_orchestrator import extract_render_payload
+
+        payload = extract_render_payload({"project": "contract-project", "mode": "unit", "size": 1})
+        assert not isinstance(payload, _payload_error_cls())
+
+
+# ---------------------------------------------------------------------------
+# SSE per-part deadline
+# ---------------------------------------------------------------------------
+
+def test_stream_part_timeout_default_is_180():
+    """Default raised 120 -> 180 for cold made-to-measure loft headroom."""
+    from services.engine import render_orchestrator
+
+    assert render_orchestrator.RENDER_STREAM_PART_TIMEOUT_SECONDS == 180
+
+
+def test_stream_part_timeout_is_env_tunable(monkeypatch):
+    """RENDER_STREAM_PART_TIMEOUT_SECONDS overrides the default at import time."""
+    import importlib
+
+    monkeypatch.setenv("RENDER_STREAM_PART_TIMEOUT_SECONDS", "240")
+    from services.engine import render_orchestrator
+
+    reloaded = importlib.reload(render_orchestrator)
+    try:
+        assert reloaded.RENDER_STREAM_PART_TIMEOUT_SECONDS == 240
+    finally:
+        monkeypatch.delenv("RENDER_STREAM_PART_TIMEOUT_SECONDS", raising=False)
+        importlib.reload(render_orchestrator)
+
+
+def test_stream_part_timeout_stays_under_subprocess_ceiling():
+    """The stream deadline must not exceed the subprocess ceiling it waits on."""
+    from services.engine import render_orchestrator
+
+    assert render_orchestrator.RENDER_STREAM_PART_TIMEOUT_SECONDS < 300

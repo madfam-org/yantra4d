@@ -1,0 +1,430 @@
+{
+  "project": {
+    "name": "T-Track Hold-Down Clamp",
+    "slug": "ttrack-clamp",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "intermediate",
+    "description": {
+      "en": "Hold-down clamps for standard 3/4 in woodworking T-track. A T-bolt rides in the track and a star knob tightens the clamp onto the workpiece — pick a low pressing arm with a sliding stud slot, a stepped riser that presses several thicknesses, or an L push/stop that registers an edge sideways.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Prensas de sujeción para riel en T de 3/4 in estándar en carpintería. Un tornillo en T corre por el riel y una perilla de estrella aprieta la prensa sobre la pieza — elige un brazo de presión bajo con ranura deslizante para el vástago, un escalón que presiona varios espesores, o un tope en L que registra un borde lateralmente.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/ttrack-clamp.webp",
+    "tags": [
+      "t-track",
+      "hold-down",
+      "clamp",
+      "jig",
+      "woodworking",
+      "3-4-inch",
+      "miter",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "hold_down",
+      "label": {
+        "en": "Pressing Arm",
+        "es": "Brazo de Presión"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "hold_down"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "step_block",
+      "label": {
+        "en": "Step Block",
+        "es": "Bloque Escalonado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "step_block"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    },
+    {
+      "id": "push_block",
+      "label": {
+        "en": "Push / Stop Block",
+        "es": "Bloque de Tope"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "push_block"
+      ],
+      "estimate": {
+        "base_time": 13,
+        "per_unit": 3,
+        "per_part": 13
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "hold_down",
+      "label": {
+        "en": "Pressing Arm",
+        "es": "Brazo de Presión"
+      },
+      "render_mode": 0,
+      "color": "#b07a4a"
+    },
+    {
+      "id": "step_block",
+      "label": {
+        "en": "Step Block",
+        "es": "Bloque Escalonado"
+      },
+      "render_mode": 0,
+      "color": "#c08a5a"
+    },
+    {
+      "id": "push_block",
+      "label": {
+        "en": "Push / Stop Block",
+        "es": "Bloque de Tope"
+      },
+      "render_mode": 0,
+      "color": "#a06a3a"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "track",
+      "label": {
+        "en": "Track & Stud",
+        "es": "Riel y Vástago"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Clamp Body",
+        "es": "Cuerpo de Prensa"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "stud",
+      "type": "select",
+      "default": "1/4-20",
+      "group": "track",
+      "modes": [
+        "hold_down",
+        "step_block",
+        "push_block"
+      ],
+      "label": {
+        "en": "Stud Thread",
+        "es": "Rosca del Vástago"
+      },
+      "tooltip": {
+        "en": "T-bolt / knob stud thread — sets the clearance hole size",
+        "es": "Rosca del tornillo en T / perilla — fija el tamaño del orificio"
+      },
+      "options": [
+        { "value": "1/4-20", "label": { "en": "1/4-20", "es": "1/4-20" } },
+        { "value": "5/16-18", "label": { "en": "5/16-18", "es": "5/16-18" } },
+        { "value": "M6", "label": { "en": "M6", "es": "M6" } },
+        { "value": "M8", "label": { "en": "M8", "es": "M8" } }
+      ]
+    },
+    {
+      "id": "body_len",
+      "type": "slider",
+      "default": 70.0,
+      "min": 40.0,
+      "max": 160.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "hold_down",
+        "step_block",
+        "push_block"
+      ],
+      "label": {
+        "en": "Body Length (mm)",
+        "es": "Longitud del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Overall length of the clamp body along the track",
+        "es": "Longitud total del cuerpo de la prensa a lo largo del riel"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "body_w",
+      "type": "slider",
+      "default": 22.0,
+      "min": 16.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "hold_down",
+        "step_block",
+        "push_block"
+      ],
+      "label": {
+        "en": "Body Width (mm)",
+        "es": "Ancho del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Width across the track; slightly over the 19 mm slot",
+        "es": "Ancho a lo ancho del riel; algo mayor que la ranura de 19 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "body_h",
+      "type": "slider",
+      "default": 14.0,
+      "min": 8.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "hold_down",
+        "step_block",
+        "push_block"
+      ],
+      "label": {
+        "en": "Body Height (mm)",
+        "es": "Altura del Cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Base height of the clamp body",
+        "es": "Altura base del cuerpo de la prensa"
+      }
+    },
+    {
+      "id": "reach",
+      "type": "slider",
+      "default": 18.0,
+      "min": 6.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "hold_down",
+        "step_block",
+        "push_block"
+      ],
+      "label": {
+        "en": "Nose Reach (mm)",
+        "es": "Alcance de la Nariz (mm)"
+      },
+      "tooltip": {
+        "en": "How far the pressing nose / fence overhangs the work",
+        "es": "Cuánto sobresale la nariz de presión / valla sobre la pieza"
+      }
+    },
+    {
+      "id": "slot_len",
+      "type": "slider",
+      "default": 28.0,
+      "min": 10.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "track",
+      "modes": [
+        "hold_down",
+        "step_block"
+      ],
+      "label": {
+        "en": "Stud Slot Travel (mm)",
+        "es": "Recorrido de Ranura (mm)"
+      },
+      "tooltip": {
+        "en": "Fore/aft travel of the stud slot so the clamp reaches to fit",
+        "es": "Recorrido del vástago para que la prensa alcance el ajuste"
+      }
+    },
+    {
+      "id": "steps",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "group": "body",
+      "modes": [
+        "step_block"
+      ],
+      "label": {
+        "en": "Step Count",
+        "es": "Número de Escalones"
+      },
+      "tooltip": {
+        "en": "Number of descending ledges on the step block",
+        "es": "Número de escalones descendentes del bloque"
+      }
+    },
+    {
+      "id": "counterbore",
+      "type": "checkbox",
+      "default": true,
+      "group": "track",
+      "advanced": true,
+      "modes": [
+        "hold_down",
+        "step_block",
+        "push_block"
+      ],
+      "label": {
+        "en": "Knob Counterbore",
+        "es": "Avellanado de Perilla"
+      },
+      "tooltip": {
+        "en": "Recess the knob washer flush into the top face",
+        "es": "Hundir la arandela de la perilla a ras de la cara superior"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_hold_down",
+      "mode": "hold_down",
+      "label": {
+        "en": "Standard Hold-Down",
+        "es": "Sujeción Estándar"
+      },
+      "values": {
+        "stud": "1/4-20",
+        "body_len": 70.0,
+        "body_w": 22.0,
+        "reach": 18.0,
+        "slot_len": 28.0
+      }
+    },
+    {
+      "id": "tall_step_block",
+      "mode": "step_block",
+      "label": {
+        "en": "Tall Step Block",
+        "es": "Bloque Escalonado Alto"
+      },
+      "values": {
+        "stud": "1/4-20",
+        "body_len": 90.0,
+        "body_w": 24.0,
+        "steps": 5
+      }
+    },
+    {
+      "id": "edge_push_stop",
+      "mode": "push_block",
+      "label": {
+        "en": "Edge Push / Stop",
+        "es": "Tope de Borde"
+      },
+      "values": {
+        "stud": "5/16-18",
+        "body_len": 60.0,
+        "body_w": 24.0,
+        "reach": 22.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_len < body_len",
+      "severity": "error",
+      "message": {
+        "en": "Stud slot must be shorter than the body length",
+        "es": "La ranura del vástago debe ser más corta que la longitud del cuerpo"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [110, 110, 90]
+    },
+    {
+      "id": "front",
+      "label": { "en": "Front", "es": "Frontal" },
+      "position": [0, -180, 20]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 12,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "ttrack_stud_rail",
+        "label": {
+          "en": "3/4 in T-Track Stud Rail",
+          "es": "Riel de Vástago T-Track 3/4 in"
+        },
+        "geometry_type": "rail",
+        "standard": "3/4in T-track (19.05 mm slot; 1/4-20 stud)",
+        "parameters": [
+          "stud",
+          "body_w",
+          "slot_len"
+        ],
+        "compatible_with": [
+          "bench-dog",
+          "featherboard"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "3/4 in T-track is the shared standard of shop jigs, fences, sleds and drill tables. Printed hold-downs, step blocks and push stops let a woodworker fixture any workpiece to any track-equipped jig without buying a proprietary clamp set, and print a replacement the moment one cracks. They ride the same track as bench dogs and featherboards, growing the miter/T-track commons.",
+      "es": "El riel en T de 3/4 in es el estándar compartido de plantillas, vallas, trineos y mesas de taladro. Sujeciones, bloques escalonados y topes impresos permiten al carpintero fijar cualquier pieza a cualquier plantilla con riel sin comprar un juego de prensas propietario, e imprimir un repuesto en cuanto una se rompe. Corren por el mismo riel que los perros de banco y los peines, haciendo crecer el común de riel en T / inglete."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

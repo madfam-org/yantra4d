@@ -1,0 +1,534 @@
+{
+  "project": {
+    "name": "Arca-Swiss L-Bracket",
+    "slug": "arca-l-bracket",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "An L-bracket for the Arca-Swiss 38 mm tripod quick-release standard. An Arca plate that wraps up the camera's left side so the same body drops into any Arca clamp in landscape (base dovetail down) or portrait (wing dovetail out) with no re-levelling. Every clamping face carries the same 38 mm dovetail with ~45° flanks, so it mates every Arca clamp, plate and ball head. Also builds a plain Arca QR plate and a long telephoto-lens foot.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un soporte en L para el estándar de liberación rápida de trípode Arca-Swiss de 38 mm. Una placa Arca que envuelve el lado izquierdo de la cámara para que el mismo cuerpo entre en cualquier mordaza Arca en horizontal (cola de milano base abajo) o vertical (cola de milano del ala hacia afuera) sin re-nivelar. Cada cara de sujeción lleva la misma cola de milano de 38 mm con flancos de ~45°, por lo que se acopla a cualquier mordaza, placa y rótula Arca. También genera una placa QR Arca simple y un pie largo para teleobjetivo.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/arca-l-bracket.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "arca-swiss",
+      "arca",
+      "l-bracket",
+      "dovetail",
+      "quick-release",
+      "tripod",
+      "portrait",
+      "38mm",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "l_bracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Soporte en L"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "l_bracket"
+      ],
+      "estimate": {
+        "base_time": 18,
+        "per_unit": 3,
+        "per_part": 16
+      }
+    },
+    {
+      "id": "flat_plate",
+      "label": {
+        "en": "Flat QR Plate",
+        "es": "Placa QR Plana"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "flat_plate"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "long_lens_foot",
+      "label": {
+        "en": "Long Lens Foot",
+        "es": "Pie de Teleobjetivo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "long_lens_foot"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "l_bracket",
+      "label": {
+        "en": "L-Bracket",
+        "es": "Soporte en L"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "flat_plate",
+      "label": {
+        "en": "Flat QR Plate",
+        "es": "Placa QR Plana"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "long_lens_foot",
+      "label": {
+        "en": "Long Lens Foot",
+        "es": "Pie de Teleobjetivo"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "dovetail",
+      "label": {
+        "en": "Arca Dovetail",
+        "es": "Cola de Milano Arca"
+      }
+    },
+    {
+      "id": "slot",
+      "label": {
+        "en": "1/4-20 Slot & Holes",
+        "es": "Ranura y Orificios 1/4-20"
+      }
+    },
+    {
+      "id": "wing",
+      "label": {
+        "en": "L Wing",
+        "es": "Ala en L"
+      }
+    },
+    {
+      "id": "foot",
+      "label": {
+        "en": "Lens Foot",
+        "es": "Pie de Lente"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "plate_w",
+      "type": "slider",
+      "default": 38.0,
+      "min": 28.0,
+      "max": 60.0,
+      "step": 0.1,
+      "group": "dovetail",
+      "modes": [
+        "l_bracket",
+        "flat_plate",
+        "long_lens_foot"
+      ],
+      "label": {
+        "en": "Dovetail Width (mm)",
+        "es": "Ancho de Cola de Milano (mm)"
+      },
+      "tooltip": {
+        "en": "Arca-Swiss dovetail platform width. Standard is 38 mm",
+        "es": "Ancho de la plataforma de cola de milano Arca-Swiss. El estándar es 38 mm"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "x",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "flank_ang",
+      "type": "slider",
+      "default": 45.0,
+      "min": 30.0,
+      "max": 55.0,
+      "step": 1,
+      "group": "dovetail",
+      "modes": [
+        "l_bracket",
+        "flat_plate",
+        "long_lens_foot"
+      ],
+      "label": {
+        "en": "Dovetail Flank Angle (deg)",
+        "es": "Ángulo de Flanco (grados)"
+      },
+      "tooltip": {
+        "en": "Undercut angle of the dovetail flanks. Arca-Swiss ~45°",
+        "es": "Ángulo de socavado de los flancos de la cola de milano. Arca-Swiss ~45°"
+      }
+    },
+    {
+      "id": "plate_h",
+      "type": "slider",
+      "default": 9.0,
+      "min": 6.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "dovetail",
+      "modes": [
+        "l_bracket",
+        "flat_plate",
+        "long_lens_foot"
+      ],
+      "label": {
+        "en": "Plate Height (mm)",
+        "es": "Altura de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the dovetail block / plate thickness",
+        "es": "Altura del bloque de cola de milano / grosor de placa"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "base_len",
+      "type": "slider",
+      "default": 70.0,
+      "min": 40.0,
+      "max": 140.0,
+      "step": 1,
+      "group": "dovetail",
+      "modes": [
+        "flat_plate"
+      ],
+      "label": {
+        "en": "Plate Length (mm)",
+        "es": "Longitud de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the flat QR plate along the dovetail (Y)",
+        "es": "Longitud de la placa QR plana a lo largo de la cola de milano (Y)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "slot_w",
+      "type": "slider",
+      "default": 6.6,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "slot",
+      "modes": [
+        "l_bracket",
+        "flat_plate",
+        "long_lens_foot"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "1/4-20 Hole/Slot Width (mm)",
+        "es": "Ancho de Orificio/Ranura 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the 1/4-20 camera slot / hole (~6.6 mm clearance)",
+        "es": "Ancho de la ranura/orificio 1/4-20 para cámara (~6.6 mm de holgura)"
+      }
+    },
+    {
+      "id": "slot_len",
+      "type": "slider",
+      "default": 30.0,
+      "min": 8.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "slot",
+      "modes": [
+        "l_bracket",
+        "flat_plate"
+      ],
+      "label": {
+        "en": "1/4-20 Slot Length (mm)",
+        "es": "Longitud de Ranura 1/4-20 (mm)"
+      },
+      "tooltip": {
+        "en": "How far the camera can slide fore/aft along the slot",
+        "es": "Cuánto puede deslizar la cámara adelante/atrás por la ranura"
+      }
+    },
+    {
+      "id": "wing_h",
+      "type": "slider",
+      "default": 55.0,
+      "min": 25.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "wing",
+      "modes": [
+        "l_bracket"
+      ],
+      "label": {
+        "en": "Wing Height (mm)",
+        "es": "Altura del Ala (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the vertical portrait wing",
+        "es": "Altura del ala vertical para retrato"
+      }
+    },
+    {
+      "id": "wing_len",
+      "type": "slider",
+      "default": 40.0,
+      "min": 25.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "wing",
+      "modes": [
+        "l_bracket"
+      ],
+      "label": {
+        "en": "Base Length (mm)",
+        "es": "Longitud de Base (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the L-bracket base plate along the dovetail",
+        "es": "Longitud de la placa base del soporte en L a lo largo de la cola de milano"
+      }
+    },
+    {
+      "id": "foot_len",
+      "type": "slider",
+      "default": 100.0,
+      "min": 50.0,
+      "max": 200.0,
+      "step": 1,
+      "group": "foot",
+      "modes": [
+        "long_lens_foot"
+      ],
+      "label": {
+        "en": "Foot Length (mm)",
+        "es": "Longitud del Pie (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the telephoto-lens dovetail foot bar",
+        "es": "Longitud de la barra de pie de cola de milano para teleobjetivo"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "portrait_l_bracket",
+      "mode": "l_bracket",
+      "label": {
+        "en": "Portrait L-Bracket (38mm)",
+        "es": "Soporte en L Retrato (38mm)"
+      },
+      "values": {
+        "plate_w": 38.0,
+        "flank_ang": 45.0,
+        "plate_h": 9.0,
+        "wing_h": 55.0,
+        "wing_len": 40.0
+      }
+    },
+    {
+      "id": "standard_qr_plate",
+      "mode": "flat_plate",
+      "label": {
+        "en": "Standard QR Plate",
+        "es": "Placa QR Estándar"
+      },
+      "values": {
+        "plate_w": 38.0,
+        "flank_ang": 45.0,
+        "plate_h": 9.0,
+        "base_len": 70.0,
+        "slot_len": 30.0
+      }
+    },
+    {
+      "id": "tele_lens_foot",
+      "mode": "long_lens_foot",
+      "label": {
+        "en": "Telephoto Lens Foot",
+        "es": "Pie de Teleobjetivo"
+      },
+      "values": {
+        "plate_w": 38.0,
+        "flank_ang": 45.0,
+        "plate_h": 9.0,
+        "foot_len": 110.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_w < plate_w",
+      "severity": "error",
+      "message": {
+        "en": "1/4-20 slot must be narrower than the plate",
+        "es": "La ranura 1/4-20 debe ser más estrecha que la placa"
+      }
+    },
+    {
+      "expression": "flank_ang >= 35",
+      "severity": "warning",
+      "message": {
+        "en": "Shallow flank angles reduce the Arca dovetail's holding security",
+        "es": "Ángulos de flanco poco profundos reducen la seguridad de sujeción de la cola de milano Arca"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        120,
+        120,
+        110
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front (Cross-Section)",
+        "es": "Frontal (Sección)"
+      },
+      "position": [
+        0,
+        -200,
+        20
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        220
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 14,
+    "per_unit": 3,
+    "per_part": 14,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "arca_swiss_dovetail",
+        "label": {
+          "en": "Arca-Swiss Dovetail",
+          "es": "Cola de Milano Arca-Swiss"
+        },
+        "geometry_type": "profile",
+        "standard": "Arca-Swiss 38mm",
+        "parameters": [
+          "plate_w",
+          "flank_ang",
+          "plate_h"
+        ],
+        "compatible_with": [
+          "arca-plate"
+        ]
+      },
+      {
+        "id": "quarter_20_slot",
+        "label": {
+          "en": "1/4-20 Camera Slot",
+          "es": "Ranura 1/4-20 para Cámara"
+        },
+        "geometry_type": "bolt_pattern",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": [
+          "slot_w",
+          "slot_len"
+        ],
+        "compatible_with": [
+          "arca-plate"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "An Arca L-bracket lets a photographer switch a camera between landscape and portrait on any Arca-Swiss head in seconds without dropping the lens axis off-centre — and print one shaped to their exact body instead of buying a proprietary bracket per camera. Because it shares the open 38 mm dovetail, it interoperates with every Arca clamp, plate and ball head, and a lost or broken bracket can be reprinted in the field.",
+      "es": "Un soporte en L Arca permite a un fotógrafo cambiar una cámara entre horizontal y vertical en cualquier rótula Arca-Swiss en segundos sin descentrar el eje de la lente, e imprimir uno con la forma exacta de su cuerpo en vez de comprar un soporte propietario por cámara. Al compartir la cola de milano abierta de 38 mm, interopera con cualquier mordaza, placa y rótula Arca, y un soporte perdido o roto puede reimprimirse en el campo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "arca-swiss",
+    "arca",
+    "l-bracket",
+    "dovetail",
+    "quick-release",
+    "tripod",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -1,0 +1,300 @@
+{
+  "project": {
+    "name": "Microscope Objective Turret",
+    "slug": "objective-turret",
+    "version": "1.0.0",
+    "description": {
+      "en": "A rotating multi-objective nosepiece (turret) that carries real female RMS (0.800 in x 36 TPI, 20.32 mm) or M25 x 0.75 objective threads around a central pivot bore, so objectives screw into any port exactly as on a factory turret. Ships as the nosepiece disc, a male objective stub for bench use, and a threaded port dust plug. Shares the RMS/M25 thread with the objective-case cartridge, so objectives interchange across the family.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un revólver rotatorio multi-objetivo que porta roscas hembra reales RMS (0.800 in x 36 TPI, 20.32 mm) o M25 x 0.75 alrededor de un eje pivote central, de modo que los objetivos se enroscan en cualquier puerto igual que en un revólver de fábrica. Incluye el disco del revólver, un vástago macho de objetivo para uso en mesa y una tapa antipolvo roscada para puertos. Comparte la rosca RMS/M25 con el cartucho objective-case, de modo que los objetivos son intercambiables en la familia.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/objective-turret.webp",
+    "difficulty": "advanced",
+    "tags": ["microscope", "objective", "turret", "nosepiece", "rms-thread", "m25", "lab", "medical", "hyperobject", "commons"],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Female objective ports add the user 'clearance' per side over the nominal major diameter; start at 0.25 mm and tune to your printer. This is a hobbyist/repair aid, not a certified optical instrument — objective parfocality and centration are not guaranteed on a printed turret.",
+        "es": "Los puertos hembra suman la 'holgura' del usuario por lado sobre el diámetro mayor nominal; empieza en 0.25 mm y ajústalo a tu impresora. Es una ayuda para aficionados/reparación, no un instrumento óptico certificado — la parfocalidad y centrado de los objetivos no están garantizados en un revólver impreso."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "objective_thread_port",
+        "label": {
+          "en": "RMS / M25 Objective Thread Port",
+          "es": "Puerto de Rosca de Objetivo RMS / M25"
+        },
+        "geometry_type": "thread",
+        "standard": "RMS W0.800in x 36 TPI (20.32 mm, DIN 58888) / M25 x 0.75",
+        "parameters": ["thread_standard", "clearance", "port_count"],
+        "compatible_with": ["objective-case"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "Restores usable magnification changing to old, teaching and self-built microscopes whose turrets are lost or broken, at the cost of filament, and lets makers build multi-objective scopes on the open RMS standard so any RMS objective interoperates.",
+      "es": "Restaura el cambio de aumento útil en microscopios antiguos, de enseñanza y de construcción propia cuyos revólveres se han perdido o roto, al costo del filamento, y permite construir microscopios multi-objetivo sobre el estándar abierto RMS para que cualquier objetivo RMS sea interoperable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "nosepiece",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Rotating Nosepiece",
+        "es": "Revólver Rotatorio"
+      },
+      "description": {
+        "en": "The turret disc: N female-threaded objective ports around a central through pivot bore."
+      },
+      "parts": ["nosepiece"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "male_stub",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Male Objective Stub",
+        "es": "Vástago Macho de Objetivo"
+      },
+      "description": {
+        "en": "A male-threaded stub on a knurled base to hold an objective on the bench outside the scope."
+      },
+      "parts": ["male_stub"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    },
+    {
+      "id": "dust_plug",
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "label": {
+        "en": "Port Dust Plug",
+        "es": "Tapa Antipolvo de Puerto"
+      },
+      "description": {
+        "en": "A male-threaded plug with a knurled head that seals an empty turret port against dust."
+      },
+      "parts": ["dust_plug"],
+      "estimate": {
+        "base_units": 1,
+        "formula": "per_part"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "nosepiece",
+      "render_mode": 0,
+      "label": {
+        "en": "Rotating Nosepiece",
+        "es": "Revólver Rotatorio"
+      },
+      "default_color": "#3f4757"
+    },
+    {
+      "id": "male_stub",
+      "render_mode": 0,
+      "label": {
+        "en": "Male Objective Stub",
+        "es": "Vástago Macho de Objetivo"
+      },
+      "default_color": "#2b323f"
+    },
+    {
+      "id": "dust_plug",
+      "render_mode": 0,
+      "label": {
+        "en": "Port Dust Plug",
+        "es": "Tapa Antipolvo de Puerto"
+      },
+      "default_color": "#1c2029"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "thread_standard",
+      "type": "select",
+      "default": "RMS",
+      "options": [
+        { "value": "RMS", "label": "RMS (0.800 in x 36 TPI, 20.32 mm)" },
+        { "value": "M25", "label": "M25 x 0.75 (25.0 mm)" }
+      ],
+      "label": {
+        "en": "Objective Thread Standard",
+        "es": "Estándar de Rosca del Objetivo"
+      },
+      "group": "thread"
+    },
+    {
+      "id": "port_count",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "modes": ["nosepiece"],
+      "label": {
+        "en": "Objective Ports",
+        "es": "Puertos de Objetivo"
+      },
+      "tooltip": {
+        "en": "Number of objective positions on the rotating turret.",
+        "es": "Número de posiciones de objetivo en el revólver rotatorio."
+      },
+      "group": "turret",
+      "preview_hint": { "type": "part_highlight", "affected_parts": ["nosepiece"] }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.25,
+      "min": 0.1,
+      "max": 0.5,
+      "step": 0.05,
+      "label": {
+        "en": "Thread Clearance (mm/side)",
+        "es": "Holgura de Rosca (mm/lado)"
+      },
+      "tooltip": {
+        "en": "Printed-thread fit slop added per side; increase if the objective binds.",
+        "es": "Holgura de ajuste de rosca impresa por lado; auméntala si el objetivo se atasca."
+      },
+      "group": "thread"
+    },
+    {
+      "id": "pivot_bore",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.5,
+      "modes": ["nosepiece"],
+      "label": {
+        "en": "Central Pivot Bore (mm)",
+        "es": "Barreno de Pivote Central (mm)"
+      },
+      "tooltip": {
+        "en": "Through-hole diameter for the turret axle at the disc centre.",
+        "es": "Diámetro del agujero pasante para el eje del revólver en el centro del disco."
+      },
+      "group": "turret"
+    },
+    {
+      "id": "turret_thick",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 24.0,
+      "step": 0.5,
+      "modes": ["nosepiece"],
+      "label": {
+        "en": "Turret Thickness (mm)",
+        "es": "Grosor del Revólver (mm)"
+      },
+      "tooltip": {
+        "en": "Disc thickness; must exceed the thread engagement height.",
+        "es": "Grosor del disco; debe superar la altura de enganche de la rosca."
+      },
+      "group": "turret",
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "thread",
+      "label": {
+        "en": "Objective Thread",
+        "es": "Rosca del Objetivo"
+      }
+    },
+    {
+      "id": "turret",
+      "label": {
+        "en": "Turret Disc",
+        "es": "Disco del Revólver"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "quad_rms",
+      "mode": "nosepiece",
+      "label": {
+        "en": "Quad RMS Turret",
+        "es": "Revólver Cuádruple RMS"
+      },
+      "values": { "thread_standard": "RMS", "port_count": 4, "pivot_bore": 6.0, "turret_thick": 12.0 }
+    },
+    {
+      "id": "triple_m25",
+      "mode": "nosepiece",
+      "label": {
+        "en": "Triple M25 Turret",
+        "es": "Revólver Triple M25"
+      },
+      "values": { "thread_standard": "M25", "port_count": 3, "pivot_bore": 8.0, "turret_thick": 14.0 }
+    },
+    {
+      "id": "bench_stub",
+      "mode": "male_stub",
+      "label": {
+        "en": "RMS Bench Stub",
+        "es": "Vástago de Mesa RMS"
+      },
+      "values": { "thread_standard": "RMS", "clearance": 0.25 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "turret_thick >= 6",
+      "severity": "error",
+      "message": {
+        "en": "Turret must be thick enough to hold the thread engagement",
+        "es": "El revólver debe ser suficientemente grueso para el enganche de la rosca"
+      }
+    },
+    {
+      "expression": "port_count <= 6",
+      "severity": "warning",
+      "message": {
+        "en": "More than 6 ports crowds the disc; neighbouring bores may merge",
+        "es": "Más de 6 puertos amontonan el disco; los barrenos vecinos pueden fusionarse"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 200] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 14,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 60
+  },
+  "license": "CERN-OHL-W-2.0"
+}

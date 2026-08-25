@@ -1,0 +1,450 @@
+{
+  "project": {
+    "name": "Lens Filter Step Ring",
+    "slug": "filter-step-ring",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Adapts one photographic filter thread to another. Screw-in filters and lens fronts share a small family of nominal thread diameters (M46/M49/M52/M58/M62/M67/M72/M77/M82) at a fine 0.75 mm pitch. A step ring puts a female thread of one size on the bottom and a male thread of another on top, so a filter made for one diameter fits a lens made for another. Also builds a stacking coupler (female↔female) and a reverse ring (male↔male). Every thread is a real filter thread, so it mates any filter-thread part.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Adapta una rosca de filtro fotográfico a otra. Los filtros de rosca y los frentes de lente comparten una pequeña familia de diámetros nominales (M46/M49/M52/M58/M62/M67/M72/M77/M82) con paso fino de 0.75 mm. Un anillo escalonador pone una rosca hembra de un tamaño abajo y una rosca macho de otro arriba, para que un filtro hecho para un diámetro encaje en una lente hecha para otro. También genera un acoplador apilador (hembra↔hembra) y un anillo inversor (macho↔macho). Cada rosca es una rosca de filtro real, por lo que se acopla a cualquier pieza de rosca de filtro.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/filter-step-ring.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "filter-thread",
+      "filter",
+      "step-ring",
+      "lens",
+      "photography",
+      "adapter",
+      "thread",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "step_ring",
+      "label": {
+        "en": "Step Ring (F→M)",
+        "es": "Anillo Escalonador (H→M)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "step_ring"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "coupler_ring",
+      "label": {
+        "en": "Stacking Coupler (F→F)",
+        "es": "Acoplador Apilador (H→H)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "coupler_ring"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "reverse_ring",
+      "label": {
+        "en": "Reverse Ring (M→M)",
+        "es": "Anillo Inversor (M→M)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "reverse_ring"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "step_ring",
+      "label": {
+        "en": "Step Ring (F→M)",
+        "es": "Anillo Escalonador (H→M)"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    },
+    {
+      "id": "coupler_ring",
+      "label": {
+        "en": "Stacking Coupler (F→F)",
+        "es": "Acoplador Apilador (H→H)"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "reverse_ring",
+      "label": {
+        "en": "Reverse Ring (M→M)",
+        "es": "Anillo Inversor (M→M)"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "sizes",
+      "label": {
+        "en": "Filter Sizes",
+        "es": "Tamaños de Filtro"
+      }
+    },
+    {
+      "id": "thread",
+      "label": {
+        "en": "Thread & Fit",
+        "es": "Rosca y Ajuste"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "thread_a",
+      "type": "select",
+      "default": "58",
+      "group": "sizes",
+      "modes": [
+        "step_ring",
+        "coupler_ring",
+        "reverse_ring"
+      ],
+      "options": [
+        { "value": "46", "label": { "en": "M46", "es": "M46" } },
+        { "value": "49", "label": { "en": "M49", "es": "M49" } },
+        { "value": "52", "label": { "en": "M52", "es": "M52" } },
+        { "value": "58", "label": { "en": "M58", "es": "M58" } },
+        { "value": "62", "label": { "en": "M62", "es": "M62" } },
+        { "value": "67", "label": { "en": "M67", "es": "M67" } },
+        { "value": "72", "label": { "en": "M72", "es": "M72" } },
+        { "value": "77", "label": { "en": "M77", "es": "M77" } },
+        { "value": "82", "label": { "en": "M82", "es": "M82" } }
+      ],
+      "label": {
+        "en": "Bottom Size (A)",
+        "es": "Tamaño Inferior (A)"
+      },
+      "tooltip": {
+        "en": "Nominal filter thread on the bottom face (mm)",
+        "es": "Rosca de filtro nominal en la cara inferior (mm)"
+      }
+    },
+    {
+      "id": "thread_b",
+      "type": "select",
+      "default": "52",
+      "group": "sizes",
+      "modes": [
+        "step_ring",
+        "coupler_ring",
+        "reverse_ring"
+      ],
+      "options": [
+        { "value": "46", "label": { "en": "M46", "es": "M46" } },
+        { "value": "49", "label": { "en": "M49", "es": "M49" } },
+        { "value": "52", "label": { "en": "M52", "es": "M52" } },
+        { "value": "58", "label": { "en": "M58", "es": "M58" } },
+        { "value": "62", "label": { "en": "M62", "es": "M62" } },
+        { "value": "67", "label": { "en": "M67", "es": "M67" } },
+        { "value": "72", "label": { "en": "M72", "es": "M72" } },
+        { "value": "77", "label": { "en": "M77", "es": "M77" } },
+        { "value": "82", "label": { "en": "M82", "es": "M82" } }
+      ],
+      "label": {
+        "en": "Top Size (B)",
+        "es": "Tamaño Superior (B)"
+      },
+      "tooltip": {
+        "en": "Nominal filter thread on the top face (mm)",
+        "es": "Rosca de filtro nominal en la cara superior (mm)"
+      }
+    },
+    {
+      "id": "thread_turns",
+      "type": "slider",
+      "default": 4.5,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "thread",
+      "modes": [
+        "step_ring",
+        "coupler_ring",
+        "reverse_ring"
+      ],
+      "label": {
+        "en": "Thread Turns",
+        "es": "Vueltas de Rosca"
+      },
+      "tooltip": {
+        "en": "Thread engagement turns per face (more = deeper screw)",
+        "es": "Vueltas de enganche de rosca por cara (más = enrosque más profundo)"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 0.75
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "thread",
+      "modes": [
+        "step_ring",
+        "coupler_ring",
+        "reverse_ring"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Thread Clearance (mm)",
+        "es": "Holgura de Rosca (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side printed-thread fit slop on the female threads",
+        "es": "Holgura de ajuste por lado de la rosca impresa en las roscas hembra"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.6,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "thread",
+      "modes": [
+        "step_ring",
+        "coupler_ring",
+        "reverse_ring"
+      ],
+      "label": {
+        "en": "Wall Thickness (mm)",
+        "es": "Grosor de Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Side wall thickness of the ring body",
+        "es": "Grosor de la pared lateral del cuerpo del anillo"
+      }
+    },
+    {
+      "id": "top_th",
+      "type": "slider",
+      "default": 2.2,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "thread",
+      "modes": [
+        "step_ring",
+        "coupler_ring",
+        "reverse_ring"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Web Thickness (mm)",
+        "es": "Grosor del Alma (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the web joining the two threaded sections",
+        "es": "Grosor del alma que une las dos secciones roscadas"
+      }
+    },
+    {
+      "id": "grip_teeth",
+      "type": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "group": "thread",
+      "modes": [
+        "step_ring",
+        "coupler_ring"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Grip Flutes (0=off)",
+        "es": "Estrías de Agarre (0=apagado)"
+      },
+      "tooltip": {
+        "en": "Number of vertical grip flutes around the outer wall",
+        "es": "Número de estrías de agarre verticales alrededor de la pared exterior"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "step_58_to_52",
+      "mode": "step_ring",
+      "label": {
+        "en": "58→52 Step-Down",
+        "es": "58→52 Reductor"
+      },
+      "values": {
+        "thread_a": "58",
+        "thread_b": "52",
+        "thread_turns": 4.5,
+        "clearance": 0.3
+      }
+    },
+    {
+      "id": "coupler_77_to_77",
+      "mode": "coupler_ring",
+      "label": {
+        "en": "77↔77 Stacking Coupler",
+        "es": "77↔77 Acoplador Apilador"
+      },
+      "values": {
+        "thread_a": "77",
+        "thread_b": "77",
+        "thread_turns": 4.5,
+        "clearance": 0.3
+      }
+    },
+    {
+      "id": "reverse_52_to_58",
+      "mode": "reverse_ring",
+      "label": {
+        "en": "52↔58 Reverse Ring",
+        "es": "52↔58 Anillo Inversor"
+      },
+      "values": {
+        "thread_a": "52",
+        "thread_b": "58",
+        "thread_turns": 4.5,
+        "clearance": 0.3
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        90,
+        90,
+        70
+      ]
+    },
+    {
+      "id": "front",
+      "label": {
+        "en": "Front (Cross-Section)",
+        "es": "Frontal (Sección)"
+      },
+      "position": [
+        0,
+        -160,
+        10
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        160
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 48,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "filter_thread",
+        "label": {
+          "en": "Filter Thread",
+          "es": "Rosca de Filtro"
+        },
+        "geometry_type": "thread",
+        "standard": "M46-M82 x 0.75",
+        "parameters": [
+          "thread_a",
+          "thread_b",
+          "thread_turns",
+          "clearance"
+        ],
+        "compatible_with": [
+          "lens-cap"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Every photographer accumulates filters and lenses in mismatched thread sizes, and a wallet of proprietary step rings to bridge them. A printable step ring — in any of the nine common sizes, in step, coupler or reverse form — lets someone make the exact adapter a shot needs from a single part, reuse an expensive filter across every lens, and replace a lost ring in the field. Sharing the filter-thread standard, it screws onto any filter-thread part and is a companion for the filter-thread family.",
+      "es": "Todo fotógrafo acumula filtros y lentes con tamaños de rosca dispares, y una cartera de anillos escalonadores propietarios para unirlos. Un anillo escalonador imprimible — en cualquiera de los nueve tamaños comunes, en forma escalonadora, acopladora o inversora — permite fabricar el adaptador exacto que una toma necesita con una sola pieza, reutilizar un filtro caro en cada lente y reemplazar un anillo perdido en el campo. Al compartir el estándar de rosca de filtro, se enrosca en cualquier pieza de rosca de filtro y es un compañero para la familia de rosca de filtro."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "filter-thread",
+    "filter",
+    "step-ring",
+    "lens",
+    "photography",
+    "commercial",
+    "hyperobject",
+    "commons"
+  ]
+}

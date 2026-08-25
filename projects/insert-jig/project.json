@@ -1,0 +1,388 @@
+{
+  "project": {
+    "name": "Threaded Insert Jig",
+    "slug": "insert-jig",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Seat brass heat-set inserts square and flush every time. Heat-set inserts (CNC-Kitchen / McMaster IUB-IUC series) are the de-facto way to put a reusable ISO metric machine-screw thread into a 3D print — but keeping them perpendicular and stopping them flush by hand is fiddly. This jig produces a soldering-iron guide block that holds the insert coaxial, a moulded-in boss test coupon for dialing in the pocket, and a press collar that trues an insert flush against a cooling part. Sized across the M3-M8 range; the seated insert then accepts any ISO metric screw.\n\nOfficial visualizer and configurator: Yantra4D",
+      "es": "Coloca insertos de latón termofijables rectos y al ras siempre. Los insertos termofijables (serie CNC-Kitchen / McMaster IUB-IUC) son la forma de facto de poner una rosca métrica ISO reutilizable en una pieza impresa en 3D, pero mantenerlos perpendiculares y detenerlos al ras a mano es complicado. Esta plantilla genera un bloque guía para el cautín que mantiene el inserto coaxial, un cupón de prueba con relieve moldeado para ajustar el alojamiento, y un collar de presión que nivela el inserto contra una pieza que se enfría. Dimensionado en el rango M3-M8; el inserto colocado acepta cualquier tornillo métrico ISO.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/insert-jig.webp",
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "tags": [
+      "insert",
+      "heat-set",
+      "threaded-insert",
+      "jig",
+      "iso-metric",
+      "m3",
+      "m8",
+      "fastener",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ]
+  },
+  "modes": [
+    {
+      "id": "guide_block",
+      "label": {
+        "en": "Iron Guide Block",
+        "es": "Bloque Guía para Cautín"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "guide_block"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "boss_gauge",
+      "label": {
+        "en": "Boss Test Coupon",
+        "es": "Cupón de Prueba de Relieve"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "boss_gauge"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "press_collar",
+      "label": {
+        "en": "Press Collar",
+        "es": "Collar de Presión"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "engine": "cadquery",
+      "parts": [
+        "press_collar"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "guide_block",
+      "label": {
+        "en": "Iron Guide Block",
+        "es": "Bloque Guía para Cautín"
+      },
+      "render_mode": 0,
+      "color": "#5b8fb0"
+    },
+    {
+      "id": "boss_gauge",
+      "label": {
+        "en": "Boss Test Coupon",
+        "es": "Cupón de Prueba de Relieve"
+      },
+      "render_mode": 0,
+      "color": "#6fa3bf"
+    },
+    {
+      "id": "press_collar",
+      "label": {
+        "en": "Press Collar",
+        "es": "Collar de Presión"
+      },
+      "render_mode": 0,
+      "color": "#4a7c8f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "insert",
+      "label": {
+        "en": "Insert",
+        "es": "Inserto"
+      }
+    },
+    {
+      "id": "fit",
+      "label": {
+        "en": "Fit & Walls",
+        "es": "Ajuste y Paredes"
+      }
+    },
+    {
+      "id": "sizing",
+      "label": {
+        "en": "Sizing",
+        "es": "Dimensiones"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "insert_size",
+      "type": "select",
+      "default": "M4",
+      "group": "insert",
+      "modes": [
+        "guide_block",
+        "boss_gauge",
+        "press_collar"
+      ],
+      "options": [
+        { "value": "M3", "label": { "en": "M3 (4.0 mm OD)", "es": "M3 (4.0 mm DE)" } },
+        { "value": "M4", "label": { "en": "M4 (5.6 mm OD)", "es": "M4 (5.6 mm DE)" } },
+        { "value": "M5", "label": { "en": "M5 (6.4 mm OD)", "es": "M5 (6.4 mm DE)" } },
+        { "value": "M6", "label": { "en": "M6 (8.0 mm OD)", "es": "M6 (8.0 mm DE)" } },
+        { "value": "M8", "label": { "en": "M8 (10.0 mm OD)", "es": "M8 (10.0 mm DE)" } }
+      ],
+      "label": {
+        "en": "Insert Size",
+        "es": "Tamaño de Inserto"
+      },
+      "tooltip": {
+        "en": "Heat-set insert thread size (IUB/IUC knurl OD in parentheses)",
+        "es": "Tamaño de rosca del inserto termofijable (DE del moleteado IUB/IUC entre paréntesis)"
+      }
+    },
+    {
+      "id": "melt_fit",
+      "type": "slider",
+      "default": 0.15,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05,
+      "group": "fit",
+      "advanced": true,
+      "modes": [
+        "guide_block",
+        "boss_gauge",
+        "press_collar"
+      ],
+      "label": {
+        "en": "Melt Interference (mm/side)",
+        "es": "Interferencia de Fusión (mm/lado)"
+      },
+      "tooltip": {
+        "en": "Per-side undersize of the printed pocket so the hot insert melts into a snug grip (~0.15 mm)",
+        "es": "Reducción por lado del alojamiento impreso para que el inserto caliente se funda con agarre ajustado (~0.15 mm)"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "fit",
+      "modes": [
+        "guide_block",
+        "boss_gauge",
+        "press_collar"
+      ],
+      "label": {
+        "en": "Wall (mm)",
+        "es": "Pared (mm)"
+      },
+      "tooltip": {
+        "en": "Material thickness around the insert socket",
+        "es": "Grosor de material alrededor del alojamiento del inserto"
+      }
+    },
+    {
+      "id": "seat_depth",
+      "type": "slider",
+      "default": 0.3,
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "sizing",
+      "advanced": true,
+      "modes": [
+        "guide_block"
+      ],
+      "label": {
+        "en": "Flush Seat Offset (mm)",
+        "es": "Desfase de Asiento al Ras (mm)"
+      },
+      "tooltip": {
+        "en": "How far the insert stops proud of / below the guide face for a repeatable flush seat",
+        "es": "Cuánto se detiene el inserto sobre/bajo la cara guía para un asiento al ras repetible"
+      }
+    },
+    {
+      "id": "block_h",
+      "type": "slider",
+      "default": 14.0,
+      "min": 8.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "sizing",
+      "modes": [
+        "guide_block"
+      ],
+      "label": {
+        "en": "Guide Block Height (mm)",
+        "es": "Altura del Bloque Guía (mm)"
+      },
+      "tooltip": {
+        "en": "Overall height of the guide block",
+        "es": "Altura total del bloque guía"
+      }
+    },
+    {
+      "id": "gauge_boss_h",
+      "type": "slider",
+      "default": 8.0,
+      "min": 4.0,
+      "max": 30.0,
+      "step": 1,
+      "group": "sizing",
+      "modes": [
+        "boss_gauge"
+      ],
+      "label": {
+        "en": "Test Boss Height (mm)",
+        "es": "Altura del Relieve de Prueba (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the moulded-in boss on the test coupon",
+        "es": "Altura del relieve moldeado en el cupón de prueba"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "m4_guide",
+      "mode": "guide_block",
+      "label": {
+        "en": "M4 Iron Guide",
+        "es": "Guía de Cautín M4"
+      },
+      "values": {
+        "insert_size": "M4",
+        "melt_fit": 0.15,
+        "wall": 4.0,
+        "block_h": 14.0
+      }
+    },
+    {
+      "id": "m5_boss",
+      "mode": "boss_gauge",
+      "label": {
+        "en": "M5 Boss Coupon",
+        "es": "Cupón de Relieve M5"
+      },
+      "values": {
+        "insert_size": "M5",
+        "melt_fit": 0.15,
+        "wall": 4.0,
+        "gauge_boss_h": 8.0
+      }
+    },
+    {
+      "id": "m6_collar",
+      "mode": "press_collar",
+      "label": {
+        "en": "M6 Press Collar",
+        "es": "Collar de Presión M6"
+      },
+      "values": {
+        "insert_size": "M6",
+        "melt_fit": 0.15,
+        "wall": 4.0
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [70, 70, 60]
+    },
+    {
+      "id": "top",
+      "label": { "en": "Top", "es": "Superior" },
+      "position": [0, 0, 120]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "insert_boss_socket",
+        "label": {
+          "en": "Heat-Set Insert Boss Socket",
+          "es": "Alojamiento de Relieve para Inserto Termofijable"
+        },
+        "geometry_type": "socket",
+        "standard": "M3-M8 insert",
+        "parameters": [
+          "insert_size",
+          "melt_fit",
+          "wall"
+        ],
+        "compatible_with": [
+          "fasteners",
+          "locking-mechanism-hyperobject"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Heat-set inserts turn a plastic print into a serviceable, repeatedly openable assembly — the difference between a throwaway part and a repairable product. But hand-seating them crooked or too deep ruins the boss and the print. A printed jig makes square, flush, depth-controlled insertion reproducible for anyone with a soldering iron, so ISO metric threads can be added reliably to community-made parts without a press or specialist tooling.",
+      "es": "Los insertos termofijables convierten una pieza impresa en un ensamble reparable y reabrible — la diferencia entre una pieza desechable y un producto reparable. Pero colocarlos torcidos o demasiado profundos a mano arruina el relieve y la pieza. Una plantilla impresa hace reproducible la inserción recta, al ras y con profundidad controlada para cualquiera con un cautín, permitiendo añadir roscas métricas ISO de forma fiable a piezas comunitarias sin prensa ni herramientas especializadas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "insert",
+    "heat-set",
+    "threaded-insert",
+    "jig",
+    "iso-metric",
+    "fastener",
+    "industrial",
+    "hyperobject",
+    "commons"
+  ]
+}

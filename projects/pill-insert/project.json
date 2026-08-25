@@ -1,0 +1,160 @@
+{
+  "project": {
+    "name": "Pill Organizer Insert",
+    "slug": "pill-insert",
+    "version": "1.0.0",
+    "description": {
+      "en": "A configurable pill-organiser grid: a compartment tray (weekly 7×1, daily 4-column, or any rows×columns), a friction lid that snaps over it, and a single removable dose cup with a finger tab. Compartment sizes and pitch are yours to set. A daily-living aid for medication sorting — it does not dispense or track doses; follow your pharmacist's and physician's guidance.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una rejilla configurable de organizador de pastillas: una bandeja de compartimentos (semanal 7×1, diaria de 4 columnas, o cualquier filas×columnas), una tapa a fricción que encaja encima y un vaso de dosis individual removible con pestaña. Los tamaños y el paso de los compartimentos los defines tú. Una ayuda de vida diaria para clasificar medicación — no dispensa ni registra dosis; sigue la orientación de tu farmacéutico y médico.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pill-insert.webp",
+    "difficulty": "beginner",
+    "tags": ["pill", "organizer", "medication", "grid", "assistive", "medical", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "engine": "cadquery",
+    "force_backend": true
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "The lid slips over the tray by the user 'clearance' and holds by friction; start at 0.4 mm and tune to your printer. Print in food-safe-handled PLA/PETG and wash before use. This is an organising aid, not a certified dosing device.",
+        "es": "La tapa se desliza sobre la bandeja con la 'holgura' del usuario y sujeta por fricción; empieza en 0.4 mm y ajústalo a tu impresora. Imprime en PLA/PETG de manejo apto para alimentos y lava antes de usar. Es una ayuda de organización, no un dispositivo de dosificación certificado."
+      }
+    },
+    "cdg_interfaces": [
+      {
+        "id": "compartment_grid",
+        "label": { "en": "Compartment Grid", "es": "Rejilla de Compartimentos" },
+        "geometry_type": "grid",
+        "standard": "internal",
+        "parameters": ["cols", "rows", "cell", "wall"]
+      }
+    ],
+    "societal_benefit": {
+      "en": "A pill organiser sized to the exact schedule and compartment size a person needs — bigger cells for arthritic hands, more columns for complex regimens — printed at home instead of settling for a fixed store layout, supporting medication adherence and independence.",
+      "es": "Un organizador de pastillas dimensionado al horario y tamaño de compartimento exactos que una persona necesita — celdas más grandes para manos con artritis, más columnas para regímenes complejos — impreso en casa en vez de conformarse con un diseño fijo de tienda, apoyando la adherencia a la medicación y la independencia."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "modes": [
+    {
+      "id": "tray",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Compartment Tray", "es": "Bandeja de Compartimentos" },
+      "description": { "en": "A rows×columns grid of open-top pill compartments." },
+      "parts": ["tray"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "lid",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Friction Lid", "es": "Tapa a Fricción" },
+      "description": { "en": "A capping shell that slips over the tray rim and holds by friction." },
+      "parts": ["lid"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "single_cup",
+      "scad_file": "main.py", "cq_file": "main.py", "engine": "cadquery",
+      "label": { "en": "Dose Cup", "es": "Vaso de Dosis" },
+      "description": { "en": "A single removable compartment cup with a finger tab to carry one dose." },
+      "parts": ["single_cup"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    { "id": "tray", "render_mode": 0, "label": { "en": "Compartment Tray", "es": "Bandeja de Compartimentos" }, "default_color": "#be185d" },
+    { "id": "lid", "render_mode": 0, "label": { "en": "Friction Lid", "es": "Tapa a Fricción" }, "default_color": "#db2777" },
+    { "id": "single_cup", "render_mode": 0, "label": { "en": "Dose Cup", "es": "Vaso de Dosis" }, "default_color": "#ec4899" }
+  ],
+  "parameters": [
+    {
+      "id": "cols", "type": "slider", "default": 7, "min": 1, "max": 14, "step": 1,
+      "group": "grid", "modes": ["tray", "lid"],
+      "label": { "en": "Columns", "es": "Columnas" },
+      "tooltip": { "en": "Compartments across (7 for a weekly organiser).", "es": "Compartimentos a lo ancho (7 para un organizador semanal)." },
+      "preview_hint": { "type": "axis_scale", "axis": "x", "scale_factor": 24.0 }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 1, "min": 1, "max": 6, "step": 1,
+      "group": "grid", "modes": ["tray", "lid"],
+      "label": { "en": "Rows", "es": "Filas" },
+      "tooltip": { "en": "Compartments deep (e.g. 4 for morning/noon/eve/night).", "es": "Compartimentos de profundidad (p. ej. 4 para mañana/mediodía/tarde/noche)." },
+      "preview_hint": { "type": "axis_scale", "axis": "y", "scale_factor": 24.0 }
+    },
+    {
+      "id": "cell", "type": "slider", "default": 22.0, "min": 12.0, "max": 40.0, "step": 1.0,
+      "group": "cell", "modes": ["tray", "lid", "single_cup"],
+      "label": { "en": "Compartment Size (mm)", "es": "Tamaño de Compartimento (mm)" },
+      "tooltip": { "en": "Square inner size of each compartment.", "es": "Tamaño interior cuadrado de cada compartimento." }
+    },
+    {
+      "id": "depth", "type": "slider", "default": 18.0, "min": 8.0, "max": 40.0, "step": 1.0,
+      "group": "cell", "modes": ["tray", "single_cup"],
+      "label": { "en": "Compartment Depth (mm)", "es": "Profundidad de Compartimento (mm)" },
+      "tooltip": { "en": "How deep each pocket runs.", "es": "Qué tan profundo es cada hueco." },
+      "preview_hint": { "type": "axis_scale", "axis": "z", "scale_factor": 1.0 }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 5.0, "step": 0.2,
+      "group": "body", "modes": ["tray", "lid", "single_cup"],
+      "label": { "en": "Wall Thickness (mm)", "es": "Grosor de Pared (mm)" },
+      "tooltip": { "en": "Divider and outer wall thickness.", "es": "Grosor de divisores y pared exterior." }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "body", "modes": ["lid", "single_cup"],
+      "label": { "en": "Fit Clearance (mm/side)", "es": "Holgura de Ajuste (mm/lado)" },
+      "tooltip": { "en": "Slip gap for the lid over the tray and the dose cup in a cell.", "es": "Holgura de la tapa sobre la bandeja y del vaso de dosis en una celda." }
+    }
+  ],
+  "parameter_groups": [
+    { "id": "grid", "label": { "en": "Grid", "es": "Rejilla" } },
+    { "id": "cell", "label": { "en": "Compartment", "es": "Compartimento" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo" } }
+  ],
+  "presets": [
+    {
+      "id": "weekly_7", "mode": "tray",
+      "label": { "en": "Weekly 7-Day Tray", "es": "Bandeja Semanal 7 Días" },
+      "values": { "cols": 7, "rows": 1, "cell": 22.0, "depth": 18.0 }
+    },
+    {
+      "id": "daily_4x7", "mode": "tray",
+      "label": { "en": "Daily 4×7 Tray", "es": "Bandeja Diaria 4×7" },
+      "values": { "cols": 7, "rows": 4, "cell": 18.0, "depth": 16.0 }
+    },
+    {
+      "id": "weekly_lid", "mode": "lid",
+      "label": { "en": "Weekly Lid", "es": "Tapa Semanal" },
+      "values": { "cols": 7, "rows": 1, "cell": 22.0, "clearance": 0.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.2",
+      "severity": "error",
+      "message": { "en": "Dividers must be at least 1.2 mm to print cleanly", "es": "Los divisores deben ser de al menos 1.2 mm para imprimir bien" }
+    },
+    {
+      "expression": "clearance <= 0.8",
+      "severity": "warning",
+      "message": { "en": "Large clearance lets the lid fall off", "es": "Una holgura grande deja que la tapa se caiga" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [160, 120, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 240] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 2, "per_part": 10,
+    "wasm_multiplier": 3, "warning_threshold_seconds": 45
+  },
+  "license": "CERN-OHL-W-2.0"
+}

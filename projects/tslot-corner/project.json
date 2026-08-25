@@ -1,0 +1,394 @@
+{
+  "project": {
+    "name": "T-Slot Corner Bracket",
+    "slug": "tslot-corner",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "force_backend": true,
+    "difficulty": "beginner",
+    "description": {
+      "en": "Corner joiners for aluminium T-slot extrusion (2020 / 2040 / OpenBuilds). The bracket bolts into the extrusion's T-slots with M5 drop-in nuts on the 20 mm module grid — pick a flat two-way brace, a gusseted brace with a triangular web for load-bearing frames, or a cubic three-way block that joins three extrusions at a vertex.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Uniones de esquina para perfil de aluminio T-slot (2020 / 2040 / OpenBuilds). El soporte se atornilla a las ranuras T del perfil con tuercas M5 sobre la cuadrícula de módulo de 20 mm — elige una escuadra plana de dos vías, una escuadra con refuerzo triangular para bastidores con carga, o un bloque cúbico de tres vías que une tres perfiles en un vértice.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tslot-corner.webp",
+    "tags": [
+      "t-slot",
+      "extrusion",
+      "2020",
+      "2040",
+      "corner",
+      "bracket",
+      "openbuilds",
+      "industrial",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    }
+  },
+  "modes": [
+    {
+      "id": "corner_2way",
+      "label": {
+        "en": "Two-Way Brace",
+        "es": "Escuadra de Dos Vías"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "corner_2way"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 10
+      }
+    },
+    {
+      "id": "corner_gusset",
+      "label": {
+        "en": "Gusseted Brace",
+        "es": "Escuadra con Refuerzo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "corner_gusset"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 12
+      }
+    },
+    {
+      "id": "corner_3way",
+      "label": {
+        "en": "Three-Way Block",
+        "es": "Bloque de Tres Vías"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "corner_3way"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 3,
+        "per_part": 14
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "corner_2way",
+      "label": {
+        "en": "Two-Way Brace",
+        "es": "Escuadra de Dos Vías"
+      },
+      "render_mode": 0,
+      "color": "#8a8f98"
+    },
+    {
+      "id": "corner_gusset",
+      "label": {
+        "en": "Gusseted Brace",
+        "es": "Escuadra con Refuerzo"
+      },
+      "render_mode": 0,
+      "color": "#9aa0a8"
+    },
+    {
+      "id": "corner_3way",
+      "label": {
+        "en": "Three-Way Block",
+        "es": "Bloque de Tres Vías"
+      },
+      "render_mode": 0,
+      "color": "#7a808a"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "extrusion",
+      "label": {
+        "en": "Extrusion",
+        "es": "Perfil"
+      }
+    },
+    {
+      "id": "bracket",
+      "label": {
+        "en": "Bracket",
+        "es": "Soporte"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "series",
+      "type": "select",
+      "default": "2020",
+      "group": "extrusion",
+      "modes": [
+        "corner_2way",
+        "corner_gusset",
+        "corner_3way"
+      ],
+      "label": {
+        "en": "Extrusion Series",
+        "es": "Serie de Perfil"
+      },
+      "tooltip": {
+        "en": "T-slot module. 2020/2040 use M5, 3030 uses M6, 4040 uses M8",
+        "es": "Módulo T-slot. 2020/2040 usan M5, 3030 usa M6, 4040 usa M8"
+      },
+      "options": [
+        { "value": "2020", "label": { "en": "2020 (M5)", "es": "2020 (M5)" } },
+        { "value": "2040", "label": { "en": "2040 (M5)", "es": "2040 (M5)" } },
+        { "value": "3030", "label": { "en": "3030 (M6)", "es": "3030 (M6)" } },
+        { "value": "4040", "label": { "en": "4040 (M8)", "es": "4040 (M8)" } }
+      ]
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "bracket",
+      "modes": [
+        "corner_2way",
+        "corner_gusset",
+        "corner_3way"
+      ],
+      "label": {
+        "en": "Plate Thickness (mm)",
+        "es": "Grosor de Placa (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the bracket legs / arms",
+        "es": "Grosor de las patas / brazos del soporte"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "z",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "leg_len",
+      "type": "slider",
+      "default": 30.0,
+      "min": 18.0,
+      "max": 120.0,
+      "step": 1,
+      "group": "bracket",
+      "modes": [
+        "corner_2way",
+        "corner_gusset",
+        "corner_3way"
+      ],
+      "label": {
+        "en": "Leg Length (mm)",
+        "es": "Longitud de Pata (mm)"
+      },
+      "tooltip": {
+        "en": "Length of each bracket leg / arm along the extrusion",
+        "es": "Longitud de cada pata / brazo del soporte a lo largo del perfil"
+      }
+    },
+    {
+      "id": "width",
+      "type": "slider",
+      "default": 20.0,
+      "min": 12.0,
+      "max": 40.0,
+      "step": 1,
+      "group": "bracket",
+      "modes": [
+        "corner_2way",
+        "corner_gusset",
+        "corner_3way"
+      ],
+      "label": {
+        "en": "Bracket Width (mm)",
+        "es": "Ancho de Soporte (mm)"
+      },
+      "tooltip": {
+        "en": "Width across the extrusion face; match the extrusion width",
+        "es": "Ancho a lo ancho de la cara del perfil; iguala el ancho del perfil"
+      },
+      "preview_hint": {
+        "type": "axis_scale",
+        "axis": "y",
+        "scale_factor": 1.0
+      }
+    },
+    {
+      "id": "bolt_dia",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "bracket",
+      "advanced": true,
+      "modes": [
+        "corner_2way",
+        "corner_gusset",
+        "corner_3way"
+      ],
+      "label": {
+        "en": "Bolt Hole Override (mm)",
+        "es": "Sobrescribir Orificio (mm)"
+      },
+      "tooltip": {
+        "en": "Manual bolt clearance; 0 = derive from the extrusion series (M5=5.5)",
+        "es": "Holgura manual de perno; 0 = derivar de la serie del perfil (M5=5.5)"
+      }
+    },
+    {
+      "id": "fillet_r",
+      "type": "slider",
+      "default": 3.0,
+      "min": 0.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "bracket",
+      "advanced": true,
+      "modes": [
+        "corner_2way",
+        "corner_gusset",
+        "corner_3way"
+      ],
+      "label": {
+        "en": "Corner Fillet (mm)",
+        "es": "Redondeo de Esquina (mm)"
+      },
+      "tooltip": {
+        "en": "Outer-corner radius for a cleaner, stronger print",
+        "es": "Radio de esquina exterior para una impresión más limpia y fuerte"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "brace_2020",
+      "mode": "corner_2way",
+      "label": {
+        "en": "2020 Two-Way Brace",
+        "es": "Escuadra 2020 de Dos Vías"
+      },
+      "values": {
+        "series": "2020",
+        "thickness": 6.0,
+        "leg_len": 30.0,
+        "width": 20.0
+      }
+    },
+    {
+      "id": "gusset_2040",
+      "mode": "corner_gusset",
+      "label": {
+        "en": "2040 Gusseted Brace",
+        "es": "Escuadra 2040 con Refuerzo"
+      },
+      "values": {
+        "series": "2040",
+        "thickness": 8.0,
+        "leg_len": 40.0,
+        "width": 20.0
+      }
+    },
+    {
+      "id": "vertex_3030",
+      "mode": "corner_3way",
+      "label": {
+        "en": "3030 Three-Way Vertex",
+        "es": "Vértice 3030 de Tres Vías"
+      },
+      "values": {
+        "series": "3030",
+        "thickness": 8.0,
+        "leg_len": 45.0,
+        "width": 30.0
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "leg_len >= width",
+      "severity": "warning",
+      "message": {
+        "en": "Very short legs relative to width leave little bolt engagement",
+        "es": "Patas muy cortas respecto al ancho dejan poco agarre para el perno"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": { "en": "Isometric", "es": "Isométrico" },
+      "position": [90, 90, 80]
+    },
+    {
+      "id": "front",
+      "label": { "en": "Front", "es": "Frontal" },
+      "position": [0, -160, 20]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 32,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "tslot_bolt_grid",
+        "label": {
+          "en": "T-Slot M5 Bolt Grid",
+          "es": "Cuadrícula de Pernos M5 T-Slot"
+        },
+        "geometry_type": "profile",
+        "standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+        "parameters": [
+          "series",
+          "leg_len",
+          "width",
+          "bolt_dia"
+        ],
+        "compatible_with": [
+          "tslot-2020",
+          "featherboard",
+          "linear-wheel"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The 20 mm T-slot extrusion grid is the open standard of the maker world — 3D-printer frames, CNC gantries, workbenches and enclosures all bolt together on it. Printed corner brackets replace proprietary die-cast joiners at a fraction of the cost, let a builder brace an odd angle no catalogue part covers, and repair a stripped joint in the field. They grow the t-slot-extrusion commons alongside the extrusion itself, featherboards and V-slot wheels.",
+      "es": "La cuadrícula de perfil T-slot de 20 mm es el estándar abierto del mundo maker — bastidores de impresoras 3D, pórticos CNC, bancos de trabajo y gabinetes se ensamblan sobre ella. Los soportes de esquina impresos reemplazan uniones de fundición propietarias a una fracción del costo, permiten reforzar un ángulo raro que ninguna pieza de catálogo cubre, y reparar una unión dañada en el campo. Hacen crecer el común de t-slot-extrusion junto al propio perfil, los peines y las ruedas V-slot."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

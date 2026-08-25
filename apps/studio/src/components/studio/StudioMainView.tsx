@@ -388,10 +388,10 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
             <span className="truncate flex-1 text-left">{lastLogLine}</span>
           </button>
           {consoleExpanded && (
-            <div className="flex flex-col max-h-[40vh] landscape:max-h-[25vh]">
+            <div className="flex flex-col max-h-[40vh] phone-landscape:max-h-[25vh]">
               <div
                 ref={consoleRef as React.RefObject<HTMLDivElement>}
-                className="bg-muted px-3 py-2 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap max-h-[30vh] landscape:max-h-[20vh]"
+                className="bg-muted px-3 py-2 font-mono text-xs text-foreground overflow-y-auto whitespace-pre-wrap max-h-[30vh] phone-landscape:max-h-[20vh]"
                 role="log"
                 aria-live="polite"
                 aria-label="Render console"

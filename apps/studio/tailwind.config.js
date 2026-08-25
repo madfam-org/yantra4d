@@ -8,7 +8,13 @@ export default {
     	extend: {
     		screens: {
     			xs: '360px',
-    			landscape: {
+    			// MUST NOT be named `landscape`: Tailwind ships a built-in
+    			// `landscape` variant (`@media (orientation: landscape)`, see
+    			// corePlugins.js `addVariant('landscape', ...)`). A custom screen
+    			// with that key collides with it and the built-in wins, so the
+    			// `max-width` guard below is silently dropped and every
+    			// `landscape:` utility fires at desktop widths too.
+    			'phone-landscape': {
     				raw: '(orientation: landscape) and (max-width: 1023px)'
     			}
     		},

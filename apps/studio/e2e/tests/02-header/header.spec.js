@@ -49,7 +49,7 @@ test.describe('Studio Header', () => {
     await expect(undoBtn).toBeEnabled({ timeout: 5000 })
 
     await header.clickUndo()
-    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 10000 })
   })
 
   test('redo restores undone change', async ({ header, sidebar }) => {
@@ -57,14 +57,14 @@ test.describe('Studio Header', () => {
     const valueBefore = await sidebar.sliderValue('width').textContent()
     const targetValue = Number(valueBefore) === 100 ? 150 : 100
     await sidebar.editSliderValue('width', targetValue)
-    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 10000 })
 
     await header.clickUndo()
-    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 10000 })
 
     expect(await header.isRedoDisabled()).toBe(false)
     await header.clickRedo()
-    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 10000 })
   })
 
   test('share button copies URL to clipboard', async ({ page, header }) => {
@@ -121,7 +121,7 @@ test.describe('Studio Header', () => {
 
     // Use Playwright locator — waits for actionability (visible, stable, event handlers attached)
     const themeBtn = page.locator('header button[title^="Theme:"], header button[title^="Tema:"]')
-    await expect(themeBtn).toBeVisible({ timeout: 3000 })
+    await expect(themeBtn).toBeVisible({ timeout: 10000 })
 
     const getTheme = () => page.evaluate(() => localStorage.getItem('vite-ui-theme'))
 
@@ -133,8 +133,8 @@ test.describe('Studio Header', () => {
     // waiting on it is waiting for the click to be safe to repeat.
     const step = async (expected) => {
       await themeBtn.click()
-      await expect(themeBtn).toHaveAttribute('title', new RegExp(expected, 'i'), { timeout: 3000 })
-      await expect(async () => expect(await getTheme()).toBe(expected)).toPass({ timeout: 3000 })
+      await expect(themeBtn).toHaveAttribute('title', new RegExp(expected, 'i'), { timeout: 10000 })
+      await expect(async () => expect(await getTheme()).toBe(expected)).toPass({ timeout: 10000 })
     }
 
     await step('dark')

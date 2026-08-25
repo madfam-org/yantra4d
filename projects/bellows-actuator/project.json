@@ -1,0 +1,206 @@
+{
+  "project": {
+    "name": "Pneumatic Bellows Actuator",
+    "slug": "bellows-actuator",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The base primitive of soft robotics: a convoluted bellows column that extends when pressurised and returns elastically when vented. Printed in TPU it is a one-piece linear actuator with no sliding seal, no rod, and no lubricant. The stroke axis is published as a linear-motion interface so a gripper knows its travel envelope, and the inlet is the shared barb series the rest of the soft-pneumatic family speaks. Low-pressure service only.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La primitiva base de la robótica blanda: una columna de fuelle corrugado que se extiende al presurizarse y regresa elásticamente al ventearse. Impresa en TPU es un actuador lineal de una sola pieza sin sello deslizante, sin vástago y sin lubricante. El eje de carrera se publica como interfaz de movimiento lineal para que una pinza conozca su envolvente, y la entrada es la serie de espiga compartida por el resto de la familia neumática blanda. Solo para baja presión.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bellows-actuator.webp",
+    "difficulty": "intermediate",
+    "tags": ["bellows", "actuator", "pneumatic", "soft-robotics", "linear", "tpu", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bellows",
+      "label": { "en": "Bellows", "es": "Fuelle" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bellows"],
+      "estimate": { "base_time": 14, "per_unit": 3, "per_part": 16 }
+    },
+    {
+      "id": "bellows_flange",
+      "label": { "en": "Flanged Bellows", "es": "Fuelle con Brida" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["bellows_flange"],
+      "estimate": { "base_time": 16, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "end_cap",
+      "label": { "en": "End Cap", "es": "Tapa de Extremo" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["end_cap"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    }
+  ],
+  "parts": [
+    { "id": "bellows", "label": { "en": "Bellows", "es": "Fuelle" }, "render_mode": 0, "color": "#0369a1" },
+    { "id": "bellows_flange", "label": { "en": "Flanged Bellows", "es": "Fuelle con Brida" }, "render_mode": 0, "color": "#0284c7" },
+    { "id": "end_cap", "label": { "en": "End Cap", "es": "Tapa de Extremo" }, "render_mode": 0, "color": "#38bdf8" }
+  ],
+  "parameter_groups": [
+    { "id": "convolution", "label": { "en": "Convolutions", "es": "Corrugaciones" } },
+    { "id": "body", "label": { "en": "Body & Caps", "es": "Cuerpo y Tapas" } },
+    { "id": "inlet", "label": { "en": "Air Inlet", "es": "Entrada de Aire" } },
+    { "id": "mount", "label": { "en": "Base Flange", "es": "Brida de Base" } }
+  ],
+  "parameters": [
+    {
+      "id": "outer_dia", "type": "slider", "default": 34.0, "min": 12.0, "max": 120.0, "step": 0.5,
+      "group": "convolution", "modes": ["bellows", "bellows_flange"],
+      "label": { "en": "Crest Diameter (mm)", "es": "Diámetro de Cresta (mm)" },
+      "tooltip": { "en": "Outer diameter at the widest point of a fold. Sets the force the bellows makes at a given pressure", "es": "Diámetro exterior en el punto más ancho de un pliegue. Define la fuerza del fuelle a una presión dada" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "inner_dia", "type": "slider", "default": 24.0, "min": 6.0, "max": 110.0, "step": 0.5,
+      "group": "convolution", "modes": ["bellows", "bellows_flange", "end_cap"],
+      "label": { "en": "Root Diameter (mm)", "es": "Diámetro de Raíz (mm)" },
+      "tooltip": { "en": "Diameter at the narrow waist of a fold; auto-clamped to stay at least two wall thicknesses inside the crest", "es": "Diámetro en la cintura estrecha de un pliegue; se limita automáticamente para quedar al menos dos paredes dentro de la cresta" }
+    },
+    {
+      "id": "convolutions", "type": "slider", "default": 6, "min": 2, "max": 16, "step": 1,
+      "group": "convolution", "modes": ["bellows", "bellows_flange"],
+      "label": { "en": "Fold Count", "es": "Número de Pliegues" },
+      "tooltip": { "en": "More folds = more stroke for the same pressure, and a taller print", "es": "Más pliegues = más carrera a la misma presión, y una impresión más alta" }
+    },
+    {
+      "id": "conv_pitch", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.2,
+      "group": "convolution", "modes": ["bellows", "bellows_flange"],
+      "label": { "en": "Fold Pitch (mm)", "es": "Paso de Pliegue (mm)" },
+      "tooltip": { "en": "Axial height of one complete fold", "es": "Altura axial de un pliegue completo" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.2, "min": 0.6, "max": 4.0, "step": 0.1,
+      "group": "body", "modes": ["bellows", "bellows_flange"],
+      "label": { "en": "Membrane Wall (mm)", "es": "Pared de Membrana (mm)" },
+      "tooltip": { "en": "Thickness of the folding wall. Thinner = softer and more stroke, but leaks and tears sooner", "es": "Grosor de la pared que se pliega. Más delgada = más suave y más carrera, pero se fuga y rompe antes" }
+    },
+    {
+      "id": "cap_th", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "body", "modes": ["bellows", "bellows_flange", "end_cap"],
+      "label": { "en": "Cap Thickness (mm)", "es": "Grosor de Tapa (mm)" },
+      "tooltip": { "en": "Thickness of the fixed and moving end plates", "es": "Grosor de las placas de extremo fija y móvil" }
+    },
+    {
+      "id": "tube_id", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "inlet", "modes": ["bellows", "bellows_flange"],
+      "label": { "en": "Tubing Inner Diameter (mm)", "es": "Diámetro Interior de Manguera (mm)" },
+      "tooltip": { "en": "The shared barb series — match this to the pneumatic-barb-port and manifold feeding it", "es": "La serie de espiga compartida — iguala este valor al del puerto de espiga y del colector que lo alimentan" }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 1.6, "min": 0.8, "max": 8.0, "step": 0.1,
+      "group": "inlet", "modes": ["bellows", "bellows_flange"],
+      "label": { "en": "Air Passage (mm)", "es": "Paso de Aire (mm)" },
+      "tooltip": { "en": "Inlet bore. Auto-clamped so it never breaches the stem wall or the bellows lumen", "es": "Perforación de entrada. Se limita automáticamente para no romper la pared del vástago ni el lumen del fuelle" }
+    },
+    {
+      "id": "flange_dia", "type": "slider", "default": 48.0, "min": 10.0, "max": 200.0, "step": 1.0,
+      "group": "mount", "modes": ["bellows_flange"],
+      "label": { "en": "Flange Diameter (mm)", "es": "Diámetro de Brida (mm)" },
+      "tooltip": { "en": "Outer diameter of the bolt-through base; auto-widened to clear the crest and bolt land", "es": "Diámetro exterior de la base atornillable; se ensancha automáticamente para librar la cresta y los tornillos" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 3.4, "min": 1.5, "max": 8.0, "step": 0.1,
+      "group": "mount", "modes": ["bellows_flange", "end_cap"],
+      "label": { "en": "Bolt Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Bolt hole diameter (3.4 mm = M3 clearance)", "es": "Diámetro del barreno (3.4 mm = holgura M3)" }
+    },
+    {
+      "id": "bolt_count", "type": "slider", "default": 4, "min": 0, "max": 12, "step": 1,
+      "group": "mount", "modes": ["bellows_flange", "end_cap"],
+      "label": { "en": "Bolt Count", "es": "Número de Tornillos" },
+      "tooltip": { "en": "Bolts around the base flange, and the tool pattern on the end cap", "es": "Tornillos alrededor de la brida de base, y el patrón de herramienta en la tapa" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "compact_lift", "mode": "bellows",
+      "label": { "en": "Compact Lift (34 mm)", "es": "Elevador Compacto (34 mm)" },
+      "values": { "outer_dia": 34, "inner_dia": 24, "convolutions": 6, "conv_pitch": 6, "wall": 1.2 }
+    },
+    {
+      "id": "long_stroke", "mode": "bellows",
+      "label": { "en": "Long Stroke (10 folds)", "es": "Carrera Larga (10 pliegues)" },
+      "values": { "outer_dia": 40, "inner_dia": 28, "convolutions": 10, "conv_pitch": 7, "wall": 1.0 }
+    },
+    {
+      "id": "frame_mount", "mode": "bellows_flange",
+      "label": { "en": "Frame-Mounted", "es": "Montado en Bastidor" },
+      "values": { "outer_dia": 44, "inner_dia": 32, "convolutions": 6, "flange_dia": 62, "bolt_count": 4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "inner_dia <= outer_dia - 4",
+      "severity": "warning",
+      "message": { "en": "Root and crest too close — the fold flattens into a plain tube and will not stroke", "es": "Raíz y cresta demasiado cercanas — el pliegue se aplana en un tubo recto y no dará carrera" }
+    },
+    {
+      "expression": "wall <= 2.0",
+      "severity": "warning",
+      "message": { "en": "A membrane above 2 mm is very stiff; expect little stroke at soft-robotics pressures", "es": "Una membrana mayor a 2 mm es muy rígida; espera poca carrera a presiones de robótica blanda" }
+    },
+    {
+      "expression": "wall >= 0.6",
+      "severity": "error",
+      "message": { "en": "Membrane must be at least 0.6 mm or the bellows will not hold pressure", "es": "La membrana debe ser de al menos 0.6 mm o el fuelle no retendrá presión" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [90, 90, 70] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -130, 30] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 140] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 14, "per_unit": 3, "per_part": 16,
+    "fn_factor": 48, "wasm_multiplier": 4, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "soft-robotics",
+    "cdg_interfaces": [
+      {
+        "id": "pneumatic_barb_series",
+        "label": { "en": "Pneumatic Barb Series", "es": "Serie de Espiga Neumática" },
+        "geometry_type": "profile",
+        "standard": "internal (2 / 3 / 4 mm tube ID)",
+        "parameters": ["tube_id", "bore"],
+        "compatible_with": ["pneumatic-barb-port", "vacuum-manifold-block"]
+      },
+      {
+        "id": "stroke_axis",
+        "label": { "en": "Linear Stroke Axis", "es": "Eje de Carrera Lineal" },
+        "geometry_type": "rail",
+        "standard": "internal",
+        "parameters": ["convolutions", "conv_pitch", "inner_dia", "cap_th"],
+        "compatible_with": ["soft-gripper-pad"]
+      },
+      {
+        "id": "base_bolt_flange",
+        "label": { "en": "Base Bolt Flange", "es": "Brida Atornillable de Base" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["flange_dia", "bolt_dia", "bolt_count"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Every soft-robotics build starts with a bellows, and every tutorial starts by telling you to mould one in silicone — a two-day process needing a mould, a vacuum chamber, and a material with a shelf life. A printed convoluted bellows collapses that to an afternoon on a machine a school or clinic already owns, and because its stroke axis and inlet are published interfaces, the same part serves as a lift, a gripper drive, and a valve actuator instead of being a one-off.",
+      "es": "Todo proyecto de robótica blanda comienza con un fuelle, y todo tutorial comienza diciéndote que lo moldees en silicón — un proceso de dos días que requiere molde, cámara de vacío y un material con caducidad. Un fuelle corrugado impreso reduce eso a una tarde en una máquina que una escuela o clínica ya posee, y como su eje de carrera y su entrada son interfaces publicadas, la misma pieza sirve como elevador, accionamiento de pinza y actuador de válvula en lugar de ser un objeto único."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["bellows", "actuator", "pneumatic", "soft-robotics", "linear", "hyperobject", "commons"]
+}

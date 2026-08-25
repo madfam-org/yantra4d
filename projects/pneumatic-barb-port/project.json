@@ -1,0 +1,196 @@
+{
+  "project": {
+    "name": "Pneumatic Barb Port",
+    "slug": "pneumatic-barb-port",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A printable hose-barb port sized by the INNER diameter of the tubing it grips: tapered barb ridges over a through-bore, on a bolt-through flange, a plain boss, or a barb-to-barb splice. The 2 / 3 / 4 mm barb series is the shared inlet interface for the whole soft-pneumatic family — a port generated at one tube ID mates every bellows, finger, cup and manifold generated at the same tube ID. Low-pressure service only.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un puerto de espiga imprimible dimensionado por el diámetro INTERIOR de la manguera que sujeta: crestas cónicas sobre una perforación pasante, montadas en una brida atornillable, un buje liso o un empalme espiga-espiga. La serie de espigas de 2 / 3 / 4 mm es la interfaz de entrada compartida de toda la familia neumática blanda — un puerto generado con un diámetro interior encaja con cada fuelle, dedo, ventosa y colector generado con el mismo diámetro. Solo para baja presión.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pneumatic-barb-port.webp",
+    "difficulty": "beginner",
+    "tags": ["pneumatic", "barb", "port", "fitting", "tubing", "soft-robotics", "hyperobject", "commons", "cdg"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "flange_port",
+      "label": { "en": "Flange Port", "es": "Puerto con Brida" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["flange_port"],
+      "estimate": { "base_time": 7, "per_unit": 2, "per_part": 9 }
+    },
+    {
+      "id": "boss_port",
+      "label": { "en": "Boss Port", "es": "Puerto con Buje" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["boss_port"],
+      "estimate": { "base_time": 6, "per_unit": 2, "per_part": 8 }
+    },
+    {
+      "id": "barb_coupler",
+      "label": { "en": "Barb Coupler", "es": "Acoplador de Espiga" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["barb_coupler"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 10 }
+    }
+  ],
+  "parts": [
+    { "id": "flange_port", "label": { "en": "Flange Port", "es": "Puerto con Brida" }, "render_mode": 0, "color": "#0f766e" },
+    { "id": "boss_port", "label": { "en": "Boss Port", "es": "Puerto con Buje" }, "render_mode": 0, "color": "#0d9488" },
+    { "id": "barb_coupler", "label": { "en": "Barb Coupler", "es": "Acoplador de Espiga" }, "render_mode": 0, "color": "#14b8a6" }
+  ],
+  "parameter_groups": [
+    { "id": "barb", "label": { "en": "Barb Series", "es": "Serie de Espiga" } },
+    { "id": "body", "label": { "en": "Body & Bore", "es": "Cuerpo y Perforación" } },
+    { "id": "flange", "label": { "en": "Flange", "es": "Brida" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_id", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "barb", "modes": ["flange_port", "boss_port", "barb_coupler"],
+      "label": { "en": "Tubing Inner Diameter (mm)", "es": "Diámetro Interior de Manguera (mm)" },
+      "tooltip": { "en": "Inner diameter of the silicone/PU tube the barb grips. This is the shared family interface — 2, 3 and 4 mm are the common soft-robotics sizes", "es": "Diámetro interior de la manguera de silicona/PU que sujeta la espiga. Es la interfaz compartida de la familia — 2, 3 y 4 mm son las medidas comunes en robótica blanda" },
+      "preview_hint": { "type": "axis_scale", "axis": "radial", "scale_factor": 1.0 }
+    },
+    {
+      "id": "barb_count", "type": "slider", "default": 3, "min": 1, "max": 8, "step": 1,
+      "group": "barb", "modes": ["flange_port", "boss_port", "barb_coupler"],
+      "label": { "en": "Barb Ridges", "es": "Crestas de Espiga" },
+      "tooltip": { "en": "How many tapered ridges grip the tube. More ridges hold harder but need more insertion force", "es": "Cuántas crestas cónicas sujetan la manguera. Más crestas sujetan mejor pero requieren más fuerza de inserción" }
+    },
+    {
+      "id": "barb_pitch", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.1,
+      "group": "barb", "modes": ["flange_port", "boss_port", "barb_coupler"],
+      "label": { "en": "Ridge Spacing (mm)", "es": "Separación de Crestas (mm)" },
+      "tooltip": { "en": "Axial distance between barb ridges; also sets the stem length", "es": "Distancia axial entre crestas; también define la longitud del vástago" }
+    },
+    {
+      "id": "barb_rise", "type": "slider", "default": 0.7, "min": 0.2, "max": 2.0, "step": 0.05,
+      "group": "barb", "modes": ["flange_port", "boss_port", "barb_coupler"],
+      "label": { "en": "Ridge Height (mm)", "es": "Altura de Cresta (mm)" },
+      "tooltip": { "en": "How far each ridge stands proud of the stem — the retention interference", "es": "Cuánto sobresale cada cresta del vástago — la interferencia de retención" }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 1.6, "min": 0.8, "max": 8.0, "step": 0.1,
+      "group": "body", "modes": ["flange_port", "boss_port", "barb_coupler"],
+      "label": { "en": "Air Passage (mm)", "es": "Paso de Aire (mm)" },
+      "tooltip": { "en": "Through-bore diameter. Automatically clamped to leave at least 0.6 mm of stem wall per side", "es": "Diámetro de la perforación pasante. Se limita automáticamente para dejar al menos 0.6 mm de pared por lado" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.6, "min": 0.8, "max": 4.0, "step": 0.1,
+      "group": "body", "modes": ["flange_port", "boss_port", "barb_coupler"],
+      "label": { "en": "Stem Wall (mm)", "es": "Pared del Vástago (mm)" },
+      "tooltip": { "en": "Minimum material around the air passage", "es": "Material mínimo alrededor del paso de aire" }
+    },
+    {
+      "id": "flange_dia", "type": "slider", "default": 16.0, "min": 8.0, "max": 60.0, "step": 0.5,
+      "group": "flange", "modes": ["flange_port"],
+      "label": { "en": "Flange Diameter (mm)", "es": "Diámetro de Brida (mm)" },
+      "tooltip": { "en": "Outer diameter of the bolt-through plate; auto-widened if the barb crest and bolt land need more room", "es": "Diámetro exterior de la placa atornillable; se ensancha automáticamente si la cresta y los tornillos requieren más espacio" }
+    },
+    {
+      "id": "flange_th", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "flange", "modes": ["flange_port", "boss_port"],
+      "label": { "en": "Base Thickness (mm)", "es": "Grosor de Base (mm)" },
+      "tooltip": { "en": "Thickness of the flange plate or the boss collar", "es": "Grosor de la placa de brida o del collar del buje" }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 3.4, "min": 1.5, "max": 8.0, "step": 0.1,
+      "group": "flange", "modes": ["flange_port"],
+      "label": { "en": "Bolt Clearance (mm)", "es": "Holgura de Tornillo (mm)" },
+      "tooltip": { "en": "Bolt hole diameter (3.4 mm = M3 clearance)", "es": "Diámetro del barreno (3.4 mm = holgura M3)" }
+    },
+    {
+      "id": "bolt_count", "type": "slider", "default": 2, "min": 0, "max": 8, "step": 1,
+      "group": "flange", "modes": ["flange_port"],
+      "label": { "en": "Bolt Count", "es": "Número de Tornillos" },
+      "tooltip": { "en": "Bolts evenly spaced around the flange (0 = glue/weld the flange instead)", "es": "Tornillos repartidos alrededor de la brida (0 = pegar o soldar la brida)" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "barb_2mm", "mode": "flange_port",
+      "label": { "en": "2 mm Tube Series", "es": "Serie de Manguera 2 mm" },
+      "values": { "tube_id": 2.0, "bore": 1.2, "barb_count": 3, "flange_dia": 13 }
+    },
+    {
+      "id": "barb_3mm", "mode": "flange_port",
+      "label": { "en": "3 mm Tube Series", "es": "Serie de Manguera 3 mm" },
+      "values": { "tube_id": 3.0, "bore": 1.6, "barb_count": 3, "flange_dia": 16 }
+    },
+    {
+      "id": "barb_4mm_boss", "mode": "boss_port",
+      "label": { "en": "4 mm Glue-In Boss", "es": "Buje Pegable 4 mm" },
+      "values": { "tube_id": 4.0, "bore": 2.4, "barb_count": 4, "flange_th": 3.5 }
+    },
+    {
+      "id": "splice_3mm", "mode": "barb_coupler",
+      "label": { "en": "3 mm Straight Splice", "es": "Empalme Recto 3 mm" },
+      "values": { "tube_id": 3.0, "bore": 1.8, "barb_count": 3, "barb_pitch": 3.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bore <= tube_id",
+      "severity": "warning",
+      "message": { "en": "An air passage wider than the tube bore is a wasted restriction — the tube is the limit", "es": "Un paso de aire más ancho que la manguera es una restricción inútil — la manguera es el límite" }
+    },
+    {
+      "expression": "barb_rise >= 0.3",
+      "severity": "warning",
+      "message": { "en": "Ridges below 0.3 mm may not retain the tube under pressure", "es": "Crestas menores a 0.3 mm pueden no retener la manguera bajo presión" }
+    },
+    {
+      "expression": "wall >= 0.8",
+      "severity": "error",
+      "message": { "en": "Stem wall must be at least 0.8 mm or the port will leak at the seams", "es": "La pared del vástago debe ser de al menos 0.8 mm o el puerto tendrá fugas en las uniones" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [40, 40, 34] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -60, 14] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 60] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 7, "per_unit": 2, "per_part": 9,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "soft-robotics",
+    "cdg_interfaces": [
+      {
+        "id": "pneumatic_barb_series",
+        "label": { "en": "Pneumatic Barb Series", "es": "Serie de Espiga Neumática" },
+        "geometry_type": "profile",
+        "standard": "internal (2 / 3 / 4 mm tube ID)",
+        "parameters": ["tube_id", "barb_count", "barb_pitch", "barb_rise", "bore"],
+        "compatible_with": ["bellows-actuator", "pneu-net-finger", "suction-cup-bellows", "vacuum-manifold-block"]
+      },
+      {
+        "id": "port_bolt_flange",
+        "label": { "en": "Port Bolt Flange", "es": "Brida Atornillable del Puerto" },
+        "geometry_type": "bolt_pattern",
+        "standard": "internal",
+        "parameters": ["flange_dia", "flange_th", "bolt_dia", "bolt_count"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Soft-robotics tutorials assume a drawer of commercial push-to-connect fittings that costs more than the actuator it feeds and is unobtainable in much of the world. A barb port parameterised on tube inner diameter turns any tubing on hand into a working pneumatic connection, and — because every actuator in this family speaks the same barb series — makes six otherwise isolated printable objects into one interoperable kit.",
+      "es": "Los tutoriales de robótica blanda asumen un cajón de conectores rápidos comerciales que cuesta más que el actuador al que alimentan y que es inconseguible en buena parte del mundo. Un puerto de espiga parametrizado por el diámetro interior de la manguera convierte cualquier tubo disponible en una conexión neumática funcional y — al hablar todos los actuadores de esta familia la misma serie de espiga — convierte seis objetos imprimibles aislados en un kit interoperable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["pneumatic", "barb", "fitting", "tubing", "soft-robotics", "hyperobject", "commons"]
+}

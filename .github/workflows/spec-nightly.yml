@@ -1,0 +1,35 @@
+# Nightly full-commons render sweep with the extracted commons bar
+# (hyperobjects-spec). The per-PR lane in ci.yml renders only changed
+# cartridges; this is the slow, exhaustive complement — every declared
+# (mode, part) rendered, judged watertight, and checked distinct from the
+# cartridge's fallback body. Reports to the run summary; no artifacts are
+# uploaded (artifact storage is billed — policy: self-hosted infra only).
+name: spec-nightly
+on:
+  schedule:
+    - cron: "0 7 * * *" # 01:00 CDMX
+  workflow_dispatch:
+
+jobs:
+  full-render-sweep:
+    runs-on: madfam-runners-blue
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.MADFAM_BOT_PAT }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install hyperobjects-spec
+        run: pip install "hyperobjects-spec[geometry] @ git+https://x-access-token:${{ secrets.MADFAM_BOT_PAT }}@github.com/madfam-org/hyperobjects-spec.git@v0.1.1"
+      - name: Full render sweep
+        run: |
+          # default shell is bash -e -o pipefail: don't abort before the summary
+          status=0
+          y4d-spec check --render projects/*/ | tee sweep-report.txt || status=$?
+          echo "### y4d-spec nightly render sweep" >> "$GITHUB_STEP_SUMMARY"
+          tail -1 sweep-report.txt >> "$GITHUB_STEP_SUMMARY"
+          grep "FAIL" sweep-report.txt | head -40 >> "$GITHUB_STEP_SUMMARY" || true
+          exit $status

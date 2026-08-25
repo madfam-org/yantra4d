@@ -402,6 +402,61 @@ jobs:
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
 
+  # The extracted commons bar (hyperobjects-spec, docs/P1B_ADOPTION.md): a third
+  # party's "it passes" and CI's "it passes" become the same sentence.
+  # BLOCKING since 2026-08-22: the 31 structural failures the bar found on day
+  # one were remediated across 15 child repos and 2 in-repo cartridges (sweep
+  # PR #50 — full commons at failures=0), so a failure here is a regression,
+  # not backlog.
+  spec-conformance:
+    runs-on: madfam-runners-blue
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.MADFAM_BOT_PAT }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # [geometry] pulls cadquery 2.7 + trimesh for the --render pass below.
+      - name: Install hyperobjects-spec
+        run: pip install "hyperobjects-spec[geometry] @ git+https://x-access-token:${{ secrets.MADFAM_BOT_PAT }}@github.com/madfam-org/hyperobjects-spec.git@v0.1.1"
+      - name: Structural conformance (full commons)
+        run: |
+          status=0
+          y4d-spec check projects/*/ | tee spec-report.txt || status=$?
+          echo "### y4d-spec structural" >> "$GITHUB_STEP_SUMMARY"
+          tail -1 spec-report.txt >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      # Renders only the cartridges this change touched: the full sweep is hours
+      # (15-25s/part) and lives in spec-nightly.yml; per-PR the changed slice is
+      # the strongest check per second spent (it caught hook-and-eye's dead
+      # bra_tape dispatch, invisible in every structural lane).
+      - name: Render conformance (changed cartridges)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+          fi
+          git cat-file -e "$BASE" 2>/dev/null || BASE=$(git rev-parse HEAD~1)
+          changed=$(git diff --name-only "$BASE"...HEAD -- projects/ | cut -d/ -f1,2 | sort -u)
+          dirs=""
+          for d in $changed; do
+            [ -f "$d/project.json" ] && dirs="$dirs $d"
+          done
+          if [ -z "$dirs" ]; then
+            echo "no cartridges changed — skipping renders"
+            exit 0
+          fi
+          status=0
+          y4d-spec check --render -v $dirs | tee render-report.txt || status=$?
+          echo "### y4d-spec renders (changed)" >> "$GITHUB_STEP_SUMMARY"
+          tail -1 render-report.txt >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+
   metadata-consistency:
     runs-on: madfam-runners-blue
     timeout-minutes: 5

@@ -1,0 +1,398 @@
+{
+  "project": {
+    "name": "Headband Blank",
+    "slug": "headband-blank",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The rigid arc a milliner or costume maker covers in fabric to build a padded headband. An adult head measured ear to ear is an ellipse, not a circle, so the blank is struck as an elliptical half-arc that follows the head instead of pinching at the temples. The ends taper in both width and thickness — that taper is what lets a covered headband disappear behind the ear — and each tapered end carries sew holes so the fabric casing is stitched to the blank rather than glued.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El arco rígido que una sombrerera o quien hace vestuario forra en tela para armar una diadema acolchada. La cabeza adulta medida de oreja a oreja es una elipse, no un círculo, así que la base se traza como medio arco elíptico que sigue la cabeza en vez de apretar en las sienes. Los extremos se afinan en ancho y en espesor —ese afinado es lo que hace que una diadema forrada desaparezca detrás de la oreja— y cada extremo lleva ojales para coser la funda de tela a la base en lugar de pegarla.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/headband-blank.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "headband-blank",
+      "headband",
+      "millinery",
+      "hair",
+      "blank",
+      "fabric-covered",
+      "costume",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "blank",
+      "label": {
+        "en": "Headband Blank",
+        "es": "Base de diadema"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "blank"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 3,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Nested Pair",
+        "es": "Par anidado"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "pair"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "blank",
+      "label": {
+        "en": "Headband Blank",
+        "es": "Base de diadema"
+      },
+      "render_mode": 0,
+      "color": "#d0c4b4"
+    },
+    {
+      "id": "pair",
+      "label": {
+        "en": "Nested Pair",
+        "es": "Par anidado"
+      },
+      "render_mode": 0,
+      "color": "#d0c4b4"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "arc",
+      "label": {
+        "en": "Head Arc",
+        "es": "Arco de cabeza"
+      }
+    },
+    {
+      "id": "band",
+      "label": {
+        "en": "Band",
+        "es": "Banda"
+      }
+    },
+    {
+      "id": "ends",
+      "label": {
+        "en": "Ends",
+        "es": "Extremos"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "head_width",
+      "type": "slider",
+      "default": 145.0,
+      "min": 110.0,
+      "max": 180.0,
+      "step": 1.0,
+      "group": "arc",
+      "modes": [
+        "blank",
+        "pair"
+      ],
+      "label": {
+        "en": "Head width, ear to ear (mm)",
+        "es": "Ancho de cabeza, de oreja a oreja (mm)"
+      },
+      "tooltip": {
+        "en": "Bitragion span across the head (mm). 145 mm is a typical adult; 120-130 mm suits a child. The crown rise follows at 0.9 of the half span.",
+        "es": "Distancia bitragión de un lado a otro de la cabeza (mm). 145 mm es un adulto típico; de 120 a 130 mm para infantil. La altura de la corona sigue a 0.9 del semiancho."
+      }
+    },
+    {
+      "id": "band_w",
+      "type": "slider",
+      "default": 22.0,
+      "min": 10.0,
+      "max": 45.0,
+      "step": 1.0,
+      "group": "band",
+      "modes": [
+        "blank",
+        "pair"
+      ],
+      "label": {
+        "en": "Band width at the crown (mm)",
+        "es": "Ancho de la banda en la corona (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the band where it crosses the crown (mm). This is the dimension the fabric casing is cut to, plus seam allowance.",
+        "es": "Ancho de la banda al cruzar la corona (mm). Es la medida a la que se corta la funda de tela, más el margen de costura."
+      }
+    },
+    {
+      "id": "band_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.2,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "band",
+      "modes": [
+        "blank",
+        "pair"
+      ],
+      "label": {
+        "en": "Band thickness (mm)",
+        "es": "Espesor de la banda (mm)"
+      },
+      "tooltip": {
+        "en": "Wall thickness of the arc (mm). Around 2.4 mm in TPU flexes onto the head and springs back; above 3.5 mm the blank is essentially rigid.",
+        "es": "Espesor de pared del arco (mm). Cerca de 2.4 mm en TPU cede al ponerse y recupera; por encima de 3.5 mm la base queda prácticamente rígida."
+      }
+    },
+    {
+      "id": "taper_len",
+      "type": "slider",
+      "default": 32.0,
+      "min": 8.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "ends",
+      "modes": [
+        "blank",
+        "pair"
+      ],
+      "label": {
+        "en": "Taper run at each end (mm)",
+        "es": "Longitud del afinado en cada extremo (mm)"
+      },
+      "tooltip": {
+        "en": "How far back from each tip the band narrows (mm). Auto-clamped to 35 % of the head width so the two tapers never meet at the crown.",
+        "es": "Cuánto se estrecha la banda desde cada punta (mm). Se limita al 35 % del ancho de cabeza para que los dos afinados nunca se junten en la corona."
+      }
+    },
+    {
+      "id": "tip_w",
+      "type": "slider",
+      "default": 9.0,
+      "min": 4.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "ends",
+      "modes": [
+        "blank",
+        "pair"
+      ],
+      "label": {
+        "en": "Tip width (mm)",
+        "es": "Ancho de la punta (mm)"
+      },
+      "tooltip": {
+        "en": "Band width at the very tip (mm). Narrow tips hide behind the ear; auto-clamped to at most the crown width minus 1.5 mm.",
+        "es": "Ancho de la banda justo en la punta (mm). Las puntas angostas se esconden tras la oreja; se limita al ancho de corona menos 1.5 mm."
+      }
+    },
+    {
+      "id": "sew_holes",
+      "type": "slider",
+      "default": 3,
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "group": "ends",
+      "modes": [
+        "blank",
+        "pair"
+      ],
+      "label": {
+        "en": "Sew holes per end",
+        "es": "Ojales por extremo"
+      },
+      "tooltip": {
+        "en": "Stitch holes bored through the band wall at each tapered end. Three per end anchors a fabric casing; zero leaves a plain blank for gluing or heat-shrink covering.",
+        "es": "Ojales taladrados a través de la pared en cada extremo afinado. Tres por lado fijan una funda de tela; cero deja la base lisa para pegar o forrar con termorretráctil."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 3.5,
+      "step": 0.1,
+      "group": "ends",
+      "modes": [
+        "blank",
+        "pair"
+      ],
+      "label": {
+        "en": "Sew hole diameter (mm)",
+        "es": "Diámetro del ojal (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each stitch hole (mm). 2 mm passes a doubled heavy-duty thread; auto-clamped to keep wall around it inside the tip width.",
+        "es": "Diámetro de cada ojal (mm). 2 mm deja pasar hilo grueso doble; se limita para conservar pared dentro del ancho de la punta."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "adult_covered",
+      "mode": "blank",
+      "label": {
+        "en": "Adult Fabric-Covered (22 mm)",
+        "es": "Adulto forrado en tela (22 mm)"
+      },
+      "values": {
+        "head_width": 145.0,
+        "band_w": 22.0,
+        "band_t": 2.4,
+        "taper_len": 32.0,
+        "tip_w": 9.0,
+        "sew_holes": 3,
+        "hole_dia": 2.0
+      }
+    },
+    {
+      "id": "child_narrow",
+      "mode": "blank",
+      "label": {
+        "en": "Child Narrow (12 mm)",
+        "es": "Infantil angosta (12 mm)"
+      },
+      "values": {
+        "head_width": 124.0,
+        "band_w": 12.0,
+        "band_t": 1.8,
+        "taper_len": 20.0,
+        "tip_w": 6.0,
+        "sew_holes": 2,
+        "hole_dia": 1.6
+      }
+    },
+    {
+      "id": "wide_padded",
+      "mode": "blank",
+      "label": {
+        "en": "Wide Padded Turban Base",
+        "es": "Base ancha tipo turbante"
+      },
+      "values": {
+        "head_width": 152.0,
+        "band_w": 38.0,
+        "band_t": 3.0,
+        "taper_len": 45.0,
+        "tip_w": 12.0,
+        "sew_holes": 4,
+        "hole_dia": 2.4
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        180,
+        160,
+        120
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 3,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "casing_sew_edge",
+        "label": {
+          "en": "Fabric Casing Sew Edge",
+          "es": "Borde de costura de la funda"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "band_w",
+          "band_t",
+          "tip_w",
+          "sew_holes",
+          "hole_dia"
+        ]
+      },
+      {
+        "id": "head_arc",
+        "label": {
+          "en": "Elliptical Head Arc",
+          "es": "Arco elíptico de cabeza"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "head_width",
+          "band_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Headband blanks are sold in two or three sizes and one shape, so anyone with a head outside the middle of the distribution wears something that pinches all day; printing the arc to a measured head width makes the covered headband a fitted garment rather than an approximation.",
+      "es": "Las bases de diadema se venden en dos o tres tallas y una sola forma, así que quien tiene una cabeza fuera del promedio pasa el día con algo que aprieta; imprimir el arco al ancho de cabeza medido convierte la diadema forrada en una prenda a medida y no en una aproximación."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "headband-blank",
+    "headband",
+    "millinery",
+    "hair",
+    "blank",
+    "fabric-covered",
+    "costume",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

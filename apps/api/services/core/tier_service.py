@@ -61,6 +61,82 @@ def resolve_tier(auth_claims: dict | None) -> str:
     return tier
 
 
+def describe_entitlement(auth_claims: dict | None) -> dict:
+    """Explain how the tier was arrived at, so a bad claim is visible.
+
+    `resolve_tier` deliberately fails closed: an unrecognised `yantra4d_tier`
+    falls back to essentials and logs a warning. That is the right security
+    posture and the wrong debugging experience — a customer who has paid, whose
+    token carries the wrong value, is seated in essentials with no signal
+    anywhere the operator or the customer can see.
+
+    The likeliest way to get there is real: checkout sends `plan=yantra4d_pro`,
+    and the tier name is `pro`. Anything that writes the plan id into the claim
+    produces a paying customer with no entitlement and no error.
+
+    This reports the raw claim beside the resolved tier and says which of them
+    happened, without ever echoing the token.
+    """
+    if not auth_claims:
+        return {
+            "source": "anonymous",
+            "claim_present": False,
+            "raw_claim": None,
+            "resolved_tier": "guest",
+            "detail": "No authenticated claims; guest tier.",
+        }
+
+    raw = auth_claims.get("yantra4d_tier")
+    resolved = resolve_tier(auth_claims)
+
+    if raw is None:
+        return {
+            "source": "claim_absent",
+            "claim_present": False,
+            "raw_claim": None,
+            "resolved_tier": resolved,
+            "detail": (
+                "Authenticated, but the token carries no yantra4d_tier claim, so it "
+                "resolved to essentials. If this account has an active subscription, "
+                "the dhanam to Janua entitlement contract has not written the claim."
+            ),
+        }
+
+    normalized = _normalize_tier(raw)
+    if normalized in TIER_HIERARCHY:
+        return {
+            "source": "claim",
+            "claim_present": True,
+            "raw_claim": raw,
+            "resolved_tier": resolved,
+            "detail": (
+                f"Claim {raw!r} recognised as tier {resolved!r}."
+                if raw == resolved
+                else f"Claim {raw!r} was a deprecated name, mapped to {resolved!r}."
+            ),
+        }
+
+    hint = ""
+    if isinstance(raw, str) and raw.startswith("yantra4d_"):
+        candidate = raw.removeprefix("yantra4d_")
+        if candidate in TIER_HIERARCHY:
+            hint = (
+                f" This looks like the checkout PLAN ID rather than the tier name — "
+                f"send {candidate!r}, not {raw!r}."
+            )
+
+    return {
+        "source": "claim_unrecognised",
+        "claim_present": True,
+        "raw_claim": raw,
+        "resolved_tier": resolved,
+        "detail": (
+            f"Claim {raw!r} is not a known tier, so it fell back to {resolved!r}. "
+            f"Known tiers: {', '.join(sorted(TIER_HIERARCHY))}.{hint}"
+        ),
+    }
+
+
 def has_tier(user_tier: str, required_tier: str) -> bool:
     """Check if user_tier meets or exceeds required_tier in hierarchy."""
     user_tier = _normalize_tier(user_tier)
@@ -110,3 +186,33 @@ def check_feature(tier: str, feature: str) -> bool:
     """Check if a tier has access to a specific feature (boolean key in tier config)."""
     limits = get_tier_limits(tier)
     return bool(limits.get(feature, False))
+
+
+def export_format_allowed(tier: str, export_format: str) -> bool:
+    """Whether a tier's export_formats list includes the given format.
+
+    The per-tier list in tiers.json is the single source of truth. The render
+    routes used to gate on the blanket `premium_export` boolean over a
+    hardcoded format set, which contradicted the list: essentials declares
+    ["stl", "3mf", "obj"], the UI unlocked those buttons from the list, and
+    the server then 403'd 3mf/obj because essentials lacks `premium_export` —
+    a paying user hitting a guaranteed error on an advertised feature.
+    """
+    formats = get_tier_limits(tier).get("export_formats") or []
+    return export_format in formats
+
+
+def minimum_tier_for_export_format(export_format: str) -> str | None:
+    """Lowest tier (by hierarchy) whose export_formats includes the format.
+
+    Used to name the tier an upsell message should point at. None when no
+    tier offers the format (an unknown or mistyped format).
+    """
+    tiers = load_tiers()
+    best: str | None = None
+    for name, limits in tiers.items():
+        if export_format in (limits.get("export_formats") or []):
+            normalized = _normalize_tier(name)
+            if best is None or TIER_HIERARCHY.get(normalized, 0) < TIER_HIERARCHY.get(best, 0):
+                best = normalized
+    return best

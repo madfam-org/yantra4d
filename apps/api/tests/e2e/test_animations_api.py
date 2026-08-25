@@ -146,3 +146,24 @@ class TestRenderAnimation:
         error_events = [e for e in events if e["event"] == "error"]
         assert len(error_events) == 1
         assert "OpenSCAD crashed" in error_events[0]["error"]
+
+    def test_render_route_carries_rate_limit(self, app, client):
+        """Flipbook render (N frames x M parts) must be rate-limited.
+
+        Rate limit headers (headers_enabled=True in extensions.py) prove the
+        @limiter.limit decorator is registered with the intended value; the
+        limiter runs before the view, so the 404 body is irrelevant here.
+        The conftest fixture disables the limiter before create_app(), which
+        skips hook registration, so re-init the limiter on this fresh app.
+        """
+        from extensions import limiter
+        app.config["RATELIMIT_ENABLED"] = True
+        limiter.enabled = True
+        limiter.init_app(app)
+        try:
+            res = client.post("/api/projects/anim-test/animations/nonexistent/render",
+                              json={"parameters": {}})
+            assert res.status_code == 404
+            assert res.headers.get("X-RateLimit-Limit") == "10"
+        finally:
+            limiter.enabled = False

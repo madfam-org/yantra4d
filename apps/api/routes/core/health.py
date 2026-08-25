@@ -5,12 +5,12 @@ Provides /api/health, /api/health/live, and /api/health/ready endpoints.
 import logging
 import os
 import resource
-import shutil
 
 from flask import Blueprint, jsonify
 
 from config import Config
 from extensions import limiter
+from services.engine.render_gc import HIGH_WATER, volume_usage
 
 logger = logging.getLogger(__name__)
 
@@ -86,13 +86,26 @@ def _check_render_worker() -> tuple[bool, str]:
 
 
 def _check_disk_space() -> tuple[bool, str]:
-    """Check available disk space on STATIC_DIR."""
+    """Check headroom on the render output volume.
+
+    STATIC_DIR is an emptyDir with its own sizeLimit, which is far smaller than
+    the node filesystem backing it. shutil.disk_usage() reports the node — it
+    would happily report hundreds of GB free while the volume sits one render
+    away from a kubelet eviction. Measure the volume against its own limit.
+    """
     try:
-        usage = shutil.disk_usage(str(Config.STATIC_DIR))
-        free_mb = usage.free / (1024 * 1024)
-        pct_free = (usage.free / usage.total) * 100
-        ok = free_mb > 100  # At least 100MB free
-        return ok, f"{free_mb:.0f}MB free ({pct_free:.1f}%)"
+        used, limit = volume_usage()
+        if limit <= 0:
+            return True, "no volume limit configured"
+        pct_used = (used / limit) * 100
+        free_mb = (limit - used) / (1024 * 1024)
+        # The GC reclaims at HIGH_WATER; anything past that means it is losing
+        # the race against inbound renders and eviction is imminent.
+        ok = pct_used < HIGH_WATER * 100
+        return ok, (
+            f"{used / (1024 * 1024):.0f}MB used of {limit // (1024 * 1024)}MB "
+            f"({pct_used:.1f}%, {free_mb:.0f}MB free)"
+        )
     except Exception as e:
         return False, str(e)
 

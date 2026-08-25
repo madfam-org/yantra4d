@@ -1,0 +1,357 @@
+{
+  "generated_by": "scripts/qa/generate_graph_catalog.py",
+  "source_of_truth": "apps/api/services/engine/graph_engine.py",
+  "graph_file_suffix": ".graph.json",
+  "limits": {
+    "max_nodes": 500,
+    "max_outputs": 50,
+    "max_pattern_count": 200
+  },
+  "planes": [
+    "XY",
+    "XZ",
+    "YZ"
+  ],
+  "nodes": {
+    "box": {
+      "output": "solid",
+      "inputs": {},
+      "params": {
+        "d": {
+          "kind": "float",
+          "default": 10.0,
+          "bindable": true
+        },
+        "h": {
+          "kind": "float",
+          "default": 10.0,
+          "bindable": true
+        },
+        "w": {
+          "kind": "float",
+          "default": 10.0,
+          "bindable": true
+        }
+      }
+    },
+    "chamfer": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "distance": {
+          "kind": "float",
+          "default": 1.0,
+          "bindable": true
+        },
+        "edges": {
+          "kind": "selector",
+          "default": "",
+          "bindable": false
+        }
+      }
+    },
+    "cut": {
+      "output": "solid",
+      "inputs": {
+        "a": "solid",
+        "b": "solid"
+      },
+      "params": {}
+    },
+    "cylinder": {
+      "output": "solid",
+      "inputs": {},
+      "params": {
+        "h": {
+          "kind": "float",
+          "default": 10.0,
+          "bindable": true
+        },
+        "r": {
+          "kind": "float",
+          "default": 5.0,
+          "bindable": true
+        }
+      }
+    },
+    "extrude": {
+      "output": "solid",
+      "inputs": {
+        "profile": "profile"
+      },
+      "params": {
+        "height": {
+          "kind": "float",
+          "default": 10.0,
+          "bindable": true
+        }
+      }
+    },
+    "fillet": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "edges": {
+          "kind": "selector",
+          "default": "",
+          "bindable": false
+        },
+        "radius": {
+          "kind": "float",
+          "default": 1.0,
+          "bindable": true
+        }
+      }
+    },
+    "hole": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "diameter": {
+          "kind": "float",
+          "default": 5.0,
+          "bindable": true
+        }
+      }
+    },
+    "intersect": {
+      "output": "solid",
+      "inputs": {
+        "a": "solid",
+        "b": "solid"
+      },
+      "params": {}
+    },
+    "mirror": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "plane": {
+          "kind": "plane",
+          "default": "YZ",
+          "bindable": false
+        }
+      }
+    },
+    "pattern_linear": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "count": {
+          "kind": "count",
+          "default": 3,
+          "bindable": true
+        },
+        "dx": {
+          "kind": "float",
+          "default": 10.0,
+          "bindable": true
+        },
+        "dy": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        },
+        "dz": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        }
+      }
+    },
+    "pattern_polar": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "angle": {
+          "kind": "float",
+          "default": 90.0,
+          "bindable": true
+        },
+        "count": {
+          "kind": "count",
+          "default": 4,
+          "bindable": true
+        }
+      }
+    },
+    "profile_circle": {
+      "output": "profile",
+      "inputs": {},
+      "params": {
+        "plane": {
+          "kind": "plane",
+          "default": "XY",
+          "bindable": false
+        },
+        "r": {
+          "kind": "float",
+          "default": 5.0,
+          "bindable": true
+        },
+        "x": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        },
+        "y": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        }
+      }
+    },
+    "profile_polygon": {
+      "output": "profile",
+      "inputs": {},
+      "params": {
+        "diameter": {
+          "kind": "float",
+          "default": 20.0,
+          "bindable": true
+        },
+        "plane": {
+          "kind": "plane",
+          "default": "XY",
+          "bindable": false
+        },
+        "sides": {
+          "kind": "count",
+          "default": 6,
+          "bindable": true
+        },
+        "x": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        },
+        "y": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        }
+      }
+    },
+    "profile_rect": {
+      "output": "profile",
+      "inputs": {},
+      "params": {
+        "d": {
+          "kind": "float",
+          "default": 10.0,
+          "bindable": true
+        },
+        "plane": {
+          "kind": "plane",
+          "default": "XY",
+          "bindable": false
+        },
+        "w": {
+          "kind": "float",
+          "default": 10.0,
+          "bindable": true
+        },
+        "x": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        },
+        "y": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        }
+      }
+    },
+    "rotate": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "angle": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        },
+        "axis": {
+          "kind": "axis",
+          "default": "z",
+          "bindable": false
+        }
+      }
+    },
+    "shell": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "face": {
+          "kind": "selector",
+          "default": ">Z",
+          "bindable": false
+        },
+        "thickness": {
+          "kind": "float",
+          "default": 2.0,
+          "bindable": true
+        }
+      }
+    },
+    "sphere": {
+      "output": "solid",
+      "inputs": {},
+      "params": {
+        "r": {
+          "kind": "float",
+          "default": 5.0,
+          "bindable": true
+        }
+      }
+    },
+    "translate": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "x": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        },
+        "y": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        },
+        "z": {
+          "kind": "float",
+          "default": 0.0,
+          "bindable": true
+        }
+      }
+    },
+    "union": {
+      "output": "solid",
+      "inputs": {
+        "a": "solid",
+        "b": "solid"
+      },
+      "params": {}
+    }
+  }
+}

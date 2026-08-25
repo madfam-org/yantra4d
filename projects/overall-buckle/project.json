@@ -1,0 +1,336 @@
+{
+  "project": {
+    "name": "Overall Buckle",
+    "slug": "overall-buckle",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed the sliding buckle-and-button set of dungarees and overalls — the metal overall hardware made printable — the rigid hard good the Fashion Cabinet `overall-buckle` notion places and bridges to here for its geometry. Sized so a garment's finished dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un the sliding buckle-and-button set of dungarees and overalls — the metal overall hardware made printable impreso en 3D — el herraje rígido que el avío `overall-buckle` de Fashion Cabinet coloca y al que se puentea aquí para su geometría. Dimensionado para que la medida terminada de una prenda determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/overall-buckle.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "overall-buckle",
+      "dungarees",
+      "slide-buckle",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Buckle + Button",
+        "es": "Hebilla + botón"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "buckle",
+      "label": {
+        "en": "Buckle",
+        "es": "Hebilla"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "buckle"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "button",
+      "label": {
+        "en": "Bib Button",
+        "es": "Botón de peto"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "button"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Buckle + Button",
+        "es": "Buckle + Button"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "buckle",
+      "label": {
+        "en": "Buckle",
+        "es": "Buckle"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "button",
+      "label": {
+        "en": "Button",
+        "es": "Button"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "size",
+      "label": {
+        "en": "Size",
+        "es": "Size"
+      }
+    },
+    {
+      "id": "button",
+      "label": {
+        "en": "Button",
+        "es": "Button"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "strap_w",
+      "type": "slider",
+      "default": 30.0,
+      "min": 15.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "size",
+      "modes": [
+        "set",
+        "buckle",
+        "button"
+      ],
+      "label": {
+        "en": "Strap width (mm)",
+        "es": "Ancho de tirante (mm)"
+      },
+      "tooltip": {
+        "en": "Strap width (mm)",
+        "es": "Ancho de tirante (mm)"
+      }
+    },
+    {
+      "id": "frame_h",
+      "type": "slider",
+      "default": 40.0,
+      "min": 20.0,
+      "max": 90.0,
+      "step": 1.0,
+      "group": "size",
+      "modes": [
+        "set",
+        "buckle",
+        "button"
+      ],
+      "label": {
+        "en": "Frame height (mm)",
+        "es": "Alto de marco (mm)"
+      },
+      "tooltip": {
+        "en": "Frame height (mm)",
+        "es": "Alto de marco (mm)"
+      }
+    },
+    {
+      "id": "wire_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 8.0,
+      "step": 0.5,
+      "group": "size",
+      "modes": [
+        "set",
+        "buckle",
+        "button"
+      ],
+      "label": {
+        "en": "Section thickness (mm)",
+        "es": "Espesor de sección (mm)"
+      },
+      "tooltip": {
+        "en": "Section thickness (mm)",
+        "es": "Espesor de sección (mm)"
+      }
+    },
+    {
+      "id": "depth",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "size",
+      "modes": [
+        "set",
+        "buckle",
+        "button"
+      ],
+      "label": {
+        "en": "Part depth (mm)",
+        "es": "Espesor de pieza (mm)"
+      },
+      "tooltip": {
+        "en": "Part depth (mm)",
+        "es": "Espesor de pieza (mm)"
+      }
+    },
+    {
+      "id": "button_dia",
+      "type": "slider",
+      "default": 17.0,
+      "min": 10.0,
+      "max": 28.0,
+      "step": 0.5,
+      "group": "button",
+      "modes": [
+        "set",
+        "buckle",
+        "button"
+      ],
+      "label": {
+        "en": "Button diameter (mm)",
+        "es": "Diámetro de botón (mm)"
+      },
+      "tooltip": {
+        "en": "Button diameter (mm)",
+        "es": "Diámetro de botón (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "strap_w": 30.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "strap_slot",
+        "label": {
+          "en": "Strap Slot",
+          "es": "Strap Slot"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "strap_w",
+          "frame_h",
+          "wire_t"
+        ]
+      },
+      {
+        "id": "button_catch",
+        "label": {
+          "en": "Button Catch",
+          "es": "Button Catch"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "button_dia",
+          "depth"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable overall buckle turns dungaree hardware — a specialist metal set — into an open, made-to-measure finding, so bib-and-brace workwear and its repairs are open to everyone.",
+      "es": "Una hebilla de overol imprimible convierte el herraje de peto — un juego metálico especializado — en un herraje abierto a la medida, para que la ropa de trabajo de peto y sus reparaciones estén al alcance de todas las personas."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "overall-buckle",
+    "dungarees",
+    "slide-buckle",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

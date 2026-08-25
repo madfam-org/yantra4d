@@ -23,7 +23,17 @@ _jwk_client = None
 def _get_jwk_client():
     global _jwk_client
     if _jwk_client is None:
-        _jwk_client = PyJWKClient(Config.JANUA_JWKS_URL, cache_keys=True, lifespan=JWKS_CACHE_LIFESPAN)
+        # An explicit User-Agent: PyJWKClient's urllib default ("Python-urllib/x.y")
+        # is on Cloudflare's Browser Integrity Check banned list at the auth edge —
+        # the JWKS fetch 403s (Error 1010), every bearer silently degrades to guest
+        # tier, and authed callers hit the guest rate limit. Found 2026-08-22 via
+        # the Fashion Cabinet live-body seam; same fix as FC's body_render.py.
+        _jwk_client = PyJWKClient(
+            Config.JANUA_JWKS_URL,
+            cache_keys=True,
+            lifespan=JWKS_CACHE_LIFESPAN,
+            headers={"User-Agent": "yantra4d-api/1.0 (+https://yantra4d.com)"},
+        )
     return _jwk_client
 
 

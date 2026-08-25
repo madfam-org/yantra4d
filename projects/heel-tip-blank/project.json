@@ -1,0 +1,440 @@
+{
+  "project": {
+    "name": "Heel Tip Blank",
+    "slug": "heel-tip-blank",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed replacement heel top-lift — the small wearing piece at the very bottom of a shoe heel, the part that meets the pavement and the only part of a heel meant to be consumed. It carries a center pin bore for the steel pin, a wearing chamfer, and the same slight draft a moulded tip has. Heel-tip sizes are a manufacturer's private grid, so the exact tip for a given shoe is routinely unobtainable; this is the blank a cobbler or a wearer can size to the heel in hand.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una tapa de tacón de repuesto impresa en 3D — la pequeña pieza de desgaste al fondo del tacón, la parte que toca el pavimento y la única parte del tacón pensada para consumirse. Lleva un barreno central para el clavo de acero, un chaflán de desgaste y la misma ligera conicidad de una tapa moldeada. Las medidas de tapas son una cuadrícula privada de cada fabricante, así que la tapa exacta para un zapato dado suele ser inconseguible; ésta es la pieza en bruto que un zapatero o quien calza puede dimensionar al tacón que tiene en la mano.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/heel-tip-blank.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "heel-tip-blank",
+      "heel-tip",
+      "top-lift",
+      "heel",
+      "shoe",
+      "footwear",
+      "cobbler",
+      "repair",
+      "leather",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "round",
+      "label": {
+        "en": "Round Tip",
+        "es": "Tapa redonda"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "round"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 2,
+        "per_part": 4
+      }
+    },
+    {
+      "id": "square",
+      "label": {
+        "en": "Square Tip",
+        "es": "Tapa cuadrada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "square"
+      ],
+      "estimate": {
+        "base_time": 6,
+        "per_unit": 2,
+        "per_part": 4
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Round + Square Set",
+        "es": "Juego redonda y cuadrada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 2,
+        "per_part": 4
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "round",
+      "label": {
+        "en": "Round Tip",
+        "es": "Tapa redonda"
+      },
+      "render_mode": 0,
+      "color": "#5a5148"
+    },
+    {
+      "id": "square",
+      "label": {
+        "en": "Square Tip",
+        "es": "Tapa cuadrada"
+      },
+      "render_mode": 0,
+      "color": "#5a5148"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Round + Square Set",
+        "es": "Juego redonda y cuadrada"
+      },
+      "render_mode": 0,
+      "color": "#4e463f"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "profile",
+      "label": {
+        "en": "Tip Profile",
+        "es": "Perfil de la tapa"
+      }
+    },
+    {
+      "id": "pin",
+      "label": {
+        "en": "Pin",
+        "es": "Clavo"
+      }
+    },
+    {
+      "id": "finish",
+      "label": {
+        "en": "Finish",
+        "es": "Acabado"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "tip_w",
+      "type": "slider",
+      "default": 11.0,
+      "min": 5.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "profile",
+      "modes": [
+        "round",
+        "square",
+        "set"
+      ],
+      "label": {
+        "en": "Tip width at seat (mm)",
+        "es": "Ancho de la tapa en el asiento (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the tip where it meets the heel (mm). In round mode this is the seat diameter. A stiletto tip is 7-11 mm; a block heel is 20-35 mm.",
+        "es": "Ancho de la tapa donde se une al tacón (mm). En modo redondo es el diámetro del asiento. Una tapa de tacón de aguja mide de 7 a 11 mm; un tacón de bloque de 20 a 35 mm."
+      }
+    },
+    {
+      "id": "tip_l",
+      "type": "slider",
+      "default": 11.0,
+      "min": 5.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "profile",
+      "modes": [
+        "square",
+        "set"
+      ],
+      "label": {
+        "en": "Tip length at seat (mm)",
+        "es": "Largo de la tapa en el asiento (mm)"
+      },
+      "tooltip": {
+        "en": "Length of the square tip's seat, front to back (mm). Only the square mode uses it; the round mode is driven by tip width alone.",
+        "es": "Largo del asiento de la tapa cuadrada, de adelante hacia atrás (mm). Sólo el modo cuadrado lo usa; el modo redondo se define únicamente por el ancho."
+      }
+    },
+    {
+      "id": "tip_h",
+      "type": "slider",
+      "default": 6.0,
+      "min": 2.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "profile",
+      "modes": [
+        "round",
+        "square",
+        "set"
+      ],
+      "label": {
+        "en": "Tip height (mm)",
+        "es": "Altura de la tapa (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the tip from seat face to ground face (mm). A dress heel tip is 5-8 mm; a boot top-lift is 8-14 mm. Printing taller than the original raises the heel, so match the worn part.",
+        "es": "Altura de la tapa desde el asiento hasta la cara de contacto (mm). Una tapa de tacón de vestir mide de 5 a 8 mm; una tapa de bota de 8 a 14 mm. Imprimir más alto que la original eleva el tacón, así que iguala la pieza gastada."
+      }
+    },
+    {
+      "id": "taper",
+      "type": "slider",
+      "default": 0.9,
+      "min": 0.6,
+      "max": 1.0,
+      "step": 0.01,
+      "group": "profile",
+      "modes": [
+        "round",
+        "square",
+        "set"
+      ],
+      "label": {
+        "en": "Ground-face taper (ratio)",
+        "es": "Conicidad de la cara de contacto (proporción)"
+      },
+      "tooltip": {
+        "en": "Ground face size as a fraction of the seat face — the moulded draft every real tip has. 1.0 gives a straight-sided tip; 0.85-0.92 matches most dress heels.",
+        "es": "Tamaño de la cara de contacto como fracción del asiento — la conicidad de molde que tiene toda tapa real. 1.0 da lados rectos; de 0.85 a 0.92 iguala la mayoría de los tacones de vestir."
+      }
+    },
+    {
+      "id": "pin_dia",
+      "type": "slider",
+      "default": 3.2,
+      "min": 1.2,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "pin",
+      "modes": [
+        "round",
+        "square",
+        "set"
+      ],
+      "label": {
+        "en": "Pin bore diameter (mm)",
+        "es": "Diámetro del barreno del clavo (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the center bore for the steel pin (mm). A standard dress-heel pin is 3.0-3.4 mm. Auto-clamped so a real wall always survives around it.",
+        "es": "Diámetro del barreno central para el clavo de acero (mm). Un clavo estándar de tacón de vestir mide de 3.0 a 3.4 mm. Se limita automáticamente para conservar pared alrededor."
+      }
+    },
+    {
+      "id": "pin_depth",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "pin",
+      "modes": [
+        "round",
+        "square",
+        "set"
+      ],
+      "label": {
+        "en": "Blind bore depth, 0 = through (mm)",
+        "es": "Profundidad del barreno ciego, 0 = pasante (mm)"
+      },
+      "tooltip": {
+        "en": "Set 0 for a through bore (the pin head shows on the ground face, and the hole drains). Any other value drills a blind bore up from the seat face so the wearing face stays solid.",
+        "es": "Usa 0 para barreno pasante (la cabeza del clavo se ve en la cara de contacto y el barreno drena). Cualquier otro valor perfora un barreno ciego desde el asiento para que la cara de desgaste quede sólida."
+      }
+    },
+    {
+      "id": "corner_r",
+      "type": "slider",
+      "default": 2.0,
+      "min": 0.3,
+      "max": 12.0,
+      "step": 0.1,
+      "group": "profile",
+      "modes": [
+        "square",
+        "set"
+      ],
+      "label": {
+        "en": "Square-tip corner radius (mm)",
+        "es": "Radio de esquina de la tapa cuadrada (mm)"
+      },
+      "tooltip": {
+        "en": "Corner radius of the square tip (mm). Match the heel's own corner so the tip does not overhang. Clamped to 40 % of the smaller tip dimension.",
+        "es": "Radio de las esquinas de la tapa cuadrada (mm). Iguálalo a la esquina del tacón para que la tapa no sobresalga. Se limita al 40 % de la dimensión menor."
+      }
+    },
+    {
+      "id": "edge_ch",
+      "type": "slider",
+      "default": 0.6,
+      "min": 0.0,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "finish",
+      "modes": [
+        "round",
+        "square",
+        "set"
+      ],
+      "label": {
+        "en": "Wearing chamfer (mm)",
+        "es": "Chaflán de desgaste (mm)"
+      },
+      "tooltip": {
+        "en": "Chamfer around the ground face (mm). It keeps the tip from catching on a grating edge and gives the tip somewhere to wear before the pin shows. Set 0 for a flat-edged tip.",
+        "es": "Chaflán alrededor de la cara de contacto (mm). Evita que la tapa se enganche en el borde de una rejilla y le da margen de desgaste antes de que asome el clavo. Usa 0 para un canto recto."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "stiletto_tip",
+      "mode": "round",
+      "label": {
+        "en": "Stiletto Tip (9 mm)",
+        "es": "Tapa de tacón de aguja (9 mm)"
+      },
+      "values": {
+        "tip_w": 9.0,
+        "tip_l": 9.0,
+        "tip_h": 6.0,
+        "taper": 0.88,
+        "pin_dia": 3.2,
+        "pin_depth": 0.0,
+        "corner_r": 2.0,
+        "edge_ch": 0.5
+      }
+    },
+    {
+      "id": "cuban_top_lift",
+      "mode": "square",
+      "label": {
+        "en": "Cuban Heel Top-Lift (26 × 32)",
+        "es": "Tapa de tacón cubano (26 × 32)"
+      },
+      "values": {
+        "tip_w": 26.0,
+        "tip_l": 32.0,
+        "tip_h": 9.0,
+        "taper": 0.94,
+        "pin_dia": 3.2,
+        "pin_depth": 5.0,
+        "corner_r": 5.0,
+        "edge_ch": 0.8
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        30
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 6,
+    "per_unit": 2,
+    "per_part": 4,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "heel_seat",
+        "label": {
+          "en": "Heel Seat Face",
+          "es": "Cara de asiento del tacón"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "tip_w",
+          "tip_l",
+          "corner_r",
+          "taper"
+        ]
+      },
+      {
+        "id": "pin_bore",
+        "label": {
+          "en": "Steel Pin Bore",
+          "es": "Barreno del clavo de acero"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "pin_dia",
+          "pin_depth",
+          "tip_h"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Heel tips are the one component of a shoe designed to be consumed, yet their sizes are a manufacturer's private grid — so a pair of otherwise sound shoes is thrown out because nobody stocks the tip. A parametric blank makes the wearing part of a heel a printable consumable again, which is the difference between a shoe that lasts a decade and one that lasts a season.",
+      "es": "Las tapas de tacón son el único componente del zapato diseñado para consumirse, pero sus medidas son una cuadrícula privada de cada fabricante — así que un par de zapatos por lo demás sanos se tira porque nadie surte la tapa. Una pieza en bruto paramétrica devuelve a la parte de desgaste del tacón su condición de consumible imprimible, que es la diferencia entre un zapato que dura una década y uno que dura una temporada."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "heel-tip-blank",
+    "heel-tip",
+    "top-lift",
+    "heel",
+    "shoe",
+    "footwear",
+    "cobbler",
+    "repair",
+    "leather",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

@@ -81,10 +81,11 @@
           "enum": [
             "openscad",
             "cadquery",
-            "implicit"
+            "implicit",
+            "graph"
           ],
           "default": "openscad",
-          "description": "CAD kernel to use for rendering. 'implicit' enables the native SDF engine for TPMS/Gyroid/lattice geometries and requires a hyperobject.implicit_field config block."
+          "description": "CAD kernel to use for rendering. 'implicit' enables the native SDF engine for TPMS/Gyroid/lattice geometries and requires a hyperobject.implicit_field config block. 'graph' renders node-graph documents (.graph.json, see graph.schema.json) by transpiling them to sandboxed CadQuery scripts."
         },
         "attribution": {
           "type": "object",
@@ -171,7 +172,7 @@
           },
           "scad_file": {
             "type": "string",
-            "pattern": "\\.(scad|py)$"
+            "pattern": "(\\.(scad|py)|\\.graph\\.json)$"
           },
           "cq_file": {
             "type": "string",
@@ -182,9 +183,10 @@
             "enum": [
               "openscad",
               "cadquery",
-              "implicit"
+              "implicit",
+              "graph"
             ],
-            "description": "Optional per-mode rendering engine override for dual-engine cartridges. When omitted, the engine is inferred from this mode's scad_file extension (.py/.cq imply cadquery) and otherwise falls back to project.engine. Ignored when project.engine is 'implicit'."
+            "description": "Optional per-mode rendering engine override for dual-engine cartridges. When omitted, the engine is inferred from this mode's scad_file extension (.graph.json implies graph, .py/.cq imply cadquery) and otherwise falls back to project.engine. Ignored when project.engine is 'implicit'."
           },
           "label": {
             "$ref": "#/$defs/i18nString"
@@ -353,6 +355,23 @@
               },
               "required": ["value", "label"]
             }
+          },
+          "binding": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z_][A-Za-z0-9_]*$"
+              },
+              {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z_][A-Za-z0-9_]*$"
+                }
+              }
+            ],
+            "description": "Graph-engine cartridges only: binds this parameter to one or more node params as 'nodeId.param'. The graph transpiler reads the bound value at render time; the graph's own value becomes the default. One parameter may drive several node params; each node param has at most one driving parameter."
           },
           "widget": {
             "type": "object",

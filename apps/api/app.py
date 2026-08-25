@@ -158,6 +158,17 @@ def create_app():
 
     limiter.init_app(app)
 
+    # Dev only: never let /api responses sit in the browser HTTP cache, so manifest
+    # and parameter edits are picked up on reload without a stale cache. Guarded by
+    # FLASK_DEBUG, so production caching is unaffected.
+    if os.getenv("FLASK_DEBUG", "").lower() in ("1", "true", "yes"):
+        @app.after_request
+        def _dev_no_store_api(resp):
+            from flask import request as _req
+            if _req.path.startswith("/api/"):
+                resp.headers["Cache-Control"] = "no-store"
+            return resp
+
     # ── Observability ──────────────────────────────────────────────────
     # Sentry error tracking (no-op when SENTRY_DSN is unset)
     _sentry_dsn = os.environ.get("SENTRY_DSN")
@@ -275,6 +286,16 @@ def create_app():
     for area, status in startup_caps.items():
         if status.get("status") not in ("ok", "configured"):
             logger.warning("Startup capability warning in %s: %s", area, status)
+
+    # AUTH_ENABLED=false is a development convenience: require_tier grants every
+    # request the top 'madfam' tier (middleware/auth.py). Outside debug mode that
+    # is a misconfiguration, so shout at startup where it cannot be missed.
+    if not Config.AUTH_ENABLED and not Config.DEBUG:
+        logger.error(
+            "AUTH_ENABLED=false while not in debug mode: authentication is DISABLED "
+            "and ALL requests are granted the top 'madfam' tier. This configuration "
+            "must NEVER run in production — set AUTH_ENABLED=true."
+        )
 
     # Start the continuous 4D Telemetry Bridge
     telemetry_service.start()

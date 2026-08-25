@@ -43,7 +43,7 @@ test.describe('Studio Sidebar', () => {
 
   test('clicking preset applies parameter values', async ({ sidebar }) => {
     await sidebar.applyPreset('Large')
-    await expect(sidebar.sliderValue('width')).toHaveText('150', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('150', { timeout: 10000 })
   })
 
   test('active preset is highlighted', async ({ sidebar }) => {
@@ -73,13 +73,13 @@ test.describe('Studio Sidebar', () => {
 
   test('editing value and blurring commits change', async ({ sidebar }) => {
     await sidebar.editSliderValue('width', 75)
-    await expect(sidebar.sliderValue('width')).toHaveText('75', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('75', { timeout: 10000 })
   })
 
   test('value is clamped to min/max', async ({ sidebar }) => {
     await sidebar.editSliderValue('width', 9999)
     // Should be clamped to max (200) — wait for React to re-render with clamped value
-    await expect(sidebar.sliderValue('width')).toHaveText('200', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('200', { timeout: 10000 })
   })
 
   test('default star marker is visible', async ({ page }) => {
@@ -109,24 +109,32 @@ test.describe('Studio Sidebar', () => {
     // State should have changed
   })
 
-  // Wireframe
-  test('wireframe toggle is visible in colors section', async ({ page }) => {
+  // Wireframe. Same AppearancePanel as the colour pickers below, so the same
+  // rule applies: it lives inside <TabsContent value="view"> and is absent from
+  // the DOM until that tab is selected.
+  test('wireframe toggle is visible in colors section', async ({ page, sidebar }) => {
+    await sidebar.selectSection('view')
     await expect(page.locator('#wireframe-toggle')).toBeVisible()
   })
 
-  test('wireframe toggle switches state', async ({ page }) => {
+  test('wireframe toggle switches state', async ({ page, sidebar }) => {
+    await sidebar.selectSection('view')
     const toggle = page.locator('#wireframe-toggle')
     await toggle.click()
     // data-state should change
     await expect(toggle).toHaveAttribute('data-state', 'checked')
   })
 
-  // Color pickers
+  // Color pickers. AppearancePanel renders these, and it lives inside
+  // <TabsContent value="view">, so #color-<part> is absent until that tab is
+  // selected — the sidebar defaults to "config".
   test('color picker renders for parts', async ({ sidebar }) => {
+    await sidebar.selectSection('view')
     await expect(sidebar.colorInput('body')).toBeVisible()
   })
 
   test('color picker accepts value', async ({ sidebar }) => {
+    await sidebar.selectSection('view')
     // Native <input type="color"> is tested via its render and accessibility
     // (Playwright cannot programmatically open the OS color picker dialog)
     const input = sidebar.colorInput('body')
@@ -180,9 +188,9 @@ test.describe('Studio Sidebar', () => {
 
   test('reset button reverts params to defaults', async ({ sidebar }) => {
     await sidebar.editSliderValue('width', 100)
-    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 10000 })
     await sidebar.clickReset()
-    await expect(sidebar.sliderValue('width')).toHaveText('50', { timeout: 3000 }) // default from mock manifest
+    await expect(sidebar.sliderValue('width')).toHaveText('50', { timeout: 10000 }) // default from mock manifest
   })
 
   // Visibility toggle

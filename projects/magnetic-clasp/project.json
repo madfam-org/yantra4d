@@ -1,0 +1,307 @@
+{
+  "project": {
+    "name": "Magnetic Clasp",
+    "slug": "magnetic-clasp",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed the two-part magnetic snap of bags, jackets, and jewellery — the rigid hard good the Fashion Cabinet `magnetic-clasp` notion places and bridges to here for its geometry. Sized so a garment's finished dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un the two-part magnetic snap of bags, jackets, and jewellery impreso en 3D — el herraje rígido que el avío `magnetic-clasp` de Fashion Cabinet coloca y al que se puentea aquí. Dimensionado para que la medida terminada de una prenda determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/magnetic-clasp.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "magnetic-clasp",
+      "magnet",
+      "snap",
+      "closure",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Halves",
+        "es": "Ambas mitades"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "half",
+      "label": {
+        "en": "One Half",
+        "es": "Una mitad"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "half"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Both Halves",
+        "es": "Both Halves"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "half",
+      "label": {
+        "en": "Half",
+        "es": "Half"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "disc",
+      "label": {
+        "en": "Disc",
+        "es": "Disc"
+      }
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "en": "Magnet",
+        "es": "Magnet"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "disc_dia",
+      "type": "slider",
+      "default": 18.0,
+      "min": 10.0,
+      "max": 40.0,
+      "step": 0.5,
+      "group": "disc",
+      "modes": [
+        "set",
+        "half"
+      ],
+      "label": {
+        "en": "Disc diameter (mm)",
+        "es": "Diámetro del disco (mm)"
+      },
+      "tooltip": {
+        "en": "Disc diameter (mm)",
+        "es": "Diámetro del disco (mm)"
+      }
+    },
+    {
+      "id": "disc_h",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.5,
+      "max": 10.0,
+      "step": 0.2,
+      "group": "disc",
+      "modes": [
+        "set",
+        "half"
+      ],
+      "label": {
+        "en": "Disc height (mm)",
+        "es": "Alto del disco (mm)"
+      },
+      "tooltip": {
+        "en": "Disc height (mm)",
+        "es": "Alto del disco (mm)"
+      }
+    },
+    {
+      "id": "magnet_dia",
+      "type": "slider",
+      "default": 10.0,
+      "min": 4.0,
+      "max": 36.0,
+      "step": 0.5,
+      "group": "magnet",
+      "modes": [
+        "set",
+        "half"
+      ],
+      "label": {
+        "en": "Magnet diameter (mm)",
+        "es": "Diámetro del imán (mm)"
+      },
+      "tooltip": {
+        "en": "Magnet diameter (mm)",
+        "es": "Diámetro del imán (mm)"
+      }
+    },
+    {
+      "id": "magnet_h",
+      "type": "slider",
+      "default": 2.0,
+      "min": 1.0,
+      "max": 9.0,
+      "step": 0.2,
+      "group": "magnet",
+      "modes": [
+        "set",
+        "half"
+      ],
+      "label": {
+        "en": "Magnet pocket depth (mm)",
+        "es": "Profundidad del imán (mm)"
+      },
+      "tooltip": {
+        "en": "Magnet pocket depth (mm)",
+        "es": "Profundidad del imán (mm)"
+      }
+    },
+    {
+      "id": "sew_holes",
+      "type": "slider",
+      "default": 4,
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "group": "disc",
+      "modes": [
+        "set",
+        "half"
+      ],
+      "label": {
+        "en": "Sew holes",
+        "es": "Ojales de costura"
+      },
+      "tooltip": {
+        "en": "Sew holes",
+        "es": "Ojales de costura"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "disc_dia": 18.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sew_face",
+        "label": {
+          "en": "Sew Face (rim holes)",
+          "es": "Sew Face (rim holes)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "disc_dia",
+          "disc_h",
+          "sew_holes"
+        ]
+      },
+      {
+        "id": "magnet_pocket",
+        "label": {
+          "en": "Magnet Pocket",
+          "es": "Magnet Pocket"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "magnet_dia",
+          "magnet_h"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable magnetic clasp turns a metal snap — bought in bulk — into an open, made-to-measure housing you print and drop magnets into, sized to any garment or bag.",
+      "es": "Un broche magnético imprimible convierte un broche metálico — comprado a granel — en una carcasa abierta a la medida que imprimes y en la que colocas imanes, dimensionada a cualquier prenda o bolsa."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "magnetic-clasp",
+    "magnet",
+    "snap",
+    "closure",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

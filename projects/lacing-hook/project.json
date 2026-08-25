@@ -1,0 +1,370 @@
+{
+  "project": {
+    "name": "Lacing Hook",
+    "slug": "lacing-hook",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed lacing hook — the upturned speed hook a lace zig-zags over on a corset, a bodice, or a boot-style closure. This is the rigid hard good the Fashion Cabinet `lacing-hook` notion places and bridges to here for its geometry, and it pairs with `garment-eyelet` on the opposing edge. Sized so a garment's finished lacing dimensions drive the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un gancho de cordón impreso en 3D — el gancho rápido, de cuerno hacia arriba, sobre el que se cruza el cordón en un corsé, un corpiño o un cierre tipo bota. Es el herraje rígido que el avío `lacing-hook` de Fashion Cabinet coloca y al que se puentea aquí, y hace juego con `garment-eyelet` en el borde opuesto. Dimensionado para que las medidas terminadas del cordonado de la prenda determinen el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/lacing-hook.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "lacing-hook",
+      "speed-hook",
+      "lacing",
+      "corsetry",
+      "boot",
+      "closure",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Hook Row",
+        "es": "Hilera de ganchos"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "hook",
+      "label": {
+        "en": "Single Hook",
+        "es": "Gancho suelto"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "hook"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Hook Row",
+        "es": "Hilera de ganchos"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "hook",
+      "label": {
+        "en": "Single Hook",
+        "es": "Gancho suelto"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "row",
+      "label": {
+        "en": "Row",
+        "es": "Hilera"
+      }
+    },
+    {
+      "id": "plate",
+      "label": {
+        "en": "Base Plate",
+        "es": "Placa base"
+      }
+    },
+    {
+      "id": "horn",
+      "label": {
+        "en": "Horn",
+        "es": "Cuerno"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "hook_count",
+      "type": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "group": "row",
+      "modes": [
+        "set"
+      ],
+      "label": {
+        "en": "Hooks in the row",
+        "es": "Ganchos en la hilera"
+      },
+      "tooltip": {
+        "en": "How many hooks are generated along the row (set mode only).",
+        "es": "Cuántos ganchos se generan a lo largo de la hilera (solo en modo hilera)."
+      }
+    },
+    {
+      "id": "pitch",
+      "type": "slider",
+      "default": 12.0,
+      "min": 8.0,
+      "max": 25.0,
+      "step": 0.5,
+      "group": "row",
+      "modes": [
+        "set"
+      ],
+      "label": {
+        "en": "Hook spacing (mm)",
+        "es": "Separación entre ganchos (mm)"
+      },
+      "tooltip": {
+        "en": "Centre-to-centre spacing between hooks along the row (mm); it is never allowed to fall below the plate width.",
+        "es": "Separación de centro a centro entre ganchos a lo largo de la hilera (mm); nunca baja del ancho de la placa."
+      }
+    },
+    {
+      "id": "cord_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.5,
+      "group": "horn",
+      "modes": [
+        "set",
+        "hook"
+      ],
+      "label": {
+        "en": "Cord diameter (mm)",
+        "es": "Diámetro del cordón (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the lace or cord (mm). The horn mouth opens 0.5 mm wider than this so the cord drops in cleanly.",
+        "es": "Diámetro del cordón o agujeta (mm). La boca del cuerno abre 0.5 mm más que esto para que el cordón entre con holgura."
+      }
+    },
+    {
+      "id": "plate_w",
+      "type": "slider",
+      "default": 9.0,
+      "min": 6.0,
+      "max": 14.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": [
+        "set",
+        "hook"
+      ],
+      "label": {
+        "en": "Plate width (mm)",
+        "es": "Ancho de la placa (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the base plate across the lacing edge (mm).",
+        "es": "Ancho de la placa base a lo largo del borde de cordonado (mm)."
+      }
+    },
+    {
+      "id": "plate_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.2,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": [
+        "set",
+        "hook"
+      ],
+      "label": {
+        "en": "Plate thickness (mm)",
+        "es": "Espesor de la placa (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the base plate (mm); it also sets the horn stock gauge.",
+        "es": "Espesor de la placa base (mm); también fija el calibre del cuerno."
+      }
+    },
+    {
+      "id": "rivet_hole_dia",
+      "type": "slider",
+      "default": 2.5,
+      "min": 1.5,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "plate",
+      "modes": [
+        "set",
+        "hook"
+      ],
+      "label": {
+        "en": "Rivet hole diameter (mm)",
+        "es": "Diámetro del barreno del remache (mm)"
+      },
+      "tooltip": {
+        "en": "Setting hole through the plate for the rivet or tack (mm); it is capped so material always remains around it.",
+        "es": "Barreno de fijación en la placa para el remache o tachuela (mm); se limita para que siempre quede material alrededor."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "hook_count": 4,
+        "cord_dia": 4.0,
+        "plate_w": 9.0,
+        "pitch": 12.0
+      }
+    },
+    {
+      "id": "corset_row",
+      "mode": "set",
+      "label": {
+        "en": "Corset Lacing Row",
+        "es": "Hilera de corsetería"
+      },
+      "values": {
+        "hook_count": 6,
+        "cord_dia": 3.0,
+        "plate_w": 8.0,
+        "plate_t": 1.6,
+        "pitch": 14.0,
+        "rivet_hole_dia": 2.0
+      }
+    },
+    {
+      "id": "boot_speed_hook",
+      "mode": "hook",
+      "label": {
+        "en": "Boot Speed Hook",
+        "es": "Gancho rápido de bota"
+      },
+      "values": {
+        "cord_dia": 5.0,
+        "plate_w": 11.0,
+        "plate_t": 2.2,
+        "rivet_hole_dia": 3.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sew_plate",
+        "label": {
+          "en": "Sew / Rivet Plate",
+          "es": "Placa de costura y remache"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "plate_w",
+          "plate_t",
+          "rivet_hole_dia"
+        ]
+      },
+      {
+        "id": "cord_catch",
+        "label": {
+          "en": "Cord Catch",
+          "es": "Retén del cordón"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "cord_dia",
+          "pitch"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Lacing hooks are a tiny stamped part that a mender or small workshop cannot buy in ones and twos; printing them to the exact cord and plate size keeps a corset, a bodice, or a pair of boots repairable instead of discarded.",
+      "es": "Los ganchos de cordón son una pieza troquelada diminuta que quien repara o un taller pequeño no puede comprar de una en una; imprimirlos a la medida exacta del cordón y de la placa mantiene reparables un corsé, un corpiño o unas botas en lugar de desecharlos."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "lacing-hook",
+    "speed-hook",
+    "lacing",
+    "corsetry",
+    "boot",
+    "closure",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

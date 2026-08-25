@@ -33,7 +33,7 @@ class ProjectManifest:
     def slug(self) -> str:
         return self._data["project"]["slug"]
 
-    KNOWN_ENGINES: ClassVar[set[str]] = {"openscad", "cadquery", "implicit"}
+    KNOWN_ENGINES: ClassVar[set[str]] = {"openscad", "cadquery", "implicit", "graph"}
 
     @property
     def engine(self) -> str:
@@ -70,8 +70,9 @@ class ProjectManifest:
 
         Resolution order (highest priority first):
         1. An explicit ``"engine"`` on the mode object, if it is a known engine.
-        2. Inference from the mode's ``scad_file`` extension: a ``.py`` / ``.cq``
-           primary file implies the ``cadquery`` engine.
+        2. Inference from the mode's ``scad_file`` extension: a ``.graph.json``
+           primary file implies the ``graph`` engine; ``.py`` / ``.cq`` imply
+           the ``cadquery`` engine.
         3. Fall back to the project-level engine (``self.engine``).
 
         A project whose ``engine`` is ``implicit`` always renders every mode with
@@ -94,6 +95,8 @@ class ProjectManifest:
                         f"inferring from scad_file / project engine instead."
                     )
                 primary = str(mode.get("scad_file", ""))
+                if primary.endswith(".graph.json"):
+                    return "graph"
                 if primary.endswith((".py", ".cq")):
                     return "cadquery"
 
@@ -133,8 +136,14 @@ class ProjectManifest:
         return result
 
     def get_mode_map(self) -> dict:
-        """Returns {part_id: render_mode_int} derived from parts."""
-        return {p["id"]: p["render_mode"] for p in self.parts}
+        """Returns {part_id: render_mode_int} derived from parts.
+
+        `render_mode` is the legacy OpenSCAD render-mode integer; CadQuery-first
+        cartridges (body-form, the staging solids, several HVAC parts) never
+        carry it — their dispatch is `target_part` — so default 0 rather than
+        crashing every /api/render of those manifests (KeyError seen live
+        2026-08-22 on the first end-to-end body-form GLB render)."""
+        return {p["id"]: p.get("render_mode", 0) for p in self.parts}
 
     def get_static_stl_map(self) -> dict:
         """Returns {part_id: absolute_path} for parts with static_stl defined."""

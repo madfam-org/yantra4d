@@ -314,9 +314,22 @@ describe('OpenSource.astro', () => {
   })
 
   it('shows stats badges', () => {
-    expect(html).toMatch(/21 Proyectos|statProjects/)
-    expect(html).toMatch(/AGPLv3|statLicense/)
+    expect(html).toMatch(/statProjects/)
+    expect(html).toMatch(/statLicense/)
     expect(html).toContain('GitHub')
+  })
+
+  it('renders its figures from bound values, never from literal copy', () => {
+    // The badges once advertised "21 Projects" against a commons of 326. The
+    // numbers must be bound from generated stats so they cannot go stale.
+    expect(html).toMatch(/\{cartridges\}/)
+    expect(html).toMatch(/\{standards\}/)
+    expect(html).not.toMatch(/\b21 (Proyectos|Projects)\b/)
+  })
+
+  it('does not credit the designs to the platform licence', () => {
+    // Cartridges are CERN-OHL-W; AGPLv3 covers the platform code only.
+    expect(html).not.toMatch(/>AGPLv3</)
   })
 
   it('has GitHub link', () => {
@@ -443,6 +456,43 @@ describe('HyperCommons.astro', () => {
 
   it('has reduced motion media query in styles', () => {
     expect(html).toContain('prefers-reduced-motion')
+  })
+
+  it('narrates why the word "hyperobject" was chosen', () => {
+    expect(html).toMatch(/Por qué hiperobjetos|whyHeading/)
+    expect(html).toMatch(/whyBody/)
+  })
+
+  it('links the word note to the manifesto in a new tab, safely', () => {
+    expect(html).toContain(
+      'https://github.com/madfam-org/yantra4d/blob/main/docs/strategy/MANIFESTO.md#on-the-word-why-hyperobjects'
+    )
+    expect(html).toContain('target="_blank"')
+    expect(html).toContain('rel="noopener noreferrer"')
+  })
+
+  it('does not colour the manifesto link with text-primary', () => {
+    // In the dark theme --primary is accent blue (221 83% 53%), measuring
+    // 3.83:1 against this card surface — below the 4.5:1 floor for 14px text.
+    // The link therefore uses text-foreground and spends primary on the
+    // underline, where the 3.0:1 non-text floor applies.
+    const note = html.slice(html.indexOf('hc-why'))
+    const anchor = note.slice(note.indexOf('<a'), note.indexOf('</a>'))
+    expect(anchor).toContain('text-foreground')
+    expect(anchor).not.toContain('text-primary')
+    expect(anchor).toContain('decoration-primary')
+  })
+
+  it('enters the word note on transform alone, never opacity', () => {
+    // An entry animation that fades from opacity 0 leaves frames below the
+    // WCAG contrast floor, which the axe lane flags. .hc-rise must therefore
+    // transition transform only — asserted here so a later edit cannot
+    // quietly reintroduce an opacity fade on this block.
+    const rise = html.match(/\.hc-rise\s*\{[^}]*\}/)
+    expect(rise).not.toBeNull()
+    expect(rise![0]).toContain('transform')
+    expect(rise![0]).not.toContain('opacity')
+    expect(html).toMatch(/\.hc-rise\.hc-visible\s*\{[^}]*transform:\s*translateY\(0\)/)
   })
 })
 

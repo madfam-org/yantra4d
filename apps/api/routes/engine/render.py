@@ -14,9 +14,10 @@ from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
 from services.core.tier_service import (
-    check_feature,
+    export_format_allowed,
     get_render_limit,
     get_render_limit_for_project,
+    minimum_tier_for_export_format,
     resolve_tier,
 )
 from services.engine.render_orchestrator import (
@@ -41,6 +42,21 @@ def _make_rate_limit_headers(tier: str) -> dict:
         "X-RateLimit-Tier": tier,
         "X-RateLimit-Type": "backend",
     }
+
+
+def _effective_tier() -> str:
+    """Gating tier. In local dev (AUTH_ENABLED off AND debug on) unlock top tier so
+    the CadQuery / server-render path is not 403-gated — mirrors require_tier() and
+    /api/me. The debug condition is load-bearing: auth-off with debug off is the
+    exact state app startup flags as must-never-run (CI and tests use it), and an
+    auth-off-only unlock silently disabled every tier gate there — guests became
+    madfam and the tier-enforcement suite could never see a 403 again."""
+    from flask import current_app
+
+    from config import Config
+    if not Config.AUTH_ENABLED and current_app.debug:
+        return "madfam"
+    return resolve_tier(getattr(request, "auth_claims", None))
 
 
 def _get_tiered_limit() -> str:
@@ -120,14 +136,22 @@ def estimate_render_time():
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
-    tier = resolve_tier(getattr(request, "auth_claims", None))
+    tier = _effective_tier()
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
         return error_response(payload.message, 400)
 
-    if payload['export_format'] in {'step', 'gltf', 'glb', '3mf', 'obj', 'off'} and not check_feature(tier, "premium_export"):
-        return error_response(f"Export format '{payload['export_format']}' requires Pro tier or above.", 403)
+    # Gate on the tier's export_formats list — the same source the UI unlocks
+    # buttons from — rather than the blanket premium_export boolean over a
+    # hardcoded set, which 403'd formats the essentials tier advertises.
+    export_format = payload['export_format']
+    if not export_format_allowed(tier, export_format):
+        needed = minimum_tier_for_export_format(export_format)
+        if needed is None:
+            return error_response(f"Export format '{export_format}' is not available.", 403)
+        label = {"essentials": "Essentials", "pro": "Pro", "madfam": "MADFAM"}.get(needed, needed.title())
+        return error_response(f"Export format '{export_format}' requires {label} tier or above.", 403)
 
     # Resolve engine configuration
     engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)
@@ -174,9 +198,17 @@ def render_stl_stream():
     if isinstance(payload, RenderPayloadError):
         return error_response(payload.message, 400)
 
-    tier = resolve_tier(getattr(request, "auth_claims", None))
-    if payload['export_format'] in {'step', 'gltf', 'glb', '3mf', 'obj', 'off'} and not check_feature(tier, "premium_export"):
-        return error_response(f"Export format '{payload['export_format']}' requires Pro tier or above.", 403)
+    tier = _effective_tier()
+    # Gate on the tier's export_formats list — the same source the UI unlocks
+    # buttons from — rather than the blanket premium_export boolean over a
+    # hardcoded set, which 403'd formats the essentials tier advertises.
+    export_format = payload['export_format']
+    if not export_format_allowed(tier, export_format):
+        needed = minimum_tier_for_export_format(export_format)
+        if needed is None:
+            return error_response(f"Export format '{export_format}' is not available.", 403)
+        label = {"essentials": "Essentials", "pro": "Pro", "madfam": "MADFAM"}.get(needed, needed.title())
+        return error_response(f"Export format '{export_format}' requires {label} tier or above.", 403)
 
     # Resolve engine configuration
     engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)

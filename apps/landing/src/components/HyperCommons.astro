@@ -1,5 +1,6 @@
 ---
 import type { Translations } from '../lib/i18n';
+import { COMMONS_STATS } from '../data/projects';
 
 interface Props {
   t?: Translations;
@@ -7,6 +8,10 @@ interface Props {
 
 const { t } = Astro.props;
 const h = t?.hyperCommons;
+// Impact figures are generated from the manifests. The cards previously
+// carried "99% cheaper" and "3-17x cheaper" with no source anywhere in the
+// repo; these four are each derived from the commons itself.
+const { cartridges, standards, interfaceInstances, cernLicensed } = COMMONS_STATS;
 ---
 
 <!-- ═══════ Section: The Parametric Commons ═══════ -->
@@ -20,7 +25,8 @@ const h = t?.hyperCommons;
 
     <!-- ── Hero intro ── -->
     <div class="text-center mb-20 hc-fade-in">
-      <span class="inline-block rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium tracking-wider text-primary uppercase mb-6">
+      <!-- 12px eyebrow: small text. --primary is 3.73:1 on bg-primary/5. -->
+      <span class="inline-block rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium tracking-wider text-primary-readable uppercase mb-6">
         Open Commons
       </span>
       <h2 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
@@ -73,7 +79,8 @@ const h = t?.hyperCommons;
             <!-- Captions -->
             <div class="absolute bottom-0 inset-x-0 flex justify-between px-4 text-xs text-muted-foreground font-mono">
               <span class="bg-background/80 px-2 py-1 rounded backdrop-blur-sm">{h?.whatIsCaption1 ?? 'Un archivo'}</span>
-              <span class="bg-primary/10 text-primary px-2 py-1 rounded backdrop-blur-sm font-semibold">{h?.whatIsCaption2 ?? 'Infinitos objetos'}</span>
+              <!-- 12px caption on bg-primary/10: --primary is 3.60:1 here. -->
+              <span class="bg-primary/10 text-primary-readable px-2 py-1 rounded backdrop-blur-sm font-semibold">{h?.whatIsCaption2 ?? 'Infinitos objetos'}</span>
             </div>
           </div>
         </div>
@@ -87,6 +94,43 @@ const h = t?.hyperCommons;
           </p>
         </div>
       </div>
+    </div>
+
+    <!-- ── Why the word "hyperobject" ── -->
+    <!--
+      Deliberately NOT using .hc-fade-in. That class enters from opacity: 0,
+      and an element mid-fade fails the axe contrast lane (the same finding
+      that landed on the Fashion Cabinet side). This block slides in on
+      transform alone, so its text is at full contrast in every frame.
+    -->
+    <div class="mb-24 flex justify-center">
+      <aside class="hc-why hc-rise max-w-3xl rounded-2xl border border-border bg-card/50 p-8 backdrop-blur-sm">
+        <h3 class="text-2xl font-bold tracking-tight sm:text-3xl mb-4">
+          {h?.whyHeading ?? 'Por qué hiperobjetos'}
+        </h3>
+        <p class="text-muted-foreground leading-relaxed text-lg">
+          {h?.whyBody ?? 'Un hiperobjeto nunca es la cosa que está sobre tu escritorio — es todo lo que esa cosa puede llegar a ser. Cada objeto aquí es una familia: un solo contrato; infinitos tamaños, materiales y configuraciones. La palabra está tomada prestada dos veces: de la filosofía — los gigantes vastos e imposibles de señalar de Timothy Morton, traídos aquí a la escala del banco de trabajo — y del hipertexto, el objeto que genera objetos. Tuyo para regenerarlo, para siempre.'}
+        </p>
+        <!--
+          Link text is text-foreground, not text-primary. In the dark theme
+          --primary is accent blue (221 83% 53%), which measures 3.83:1 against
+          this card surface — under the 4.5:1 floor for 14px text. The primary
+          colour carries the affordance as the underline instead, where the
+          3.0:1 non-text floor applies and it passes.
+        -->
+        <p class="mt-5 text-sm">
+          <span class="text-muted-foreground">{h?.whyLink ?? 'Sobre la palabra'}</span>
+          <span class="text-muted-foreground" aria-hidden="true"> → </span>
+          <a
+            href="https://github.com/madfam-org/yantra4d/blob/main/docs/strategy/MANIFESTO.md#on-the-word-why-hyperobjects"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-medium text-foreground underline underline-offset-4 decoration-primary transition-colors hover:decoration-foreground"
+          >
+            {h?.whyLinkTarget ?? 'el manifiesto'}
+          </a>
+        </p>
+      </aside>
     </div>
 
     <!-- ── The Shift: .STL vs .SCAD ── -->
@@ -113,7 +157,9 @@ const h = t?.hyperCommons;
           <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary/40"></div>
           <div class="flex items-center gap-3 mb-4">
             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary text-lg">⚡</div>
-            <h4 class="font-bold text-lg text-primary">{h?.shiftTo ?? '.SCAD Paramétrico'}</h4>
+            <!-- text-lg is 18px, below the 18.66px bold large-text floor, so
+                 4.5:1 applies; --primary measures 3.73:1 on bg-primary/5. -->
+            <h4 class="font-bold text-lg text-primary-readable">{h?.shiftTo ?? '.SCAD Paramétrico'}</h4>
           </div>
           <p class="text-muted-foreground">{h?.shiftToDesc ?? 'Geometrías infinitas. Tus dimensiones. Configurado a tu realidad.'}</p>
           <!-- Morphing shapes visual -->
@@ -203,20 +249,20 @@ const h = t?.hyperCommons;
       </h3>
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 max-w-4xl mx-auto">
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact1value ?? '99% más barato'}</div>
-          <div class="text-xs text-muted-foreground">{h?.impact1label ?? 'Otoscopio Glia'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{cartridges}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact1label ?? 'Cartuchos abiertos'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact2value ?? '3-17× más baratos'}</div>
-          <div class="text-xs text-muted-foreground">{h?.impact2label ?? 'Conectores Tubería'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{standards}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact2label ?? 'Estándares que hablan'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
-          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact3value ?? 'Estándar global'}</div>
-          <div class="text-xs text-muted-foreground">{h?.impact3label ?? 'Gridfinity'}</div>
+          <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{interfaceInstances}</div>
+          <div class="text-xs text-muted-foreground">{h?.impact3label ?? 'Interfaces declaradas'}</div>
         </div>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
           <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact4value ?? 'CERN OHL'}</div>
-          <div class="text-xs text-muted-foreground">{h?.impact4label ?? 'Licencia'}</div>
+          <div class="text-xs text-muted-foreground">{cernLicensed} {h?.impact4label ?? 'diseños'}</div>
         </div>
       </div>
     </div>
@@ -330,6 +376,19 @@ const h = t?.hyperCommons;
     transform: translateY(0);
   }
 
+  /* ── "Why hyperobjects" entry: transform only ──
+     No opacity in this transition. Fading text in from 0 leaves several
+     frames where the copy sits below the WCAG contrast floor, which the
+     axe lane flags; sliding it in leaves every frame at full contrast. */
+  .hc-rise {
+    transform: translateY(24px);
+    transition: transform 0.7s ease-out;
+  }
+
+  .hc-rise.hc-visible {
+    transform: translateY(0);
+  }
+
   /* ── Domain card hover ── */
   .hc-domain-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
@@ -361,6 +420,10 @@ const h = t?.hyperCommons;
       transform: none;
       transition: none;
     }
+    .hc-rise {
+      transform: none;
+      transition: none;
+    }
     .hc-domain-card:hover,
     .hc-stat-card:hover {
       transform: none;
@@ -381,5 +444,8 @@ const h = t?.hyperCommons;
     { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
   );
 
-  document.querySelectorAll('.hc-fade-in').forEach((el) => observer.observe(el));
+  // .hc-rise shares the observer but not the opacity transition — see styles.
+  document
+    .querySelectorAll('.hc-fade-in, .hc-rise')
+    .forEach((el) => observer.observe(el));
 </script>

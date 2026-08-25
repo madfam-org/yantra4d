@@ -39,6 +39,10 @@ COPY apps/api/requirements.txt ./backend/
 COPY apps/worker/ /app/worker/
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
+# The shared sandbox core the cq_runner subprocess imports (one source with FC).
+COPY packages/commons-sandbox /app/packages/commons-sandbox
+RUN pip install --no-cache-dir /app/packages/commons-sandbox
+
 # Copy application code
 COPY projects/ ./projects/
 COPY libs/ ./libs/

@@ -1,0 +1,286 @@
+{
+  "project": {
+    "name": "Toggle",
+    "slug": "toggle",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed the barrel toggle of duffle coats and drawstrings — the rigid hard good the Fashion Cabinet `toggle` notion places and bridges to here for its geometry. Sized so a garment's finished dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un the barrel toggle of duffle coats and drawstrings impreso en 3D — el herraje rígido que el avío `toggle` de Fashion Cabinet coloca y al que se puentea aquí. Dimensionado para que la medida terminada de una prenda determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/toggle.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "toggle",
+      "duffle",
+      "drawstring",
+      "closure",
+      "hardware",
+      "fastener",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "toggle",
+      "label": {
+        "en": "Toggle",
+        "es": "Alamar"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "toggle"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "bar",
+      "label": {
+        "en": "Bar Toggle",
+        "es": "Barra"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bar"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "toggle",
+      "label": {
+        "en": "Toggle",
+        "es": "Toggle"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "bar",
+      "label": {
+        "en": "Bar",
+        "es": "Bar"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "barrel",
+      "label": {
+        "en": "Barrel",
+        "es": "Barrel"
+      }
+    },
+    {
+      "id": "cord",
+      "label": {
+        "en": "Cord",
+        "es": "Cord"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "barrel_len",
+      "type": "slider",
+      "default": 38.0,
+      "min": 18.0,
+      "max": 80.0,
+      "step": 1.0,
+      "group": "barrel",
+      "modes": [
+        "toggle",
+        "bar"
+      ],
+      "label": {
+        "en": "Barrel length (mm)",
+        "es": "Largo del barril (mm)"
+      },
+      "tooltip": {
+        "en": "Barrel length (mm)",
+        "es": "Largo del barril (mm)"
+      }
+    },
+    {
+      "id": "barrel_dia",
+      "type": "slider",
+      "default": 12.0,
+      "min": 6.0,
+      "max": 24.0,
+      "step": 0.5,
+      "group": "barrel",
+      "modes": [
+        "toggle",
+        "bar"
+      ],
+      "label": {
+        "en": "Barrel diameter (mm)",
+        "es": "Diámetro del barril (mm)"
+      },
+      "tooltip": {
+        "en": "Barrel diameter (mm)",
+        "es": "Diámetro del barril (mm)"
+      }
+    },
+    {
+      "id": "cord_dia",
+      "type": "slider",
+      "default": 4.0,
+      "min": 1.5,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "cord",
+      "modes": [
+        "toggle",
+        "bar"
+      ],
+      "label": {
+        "en": "Cord channel (mm)",
+        "es": "Canal de cordón (mm)"
+      },
+      "tooltip": {
+        "en": "Cord channel (mm)",
+        "es": "Canal de cordón (mm)"
+      }
+    },
+    {
+      "id": "cords",
+      "type": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "group": "cord",
+      "modes": [
+        "toggle",
+        "bar"
+      ],
+      "label": {
+        "en": "Cord channels",
+        "es": "Canales de cordón"
+      },
+      "tooltip": {
+        "en": "Cord channels",
+        "es": "Canales de cordón"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "toggle",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "barrel_len": 38.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "cord_face",
+        "label": {
+          "en": "Cord Attachment Face",
+          "es": "Cord Attachment Face"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "barrel_len",
+          "barrel_dia",
+          "cord_dia"
+        ]
+      },
+      {
+        "id": "cord_channel",
+        "label": {
+          "en": "Cord Channel",
+          "es": "Cord Channel"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "cord_dia",
+          "cords"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable toggle turns duffle and drawstring closures — a horn/wood part — into an open, made-to-measure finding anyone can print and size.",
+      "es": "Un alamar imprimible convierte los cierres de trenca y jareta — una pieza de asta o madera — en un herraje abierto a la medida que cualquiera puede imprimir y dimensionar."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "toggle",
+    "duffle",
+    "drawstring",
+    "closure",
+    "hardware",
+    "fastener",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

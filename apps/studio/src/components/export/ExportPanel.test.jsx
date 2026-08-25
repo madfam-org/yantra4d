@@ -1,7 +1,25 @@
-import { describe, it, expect, vi } from 'vitest'
-import { screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import ExportPanel from './ExportPanel'
 import { renderWithProviders } from '../../test/render-with-providers'
+
+// Partial mock: keeps the real project context, but lets a test supply the
+// values the panel's handlers depend on — a print estimate, a share-url
+// callback — which the real provider leaves null in a bare render.
+const { projectOverride } = vi.hoisted(() => ({ projectOverride: { value: null } }))
+
+vi.mock('../../contexts/project/ProjectProvider', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    useProject: () => ({ ...actual.useProject(), ...(projectOverride.value || {}) }),
+  }
+})
+
+const mockDownloadZip = vi.fn(() => Promise.resolve())
+vi.mock('../../lib/downloadUtils', () => ({
+  downloadZip: (...args) => mockDownloadZip(...args),
+}))
 
 vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
 
@@ -177,4 +195,162 @@ describe('ExportPanel', () => {
     openSection('Documents')
     expect(screen.getByText(/3 assembly steps/i)).toBeInTheDocument()
   })
+
+  // --- Documents, estimate, share and archive ------------------------------
+  // ExportPanel sat at 44% branch coverage. Everything gated behind a manifest
+  // feature — BOM, assembly steps, print estimate — plus the copy/share/archive
+  // handlers were unreachable from the default props, which pass no manifest.
+
+  const MANIFEST = {
+    project: { slug: 'widget' },
+    modes: [{ id: 'unit', scad_file: 'widget.scad', parts: ['body', 'lid'] }],
+    export_formats: ['stl', '3mf', 'off'],
+    bom: [{ part: 'M3 bolt', qty: 4 }],
+    assembly_steps: [{ id: 1, text: 'Insert bolt' }],
+  }
+
+  const PARTS = [{ type: 'body', url: 'blob:body' }, { type: 'lid', download_url: '/lid.stl' }]
+
+  it('offers every format the manifest declares', () => {
+    renderPanel({ manifest: MANIFEST })
+    // Only shown when the manifest declares more than one format; the default
+    // props render a single STL button and skip this block entirely.
+    expect(screen.getByRole('button', { name: /3MF/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /OFF/ })).toBeInTheDocument()
+  })
+
+  it('label says ZIP when the mode declares multiple parts', () => {
+    renderPanel({ manifest: MANIFEST })
+    expect(screen.getByText(/Download STL \(ZIP\)/i)).toBeInTheDocument()
+  })
+
+  it('a format the tier does not allow is marked locked and does not change format', () => {
+    const onExportFormatChange = vi.fn()
+    renderPanel({ manifest: MANIFEST, onExportFormatChange })
+    // Guest tier allows stl only, so 3MF carries the lock marker and its click
+    // triggers the upgrade prompt instead of selecting the format.
+    const locked = screen.getByRole('button', { name: /3MF/ })
+    expect(locked.textContent).toMatch(/🔒/)
+    fireEvent.click(locked)
+    expect(onExportFormatChange).not.toHaveBeenCalled()
+  })
+
+  it('an allowed format selects on click', () => {
+    const onExportFormatChange = vi.fn()
+    renderPanel({ manifest: MANIFEST, onExportFormatChange })
+    fireEvent.click(screen.getByRole('button', { name: 'STL', exact: true }))
+    expect(onExportFormatChange).toHaveBeenCalledWith('stl')
+  })
+
+  it('SCAD download opens the mode’s scad file for the manifest slug', () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+    fireEvent.click(screen.getByText(/Download SCAD/i).closest('button'))
+    expect(open).toHaveBeenCalledWith(expect.stringContaining('/download/scad/widget.scad'), '_blank')
+  })
+
+  it('documents section appears only when the manifest carries a BOM or steps', () => {
+    renderPanel()
+    expect(screen.queryByRole('button', { name: /Documents/i })).not.toBeInTheDocument()
+
+    renderPanel({ manifest: MANIFEST })
+    expect(screen.getByRole('button', { name: /Documents/i })).toBeInTheDocument()
+  })
+
+  it('BOM CSV download carries the current parameters as query string', () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+    openSection(/Documents/i)
+    fireEvent.click(screen.getByText(/BOM/i).closest('button'))
+    expect(open).toHaveBeenCalledWith(expect.stringContaining('/bom?format=csv'), '_blank')
+  })
+
+  // --- Copy, share and archive handlers ------------------------------------
+
+  const ESTIMATE = { time: '2h 15m', weight: '48 g', cost: '$3.20' }
+
+  afterEach(() => {
+    projectOverride.value = null
+    mockDownloadZip.mockClear()
+  })
+
+  it('copying the estimate puts every populated field on the clipboard', async () => {
+    const writeText = vi.fn(() => Promise.resolve())
+    Object.assign(navigator, { clipboard: { writeText } })
+    projectOverride.value = { printEstimate: ESTIMATE, projectSlug: 'widget' }
+
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+    // Both controls live in collapsed accordion sections.
+    openSection(/Print Estimate/i)
+    fireEvent.click(screen.getByRole('button', { name: /Copy Estimate/i }))
+
+    await waitFor(() => expect(writeText).toHaveBeenCalled())
+    const text = writeText.mock.calls[0][0]
+    expect(text).toContain('2h 15m')
+    expect(text).toContain('48 g')
+    expect(text).toContain('$3.20')
+  })
+
+  it('an estimate with only a time copies just that line', async () => {
+    const writeText = vi.fn(() => Promise.resolve())
+    Object.assign(navigator, { clipboard: { writeText } })
+    projectOverride.value = { printEstimate: { time: '10m' }, projectSlug: 'widget' }
+
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+    openSection(/Print Estimate/i)
+    fireEvent.click(screen.getByRole('button', { name: /Copy Estimate/i }))
+
+    await waitFor(() => expect(writeText).toHaveBeenCalled())
+    expect(writeText.mock.calls[0][0]).not.toMatch(/undefined/)
+  })
+
+  it('the archive bundles each part, the manifest, and the BOM when there is one', async () => {
+    projectOverride.value = { projectSlug: 'widget' }
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+
+    openSection(/Share/i)
+    fireEvent.click(screen.getByRole('button', { name: /Download Project Archive/i }))
+
+    await waitFor(() => expect(mockDownloadZip).toHaveBeenCalled())
+    const [items, filename] = mockDownloadZip.mock.calls[0]
+    expect(filename).toBe('widget-archive.zip')
+    const names = items.map(i => i.filename)
+    expect(names).toContain('project.json')
+    expect(names).toContain('bom.csv')
+    expect(names).toContain('body.stl')
+    // download_url wins over url when a part carries both.
+    expect(items.find(i => i.filename === 'lid.stl').url).toBe('/lid.stl')
+  })
+
+  it('the archive omits the BOM when the manifest has none', async () => {
+    projectOverride.value = { projectSlug: 'widget' }
+    const noBom = { ...MANIFEST }
+    delete noBom.bom
+    renderPanel({ manifest: noBom, parts: PARTS })
+
+    openSection(/Share/i)
+    fireEvent.click(screen.getByRole('button', { name: /Download Project Archive/i }))
+    await waitFor(() => expect(mockDownloadZip).toHaveBeenCalled())
+    expect(mockDownloadZip.mock.calls[0][0].map(i => i.filename)).not.toContain('bom.csv')
+  })
+
+  it('the archive is not attempted with no parts', () => {
+    projectOverride.value = { projectSlug: 'widget' }
+    renderPanel({ manifest: MANIFEST, parts: [] })
+
+    openSection(/Share/i)
+    fireEvent.click(screen.getByRole('button', { name: /Download Project Archive/i }))
+    expect(mockDownloadZip).not.toHaveBeenCalled()
+  })
+
+  it('the share control copies the share URL', async () => {
+    const copyShareUrl = vi.fn(() => Promise.resolve())
+    projectOverride.value = { copyShareUrl, projectSlug: 'widget' }
+    renderPanel({ manifest: MANIFEST, parts: PARTS })
+
+    openSection(/Share/i)
+    fireEvent.click(screen.getByRole('button', { name: /Copy Share Link/i }))
+    await waitFor(() => expect(copyShareUrl).toHaveBeenCalled())
+  })
 })
+

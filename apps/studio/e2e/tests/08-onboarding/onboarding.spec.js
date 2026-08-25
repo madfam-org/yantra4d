@@ -6,7 +6,12 @@ test.describe('Onboarding Wizard', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
     await page.goto('/onboard')
-    await page.waitForSelector('header')
+    // Wait for the wizard, not for `header`. /onboard renders OnboardingWizard
+    // standalone — App.tsx returns it inside ErrorBoundary/Suspense with no app
+    // chrome — so `header` never appears. Every test in this file therefore sat
+    // in beforeEach until its 60s timeout, and with 23 spec files that alone
+    // exhausted the 25 minute job budget for chromium, firefox and webkit.
+    await page.waitForSelector('[data-testid="onboarding-wizard"]')
   })
 
   // Step 0: Upload
@@ -133,6 +138,10 @@ test.describe('Onboarding Wizard', () => {
     })
     await page.locator('button', { hasText: 'Analyze Files' }).click()
     await page.locator('button', { hasText: 'Edit Manifest' }).click()
+    // EditStep defaults to the structured editor; the raw JSON textarea is
+    // behind a toggle labelled "Raw JSON". These tests were written against an
+    // editor that was always raw, so `textarea` matched nothing on step 2.
+    await page.getByRole('button', { name: /Raw JSON/i }).click()
     await expect(page.locator('textarea')).toBeVisible()
   })
 
@@ -152,6 +161,10 @@ test.describe('Onboarding Wizard', () => {
     })
     await page.locator('button', { hasText: 'Analyze Files' }).click()
     await page.locator('button', { hasText: 'Edit Manifest' }).click()
+    // EditStep defaults to the structured editor; the raw JSON textarea is
+    // behind a toggle labelled "Raw JSON". These tests were written against an
+    // editor that was always raw, so `textarea` matched nothing on step 2.
+    await page.getByRole('button', { name: /Raw JSON/i }).click()
 
     const textarea = page.locator('textarea')
     await textarea.fill('{invalid json')

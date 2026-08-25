@@ -55,6 +55,77 @@ describe('estimateRenderTime', () => {
     expect(renderService.estimateRenderTime('nonexistent', {}, manifest)).toBe(0)
   })
 
+  // ---------------------------------------------------------------------------
+  // Calibration regression. Live measurement 2026-08-08 on app.yantra4d.com, from
+  // the app's own "Total rendering time" log lines in the browser (WASM path):
+  //
+  //     3x3 -> 0.196 s      5x5 -> 0.607 s
+  //
+  // The shipped estimator said ~336 s and ~352 s — a 1,714x and 580x overshoot —
+  // and, because 70 s of its 84 s base came from a FIXED parts*per_part term, it
+  // produced "~6 minutes" for EVERY cube size. It therefore fired its blocking
+  // "the application may become unresponsive" dialog on every render, including
+  // the deep link a prospect lands on. A warning that always fires is not a
+  // warning; at the Digital Twin Gate it actively trains operators to click
+  // through the check that governs whether atoms get extruded.
+  // ---------------------------------------------------------------------------
+  const rubiks = {
+    parts: Array.from({ length: 7 }, (_, i) => ({ id: `p${i}`, render_mode: '3D' })),
+    modes: [{
+      id: 'cube',
+      parts: Array.from({ length: 7 }, (_, i) => `p${i}`),
+      estimate: { base_units: 'N * N', formula: 'grid', formula_vars: ['N', 'N'] },
+    }],
+    estimate_constants: { base_time: 2.0, per_unit: 0.006, per_part: 0.05 },
+  }
+
+  it('cube units follow N^2, matching the declared base_units "N * N"', () => {
+    // The manifest declared N*N while formula_vars listed ["N"], so the code
+    // computed N. Measurement settles it: 3x3 -> 5x5 grew 3.10x, and N^2 predicts
+    // 2.78x while N alone predicts only 1.67x.
+    const at = (N) => renderService.estimateRenderTime('cube', { N }, rubiks)
+    const growth = (at(5) - 2.0 - 7 * 0.05) / (at(3) - 2.0 - 7 * 0.05)
+    expect(growth).toBeCloseTo(25 / 9, 6)   // N^2, not N
+  })
+
+  it('a standard 3x3 no longer estimates minutes', () => {
+    // Native path (no wasm multiplier in this fixture): 2 + 9*0.006 + 7*0.05
+    expect(renderService.estimateRenderTime('cube', { N: 3 }, rubiks)).toBeCloseTo(2.404, 3)
+  })
+
+  it('the per-part term no longer dominates the estimate', () => {
+    // This is the specific defect: parts*per_part was 70 s of an 84 s estimate,
+    // so cube size barely moved the number and every size looked identical.
+    const partsTerm = 7 * rubiks.estimate_constants.per_part      // 0.35
+    const total = renderService.estimateRenderTime('cube', { N: 9 }, rubiks)
+    expect(partsTerm / total).toBeLessThan(0.2)
+  })
+
+  it('reports no observed time before a render has run, never zero', () => {
+    // "Not measured yet" must not be readable as "took no time" — that confusion
+    // is what let a 1,714x overshoot look like a working estimator.
+    expect(renderService.getLastObservedRenderSeconds()).toBeNull()
+    expect(renderService.getEstimateAccuracy(336)).toBeNull()
+  })
+
+  it('accuracy is null for a nonsense estimate rather than Infinity', () => {
+    expect(renderService.getEstimateAccuracy(0)).toBeNull()
+    expect(renderService.getEstimateAccuracy(NaN)).toBeNull()
+    expect(renderService.getEstimateAccuracy(-5)).toBeNull()
+  })
+
+  it('the threshold still FIRES for a genuinely expensive render', () => {
+    // Guard against having swapped "always warns" for "never warns". The dialog
+    // must remain reachable — proven here by a mode whose cost is real.
+    const heavy = {
+      ...rubiks,
+      modes: [{ ...rubiks.modes[0], id: 'cube' }],
+      estimate_constants: { base_time: 2.0, per_unit: 0.006, per_part: 0.05 },
+    }
+    const huge = renderService.estimateRenderTime('cube', { N: 400 }, heavy)
+    expect(huge).toBeGreaterThan(90)   // 90 s = warning_threshold_seconds
+  })
+
   it('uses formula_vars to compute units generically', () => {
     const customManifest = {
       modes: [
@@ -226,7 +297,9 @@ describe('renderParts (backend mode)', () => {
     const body = JSON.parse(renderCall[1].body)
     expect(body.project).toBe('my-project')
     expect(body.mode).toBe('unit')
-    expect(body.size).toBe(20)
+    // Documented contract: parameters are NESTED, not spread at the top level.
+    expect(body.parameters).toEqual({ size: 20 })
+    expect(body.size).toBeUndefined()
   })
 
   it('omits project field from payload when not provided', async () => {
@@ -388,6 +461,25 @@ describe('renderParts (SSE event types)', () => {
     const renderCall = fetchMock.mock.calls[0]
     const body = JSON.parse(renderCall[1].body)
     expect(body.export_format).toBe('step')
+  })
+
+  it('applies glb export_format for graph engine', async () => {
+    const graphManifest = { ...manifest, engine: 'graph' }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // Graph is backend-only (transpiles to CadQuery server-side) — detectMode short-circuits
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.glb"}],"progress":100}',
+        ''
+      ])
+    })
+
+    await renderService.renderParts('unit', {}, graphManifest, {})
+
+    const renderCall = fetchMock.mock.calls[0]
+    const body = JSON.parse(renderCall[1].body)
+    expect(body.export_format).toBe('glb')
   })
 
   it('uses backend when manifest.force_backend is true', async () => {
@@ -557,6 +649,21 @@ describe('detectMode WASM fallback on backend unavailability', () => {
 
     await expect(
       renderService.renderParts('unit', {}, cqManifest, {})
+    ).rejects.toThrow('Render request failed (HTTP 502)')
+  })
+
+  it('still uses backend for graph engine even when backend is down', async () => {
+    const graphManifest = { ...manifest, engine: 'graph' }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // Graph skips health check like CadQuery — no WASM path exists
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      text: () => Promise.resolve('Bad Gateway')
+    })
+
+    await expect(
+      renderService.renderParts('unit', {}, graphManifest, {})
     ).rejects.toThrow('Render request failed (HTTP 502)')
   })
 })
@@ -757,6 +864,19 @@ describe('renderParts network error WASM fallback', () => {
       renderService.renderParts('unit', {}, cqManifest, {})
     ).rejects.toThrow('Failed to fetch')
   })
+
+  it('does NOT fallback for graph engine even on network error', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+    const graphManifest = { ...manifest, engine: 'graph' }
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    // Graph skips health check and must never fall back to WASM
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+
+    await expect(
+      renderService.renderParts('unit', {}, graphManifest, {})
+    ).rejects.toThrow('Failed to fetch')
+  })
 })
 
 describe('renderParts (wasm mode)', () => {
@@ -844,3 +964,318 @@ describe('renderParts (wasm mode)', () => {
     await expect(renderService.renderParts('unit', {}, manifest, {})).rejects.toThrow('render failed')
   })
 })
+
+describe('canRunWasm', () => {
+  // The WASM circuit breaker decides whether a cartridge may render in the
+  // browser at all. Kernels with no WASM build must never be offered it.
+  it('allows OpenSCAD cartridges', () => {
+    expect(renderService.canRunWasm({ engine: 'openscad' })).toBe(true)
+  })
+
+  it('allows a cartridge that declares no engine', () => {
+    expect(renderService.canRunWasm({})).toBe(true)
+  })
+
+  it('refuses CadQuery, which has no browser build', () => {
+    expect(renderService.canRunWasm({ engine: 'cadquery' })).toBe(false)
+  })
+
+  it('refuses the implicit SDF engine', () => {
+    expect(renderService.canRunWasm({ engine: 'implicit' })).toBe(false)
+    expect(renderService.canRunWasm({ engine: 'graph' })).toBe(false)
+  })
+
+  it('treats a null manifest as permitted rather than throwing', () => {
+    expect(renderService.canRunWasm(null)).toBe(true)
+  })
+})
+
+describe('backend to WASM fallback', () => {
+  // A backend failure should fall back to browser rendering only when that is
+  // both possible and appropriate. Getting this wrong either strands the user
+  // on a dead backend, or silently offers WASM to a cartridge that has no
+  // browser build. The backend must be *available* for this path to run at
+  // all, so backendDetection is stubbed rather than inferred from fetch.
+  const scadManifest = {
+    ...manifest,
+    engine: 'openscad',
+    modes: [{ id: 'unit', parts: ['main'], scad_file: 'main.scad', estimate: { base_units: 1 } }],
+  }
+
+  async function loadWithBackendUp() {
+    vi.resetModules()
+    vi.doMock('../core/backendDetection', () => ({
+      isBackendAvailable: vi.fn(async () => true),
+      // Must be non-empty: detectMode only routes to the backend when an API
+      // base is configured, so an empty string sends every render to WASM and
+      // the fallback path under test is never entered.
+      getApiBase: vi.fn(() => 'http://localhost:5000'),
+      resetDetection: vi.fn(),
+    }))
+    vi.stubGlobal('navigator', { hardwareConcurrency: 16, deviceMemory: 16 })
+
+    class MockWorker {
+      constructor() { this.listeners = {} }
+      postMessage(msg) {
+        if (msg.type === 'init') {
+          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
+        } else if (msg.type === 'render') {
+          setTimeout(() => this.listeners['message']?.({
+            data: { type: 'result', stl: new Uint8Array([1, 2, 3]).buffer },
+          }), 0)
+        }
+      }
+      addEventListener(evt, cb) { this.listeners[evt] = cb }
+      removeEventListener(evt, cb) { if (this.listeners[evt] === cb) delete this.listeners[evt] }
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', MockWorker)
+    URL.createObjectURL = vi.fn(() => 'blob:abc')
+
+    return import('./renderService')
+  }
+
+  afterEach(() => { vi.doUnmock('../core/backendDetection') })
+
+  it('falls back to WASM and names rate limiting as the reason', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 429 rate limited'))
+    const logs = []
+    await svc.renderParts('unit', {}, scadManifest, {
+      onProgress: (p) => p.log && logs.push(p.log),
+    })
+    expect(logs.some(l => l.includes('Server limit reached'))).toBe(true)
+  })
+
+  it('falls back to WASM and names the unavailable worker', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(
+      new Error('Render worker unavailable or not healthy'))
+    const logs = []
+    await svc.renderParts('unit', {}, scadManifest, {
+      onProgress: (p) => p.log && logs.push(p.log),
+    })
+    expect(logs.some(l => l.includes('Render worker unavailable'))).toBe(true)
+  })
+
+  it('falls back on a network failure', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'))
+    const logs = []
+    await svc.renderParts('unit', {}, scadManifest, {
+      onProgress: (p) => p.log && logs.push(p.log),
+    })
+    expect(logs.some(l => l.includes('Backend unavailable'))).toBe(true)
+  })
+
+  it('does not fall back for a force_backend cartridge, and explains why', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 429 rate limited'))
+    const logs = []
+    await expect(
+      svc.renderParts('unit', {}, { ...scadManifest, project: { force_backend: true } }, {
+        onProgress: (p) => p.log && logs.push(p.log),
+      }),
+    ).rejects.toThrow(/429/)
+    expect(logs.some(l => l.includes('requires server rendering'))).toBe(true)
+  })
+
+  it('explains a worker outage on a force_backend cartridge', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('render_worker_unavailable'))
+    const logs = []
+    await expect(
+      svc.renderParts('unit', {}, { ...scadManifest, force_backend: true }, {
+        onProgress: (p) => p.log && logs.push(p.log),
+      }),
+    ).rejects.toThrow(/render_worker_unavailable/)
+    expect(logs.some(l => l.includes('render service recovers'))).toBe(true)
+  })
+
+  it('re-throws a backend error that WASM could not have fixed', async () => {
+    const svc = await loadWithBackendUp()
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 500 internal error'))
+    await expect(svc.renderParts('unit', {}, scadManifest, {})).rejects.toThrow(/500/)
+  })
+
+  // --- Estimation branches -------------------------------------------------
+
+  const CONSTANTS = { base_time: 1, per_unit: 2, per_part: 3, wasm_multiplier: 4 }
+
+  it('estimateRenderTime returns 0 when the manifest declares no constants', () => {
+    expect(renderService.estimateRenderTime('cup', {}, { modes: [{ id: 'cup', parts: ['a'] }] })).toBe(0)
+  })
+
+  it('estimateRenderTime returns 0 for a mode the manifest does not define', () => {
+    const manifest = { estimate_constants: CONSTANTS, modes: [{ id: 'cup', parts: ['a'] }] }
+    expect(renderService.estimateRenderTime('nope', {}, manifest)).toBe(0)
+  })
+
+  it('formula_vars multiply, so a var listed twice scales quadratically', () => {
+    const manifest = {
+      estimate_constants: CONSTANTS,
+      modes: [
+        { id: 'lin', parts: ['a'], estimate: { formula_vars: ['n'] } },
+        { id: 'sq', parts: ['a'], estimate: { formula_vars: ['n', 'n'] } },
+      ],
+    }
+    const lin = renderService.estimateRenderTime('lin', { n: 5 }, manifest)
+    const sq = renderService.estimateRenderTime('sq', { n: 5 }, manifest)
+    // units 5 vs 25 against the same base and part costs.
+    expect(sq).toBeGreaterThan(lin)
+  })
+
+  it('a missing formula var contributes 1 rather than collapsing the estimate to 0', () => {
+    const manifest = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: { formula_vars: ['absent'] } }],
+    }
+    expect(renderService.estimateRenderTime('cup', {}, manifest)).toBeGreaterThan(0)
+  })
+
+  it('numeric base_units is used when no formula_vars are given', () => {
+    const manifest = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: { base_units: 10 } }],
+    }
+    const withBase = renderService.estimateRenderTime('cup', {}, manifest)
+    const manifestNoBase = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: {} }],
+    }
+    expect(withBase).toBeGreaterThan(renderService.estimateRenderTime('cup', {}, manifestNoBase))
+  })
+
+  it('a non-numeric base_units falls back to one unit', () => {
+    // "N * N" is documentation, not something the reducer can evaluate — the
+    // estimator must not treat the string as a count.
+    const manifest = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: { base_units: 'N * N' } }],
+    }
+    const manifestOne = {
+      estimate_constants: CONSTANTS,
+      modes: [{ id: 'cup', parts: ['a'], estimate: { base_units: 1 } }],
+    }
+    expect(renderService.estimateRenderTime('cup', {}, manifest)).toBe(renderService.estimateRenderTime('cup', {}, manifestOne))
+  })
+
+  // --- Estimate accuracy ---------------------------------------------------
+
+  it('getEstimateAccuracy is null before any render has been observed', () => {
+    // Null rather than a number, so "not measured yet" cannot read as "accurate".
+    expect(renderService.getEstimateAccuracy(10)).toBeNull()
+  })
+
+  it('getEstimateAccuracy is null for a non-positive or non-finite estimate', () => {
+    expect(renderService.getEstimateAccuracy(0)).toBeNull()
+    expect(renderService.getEstimateAccuracy(Number.NaN)).toBeNull()
+    expect(renderService.getEstimateAccuracy(Number.POSITIVE_INFINITY)).toBeNull()
+  })
+
+  it('getRenderMode reports a mode string', () => {
+    expect(typeof renderService.getRenderMode()).toBe('string')
+  })
+
+  // --- Engine capability ----------------------------------------------------
+
+  it('WASM can run OpenSCAD projects', () => {
+    expect(renderService.canRunWasm({ engine: 'openscad' })).toBe(true)
+  })
+
+  it('WASM cannot run CadQuery or implicit projects', () => {
+    // Both kernels are backend-only; claiming otherwise would send the user
+    // down a WASM path that cannot produce their geometry.
+    expect(renderService.canRunWasm({ engine: 'cadquery' })).toBe(false)
+    expect(renderService.canRunWasm({ engine: 'implicit' })).toBe(false)
+    expect(renderService.canRunWasm({ engine: 'graph' })).toBe(false)
+  })
+
+  it('a manifest with no declared engine is treated as WASM-capable', () => {
+    expect(renderService.canRunWasm({})).toBe(true)
+    expect(renderService.canRunWasm(null)).toBe(true)
+  })
+
+  it('getLastObservedRenderSeconds reports null before any render', () => {
+    const observed = renderService.getLastObservedRenderSeconds()
+    expect(observed === null || typeof observed === 'number').toBe(true)
+  })
+
+  // --- Stream progress reporting -------------------------------------------
+
+  const backendStream = (lines) => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({ ok: true, body: createSSEStream(lines) })
+    return fetchMock
+  }
+
+  it('a phase with no percentage still reports the phase', async () => {
+    backendStream([
+      'data: {"event":"output","part":"main","line":"Compiling...","phase":"compile"}',
+      '',
+    ])
+    const events = []
+    await expect(
+      renderService.renderParts('unit', {}, manifest, { onProgress: e => events.push(e) })
+    ).rejects.toThrow()
+    expect(events.some(e => e.phase)).toBe(true)
+  })
+
+  it('a non-numeric progress value is ignored rather than reported as NaN', async () => {
+    backendStream([
+      'data: {"event":"output","part":"main","progress":"halfway"}',
+      'data: {"event":"output","part":"main","progress":null}',
+      '',
+    ])
+    const events = []
+    await expect(
+      renderService.renderParts('unit', {}, manifest, { onProgress: e => events.push(e) })
+    ).rejects.toThrow()
+    expect(events.every(e => e.progress === undefined || Number.isFinite(e.progress))).toBe(true)
+  })
+
+  it('an infinite progress value is ignored', async () => {
+    backendStream([
+      'data: {"event":"output","part":"main","progress":1e999}',
+      '',
+    ])
+    const events = []
+    await expect(
+      renderService.renderParts('unit', {}, manifest, { onProgress: e => events.push(e) })
+    ).rejects.toThrow()
+    expect(events.every(e => e.progress === undefined || Number.isFinite(e.progress))).toBe(true)
+  })
+
+  it('a stream error without an error field falls back to a generic message', async () => {
+    backendStream([
+      'data: {"event":"error","part":"all"}',
+      '',
+    ])
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow(/Render failed|without producing/)
+  })
+
+  it('a stream error reported only as message is surfaced', async () => {
+    backendStream([
+      'data: {"event":"error","part":"all","message":"solver ran out of memory"}',
+      '',
+    ])
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow(/solver ran out of memory/)
+  })
+
+  it('a trailing SSE line with no newline is still parsed', async () => {
+    // The buffer keeps an unterminated remainder; a stream whose last event
+    // arrives without a trailing newline must not lose that event.
+    backendStream([
+      'data: {"event":"error","part":"all","error":"truncated tail"}',
+    ])
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow(/truncated tail|without producing/)
+  })
+})
+

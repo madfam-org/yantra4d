@@ -101,3 +101,45 @@ class TestSummary:
         assert res.status_code == 200
         data = res.get_json()
         assert data["period_days"] == 7
+
+
+def _enable_rate_limits(app):
+    """Re-init the limiter with limits enabled on a freshly built app.
+
+    The autouse conftest fixture disables the limiter before create_app() runs,
+    which makes flask-limiter's init_app skip registering its request hooks
+    entirely. Re-running init_app (before the app's first request) registers
+    them so rate limit headers can be observed.
+    """
+    from extensions import limiter
+    app.config["RATELIMIT_ENABLED"] = True
+    limiter.enabled = True
+    limiter.init_app(app)
+
+
+class TestRateLimits:
+    """Analytics endpoints stay unauthenticated but must carry rate limits.
+
+    Rate limit headers (headers_enabled=True in extensions.py) prove the
+    @limiter.limit decorator is registered with the intended value.
+    """
+
+    def test_track_carries_rate_limit(self, app, client):
+        from extensions import limiter
+        _enable_rate_limits(app)
+        try:
+            res = client.post("/api/analytics/track", json={"project": "p", "event": "render"})
+            assert res.status_code == 201
+            assert res.headers.get("X-RateLimit-Limit") == "120"
+        finally:
+            limiter.enabled = False
+
+    def test_summary_carries_rate_limit(self, app, client):
+        from extensions import limiter
+        _enable_rate_limits(app)
+        try:
+            res = client.get("/api/analytics/test-project/summary")
+            assert res.status_code == 200
+            assert res.headers.get("X-RateLimit-Limit") == "60"
+        finally:
+            limiter.enabled = False

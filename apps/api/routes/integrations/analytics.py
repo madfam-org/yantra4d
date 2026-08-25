@@ -10,7 +10,8 @@ import time
 from flask import Blueprint, Response, jsonify, request
 from sqlalchemy import func
 
-from extensions import db
+import rate_limits
+from extensions import db, limiter
 from models.analytics import AnalyticsEvent
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 @analytics_bp.route("/api/analytics/track", methods=["POST"])
+@limiter.limit(rate_limits.ANALYTICS_TRACK)
 def track_event() -> tuple[Response, int]:
     """Record an analytics event. No PII collected."""
     data = request.get_json(silent=True) or {}
@@ -59,6 +61,7 @@ def track_event() -> tuple[Response, int]:
 
 @analytics_bp.route("/api/analytics/<slug>/summary", methods=["GET"])
 @require_valid_slug
+@limiter.limit(rate_limits.ANALYTICS_SUMMARY)
 def get_summary(slug: str) -> Response:
     """Return aggregate analytics for a project."""
     days = int(request.args.get("days", 30))

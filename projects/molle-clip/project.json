@@ -411,7 +411,7 @@
           "es": "Rejilla PALS / MOLLE"
         },
         "geometry_type": "snap",
-        "standard": "MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
+        "standard": "MOLLE/PALS MIL-W-17337 / A-A-55301 (1in rows, 1.5in columns)",
         "parameters": [
           "row_h",
           "row_pitch",

@@ -1,20 +1,39 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage, isMac } from '../../helpers/test-utils.js'
+import {
+  goToStudio,
+  setLanguage,
+  isMac,
+  forceBackendRender,
+  waitForRenderSettled,
+  waitForModesReady,
+  pressModeShortcut,
+} from '../../helpers/test-utils.js'
+
+/**
+ * Mode ids of the MOCKED manifest (e2e/helpers/api-mocker.js), in the order the
+ * Cmd/Ctrl+N shortcut indexes them. Deliberately different from the gridfinity
+ * fallback manifest the app boots with, which is what makes the wait necessary.
+ */
+const MOCK_MODE_IDS = ['cup', 'single', 'grid']
 
 test.describe('Keyboard Shortcuts', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
+    // Pin the render path to the mocked backend. Without this, detectMode()
+    // reads navigator.hardwareConcurrency and picks WASM on any runner with
+    // >= 4 cores, so the per-test render mocks below never load.
+    await forceBackendRender(page)
     await goToStudio(page)
   })
 
   test('Cmd/Ctrl+Z triggers undo', async ({ page, sidebar }) => {
     const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 100)
-    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 10000 })
 
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 10000 })
   })
 
   test('Cmd/Ctrl+Shift+Z triggers redo', async ({ page, sidebar }) => {
@@ -23,16 +42,16 @@ test.describe('Keyboard Shortcuts', () => {
 
     const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 100)
-    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 10000 })
 
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 10000 })
 
     // Small delay to avoid keyboard event collision with undo handler
     await page.waitForTimeout(200)
     await page.keyboard.press(mac ? 'Meta+Shift+z' : 'Control+Shift+z')
-    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 10000 })
   })
 
   test('Cmd/Ctrl+Enter triggers render', async ({ page, sidebar }) => {
@@ -50,50 +69,82 @@ test.describe('Keyboard Shortcuts', () => {
     // Change a param to bust the render cache, then wait for debounce to clear
     await sidebar.editSliderValue('width', 77)
     // The debounced auto-render fires with the slow mock, showing Processing...
-    await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 3000 })
+    await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 10000 })
   })
 
   test('Escape cancels active render', async ({ page, sidebar }) => {
-    // Wait for initial auto-render to settle
-    await page.waitForTimeout(1000)
-    // Set up slow mock to catch new render
+    // Hold the render open until this test releases it, so the window in which
+    // Escape has something to cancel is set by the test rather than by how fast
+    // the runner happens to render. The previous version raced twice over: the
+    // initial auto-render might still be running when it pressed Escape (so the
+    // Cancel it saw belonged to the *un*mocked render), and on hardware where
+    // detectMode() picked WASM the 10s mock below was never consulted at all.
+    let releaseRender = () => { }
+    const renderHeld = new Promise((resolve) => { releaseRender = resolve })
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
-      await new Promise(r => setTimeout(r, 10000))
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
+      await renderHeld
+      await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
 
-    // Change a param to bust render cache — debounced auto-render will use the slow mock
-    await sidebar.editSliderValue('width', 63)
-    // Wait for render to actually start (Cancel button appears)
-    await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
+    try {
+      // The initial auto-render must be finished before we can attribute the
+      // next Cancel button to our own slow mock.
+      await waitForRenderSettled(page)
 
-    await page.keyboard.press('Escape')
-    // Generate button should re-appear
-    await expect(page.locator('button', { hasText: /Generate|Generar/ })).toBeVisible({ timeout: 5000 })
+      // Change a param to bust render cache — debounced auto-render uses the held mock
+      await sidebar.editSliderValue('width', 63)
+      // Wait for render to actually start (Cancel button appears)
+      await expect(sidebar.cancelButton).toBeVisible({ timeout: 15_000 })
+
+      await page.keyboard.press('Escape')
+      // Generate button should re-appear — the app aborts the in-flight fetch,
+      // so this must not depend on the route ever being released.
+      await expect(sidebar.generateButton).toBeVisible({ timeout: 10_000 })
+      await expect(sidebar.generateButton).toBeEnabled({ timeout: 10_000 })
+    } finally {
+      releaseRender()
+    }
   })
 
-  test('Cmd/Ctrl+1 switches to first mode', async ({ page }) => {
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+1' : 'Control+1')
-    await page.waitForTimeout(500)
-    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Start|Inicio/i, { timeout: 3000 })
+  // The mode tabs are plain buttons carrying aria-selected; the only tabs with
+  // data-state="active" are the Radix section tabs (Design/View/BOM/Export) and
+  // the hidden mobile mode list. So [role="tab"][data-state="active"] resolved
+  // first to the Design section tab and these assertions compared a mode name
+  // against "Design". sidebar.getActiveMode() reads the visible mode tablist.
+  test('Cmd/Ctrl+1 switches to first mode', async ({ page, sidebar }) => {
+    // waitForModesReady, not a bare keypress: the shortcut handler indexes into
+    // whichever manifest is loaded when the key lands, and until the mock
+    // manifest arrives that is the gridfinity fallback. This test would pass
+    // either way — fallback modes[0] is "bin" and loaded modes[0] is "cup"
+    // (label "Start"), so /start|inicio/ matches the loaded one regardless —
+    // which made it a false green hiding the same race that fails Cmd/Ctrl+2.
+    await pressModeShortcut(page, 1, MOCK_MODE_IDS)
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 15_000 }).toMatch(/start|inicio/i)
   })
 
-  test('Cmd/Ctrl+2 switches to second mode', async ({ page }) => {
-    const mac = await isMac(page)
-    await page.keyboard.press(mac ? 'Meta+2' : 'Control+2')
-    await page.waitForTimeout(500)
-    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Single|Individual/i, { timeout: 3000 })
+  test('Cmd/Ctrl+2 switches to second mode', async ({ page, sidebar }) => {
+    // The flake this file was red for. Sending Meta+2 before the mock manifest
+    // replaced the fallback dispatched fallback modes[1] = "baseplate", a mode
+    // absent from the loaded manifest, so the app stayed on "cup" and
+    // getActiveMode() returned "start" until the poll expired. Waiting for the
+    // loaded modes to be the ones on screen removes the race at its source.
+    await pressModeShortcut(page, 2, MOCK_MODE_IDS)
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 15_000 }).toMatch(/single|individual/i)
   })
 
-  test('Cmd/Ctrl+number beyond mode count does nothing', async ({ page }) => {
-    const tabBefore = await page.locator('[role="tab"][data-state="active"]').first().textContent()
+  test('Cmd/Ctrl+number beyond mode count does nothing', async ({ page, sidebar }) => {
+    // Guard the count too: the fallback manifest has FIVE modes, so a Meta+9
+    // here is only genuinely "beyond the mode count" once the 3-mode loaded
+    // manifest is in place. Without the wait this asserts nothing on a slow
+    // manifest — and would also have stayed green if Meta+9 had switched mode
+    // while both reads still resolved to the same tab.
+    await waitForModesReady(page, MOCK_MODE_IDS)
+    const modeBefore = await sidebar.getActiveMode()
     const mac = await isMac(page)
     await page.keyboard.press(mac ? 'Meta+9' : 'Control+9')
     await page.waitForTimeout(300)
-    const tabAfter = await page.locator('[role="tab"][data-state="active"]').first().textContent()
-    expect(tabAfter).toBe(tabBefore)
+    expect(await sidebar.getActiveMode()).toBe(modeBefore)
   })
 
   test('keyboard shortcuts work when sidebar is focused', async ({ page, sidebar }) => {
@@ -103,20 +154,23 @@ test.describe('Keyboard Shortcuts', () => {
     // Capture value AFTER focus — clicking the slider track could change it
     const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 100)
-    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 10000 })
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 10000 })
   })
 
-  test('keyboard shortcuts work when viewer is focused', async ({ page }) => {
-    // Click the viewer area (not canvas directly — it may remount during manifest load)
-    await page.locator('#main-content').click()
+  test('keyboard shortcuts work when viewer is focused', async ({ page, sidebar }) => {
+    // Click the viewer area (not canvas directly — it may remount during manifest load).
+    // App.tsx renders StudioMainView in both the desktop and the mobile layout
+    // tree, so #main-content is in the DOM twice — a duplicate id, and enough to
+    // fail strict mode here before any key was pressed. Scope to the visible one.
+    await page.locator('#main-content:visible').first().click()
     await page.waitForTimeout(200)
-    const mac = await isMac(page)
-    // Ctrl+3 selects the 3rd mode (Grid) — modes are 1-indexed in shortcuts
-    await page.keyboard.press(mac ? 'Meta+3' : 'Control+3')
-    await page.waitForTimeout(500)
-    await expect(page.locator('[role="tab"][data-state="active"]').first()).toContainText(/Grid|Cuadrícula/i, { timeout: 3000 })
+    // Ctrl+3 selects the 3rd mode (Grid) — modes are 1-indexed in shortcuts.
+    // Same manifest race as Cmd/Ctrl+2: fallback modes[2] is "cup", so an early
+    // keystroke here switches to Start and this asserts /grid/ against "start".
+    await pressModeShortcut(page, 3, MOCK_MODE_IDS)
+    await expect.poll(() => sidebar.getActiveMode(), { timeout: 15_000 }).toMatch(/grid|cuadr/i)
   })
 
   test('keyboard shortcuts do not interfere with text inputs', async ({ sidebar }) => {
@@ -125,24 +179,24 @@ test.describe('Keyboard Shortcuts', () => {
       // Use fill() — atomically focuses, clears, types, and dispatches change events
       // This validates the core concern: keyboard shortcut handler returns early for INPUT elements
       await letterInput.fill('Z')
-      await expect(letterInput).toHaveValue('Z', { timeout: 3000 })
+      await expect(letterInput).toHaveValue('Z', { timeout: 10000 })
     }
   })
 
   test('multiple undos walk back through history', async ({ page, sidebar }) => {
     const initialVal = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 80)
-    await expect(sidebar.sliderValue('width')).toHaveText('80', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('80', { timeout: 10000 })
     await sidebar.editSliderValue('width', 120)
-    await expect(sidebar.sliderValue('width')).toHaveText('120', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('120', { timeout: 10000 })
 
     const mac = await isMac(page)
     // Undo to 80
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await expect(sidebar.sliderValue('width')).toHaveText('80', { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText('80', { timeout: 10000 })
 
     // Undo to initial
     await page.keyboard.press(mac ? 'Meta+z' : 'Control+z')
-    await expect(sidebar.sliderValue('width')).toHaveText(initialVal, { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(initialVal, { timeout: 10000 })
   })
 })

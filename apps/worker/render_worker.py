@@ -4,12 +4,12 @@ Yantra4D Render Worker.
 Consumes CAD rendering tasks from Redis queue and executes them via OpenSCAD or CadQuery.
 Publishes progress and completion events via Redis Pub/Sub back to the API.
 """
-# ruff: noqa: E402
 import json
 import logging
 import os
 import sys
 import time
+
 import redis
 
 BACKEND_PATH = os.environ.get("YANTRA4D_BACKEND_PATH", "/app/backend")
@@ -19,12 +19,18 @@ if BACKEND_PATH not in sys.path:
 # Use the same imports as the orchestrator to run the actual engines
 from config import Config
 from manifest import get_manifest
+from services.core.implicit_engine import run_render as run_implicit_render
+from services.core.implicit_engine import stream_render as stream_implicit_render
 from services.engine import render_orchestrator
-from services.engine.openscad import build_openscad_command, run_render as run_openscad_render, stream_render as stream_openscad_render
-from services.engine.cadquery_engine import build_cadquery_command, run_render as run_cadquery_render, stream_render as stream_cadquery_render
-from services.core.implicit_engine import run_render as run_implicit_render, stream_render as stream_implicit_render
-from services.engine.render_cache import render_cache
+from services.engine.cadquery_engine import build_cadquery_command
+from services.engine.cadquery_engine import run_render as run_cadquery_render
+from services.engine.cadquery_engine import stream_render as stream_cadquery_render
 from services.engine.format_converter import convert_mesh, stl_to_glb
+from services.engine.graph_engine import prepare_graph_script
+from services.engine.openscad import build_openscad_command
+from services.engine.openscad import run_render as run_openscad_render
+from services.engine.openscad import stream_render as stream_openscad_render
+from services.engine.render_cache import render_cache
 from services.engine.render_contract import (
     RENDER_EVENT_CANCELLED,
     RENDER_EVENT_ERROR,
@@ -159,9 +165,7 @@ def _post_render_convert(output_path, output_filename, part, stl_prefix, actual_
         glb_path = os.path.join(STATIC_FOLDER, glb_filename)
         threemf_path = output_path.rsplit('.stl', 1)[0] + '.3mf' if output_path.endswith('.stl') else None
         if threemf_path and os.path.isfile(threemf_path):
-            if convert_mesh(threemf_path, glb_path):
-                viewer_filename = glb_filename
-            elif stl_to_glb(output_path, glb_path):
+            if convert_mesh(threemf_path, glb_path) or stl_to_glb(output_path, glb_path):
                 viewer_filename = glb_filename
         elif stl_to_glb(output_path, glb_path):
             viewer_filename = glb_filename
@@ -198,6 +202,16 @@ def process_sync_task(task):
             cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format)
             success, stderr = run_cadquery_render(
                 cmd, scad_path=scad_path, is_cancelled=lambda: _is_cancelled(job_id)
+            )
+        elif engine == "graph":
+            # Transpile the graph document to a CadQuery script, then ride the
+            # proven CadQuery sandbox path (part selection via target_part).
+            script_path = prepare_graph_script(scad_path, manifest)
+            cp_copy = params.copy()
+            cp_copy["target_part"] = part
+            cmd = build_cadquery_command(output_path, script_path, cp_copy, export_format)
+            success, stderr = run_cadquery_render(
+                cmd, scad_path=script_path, is_cancelled=lambda: _is_cancelled(job_id)
             )
         elif engine == "implicit":
             config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
@@ -256,7 +270,7 @@ def process_sync_task(task):
 
         _publish_job_event(job_id, final_payload, emit_final=True)
     except Exception as exc:
-        logger.exception("Sync render failed for job %s part %s: %s", job_id, part, exc)
+        logger.exception("Sync render failed for job %s part %s", job_id, part)
         if _is_cancelled(job_id):
             _notify_cancelled(job_id, part)
         else:
@@ -298,6 +312,15 @@ def process_stream_task(task):
             stream_gen = stream_cadquery_render(
                 cmd, part, part_base, part_weight, i, num_parts,
                 scad_path=scad_path, is_cancelled=lambda: _is_cancelled(job_id)
+            )
+        elif engine == "graph":
+            script_path = prepare_graph_script(scad_path, manifest)
+            cp_copy = params.copy()
+            cp_copy["target_part"] = part
+            cmd = build_cadquery_command(output_path, script_path, cp_copy, export_format)
+            stream_gen = stream_cadquery_render(
+                cmd, part, part_base, part_weight, i, num_parts,
+                scad_path=script_path, is_cancelled=lambda: _is_cancelled(job_id)
             )
         elif engine == "implicit":
             config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
@@ -365,7 +388,7 @@ def process_stream_task(task):
                     )
                     emitted_final = True
                     break
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — one bad event must not kill the stream
                 logger.error(f"Error parsing stream event: {e}")
 
         if not emitted_final:
@@ -374,7 +397,7 @@ def process_stream_task(task):
             else:
                 _notify_error(job_id, part, "Render stream ended without completion")
     except Exception as exc:
-        logger.exception("Stream render failed for job %s part %s: %s", job_id, part, exc)
+        logger.exception("Stream render failed for job %s part %s", job_id, part)
         if _is_cancelled(job_id):
             _notify_cancelled(job_id, part)
         else:
@@ -399,7 +422,7 @@ def run_worker():
                     logger.warning("Malformed task in render queue: %s", message)
         except TypeError:
             pass  # Timeout
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — the worker loop must survive anything
             logger.error(f"Worker loop error: {e}")
             time.sleep(1)
 

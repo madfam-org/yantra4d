@@ -24,9 +24,10 @@ test.describe('Error Handling', () => {
     await page.route('**/api/render', (route) => route.abort('connectionrefused'))
     await page.route('**/api/render-stream', (route) => route.abort('connectionrefused'))
     await sidebar.clickGenerate()
-    await page.waitForTimeout(2000)
-    const logs = await viewer.getConsoleLogs()
-    expect(logs).toContain('Error')
+    // Poll rather than sleeping 2s and reading once. Under serial load the
+    // error had not reached the console yet and the single read saw the
+    // initial "Ready." — a real flake, not a regression.
+    await expect.poll(() => viewer.getConsoleLogs(), { timeout: 15000 }).toContain('Error')
   })
 
   test('API 500 on render surfaces error to user', async ({ page, sidebar, viewer }) => {
@@ -38,12 +39,13 @@ test.describe('Error Handling', () => {
       route.fulfill({ status: 500, json: { error: 'Internal server error' } })
     })
     await sidebar.clickGenerate()
-    await page.waitForTimeout(2000)
-    const logs = await viewer.getConsoleLogs()
-    expect(logs).toContain('Error')
+    // Poll rather than sleeping 2s and reading once. Under serial load the
+    // error had not reached the console yet and the single read saw the
+    // initial "Ready." — a real flake, not a regression.
+    await expect.poll(() => viewer.getConsoleLogs(), { timeout: 15000 }).toContain('Error')
   })
 
-  test('API 400 on render shows error', async ({ page, sidebar }) => {
+  test('API 400 on render shows error', async ({ page, sidebar, viewer }) => {
     await goToStudio(page)
     await page.route('**/api/render', (route) => {
       route.fulfill({ status: 400, json: { error: 'Bad request: missing mode' } })
@@ -52,7 +54,9 @@ test.describe('Error Handling', () => {
       route.fulfill({ status: 400, json: { error: 'Bad request: missing mode' } })
     })
     await sidebar.clickGenerate()
-    await page.waitForTimeout(2000)
+    // This test ended here, on a bare 2s wait with no assertion — it passed
+    // whether or not a 400 surfaced anything. Its name is a claim; make it one.
+    await expect.poll(() => viewer.getConsoleLogs(), { timeout: 15000 }).toContain('Error')
   })
 
   test('manifest fetch failure falls back gracefully', async ({ page }) => {
@@ -72,15 +76,18 @@ test.describe('Error Handling', () => {
   })
 
   test('projects fetch failure shows error state', async ({ page }) => {
-    await page.unroute('**/api/admin/projects**')
-    await page.route('**/api/admin/projects**', (route) => {
+    // ProjectsView reads /api/catalog/search, not /api/admin/projects — this
+    // mock used to override an endpoint the page no longer calls, so the view
+    // loaded normally and never rendered an error.
+    await page.unroute('**/api/catalog/search**')
+    await page.route('**/api/catalog/search**', (route) => {
       route.fulfill({ status: 500, json: { error: 'Server down' } })
     })
     await goToProjects(page)
     await expect(page.locator('.text-destructive')).toBeVisible({ timeout: 8000 })
   })
 
-  test('verify failure shows error in console', async ({ page, sidebar }) => {
+  test('verify failure shows error in console', async ({ page, sidebar, viewer }) => {
     await goToStudio(page)
     await page.route('**/api/verify', (route) => {
       route.fulfill({ status: 500, json: { error: 'Verification failed' } })
@@ -88,10 +95,17 @@ test.describe('Error Handling', () => {
     // Need parts to enable verify button
     await sidebar.clickGenerate()
     await page.waitForTimeout(2000)
-    if (!(await sidebar.verifyButton.isDisabled())) {
-      await sidebar.clickVerify()
-      await page.waitForTimeout(1000)
-    }
+
+    // This body used to be an `if` around two clicks and a sleep, with no
+    // assertion in any branch — it reported success whether verification
+    // errored, succeeded, or never ran. Verify needs rendered parts, which
+    // depend on the renderer being available, so the unavailable case is now
+    // an explicit skip rather than a silent pass.
+    const canVerify = await sidebar.verifyButton.isEnabled().catch(() => false)
+    test.skip(!canVerify, 'verify requires rendered parts; none were produced in this environment')
+
+    await sidebar.clickVerify()
+    await expect.poll(() => viewer.getConsoleLogs(), { timeout: 15000 }).toContain('Error')
   })
 
   test('render timeout does not crash the app', async ({ page, sidebar }) => {
@@ -118,12 +132,21 @@ test.describe('Error Handling', () => {
     expect(crashed).toBe(0)
   })
 
-  test('backend unavailable shows warning in console', async ({ page }) => {
+  test('backend unavailable reports a server problem, not a missing project', async ({ page }) => {
     await page.route('**/api/**', (route) => route.abort('connectionrefused'))
     await page.goto('/project/test')
-    await page.waitForTimeout(3000)
-    // Should still render with fallback manifest
-    await expect(page.locator('header')).toBeVisible()
+
+    // The old assertion was `header` visible, on the premise that the app falls
+    // back to the bundled manifest. It does not: a manifest error takes over the
+    // whole screen, header included. What it used to render there was "The
+    // project 'test' doesn't exist or hasn't been deployed yet" — a claim the
+    // app cannot support when the server never answered.
+    await expect(page.getByText(/Can't Reach the Server|No se puede conectar/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText(/doesn't exist|no existe/i)).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Retry|Reintentar/i })).toBeVisible()
+
+    const crashed = await page.locator('[data-testid="error-boundary"], .error-boundary').count()
+    expect(crashed).toBe(0)
   })
 
   test('ErrorBoundary retry button resets error state', async ({ page }) => {
@@ -133,13 +156,18 @@ test.describe('Error Handling', () => {
     await expect(page.locator('header')).toBeVisible()
   })
 
-  // Skipped: OnboardingWizard route (/onboard) not integrated into app routing
+  // /onboard IS routed — useHashNavigation.isOnboardView matches it and App.tsx
+  // renders OnboardingWizard for it. The old reason on this skip was stale. What
+  // was actually wrong is the `header` wait below: the wizard renders standalone
+  // with no app chrome, so that selector never resolves. Left skipped only
+  // because these two have not been re-verified since; the anchor is now
+  // [data-testid="onboarding-wizard"], as used in 08-onboarding.
   test.skip('onboarding API error shows error banner', async ({ page }) => {
     await page.route('**/api/projects/analyze', (route) => {
       route.fulfill({ status: 500, json: { error: 'Analysis failed' } })
     })
     await page.goto('/onboard')
-    await page.waitForSelector('header')
+    await page.waitForSelector('[data-testid="onboarding-wizard"]')
     await page.locator('#scad-upload').setInputFiles({
       name: 'test.scad', mimeType: 'text/plain', buffer: Buffer.from('cube(10);'),
     })

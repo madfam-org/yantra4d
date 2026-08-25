@@ -100,7 +100,8 @@ test.describe('Accessibility', () => {
 
   test('console has role="log" and aria-live', async ({ page }) => {
     await goToStudio(page)
-    const console_ = page.locator('[role="log"]')
+    // StudioMainView renders a desktop and a mobile console, both role="log".
+    const console_ = page.locator('[role="log"]:visible')
     await expect(console_).toHaveAttribute('aria-live', 'polite')
     await expect(console_).toHaveAttribute('aria-label', 'Render console')
   })
@@ -133,7 +134,10 @@ test.describe('Accessibility', () => {
     // Open globe dropdown and select a different language
     await page.locator('button:has(.lucide-globe)').first().click()
     const dropdown = page.locator('.absolute.top-full')
-    await dropdown.first().waitFor({ timeout: 3000 })
+    // 10s, not 3s: WebKit renders the dropdown slower than Chromium and this
+    // wait exhausted all 3 retries on the webkit shard (per the config's own
+    // note that tight timeouts flake across shards). A passing run is unaffected.
+    await dropdown.first().waitFor({ timeout: 10000 })
     const options = dropdown.locator('button')
     const count = await options.count()
     for (let i = 0; i < count; i++) {
@@ -148,12 +152,14 @@ test.describe('Accessibility', () => {
     expect(langAfter).not.toBe(langBefore)
   })
 
-  test('confirm dialog traps focus', async ({ page }) => {
+  test('confirm dialog traps focus', async ({ page, sidebar }) => {
     await page.route('**/api/estimate', (route) => {
       route.fulfill({ json: { estimated_time: 120 } })
     })
     await goToStudio(page)
-    await page.locator('button', { hasText: 'Generate' }).click()
+    // Scoped to the sidebar: Generate renders in both layout trees, so the bare
+    // match resolved to 2 elements and failed strict mode.
+    await sidebar.generateButton.click()
     await page.waitForTimeout(500)
     const dialog = page.locator('[role="alertdialog"]')
     if (await dialog.isVisible()) {

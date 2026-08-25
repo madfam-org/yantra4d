@@ -146,7 +146,7 @@
         "id": "pipe_clamp_bore",
         "label": { "en": "Pipe Clamp Bore", "es": "Barreno de Prensa de Tubo" },
         "geometry_type": "socket",
-        "standard": "1/2in & 3/4in pipe",
+        "standard": "1/2in & 3/4in IPS pipe",
         "parameters": ["pipe", "fit", "depth", "wall"]
       },
       {

@@ -153,7 +153,7 @@
         "id": "handlebar_clamp",
         "label": { "en": "Handlebar Clamp", "es": "Abrazadera de Manillar" },
         "geometry_type": "socket",
-        "standard": "7/8-1in bar",
+        "standard": "handlebar 7/8-1in (22.2-25.4mm)",
         "parameters": ["bar_od", "wall", "clamp_w", "clearance"]
       },
       {

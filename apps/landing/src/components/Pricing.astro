@@ -1,0 +1,81 @@
+---
+// The #pricing section every upsell CTA in the studio has pointed at since the
+// tier system shipped — DemoBanner, RateLimitBanner and the upgrade dialog all
+// link to https://yantra4d.com/#pricing. Until this component existed, that
+// anchor resolved to nothing.
+//
+// Tier facts mirror apps/api/tiers.json (the entitlement source of truth):
+// guest 10 renders/hr · essentials 30 + 3MF/OBJ (free with an account — an
+// authenticated user without a billing claim resolves to essentials) · pro 150
+// + all formats + CadQuery + GitHub + print dispatch. The pro price is the
+// product's existing "from $9/mo" copy. Checkout is Dhanam's hosted page with
+// the same query contract as apps/studio/src/lib/billing.ts.
+const { t } = Astro.props;
+
+const CHECKOUT_URL = 'https://app.dhan.am/checkout?plan=yantra4d_pro&product=yantra4d';
+const APP_URL = 'https://app.yantra4d.com';
+---
+
+<section id="pricing" class="py-24 px-6">
+  <div class="mx-auto max-w-5xl">
+    <div class="text-center mb-12">
+      <h2 class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">{t?.pricing?.heading ?? 'Precios'}</h2>
+      <p class="text-muted-foreground max-w-2xl mx-auto">{t?.pricing?.subheading ?? ''}</p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-3">
+      <!-- Free / Guest -->
+      <div class="rounded-xl border border-border bg-card p-8 flex flex-col">
+        <h3 class="text-xl font-bold mb-1">{t?.pricing?.free?.name ?? 'Explorador'}</h3>
+        <div class="text-3xl font-bold mb-4">{t?.pricing?.free?.price ?? 'Gratis'}</div>
+        <ul class="space-y-2 text-sm text-muted-foreground mb-8 flex-1">
+          <li>{t?.pricing?.free?.f1 ?? ''}</li>
+          <li>{t?.pricing?.free?.f2 ?? ''}</li>
+          <li>{t?.pricing?.free?.f3 ?? ''}</li>
+        </ul>
+        <a href={APP_URL} class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+          {t?.pricing?.free?.cta ?? 'Abrir el estudio'}
+        </a>
+      </div>
+
+      <!-- Essentials -->
+      <div class="rounded-xl border border-border bg-card p-8 flex flex-col">
+        <h3 class="text-xl font-bold mb-1">{t?.pricing?.essentials?.name ?? 'Essentials'}</h3>
+        <div class="text-3xl font-bold mb-4">{t?.pricing?.essentials?.price ?? 'Gratis con cuenta'}</div>
+        <ul class="space-y-2 text-sm text-muted-foreground mb-8 flex-1">
+          <li>{t?.pricing?.essentials?.f1 ?? ''}</li>
+          <li>{t?.pricing?.essentials?.f2 ?? ''}</li>
+          <li>{t?.pricing?.essentials?.f3 ?? ''}</li>
+        </ul>
+        <a href={APP_URL} class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+          {t?.pricing?.essentials?.cta ?? 'Crear cuenta'}
+        </a>
+      </div>
+
+      <!-- Pro -->
+      <div class="rounded-xl border-2 border-primary bg-card p-8 flex flex-col relative">
+        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+          {t?.pricing?.pro?.badge ?? 'Recomendado'}
+        </span>
+        <h3 class="text-xl font-bold mb-1">{t?.pricing?.pro?.name ?? 'Pro'}</h3>
+        <div class="text-3xl font-bold mb-4">{t?.pricing?.pro?.price ?? 'desde $9/mes'}</div>
+        <ul class="space-y-2 text-sm text-muted-foreground mb-8 flex-1">
+          <li>{t?.pricing?.pro?.f1 ?? ''}</li>
+          <li>{t?.pricing?.pro?.f2 ?? ''}</li>
+          <li>{t?.pricing?.pro?.f3 ?? ''}</li>
+          <li>{t?.pricing?.pro?.f4 ?? ''}</li>
+        </ul>
+        <a href={CHECKOUT_URL} class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+          {t?.pricing?.pro?.cta ?? 'Mejorar a Pro'}
+        </a>
+      </div>
+    </div>
+
+    <p class="text-center text-sm text-muted-foreground mt-8">
+      {t?.pricing?.whitelabel ?? ''}
+      <a href="https://madfam.io" class="underline hover:text-foreground" rel="noopener noreferrer">
+        {t?.pricing?.whitelabelCta ?? 'Innovaciones MADFAM'}
+      </a>
+    </p>
+  </div>
+</section>

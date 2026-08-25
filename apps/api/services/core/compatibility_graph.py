@@ -54,7 +54,7 @@ _FAMILY_PATTERNS: list[tuple[str, str]] = [
     (r"gridfinity", "gridfinity"),
     (r"multiboard", "multiboard"),
     (r"din\s*(en\s*)?60715|ts35|din\s*rail", "din-rail-35"),
-    (r"pco\s*1881", "pco-1881"),
+    (r"pco[\s-]*1881", "pco-1881"),
     (r"\bght\b|garden hose", "ght-hose"),
     (r"\bnpt\b", "npt"),
     (r"\bbsp\b", "bsp"),
@@ -74,7 +74,9 @@ _FAMILY_PATTERNS: list[tuple[str, str]] = [
     (r"\b2020\b|2040|v-?slot|t-?slot|1020|extrusion", "t-slot-extrusion"),
     (r"miter|t-?track|19mm", "miter-ttrack"),
     (r"ws2812|neopixel|sk6812", "addressable-led"),
-    (r"ws28|8x8|16x16", "led-matrix"),
+    # "16x16 / 19x19 / 9x9 brushless motor mount" is the FPV motor bolt square, not an
+    # LED matrix — the old "8x8|16x16" alternatives mis-familied drone hardware.
+    (r"brushless\s*motor\s*mount", "drone-motor-mount"),
     (r"rms\b|w0\.800|objective", "rms-objective"),
     (r"thorlabs|breadboard|25\s*mm.*grid|1\s*in.*grid", "optical-breadboard"),
     (r"picatinny|weaver", "picatinny"),
@@ -89,7 +91,8 @@ _FAMILY_PATTERNS: list[tuple[str, str]] = [
     (r"din\s*3975|worm", "worm-gear"),
     (r"iso\s*23509|bevel", "bevel-gear"),
     (r"webbing|molle|pals", "webbing-strap"),
-    (r"pc\s*fan|40mm|60mm|80mm|120mm|140mm\s*fan", "pc-fan"),
+    # sizes must be fan-qualified: bare "40mm|60mm…" matched gauges and internal parts
+    (r"pc\s*fan|(40|60|80|92|120|140)\s*mm\s*fan", "pc-fan"),
     (r"18650|21700|\baa\b|\baaa\b|battery cell", "battery-cell"),
     (r"m49|m52|m58|m6[27]|m72|m77|m82|filter thread", "filter-thread"),
     (r"drip|1/4in.*1/2in|hydroponic", "drip-irrigation"),
@@ -109,6 +112,69 @@ _FAMILY_PATTERNS: list[tuple[str, str]] = [
     (r"cuvette", "cuvette"),
     (r"compass", "compass-capsule"),
     (r"tarot|mini card|standard card|playing card", "card-format"),
+    # ── D12 coverage: each entry names ONE physical mating standard ──────────
+    # lab & optics
+    (r"slas|\bsbs\b|microplate", "slas-microplate"),           # ANSI/SLAS 1/4-2004 9mm-pitch microplate footprint
+    (r"iso\s*8037", "microscope-slide"),                        # ISO 8037-1 25.4x76.2mm slide
+    (r"\bfalcon\b|conical\s*(centrifuge\s*)?tube", "conical-tube"),  # 15/50mL conical (Falcon) tube
+    (r"90\s*mm\s*petri", "petri-90mm"),                         # 90mm petri dish body
+    (r"stir\s*bars?\b", "stir-bar"),                            # PTFE magnetic stir bar sizes
+    (r"\bluer\b", "luer"),                                      # ISO 80369/594 Luer taper
+    (r"support\s*rod|optical\s*post", "support-rod-12"),        # Ø12-12.7mm lab/optical rod
+    (r"(1\s*in|25(\.4)?\s*mm)[^a-z]*optic\b", "optic-25.4"),    # Ø1in/25mm round optics
+    # construction-set & wall-system ecosystems
+    (r"stemfie", "stemfie"),                                    # STEMFIE 10mm-pitch construction set
+    (r"construction\s*brick|\blego\b", "brick-8mm-stud"),       # 8mm-stud construction brick
+    (r"1[\s-]*in(ch)?\s*pegboard|pegboard\s*1\s*in", "pegboard-1in"),  # US 1in-pitch pegboard
+    (r"french\s*cleat", "french-cleat"),                        # 45-deg French cleat
+    (r"keyhole", "keyhole-hanger"),                             # keyhole-slot wall hanging
+    # boards, electronics & RC
+    (r"\brpi\b|raspberry\s*pi\b|\bpi\s*hat\b", "rpi-mount"),    # Raspberry Pi 58x49mm M2.5 holes (HAT spec)
+    (r"arduino", "arduino-mount"),                              # Arduino Uno/Mega hole pattern
+    (r"\bomron\b|\bd2f\b", "microswitch-d2f"),                  # Omron D2F/SS microswitch mount
+    (r"\bsg90\b|\bmg996r?\b", "servo-body"),                    # SG90/MG996R servo body cutout
+    (r"\bsma\b|u\.fl", "sma-rf"),                               # SMA / U.FL RF connector
+    (r"fpv\s*(micro|nano|mini|cam)", "fpv-cam"),                # FPV cam widths 14/19/21mm
+    (r"(5050|2835)\s*(led\s*)?(strip|tape)|led\s*strip", "led-strip"),  # 8-10mm SMD LED strip
+    (r"3\.5\s*mm.*switch|assistive\s*switch", "at-switch-3.5mm"),  # 3.5mm assistive-tech switch jack
+    (r"j1962", "sae-j1962"),                                    # OBD-II connector
+    (r"iso\s*8820|\bato\b", "ato-fuse"),                        # ISO 8820-3 ATO/Mini blade fuse
+    # machine, metrology & drive
+    (r"\bmgn\s*\d", "mgn-rail"),                                # MGN9/12/15 miniature linear rail
+    (r"iso\s*2904|\bacme\b|trapezoidal", "trapezoidal-thread"), # ISO 2904 Tr / ACME leadscrew
+    (r"iso\s*4183|v-?belt\b|\bspz\b", "v-belt"),                # ISO 4183 A/SPZ V-belt groove
+    (r"iso\s*261|iso\s*965", "iso-metric-thread"),              # ISO metric thread system (generic)
+    (r"\ber\s*/\s*straight|\ber\s*collet|din\s*6499", "er-collet"),  # DIN 6499 ER collet
+    (r"indicator[\s-]*dovetail|lever-indicator", "indicator-dovetail"),  # test-indicator dovetail
+    (r"indicator\s*stem", "indicator-stem-8mm"),                # 8mm indicator stem (AGD)
+    (r"\bkurt\b", "kurt-vise"),                                 # Kurt-style vise bolt pattern
+    (r"hex\s*(driver\s*)?bit|1/4\s*in\s*hex", "hex-bit-1/4"),   # 1/4in hex driver bit (ISO 1173)
+    # plumbing, HVAC & household
+    (r"\bips\b|pvc\s*sch", "ips-pipe"),                         # IPS/PVC-sch40 pipe OD (0.84/1.05in…)
+    (r"\bpex\b|copper\s*tube|\bcts\b", "cts-pipe"),             # CTS copper/PEX tube OD
+    (r"tubular", "tubular-drain"),                              # 1-1/4 / 1-1/2in tubular drain slip
+    (r"round\s*duct", "round-duct"),                            # US nominal round duct 4/5/6in
+    (r"\d{2}-4[01]0\b|\bspi\s*\d", "spi-neck"),                 # SPI 20-410/24-410/28-410 bottle neck
+    (r"crown\s*cap", "crown-cap-26"),                           # 26mm crown bottle cap
+    (r"wall\s*box", "wall-box"),                                # US/EU electrical wall-box screw pattern
+    (r"license\s*plate", "license-plate"),                      # US 12x6in / EU 520x110mm plate
+    (r"\ba156\b", "ansi-a156-strike"),                          # ANSI/BHMA A156.2 strike/bore
+    # vehicle & outdoor
+    (r"handlebar", "handlebar-clamp"),                          # Ø22.2-31.8mm handlebar
+    (r"bottle\s*boss", "bottle-cage-boss"),                     # bicycle 64mm M5 bottle boss
+    (r"paracord", "paracord-550"),                              # MIL-C-5040 550 paracord
+    (r"ferro\s*rod", "ferro-rod"),                              # 6/8mm ferrocerium rod
+    # craft, hobby & wearables
+    (r"mm\s*lug\b|watch\s*lug", "watch-lug"),                   # 18/20/22mm watch strap lug
+    (r"eta\s*2824|\bcalibre\b|\bligne\b", "watch-movement"),    # ETA 2824-2 / ligne movement ring
+    (r"class\s*15\b|l[\s-]style\s*bobbin", "bobbin-class-15"),  # Class 15 / L-style sewing bobbin
+    (r"low\s*/\s*high\s*shank|presser\s*foot", "presser-shank"),  # sewing low/high presser shank
+    (r"citadel|vallejo", "paint-pot"),                          # Citadel/Vallejo hobby paint pots
+    (r"business\s*card", "business-card"),                      # 3.5x2in business card
+    (r"portafilter|58/54/51", "portafilter-58"),                # 58/54/51mm espresso basket
+    (r"(52|60)\s*mm\s*gauge", "auto-gauge-52-60"),              # 52/60mm automotive gauge pod
+    (r"5/8[\s-]*27|mic\s*(stand\s*)?thread", "mic-thread-5/8-27"),  # 5/8in-27 mic stand thread
+    (r"baby\s*pin", "baby-pin-5/8"),                            # 5/8in grip/lighting baby pin
 ]
 
 # Geometry pairs that physically join (unordered). Same-type anchors also mate.
@@ -127,9 +193,13 @@ _SELF_MATING: set[str] = {"bolt_pattern", "grid", "rail", "thread", "snap", "soc
 
 def normalize_family(standard: str) -> str | None:
     """Map a free-text CDG standard to a canonical family key, or None if unrecognized."""
-    if not standard or standard.strip().lower() == "internal":
+    if not standard:
         return None
     s = standard.lower()
+    # "internal", "internal/aocl", "internal peg grid 8mm"… are private geometry, never
+    # a shared standard — reject the whole prefixed class, not just the exact token.
+    if s.strip().startswith("internal"):
+        return None
     for pattern, family in _FAMILY_PATTERNS:
         if re.search(pattern, s):
             return family

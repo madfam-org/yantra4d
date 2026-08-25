@@ -1,12 +1,15 @@
-import cadquery as cq
 import math
+
+import cadquery as cq
 
 
 # ─── Sandbox-safe parameter access ───────────────────────────────────────────
 def PARAM(getter, default):
     try:
         return getter()
-    except Exception:
+    except Exception:  # noqa: BLE001 — NameError is absent from older
+        # cq_runner sandbox builtin allowlists, so catching it by name raises
+        # inside the sandbox; the broad catch is the portable probe.
         return default
 
 
@@ -17,7 +20,7 @@ movement_height  = float(PARAM(lambda: movement_height, 4.6))  # ETA 2824-2 = 4.
 wall             = float(PARAM(lambda: wall, 6.0))
 base_height      = float(PARAM(lambda: base_height, 10.0))
 stem_relief_dia  = float(PARAM(lambda: stem_relief_dia, 6.0))
-station_count    = int(str(PARAM(lambda: station_count, 3)))
+station_count    = int(float(PARAM(lambda: station_count, 3)))
 
 
 # ─── Shared constants ─────────────────────────────────────────────────────────

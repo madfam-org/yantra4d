@@ -79,6 +79,7 @@ def simulate_stress(slug: str):
 @simulate_bp.route('/api/projects/<slug>/simulate/physics', methods=['POST'])
 @require_valid_slug
 @require_tier("pro")
+@limiter.limit(rate_limits.SIMULATE_PHYSICS)
 @handle_exceptions
 def start_physics_simulation(slug: str):
     """Trigges a full GPU-bound PPF Physics simulation returning sequence frames."""
@@ -131,6 +132,7 @@ def get_physics_simulation_status(slug: str, job_id: str):
 @simulate_bp.route('/api/projects/<slug>/simulate/optimize', methods=['POST'])
 @require_valid_slug
 @require_tier("pro")
+@limiter.limit(rate_limits.SIMULATE_OPTIMIZE)
 @handle_exceptions
 def start_optimization(slug: str):
     """Trigges a generative topology optimization task."""

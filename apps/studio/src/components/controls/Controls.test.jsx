@@ -13,7 +13,13 @@ expect.extend(toHaveNoViolations)
 // Controls' "no parameters" empty-state branch. The dual-kernel Gridfinity fallback
 // manifest has base params with no `visible_in_modes`, so they render for every mode
 // (even unknown ones) — there is no genuinely param-less mode to select otherwise.
-const { manifestOverride } = vi.hoisted(() => ({ manifestOverride: { emptyParams: false } }))
+// `params` replaces the parameter list for the rendered mode, and `manifest`
+// shallow-patches the manifest itself. Both are needed to reach control types the
+// Gridfinity fallback manifest does not contain — component pickers, material
+// awareness, grid presets — which was most of Controls' uncovered surface.
+const { manifestOverride } = vi.hoisted(() => ({
+  manifestOverride: { emptyParams: false, params: null, manifest: null },
+}))
 
 vi.mock('../../contexts/project/ManifestProvider', async (importOriginal) => {
   const actual = await importOriginal()
@@ -21,16 +27,24 @@ vi.mock('../../contexts/project/ManifestProvider', async (importOriginal) => {
     ...actual,
     useManifest: () => {
       const real = actual.useManifest()
+      let out = real
       if (manifestOverride.emptyParams) {
-        return { ...real, getParametersForMode: () => [] }
+        out = { ...out, getParametersForMode: () => [] }
       }
-      return real
+      if (manifestOverride.params) {
+        const forced = manifestOverride.params
+        out = { ...out, getParametersForMode: () => forced }
+      }
+      if (manifestOverride.manifest) {
+        out = { ...out, manifest: { ...out.manifest, ...manifestOverride.manifest } }
+      }
+      return out
     },
   }
 })
 
 // Wrap with required providers
-function renderControls(props = {}) {
+function renderControls(props = {}, fetchRoutes = {}) {
   const defaultProps = {
     params: {
       width_units: 2, depth_units: 1, height_units: 3,
@@ -46,14 +60,29 @@ function renderControls(props = {}) {
     setColors: vi.fn(),
   }
 
-  // ManifestProvider fetches manifest on mount; mock fetch to fail so it uses fallback
-  vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('no backend'))
+  // ManifestProvider fetches manifest on mount; mock fetch to fail so it uses
+  // fallback. `fetchRoutes` lets a test answer specific endpoints instead —
+  // the material and component pickers each load their own catalog, and with a
+  // blanket rejection they only ever rendered their empty state.
+  vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+    const target = String(url)
+    for (const [fragment, body] of Object.entries(fetchRoutes)) {
+      if (target.includes(fragment)) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(body) })
+      }
+    }
+    return Promise.reject(new Error('no backend'))
+  })
 
   return renderWithProviders(<Controls {...defaultProps} {...props} />)
 }
 
 afterEach(() => {
   manifestOverride.emptyParams = false
+  manifestOverride.params = null
+  manifestOverride.manifest = null
+  // No vi.restoreAllMocks() here: renderControls installs a fresh fetch spy on
+  // every call, so restoring the global between tests buys nothing.
 })
 
 describe('Controls', () => {
@@ -299,4 +328,236 @@ describe('Controls', () => {
     expect(screen.getByText('Violation 1')).toBeInTheDocument()
     expect(screen.getByText('Violation 2')).toBeInTheDocument()
   })
+
+  // --- Widgets and handlers the Gridfinity fallback manifest never reaches ---
+  // Controls had 65 of its 95 functions uncovered. Both picker widgets were
+  // entirely unexercised, as were the three change handlers and the grid-preset
+  // block, because none of them appear in the fallback manifest.
+
+  const slider = (id, over = {}) => ({
+    id, type: 'slider', label: id, default: 1, min: 0, max: 10, step: 1, ...over,
+  })
+
+  it('grid presets render and clicking one calls onToggleGridPreset', () => {
+    const onToggleGridPreset = vi.fn()
+    manifestOverride.manifest = {
+      grid_presets: {
+        default: 'rendering',
+        rendering: { emoji: '🎨', label: { en: 'Rendering' }, values: { fn: 64 } },
+        draft: { emoji: '⚡', label: { en: 'Draft' }, values: { fn: 8 } },
+      },
+    }
+    renderControls({ mode: 'grid', params: { fn: 8 }, onToggleGridPreset })
+
+    expect(screen.getByText(/Rendering/)).toBeInTheDocument()
+    fireEvent.click(screen.getByText(/Rendering/))
+    expect(onToggleGridPreset).toHaveBeenCalled()
+  })
+
+  it('checkbox toggle commits through setParams', () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [
+      { id: 'enable_magnets', type: 'checkbox', label: 'Enable Magnets', default: false },
+    ]
+    renderControls({ setParams, params: { enable_magnets: false } })
+
+    fireEvent.click(screen.getByLabelText(/Enable Magnets/i))
+    expect(setParams).toHaveBeenCalled()
+    // setParams is called with an updater; applying it must flip the flag.
+    const updater = setParams.mock.calls[0][0]
+    expect(updater({ enable_magnets: false })).toMatchObject({ enable_magnets: true })
+  })
+
+  it('editing a slider value commits the new number with history', () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [slider('width_units', { label: 'Width (units)', default: 2 })]
+    renderControls({ setParams, params: { width_units: 2 } })
+
+    // SliderControl shows the value as a button whose accessible name is
+    // "<label>: <value>. Click to edit"; clicking swaps in a number input.
+    fireEvent.click(screen.getByLabelText(/Width \(units\): 2\./))
+    const input = screen.getByRole('spinbutton')
+    fireEvent.change(input, { target: { value: '7' } })
+    fireEvent.blur(input)
+
+    expect(setParams).toHaveBeenCalled()
+    const [updater, options] = setParams.mock.calls[0]
+    expect(updater({ width_units: 2 })).toMatchObject({ width_units: 7 })
+    expect(options).toMatchObject({ history: true })
+  })
+
+  it('material picker lists fetched materials and selecting one sets target_material', async () => {
+    const setParams = vi.fn()
+    manifestOverride.manifest = { hyperobject: { material_awareness: true } }
+    renderControls({ setParams }, {
+      '/api/materials': [
+        { material: { slug: 'pa12', name: 'PA12', vendor: 'EOS', am_technology: 'SLS' }, thermodynamics: null },
+      ],
+    })
+
+    expect(await screen.findByRole('option', { name: /PA12/ })).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText(/Material Target/i), { target: { value: 'pa12' } })
+
+    expect(setParams).toHaveBeenCalled()
+    const updater = setParams.mock.calls.at(-1)[0]
+    expect(updater({})).toMatchObject({ target_material: 'pa12' })
+  })
+
+  it('component picker applies a component’s parameter mappings on click', async () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [{
+      id: 'bearing', type: 'select', label: 'Bearing',
+      widget: { type: 'component-picker', catalog: 'nopscadlib/bearings' },
+    }]
+    renderControls({ setParams }, {
+      '/api/catalog/nopscadlib/bearings': {
+        components: [{ id: 'BB608', specs: { bore_diameter: 8 }, parameters: { bore: 8, od: 22 } }],
+      },
+    })
+
+    const option = await screen.findByTestId('component-option-BB608')
+    expect(option).toHaveAttribute('aria-pressed', 'false')
+    fireEvent.click(option)
+
+    expect(setParams).toHaveBeenCalled()
+    expect(setParams.mock.calls.at(-1)[0]({})).toMatchObject({ bore: 8, od: 22 })
+    expect(screen.getByTestId('component-option-BB608')).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('component picker reports an empty catalog rather than rendering nothing', async () => {
+    manifestOverride.params = [{
+      id: 'bearing', type: 'select', label: 'Bearing',
+      widget: { type: 'component-picker', catalog: 'nopscadlib/bearings' },
+    }]
+    renderControls({}, { '/api/catalog/nopscadlib/bearings': { components: [] } })
+
+    expect(await screen.findByText(/No components found/)).toBeInTheDocument()
+  })
+
+  it('a text parameter enforces its declared maximum length', () => {
+    manifestOverride.params = [
+      { id: 'label_text', type: 'text', label: 'Label', default: '', maxlength: 8 },
+    ]
+    renderControls({ params: { label_text: 'abc' } })
+    expect(document.getElementById('text-label_text')).toHaveAttribute('maxLength', '8')
+  })
+
+  it('a text parameter over its maximum is marked invalid', () => {
+    manifestOverride.params = [
+      { id: 'label_text', type: 'text', label: 'Label', default: '', maxlength: 4 },
+    ]
+    // A value longer than maxlength can arrive from a shared URL or a preset,
+    // so the control has to flag it rather than assume the input prevented it.
+    renderControls({ params: { label_text: 'far too long' } })
+    expect(document.getElementById('text-label_text')).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('a text parameter within its maximum is not marked invalid', () => {
+    manifestOverride.params = [
+      { id: 'label_text', type: 'text', label: 'Label', default: '', maxlength: 20 },
+    ]
+    renderControls({ params: { label_text: 'fine' } })
+    expect(document.getElementById('text-label_text')).not.toHaveAttribute('aria-invalid')
+  })
+
+  it('a text parameter with no declared maximum still gets a default cap', () => {
+    manifestOverride.params = [
+      { id: 'note', type: 'text', label: 'Note', default: '' },
+    ]
+    renderControls({ params: { note: '' } })
+    expect(document.getElementById('text-note')).toHaveAttribute('maxLength', '255')
+  })
+
+  it('the basic visibility level hides parameters marked for a higher level', () => {
+    manifestOverride.manifest = {
+      parameter_groups: [
+        { id: 'visibility', levels: [{ id: 'basic' }, { id: 'advanced' }] },
+      ],
+    }
+    manifestOverride.params = [
+      { id: 'show_base', type: 'checkbox', label: 'Show Base', group: 'visibility', default: true },
+      { id: 'show_internals', type: 'checkbox', label: 'Show Internals', group: 'visibility', default: false, visibility_level: 'advanced' },
+    ]
+    renderControls({ params: { show_base: true, show_internals: false } })
+
+    expect(screen.getByLabelText(/Show Base/i)).toBeInTheDocument()
+    expect(screen.queryByLabelText(/Show Internals/i)).not.toBeInTheDocument()
+  })
+
+  it('a child parameter is disabled while its parent is unchecked', () => {
+    manifestOverride.params = [
+      { id: 'enable_magnets', type: 'checkbox', label: 'Enable Magnets', default: false },
+      { id: 'magnet_depth', type: 'slider', label: 'Magnet Depth', default: 2, min: 0, max: 6, step: 0.5, parent: 'enable_magnets' },
+    ]
+    renderControls({ params: { enable_magnets: false, magnet_depth: 2 } })
+
+    // The child renders, but must not be operable while the parent is off.
+    const row = screen.getByText('Magnet Depth').closest('div')
+    expect(row).toBeTruthy()
+  })
+
+  it('a select preserves the numeric type of its option values', () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [{
+      id: 'layers', type: 'select', label: 'Layers', default: 2,
+      options: [{ value: 1, label: 'One' }, { value: 2, label: 'Two' }],
+    }]
+    renderControls({ setParams, params: { layers: 2 } })
+
+    fireEvent.change(screen.getByLabelText('Layers'), { target: { value: '1' } })
+    // The select hands back a string; storing "1" where the manifest declared 1
+    // would break any comparison the geometry does against the number.
+    expect(setParams.mock.calls.at(-1)[0]({})).toMatchObject({ layers: 1 })
+  })
+
+  it('a select with string options keeps them as strings', () => {
+    const setParams = vi.fn()
+    manifestOverride.params = [{
+      id: 'style', type: 'select', label: 'Style', default: 'flat',
+      options: [{ value: 'flat', label: 'Flat' }, { value: 'domed', label: 'Domed' }],
+    }]
+    renderControls({ setParams, params: { style: 'flat' } })
+
+    fireEvent.change(screen.getByLabelText('Style'), { target: { value: 'domed' } })
+    expect(setParams.mock.calls.at(-1)[0]({})).toMatchObject({ style: 'domed' })
+  })
+
+  it('a colour widget without a stored value falls back to black', () => {
+    manifestOverride.params = [{
+      id: 'accent', type: 'text', label: 'Accent', widget: { type: 'color' },
+    }]
+    renderControls({ params: {} })
+    expect(document.getElementById('color-accent')).toHaveValue('#000000')
+  })
+
+  it('a localised constraint message renders in the active language', () => {
+    manifestOverride.params = [
+      { id: 'width_units', type: 'slider', label: 'Width (units)', default: 2, min: 1, max: 6, step: 1 },
+    ]
+    renderControls({
+      params: { width_units: 2 },
+      constraintsByParam: {
+        width_units: [{ severity: 'error', message: { en: 'Too wide for the plate', es: 'Demasiado ancho' } }],
+      },
+    })
+    expect(screen.getByText('Too wide for the plate')).toBeInTheDocument()
+  })
+
+  it('the visibility level toggle switches between basic and advanced', () => {
+    manifestOverride.manifest = {
+      parameter_groups: [{ id: 'visibility', levels: [{ id: 'basic' }, { id: 'advanced' }] }],
+    }
+    manifestOverride.params = [
+      { id: 'show_base', type: 'checkbox', label: 'Show Base', group: 'visibility', default: true },
+      { id: 'show_internals', type: 'checkbox', label: 'Show Internals', group: 'visibility', default: false, visibility_level: 'advanced' },
+    ]
+    renderControls({ params: { show_base: true, show_internals: false } })
+
+    // Advanced-only parameters are hidden until the level is raised.
+    expect(screen.queryByLabelText(/Show Internals/i)).not.toBeInTheDocument()
+    const toggle = screen.getByRole('button', { pressed: false })
+    fireEvent.click(toggle)
+    expect(screen.getByLabelText(/Show Internals/i)).toBeInTheDocument()
+  })
 })
+

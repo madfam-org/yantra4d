@@ -4,12 +4,12 @@ on:
   workflow_call:
     secrets:
       DISPATCH_TOKEN:
-        required: true
+        required: false
         description: 'PAT with repo access to send repository_dispatch to yantra4d'
 
 jobs:
   validate-and-audit:
-    runs-on: ubuntu-latest
+    runs-on: madfam-runners-blue
     timeout-minutes: 10
     steps:
       - name: Checkout project repository
@@ -49,11 +49,32 @@ jobs:
             echo "⚠️ No project.json found — skipping compliance audit"
           fi
           
+      # An unprovisioned DISPATCH_TOKEN arrives as the empty string, and
+      # repository-dispatch then dies with "Parameter token or opts.auth is
+      # required" - which failed every cartridge repo's CI from Feb to Aug 2026
+      # while all validation steps were green. Detect the secret explicitly so a
+      # missing token degrades to a loud skip: validation stays authoritative,
+      # and the auto-bump resumes the moment the secret is provisioned.
+      - name: Detect dispatch token
+        id: dispatch
+        env:
+          TOKEN: ${{ secrets.DISPATCH_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Trigger Submodule Update
-        if: github.ref == 'refs/heads/main' && success()
+        if: github.ref == 'refs/heads/main' && success() && steps.dispatch.outputs.present == 'true'
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.DISPATCH_TOKEN }}
           repository: madfam-org/yantra4d
           event-type: bump-submodule
           client-payload: '{"repository": "${{ github.repository }}", "sha": "${{ github.sha }}"}'
+
+      - name: Submodule auto-bump skipped
+        if: github.ref == 'refs/heads/main' && success() && steps.dispatch.outputs.present != 'true'
+        run: echo "::warning::DISPATCH_TOKEN is not provisioned in this repository - yantra4d's submodule pointer was NOT auto-bumped. Provision the secret (org-level recommended) to restore the auto-bump loop."

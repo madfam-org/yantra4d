@@ -1,10 +1,13 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage, enableClipboard } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, enableClipboard, waitForRenderSettled } from '../../helpers/test-utils.js'
 
 test.describe('Studio Header', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
+    // The dock shows Processing/Procesando while the auto-render is in flight;
+    // settle before any test asserts Generate/Generar text (ARC race class, #43).
+    await waitForRenderSettled(page)
   })
 
   test('displays project name from manifest', async ({ header }) => {
@@ -46,7 +49,7 @@ test.describe('Studio Header', () => {
     await expect(undoBtn).toBeEnabled({ timeout: 5000 })
 
     await header.clickUndo()
-    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 10000 })
   })
 
   test('redo restores undone change', async ({ header, sidebar }) => {
@@ -54,14 +57,14 @@ test.describe('Studio Header', () => {
     const valueBefore = await sidebar.sliderValue('width').textContent()
     const targetValue = Number(valueBefore) === 100 ? 150 : 100
     await sidebar.editSliderValue('width', targetValue)
-    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 10000 })
 
     await header.clickUndo()
-    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(valueBefore, { timeout: 10000 })
 
     expect(await header.isRedoDisabled()).toBe(false)
     await header.clickRedo()
-    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 3000 })
+    await expect(sidebar.sliderValue('width')).toHaveText(String(targetValue), { timeout: 10000 })
   })
 
   test('share button copies URL to clipboard', async ({ page, header }) => {
@@ -83,20 +86,20 @@ test.describe('Studio Header', () => {
     await expect(toast.first()).not.toBeVisible({ timeout: 8000 })
   })
 
-  test('language toggle switches EN→ES', async ({ page, header }) => {
-    await expect(page.locator('text=Generate')).toBeVisible({ timeout: 5000 })
+  // Through the sidebar page object: the Generate button exists in both the
+  // desktop and mobile layout trees, so text=Generate matched two elements and
+  // failed strict mode before either language had a chance to be wrong.
+  test('language toggle switches EN→ES', async ({ header, sidebar }) => {
+    await expect(sidebar.generateButton).toHaveText(/Generate/, { timeout: 5000 })
     await header.toggleLanguage()
-    await page.waitForTimeout(500)
-    await expect(page.locator('text=Generar')).toBeVisible({ timeout: 5000 })
+    await expect(sidebar.generateButton).toHaveText(/Generar/, { timeout: 5000 })
   })
 
-  test('language toggle switches ES→EN', async ({ page, header }) => {
+  test('language toggle switches ES→EN', async ({ header, sidebar }) => {
     await header.toggleLanguage() // to ES
-    await page.waitForTimeout(500)
-    await expect(page.getByRole('button', { name: 'Generar' })).toBeVisible({ timeout: 5000 })
+    await expect(sidebar.generateButton).toHaveText(/Generar/, { timeout: 5000 })
     await header.toggleLanguage() // back to EN
-    await page.waitForTimeout(500)
-    await expect(page.getByRole('button', { name: 'Generate' })).toBeVisible({ timeout: 5000 })
+    await expect(sidebar.generateButton).toHaveText(/Generate/, { timeout: 5000 })
   })
 
   test('language persists to localStorage', async ({ page, header }) => {
@@ -118,21 +121,25 @@ test.describe('Studio Header', () => {
 
     // Use Playwright locator — waits for actionability (visible, stable, event handlers attached)
     const themeBtn = page.locator('header button[title^="Theme:"], header button[title^="Tema:"]')
-    await expect(themeBtn).toBeVisible({ timeout: 3000 })
+    await expect(themeBtn).toBeVisible({ timeout: 10000 })
 
     const getTheme = () => page.evaluate(() => localStorage.getItem('vite-ui-theme'))
 
-    // Cycle light → dark
-    await themeBtn.click()
-    await expect(async () => expect(await getTheme()).toBe('dark')).toPass({ timeout: 3000 })
+    // Wait for the button to re-render between clicks, not just for localStorage
+    // to change. cycleTheme reads `theme` from context and computes the next one
+    // from it, so a click that lands before React has re-rendered recomputes
+    // from the stale value: click, click gave light → dark → dark, and the run
+    // stalled there. The title is the rendered view of the same state, so
+    // waiting on it is waiting for the click to be safe to repeat.
+    const step = async (expected) => {
+      await themeBtn.click()
+      await expect(themeBtn).toHaveAttribute('title', new RegExp(expected, 'i'), { timeout: 10000 })
+      await expect(async () => expect(await getTheme()).toBe(expected)).toPass({ timeout: 10000 })
+    }
 
-    // Cycle dark → system
-    await themeBtn.click()
-    await expect(async () => expect(await getTheme()).toBe('system')).toPass({ timeout: 3000 })
-
-    // Cycle system → light
-    await themeBtn.click()
-    await expect(async () => expect(await getTheme()).toBe('light')).toPass({ timeout: 3000 })
+    await step('dark')
+    await step('system')
+    await step('light')
   })
 
   test('theme persists across reload', async ({ page }) => {

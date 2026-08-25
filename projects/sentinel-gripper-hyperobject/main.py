@@ -1,12 +1,27 @@
-import cadquery as cq
 import math
 
-# ─── Globals injected by Yantra4D cq_runner ──────────────────────────────────
-finger_length     = float(globals().get("finger_length",     65.0))
-base_radius       = float(globals().get("base_radius",       35.0))
-flexure_thickness = float(globals().get("flexure_thickness",  1.2))
-finger_count      = int(str(globals().get("finger_count",      3)))
-target_part       = str(globals().get("target_part",     "housing"))
+import cadquery as cq
+
+
+# ─── Sandbox-safe parameter access ───────────────────────────────────────────
+# cq_runner injects parameters as module globals but blocks the globals()
+# builtin, so reading them via globals().get() failed every production render
+# of this cartridge. The NameError probe below needs no blocked builtins.
+def PARAM(getter, default):
+    try:
+        return getter()
+    except Exception:  # noqa: BLE001 — NameError is absent from older
+        # cq_runner sandbox builtin allowlists, so catching it by name raises
+        # inside the sandbox; the broad catch is the portable probe.
+        return default
+
+
+finger_length     = float(PARAM(lambda: finger_length,     65.0))
+base_radius       = float(PARAM(lambda: base_radius,       35.0))
+flexure_thickness = float(PARAM(lambda: flexure_thickness,  1.2))
+# int(float(...)) — the API coerces slider values to float and int("3.0") raises.
+finger_count      = int(float(PARAM(lambda: finger_count,     3)))
+target_part       = str(PARAM(lambda: target_part,    "housing"))
 phalanx_width     = 18.0
 
 

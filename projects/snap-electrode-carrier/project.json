@@ -1,0 +1,433 @@
+{
+  "project": {
+    "name": "Snap Electrode Carrier",
+    "slug": "snap-electrode-carrier",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed carrier disc for a standard 10 mm ECG/EMG snap stud used as a textile electrode contact. A sensing garment needs the snap to sit on a rigid, flat, sewable island so the stud cannot tilt against skin and the conductive-fabric patch under it stays in even contact. Sew-hole ring, central bored boss, and an underside pocket that seats the fabric patch. This is the rigid hard good the Fashion Cabinet electrode notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un disco portador impreso en 3D para un broche macho estándar de 10 mm de ECG/EMG usado como contacto de electrodo textil. Una prenda con sensores necesita que el broche descanse sobre una isla rígida, plana y cosible para que no se incline contra la piel y el parche de tela conductora bajo él mantenga contacto parejo. Anillo de ojales, poste central barrenado y una cajera inferior que aloja el parche de tela. Es el herraje rígido que el avío de electrodo de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/snap-electrode-carrier.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "snap-electrode-carrier",
+      "electrode",
+      "ecg",
+      "emg",
+      "biosignal",
+      "e-textile",
+      "wearable-electronics",
+      "snap",
+      "sew-on",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "carrier",
+      "label": {
+        "en": "Carrier Disc",
+        "es": "Disco portador"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "carrier"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "carrier_lid",
+      "label": {
+        "en": "Carrier + Retaining Ring",
+        "es": "Portador y anillo de retención"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "carrier_lid"
+      ],
+      "estimate": {
+        "base_time": 11,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Electrode Pair Set",
+        "es": "Juego de par de electrodos"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "carrier",
+      "label": {
+        "en": "Carrier Disc",
+        "es": "Disco portador"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "carrier_lid",
+      "label": {
+        "en": "Carrier + Ring",
+        "es": "Portador y anillo"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    },
+    {
+      "id": "set",
+      "label": {
+        "en": "Electrode Pair Set",
+        "es": "Juego de par de electrodos"
+      },
+      "render_mode": 0,
+      "color": "#9c9482"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "disc",
+      "label": {
+        "en": "Disc",
+        "es": "Disco"
+      }
+    },
+    {
+      "id": "stud",
+      "label": {
+        "en": "Snap Stud",
+        "es": "Broche macho"
+      }
+    },
+    {
+      "id": "sewing",
+      "label": {
+        "en": "Sewing",
+        "es": "Costura"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "disc_dia",
+      "type": "slider",
+      "default": 22.0,
+      "min": 14.0,
+      "max": 45.0,
+      "step": 0.5,
+      "group": "disc",
+      "modes": [
+        "carrier",
+        "carrier_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Carrier disc diameter (mm)",
+        "es": "Diámetro del disco portador (mm)"
+      },
+      "tooltip": {
+        "en": "Outside diameter of the carrier disc (mm). Auto-raised to the stud flange plus 8 mm so a sewing rim always survives. 20-24 mm suits a chest strap; 30 mm+ suits a loose EMG sleeve that needs more contact area.",
+        "es": "Diámetro exterior del disco portador (mm). Se eleva automáticamente al diámetro de la pestaña del broche más 8 mm para conservar un borde de costura. De 20 a 24 mm para bandas pectorales; 30 mm o más para mangas de EMG holgadas que requieren más área de contacto."
+      }
+    },
+    {
+      "id": "disc_t",
+      "type": "slider",
+      "default": 2.4,
+      "min": 1.4,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "disc",
+      "modes": [
+        "carrier",
+        "carrier_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Disc thickness (mm)",
+        "es": "Espesor del disco (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flat disc body (mm). Thicker keeps the stud from tilting under a snapped-on lead; thinner is less noticeable under a close-fit garment.",
+        "es": "Espesor del cuerpo plano del disco (mm). Más grueso evita que el broche se incline bajo un cable acoplado; más delgado se nota menos bajo una prenda ceñida."
+      }
+    },
+    {
+      "id": "stud_shank",
+      "type": "slider",
+      "default": 4.2,
+      "min": 2.0,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "stud",
+      "modes": [
+        "carrier",
+        "carrier_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Stud shank diameter (mm)",
+        "es": "Diámetro del vástago del broche (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the metal snap stud's shank (mm) — the through bore is cut to this. A standard 10 mm medical electrode stud has a 3.9-4.3 mm shank.",
+        "es": "Diámetro del vástago del broche metálico (mm) — el barreno pasante se corta a esta medida. Un broche estándar de electrodo médico de 10 mm tiene un vástago de 3.9 a 4.3 mm."
+      }
+    },
+    {
+      "id": "stud_flange",
+      "type": "slider",
+      "default": 10.0,
+      "min": 6.0,
+      "max": 16.0,
+      "step": 0.5,
+      "group": "stud",
+      "modes": [
+        "carrier",
+        "carrier_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Stud flange diameter (mm)",
+        "es": "Diámetro de la pestaña del broche (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the snap stud's flange (mm) — the counterbore is cut to this so the flange sits flush. 10 mm is the medical-electrode standard the whole snap-lead ecosystem uses.",
+        "es": "Diámetro de la pestaña del broche (mm) — el rebaje se corta a esta medida para que la pestaña quede al ras. 10 mm es el estándar de electrodo médico que usa todo el ecosistema de cables de broche."
+      }
+    },
+    {
+      "id": "boss_h",
+      "type": "slider",
+      "default": 2.0,
+      "min": 0.8,
+      "max": 5.0,
+      "step": 0.1,
+      "group": "stud",
+      "modes": [
+        "carrier",
+        "carrier_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Boss height (mm)",
+        "es": "Altura del poste (mm)"
+      },
+      "tooltip": {
+        "en": "How far the central boss stands above the disc face (mm). Raising it lifts the snap clear of a thick garment shell so the lead clips on without fighting the fabric.",
+        "es": "Cuánto sobresale el poste central sobre la cara del disco (mm). Elevarlo libera el broche de una prenda gruesa para que el cable se acople sin pelear con la tela."
+      }
+    },
+    {
+      "id": "sew_holes",
+      "type": "slider",
+      "default": 6,
+      "min": 4,
+      "max": 10,
+      "step": 1,
+      "group": "sewing",
+      "modes": [
+        "carrier",
+        "carrier_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Sew holes (count)",
+        "es": "Ojales de costura (cantidad)"
+      },
+      "tooltip": {
+        "en": "Number of stitch holes around the rim. Six spreads the pull of a snapped-on lead evenly; four is enough for a light strap.",
+        "es": "Cantidad de ojales alrededor del borde. Seis reparten parejo el tirón de un cable acoplado; cuatro bastan para una banda ligera."
+      }
+    },
+    {
+      "id": "hole_dia",
+      "type": "slider",
+      "default": 1.6,
+      "min": 1.0,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "sewing",
+      "modes": [
+        "carrier",
+        "carrier_lid",
+        "set"
+      ],
+      "label": {
+        "en": "Sew hole diameter (mm)",
+        "es": "Diámetro del ojal (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of each stitch hole (mm). Auto-clamped to fit the rim band between the boss and the disc edge.",
+        "es": "Diámetro de cada ojal (mm). Se limita automáticamente para caber en la banda entre el poste y el borde del disco."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "chest_strap",
+      "mode": "set",
+      "label": {
+        "en": "Chest Strap Pair (22 mm)",
+        "es": "Par para banda pectoral (22 mm)"
+      },
+      "values": {
+        "disc_dia": 22.0,
+        "disc_t": 2.4,
+        "stud_shank": 4.2,
+        "stud_flange": 10.0,
+        "boss_h": 2.0,
+        "sew_holes": 6,
+        "hole_dia": 1.6
+      }
+    },
+    {
+      "id": "emg_sleeve",
+      "mode": "carrier_lid",
+      "label": {
+        "en": "EMG Sleeve Pad (32 mm)",
+        "es": "Pastilla para manga de EMG (32 mm)"
+      },
+      "values": {
+        "disc_dia": 32.0,
+        "disc_t": 3.0,
+        "stud_shank": 4.2,
+        "stud_flange": 10.0,
+        "boss_h": 3.0,
+        "sew_holes": 8,
+        "hole_dia": 1.8
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        60,
+        60,
+        45
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "sew_face",
+        "label": {
+          "en": "Sewn Rim Face",
+          "es": "Cara cosida del borde"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "disc_dia",
+          "sew_holes",
+          "hole_dia"
+        ]
+      },
+      {
+        "id": "stud_bore",
+        "label": {
+          "en": "10 mm Snap Stud Bore",
+          "es": "Barreno para broche de 10 mm"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "stud_shank",
+          "stud_flange",
+          "boss_h"
+        ]
+      },
+      {
+        "id": "fabric_pocket",
+        "label": {
+          "en": "Conductive-Fabric Pocket",
+          "es": "Cajera para tela conductora"
+        },
+        "geometry_type": "pocket",
+        "standard": "internal",
+        "parameters": [
+          "stud_flange",
+          "disc_dia",
+          "disc_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Disposable gel electrodes are thrown away by the sheet every session, and reusable sensing garments are sold as sealed products nobody can repair. A printed carrier lets a clinic, a lab, or a person at home mount a standard snap stud on washable conductive fabric and replace only the patch, turning a consumable into a serviceable garment.",
+      "es": "Los electrodos desechables de gel se tiran por hojas en cada sesión, y las prendas con sensores reutilizables se venden como productos sellados que nadie puede reparar. Un portador impreso permite que una clínica, un laboratorio o una persona en su casa monte un broche estándar sobre tela conductora lavable y reemplace sólo el parche, convirtiendo un consumible en una prenda reparable."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "snap-electrode-carrier",
+    "electrode",
+    "ecg",
+    "emg",
+    "biosignal",
+    "e-textile",
+    "wearable-electronics",
+    "snap",
+    "sew-on",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

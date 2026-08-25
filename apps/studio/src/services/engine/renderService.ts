@@ -73,6 +73,11 @@ const API_BASE = getApiBase()
 let _hardwareMode: 'backend' | 'wasm' | null = null
 let _worker: Worker | null = null
 let _initPromise: Promise<void> | null = null
+//: Wall-clock seconds of the last WASM render, compile INCLUDED. This is the
+//: quantity `estimateRenderTime` claims to predict, kept so the prediction can be
+//: checked against the outcome instead of being taken on faith. Read it with
+//: `getLastObservedRenderSeconds()`; null until a render has completed.
+let _lastObservedRenderSeconds: number | null = null
 
 /**
  * Detect hardware capabilities
@@ -84,14 +89,74 @@ function hasWasmCapabilities(): boolean {
 }
 
 /**
+ * The only two values the render-mode override accepts. Anything else is junk
+ * and is IGNORED rather than coerced: a typo'd `?render=wsam` must fall through
+ * to normal detection, not silently pin a path the operator did not ask for.
+ */
+function parseRenderMode(value: string | null | undefined): 'backend' | 'wasm' | null {
+  if (value === 'backend' || value === 'wasm') return value
+  return null
+}
+
+/**
+ * Explicit render-mode override, resolved ONCE at module load.
+ *
+ * Read once, not per render, so the answer cannot change underneath an
+ * in-flight session. The studio rewrites its own URL as the user picks a
+ * preset/mode (routes are `/project/:slug/:preset/:mode`), and those rewrites
+ * do not carry the query string; re-reading per render would let a pinned path
+ * silently evaporate on the first such rewrite — exactly when a user on a
+ * support-issued link starts clicking around. Page load is also the only moment
+ * at which the operator's intent (the link they opened) is unambiguous.
+ *
+ * Precedence, highest first:
+ *   1. `?render=backend` | `?render=wasm`  — per-session, what support hands a user
+ *   2. `VITE_RENDER_MODE=backend|wasm`     — build-time pin for a whole deployment
+ *   3. null                                — defer to the hardware heuristic
+ */
+const RENDER_MODE_OVERRIDE: 'backend' | 'wasm' | null = (() => {
+  let fromQuery: 'backend' | 'wasm' | null = null
+  if (typeof window !== 'undefined' && window.location) {
+    try {
+      fromQuery = parseRenderMode(new URLSearchParams(window.location.search).get('render'))
+    } catch { /* malformed search string — fall through to env */ }
+  }
+  if (fromQuery) return fromQuery
+  return parseRenderMode(import.meta.env.VITE_RENDER_MODE as string | undefined)
+})()
+
+/**
+ * The explicit override, or null when detection should decide.
+ * Exported for diagnostics and tests.
+ */
+export function getRenderModeOverride(): 'backend' | 'wasm' | null {
+  return RENDER_MODE_OVERRIDE
+}
+
+/**
  * Detect whether to use 'backend' or 'wasm' rendering mode.
- * Checks backend availability BEFORE respecting force_backend/API_BASE preferences,
- * so the app can fall back to WASM when the backend is unreachable.
+ *
+ * An explicit override (`?render=` / `VITE_RENDER_MODE`) wins over everything
+ * below it. Absent one, this checks backend availability BEFORE respecting
+ * force_backend/API_BASE preferences, so the app can fall back to WASM when the
+ * backend is unreachable.
  */
 async function detectMode(manifest: Manifest | null, mode: string, params: Record<string, unknown>): Promise<'backend' | 'wasm'> {
-  // CadQuery engine has no WASM path — always backend
-  if (manifest && manifest.engine === 'cadquery') {
+  // Backend-only engines have no WASM path — always backend.
+  // Deliberately ABOVE the override: `?render=wasm` on a CadQuery/graph project
+  // cannot be honoured (the kernel only exists server-side), and pretending
+  // otherwise would trade a working render for a guaranteed failure.
+  if (manifest && BACKEND_ONLY_ENGINES.has(manifest.engine ?? '')) {
     return 'backend'
+  }
+
+  // Explicit override — consulted BEFORE backend probing and the hardware
+  // heuristic, so a pinned path is honoured regardless of core count, of
+  // whether /api/health answers, and of force_backend.
+  if (RENDER_MODE_OVERRIDE) {
+    console.warn(`[Render Mode] Override active: forcing '${RENDER_MODE_OVERRIDE}' rendering (hardware heuristic bypassed).`)
+    _hardwareMode = RENDER_MODE_OVERRIDE
+    return RENDER_MODE_OVERRIDE
   }
 
   // Check backend availability first (uses TTL-cached result)
@@ -134,10 +199,17 @@ async function detectMode(manifest: Manifest | null, mode: string, params: Recor
 }
 
 /**
+ * Engines the browser cannot run: CadQuery and graph documents execute
+ * server-side kernels (graph transpiles to CadQuery). Implicit is additionally
+ * excluded from WASM in canRunWasm but keeps its own detectMode behavior.
+ */
+const BACKEND_ONLY_ENGINES = new Set(['cadquery', 'graph'])
+
+/**
  * Check whether the current manifest supports client-side WASM rendering.
  */
 export function canRunWasm(manifest: Manifest | null): boolean {
-  return manifest?.engine !== 'cadquery' && manifest?.engine !== 'implicit'
+  return !BACKEND_ONLY_ENGINES.has(manifest?.engine ?? '') && manifest?.engine !== 'implicit'
 }
 
 /**
@@ -254,6 +326,7 @@ async function renderWasm(
   if (!modeConfig) throw new Error(`Unknown mode: ${mode}`)
 
   const parts: RenderPart[] = []
+  const partTimings: { part: string; seconds: number }[] = []
   const totalParts = modeConfig.parts.length
 
   for (let i = 0; i < totalParts; i++) {
@@ -266,6 +339,15 @@ async function renderWasm(
     }
 
     const basePercent = Math.round((i / totalParts) * 100)
+    // WALL-CLOCK PER PART, spanning compile AND render.
+    //
+    // The engine already logs a "Total rendering time" line, but that EXCLUDES
+    // the OpenSCAD/WASM compile — which is the dominant cost the operator
+    // actually waits through. Calibrating estimate_constants against the engine's
+    // number alone therefore fits the small half of the problem: measured 2026-08-08,
+    // a 3x3 reported 0.196 s of "rendering" while the visible wait was seconds of
+    // "Compilando...". Timing the await is the only place both are in scope.
+    const partStart = performance.now()
     onProgress?.({
       percent: basePercent,
       phase: 'compiling',
@@ -315,13 +397,25 @@ async function renderWasm(
     const url = URL.createObjectURL(blob)
     parts.push({ type: partId, blob, url })
 
+    const partElapsed = (performance.now() - partStart) / 1000
+    partTimings.push({ part: partId, seconds: partElapsed })
     onProgress?.({
       percent: Math.round(((i + 1) / totalParts) * 100),
       phase: 'done',
       part: partId,
-      log: `[${partId}] Done (${Math.round(((i + 1) / totalParts) * 100)}%)`
+      log: `[${partId}] Done (${Math.round(((i + 1) / totalParts) * 100)}%) in ${partElapsed.toFixed(2)}s`
     })
   }
+
+  // The line the estimator should be fitted against. `estimateRenderTime` predicts
+  // exactly this quantity, so printing them together is what makes a bad
+  // calibration visible instead of silent — the shipped constants were 1,714x high
+  // and nothing in the UI ever compared the two.
+  const observedTotal = partTimings.reduce((a, p) => a + p.seconds, 0)
+  _lastObservedRenderSeconds = observedTotal
+  onProgress?.({
+    log: `[render] observed ${observedTotal.toFixed(2)}s wall-clock across ${partTimings.length} part(s)`
+  })
 
   if (_worker) {
     _worker.terminate()
@@ -345,13 +439,18 @@ async function renderBackend(
   ignoreCache?: boolean,
   exportFormat?: string
 ): Promise<RenderPart[]> {
-  const payload: Record<string, unknown> = { ...params, mode }
+  // Documented /api/render-stream contract:
+  // {mode, parameters, parts, export_format?, project?} — parameters NESTED.
+  // The previous flattened form ({ ...params, mode }) was silently tolerated by
+  // the server but produced a different param_hash (cache key) than the nested
+  // form and dropped target_material.
+  const payload: Record<string, unknown> = { mode, parameters: params }
   if (project) payload.project = project
   if (ignoreCache) payload.ignore_cache = true
 
   if (exportFormat) {
     payload.export_format = exportFormat
-  } else if (manifest && manifest.engine === 'cadquery') {
+  } else if (manifest && BACKEND_ONLY_ENGINES.has(manifest.engine ?? '')) {
     payload.export_format = 'glb'
   }
 
@@ -391,9 +490,18 @@ async function renderBackend(
         onProgress?.({ log: `  ${line}` })
       }
     } else if (data.event === 'part_done') {
+      // `data.progress` is optional on the wire — a backend that omits it used to
+      // render literally as "[cubies] Done (undefined%)" in the operator console,
+      // right underneath the WASM path's correct "[cubies] Done (14%)". Two lines
+      // per part, one of them nonsense. Fall back to the part index instead of
+      // interpolating undefined; drop the percentage entirely if neither is known,
+      // because a missing number should read as missing, not as a value.
+      const pct = typeof data.progress === 'number' && Number.isFinite(data.progress)
+        ? `${Math.round(data.progress)}%`
+        : null
       onProgress?.({
         part: data.part,
-        log: `[${data.part}] Done (${data.progress}%)`
+        log: pct ? `[${data.part}] Done (${pct})` : `[${data.part}] Done`
       })
     } else if (data.event === 'complete') {
       finalParts = data.parts || []
@@ -470,9 +578,13 @@ export async function renderParts(
     } catch (err) {
       // If backend fails with network/capacity errors, try WASM fallback.
       const forceBackend = manifest?.project?.force_backend || manifest?.force_backend
+      // `?render=backend` is a deliberate "keep me off WASM" instruction —
+      // usually because WASM is exactly what broke for this user. Falling back
+      // to it here would quietly undo the override at the one moment it matters.
       const canFallbackToWasm = (
         !forceBackend
-        && manifest?.engine !== 'cadquery'
+        && RENDER_MODE_OVERRIDE !== 'backend'
+        && !BACKEND_ONLY_ENGINES.has(manifest?.engine ?? '')
         && hasWasmCapabilities()
       )
       const shouldFallback = (
@@ -534,6 +646,25 @@ export function estimateRenderTime(mode: string, params: Record<string, unknown>
   const modeConfig = manifest.modes.find(m => m.id === mode)
   if (!modeConfig) return 0
 
+  // UNITS. `formula_vars` is a PRODUCT of the named params, so a mode whose cost
+  // scales with N^2 lists N twice. That is not a trick: it is the only thing the
+  // reducer below can express, and it keeps `base_units` (documentation) and the
+  // computed value in agreement.
+  //
+  // They used to disagree. The cube mode declared `base_units: "N * N"` while
+  // listing `formula_vars: ["N"]`, so the estimator computed N and the manifest
+  // claimed N^2 — and nothing reconciled them, because `base_units` is only read
+  // in the `else` branch and only when it is a NUMBER. A string like "N * N"
+  // could never satisfy `typeof base === 'number'`, so the declared intent was
+  // unreachable code that read as configuration.
+  //
+  // Measured 2026-08-08 in the browser (WASM), from the app's own
+  // "Total rendering time" lines:
+  //     3x3 -> 0.196 s   (units N^2 = 9)
+  //     5x5 -> 0.607 s   (units N^2 = 25)
+  // Ratio 3.10x observed against 2.78x predicted by N^2 — the manifest's declared
+  // model was right and the code was wrong. N alone predicts 1.67x, which the
+  // measurement rules out.
   let units = 1
   if (modeConfig.estimate?.formula_vars) {
     units = modeConfig.estimate.formula_vars.reduce((acc, v) => acc * (Number(params[v]) || 1), 1)
@@ -558,4 +689,29 @@ export function estimateRenderTime(mode: string, params: Record<string, unknown>
  */
 export function getRenderMode(): string {
   return _hardwareMode || 'detecting'
+}
+
+/**
+ * Wall-clock seconds of the last completed WASM render, compile INCLUDED.
+ *
+ * `estimateRenderTime` predicts this exact quantity. Until this existed nothing
+ * compared the two, which is how constants that overshot by 1,714x shipped and
+ * stayed: the estimator drove a blocking dialog on every render and no surface
+ * ever contradicted it. Returns null before the first render completes — a
+ * missing measurement must read as missing, never as zero.
+ */
+export function getLastObservedRenderSeconds(): number | null {
+  return _lastObservedRenderSeconds
+}
+
+/**
+ * How far off the estimate was, as a ratio (estimate / observed).
+ *
+ * 1.0 is perfect; >1 overshoots. Null when either side is unknown, so a caller
+ * cannot mistake "not measured yet" for "accurate".
+ */
+export function getEstimateAccuracy(estimateSeconds: number): number | null {
+  if (_lastObservedRenderSeconds == null || _lastObservedRenderSeconds <= 0) return null
+  if (!Number.isFinite(estimateSeconds) || estimateSeconds <= 0) return null
+  return estimateSeconds / _lastObservedRenderSeconds
 }

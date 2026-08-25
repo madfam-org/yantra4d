@@ -87,9 +87,27 @@ test.describe('Authentication', () => {
     await expect(page.locator('header')).toBeVisible()
   })
 
-  test('protected downloads enforce auth when required', async ({ page }) => {
-    // Verify download buttons respect auth config
+  test('protected downloads enforce auth when required', async ({ page, sidebar }) => {
+    // Download STL lives in ExportPanel, inside <TabsContent value="export">,
+    // so it is not in the DOM until that tab is selected — the test was looking
+    // for it on the default Design tab.
+    await sidebar.selectSection('export')
+    // Either a download control or a sign-in prompt must be offered; which one
+    // depends on auth config, and asserting only the download button made this
+    // pass or fail on environment rather than on behaviour.
+    //
+    // Polled, not counted once. `locator.count()` takes a single instantaneous
+    // reading with no retry, so this asserted that the export tabpanel had
+    // already mounted at the exact moment selectSection() returned — and
+    // selectSection only clicks and sleeps 150ms. On WebKit under ARC load that
+    // was not enough and the sum read 0 on all three attempts (run
+    // 32565668502, webkit shard 3), while the sibling test in 05-export that
+    // asserts the same button via the auto-retrying toBeVisible() passed.
+    const signIn = page.locator('text=Sign in to download')
     const downloadBtn = page.locator('button', { hasText: 'Download STL' })
-    await expect(downloadBtn).toBeVisible()
+    await expect.poll(
+      async () => (await signIn.count()) + (await downloadBtn.count()),
+      { timeout: 15_000, message: 'export panel offered neither a download control nor a sign-in prompt' },
+    ).toBeGreaterThan(0)
   })
 })

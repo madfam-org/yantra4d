@@ -1,0 +1,7 @@
+{
+  "_comment": "sha256 of the vendored commons-sandbox security core. Canonical source: fashion-cabinet/packages/commons-sandbox. Re-pin only after re-vendoring; see VENDORED.md.",
+  "hashes": {
+    "core.py": "26854223dfedf88e2cf1f78a6203c38a52dc3584dd8e9256011a311dc44b7ab3",
+    "__init__.py": "3bd97b51871572e3dd8d0435286b582d8c7646059f2ce019c102ce9f20262471"
+  }
+}

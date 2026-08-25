@@ -5,18 +5,20 @@ import cadquery as cq
 def PARAM(getter, default):
     try:
         return getter()
-    except Exception:
+    except Exception:  # noqa: BLE001 — NameError is absent from older
+        # cq_runner sandbox builtin allowlists, so catching it by name raises
+        # inside the sandbox; the broad catch is the portable probe.
         return default
 
 
 target_part   = PARAM(lambda: target_part, "feeler_rack")
 blade_width   = float(PARAM(lambda: blade_width, 12.7))    # feeler blade width = 1/2 in
-blade_count   = int(str(PARAM(lambda: blade_count, 13)))    # metric set 0.05–1.00 mm = 13 blades
+blade_count   = int(float(PARAM(lambda: blade_count, 13)))    # metric set 0.05–1.00 mm = 13 blades
 slot_pitch    = float(PARAM(lambda: slot_pitch, 4.0))
 wall          = float(PARAM(lambda: wall, 4.0))
 body_height   = float(PARAM(lambda: body_height, 22.0))
-index_cols    = int(str(PARAM(lambda: index_cols, 10)))
-index_rows    = int(str(PARAM(lambda: index_rows, 6)))
+index_cols    = int(float(PARAM(lambda: index_cols, 10)))
+index_rows    = int(float(PARAM(lambda: index_rows, 6)))
 max_bit_dia   = float(PARAM(lambda: max_bit_dia, 6.5))     # #1–#60 wire-gauge range top
 
 

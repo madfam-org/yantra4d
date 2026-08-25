@@ -1,0 +1,343 @@
+{
+  "project": {
+    "name": "Ladder Lock",
+    "slug": "ladder-lock",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed ladder-lock webbing adjuster — the one-piece frame with a center bar that holds a strap setting on pack shoulder straps, sternum straps, cinches and harnesses. Pull the tape to tighten; lift it off the bar to release. Sized for trade webbing widths 20, 25, 38 and 50 mm. This is the rigid hard good the Fashion Cabinet `ladder-lock` notion places and bridges to here for its geometry.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un regulador de cincha tipo ladder-lock impreso en 3D — el marco de una sola pieza con barra central que fija el ajuste de una correa en tirantes de mochila, pectorales, cinchas y arneses. Jala la cinta para apretar; levántala de la barra para soltar. Dimensionado para los anchos de cincha comerciales de 20, 25, 38 y 50 mm. Es el herraje rígido que el avío `ladder-lock` de Fashion Cabinet coloca y al que se puentea aquí.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/ladder-lock.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "ladder-lock",
+      "webbing",
+      "strap-adjuster",
+      "buckle",
+      "adjuster",
+      "strap",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "lock",
+      "label": {
+        "en": "Ladder Lock",
+        "es": "Regulador ladder-lock"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "lock"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "lock",
+      "label": {
+        "en": "Ladder Lock",
+        "es": "Regulador ladder-lock"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "webbing",
+      "label": {
+        "en": "Webbing",
+        "es": "Cincha"
+      }
+    },
+    {
+      "id": "frame",
+      "label": {
+        "en": "Frame",
+        "es": "Marco"
+      }
+    },
+    {
+      "id": "grip",
+      "label": {
+        "en": "Grip",
+        "es": "Agarre"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing_w",
+      "type": "slider",
+      "default": 25.0,
+      "min": 15.0,
+      "max": 50.0,
+      "step": 0.5,
+      "group": "webbing",
+      "modes": [
+        "lock"
+      ],
+      "label": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Nominal webbing width (mm). Both slots span this plus 1 mm so the tape runs without binding at the edges.",
+        "es": "Ancho nominal de la cincha (mm). Ambas ranuras miden esto más 1 mm para que la cinta corra sin trabarse en los cantos."
+      }
+    },
+    {
+      "id": "webbing_t",
+      "type": "slider",
+      "default": 1.6,
+      "min": 0.8,
+      "max": 4.0,
+      "step": 0.1,
+      "group": "webbing",
+      "modes": [
+        "lock"
+      ],
+      "label": {
+        "en": "Webbing thickness (mm)",
+        "es": "Espesor de la cincha (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the tape (mm). Each slot opens to twice this plus an allowance, because the tape is doubled where it wraps the bar.",
+        "es": "Espesor de la cincha (mm). Cada ranura abre al doble de esto más una tolerancia, porque la cinta va doblada donde envuelve la barra."
+      }
+    },
+    {
+      "id": "frame_t",
+      "type": "slider",
+      "default": 3.0,
+      "min": 2.0,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "lock"
+      ],
+      "label": {
+        "en": "Frame rail thickness (mm)",
+        "es": "Espesor del riel del marco (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the outer frame rails (mm). This is the load path when the strap is under tension.",
+        "es": "Espesor de los rieles exteriores del marco (mm). Es la vía de carga cuando la correa está en tensión."
+      }
+    },
+    {
+      "id": "bar_w",
+      "type": "slider",
+      "default": 4.5,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "lock"
+      ],
+      "label": {
+        "en": "Center bar width (mm)",
+        "es": "Ancho de la barra central (mm)"
+      },
+      "tooltip": {
+        "en": "Width of the center bar along the pull (mm). A wider bar spreads the wrap and holds heavier loads without creeping.",
+        "es": "Ancho de la barra central en el sentido del tiro (mm). Una barra más ancha reparte el envolvimiento y aguanta más carga sin deslizarse."
+      }
+    },
+    {
+      "id": "body_h",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 10.0,
+      "step": 0.1,
+      "group": "frame",
+      "modes": [
+        "lock"
+      ],
+      "label": {
+        "en": "Frame height (mm)",
+        "es": "Altura del marco (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the frame (mm) — the print height when it lies flat on the bed. Taller frames are stiffer but sit prouder under a pack strap.",
+        "es": "Altura del marco (mm) — la altura de impresión al quedar plano en la cama. Un marco alto es más rígido pero sobresale más bajo el tirante."
+      }
+    },
+    {
+      "id": "teeth",
+      "type": "slider",
+      "default": 4,
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "group": "grip",
+      "modes": [
+        "lock"
+      ],
+      "label": {
+        "en": "Grip ribs (count)",
+        "es": "Nervios de agarre (cantidad)"
+      },
+      "tooltip": {
+        "en": "Shallow ribs across the center bar that bite the tape weave. Set to 0 for a smooth bar that releases more easily on slippery polypropylene. The count is auto-clamped so ribs never merge into a band: a bar holds at most one rib per millimetre of bar_w, minus one — widen bar_w if you want more.",
+        "es": "Nervios poco profundos sobre la barra central que muerden el tejido de la cinta. Ponlo en 0 para una barra lisa que suelta mejor el polipropileno resbaloso. La cantidad se limita automáticamente para que los nervios nunca se fundan en una banda: la barra admite como máximo un nervio por milímetro de bar_w, menos uno — ensancha bar_w si quieres más."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "shoulder25",
+      "mode": "lock",
+      "label": {
+        "en": "Shoulder Strap (25 mm)",
+        "es": "Tirante de mochila (25 mm)"
+      },
+      "values": {
+        "webbing_w": 25.0,
+        "webbing_t": 1.6,
+        "frame_t": 3.0,
+        "bar_w": 4.5,
+        "body_h": 5.0,
+        "teeth": 4
+      }
+    },
+    {
+      "id": "haul50",
+      "mode": "lock",
+      "label": {
+        "en": "Haul Strap (50 mm)",
+        "es": "Correa de carga (50 mm)"
+      },
+      "values": {
+        "webbing_w": 50.0,
+        "webbing_t": 2.4,
+        "frame_t": 4.5,
+        "bar_w": 7.0,
+        "body_h": 7.0,
+        "teeth": 6
+      }
+    },
+    {
+      "id": "smooth20",
+      "mode": "lock",
+      "label": {
+        "en": "Smooth Bar (20 mm)",
+        "es": "Barra lisa (20 mm)"
+      },
+      "values": {
+        "webbing_w": 20.0,
+        "webbing_t": 1.2,
+        "frame_t": 2.4,
+        "bar_w": 3.5,
+        "body_h": 4.0,
+        "teeth": 0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        80,
+        80,
+        80
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "webbing_slots",
+        "label": {
+          "en": "Webbing Slots (tape edge)",
+          "es": "Ranuras de la cincha (canto de la cinta)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "webbing_w",
+          "webbing_t",
+          "frame_t"
+        ]
+      },
+      {
+        "id": "bar_grip",
+        "label": {
+          "en": "Center Bar Grip",
+          "es": "Agarre de la barra central"
+        },
+        "geometry_type": "profile",
+        "standard": "internal",
+        "parameters": [
+          "bar_w",
+          "teeth",
+          "body_h"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Ladder locks are sold moulded onto finished straps, so a worn one means replacing the whole strap; a printed adjuster sized to the tape you already own repairs the pack instead of retiring it.",
+      "es": "Los reguladores ladder-lock se venden moldeados en correas terminadas, así que uno gastado obliga a cambiar la correa entera; un ajustador impreso a la medida de la cinta que ya tienes repara la mochila en lugar de jubilarla."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "ladder-lock",
+    "webbing",
+    "strap-adjuster",
+    "buckle",
+    "adjuster",
+    "strap",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

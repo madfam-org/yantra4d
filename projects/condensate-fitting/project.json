@@ -277,7 +277,7 @@
                     "es": "Boca Deslizante de Tocon de Drenaje"
                 },
                 "geometry_type": "socket",
-                "standard": "1/2-3/4 in stub slip",
+                "standard": "1/2-3/4 in IPS stub slip (PVC sched 40)",
                 "parameters": ["socket_od", "clearance"]
             }
         ],

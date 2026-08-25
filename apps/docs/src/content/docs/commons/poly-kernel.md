@@ -16,4 +16,4 @@ To satisfy the **Hyperobjects Commons**, every feature mapping to a specific `mo
 ### Why B-Rep?
 A CadQuery Boundary Representation is aware of pure, parameterized surfaces. When we export `.step` artifacts to aerospace/automotive engineering endpoints, we pass them native mathematical boundaries instead of interpolated polygon spheres.
 
-As of Phase 5.2, any Yantra4D project omitting `"cq_file"` fails ecosystem CI validates.
+`cq_file` is optional. It pairs a CadQuery script with an OpenSCAD mode so that B-Rep formats such as STEP remain available for that mode. Cartridges authored CadQuery-first, and every graph cartridge, omit it — the shipped `spacer-block` and `flange-plate` do, and pass CI.

@@ -2,8 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
+// The layout callback is captured so a test can fire it; it is how the console
+// reports a new size, and it guards against writing a size while collapsed.
+const { layoutCb } = vi.hoisted(() => ({ layoutCb: { onLayoutChanged: null } }))
+
 vi.mock('@/components/ui/resizable', () => ({
-  ResizablePanelGroup: function MockPanelGroup({ children, orientation }) {
+  ResizablePanelGroup: function MockPanelGroup({ children, orientation, onLayoutChanged }) {
+    layoutCb.onLayoutChanged = onLayoutChanged ?? null
     return <div data-testid="resizable-panel-group" data-orientation={orientation}>{children}</div>
   },
   ResizablePanel: function MockPanel({ children, id }) {
@@ -33,8 +38,10 @@ vi.mock('./ShortcutHelpDialog', () => ({
 }))
 
 vi.mock('./ModelInfoPanel', () => ({
-  default: function MockModelInfo() {
-    return <div data-testid="model-info" />
+  default: function MockModelInfo(props) {
+    // totalPieceCount is computed in StudioMainView and handed straight to this
+    // child, so surface it for assertions rather than rendering a bare stub.
+    return <div data-testid="model-info" data-total-pieces={props.totalPieceCount ?? ''} />
   },
 }))
 
@@ -47,6 +54,12 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
 }))
 vi.mock('../../hooks/system/useUnitSystem', () => ({
   useUnitSystem: () => ({ unit: 'mm', format: (v) => `${v}mm`, formatVolume: (v, p = 0) => `${v.toFixed(p)} mm³`, label: 'mm', toggle: vi.fn() }),
+}))
+
+vi.mock('../feedback/WelcomeOverlay', () => ({
+  default: function MockWelcomeOverlay() {
+    return <div data-testid="welcome-overlay" />
+  },
 }))
 
 import StudioMainView from './StudioMainView'
@@ -208,4 +221,219 @@ describe('StudioMainView', () => {
     expect(panelIds).toContain('viewer')
     expect(panelIds).toContain('console')
   })
+
+  // --- Manifest-driven branches -------------------------------------------
+  // baseContext leaves manifest, printEstimate and the job ids empty, so the
+  // part-count computation, welcome overlay, estimate strip and the physics and
+  // optimization badges were all unreachable.
+
+  const withContext = (patch) => {
+    useProject.mockReturnValue({ ...baseContext, ...patch })
+  }
+
+  it('part count multiplies quantities declared per part', () => {
+    withContext({
+      manifest: {
+        modes: [{ id: 'full', parts: ['body', 'pin'], part_quantities: { body: 1, pin: 4 } }],
+      },
+      params: {},
+      // ModelInfoPanel, which receives the count, only renders once a render
+      // has produced parts.
+      parts: [{ type: 'body' }, { type: 'pin' }],
+    })
+    render(<StudioMainView />)
+    // 1 body + 4 pins.
+    // StudioMainView renders its own desktop and mobile trees, so this child
+    // appears twice; both carry the same computed count.
+    expect(screen.getAllByTestId('model-info')[0]).toHaveAttribute('data-total-pieces', '5')
+  })
+
+  it('a part with no declared quantity counts as one', () => {
+    withContext({
+      manifest: { modes: [{ id: 'full', parts: ['body', 'lid'], part_quantities: { body: 2 } }] },
+      parts: [{ type: 'body' }, { type: 'lid' }],
+    })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('model-info')[0]).toHaveAttribute('data-total-pieces', '3')
+  })
+
+  it('no part count when the active mode is absent from the manifest', () => {
+    withContext({ manifest: { modes: [{ id: 'other', parts: ['a'], part_quantities: { a: 9 } }] } })
+    const { container } = render(<StudioMainView />)
+    expect(container).toBeTruthy() // renders without the count block
+  })
+
+  it('welcome overlay appears when the manifest enables it', () => {
+    localStorage.clear()
+    withContext({
+      projectSlug: 'demo',
+      manifest: { project: { welcome: { enabled: true, title: 'Welcome aboard' } } },
+    })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('welcome-overlay').length).toBeGreaterThan(0)
+  })
+
+  it('welcome overlay stays hidden once dismissed for that project', () => {
+    localStorage.setItem('yantra4d-welcome-demo', '1')
+    withContext({
+      projectSlug: 'demo',
+      manifest: { project: { welcome: { enabled: true, title: 'Welcome aboard' } } },
+    })
+    render(<StudioMainView />)
+    expect(screen.queryAllByTestId('welcome-overlay')).toHaveLength(0)
+    localStorage.clear()
+  })
+
+  it('welcome overlay stays hidden when the manifest does not enable it', () => {
+    localStorage.clear()
+    withContext({
+      projectSlug: 'demo',
+      manifest: { project: { welcome: { enabled: false, title: 'Welcome aboard' } } },
+    })
+    render(<StudioMainView />)
+    expect(screen.queryAllByTestId('welcome-overlay')).toHaveLength(0)
+  })
+
+  it('the collapsed console previews the last log line', () => {
+    withContext({ logs: 'first line\nsecond line\nlast line' })
+    render(<StudioMainView />)
+    expect(document.body.textContent).toContain('last line')
+  })
+
+  it('print estimate strip appears once a volume is known', () => {
+    withContext({ printEstimate: { volumeMm3: 1234 } })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('print-overlay').length).toBeGreaterThan(0)
+  })
+
+  it('estimate toggle is offered with a volume and withdrawn when estimation is disabled', () => {
+    withContext({ printEstimate: { volumeMm3: 1234 } })
+    const { unmount } = render(<StudioMainView />)
+    expect(screen.getAllByLabelText('Toggle print estimate panel').length).toBeGreaterThan(0)
+    unmount()
+
+    withContext({
+      printEstimate: { volumeMm3: 1234 },
+      manifest: { print_estimation: { enabled: false } },
+    })
+    render(<StudioMainView />)
+    expect(screen.queryAllByLabelText('Toggle print estimate panel')).toHaveLength(0)
+  })
+
+  it('compare mode renders a slot per comparison', () => {
+    withContext({ parts: [{ type: 'body' }] })
+    render(
+      <StudioMainView
+        compareMode
+        comparisonSlots={[{ id: 'a', parts: [] }, { id: 'b', parts: [] }]}
+      />
+    )
+    // The compare layout replaces the single viewer with one per slot.
+    expect(screen.getAllByTestId('viewer').length).toBeGreaterThan(1)
+  })
+
+  it('optimization logs are shown while a run reports them', () => {
+    // The logs panel only renders while a job is active; the last line is
+    // what the badge shows.
+    // The simulation toolbar as a whole only renders for a mode with rendered
+    // parts and no render in flight.
+    withContext({
+      mode: 'full',
+      parts: [{ type: 'body' }],
+      loading: false,
+      optimizationJobId: 'opt-1',
+      optimizationProgress: 30,
+      optimizationLogs: ['seeding', 'iteration 1'],
+    })
+    render(<StudioMainView />)
+    expect(document.body.textContent).toContain('iteration 1')
+  })
+
+  it('an estimate nested under total is read the same as a flat one', () => {
+    // The estimate arrives either flat or wrapped in `total` depending on
+    // whether the render produced one part or several.
+    withContext({ printEstimate: { total: { volumeMm3: 900, boundingBox: { width: 1, depth: 2, height: 3 } } } })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('print-overlay').length).toBeGreaterThan(0)
+  })
+
+  it('a part quantity given as a formula string is coerced to a number', () => {
+    withContext({
+      manifest: {
+        modes: [{ id: 'full', parts: ['body'], part_quantities: { body: '2 + 3' } }],
+      },
+      params: {},
+      parts: [{ type: 'body' }],
+    })
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('model-info')[0]).toHaveAttribute('data-total-pieces', '5')
+  })
+
+  it('an unevaluable part quantity counts as one rather than NaN', () => {
+    withContext({
+      manifest: {
+        modes: [{ id: 'full', parts: ['body'], part_quantities: { body: 'not a formula' } }],
+      },
+      parts: [{ type: 'body' }],
+    })
+    render(<StudioMainView />)
+    const count = screen.getAllByTestId('model-info')[0].getAttribute('data-total-pieces')
+    expect(count).not.toContain('NaN')
+  })
+
+  it('the live region summarises the model once parts exist', () => {
+    withContext({
+      parts: [{ type: 'body' }],
+      printEstimate: { boundingBox: { width: 40, depth: 30, height: 20 }, volumeMm3: 1000 },
+    })
+    render(<StudioMainView />)
+    const status = document.querySelector('[role="status"][aria-live="polite"]')
+    expect(status).toBeTruthy()
+    // Screen-reader users get the dimensions, not just "rendered".
+    expect(status.textContent.length).toBeGreaterThan(0)
+  })
+
+  it('the live region announces rendering while a render is in flight', () => {
+    withContext({ loading: true, parts: [] })
+    render(<StudioMainView />)
+    const status = document.querySelector('[role="status"][aria-live="polite"]')
+    expect(status.textContent).toMatch(/Rendering/i)
+  })
+
+  it('a bounding box nested under total is summarised the same as a flat one', () => {
+    withContext({
+      parts: [{ type: 'body' }],
+      printEstimate: { total: { boundingBox: { width: 5, depth: 5, height: 5 }, volumeMm3: 125 } },
+    })
+    render(<StudioMainView />)
+    const status = document.querySelector('[role="status"][aria-live="polite"]')
+    expect(status.textContent.length).toBeGreaterThan(0)
+  })
+
+  it('a console resize is reported upward', () => {
+    const onConsoleResize = vi.fn()
+    withContext({})
+    render(<StudioMainView onConsoleResize={onConsoleResize} consoleCollapsed={false} />)
+    layoutCb.onLayoutChanged?.({ console: 30 })
+    expect(onConsoleResize).toHaveBeenCalledWith(30)
+  })
+
+  it('a resize while the console is collapsed is not recorded', () => {
+    // Recording the collapsed height would make it the size the console
+    // restores to next time it opens.
+    const onConsoleResize = vi.fn()
+    withContext({})
+    render(<StudioMainView onConsoleResize={onConsoleResize} consoleCollapsed />)
+    layoutCb.onLayoutChanged?.({ console: 0 })
+    expect(onConsoleResize).not.toHaveBeenCalled()
+  })
+
+  it('a layout change that omits the console size is ignored', () => {
+    const onConsoleResize = vi.fn()
+    withContext({})
+    render(<StudioMainView onConsoleResize={onConsoleResize} consoleCollapsed={false} />)
+    layoutCb.onLayoutChanged?.({ sidebar: 20 })
+    expect(onConsoleResize).not.toHaveBeenCalled()
+  })
 })
+

@@ -50,5 +50,16 @@ ONBOARD_CREATE = "10/hour"
 ANALYSIS_THICKNESS = "20/hour"
 ANALYSIS_OVERHANG = "20/hour"
 
+# Simulation (pro-gated, dispatches GPU/CPU-heavy jobs)
+SIMULATE_PHYSICS = "20/hour"
+SIMULATE_OPTIMIZE = "20/hour"
+
+# Animation flipbook rendering (N frames x M parts per request, streamed over SSE)
+ANIMATION_RENDER = "10/hour"
+
+# Analytics (unauthenticated — guests legitimately produce analytics)
+ANALYTICS_TRACK = "120/hour"
+ANALYTICS_SUMMARY = "60/hour"
+
 # External integrations
 COTIZA_EXPORT = "20/hour"

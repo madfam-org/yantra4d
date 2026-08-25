@@ -28,7 +28,6 @@ interface EstimateRowsProps {
   est: EstimateResult
   t: (key: string) => string
   costRange?: CostRange | null
-  priceCurrency?: string
 }
 
 function formatCurrency(amount: number, currency: string): string {
@@ -37,7 +36,7 @@ function formatCurrency(amount: number, currency: string): string {
   return `${symbol}${amount.toFixed(2)}${suffix}`
 }
 
-function EstimateRows({ est, t, costRange, priceCurrency }: EstimateRowsProps) {
+function EstimateRows({ est, t, costRange }: EstimateRowsProps) {
   return (
     <>
       <div className="flex justify-between">
@@ -56,9 +55,9 @@ function EstimateRows({ est, t, costRange, priceCurrency }: EstimateRowsProps) {
         <span className="text-muted-foreground">{t('print.cost')}:</span>
         {costRange ? (
           <span className="font-medium text-right">
-            {formatCurrency(costRange.low, priceCurrency || costRange.currency)}
+            {formatCurrency(costRange.low, costRange.currency)}
             {' – '}
-            {formatCurrency(costRange.high, priceCurrency || costRange.currency)}
+            {formatCurrency(costRange.high, costRange.currency)}
           </span>
         ) : (
           <span className="font-medium">~${est.filament.cost}</span>
@@ -85,19 +84,9 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
   const [nozzleDiameter, setNozzleDiameter] = useState(0.4)
   const [breakdownOpen, setBreakdownOpen] = useState(false)
   const [livePricing, setLivePricing] = useState<LivePricing | null>(null)
-  const [priceCurrency, setPriceCurrency] = useState<string>(() => {
-    try { return localStorage.getItem('yantra4d-price-currency') || 'MXN' } catch { return 'MXN' }
-  })
-
   useEffect(() => {
     fetchMaterialPricing(material).then(setLivePricing)
   }, [material])
-
-  const toggleCurrency = () => {
-    const next = priceCurrency === 'MXN' ? 'USD' : 'MXN'
-    setPriceCurrency(next)
-    try { localStorage.setItem('yantra4d-price-currency', next) } catch { /* quota exceeded */ }
-  }
 
   const materials = useMemo(() => getMaterialProfiles(manifestMaterials as never), [manifestMaterials])
   const materialLookup = useMemo(() => buildMaterialLookup(manifestMaterials as never), [manifestMaterials])
@@ -196,16 +185,15 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
           </select>
         </div>
 
-        {/* Currency toggle (when live pricing available) */}
+        {/* Prices display in the pricing source's own currency. A toggle used
+            to relabel MXN values as USD (and vice versa) without converting —
+            there is no FX rate anywhere in the system, so relabeling was the
+            only thing it could do. Until an FX layer exists, the label always
+            tells the truth about the number next to it. */}
         {costRange && (
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground">{t('print.currency') || 'Currency'}:</span>
-            <button
-              onClick={toggleCurrency}
-              className="bg-background border border-border rounded px-2 py-0.5 text-xs font-medium hover:bg-muted transition-colors min-h-[44px] md:min-h-0"
-            >
-              {priceCurrency}
-            </button>
+            <span className="text-xs font-medium">{costRange.currency}</span>
           </div>
         )}
 
@@ -214,7 +202,7 @@ export default function PrintEstimateOverlay({ volumeMm3, boundingBox, perPartDa
           {partEstimates && (
             <div className="text-muted-foreground font-medium mb-1">Total</div>
           )}
-          <EstimateRows est={estimate} t={t} costRange={costRange} priceCurrency={priceCurrency} />
+          <EstimateRows est={estimate} t={t} costRange={costRange} />
           {costRange?.source === 'forgesight' && (
             <div className="text-[10px] text-primary/70 mt-1 font-medium">
               Market pricing via ForgeSight

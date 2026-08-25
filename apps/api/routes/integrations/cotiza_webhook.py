@@ -35,11 +35,13 @@ import json
 import logging
 import os
 import time
+from decimal import Decimal, InvalidOperation
 
 from flask import Blueprint, jsonify, request
 
 from extensions import db
 from models.analytics import AnalyticsEvent
+from models.quote import CotizaQuote, CotizaQuoteEvent
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +62,82 @@ def _verify_signature(payload: bytes, signature: str | None) -> bool:
     ).hexdigest()
 
     return hmac.compare_digest(signature, expected)
+
+
+def _parse_amount(value) -> Decimal | None:
+    """Coerce a webhook amount into Decimal, or None when absent/garbage.
+
+    Money goes through str() first so a float like 1234.56 doesn't drag its
+    binary representation error into the Decimal.
+    """
+    if value is None or value == "":
+        return None
+    try:
+        return Decimal(str(value))
+    except (InvalidOperation, ValueError):
+        return None
+
+
+def _project_quote_event(raw_body: bytes, payload: dict) -> dict:
+    """Idempotently record the event and update the per-quote projection.
+
+    Deduplication key is a hash of the raw body: a provider retry or a
+    replayed request carries identical bytes and becomes a no-op ACK instead
+    of a double-counted order. A changed body (e.g. a later event for the
+    same quote) is a new ledger row, and the projection takes its values —
+    last received wins, with Cotiza's own timestamp preserved for audit.
+
+    Returns a dict describing what happened; never raises. When the DB is
+    unavailable the webhook still ACKs (Cotiza should not retry forever
+    because our analytics store is down) and the outcome says so.
+    """
+    event_key = hashlib.sha256(raw_body).hexdigest()
+    quote_id = str(payload.get("quote_id") or "")
+    if not quote_id:
+        return {"projected": False, "reason": "missing_quote_id"}
+
+    try:
+        existing = CotizaQuoteEvent.query.filter_by(event_key=event_key).first()
+        if existing is not None:
+            return {"projected": False, "duplicate": True, "event_id": existing.id}
+
+        amount = _parse_amount(payload.get("total_amount"))
+        event = CotizaQuoteEvent(
+            event_key=event_key,
+            event_type=payload.get("event_type", "unknown"),
+            quote_id=quote_id,
+            quote_number=payload.get("quote_number"),
+            project_slug=payload.get("project_slug"),
+            status=payload.get("status"),
+            total_amount=amount,
+            currency=payload.get("currency"),
+            event_timestamp=payload.get("timestamp"),
+            raw=raw_body.decode("utf-8", errors="replace"),
+        )
+        db.session.add(event)
+
+        quote = db.session.get(CotizaQuote, quote_id)
+        if quote is None:
+            quote = CotizaQuote(quote_id=quote_id)
+            db.session.add(quote)
+        quote.quote_number = payload.get("quote_number") or quote.quote_number
+        quote.project_slug = payload.get("project_slug") or quote.project_slug
+        quote.status = payload.get("status") or quote.status
+        if amount is not None:
+            quote.total_amount = amount
+        quote.currency = payload.get("currency") or quote.currency
+        quote.last_event_type = payload.get("event_type")
+        quote.updated_at = db.func.current_timestamp()
+
+        db.session.commit()
+        return {"projected": True, "duplicate": False, "quote_id": quote_id}
+    except Exception as exc:
+        logger.warning("Cotiza quote projection skipped: %s", exc)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        return {"projected": False, "reason": "quote_store_unavailable"}
 
 
 def _persist_audit_event(payload: dict) -> dict:
@@ -167,6 +245,7 @@ def handle_cotiza_webhook():
     else:
         logger.debug("Cotiza webhook: unrecognized event_type=%s", event_type)
 
+    projection = _project_quote_event(raw_body, payload)
     audit = _persist_audit_event(payload)
 
     return jsonify({
@@ -188,6 +267,8 @@ def handle_cotiza_webhook():
             "Lifecycle webhook only; Yantra4D did not independently verify market pricing.",
         ),
         "audit": audit,
+        "projection": projection,
+        "duplicate": bool(projection.get("duplicate", False)),
     }), 200
 
 

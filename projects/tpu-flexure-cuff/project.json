@@ -1,0 +1,155 @@
+{
+  "project": {
+    "name": "TPU Flexure Cuff",
+    "slug": "tpu-flexure-cuff",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place flexible cuff band — the additive-manufacturing trim the Fashion Cabinet `printed-flexure-cuff` notion describes and bridges to here for its geometry. A cylindrical band, printed thin in TPU and perforated by a staggered lattice of through-slots (a rolled-up living hinge), flexes open to pass over the hand and springs back to grip the wrist: a sleeve or hem finish with no separate elastic. Sized by cuff circumference so a garment's finished opening drives the band. One material identity — Bambu TPU 95A — spans the FC notion and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una pretina de puño flexible impresa en sitio — el avío de manufactura aditiva que el avío `printed-flexure-cuff` de Fashion Cabinet describe y al que se puentea aquí para su geometría. Una banda cilíndrica, impresa delgada en TPU y perforada por una retícula escalonada de ranuras (una bisagra viva enrollada), se abre para pasar por la mano y regresa para ceñir la muñeca: un acabado de manga o ruedo sin elástico aparte. Dimensionada por circunferencia para que la abertura terminada de una prenda determine la banda. Una identidad de material — Bambu TPU 95A — abarca el avío de FC y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tpu-flexure-cuff.webp",
+    "difficulty": "advanced",
+    "tags": ["cuff", "flexure", "print-in-place", "flexible", "tpu", "am-fashion", "trim", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "cuff",
+      "label": { "en": "Flexure Cuff", "es": "Puño flexible" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["cuff"],
+      "estimate": { "base_time": 55, "per_unit": 4, "per_part": 28 }
+    },
+    {
+      "id": "swatch",
+      "label": { "en": "Arc Swatch", "es": "Muestra de arco" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["swatch"],
+      "estimate": { "base_time": 18, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "band",
+      "label": { "en": "Plain Band (no slots)", "es": "Banda lisa (sin ranuras)" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["band"],
+      "estimate": { "base_time": 30, "per_unit": 3, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "cuff", "label": { "en": "Flexure Cuff", "es": "Puño flexible" }, "render_mode": 0, "color": "#7fa8a0" },
+    { "id": "swatch", "label": { "en": "Swatch", "es": "Muestra" }, "render_mode": 0, "color": "#7fa8a0" },
+    { "id": "band", "label": { "en": "Band", "es": "Banda" }, "render_mode": 0, "color": "#8fb2ab" }
+  ],
+  "parameter_groups": [
+    { "id": "fit", "label": { "en": "Fit", "es": "Ajuste" } },
+    { "id": "flexure", "label": { "en": "Flexure", "es": "Flexión" } },
+    { "id": "print", "label": { "en": "Print", "es": "Impresión" } }
+  ],
+  "parameters": [
+    {
+      "id": "cuff_circum", "type": "slider", "default": 180.0, "min": 80.0, "max": 500.0, "step": 5.0,
+      "group": "fit", "modes": ["cuff", "swatch", "band"],
+      "label": { "en": "Cuff circumference (mm)", "es": "Circunferencia del puño (mm)" },
+      "tooltip": { "en": "Relaxed inner circumference; flexes larger to pass the hand", "es": "Circunferencia interior en reposo; flexiona más para pasar la mano" }
+    },
+    {
+      "id": "cuff_height", "type": "slider", "default": 60.0, "min": 15.0, "max": 200.0, "step": 5.0,
+      "group": "fit", "modes": ["cuff", "swatch", "band"],
+      "label": { "en": "Cuff height (mm)", "es": "Altura del puño (mm)" },
+      "tooltip": { "en": "Band height along the limb", "es": "Altura de la banda a lo largo del miembro" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.0, "max": 6.0, "step": 0.1,
+      "group": "print", "modes": ["cuff", "swatch", "band"],
+      "label": { "en": "Wall thickness (mm)", "es": "Espesor de pared (mm)" },
+      "tooltip": { "en": "Band wall; thinner + more slots = more stretch", "es": "Pared de la banda; más delgada + más ranuras = más elasticidad" }
+    },
+    {
+      "id": "slot_rows", "type": "slider", "default": 3, "min": 1, "max": 8, "step": 1,
+      "group": "flexure", "modes": ["cuff", "swatch"],
+      "label": { "en": "Slot rows", "es": "Filas de ranuras" },
+      "tooltip": { "en": "Rows of flexure slots up the band", "es": "Filas de ranuras de flexión a lo alto" }
+    },
+    {
+      "id": "slot_cols", "type": "slider", "default": 16, "min": 4, "max": 48, "step": 1,
+      "group": "flexure", "modes": ["cuff", "swatch"],
+      "label": { "en": "Slots per row", "es": "Ranuras por fila" },
+      "tooltip": { "en": "Slots around the band; more = softer flex", "es": "Ranuras alrededor; más = flexión más suave" }
+    },
+    {
+      "id": "slot_w", "type": "slider", "default": 2.0, "min": 0.8, "max": 6.0, "step": 0.1,
+      "group": "flexure", "modes": ["cuff", "swatch"],
+      "label": { "en": "Slot width (mm)", "es": "Ancho de ranura (mm)" },
+      "tooltip": { "en": "Slot opening around the band", "es": "Abertura de la ranura alrededor" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "wrist_cuff", "mode": "cuff",
+      "label": { "en": "Wrist Cuff (180)", "es": "Puño de muñeca (180)" },
+      "values": { "cuff_circum": 180, "cuff_height": 60, "slot_rows": 3 }
+    },
+    {
+      "id": "ankle_cuff", "mode": "cuff",
+      "label": { "en": "Ankle Cuff (260)", "es": "Puño de tobillo (260)" },
+      "values": { "cuff_circum": 260, "cuff_height": 80, "slot_rows": 4, "slot_cols": 24 }
+    },
+    {
+      "id": "flex_test", "mode": "swatch",
+      "label": { "en": "Flex Test Swatch", "es": "Muestra de flexión" },
+      "values": { "slot_rows": 3, "slot_cols": 16, "slot_w": 2.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "slot_w < wall * 4",
+      "severity": "warning",
+      "message": { "en": "Very wide slots weaken the band; narrow them if it won't spring back", "es": "Ranuras muy anchas debilitan la banda; redúcelas si no recupera" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior" }, "position": [0, 0, 220] },
+    { "id": "front", "label": { "en": "Front", "es": "Frente" }, "position": [0, 200, 40] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 55, "per_unit": 4, "per_part": 28,
+    "fn_factor": 24, "wasm_multiplier": 6, "warning_threshold_seconds": 160
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "cuff_edge",
+        "label": { "en": "Sewable Cuff Edge", "es": "Canto de puño cosible" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["cuff_circum", "cuff_height", "wall"]
+      },
+      {
+        "id": "flex_cell",
+        "label": { "en": "Flexure Slot Cell", "es": "Celda de ranura de flexión" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["slot_rows", "slot_cols", "slot_w", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A stretch cuff anyone can print replaces sewn elastic — which perishes and is rarely repairable — with an open, made-to-measure flexure band that is washable, recyclable, and springs back for the life of the garment. Sized to a sleeve or hem it is a trim that is simultaneously a Fashion Cabinet notion and a Yantra4D solid.",
+      "es": "Un puño elástico que cualquiera puede imprimir reemplaza el elástico cosido — que se degrada y rara vez se repara — con una banda de flexión abierta y a la medida, lavable, reciclable y que recupera durante toda la vida de la prenda. Dimensionada a una manga o ruedo es un avío que es a la vez un avío de Fashion Cabinet y un sólido de Yantra4D."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["cuff", "flexure", "print-in-place", "flexible", "tpu", "am-fashion", "trim", "wearable", "hyperobject", "commons"]
+}

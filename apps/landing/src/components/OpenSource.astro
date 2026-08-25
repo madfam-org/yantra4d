@@ -1,11 +1,15 @@
 ---
 import type { Translations } from '../lib/i18n';
+import { COMMONS_STATS } from '../data/projects';
 
 interface Props {
   t?: Translations;
 }
 
 const { t } = Astro.props;
+// Figures come from the generated commons stats, never from copy — the page
+// previously advertised "21 Projects" against a commons of 326.
+const { cartridges, standards, cernLicensed } = COMMONS_STATS;
 ---
 
 <section id="open-source" class="py-24 px-6">
@@ -17,13 +21,16 @@ const { t } = Astro.props;
 
     <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-8">
       <div class="rounded-lg border border-border bg-card px-4 sm:px-6 py-2 sm:py-3">
-        <div class="text-2xl font-bold">{t?.openSourceSection.statProjects ?? '21 Proyectos'}</div>
+        <div class="text-2xl font-bold">{cartridges}</div>
+        <div class="text-xs text-muted-foreground">{t?.openSourceSection.statProjects ?? 'Cartuchos Abiertos'}</div>
       </div>
       <div class="rounded-lg border border-border bg-card px-4 sm:px-6 py-2 sm:py-3">
-        <div class="text-2xl font-bold">{t?.openSourceSection.statLicense ?? 'AGPLv3'}</div>
+        <div class="text-2xl font-bold">{standards}</div>
+        <div class="text-xs text-muted-foreground">{t?.openSourceSection.statStandards ?? 'Estándares'}</div>
       </div>
       <div class="rounded-lg border border-border bg-card px-4 sm:px-6 py-2 sm:py-3">
-        <div class="text-2xl font-bold">GitHub</div>
+        <div class="text-2xl font-bold">{t?.openSourceSection.statLicense ?? 'CERN-OHL-W'}</div>
+        <div class="text-xs text-muted-foreground">{cernLicensed} {t?.openSourceSection.statLicensedSuffix ?? 'diseños'}</div>
       </div>
     </div>
 

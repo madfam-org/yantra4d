@@ -55,4 +55,55 @@ describe('i18n', () => {
       expect(getLangFromUrl(new URL('https://yantra4d.com/fr/'))).toBe('es')
     })
   })
+
+  describe('pricing section strings', () => {
+    // The #pricing anchor is the destination of every upsell CTA in the
+    // studio; its copy must exist in both locales and state the tier facts.
+    it('exists in both locales with matching keys', () => {
+      const en = getTranslations('en') as Record<string, unknown>
+      const es = getTranslations('es') as Record<string, unknown>
+      expect(en.pricing).toBeDefined()
+      expect(es.pricing).toBeDefined()
+      expect(Object.keys(en.pricing as object).sort()).toEqual(
+        Object.keys(es.pricing as object).sort()
+      )
+    })
+
+    it('pro pricing carries the product price copy', () => {
+      const en = getTranslations('en') as { pricing: { pro: { price: string } } }
+      expect(en.pricing.pro.price).toContain('$9')
+    })
+  })
+
+  describe('"why hyperobjects" copy', () => {
+    // The word is the product's central claim; the landing must carry the
+    // explanation in both locales or half the audience gets an unglossed term.
+    it('exists in both locales with matching keys', () => {
+      const en = getTranslations('en')
+      const es = getTranslations('es')
+      expect(Object.keys(en.hyperCommons).sort()).toEqual(
+        Object.keys(es.hyperCommons).sort()
+      )
+      for (const key of ['whyHeading', 'whyBody', 'whyLink', 'whyLinkTarget'] as const) {
+        expect(typeof en.hyperCommons[key]).toBe('string')
+        expect(typeof es.hyperCommons[key]).toBe('string')
+      }
+    })
+
+    it('keeps both halves of the borrowed word', () => {
+      const en = getTranslations('en')
+      const es = getTranslations('es')
+      expect(en.hyperCommons.whyBody).toContain('Timothy Morton')
+      expect(es.hyperCommons.whyBody).toContain('Timothy Morton')
+      expect(en.hyperCommons.whyBody).toContain('hypertext')
+      expect(es.hyperCommons.whyBody).toContain('hipertexto')
+    })
+
+    it('is not left in English on the Spanish side', () => {
+      const es = getTranslations('es')
+      expect(es.hyperCommons.whyHeading).not.toBe('Why hyperobjects')
+      expect(es.hyperCommons.whyBody).not.toContain('on your desk')
+    })
+  })
 })
+

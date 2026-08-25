@@ -1,0 +1,390 @@
+{
+  "project": {
+    "name": "Garment Eyelet and Washer",
+    "slug": "garment-eyelet",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed two-part garment eyelet: a flanged barrel that passes through the fabric stack, plus the plain toothless washer it is set against on the reverse. This is the rigid hard good the Fashion Cabinet `garment-eyelet` notion places and bridges to here for its geometry — sized so a garment's finished lace hole and seam-allowance stack drive the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un ojillo de dos piezas impreso en 3D: un cuerpo con pestaña que atraviesa el espesor de la tela, más la arandela lisa contra la que se remacha por el revés. Es el avío rígido que la noción `garment-eyelet` de Fashion Cabinet coloca y al que se puentea aquí — dimensionado para que el ojal terminado y el espesor de la prenda determinen el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/garment-eyelet.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "garment-eyelet",
+      "eyelet",
+      "grommet",
+      "washer",
+      "lacing",
+      "corset",
+      "drawstring",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Eyelet and Washer",
+        "es": "Ojillo y arandela"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "set"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "eyelet",
+      "label": {
+        "en": "Eyelet Only",
+        "es": "Solo el ojillo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "eyelet"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    },
+    {
+      "id": "washer",
+      "label": {
+        "en": "Washer Only",
+        "es": "Solo la arandela"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "washer"
+      ],
+      "estimate": {
+        "base_time": 10,
+        "per_unit": 2,
+        "per_part": 6
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "set",
+      "label": {
+        "en": "Eyelet and Washer",
+        "es": "Ojillo y arandela"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "eyelet",
+      "label": {
+        "en": "Eyelet",
+        "es": "Ojillo"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "washer",
+      "label": {
+        "en": "Washer",
+        "es": "Arandela"
+      },
+      "render_mode": 0,
+      "color": "#a89c86"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "hole",
+      "label": {
+        "en": "Hole",
+        "es": "Ojal"
+      }
+    },
+    {
+      "id": "body",
+      "label": {
+        "en": "Body",
+        "es": "Cuerpo"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "inner_dia",
+      "type": "slider",
+      "default": 5.0,
+      "min": 3.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "hole",
+      "modes": [
+        "set",
+        "eyelet",
+        "washer"
+      ],
+      "label": {
+        "en": "Finished hole diameter (mm)",
+        "es": "Diámetro del ojal terminado (mm)"
+      },
+      "tooltip": {
+        "en": "Clear bore the lace or drawstring passes through (mm).",
+        "es": "Paso libre por el que cruza el cordón o la agujeta (mm)."
+      }
+    },
+    {
+      "id": "flange_dia",
+      "type": "slider",
+      "default": 10.0,
+      "min": 8.0,
+      "max": 24.0,
+      "step": 0.5,
+      "group": "body",
+      "modes": [
+        "set",
+        "eyelet",
+        "washer"
+      ],
+      "label": {
+        "en": "Flange diameter (mm)",
+        "es": "Diámetro de la pestaña (mm)"
+      },
+      "tooltip": {
+        "en": "Outer diameter of the visible face flange and of the washer (mm). Raised automatically to clear the barrel wall.",
+        "es": "Diámetro exterior de la pestaña visible y de la arandela (mm). Se amplía automáticamente para librar la pared del cuerpo."
+      }
+    },
+    {
+      "id": "barrel_h",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.5,
+      "max": 8.0,
+      "step": 0.1,
+      "group": "body",
+      "modes": [
+        "set",
+        "eyelet"
+      ],
+      "label": {
+        "en": "Barrel height / fabric stack (mm)",
+        "es": "Alto del cuerpo / espesor de tela (mm)"
+      },
+      "tooltip": {
+        "en": "Height of the barrel that passes through the fabric — set it to the compressed thickness of the layers plus the roll allowance (mm).",
+        "es": "Alto del cuerpo que atraviesa la tela — ajústalo al espesor comprimido de las capas más el margen de remache (mm)."
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 2.5,
+      "step": 0.1,
+      "group": "body",
+      "modes": [
+        "set",
+        "eyelet",
+        "washer"
+      ],
+      "label": {
+        "en": "Barrel wall thickness (mm)",
+        "es": "Espesor de pared del cuerpo (mm)"
+      },
+      "tooltip": {
+        "en": "Wall of the barrel tube; the barrel outer diameter is the hole diameter plus twice this (mm).",
+        "es": "Pared del tubo; el diámetro exterior del cuerpo es el del ojal más dos veces este valor (mm)."
+      }
+    },
+    {
+      "id": "washer_t",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.8,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "body",
+      "modes": [
+        "set",
+        "eyelet",
+        "washer"
+      ],
+      "label": {
+        "en": "Flange / washer thickness (mm)",
+        "es": "Espesor de pestaña y arandela (mm)"
+      },
+      "tooltip": {
+        "en": "Thickness of the flat face flange and of the matching washer (mm).",
+        "es": "Espesor de la pestaña plana y de la arandela correspondiente (mm)."
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "set",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "inner_dia": 5.0,
+        "flange_dia": 10.0,
+        "barrel_h": 3.0,
+        "wall": 1.2,
+        "washer_t": 1.2
+      }
+    },
+    {
+      "id": "corset_lacing",
+      "mode": "set",
+      "label": {
+        "en": "Corset Lacing (#00)",
+        "es": "Ojillo de corsé (#00)"
+      },
+      "values": {
+        "inner_dia": 4.0,
+        "flange_dia": 9.0,
+        "barrel_h": 4.5,
+        "wall": 1.0,
+        "washer_t": 1.0
+      }
+    },
+    {
+      "id": "hoodie_drawstring",
+      "mode": "set",
+      "label": {
+        "en": "Hoodie Drawstring",
+        "es": "Cordón de sudadera"
+      },
+      "values": {
+        "inner_dia": 8.0,
+        "flange_dia": 14.0,
+        "barrel_h": 2.5,
+        "wall": 1.4,
+        "washer_t": 1.4
+      }
+    },
+    {
+      "id": "canvas_awning",
+      "mode": "eyelet",
+      "label": {
+        "en": "Heavy Canvas",
+        "es": "Lona pesada"
+      },
+      "values": {
+        "inner_dia": 11.0,
+        "flange_dia": 22.0,
+        "barrel_h": 6.0,
+        "wall": 2.0,
+        "washer_t": 2.4
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 6,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "barrel",
+        "label": {
+          "en": "Barrel (fabric stack passage)",
+          "es": "Cuerpo (paso por el espesor de tela)"
+        },
+        "geometry_type": "socket",
+        "standard": "internal",
+        "parameters": [
+          "inner_dia",
+          "barrel_h",
+          "wall"
+        ]
+      },
+      {
+        "id": "set_face",
+        "label": {
+          "en": "Set Face (flange)",
+          "es": "Cara de remache (pestaña)"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "flange_dia",
+          "washer_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable eyelet lets a mender or small maker finish a lace hole to the exact thickness of the garment in hand, instead of buying a boxed size that never quite fits.",
+      "es": "Un ojillo imprimible permite a quien repara o produce en pequeño terminar un ojal al espesor exacto de la prenda que tiene en las manos, en lugar de comprar una medida de caja que nunca ajusta del todo."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "garment-eyelet",
+    "eyelet",
+    "grommet",
+    "washer",
+    "lacing",
+    "corset",
+    "drawstring",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

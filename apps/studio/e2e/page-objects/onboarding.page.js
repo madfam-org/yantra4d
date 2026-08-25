@@ -34,8 +34,11 @@ export class OnboardingPage extends BasePage {
   async getCurrentStep() {
     const _text = await this.stepIndicators.textContent()
     const steps = ['Upload', 'Review', 'Edit', 'Save', 'Subir', 'Revisar', 'Editar', 'Guardar']
-    // Find which step has font-semibold
-    const active = this.page.locator('.font-semibold', { hasText: new RegExp(steps.join('|')) })
+    // Find which step has font-semibold. Scoped to :visible and .first(): the
+    // step labels render in both the desktop and mobile step indicators, so the
+    // bare class match resolved to 2 elements and textContent() failed strict
+    // mode before it could read anything.
+    const active = this.page.locator('.font-semibold:visible', { hasText: new RegExp(steps.join('|')) }).first()
     const activeText = await active.textContent()
     const stepMap = { Upload: 0, Subir: 0, Review: 1, Revisar: 1, Edit: 2, Editar: 2, Save: 3, Guardar: 3 }
     return stepMap[activeText.trim()] ?? -1

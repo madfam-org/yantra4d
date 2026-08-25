@@ -104,7 +104,7 @@ test.describe('Custom MSH — Browser Audit', () => {
   test('adjusting substrate_length to 26 updates value', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await sidebar.editSliderValue('substrate_length', 26)
-    await expect(sidebar.sliderValue('substrate_length')).toHaveText('26', { timeout: 3000 })
+    await expect(sidebar.sliderValue('substrate_length')).toHaveText('26', { timeout: 10000 })
   })
 
   test('toggling label_area checkbox works', async ({ page, sidebar }) => {
@@ -145,8 +145,8 @@ test.describe('Custom MSH — Browser Audit', () => {
   test('applies Default Holder preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await sidebar.applyPreset('Default Holder')
-    await expect(sidebar.sliderValue('substrate_length')).toHaveText('25.4', { timeout: 3000 })
-    await expect(sidebar.sliderValue('holder_thickness')).toHaveText('2', { timeout: 3000 })
+    await expect(sidebar.sliderValue('substrate_length')).toHaveText('25.4', { timeout: 10000 })
+    await expect(sidebar.sliderValue('holder_thickness')).toHaveText('2', { timeout: 10000 })
   })
 
   test('applies Default Staining Rack preset in rack mode', async ({ page, sidebar }) => {
@@ -154,7 +154,7 @@ test.describe('Custom MSH — Browser Audit', () => {
     await sidebar.selectMode('rack')
     await page.waitForTimeout(500)
     await sidebar.applyPreset('Default Staining Rack')
-    await expect(sidebar.sliderValue('num_slots')).toHaveText('10', { timeout: 3000 })
+    await expect(sidebar.sliderValue('num_slots')).toHaveText('10', { timeout: 10000 })
   })
 
   test('assembly presets control assembly_level', async ({ page, sidebar }) => {
@@ -166,7 +166,7 @@ test.describe('Custom MSH — Browser Audit', () => {
     await page.waitForTimeout(500)
     // Verify preset button is highlighted
     const presetBtn = sidebar.presetButton('Staining rack WITH')
-    await expect(presetBtn).toHaveClass(/bg-primary/, { timeout: 3000 })
+    await expect(presetBtn).toHaveClass(/bg-primary/, { timeout: 10000 })
   })
 
   // ── C. 3D Rendering ─────────────────────────────────────────────

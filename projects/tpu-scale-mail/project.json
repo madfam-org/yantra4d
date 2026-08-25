@@ -1,0 +1,167 @@
+{
+  "project": {
+    "name": "TPU Scale Mail",
+    "slug": "tpu-scale-mail",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A print-in-place flexible scale-mail panel — the additive-manufacturing textile the Fashion Cabinet `articulated-scale-mail` notion describes and bridges to here for its geometry. Rows of overlapping scales, each tied to a thin backing by a narrow flexure neck, print flat and articulate like a dragon-scale garment: rigid scale, flexible neck. Sized by scale count so a garment panel's finished dimensions drive the field. One material identity — Bambu TPU 95A — spans the FC notion and this solid.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un panel de cota de escamas flexible impreso en sitio — el textil de manufactura aditiva que el avío `articulated-scale-mail` de Fashion Cabinet describe y al que se puentea aquí para su geometría. Filas de escamas superpuestas, cada una atada a un respaldo delgado por un cuello de flexión angosto, se imprimen planas y articulan como una prenda de escamas de dragón: escama rígida, cuello flexible. Dimensionada por número de escamas para que las medidas de un panel determinen el campo. Una identidad de material — Bambu TPU 95A — abarca el avío de FC y este sólido.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/tpu-scale-mail.webp",
+    "difficulty": "advanced",
+    "tags": ["scale-mail", "scales", "print-in-place", "flexible", "tpu", "textile", "am-fashion", "wearable", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "panel",
+      "label": { "en": "Scale Panel", "es": "Panel de escamas" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["panel"],
+      "estimate": { "base_time": 60, "per_unit": 4, "per_part": 30 }
+    },
+    {
+      "id": "swatch",
+      "label": { "en": "3×3 Swatch", "es": "Muestra 3×3" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["swatch"],
+      "estimate": { "base_time": 18, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "scale",
+      "label": { "en": "Single Scale", "es": "Escama única" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["scale"],
+      "estimate": { "base_time": 8, "per_unit": 2, "per_part": 6 }
+    }
+  ],
+  "parts": [
+    { "id": "panel", "label": { "en": "Scale Panel", "es": "Panel de escamas" }, "render_mode": 0, "color": "#7f8f86" },
+    { "id": "swatch", "label": { "en": "Swatch", "es": "Muestra" }, "render_mode": 0, "color": "#7f8f86" },
+    { "id": "scale", "label": { "en": "Scale", "es": "Escama" }, "render_mode": 0, "color": "#7f8f86" }
+  ],
+  "parameter_groups": [
+    { "id": "field", "label": { "en": "Field", "es": "Campo" } },
+    { "id": "scale", "label": { "en": "Scale", "es": "Escama" } },
+    { "id": "flex", "label": { "en": "Flexure", "es": "Flexión" } }
+  ],
+  "parameters": [
+    {
+      "id": "rows", "type": "slider", "default": 7, "min": 1, "max": 40, "step": 1,
+      "group": "field", "modes": ["panel"],
+      "label": { "en": "Rows (scales down)", "es": "Filas (escamas a lo alto)" },
+      "tooltip": { "en": "Scale rows down the panel; with overlap sets the height", "es": "Filas de escamas a lo alto; con el traslape define el alto" }
+    },
+    {
+      "id": "cols", "type": "slider", "default": 6, "min": 1, "max": 40, "step": 1,
+      "group": "field", "modes": ["panel"],
+      "label": { "en": "Columns (scales across)", "es": "Columnas (escamas a lo ancho)" },
+      "tooltip": { "en": "Scale columns across; the width follows", "es": "Columnas de escamas a lo ancho; el ancho sigue" }
+    },
+    {
+      "id": "scale_w", "type": "slider", "default": 20.0, "min": 8.0, "max": 60.0, "step": 1.0,
+      "group": "scale", "modes": ["panel", "swatch", "scale"],
+      "label": { "en": "Scale width (mm)", "es": "Ancho de escama (mm)" },
+      "tooltip": { "en": "Scale width across", "es": "Ancho de la escama" }
+    },
+    {
+      "id": "scale_h", "type": "slider", "default": 26.0, "min": 8.0, "max": 80.0, "step": 1.0,
+      "group": "scale", "modes": ["panel", "swatch", "scale"],
+      "label": { "en": "Scale height (mm)", "es": "Alto de escama (mm)" },
+      "tooltip": { "en": "Scale height along the drop", "es": "Alto de la escama a lo largo de la caída" }
+    },
+    {
+      "id": "scale_t", "type": "slider", "default": 2.0, "min": 1.0, "max": 8.0, "step": 0.1,
+      "group": "scale", "modes": ["panel", "swatch", "scale"],
+      "label": { "en": "Scale thickness (mm)", "es": "Espesor de escama (mm)" },
+      "tooltip": { "en": "Scale thickness; thicker = more protection", "es": "Espesor de escama; mayor = más protección" }
+    },
+    {
+      "id": "overlap", "type": "slider", "default": 0.45, "min": 0.0, "max": 0.7, "step": 0.05,
+      "group": "field", "modes": ["panel", "swatch"],
+      "label": { "en": "Row overlap", "es": "Traslape de filas" },
+      "tooltip": { "en": "Fraction each row overlaps the one below; more = tighter coverage", "es": "Fracción que cada fila traslapa a la de abajo; más = cobertura más cerrada" }
+    },
+    {
+      "id": "neck_w", "type": "slider", "default": 5.0, "min": 1.0, "max": 60.0, "step": 0.5,
+      "group": "flex", "modes": ["panel", "swatch", "scale"],
+      "label": { "en": "Neck width (mm)", "es": "Ancho de cuello (mm)" },
+      "tooltip": { "en": "Flexure neck width; narrower = each scale lifts more freely", "es": "Ancho del cuello de flexión; más angosto = cada escama se levanta más libre" }
+    },
+    {
+      "id": "back_t", "type": "slider", "default": 0.8, "min": 0.4, "max": 3.0, "step": 0.1,
+      "group": "flex", "modes": ["panel", "swatch", "scale"],
+      "label": { "en": "Backing thickness (mm)", "es": "Espesor de respaldo (mm)" },
+      "tooltip": { "en": "The thin sheet the scales anchor to; thinner = more drape", "es": "La lámina delgada donde se anclan las escamas; más delgada = más caída" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "dragon_scale", "mode": "panel",
+      "label": { "en": "Dragon Scale (0.45 overlap)", "es": "Escama de dragón (traslape 0.45)" },
+      "values": { "rows": 7, "cols": 6, "scale_w": 20, "overlap": 0.45 }
+    },
+    {
+      "id": "tight_coverage", "mode": "panel",
+      "label": { "en": "Tight Coverage (0.6 overlap)", "es": "Cobertura cerrada (traslape 0.6)" },
+      "values": { "rows": 9, "cols": 7, "overlap": 0.6 }
+    },
+    {
+      "id": "print_test", "mode": "swatch",
+      "label": { "en": "Print Test Swatch", "es": "Muestra de prueba" },
+      "values": { "scale_w": 20, "scale_h": 26, "overlap": 0.45 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "back_t < scale_t",
+      "severity": "error",
+      "message": { "en": "Backing must be thinner than the scales so the sheet flexes, not the scales", "es": "El respaldo debe ser más delgado que las escamas para que flexione la lámina, no las escamas" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [130, 130, 90] },
+    { "id": "front", "label": { "en": "Front", "es": "Frente" }, "position": [0, 200, 60] },
+    { "id": "detail", "label": { "en": "Scale Detail", "es": "Detalle de escama" }, "position": [40, 40, 35] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 60, "per_unit": 4, "per_part": 30,
+    "fn_factor": 10, "wasm_multiplier": 5, "warning_threshold_seconds": 180
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "panel_edge",
+        "label": { "en": "Sewable Panel Edge", "es": "Canto de panel cosible" },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": ["rows", "cols", "scale_w", "scale_h", "overlap"]
+      },
+      {
+        "id": "scale_cell",
+        "label": { "en": "Scale-and-Neck Cell", "es": "Celda de escama y cuello" },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": ["scale_w", "scale_h", "neck_w", "back_t"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A scale-mail fabric anyone can print turns dragon-scale armor and expressive scalework — historically painstaking hand assembly — into an open, made-to-measure pattern: independently articulating scales that protect and move. Printed in TPU it is washable, repairable scale-by-scale, and recyclable; sized to a garment panel it is a fabric that is simultaneously a Fashion Cabinet cloth and a Yantra4D solid.",
+      "es": "Una tela de cota de escamas que cualquiera puede imprimir convierte la armadura de escamas de dragón y la escamería expresiva — históricamente un ensamble manual laborioso — en un patrón abierto a la medida: escamas que articulan de forma independiente, que protegen y se mueven. Impresa en TPU es lavable, reparable escama por escama y reciclable; dimensionada a un panel es una tela que es a la vez una tela de Fashion Cabinet y un sólido de Yantra4D."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["scale-mail", "scales", "print-in-place", "flexible", "tpu", "textile", "am-fashion", "wearable", "hyperobject", "commons"]
+}

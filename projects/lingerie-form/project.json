@@ -1,0 +1,583 @@
+{
+  "project": {
+    "name": "Lingerie Form",
+    "slug": "lingerie-form",
+    "version": "0.1.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A parametric intimates display form — the smooth bust-and-hip body the Fashion Cabinet commons stages bras, briefs, camisoles, and slips on. Sibling of the Body Form dress form, and deliberately a different anatomy rather than a trimmed torso: on intimates the fit is the product, so this form carries the one landmark a dress form omits — the UNDERBUST ring. A bra reads correctly only when the bust apex and the band beneath it are two separate measured circles. It runs upper chest to upper thigh, closed flat at both ends, and stands unaided on its own bottom face: no post, no base, no stand clutter. Bust fullness is pushed forward rather than sideways by a deeper bust band plus a blended forward projection, so the front is rounded and the back stays quiet. Modes: the bare form, and the same form with a small integrated hanging tab.\n\nOfficial visualizer and configurator: Yantra4D.",
+      "es": "Un maniquí paramétrico de lencería — el cuerpo suave de busto y cadera sobre el que el común Fashion Cabinet presenta brasieres, calzones, camisetas y fondos. Hermano del maniquí de sastre Body Form, y deliberadamente otra anatomía y no un torso recortado: en lencería el ajuste es el producto, así que esta forma lleva el punto de referencia que un maniquí de sastre omite — el anillo de BAJO BUSTO. Un brasier se lee bien solo cuando el ápice del busto y la banda que va debajo son dos círculos medidos distintos. Va del pecho alto al muslo alto, cerrada plana en ambos extremos, y se sostiene sola sobre su cara inferior: sin poste, sin base, sin pedestal. El volumen del busto se proyecta hacia el frente y no hacia los lados mediante una banda más profunda más una proyección frontal mezclada, de modo que el frente es redondeado y la espalda queda tranquila. Modos: la forma simple, y la misma forma con una pequeña pestaña colgante integrada.\n\nVisualizador y configurador oficial: Yantra4D."
+    },
+    "difficulty": "advanced",
+    "tags": [
+      "lingerie-form",
+      "intimates",
+      "mannequin",
+      "body",
+      "underbust",
+      "fashion",
+      "iso-8559",
+      "landmark-rings",
+      "hyperobject",
+      "commons",
+      "cadquery"
+    ],
+    "attribution": {
+      "author": "Innovaciones MADFAM",
+      "license": "CERN-OHL-W-2.0"
+    },
+    "thumbnail": "/projects/lingerie-form.webp"
+  },
+  "modes": [
+    {
+      "id": "form",
+      "label": {
+        "en": "Form (stands flat)",
+        "es": "Forma (se sostiene sola)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "form"
+      ],
+      "estimate": {
+        "base_time": 200,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    },
+    {
+      "id": "hanger_tab",
+      "label": {
+        "en": "Form with hanging tab",
+        "es": "Forma con pestaña colgante"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "hanger_tab"
+      ],
+      "estimate": {
+        "base_time": 230,
+        "per_unit": 2,
+        "per_part": 60
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "form",
+      "name": {
+        "en": "Intimates form",
+        "es": "Maniquí de lencería"
+      }
+    },
+    {
+      "id": "hanger_tab",
+      "name": {
+        "en": "Intimates form with hanging tab",
+        "es": "Maniquí con pestaña colgante"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "target_part",
+      "type": "select",
+      "default": "form",
+      "options": [
+        {
+          "value": "form",
+          "label": {
+            "en": "Form (stands flat)",
+            "es": "Forma (se sostiene sola)"
+          }
+        },
+        {
+          "value": "hanger_tab",
+          "label": {
+            "en": "Form with hanging tab",
+            "es": "Forma con pestaña colgante"
+          }
+        }
+      ],
+      "label": {
+        "en": "Form",
+        "es": "Forma"
+      }
+    },
+    {
+      "id": "bust_girth",
+      "type": "slider",
+      "default": 900,
+      "min": 500,
+      "max": 1600,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "bust_girth"
+      },
+      "label": {
+        "en": "Bust girth (mm)",
+        "es": "Contorno de busto (mm)"
+      }
+    },
+    {
+      "id": "underbust_girth",
+      "type": "slider",
+      "default": 760,
+      "min": 380,
+      "max": 1400,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "underbust_girth"
+      },
+      "label": {
+        "en": "Underbust (band) girth (mm)",
+        "es": "Contorno de bajo busto (mm)"
+      }
+    },
+    {
+      "id": "waist_girth",
+      "type": "slider",
+      "default": 700,
+      "min": 380,
+      "max": 1400,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "waist_girth"
+      },
+      "label": {
+        "en": "Waist girth (mm)",
+        "es": "Contorno de cintura (mm)"
+      }
+    },
+    {
+      "id": "hip_girth",
+      "type": "slider",
+      "default": 960,
+      "min": 440,
+      "max": 1700,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "hip_girth"
+      },
+      "label": {
+        "en": "Hip girth (mm)",
+        "es": "Contorno de cadera (mm)"
+      }
+    },
+    {
+      "id": "upper_chest_girth",
+      "type": "slider",
+      "default": 840,
+      "min": 400,
+      "max": 1500,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "chest_bust_girth"
+      },
+      "label": {
+        "en": "Upper chest girth, above bust (mm)",
+        "es": "Contorno de pecho alto (mm)"
+      }
+    },
+    {
+      "id": "thigh_girth",
+      "type": "slider",
+      "default": 580,
+      "min": 300,
+      "max": 900,
+      "step": 10,
+      "group": "measurements",
+      "measurement": {
+        "standard": "iso_8559",
+        "code": "thigh_girth"
+      },
+      "label": {
+        "en": "Thigh girth (mm)",
+        "es": "Contorno de muslo (mm)"
+      }
+    },
+    {
+      "id": "torso_length",
+      "type": "slider",
+      "default": 660,
+      "min": 300,
+      "max": 760,
+      "step": 5,
+      "group": "measurements",
+      "label": {
+        "en": "Form length, upper chest→upper thigh (mm)",
+        "es": "Largo de la forma, pecho alto→muslo (mm)"
+      }
+    },
+    {
+      "id": "underbust_to_waist",
+      "type": "slider",
+      "default": 160,
+      "min": 80,
+      "max": 300,
+      "step": 5,
+      "group": "measurements",
+      "label": {
+        "en": "Underbust→waist length (mm)",
+        "es": "Largo bajo busto→cintura (mm)"
+      }
+    },
+    {
+      "id": "waist_to_hip",
+      "type": "slider",
+      "default": 200,
+      "min": 100,
+      "max": 340,
+      "step": 5,
+      "group": "measurements",
+      "label": {
+        "en": "Waist→hip length (mm)",
+        "es": "Largo cintura→cadera (mm)"
+      }
+    },
+    {
+      "id": "bust_depth_ratio",
+      "type": "slider",
+      "default": 0.86,
+      "min": 0.6,
+      "max": 1,
+      "step": 0.01,
+      "group": "shape",
+      "advanced": true,
+      "label": {
+        "en": "Bust depth : width",
+        "es": "Profundidad : ancho de busto"
+      }
+    },
+    {
+      "id": "bust_projection",
+      "type": "slider",
+      "default": 26,
+      "min": 0,
+      "max": 70,
+      "step": 1,
+      "group": "shape",
+      "advanced": true,
+      "label": {
+        "en": "Bust projection, forward of rib line (mm)",
+        "es": "Proyección del busto, al frente (mm)"
+      }
+    },
+    {
+      "id": "seat_depth_ratio",
+      "type": "slider",
+      "default": 0.74,
+      "min": 0.55,
+      "max": 0.98,
+      "step": 0.01,
+      "group": "shape",
+      "advanced": true,
+      "label": {
+        "en": "Seat depth : width",
+        "es": "Profundidad : ancho de asiento"
+      }
+    },
+    {
+      "id": "tab_width",
+      "type": "slider",
+      "default": 46,
+      "min": 20,
+      "max": 120,
+      "step": 2,
+      "group": "hanger",
+      "modes": [
+        "hanger_tab"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Hanging tab width (mm)",
+        "es": "Ancho de la pestaña (mm)"
+      }
+    },
+    {
+      "id": "tab_height",
+      "type": "slider",
+      "default": 60,
+      "min": 20,
+      "max": 160,
+      "step": 5,
+      "group": "hanger",
+      "modes": [
+        "hanger_tab"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Hanging tab rise (mm)",
+        "es": "Alto de la pestaña (mm)"
+      }
+    },
+    {
+      "id": "tab_thickness",
+      "type": "slider",
+      "default": 14,
+      "min": 6,
+      "max": 40,
+      "step": 1,
+      "group": "hanger",
+      "modes": [
+        "hanger_tab"
+      ],
+      "advanced": true,
+      "label": {
+        "en": "Hanging tab thickness (mm)",
+        "es": "Grosor de la pestaña (mm)"
+      }
+    },
+    {
+      "id": "target_material",
+      "type": "select",
+      "default": "polymaker-polylite-pla",
+      "hidden": true,
+      "options": [
+        {
+          "value": "polymaker-polylite-pla",
+          "label": "Polymaker PolyLite PLA"
+        },
+        {
+          "value": "polymaker-polylite-petg",
+          "label": "Polymaker PolyLite PETG"
+        }
+      ],
+      "label": {
+        "en": "Target material",
+        "es": "Material objetivo"
+      }
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "measurements",
+      "label": {
+        "en": "Body measurements (ISO 8559)",
+        "es": "Medidas corporales (ISO 8559)"
+      }
+    },
+    {
+      "id": "shape",
+      "label": {
+        "en": "Form shaping",
+        "es": "Modelado"
+      }
+    },
+    {
+      "id": "hanger",
+      "label": {
+        "en": "Hanging tab",
+        "es": "Pestaña colgante"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "intimates-w-s",
+      "label": {
+        "en": "Women's S",
+        "es": "Mujer S"
+      },
+      "values": {
+        "bust_girth": 840,
+        "underbust_girth": 700,
+        "waist_girth": 640,
+        "hip_girth": 900,
+        "upper_chest_girth": 790,
+        "torso_length": 630,
+        "underbust_to_waist": 150,
+        "waist_to_hip": 190
+      }
+    },
+    {
+      "id": "intimates-w-m",
+      "label": {
+        "en": "Women's M",
+        "es": "Mujer M"
+      },
+      "values": {
+        "bust_girth": 900,
+        "underbust_girth": 760,
+        "waist_girth": 700,
+        "hip_girth": 960,
+        "upper_chest_girth": 840,
+        "torso_length": 660,
+        "underbust_to_waist": 160,
+        "waist_to_hip": 200
+      }
+    },
+    {
+      "id": "intimates-w-l",
+      "label": {
+        "en": "Women's L",
+        "es": "Mujer L"
+      },
+      "values": {
+        "bust_girth": 990,
+        "underbust_girth": 840,
+        "waist_girth": 790,
+        "hip_girth": 1050,
+        "upper_chest_girth": 920,
+        "torso_length": 690,
+        "underbust_to_waist": 170,
+        "waist_to_hip": 210
+      }
+    },
+    {
+      "id": "intimates-w-xl",
+      "label": {
+        "en": "Women's XL",
+        "es": "Mujer XL"
+      },
+      "values": {
+        "bust_girth": 1090,
+        "underbust_girth": 940,
+        "waist_girth": 900,
+        "hip_girth": 1160,
+        "upper_chest_girth": 1010,
+        "torso_length": 710,
+        "underbust_to_waist": 180,
+        "waist_to_hip": 220,
+        "bust_projection": 32
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "bust_girth >= underbust_girth",
+      "message": {
+        "en": "The bust is measured over the fullest part and is at least the underbust band girth.",
+        "es": "El busto se mide en la parte más llena y es al menos el contorno de bajo busto."
+      }
+    },
+    {
+      "expression": "bust_girth >= upper_chest_girth",
+      "message": {
+        "en": "The upper chest is measured above the bust and is no larger than the bust girth.",
+        "es": "El pecho alto se mide arriba del busto y no es mayor que el contorno de busto."
+      }
+    },
+    {
+      "expression": "hip_girth >= waist_girth * 0.9",
+      "message": {
+        "en": "A hip much smaller than the waist makes an unnatural seat curve.",
+        "es": "Una cadera mucho menor que la cintura crea una curva de asiento poco natural."
+      }
+    }
+  ],
+  "export_formats": [
+    "glb",
+    "gltf",
+    "stl",
+    "step",
+    "3mf",
+    "obj"
+  ],
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "bust_ring",
+        "label": {
+          "en": "Bust landmark ring",
+          "es": "Anillo de busto"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "bust_girth",
+          "bust_depth_ratio",
+          "bust_projection"
+        ]
+      },
+      {
+        "id": "underbust_ring",
+        "label": {
+          "en": "Underbust band ring",
+          "es": "Anillo de bajo busto"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "underbust_girth",
+          "underbust_to_waist"
+        ]
+      },
+      {
+        "id": "upper_chest_ring",
+        "label": {
+          "en": "Upper chest landmark ring",
+          "es": "Anillo de pecho alto"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "upper_chest_girth"
+        ]
+      },
+      {
+        "id": "waist_ring",
+        "label": {
+          "en": "Waist landmark ring",
+          "es": "Anillo de cintura"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "waist_girth",
+          "waist_to_hip"
+        ]
+      },
+      {
+        "id": "hip_ring",
+        "label": {
+          "en": "Hip landmark ring",
+          "es": "Anillo de cadera"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "hip_girth",
+          "seat_depth_ratio"
+        ]
+      },
+      {
+        "id": "thigh_ring",
+        "label": {
+          "en": "Upper thigh ring (bottom seat face)",
+          "es": "Anillo de muslo alto (cara inferior)"
+        },
+        "geometry_type": "surface",
+        "standard": "iso_8559",
+        "parameters": [
+          "thigh_girth",
+          "torso_length"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": false
+    },
+    "societal_benefit": {
+      "en": "Intimates are the hardest garments to fit and the ones fitted least honestly: bra sizing collapses a two-number measurement — bust and underbust — into a letter, and most display forms have no underbust ring at all, so a band that does not fit still looks fine on the stand. This form carries both circles as real, verified ISO-8559 girths, which means a maker or a small shop can print a fitting surface for an actual body and see a band sit where it will really sit. The same numbers drive the flat patterns of the Fashion Cabinet commons, so pattern and form can never disagree, and a person whose measurements fall outside the narrow range of commercial sizing gets a form at last.",
+      "es": "La lencería es la prenda más difícil de ajustar y la que se ajusta con menos honestidad: la talla de brasier reduce una medida de dos números — busto y bajo busto — a una letra, y la mayoría de los maniquíes de exhibición no tienen anillo de bajo busto, así que una banda que no queda igual se ve bien en el pedestal. Esta forma lleva ambos círculos como contornos ISO-8559 reales y verificados, lo que permite que quien confecciona o un taller pequeño imprima una superficie de ajuste para un cuerpo real y vea dónde va a quedar de verdad la banda. Los mismos números manejan los patrones planos del común Fashion Cabinet, así que patrón y forma nunca se contradicen, y quien tiene medidas fuera del rango estrecho del tallaje comercial por fin tiene un maniquí."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  }
+}

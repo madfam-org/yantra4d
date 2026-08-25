@@ -502,7 +502,7 @@
           "es": "Barreno de Eje D"
         },
         "geometry_type": "socket",
-        "standard": "internal (D-shaft / spline)",
+        "standard": "D-shaft / spline bore",
         "parameters": [
           "bore_type",
           "shaft_dia",

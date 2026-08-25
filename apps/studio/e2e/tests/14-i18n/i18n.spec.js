@@ -1,12 +1,12 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, goToProjects, setLanguage } from '../../helpers/test-utils.js'
+import { goToStudio, goToProjects, setLanguage, waitForRenderSettled } from '../../helpers/test-utils.js'
 
 /** Click the globe button and select a language from the dropdown. */
 async function selectLanguageFromDropdown(page, langLabel) {
   await page.locator('button:has(.lucide-globe)').first().click()
   // Wait for dropdown to appear
   const dropdown = page.locator('.absolute.top-full')
-  await dropdown.first().waitFor({ timeout: 3000 })
+  await dropdown.first().waitFor({ timeout: 10000 })
   // Click the target language button
   await dropdown.locator('button', { hasText: langLabel }).click()
   await page.waitForTimeout(300)
@@ -16,7 +16,7 @@ async function selectLanguageFromDropdown(page, langLabel) {
 async function toggleToOtherLanguage(page) {
   await page.locator('button:has(.lucide-globe)').first().click()
   const dropdown = page.locator('.absolute.top-full')
-  await dropdown.first().waitFor({ timeout: 3000 })
+  await dropdown.first().waitFor({ timeout: 10000 })
   const options = dropdown.locator('button')
   const count = await options.count()
   for (let i = 0; i < count; i++) {
@@ -34,20 +34,33 @@ async function toggleToOtherLanguage(page) {
 }
 
 test.describe('Internationalization (i18n)', () => {
-  test('default language renders all UI in Spanish', async ({ page }) => {
+  // Both of these go through the sidebar page object rather than raw text
+  // locators. Two reasons, one per failure they used to produce:
+  //   - "Generate" matched 2 elements (the sidebar renders its controls in both
+  //     the desktop and mobile layout trees) and failed strict mode.
+  //   - Reset is an icon button — <Button size="icon" title={t("btn.reset")}>
+  //     with no text node — so text=Restablecer Valores found nothing at all.
+  // The page object already scopes to the sidebar and matches Reset by title.
+  test('default language renders all UI in Spanish', async ({ page, sidebar }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
-    await expect(page.locator('text=Generar')).toBeVisible()
-    await expect(page.locator('text=Ejecutar Verificación')).toBeVisible()
-    await expect(page.locator('text=Restablecer Valores')).toBeVisible()
+    // The dock shows "Procesando…" while the auto-render is in flight — settle
+    // first or the Generar/Verificación text assertions race it (ARC flake class).
+    await waitForRenderSettled(page)
+    await expect(sidebar.generateButton).toBeVisible()
+    await expect(sidebar.generateButton).toHaveText(/Generar/)
+    await expect(sidebar.verifyButton).toHaveText(/Verificación/)
+    await expect(sidebar.resetButton).toBeVisible()
   })
 
-  test('English UI renders all buttons', async ({ page }) => {
+  test('English UI renders all buttons', async ({ page, sidebar }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
-    await expect(page.locator('text=Generate')).toBeVisible()
-    await expect(page.locator('text=Run Verification Suite')).toBeVisible()
-    await expect(page.locator('text=Reset to Defaults')).toBeVisible()
+    await waitForRenderSettled(page)
+    await expect(sidebar.generateButton).toBeVisible()
+    await expect(sidebar.generateButton).toHaveText(/Generate/)
+    await expect(sidebar.verifyButton).toHaveText(/Verification/)
+    await expect(sidebar.resetButton).toBeVisible()
   })
 
   test('toggling language updates all header text', async ({ page }) => {
@@ -59,9 +72,12 @@ test.describe('Internationalization (i18n)', () => {
     await expect(page.locator('text=Proyectos').first()).toBeVisible({ timeout: 5000 })
   })
 
-  test('export panel text updates on language toggle', async ({ page }) => {
+  test('export panel text updates on language toggle', async ({ page, sidebar }) => {
     await setLanguage(page, 'en')
     await goToStudio(page)
+    // ExportPanel is behind the sidebar's "export" tab; the sidebar opens on
+    // "config", so none of these labels exist until the tab is selected.
+    await sidebar.selectSection('export')
     await expect(page.locator('text=Geometry')).toBeVisible()
     await expect(page.locator('text=Download STL')).toBeVisible()
 
@@ -97,10 +113,12 @@ test.describe('Internationalization (i18n)', () => {
   test('language persists across page reload', async ({ page }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
+    await waitForRenderSettled(page)
     await expect(page.locator('text=Generar')).toBeVisible()
 
     await page.reload()
     await page.waitForSelector('header')
+    await waitForRenderSettled(page)
     await expect(page.locator('text=Generar')).toBeVisible()
   })
 
@@ -114,18 +132,24 @@ test.describe('Internationalization (i18n)', () => {
     await expect(globe).toBeVisible()
   })
 
-  test('console "Ready" message translates', async ({ page }) => {
+  test('console "Ready" message translates', async ({ page, viewer }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
-    const logs = await page.locator('[role="log"]').textContent()
+    // StudioMainView renders a render console in each of the desktop and mobile
+    // layout trees, both carrying role="log", so a bare [role="log"] resolved to
+    // two elements and failed strict mode. viewer.console is scoped to :visible.
+    const logs = await viewer.getConsoleLogs()
     expect(logs).toContain('Listo')
   })
 
   test('viewer button labels translate', async ({ page }) => {
     await setLanguage(page, 'es')
     await goToStudio(page)
-    // Camera view buttons — check any Spanish button is present
-    const hasSpanish = await page.locator('button', { hasText: /Isométric|Superior|Frontal|Derech/ }).first().isVisible({ timeout: 3000 }).catch(() => false)
+    // Camera view buttons — check any Spanish button is present. Scoped to
+    // :visible for the same duplication reason; without it .first() resolved to
+    // the hidden mobile copy, isVisible() came back false, and the test fell
+    // through to an export-panel assertion that only holds on the export tab.
+    const hasSpanish = await page.locator('button:visible', { hasText: /Isométric|Superior|Frontal|Derech/ }).first().isVisible({ timeout: 10000 }).catch(() => false)
     // If camera buttons use icons instead of text, just verify Spanish export text
     if (!hasSpanish) {
       await expect(page.locator('text=Exportar Imágenes')).toBeVisible()

@@ -3,17 +3,17 @@
 # Sync fallback manifest if source has changed.
 # The fallback manifest is for offline/WASM mode, so force_backend must be
 # stripped — it would prevent WASM rendering when the backend is unreachable.
-MANIFEST_SRC="projects/gridfinity/project.json"
-MANIFEST_DST="apps/studio/src/config/fallback-manifest.json"
-MANIFEST_TMP=$(mktemp)
-# Build the expected fallback (source minus force_backend)
-sed '/"force_backend":/d' "$MANIFEST_SRC" > "$MANIFEST_TMP"
-if ! cmp -s "$MANIFEST_TMP" "$MANIFEST_DST"; then
+#
+# Delegate to the same script CI checks with. This used to strip the key with
+# `sed '/"force_backend":/d'`, a line-level delete, while CI compared parsed
+# JSON — two different definitions of "in sync" that could disagree.
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+MANIFEST_DST="$ROOT_DIR/apps/studio/src/config/fallback-manifest.json"
+if ! python3 "$ROOT_DIR/scripts/qa/sync_fallback_manifest.py" --check >/dev/null 2>&1; then
   echo "husky: Syncing fallback manifest before commit..."
-  cp "$MANIFEST_TMP" "$MANIFEST_DST"
+  python3 "$ROOT_DIR/scripts/qa/sync_fallback_manifest.py" || exit 1
   git add "$MANIFEST_DST"
 fi
-rm -f "$MANIFEST_TMP"
 
 # Run Lint Staged in Studio
 (cd apps/studio && npx lint-staged) || exit 1

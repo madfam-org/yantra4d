@@ -14,7 +14,9 @@ import os
 
 from flask import Blueprint, Response, jsonify, request
 
+import rate_limits
 from config import Config
+from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
 from services.core.implicit_engine import run_render as run_implicit_render
@@ -99,6 +101,7 @@ def _render_frame(engine: str, manifest, output_path: str, params: dict,
 @animations_bp.route("/api/projects/<slug>/animations/<animation_id>/render", methods=["POST"])
 @require_valid_slug
 @optional_auth
+@limiter.limit(rate_limits.ANIMATION_RENDER)
 def render_animation(slug: str, animation_id: str):
     """
     Render all frames of a parametric animation defined in project.json.

@@ -7,7 +7,11 @@ export class StudioSidebarPage extends BasePage {
     this.generateButton = this.sidebar.locator('button', { hasText: /Generate|Generar/ }).first()
     this.cancelButton = this.sidebar.locator('button', { hasText: /Cancel|Cancelar/ }).first()
     this.verifyButton = this.sidebar.locator('button', { hasText: /Verification|Verificación/ }).first()
-    this.resetButton = this.sidebar.locator('button', { hasText: /Reset to Defaults|Restablecer/ }).first()
+    // Reset is an icon button — <Button size="icon" title={t("btn.reset")}>
+    // with no text node — so a hasText match could never find it and every
+    // click on it waited out the full 60s timeout. Match the title, which is
+    // also what a screen reader announces.
+    this.resetButton = this.sidebar.getByTitle(/Reset to Defaults|Restablecer/i).first()
   }
 
   /** Get mode tab trigger by mode id or label. */
@@ -22,16 +26,58 @@ export class StudioSidebarPage extends BasePage {
     )
   }
 
-  /** Locator for the mode tablist (distinguished from section tabs by aria-label). */
-  get modeTablist() {
-    // Desktop: custom ModeTabs with aria-label="Mode selection"
-    // Mobile: Radix TabsList inside the mobile bar
-    return this.sidebar.locator('[role="tablist"][aria-label="Mode selection"]').or(
-      this.page.locator('[data-testid="studio-sidebar"] [role="tablist"][aria-label="Mode selection"]')
-    ).first()
+  /**
+   * Select one of the sidebar's section tabs: config | view | analysis | export.
+   *
+   * StudioSidebar wraps its panels in <Tabs defaultValue="config">, so
+   * ExportPanel, PrintPanel and the BOM only exist in the DOM once their tab is
+   * selected. Tests that assume a panel is present on load find nothing at all.
+   *
+   * Matched on Radix's generated id rather than the tab's text. Radix builds it
+   * as `${baseId}-trigger-${value}` from the TabsTrigger `value` prop, which is
+   * the same "export" in every locale — matching the label instead broke the
+   * moment a test ran in Spanish and looked for "Export" against "Exportar".
+   */
+  async selectSection(value) {
+    const tab = this.sidebar.locator(`[role="tab"][id$="-trigger-${value}"]`).first()
+    await tab.click()
+    // Wait for the tab to actually report itself selected and for its panel to
+    // be on screen, rather than sleeping 150ms and hoping. Radix mounts
+    // TabsContent only for the active value, so callers that immediately take a
+    // non-retrying reading (locator.count()) were racing the mount — which is
+    // how 05-export:95 and 17-auth:90 both counted zero controls on WebKit
+    // under ARC load while their retrying siblings passed (run 32565668502).
+    await tab.and(this.page.locator('[data-state="active"]')).waitFor({ timeout: 10_000 }).catch(() => { })
+    await this.sidebar
+      .locator(`[role="tabpanel"][id$="-content-${value}"]`)
+      .first()
+      .waitFor({ state: 'visible', timeout: 10_000 })
+      .catch(() => { })
   }
 
-  /** Click a mode tab by index (0-based) or data-value/aria-selected. */
+  /** Locator for the mode tablist (distinguished from section tabs by aria-label). */
+  get modeTablist() {
+    // The sidebar renders a mode tablist in both its desktop and mobile layout
+    // trees, so this matched two elements and `.first()` was a guess about DOM
+    // order. The mobile one does not track the desktop one's selection, so
+    // getActiveMode() read aria-selected off a stale hidden tab and returned
+    // "start" after a click that had correctly switched the mode to "grid" —
+    // which is why the sibling test asserting the URL passed at the same time.
+    // Scope to the tablist the user can actually see. The two previous branches
+    // of the .or() were the same selector written twice: `this.sidebar` IS
+    // [data-testid="studio-sidebar"].
+    return this.sidebar.locator('[role="tablist"][aria-label="Mode selection"]:visible').first()
+  }
+
+  /**
+   * Click a mode tab by index (0-based) or data-value/aria-selected.
+   *
+   * Each branch waits for the clicked tab to actually become selected before
+   * returning. Without that, `await selectMode('grid')` resolved as soon as the
+   * click dispatched and callers read the pre-render DOM — getActiveMode()
+   * returned "start" for a click that had correctly switched to grid, while the
+   * sibling test asserting the URL passed because the router had already moved.
+   */
   async selectMode(modeId) {
     const tablist = this.modeTablist
 
@@ -39,6 +85,7 @@ export class StudioSidebarPage extends BasePage {
     const tabByValue = tablist.locator(`[role="tab"][data-value="${modeId}"]`)
     if (await tabByValue.count() > 0) {
       await tabByValue.click()
+      await this._waitForSelected(tabByValue)
       return
     }
 
@@ -46,6 +93,7 @@ export class StudioSidebarPage extends BasePage {
     const tabByText = tablist.locator(`[role="tab"]`).filter({ hasText: new RegExp(modeId, 'i') }).first()
     if (await tabByText.count() > 0) {
       await tabByText.click()
+      await this._waitForSelected(tabByText)
       return
     }
 
@@ -56,7 +104,23 @@ export class StudioSidebarPage extends BasePage {
     const idx = modeIndex[modeId] ?? 0
     if (idx < count) {
       await tabs.nth(idx).click()
+      await this._waitForSelected(tabs.nth(idx))
     }
+  }
+
+  /**
+   * Wait for a mode tab to report itself selected.
+   *
+   * The desktop ModeTabs are plain buttons carrying aria-selected; the mobile
+   * Radix list uses data-state="active". Accept either, and don't fail the
+   * caller if neither ever appears — some callers only want the side effect
+   * (the route change), and a strict wait here would turn those into timeouts.
+   */
+  async _waitForSelected(tab) {
+    await tab
+      .and(this.page.locator('[aria-selected="true"], [data-state="active"]'))
+      .waitFor({ timeout: 5000 })
+      .catch(() => { })
   }
 
   /** Get the active mode tab's data-value or text. */
@@ -97,7 +161,15 @@ export class StudioSidebarPage extends BasePage {
   async editSliderValue(paramId, value) {
     const row = this.sidebar.locator(`.flex.justify-between:has(#param-label-${paramId})`)
     const valSpan = this.sliderValue(paramId)
-    await valSpan.waitFor({ state: 'visible', timeout: 5000 })
+    // 15s, not 5s. The param rows are re-rendered when the preset that
+    // goToStudio's URL settle step applies lands, and on a contended runner
+    // that re-render can arrive after the old 5s budget — the post-failure
+    // snapshot shows the row present and correct
+    // (`button "Width: 30. Click to edit"`), just later than the wait allowed.
+    // Every caller of this helper is asserting on what happens AFTER the edit,
+    // so waiting longer here costs nothing on a fast machine (the locator
+    // resolves as soon as it appears) and removes a whole class of ARC flake.
+    await valSpan.waitFor({ state: 'visible', timeout: 15_000 })
     await valSpan.click()
     // Scope input to the parameter's row to avoid matching other inputs
     const input = row.locator(`input[type="number"]`)

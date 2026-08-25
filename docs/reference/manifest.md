@@ -301,6 +301,27 @@ Each mode entry can declare both a `scad_file` (OpenSCAD `.scad` script) and an 
 - **OpenSCAD engine** is the default and handles `stl`, `3mf`, and `off` natively. Additional formats (`obj`, `glb`, `gltf`, `3mf`, `off`, `ply`) are available via automatic trimesh post-render conversion from STL.
 - **CadQuery engine** is used when the requested format requires B-Rep capabilities that OpenSCAD cannot provide, such as `step`. Dual-engine fallback also activates for `glb` and `gltf` when a `cq_file` is present.
 - **Implicit engine** natively produces STL. Other mesh formats (`obj`, `glb`, `gltf`, `3mf`, `off`) are available via trimesh conversion. STEP export requires a `cq_file` fallback.
+- **Graph engine** renders node-graph documents (`.graph.json`, contract: `packages/schemas/graph.schema.json`) by transpiling them server-side into sandboxed CadQuery scripts, so it shares CadQuery's export formats including `step`. A mode selects it with `"engine": "graph"` or automatically via a `.graph.json` `scad_file`. Manifest parameters drive node params through the `binding` field (`"nodeId.param"`, or a list to drive several node params from one parameter). Tier-gated by the `graph_engine` feature key. Reference cartridges: `projects/spacer-block/` (primitives + bindings), `projects/flange-plate/` (profiles, extrude, polar pattern, CDG interfaces).
+
+#### Graph node vocabulary
+
+Nodes produce either a **solid** or a **profile** (a 2D sketch, consumed only by `extrude`); the transpiler enforces socket types, and an output must always be a solid.
+
+| Group | Nodes |
+|-------|-------|
+| Solids | `box`, `cylinder`, `sphere` |
+| Profiles | `profile_rect`, `profile_circle`, `profile_polygon` → `extrude` |
+| Booleans | `union`, `cut`, `intersect` |
+| Transforms | `translate`, `rotate`, `mirror` |
+| Patterns | `pattern_linear`, `pattern_polar` |
+| Finishing | `fillet`, `chamfer`, `shell`, `hole` |
+
+Two rules follow from the security model, and shape how cartridges are authored:
+
+- **No expressions.** Every emitted value is a validated literal or a bound parameter, which is what keeps generated scripts safe. Derived values must therefore be separate parameters — a polar pattern exposes both `count` and `angle` rather than computing `360 / count`.
+- **Structural params are not bindable.** Selectors, axes and planes stay literal so a render-time value cannot change the emitted code's shape. Numeric params bind freely; pattern counts are additionally clamped in the generated code so a slider cannot detonate a union loop in the render worker.
+
+`revolve` is deliberately absent: an unbounded revolve can exhaust memory, and the render worker must not host an operation that can hang a job.
 
 If a user requests a STEP export and the mode has a `cq_file`, the backend automatically falls back to the CadQuery engine to produce the STEP file. If no `cq_file` is declared, the backend returns a 400 error for STEP. For mesh formats like OBJ, GLB, and GLTF, the backend renders as STL first and converts via trimesh — no `cq_file` required.
 
@@ -324,13 +345,15 @@ If a user requests a STEP export and the mode has a `cq_file`, the backend autom
 | OpenSCAD | `stl`, `3mf`, `off` | `obj`, `glb`, `gltf`, `ply` | `step` (requires `cq_file`) |
 | CadQuery | `stl`, `step`, `glb`, `gltf`, `3mf`, `obj`, `vrml`, `amf` | — | — |
 | Implicit | `stl` | `obj`, `glb`, `gltf`, `3mf`, `off` | `step` (requires `cq_file`) |
+| Graph | stl, step, glb, gltf, 3mf, obj, vrml, amf | — | Transpiles to CadQuery, so it shares CadQuery's formats. STEP needs no `cq_file`. |
 
-To advertise STEP support in the UI, add `"step"` to the manifest's `export_formats` array and provide a `cq_file` for each mode that should support it. For OBJ and GLB, no `cq_file` is needed — trimesh conversion handles these automatically.
+Except for graph modes, which produce STEP natively, to advertise STEP support in the UI, add `"step"` to the manifest's `export_formats` array and provide a `cq_file` for each mode that should support it. For OBJ and GLB, no `cq_file` is needed — trimesh conversion handles these automatically.
 
 ### Reference projects
 
 - `projects/gridfinity/project.json` — all three modes declare `cq_file` alongside `scad_file`, with `"export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"]`.
 - `projects/scara-robotics/project.json` — benchmark dual-engine parity implementation.
+- `projects/spacer-block/project.json`, `projects/flange-plate/project.json` — graph-engine cartridges (see [authoring guide](../guides/graph-cartridges.md)).
 - `projects/cq-hyperobject-test/project.json` — CadQuery-only test project.
 
 ---
@@ -344,6 +367,7 @@ The `ProjectManifest` class provides:
 | `get_allowed_files()` | `{filename: Path}` | All SCAD files referenced by modes |
 | `get_parts_map()` | `{scad_filename: [part_ids]}` | Parts per SCAD file |
 | `get_mode_map()` | `{part_id: render_mode_int}` | Render mode integers for OpenSCAD |
+| `mode_engine(mode_id)` | Resolve the engine for one mode (explicit `engine`, then `.graph.json`/`.py` inference, then project default) |
 | `get_scad_file_for_mode(mode_id)` | `str \| None` | SCAD filename for a mode |
 | `get_parts_for_mode(mode_id)` | `[str]` | Part IDs for a mode |
 | `calculate_estimate_units(mode_id, params)` | `int` | Unit count for time estimation |

@@ -16,12 +16,12 @@
     "titleLine1": "Tus Diseños.",
     "titleLine2": "Sus Dimensiones.",
     "subtitle": "Makers: personaliza cualquier parámetro y exporta tu STL perfecto. Creadores: convierte tus modelos OpenSCAD en configuradores que cualquiera puede usar.",
-    "ctaPrimary": "Explorar 21 Proyectos",
+    "ctaPrimary": "Explorar el Commons",
     "ctaSecondary": "Sube Tu Diseño"
   },
   "gallery": {
     "heading": "Galería de Proyectos",
-    "subtitle": "21 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.",
+    "subtitle": "Hardware abierto y paramétrico que puedes redimensionar, remezclar y fabricar — cada cartucho libre, para siempre. Abre uno en Studio y hazlo tuyo.",
     "categories": {
       "all": "Todos",
       "commons": "🔷 Commons",
@@ -48,11 +48,11 @@
     },
     "estimate": {
       "title": "Anticípate a la Impresión",
-      "desc": "Tiempo, filamento y costo estimados antes de gastar un gramo."
+      "desc": "Estimaciones de tiempo, filamento y costo antes de desperdiciar un gramo — aproximaciones, no exactitud de laminador."
     },
     "export": {
       "title": "Exporta a Tu Manera",
-      "desc": "STL, 3MF u OFF. Un clic. Listo para tu slicer."
+      "desc": "STL para el laminador, STEP para CAD real. 317 cartuchos exportan sólidos B-Rep que abres en Fusion, SolidWorks o FreeCAD."
     },
     "assembly": {
       "title": "Ensamblaje Claro",
@@ -65,10 +65,10 @@
   },
   "forCreators": {
     "heading": "Hecho para Creadores",
-    "subtitle": "Tus diseños merecen una audiencia más allá de los programadores. Convierte archivos .scad en configuradores compartibles.",
+    "subtitle": "Tus diseños merecen público más allá de quienes programan. Convierte modelos OpenSCAD o CadQuery en configuradores.",
     "upload": {
       "title": "Sube y Listo",
-      "desc": "Arrastra archivos .scad. Yantra4D auto-genera un configurador con parámetros, modos y preajustes."
+      "desc": "Sube .scad o Python de CadQuery. Yantra4D lee los parámetros y genera un configurador."
     },
     "share": {
       "title": "Comparte con Cualquiera",
@@ -79,8 +79,8 @@
       "desc": "Parámetros, preajustes, pasos de ensamblaje, BOM, modos — un solo manifiesto JSON."
     },
     "multiProject": {
-      "title": "Proyectos Ilimitados",
-      "desc": "Panel multi-proyecto. Cada diseño tiene su propio configurador."
+      "title": "Aloja Todo Tu Catálogo",
+      "desc": "Cinco proyectos gratis con cuenta, ilimitados en Pro. Cada uno con su propia URL."
     },
     "openSource": {
       "title": "Código Abierto para Siempre",
@@ -128,10 +128,44 @@
   "openSourceSection": {
     "heading": "Gratis. Código Abierto. Para Siempre.",
     "description": "Auto-aloja, contribuye, construye encima — tus configuradores son tuyos.",
-    "statProjects": "21 Proyectos",
-    "statLicense": "AGPLv3",
+    "statProjects": "Cartuchos Abiertos",
+    "statLicense": "CERN-OHL-W",
     "cta": "Ver en GitHub",
-    "techNote": "Construido con OpenSCAD, React, Three.js, Flask y WebAssembly."
+    "techNote": "Plataforma AGPLv3, diseños CERN-OHL-W. Cuatro kernels renderizan el commons — OpenSCAD, CadQuery B-Rep, un motor implícito SDF para celosías, y un nuevo motor de grafos de nodos — sobre React, Three.js, Flask y WebAssembly.",
+    "statStandards": "Estándares",
+    "statLicensedSuffix": "diseños"
+  },
+  "pricing": {
+    "heading": "Precios",
+    "subheading": "El acervo común es gratis para siempre. Los planes de pago financian los servidores que lo renderizan, verifican y fabrican.",
+    "free": {
+      "name": "Explorador",
+      "price": "Gratis",
+      "f1": "Explora los 324 cartuchos abiertos",
+      "f2": "Renderizado en el navegador y exportación STL",
+      "f3": "10 renders en servidor por hora",
+      "cta": "Abrir el estudio"
+    },
+    "essentials": {
+      "name": "Essentials",
+      "price": "Gratis con cuenta",
+      "f1": "30 renders en servidor por hora",
+      "f2": "Exportación 3MF y OBJ",
+      "f3": "Configurador con IA",
+      "cta": "Crear cuenta"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "desde $9/mes",
+      "badge": "Recomendado",
+      "f1": "150 renders en servidor por hora",
+      "f2": "Todos los formatos de exportación, incluido STEP",
+      "f3": "Motor CadQuery, importación de GitHub y editor de código",
+      "f4": "Envío a impresora y cotizaciones de manufactura",
+      "cta": "Mejorar a Pro"
+    },
+    "whitelabel": "¿Necesitas un estudio con tu marca y un catálogo privado para tu equipo o clientes? Licencias white-label disponibles con",
+    "whitelabelCta": "Innovaciones MADFAM"
   },
   "hyperCommons": {
     "heading": "Los Comunes Paramétricos",
@@ -140,6 +174,10 @@
     "whatIsBody": "Los archivos 3D tradicionales son estáticos — una geometría, congelada en un tamaño. Un hiperobjeto paramétrico es la definición computacional de toda una *familia* de objetos, acotada por las reglas de su código. Cambia los parámetros, y la geometría se adapta — al instante.",
     "whatIsCaption1": "Un archivo",
     "whatIsCaption2": "Infinitos objetos",
+    "whyHeading": "Por qué hiperobjetos",
+    "whyBody": "Un hiperobjeto nunca es la cosa que está sobre tu escritorio — es todo lo que esa cosa puede llegar a ser. Cada objeto aquí es una familia: un solo contrato; infinitos tamaños, materiales y configuraciones. La palabra está tomada prestada dos veces: de la filosofía — los gigantes vastos e imposibles de señalar de Timothy Morton, traídos aquí a la escala del banco de trabajo — y del hipertexto, el objeto que genera objetos. Tuyo para regenerarlo, para siempre.",
+    "whyLink": "Sobre la palabra",
+    "whyLinkTarget": "el manifiesto",
     "shiftHeading": "El Cambio de Paradigma",
     "shiftFrom": ".STL Estático",
     "shiftFromDesc": "Una geometría fija. Un solo tamaño. Descarga y espera que funcione.",
@@ -310,7 +348,7 @@
       "forkTitle": "Fork y Adaptar",
       "forkDesc": "Las obras derivadas son fomentadas, no restringidas.",
       "copyleftTitle": "Licencia Copyleft",
-      "copyleftDesc": "Protegido por AGPLv3 para asegurar libertad por siempre.",
+      "copyleftDesc": "Los diseños llevan CERN-OHL-W, una licencia de hardware con reciprocidad fuerte: si mejoras uno, la mejora sigue abierta. La plataforma es AGPLv3.",
       "globalTitle": "Estándares Globales",
       "globalDesc": "Agnóstico al idioma, sistema métrico, universalmente compatible.",
       "joinTitle": "Únete al Movimiento",
@@ -319,7 +357,7 @@
     }
   },
   "heroNew": {
-    "badge": "v0.1.0 Beta Pública",
+    "badge": "Commons Abierto · Beta Pública",
     "journeyBtn": "Comienza Tu Viaje",
     "studioBtn": "Abrir Studio"
   },

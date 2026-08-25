@@ -12,7 +12,11 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov'],
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/test/**'],
+      // src/components/vendor/** is code synced in from the shared MADFAM
+      // ecosystem-banner package, not authored here. Tests written against it
+      // in this repo would duplicate the upstream suite and break on every
+      // sync, so it is measured upstream rather than counted in this denominator.
+      exclude: ['src/test/**', 'src/components/vendor/**'],
       thresholds: {
         statements: 60,
         branches: 60,

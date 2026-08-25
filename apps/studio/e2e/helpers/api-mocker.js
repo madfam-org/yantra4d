@@ -3,7 +3,7 @@
  * Playwright route interception helpers for mocking backend API responses.
  */
 
-const MOCK_MANIFEST = {
+const MOCK_MANIFEST_RAW = {
   project: { name: 'Test Project', slug: 'test', version: '1.0.0', description: 'Test project' },
   modes: [
     { id: 'cup', label: 'Start', label_es: 'Inicio', scad_file: 'test.scad', parts: ['body'] },
@@ -47,10 +47,90 @@ const MOCK_MANIFEST = {
   estimate_constants: { base_time: 5, time_per_mm3: 0.001 },
 }
 
+/**
+ * Convert the `label` / `label_es` sibling pairs above into the `{ en, es }`
+ * objects the app actually reads.
+ *
+ * ManifestProvider.getLabel is:
+ *
+ *   if (typeof obj[key] === "string") return obj[key]
+ *   return obj[key][lang] || obj[key]["en"] || ""
+ *
+ * so a flat string label comes back verbatim in every locale, and `label_es` is
+ * read by nothing at all — `grep -r label_es src/` returns zero hits, while the
+ * real manifests use `label: { en, es }` (see config/fallback-manifest.json).
+ * The mock therefore rendered English mode tabs, presets and camera buttons in
+ * Spanish, which is what "viewer button labels translate" was reporting: the
+ * fixture was wrong, not the app.
+ *
+ * Kept as a transform rather than rewriting the literal so the fixture above
+ * stays readable as a flat table.
+ */
+function withI18nLabels(node) {
+  if (Array.isArray(node)) return node.map(withI18nLabels)
+  if (node && typeof node === 'object') {
+    const out = {}
+    for (const [key, value] of Object.entries(node)) {
+      if (key.endsWith('_es')) continue // folded into its base key below
+      const esKey = `${key}_es`
+      if (typeof value === 'string' && esKey in node) out[key] = { en: value, es: node[esKey] }
+      else out[key] = withI18nLabels(value)
+    }
+    return out
+  }
+  return node
+}
+
+const MOCK_MANIFEST = withI18nLabels(MOCK_MANIFEST_RAW)
+
 const MOCK_PROJECTS = [
   { slug: 'test', name: 'Test Project', version: '1.0.0', description: 'A test', mode_count: 2, parameter_count: 4, scad_file_count: 1, has_manifest: true, has_exports: false },
   { slug: 'demo', name: 'Demo Project', version: '0.1.0', description: 'A demo', mode_count: 1, parameter_count: 2, scad_file_count: 1, has_manifest: true, has_exports: true },
 ]
+
+// ProjectsView no longer reads /api/admin/projects. It is a faceted catalog
+// browser backed by /api/catalog/search, which returns results plus the facet
+// counts that drive the Domain / Connects via / Material filter rails. Because
+// that route was never mocked, every projects-view test ran against whatever
+// the dev backend happened to hold — 326 real cartridges — so assertions about
+// "Test Project" could not pass and the empty/loading/error routes overrode an
+// endpoint the page had stopped calling.
+const MOCK_CATALOG_RESULTS = [
+  {
+    slug: 'test', name: 'Test Project', description: 'A test',
+    engine: 'openscad', difficulty: 'beginner', domain: 'household',
+    is_hyperobject: true, dual_engine: false, tags: ['test', 'fixture'],
+    geometry_types: ['socket'], standards: ['gridfinity'],
+    mode_count: 2, part_count: 2,
+  },
+  {
+    slug: 'demo', name: 'Demo Project', description: 'A demo',
+    engine: 'cadquery', difficulty: 'intermediate', domain: 'industrial',
+    is_hyperobject: false, dual_engine: true, tags: ['demo'],
+    geometry_types: ['bolt_pattern'], standards: [],
+    mode_count: 1, part_count: 1,
+  },
+]
+
+const MOCK_CATALOG_FACETS = {
+  domain: [{ value: 'household', count: 1 }, { value: 'industrial', count: 1 }],
+  geometry_type: [{ value: 'socket', count: 1 }, { value: 'bolt_pattern', count: 1 }],
+  standard: [{ value: 'gridfinity', count: 1 }],
+  material: [],
+  difficulty: [{ value: 'beginner', count: 1 }, { value: 'intermediate', count: 1 }],
+  engine: [{ value: 'openscad', count: 1 }, { value: 'cadquery', count: 1 }],
+}
+
+export function catalogResponse(results = MOCK_CATALOG_RESULTS) {
+  return {
+    results,
+    total: results.length,
+    limit: 60,
+    offset: 0,
+    facets: MOCK_CATALOG_FACETS,
+    catalog_count: results.length,
+  }
+}
 
 // Minimal valid binary STL (134 bytes, 1 triangle)
 function createMinimalSTL() {
@@ -81,6 +161,12 @@ function createMinimalSTL() {
  * @param {import('@playwright/test').Page} page
  */
 export async function mockAllAPIs(page) {
+  // The endpoint ProjectsView actually calls. Query string varies with filters
+  // and paging, so the pattern has to end in ** to match ?q=&limit=&offset=.
+  await page.route('**/api/catalog/search**', (route) => {
+    route.fulfill({ json: catalogResponse() })
+  })
+
   await page.route('**/api/projects', (route) => {
     if (route.request().url().includes('/api/projects/')) return route.fallback()
     console.log('MOCK: Intercepted GET /api/projects')
@@ -88,8 +174,20 @@ export async function mockAllAPIs(page) {
   })
 
   await page.route('**/api/projects/*/manifest', (route) => {
-    console.log('MOCK: Intercepted GET manifest', route.request().url())
-    route.fulfill({ json: MOCK_MANIFEST })
+    const url = route.request().url()
+    console.log('MOCK: Intercepted GET manifest', url)
+    // Echo the requested slug back. ProjectProvider computes
+    //   manifestStale = manifestSlug && projectSlug && manifestSlug !== projectSlug
+    // and holds SplashScreen up for as long as that is true — correctly, since
+    // showing one project's UI against another's manifest would be a bug. But
+    // this mock answered every slug with project.slug === 'test', so any
+    // goToStudio(page, <anything but 'test'>) sat on the splash forever, never
+    // rendered <header>, and failed in waitForAppReady 15s later. That is what
+    // took out all of 20-digital-twin, which loads a material-aware project.
+    const slug = new URL(url).pathname.split('/').at(-2)
+    route.fulfill({
+      json: { ...MOCK_MANIFEST, project: { ...MOCK_MANIFEST.project, slug } },
+    })
   })
 
   await page.route('**/api/manifest', (route) => {

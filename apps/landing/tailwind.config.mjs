@@ -14,6 +14,10 @@ export default {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
+          // Small-text-safe accent. --primary itself measures 3.83:1 on
+          // dark surfaces, which is under the 4.5:1 floor for body copy;
+          // use `text-primary-readable` for accent text below 24px.
+          readable: 'hsl(var(--primary-readable))',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',

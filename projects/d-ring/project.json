@@ -1,0 +1,284 @@
+{
+  "project": {
+    "name": "D-Ring",
+    "slug": "d-ring",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A 3D-printed the flat-bottomed loop that anchors straps and webbing on bags, packs, and overalls — the rigid hard good the Fashion Cabinet `d-ring` notion places and bridges to here for its geometry. Sized so a garment's finished dimension drives the finding.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un the flat-bottomed loop that anchors straps and webbing on bags, packs, and overalls impreso en 3D — el herraje rígido que el avío `d-ring` de Fashion Cabinet coloca y al que se puentea aquí para su geometría. Dimensionado para que la medida terminada de una prenda determine el avío.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/d-ring.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "d-ring",
+      "ring",
+      "strap",
+      "webbing",
+      "hardware",
+      "finding",
+      "wearable",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "d_ring",
+      "label": {
+        "en": "D-Ring",
+        "es": "Argolla D"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "d_ring"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    },
+    {
+      "id": "square",
+      "label": {
+        "en": "Square Ring",
+        "es": "Argolla cuadrada"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "square"
+      ],
+      "estimate": {
+        "base_time": 12,
+        "per_unit": 2,
+        "per_part": 8
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "d_ring",
+      "label": {
+        "en": "D-Ring",
+        "es": "D-Ring"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    },
+    {
+      "id": "square",
+      "label": {
+        "en": "Square Ring",
+        "es": "Square Ring"
+      },
+      "render_mode": 0,
+      "color": "#b0a890"
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "size",
+      "label": {
+        "en": "Size",
+        "es": "Size"
+      }
+    },
+    {
+      "id": "section",
+      "label": {
+        "en": "Section",
+        "es": "Section"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "webbing",
+      "type": "slider",
+      "default": 25.0,
+      "min": 10.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "size",
+      "modes": [
+        "d_ring",
+        "square"
+      ],
+      "label": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de correa (mm)"
+      },
+      "tooltip": {
+        "en": "Webbing width (mm)",
+        "es": "Ancho de correa (mm)"
+      }
+    },
+    {
+      "id": "bow_depth",
+      "type": "slider",
+      "default": 20.0,
+      "min": 8.0,
+      "max": 60.0,
+      "step": 1.0,
+      "group": "size",
+      "modes": [
+        "d_ring",
+        "square"
+      ],
+      "label": {
+        "en": "Bow depth (mm)",
+        "es": "Profundidad de arco (mm)"
+      },
+      "tooltip": {
+        "en": "Bow depth (mm)",
+        "es": "Profundidad de arco (mm)"
+      }
+    },
+    {
+      "id": "wire_t",
+      "type": "slider",
+      "default": 4.0,
+      "min": 2.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "section",
+      "modes": [
+        "d_ring",
+        "square"
+      ],
+      "label": {
+        "en": "Section thickness (mm)",
+        "es": "Espesor de sección (mm)"
+      },
+      "tooltip": {
+        "en": "Section thickness (mm)",
+        "es": "Espesor de sección (mm)"
+      }
+    },
+    {
+      "id": "wire_h",
+      "type": "slider",
+      "default": 5.0,
+      "min": 2.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "section",
+      "modes": [
+        "d_ring",
+        "square"
+      ],
+      "label": {
+        "en": "Section height (mm)",
+        "es": "Alto de sección (mm)"
+      },
+      "tooltip": {
+        "en": "Section height (mm)",
+        "es": "Alto de sección (mm)"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "default",
+      "mode": "d_ring",
+      "label": {
+        "en": "Default",
+        "es": "Predeterminado"
+      },
+      "values": {
+        "webbing": 25.0
+      }
+    }
+  ],
+  "constraints": [],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico"
+      },
+      "position": [
+        40,
+        40,
+        40
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 12,
+    "per_unit": 2,
+    "per_part": 8,
+    "fn_factor": 16,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "wearable",
+    "cdg_interfaces": [
+      {
+        "id": "bar_edge",
+        "label": {
+          "en": "Webbing Bar Edge",
+          "es": "Webbing Bar Edge"
+        },
+        "geometry_type": "flange",
+        "standard": "internal",
+        "parameters": [
+          "webbing",
+          "wire_t",
+          "wire_h"
+        ]
+      },
+      {
+        "id": "bow_loop",
+        "label": {
+          "en": "Bow Loop",
+          "es": "Bow Loop"
+        },
+        "geometry_type": "snap",
+        "standard": "internal",
+        "parameters": [
+          "bow_depth",
+          "wire_t"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": false,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A printable D-ring turns strap hardware — a bulk-bought metal part — into an open, made-to-measure loop sized exactly to your webbing, repairable and reprintable per bag.",
+      "es": "Una argolla D imprimible convierte el herraje de correas — una pieza metálica a granel — en un anillo abierto a la medida exacta de tu correa, reparable y reimprimible por bolsa."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "d-ring",
+    "ring",
+    "strap",
+    "webbing",
+    "hardware",
+    "finding",
+    "wearable",
+    "hyperobject",
+    "commons"
+  ]
+}

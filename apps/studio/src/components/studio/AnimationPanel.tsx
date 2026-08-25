@@ -65,12 +65,20 @@ function consumeSSE(response: Response, onEvent: (event: SSEEvent) => void, sign
             const lines = buffer.split('\n')
             buffer = lines.pop() ?? ''
             for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                    try {
-                        const event = JSON.parse(line.slice(6)) as SSEEvent
-                        onEvent(event)
-                    } catch { /* ignore malformed SSE event */ }
+                if (!line.startsWith('data: ')) continue
+                // The try covers the parse only. It used to wrap onEvent too, so
+                // anything the handler threw was discarded as "malformed SSE" —
+                // including the `throw new Error(event.error)` that handleRender
+                // raises for an `error` event. A failed render therefore never
+                // reached setError: the panel sat in its rendering state with no
+                // message, and the stream just ended.
+                let event: SSEEvent
+                try {
+                    event = JSON.parse(line.slice(6)) as SSEEvent
+                } catch {
+                    continue // malformed SSE event
                 }
+                onEvent(event)
             }
         }
     }

@@ -39,15 +39,12 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: () => ({ t: (k) => k }),
 }))
 
-vi.mock('../editor/useUndoRedo', () => ({
-  useUndoRedo: (init) => {
-    const val = init()
-    const setVal = vi.fn((update) => {
-      if (typeof update === 'function') update(val)
-    })
-    return [val, setVal, { undo: vi.fn(), redo: vi.fn(), canUndo: false, canRedo: false }]
-  },
-}))
+// The real useUndoRedo is used deliberately. The previous stub returned a
+// fresh value each render and a setter that applied the updater and threw the
+// result away, so params never actually changed — every effect in the hook that
+// reacts to a param, mode or preset change was unreachable, and the file's 63
+// uncovered branches were mostly those. It is a small, self-contained hook with
+// its own spec; standing it up here costs nothing and makes the state real.
 
 vi.mock('../system/useLocalStoragePersistence', () => ({
   useLocalStoragePersistence: vi.fn(),
@@ -58,12 +55,25 @@ vi.mock('./useShareableUrl', () => ({
   getSharedParams: () => ({}),
 }))
 
+// Constraint errors and cache hits both short-circuit the debounced
+// auto-generate effect, so both need to be steerable from a test.
+const { constraintState } = vi.hoisted(() => ({ constraintState: { hasErrors: false } }))
+
 vi.mock('../editor/useConstraints', () => ({
-  useConstraints: () => ({ violations: [], byParam: {}, hasErrors: false }),
+  useConstraints: () => ({ violations: [], byParam: {}, hasErrors: constraintState.hasErrors }),
 }))
 
+// The mock captures onHashChange so a test can drive it. Route changes are how
+// mode and preset actually change in this app — the whole block that cleans up
+// out-of-mode parameters and applies preset values hangs off this callback, and
+// with the old stub it could never fire.
+const { hashNav } = vi.hoisted(() => ({ hashNav: { onHashChange: null } }))
+
 vi.mock('../system/useHashNavigation', () => ({
-  useHashNavigation: () => ({ currentView: 'studio', isDemo: false }),
+  useHashNavigation: (opts) => {
+    hashNav.onHashChange = opts?.onHashChange ?? null
+    return { currentView: 'studio', isDemo: false }
+  },
   parseHash: () => ({}),
   buildHash: () => '#',
 }))
@@ -73,21 +83,24 @@ vi.mock('../render/useImageExport', () => ({
 }))
 
 const mockSetParts = vi.fn()
+const mockCheckCache = vi.fn(() => null)
+const mockHandleGenerate = vi.fn()
+const { renderState } = vi.hoisted(() => ({ renderState: { parts: [] } }))
 
 vi.mock('../render/useRender', () => ({
   useRender: () => ({
-    parts: [],
+    parts: renderState.parts,
     setParts: mockSetParts,
     logs: '',
     setLogs: vi.fn(),
     loading: false,
     progress: 0,
     progressPhase: '',
-    checkCache: vi.fn(),
+    checkCache: mockCheckCache,
     evictCache: vi.fn(),
     showConfirmDialog: false,
     pendingEstimate: null,
-    handleGenerate: vi.fn(),
+    handleGenerate: mockHandleGenerate,
     handleCancelGenerate: vi.fn(),
     handleConfirmRender: vi.fn(),
     handleCancelRender: vi.fn(),
@@ -638,6 +651,270 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
   it('exposes preRenderStatus from useParameterPreviewCache', () => {
     const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
     expect(result.current.preRenderStatus).toBe('idle')
+  })
+
+  // --- Mode and preset transitions over a manifest with real parameters ----
+  // mockManifest.parameters was empty for every existing test, so the block
+  // that resets out-of-mode parameters and applies preset values on a
+  // mode/preset change was never entered. The manifest mock reads the object on
+  // each call, so a test can extend it and restore it afterwards.
+
+  const withManifest = (patch, fn) => {
+    const saved = { ...mockManifest }
+    Object.assign(mockManifest, patch)
+    try {
+      return fn()
+    } finally {
+      Object.keys(patch).forEach((k) => { delete mockManifest[k] })
+      Object.assign(mockManifest, saved)
+    }
+  }
+
+  it('a preset with no mode of its own leaves the current mode alone', () => {
+    withManifest({
+      parameters: [
+        { id: 'a', default: 0, visible_in_modes: ['default'] },
+        { id: 'b', default: 5, visible_in_modes: ['grid'] },
+      ],
+    }, () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      const before = result.current.mode
+      act(() => {
+        result.current.handleApplyPreset({ id: 'preset1', values: { a: 9 } })
+      })
+      expect(result.current.mode).toBe(before)
+    })
+  })
+
+  it('a preset that names a mode switches to it', () => {
+    withManifest({
+      parameters: [{ id: 'a', default: 0, visible_in_modes: ['default', 'grid'] }],
+    }, () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => {
+        result.current.handleApplyPreset({ id: 'preset2', mode: 'grid', values: { a: 3 } })
+      })
+      expect(result.current.mode).toBe('grid')
+    })
+  })
+
+  // --- Real parameter state ------------------------------------------------
+  // Reachable now that the hook uses the real useUndoRedo: params actually
+  // change, so the undo stack and the effects that react to a param or mode
+  // change run for the first time.
+
+  it('setParams updates params and makes undo available', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    expect(result.current.canUndo).toBe(false)
+
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 42 })) })
+
+    expect(result.current.params.width).toBe(42)
+    expect(result.current.canUndo).toBe(true)
+  })
+
+  it('undo reverts the last parameter change and redo restores it', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 10 })) })
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 20 })) })
+    expect(result.current.params.width).toBe(20)
+
+    act(() => { result.current.undoParams() })
+    expect(result.current.params.width).toBe(10)
+    expect(result.current.canRedo).toBe(true)
+
+    act(() => { result.current.redoParams() })
+    expect(result.current.params.width).toBe(20)
+  })
+
+  it('one setParams call is one undo step', () => {
+    // Guards the StrictMode double-push this hook's undo used to suffer, where a
+    // single edit landed twice and the first undo appeared to do nothing.
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    const initial = result.current.params.width
+
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 99 })) })
+    act(() => { result.current.undoParams() })
+
+    expect(result.current.params.width).toBe(initial)
+  })
+
+  it('setParams with history:false does not create an undo step', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 7 }), { history: false }) })
+    expect(result.current.params.width).toBe(7)
+    expect(result.current.canUndo).toBe(false)
+  })
+
+  it('setting the same value again is not a new undo step', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 5 })) })
+    act(() => { result.current.setParams(prev => ({ ...prev, width: 5 })) })
+    act(() => { result.current.undoParams() })
+    // A single undo must clear both no-op writes, not leave one behind.
+    expect(result.current.params.width).not.toBe(5)
+  })
+
+  it('switching mode is reflected in the hook state', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setMode('grid') })
+    expect(result.current.mode).toBe('grid')
+  })
+
+  it('colors and viewer toggles round-trip through their setters', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+    act(() => { result.current.setWireframe(true) })
+    expect(result.current.wireframe).toBe(true)
+
+    act(() => { result.current.setExplodeFactor(0.5) })
+    expect(result.current.explodeFactor).toBe(0.5)
+
+    act(() => { result.current.setClippingAxis('z') })
+    expect(result.current.clippingAxis).toBe('z')
+
+    act(() => { result.current.setColors(prev => ({ ...prev, body: '#123456' })) })
+    expect(result.current.colors.body).toBe('#123456')
+  })
+
+  // --- Route-driven mode and preset changes --------------------------------
+  // Driving onHashChange is what a navigation does. The block it runs resets
+  // parameters that do not belong to the new mode and applies the new preset's
+  // values, and none of it had ever executed.
+
+  const withManifestParams = (params, fn) => {
+    const saved = mockManifest.parameters
+    mockManifest.parameters = params
+    try { return fn() } finally { mockManifest.parameters = saved }
+  }
+
+  it('navigating to a new mode resets parameters that do not belong to it', () => {
+    withManifestParams([
+      { id: 'only_default', default: 7, visible_in_modes: ['default'] },
+      { id: 'shared', default: 1 },
+    ], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+      act(() => { result.current.setParams(prev => ({ ...prev, only_default: 99 })) })
+      expect(result.current.params.only_default).toBe(99)
+
+      // A parameter scoped to 'default' must not leak into 'grid'.
+      act(() => { hashNav.onHashChange({ mode: { id: 'grid' }, preset: null }) })
+      expect(result.current.mode).toBe('grid')
+      expect(result.current.params.only_default).toBe(7)
+    })
+  })
+
+  it('a parameter with no mode scope survives a mode change', () => {
+    withManifestParams([{ id: 'shared', default: 1 }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+
+      act(() => { result.current.setParams(prev => ({ ...prev, shared: 42 })) })
+      act(() => { hashNav.onHashChange({ mode: { id: 'grid' }, preset: null }) })
+      expect(result.current.params.shared).toBe(42)
+    })
+  })
+
+  it('navigating to a preset applies its values', () => {
+    withManifestParams([{ id: 'a', default: 0 }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      // preset1 is already active on init, and re-applying the active preset is
+      // deliberately skipped; preset2 is a genuine change.
+      act(() => { hashNav.onHashChange({ mode: null, preset: { id: 'preset2', values: { a: 5 } } }) })
+      expect(result.current.params.a).toBe(5)
+    })
+  })
+
+  it('a hash change with neither mode nor preset leaves state alone', () => {
+    withManifestParams([{ id: 'a', default: 0 }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { result.current.setParams(prev => ({ ...prev, a: 3 })) })
+      const before = result.current.mode
+
+      act(() => { hashNav.onHashChange({ mode: null, preset: null }) })
+      expect(result.current.mode).toBe(before)
+      expect(result.current.params.a).toBe(3)
+    })
+  })
+
+  it('re-navigating to the mode already active does not reset parameters', () => {
+    // The auto-redirect from /project/x to /project/x/<mode>/<preset> fires a
+    // hash change for the mode that is already active; treating that as a
+    // change would wipe values the user or a ?p= share had just set.
+    withManifestParams([{ id: 'only_default', default: 7, visible_in_modes: ['default'] }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { result.current.setParams(prev => ({ ...prev, only_default: 99 })) })
+
+      act(() => { hashNav.onHashChange({ mode: { id: 'default' }, preset: null }) })
+      expect(result.current.params.only_default).toBe(99)
+    })
+  })
+
+  // --- Auto-generate gate and overhang analysis ----------------------------
+
+  beforeEach(() => {
+    constraintState.hasErrors = false
+    renderState.parts = []
+    mockCheckCache.mockReturnValue(null)
+    mockHandleGenerate.mockClear()
+    mockSetParts.mockClear()
+  })
+
+  it('a cache hit serves the cached parts instead of rendering again', () => {
+    const cached = [{ type: 'body', url: 'blob:cached' }]
+    mockCheckCache.mockReturnValue(cached)
+    renderHook(() => useProjectParams({ viewerRef: {} }))
+    expect(mockSetParts).toHaveBeenCalledWith(cached)
+    expect(mockHandleGenerate).not.toHaveBeenCalled()
+  })
+
+  it('a constraint error suppresses the auto-render', () => {
+    vi.useFakeTimers()
+    constraintState.hasErrors = true
+    renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { vi.advanceTimersByTime(2000) })
+    // Rendering geometry that violates its own constraints wastes a render and
+    // shows the user something the manifest says is invalid.
+    expect(mockHandleGenerate).not.toHaveBeenCalled()
+    vi.useRealTimers()
+  })
+
+  it('no auto-render while every visibility parameter for the mode is off', () => {
+    vi.useFakeTimers()
+    const saved = mockManifest.parameters
+    mockManifest.parameters = [
+      { id: 'show_body', group: 'visibility', visible_in_modes: ['default'], default: false },
+    ]
+    try {
+      renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { vi.advanceTimersByTime(2000) })
+      // With nothing visible there is no geometry to produce.
+      expect(mockHandleGenerate).not.toHaveBeenCalled()
+    } finally {
+      mockManifest.parameters = saved
+      vi.useRealTimers()
+    }
+  })
+
+  it('disabling overhang analysis clears the data it produced', () => {
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setOverhangEnabled(true) })
+    act(() => { result.current.setOverhangEnabled(false) })
+    expect(result.current.overhangData).toBeNull()
+  })
+
+  it('overhang analysis is not requested without rendered parts', () => {
+    const spy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true, json: () => Promise.resolve({ analysis: {} }),
+    })
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { result.current.setOverhangEnabled(true) })
+    // Nothing to analyse yet, so no request.
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('/analyze/overhang'), expect.anything()
+    )
+    spy.mockRestore()
   })
 })
 

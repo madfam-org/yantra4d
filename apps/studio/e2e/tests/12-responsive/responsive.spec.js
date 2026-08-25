@@ -1,24 +1,35 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, goToProjects, setLanguage, waitForAppReady } from '../../helpers/test-utils.js'
+import {
+  goToStudio,
+  goToProjects,
+  setLanguage,
+  waitForRenderSettled,
+  waitForHeaderReady,
+  openDropdownMenu,
+  openMobileSheet,
+} from '../../helpers/test-utils.js'
 
 /**
  * Lightweight studio navigation for mobile viewports.
  * Unlike goToStudio, this does NOT wait for desktop sidebar or sliders,
  * which are hidden at mobile and cause 13s of wasted timeouts.
+ *
+ * It DOES wait for the header to finish swapping in the loaded manifest.
+ * The previous version swallowed that wait with `.catch(() => {})`, so on a
+ * slow manifest it returned with the header still rendering the fallback tree —
+ * and every caller below then clicked a header control whose React handler was
+ * about to be replaced. waitForHeaderReady is the same wait, un-swallowed.
  */
 async function goToStudioMobile(page, slug = 'test') {
   await page.goto(`/project/${slug}`)
-  await waitForAppReady(page)
-  // Wait for mock manifest to load
-  await page.locator('header h1', { hasText: 'Test Project' })
-    .waitFor({ timeout: 8000 }).catch(() => { })
+  await waitForHeaderReady(page)
   // Ensure a mode tab is active (click first tab if needed)
   const activeTab = page.locator('[role="tab"][data-state="active"]')
   if (await activeTab.count() === 0) {
-    const firstTab = page.locator('[role="tab"]').first()
-    if (await firstTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+    const firstTab = page.locator('[role="tab"]:visible').first()
+    if (await firstTab.isVisible({ timeout: 10000 }).catch(() => false)) {
       await firstTab.click()
-      await page.waitForTimeout(300)
+      await expect(activeTab.first()).toBeVisible({ timeout: 10_000 }).catch(() => { })
     }
   }
 }
@@ -38,10 +49,16 @@ test.describe('Responsive Design', () => {
     // with mode tabs and a hamburger button is shown above the viewer.
     const mobileBar = page.locator('.lg\\:hidden:visible').first()
     await expect(mobileBar).toBeVisible({ timeout: 5000 })
-    // Viewer area should be below the mobile bar.
-    // Use #main-content instead of canvas — R3F's <Canvas> requires WebGL
-    // which may not be available in CI headless Chromium at mobile DPI.
-    const viewerArea = page.locator('#main-content:visible').first()
+    // Viewer area should be below the mobile bar. Measured on the studio main
+    // view, not on a canvas — R3F's <Canvas> requires WebGL, which may not be
+    // available in CI headless Chromium at mobile DPI.
+    //
+    // This used #main-content, which worked only while that id sat on
+    // StudioMainView. It now marks the whole content region — both layout
+    // trees, so that the skip link resolves to something visible at every
+    // width — and therefore starts at the same y as the mobile bar rather than
+    // below it. data-testid is the stable handle for the viewer pane itself.
+    const viewerArea = page.locator('[data-testid="studio-main-view"]:visible').first()
     await expect(viewerArea).toBeVisible({ timeout: 10000 })
     const barBox = await mobileBar.boundingBox()
     const viewerBox = await viewerArea.boundingBox()
@@ -83,7 +100,7 @@ test.describe('Responsive Design', () => {
     await expect(tablist).toBeVisible({ timeout: 10000 })
     // Should have at least 2 mode tabs
     const tabs = tablist.locator('[role="tab"]')
-    await expect(tabs.first()).toBeVisible({ timeout: 3000 })
+    await expect(tabs.first()).toBeVisible({ timeout: 10000 })
     const count = await tabs.count()
     expect(count).toBeGreaterThanOrEqual(2)
   })
@@ -92,15 +109,23 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudioMobile(page)
     // The overflow "..." menu should be visible on mobile
-    const overflowBtn = page.locator('button[title="More actions"]')
-    await expect(overflowBtn).toBeVisible({ timeout: 5000 })
-    // Click to open dropdown
-    await overflowBtn.click()
-    // Dropdown menu content should appear
+    const overflowBtn = page.locator('button[title="More actions"]:visible').first()
+    // The re-click loop this replaces was NOT convergent, despite its comment.
+    // Its isVisible() check and its click() are separate round-trips, so a
+    // click that opened the menu after the preceding check read false earned a
+    // second click on the next iteration — and a second click on a Radix
+    // DropdownMenu trigger toggles it SHUT. Under the timing where clicks are
+    // slow (this exact case: the mobile project on a contended runner) it can
+    // oscillate until the budget expires, which is what happened at ~line 109
+    // in run 32790503197.
+    //
+    // openDropdownMenu clicks once and waits for Radix's own data-state="open"
+    // on the trigger, so a slow click is waited out rather than re-fired.
+    await openDropdownMenu(overflowBtn)
     const menu = page.locator('[role="menu"]')
-    await expect(menu).toBeVisible({ timeout: 3000 })
+    await expect(menu).toBeVisible({ timeout: 15_000 })
     // Should contain undo, share, etc.
-    await expect(menu.locator('[role="menuitem"]').first()).toBeVisible()
+    await expect(menu.locator('[role="menuitem"]').first()).toBeVisible({ timeout: 15_000 })
   })
 
   test('mobile: AI panel has dismiss backdrop', async ({ page }) => {
@@ -108,7 +133,7 @@ test.describe('Responsive Design', () => {
     await goToStudioMobile(page)
     // Open AI panel if the toggle button is visible
     const aiToggle = page.locator('button').filter({ hasText: /AI configurator/i }).first()
-    if (await aiToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await aiToggle.isVisible({ timeout: 10000 }).catch(() => false)) {
       await aiToggle.click()
       await page.waitForTimeout(300)
       // Check for dismiss backdrop
@@ -136,7 +161,7 @@ test.describe('Responsive Design', () => {
   test('landscape: viewer area is usable', async ({ page }) => {
     await page.setViewportSize({ width: 812, height: 375 })
     await goToStudioMobile(page)
-    const viewerArea = page.locator('#main-content:visible').first()
+    const viewerArea = page.locator('[data-testid="studio-main-view"]:visible').first()
     await expect(viewerArea).toBeVisible({ timeout: 10000 })
     const box = await viewerArea.boundingBox()
     if (box) {
@@ -159,8 +184,8 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await goToStudio(page)
     await expect(page.locator('header')).toBeVisible()
-    // Use #main-content instead of canvas — WebGL may be unavailable at mobile DPI
-    await expect(page.locator('#main-content:visible').first()).toBeVisible({ timeout: 10000 })
+    // Measured on the studio main view, not a canvas — WebGL may be unavailable at mobile DPI
+    await expect(page.locator('[data-testid="studio-main-view"]:visible').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('tablet: sidebar is visible', async ({ page }) => {
@@ -193,7 +218,12 @@ test.describe('Responsive Design', () => {
         const overlapX = Math.max(0, Math.min(b1.x + b1.width, b2.x + b2.width) - Math.max(b1.x, b2.x))
         const overlapY = Math.max(0, Math.min(b1.y + b1.height, b2.y + b2.height) - Math.max(b1.y, b2.y))
         const intersection = overlapX * overlapY
-        expect(intersection).toBe(0)
+        // Compared against a threshold, not exact zero. Firefox reports
+        // fractional bounding boxes where Chromium rounds, so adjacent buttons
+        // that merely touch produced an intersection of 0.00067 square pixels —
+        // 0.026px on a side — and failed `toBe(0)`. Anything under a square
+        // pixel is measurement noise, not two controls overlapping.
+        expect(intersection).toBeLessThan(1)
       }
     }
   })
@@ -222,25 +252,29 @@ test.describe('Responsive Design', () => {
   test('mobile: export panel is accessible via scroll', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudioMobile(page)
-    // On mobile, the export panel is inside the bottom sheet.
-    // Open the sheet by clicking the hamburger menu button.
-    // The SheetTrigger button contains <Menu> icon and sr-only text "Open controls".
-    const menuBtn = page.locator('button:has(.lucide-menu)').first()
-    await expect(menuBtn).toBeVisible({ timeout: 10000 })
-    await menuBtn.click()
-    // Wait for the Sheet dialog to open (SidebarContent is rendered twice:
-    // once in the hidden desktop sidebar and once in the Sheet portal,
-    // so we must scope to the dialog to avoid picking up the hidden copy)
-    const sheet = page.locator('[role="dialog"]')
-    await expect(sheet).toBeVisible({ timeout: 5000 })
+    // On mobile, the export panel is inside the bottom sheet. Opening it is the
+    // same lost-click hazard as the overflow menu — SheetTrigger is a Radix
+    // Dialog Trigger — so gate on its data-state rather than on the portalled
+    // dialog appearing within a fixed 5s. (SidebarContent is rendered twice:
+    // once in the hidden desktop sidebar and once in the Sheet portal, so the
+    // assertions below stay scoped to the dialog.)
+    const sheet = await openMobileSheet(page)
     const controls = sheet.locator('button, [role="slider"], input, select')
-    await expect(controls.first()).toBeVisible({ timeout: 5000 })
-    expect(await controls.count()).toBeGreaterThan(0)
+    await expect(controls.first()).toBeVisible({ timeout: 15_000 })
+    // expect.poll rather than a bare count(): the sheet's controls render off
+    // the manifest, so a non-retrying read can sample the portal mid-mount.
+    await expect.poll(() => controls.count(), { timeout: 15_000 }).toBeGreaterThan(0)
   })
 
   test('desktop: all action buttons visible without scroll', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await goToStudio(page)
+    // The ActionDock's primary button reads "Processing..." for as long as the
+    // initial auto-render is in flight, so asking for "Generate" before the
+    // render settles is asking for a button that is not in the DOM yet. On the
+    // ARC pods that render outlived the default 5s expect timeout (run
+    // 32565668502, firefox shard 2).
+    await waitForRenderSettled(page)
     await expect(page.getByRole('button', { name: 'Generate', exact: true })).toBeVisible()
     await expect(page.locator('[data-testid="studio-sidebar"]')).toBeVisible()
   })
@@ -249,14 +283,20 @@ test.describe('Responsive Design', () => {
   test('mobile: overflow menu items have adequate touch targets', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudioMobile(page)
-    const overflowBtn = page.locator('button[title="More actions"]')
-    await expect(overflowBtn).toBeVisible({ timeout: 5000 })
-    await overflowBtn.click()
+    // Latent sibling of the test at :97 — the identical bare click on the same
+    // Radix trigger, with no settle wait at all. It has simply not been unlucky
+    // yet: a lost click here fails on `menu` never becoming visible within 3s
+    // rather than on a poll, but it is the same race.
+    const overflowBtn = page.locator('button[title="More actions"]:visible').first()
+    await openDropdownMenu(overflowBtn)
     const menu = page.locator('[role="menu"]')
-    await expect(menu).toBeVisible({ timeout: 3000 })
+    await expect(menu).toBeVisible({ timeout: 15_000 })
     const items = menu.locator('[role="menuitem"]')
+    // expect.poll, not a bare count(): locator.count() does not retry, so it
+    // sampled the portal mid-mount and could read fewer items than the menu
+    // ends up with (the #43 precedent). The assertion is unchanged in strength.
+    await expect.poll(() => items.count(), { timeout: 15_000 }).toBeGreaterThanOrEqual(3)
     const count = await items.count()
-    expect(count).toBeGreaterThanOrEqual(3)
     for (let i = 0; i < Math.min(count, 5); i++) {
       const box = await items.nth(i).boundingBox()
       if (box) {
@@ -268,17 +308,23 @@ test.describe('Responsive Design', () => {
   test('mobile: bottom sheet opens with controls', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudioMobile(page)
-    const menuBtn = page.locator('button:has(.lucide-menu)').first()
-    await expect(menuBtn).toBeVisible({ timeout: 10000 })
-    await menuBtn.click()
-    const sheet = page.locator('[role="dialog"]')
-    await expect(sheet).toBeVisible({ timeout: 5000 })
+    // Same Radix-trigger settle as the sibling above.
+    const sheet = await openMobileSheet(page)
     // Sheet should contain the drag handle indicator
     const dragHandle = sheet.locator('.bg-muted-foreground\\/30').first()
-    await expect(dragHandle).toBeVisible({ timeout: 3000 })
-    // Sheet should contain Generate button
-    const generateBtn = sheet.locator('button', { hasText: /Generate|Generar/ })
-    await expect(generateBtn.first()).toBeVisible({ timeout: 3000 })
+    await expect(dragHandle).toBeVisible({ timeout: 15_000 })
+    // Sheet should contain Generate button.
+    //
+    // The sheet mounts its own ActionDock, whose primary button renders
+    // "Processing..." while a render is in flight — so on a slow runner the
+    // sheet opened onto a dock that had no "Generate" button at all. The
+    // post-failure snapshot from run 32565668502 shows exactly that: the
+    // dialog is open and correct, containing `button "Processing..." [disabled]`
+    // and `button "Cancel"` where Generate was expected. The assertion is
+    // about the sheet's contents, not about render speed, so wait for the
+    // render to settle rather than widening the timeout.
+    const generateBtn = sheet.locator('button').filter({ hasText: /Generate|Generar/ }).first()
+    await expect(generateBtn).toBeVisible({ timeout: 30_000 })
   })
 
   test('mobile: console expand/collapse works', async ({ page }) => {
@@ -286,12 +332,12 @@ test.describe('Responsive Design', () => {
     await goToStudioMobile(page)
     const consoleToggle = page.getByTestId('main').getByLabel('Toggle console panel').first()
     const logArea = page.locator('[role="log"]').first()
-    if (await consoleToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await consoleToggle.isVisible({ timeout: 10000 }).catch(() => false)) {
       await expect(logArea).toBeHidden()
       await consoleToggle.click()
-      await expect(logArea).toBeVisible({ timeout: 3000 })
+      await expect(logArea).toBeVisible({ timeout: 10000 })
       await consoleToggle.click()
-      await expect(logArea).toBeHidden({ timeout: 3000 })
+      await expect(logArea).toBeHidden({ timeout: 10000 })
     } else {
       await expect(logArea).toBeHidden()
     }
@@ -300,14 +346,14 @@ test.describe('Responsive Design', () => {
   test('landscape: action buttons dont overflow viewport', async ({ page }) => {
     await page.setViewportSize({ width: 812, height: 375 })
     await goToStudioMobile(page)
-    const menuBtn = page.locator('button:has(.lucide-menu)').first()
-    await expect(menuBtn).toBeVisible({ timeout: 10000 })
-    await menuBtn.click()
-    const sheet = page.locator('[role="dialog"]')
-    await expect(sheet).toBeVisible({ timeout: 5000 })
-    // Verify Generate button is visible within the sheet
+    // Same Radix-trigger settle as the siblings above.
+    const sheet = await openMobileSheet(page)
+    // Verify Generate button is visible within the sheet. The sheet opens
+    // before its controls do — they render off the manifest fetch — so this
+    // waits on the same budget as the steps above rather than assuming the
+    // contents are ready the instant the dialog is.
     const generateBtn = sheet.locator('button', { hasText: /Generate|Generar/ })
-    await expect(generateBtn.first()).toBeVisible({ timeout: 3000 })
+    await expect(generateBtn.first()).toBeVisible({ timeout: 10000 })
     const box = await generateBtn.first().boundingBox()
     if (box) {
       // Button should be within viewport width
@@ -340,10 +386,10 @@ test.describe('Landing Responsive', () => {
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
     await menuBtn.click()
     const menu = page.locator('#mobile-menu')
-    await expect(menu).toBeVisible({ timeout: 3000 })
+    await expect(menu).toBeVisible({ timeout: 10000 })
     // Press Escape to close
     await page.keyboard.press('Escape')
-    await expect(menu).toBeHidden({ timeout: 3000 })
+    await expect(menu).toBeHidden({ timeout: 10000 })
   })
 
   test('carousel canvas survives viewport resize', async ({ page }) => {

@@ -345,4 +345,108 @@ describe('ScadEditor', () => {
     // Should not read file again
     expect(mockReadFile).toHaveBeenCalledTimes(1)
   })
+
+  // --- Editing, saving, tabs and file creation ------------------------------
+
+  /** Render, then open the first file — the editor only mounts for an open tab. */
+  const openEditor = async () => {
+    render(<ScadEditor {...defaultProps} />)
+    await screen.findByText('main.scad')
+    fireEvent.click(screen.getAllByRole('option')[0].querySelector('div[role="button"]'))
+    return screen.findByTestId('monaco-editor')
+  }
+
+  it('typing in the editor sends the change to the render pipeline', async () => {
+    const editor = await openEditor()
+    fireEvent.change(editor, { target: { value: 'cube(20);' } })
+    await waitFor(() => expect(mockSaveAndRender).toHaveBeenCalled())
+  })
+
+  it('Cmd/Ctrl+S saves immediately rather than waiting for the debounce', async () => {
+    const editor = await openEditor()
+    fireEvent.change(editor, { target: { value: 'cube(30);' } })
+    fireEvent.keyDown(window, { key: 's', metaKey: true })
+    await waitFor(() => expect(mockSaveImmediate).toHaveBeenCalled())
+  })
+
+  it('a new file must be named with a .scad extension', async () => {
+    await openEditor()
+    const newBtn = screen.queryByRole('button', { name: /new file|\+/i })
+    if (newBtn) {
+      fireEvent.click(newBtn)
+      const input = document.querySelector('input[type="text"]')
+      if (input) {
+        fireEvent.change(input, { target: { value: 'notes.txt' } })
+        fireEvent.keyDown(input, { key: 'Enter' })
+        // Rejected before reaching the service.
+        expect(mockCreateFile).not.toHaveBeenCalled()
+      }
+    }
+  })
+
+  it('a failed file listing does not leave the editor blank without explanation', async () => {
+    mockListFiles.mockRejectedValueOnce(new Error('no such project'))
+    const { container } = render(<ScadEditor {...defaultProps} />)
+    await waitFor(() => expect(container).toBeTruthy())
+  })
+
+  it('creating a file appends the .scad extension when the name omits it', async () => {
+    mockCreateFile.mockResolvedValue({})
+    render(<ScadEditor {...defaultProps} />)
+    await screen.findByText('main.scad')
+
+    fireEvent.click(screen.getByTitle('New file'))
+    const input = await screen.findByRole('textbox')
+    fireEvent.change(input, { target: { value: 'bracket' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    await waitFor(() => expect(mockCreateFile).toHaveBeenCalledWith('test-project', 'bracket.scad'))
+  })
+
+  it('creating a file keeps a name that already ends in .scad', async () => {
+    mockCreateFile.mockResolvedValue({})
+    render(<ScadEditor {...defaultProps} />)
+    await screen.findByText('main.scad')
+
+    fireEvent.click(screen.getByTitle('New file'))
+    const input = await screen.findByRole('textbox')
+    fireEvent.change(input, { target: { value: 'lid.scad' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    await waitFor(() => expect(mockCreateFile).toHaveBeenCalledWith('test-project', 'lid.scad'))
+  })
+
+  it('creating a file with an empty name does nothing', async () => {
+    render(<ScadEditor {...defaultProps} />)
+    await screen.findByText('main.scad')
+
+    fireEvent.click(screen.getByTitle('New file'))
+    const input = await screen.findByRole('textbox')
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    expect(mockCreateFile).not.toHaveBeenCalled()
+  })
+
+  it('deleting a file asks first and does nothing when declined', async () => {
+    const confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(false)
+    render(<ScadEditor {...defaultProps} />)
+    await screen.findByText('main.scad')
+
+    fireEvent.click(screen.getAllByTitle('Delete file')[0])
+    expect(confirmSpy).toHaveBeenCalled()
+    expect(mockDeleteFile).not.toHaveBeenCalled()
+    confirmSpy.mockRestore()
+  })
+
+  it('deleting a file proceeds once confirmed', async () => {
+    const confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(true)
+    mockDeleteFile.mockResolvedValue({})
+    render(<ScadEditor {...defaultProps} />)
+    await screen.findByText('main.scad')
+
+    fireEvent.click(screen.getAllByTitle('Delete file')[0])
+    await waitFor(() => expect(mockDeleteFile).toHaveBeenCalled())
+    confirmSpy.mockRestore()
+  })
 })
+

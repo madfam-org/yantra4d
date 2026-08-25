@@ -4,7 +4,10 @@ export class ProjectsViewPage extends BasePage {
   constructor(page) {
     super(page)
     this.title = page.locator('h2', { hasText: /Projects|Proyectos/ })
-    this.projectCards = page.locator('a[href^="/project/"] .h-full')
+    // Count the links themselves. The old selector required a `.h-full`
+    // descendant, which was a detail of the card-grid markup the catalog
+    // browser replaced; the anchor is what a project result actually is.
+    this.projectCards = page.locator('a[href^="/project/"]')
     this.loadingText = page.locator('text=Loading projects, text=Cargando proyectos')
     this.errorText = page.locator('.text-destructive')
     this.emptyText = page.locator('text=No projects found, text=No se encontraron proyectos')

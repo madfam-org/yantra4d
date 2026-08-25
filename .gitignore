@@ -84,3 +84,6 @@ debug_manifest.py
 
 # Audit screenshots (root-level PNGs from browser audits)
 mobile-controls-*.png
+
+# Redis dev-server dump
+apps/api/dump.rdb

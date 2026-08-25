@@ -42,7 +42,7 @@ The JSON structure is strictly validated by `scripts/validate_manifests.py` agai
 ```
 
 ### Core Components
-1. **`modes`**: Defines the different visual variants of a project. A hyperobject **must** specify both `scad_file` (OpenSCAD fallback) and `cq_file` (CadQuery dual-kernel execution).
+1. **`modes`**: Defines the different visual variants of a project. Each mode names a `scad_file`, which may be an OpenSCAD `.scad`, a CadQuery `.py`, or a `.graph.json` node graph; the engine is inferred from the extension or set explicitly with `engine`. A `cq_file` is optional and only used for dual-kernel cartridges that want CadQuery to serve B-Rep formats for an OpenSCAD mode — it is **not** required, and graph cartridges never use one.
 2. **`parameters`**: Declares UI interactive components for the Yantra4D React workspace to auto-generate.
 3. **`estimate_constants`**: Required numerical heuristics allowing the AI logic to predict the exact time a user's browser/backend CPU will take compiling the STL depending on parameter densities.
 4. **`material_awareness`**: When defined, connects the geometric cartridge to the intelligence pipeline of Yantra4D's **Material Hyperobjects**. It allows the object to attain "hyperawareness", ingesting nanoscale variables (TDA), spatial compensations (shrinkage), and semantic data from physical AM substrates to dynamically adapt its geometry.

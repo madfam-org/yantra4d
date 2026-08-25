@@ -3,11 +3,19 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
   timeout: 60_000,
+  // Global floor for expect()/toBeVisible() auto-retry. Playwright's default is
+  // 5s; WebKit on the self-hosted ARC pods renders slower and tripped tight
+  // waits across shards (PR #41, #55). Individual specs no longer hard-code a
+  // tighter 3s override — they inherit this — so the floor is meaningful.
+  expect: { timeout: 10_000 },
   testDir: './e2e/tests',
   testIgnore: [],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 0,
+  // CI-only retry budget: the self-hosted ARC pods are slower/more contended
+  // than GitHub-hosted runners, and tight expect timeouts flake across shards
+  // (2026-08-22, PR #41). A retried pass is reported as "flaky", not hidden.
+  retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ['list'],
@@ -65,7 +73,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? 'npm run build && npx vite preview --port 5173' : 'cd ../.. && ./scripts/dev.sh',
+    // In CI the backend is started by the workflow before Playwright runs; here
+    // we only need the static preview. Locally dev.sh brings up backend+studio.
+    command: process.env.CI ? 'npm run build && npx vite preview --port 5173' : 'cd ../.. && ./scripts/dev/dev.sh',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 300_000,

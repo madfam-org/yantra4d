@@ -230,7 +230,7 @@ X-RateLimit-Tier: pro
 
 | Endpoint | Default limit |
 |----------|:---:|
-| Render | Tier-based (30-500/hr) |
+| Render | Tier-based (10-500/hr) |
 | Estimate | 200/hr |
 | Verify | 50/hr |
 

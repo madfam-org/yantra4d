@@ -128,7 +128,7 @@ class TestRenderEndpoint:
         assert res.headers.get("X-Cache") == "HIT"
 
     def test_render_export_format_3mf(self, client):
-        with patch("routes.engine.render.check_feature", return_value=True), \
+        with patch("routes.engine.render.export_format_allowed", return_value=True), \
              patch(
                  "routes.engine.render.render_parts_sync",
                  return_value=(

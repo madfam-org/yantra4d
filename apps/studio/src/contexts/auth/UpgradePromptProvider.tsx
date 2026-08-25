@@ -11,8 +11,12 @@ export function UpgradePromptProvider({ children }: UpgradePromptProviderProps) 
     const [isOpen, setIsOpen] = useState(false);
     const [feature, setFeature] = useState('');
 
-    const triggerUpgradePrompt = useCallback(() => {
-        setFeature('a Pro feature');
+    const triggerUpgradePrompt = useCallback((feature?: string) => {
+        // Callers pass the specific thing the user just reached for —
+        // "Premium Export Formats (STEP)", "CadQuery Cloud Rendering" — and
+        // this used to discard it and hardcode 'a Pro feature', so every
+        // upsell was generic. Show what they actually wanted.
+        setFeature(feature || 'a Pro feature');
         setIsOpen(true);
     }, []);
 

@@ -1,0 +1,223 @@
+{
+  "project": {
+    "name": "Bolt-Circle Flange Plate",
+    "slug": "flange-plate",
+    "version": "1.0.0",
+    "author": "Yantra4D",
+    "description": {
+      "en": "A round flange plate with a centered bore and a polar bolt circle, defined as a node graph. Set the plate radius, thickness, bore, bolt-hole size and bolt-circle radius to adapt it to a motor face, pipe flange, turntable or bearing mount; the blank variant omits the bolt holes for marking and drilling by hand.",
+      "es": "Una brida circular con barreno central y círculo de tornillos polar, definida como grafo de nodos. Ajusta radio, espesor, barreno, tamaño de los agujeros y radio del círculo de tornillos para adaptarla a la cara de un motor, una brida de tubería, una base giratoria o un soporte de rodamiento; la variante lisa omite los agujeros para trazarlos y perforarlos a mano."
+    },
+    "thumbnail": "/projects/flange-plate.webp",
+    "difficulty": "beginner",
+    "tags": ["flange", "plate", "bolt-circle", "adapter", "mount", "graph", "hyperobject", "commons"],
+    "engine": "graph",
+    "force_backend": true,
+    "attribution": {
+      "author": "Yantra4D",
+      "license": "CERN-OHL-W-2.0"
+    }
+  },
+  "hyperobject": {
+    "is_hyperobject": true,
+    "domain": "industrial",
+    "commons_license": "CERN-OHL-W-2.0",
+    "societal_benefit": "A parametric flange adapts salvaged motors, pumps and bearings to new machines instead of scrapping them for want of a matching bolt circle.",
+    "material_awareness": true,
+    "cdg_interfaces": [
+      {
+        "id": "bolt_circle",
+        "label": "Polar bolt circle",
+        "geometry_type": "bolt_pattern",
+        "standard": "ISO 273 medium clearance",
+        "parameters": ["bolt_circle_radius", "bolt_hole_radius", "bolt_count", "bolt_spacing_deg"]
+      },
+      {
+        "id": "center_bore",
+        "label": "Centered through bore",
+        "geometry_type": "socket",
+        "standard": "ISO 286 clearance fit",
+        "parameters": ["bore_radius", "thickness"]
+      }
+    ]
+  },
+  "modes": [
+    {
+      "id": "flange",
+      "scad_file": "flange.graph.json",
+      "engine": "graph",
+      "label": { "en": "Drilled Flange", "es": "Brida Perforada" },
+      "description": {
+        "en": "Plate with the centered bore and the full polar bolt circle.",
+        "es": "Placa con barreno central y el círculo de tornillos completo."
+      },
+      "parts": ["flange"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    },
+    {
+      "id": "blank",
+      "scad_file": "flange.graph.json",
+      "engine": "graph",
+      "label": { "en": "Blank Plate", "es": "Placa Lisa" },
+      "description": {
+        "en": "Bore only — mark and drill the bolt circle yourself.",
+        "es": "Sólo el barreno — traza y perfora el círculo de tornillos a mano."
+      },
+      "parts": ["blank"],
+      "estimate": { "base_units": 1, "formula": "per_part" }
+    }
+  ],
+  "parts": [
+    {
+      "id": "flange",
+      "label": { "en": "Drilled Flange", "es": "Brida Perforada" },
+      "render_mode": 0,
+      "color": "#0e7c66"
+    },
+    {
+      "id": "blank",
+      "label": { "en": "Blank Plate", "es": "Placa Lisa" },
+      "render_mode": 1,
+      "color": "#5a7a8a"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "plate_radius",
+      "type": "slider",
+      "default": 45.0,
+      "min": 15.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "plate",
+      "modes": ["flange", "blank"],
+      "binding": "outline.r",
+      "label": { "en": "Plate radius (mm)", "es": "Radio de la placa (mm)" },
+      "tooltip": {
+        "en": "Outer radius of the plate — half the overall diameter.",
+        "es": "Radio exterior de la placa — la mitad del diámetro total."
+      }
+    },
+    {
+      "id": "thickness",
+      "type": "slider",
+      "default": 8.0,
+      "min": 2.0,
+      "max": 30.0,
+      "step": 0.5,
+      "group": "plate",
+      "modes": ["flange", "blank"],
+      "binding": "plate.height",
+      "label": { "en": "Thickness (mm)", "es": "Espesor (mm)" },
+      "tooltip": {
+        "en": "Plate thickness.",
+        "es": "Espesor de la placa."
+      }
+    },
+    {
+      "id": "bore_radius",
+      "type": "slider",
+      "default": 12.0,
+      "min": 2.0,
+      "max": 60.0,
+      "step": 0.5,
+      "group": "bore",
+      "modes": ["flange", "blank"],
+      "binding": "bore.r",
+      "label": { "en": "Center bore radius (mm)", "es": "Radio del barreno central (mm)" },
+      "tooltip": {
+        "en": "Radius of the centered through bore — match the shaft or pipe it clears.",
+        "es": "Radio del barreno pasante central — ajústalo al eje o tubo que libra."
+      }
+    },
+    {
+      "id": "bolt_circle_radius",
+      "type": "slider",
+      "default": 32.0,
+      "min": 8.0,
+      "max": 100.0,
+      "step": 0.5,
+      "group": "bolts",
+      "modes": ["flange"],
+      "binding": "boltpos.x",
+      "label": { "en": "Bolt circle radius (mm)", "es": "Radio del círculo de tornillos (mm)" },
+      "tooltip": {
+        "en": "Distance from the center to each bolt hole. Keep it between the bore and the plate edge.",
+        "es": "Distancia del centro a cada agujero. Mantenlo entre el barreno y el borde de la placa."
+      }
+    },
+    {
+      "id": "bolt_hole_radius",
+      "type": "slider",
+      "default": 4.25,
+      "min": 1.0,
+      "max": 12.0,
+      "step": 0.25,
+      "group": "bolts",
+      "modes": ["flange"],
+      "binding": "boltcut.r",
+      "label": { "en": "Bolt hole radius (mm)", "es": "Radio de agujero (mm)" },
+      "tooltip": {
+        "en": "4.25 clears an M8 bolt; 3.25 clears M6; 2.6 clears M5.",
+        "es": "4.25 libra un tornillo M8; 3.25 libra M6; 2.6 libra M5."
+      }
+    },
+    {
+      "id": "bolt_count",
+      "type": "slider",
+      "default": 6,
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "group": "bolts",
+      "modes": ["flange"],
+      "binding": "boltring.count",
+      "label": { "en": "Bolt count", "es": "Número de tornillos" },
+      "tooltip": {
+        "en": "How many holes around the circle. Set the spacing below to 360 divided by this number.",
+        "es": "Cuántos agujeros alrededor del círculo. Ajusta el espaciamiento a 360 dividido entre este número."
+      }
+    },
+    {
+      "id": "bolt_spacing_deg",
+      "type": "slider",
+      "default": 60.0,
+      "min": 5.0,
+      "max": 180.0,
+      "step": 1.0,
+      "group": "bolts",
+      "modes": ["flange"],
+      "binding": "boltring.angle",
+      "label": { "en": "Bolt spacing (degrees)", "es": "Espaciamiento (grados)" },
+      "tooltip": {
+        "en": "Angle between neighbouring holes. For an evenly spaced circle use 360 / bolt count (6 holes = 60°).",
+        "es": "Ángulo entre agujeros vecinos. Para un círculo uniforme usa 360 / número de tornillos (6 agujeros = 60°)."
+      }
+    },
+    {
+      "id": "edge_chamfer",
+      "type": "slider",
+      "default": 0.8,
+      "min": 0.2,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "finish",
+      "modes": ["flange", "blank"],
+      "binding": ["flange.distance", "blank.distance"],
+      "label": { "en": "Top edge chamfer (mm)", "es": "Chaflán superior (mm)" },
+      "tooltip": {
+        "en": "Breaks the top edges, including around the holes.",
+        "es": "Rompe las aristas superiores, incluidas las de los agujeros."
+      }
+    }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10,
+    "per_unit": 2,
+    "per_part": 10,
+    "fn_factor": 24,
+    "wasm_multiplier": 4,
+    "warning_threshold_seconds": 90
+  }
+}

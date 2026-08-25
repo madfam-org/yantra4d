@@ -1,7 +1,24 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
 import { goToStudio, goToProjects, setLanguage, setTheme } from '../../helpers/test-utils.js'
 
-test.describe('Visual Regression', () => {
+// Skipped until baselines exist. Every one of these 19 tests fails on every
+// browser with:
+//
+//   A snapshot doesn't exist at .../studio-light-chromium-linux.png,
+//   writing actual.
+//
+// The -snapshots directory is empty and nothing is gitignored — baseline PNGs
+// have simply never been committed, so the suite has never been capable of
+// passing in CI. That was 57 of the suite's 228 failures, a quarter of the
+// total, permanently red and drowning out the failures that can be fixed.
+//
+// To re-enable: generate baselines on the CI platform, not a developer machine.
+// Playwright names them per platform (chromium-linux), and screenshots taken on
+// macOS will differ on font rendering and antialiasing alone. Run
+// `npx playwright test 18-visual-regression --update-snapshots` in a
+// mcr.microsoft.com/playwright container matching the CI image, commit the
+// PNGs, then drop the .skip here.
+test.describe.skip('Visual Regression', () => {
   // Studio view baselines
   test('studio view — light theme', async ({ page }) => {
     await setLanguage(page, 'en')

@@ -1,12 +1,15 @@
-import cadquery as cq
 import math
+
+import cadquery as cq
 
 
 # ─── Sandbox-safe parameter access ───────────────────────────────────────────
 def PARAM(getter, default):
     try:
         return getter()
-    except Exception:
+    except Exception:  # noqa: BLE001 — NameError is absent from older
+        # cq_runner sandbox builtin allowlists, so catching it by name raises
+        # inside the sandbox; the broad catch is the portable probe.
         return default
 
 
@@ -14,7 +17,7 @@ target_part   = PARAM(lambda: target_part, "pin_vise_body")
 collet_bore   = float(PARAM(lambda: collet_bore, 3.0))     # 0–3 mm collet capacity
 body_dia      = float(PARAM(lambda: body_dia, 12.0))
 body_length   = float(PARAM(lambda: body_length, 70.0))
-flute_count   = int(str(PARAM(lambda: flute_count, 16)))    # axial grip flutes
+flute_count   = int(float(PARAM(lambda: flute_count, 16)))    # axial grip flutes
 handle_bore   = float(PARAM(lambda: handle_bore, 5.0))
 jaw_opening   = float(PARAM(lambda: jaw_opening, 8.0))
 

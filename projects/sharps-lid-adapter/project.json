@@ -1,0 +1,210 @@
+{
+  "project": {
+    "name": "Sharps Container Lid Adapter",
+    "slug": "sharps-lid-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Turns an ordinary threaded jar into a one-way sharps container. A used needle is the most dangerous object in a small clinic, and the standard answer is a purchased consumable; where the supply budget does not stretch, the observed substitute is an open bottle or tin — which is the specific thing that causes needlestick injury, since it can be reached into and it spills when knocked. Jars are everywhere; the one-way lid is not. The lid carries a slot that passes a syringe hub but not a hand, a sprung baffle that closes behind the drop, and a closure that is destroyed rather than reopened. Lands on the published jar-thread CT finishes and the published needle-gauge series rather than inventing geometry. Distinct from the friction-fit sharps-lid cartridge, which fits buckets and carboys.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Convierte un frasco roscado común en un contenedor de punzocortantes de un solo sentido. Una aguja usada es el objeto más peligroso de una clínica pequeña, y la respuesta estándar es un consumible de compra; donde el presupuesto no alcanza, el sustituto observado es una botella o lata abierta — que es justo lo que causa el pinchazo, porque se puede meter la mano y se derrama al voltearse. Los frascos abundan; la tapa de un solo sentido no. La tapa lleva una ranura que deja pasar el cono de una jeringa pero no una mano, un deflector que cierra tras la caída y un sello que se destruye en vez de reabrirse. Se asienta en los acabados roscados CT publicados y en la serie de calibres de aguja publicada, sin inventar geometría. Distinto del cartucho sharps-lid de ajuste a presión, que va en cubetas y garrafones.\n\nVisualizador y configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/sharps-lid-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": ["sharps", "needlestick", "biosafety", "clinic", "jar-thread", "ct-finish", "needle-gauge", "one-way", "medical", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "lid",
+      "label": { "en": "Threaded Lid", "es": "Tapa Roscada" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["lid"],
+      "estimate": { "base_time": 10, "per_unit": 4, "per_part": 14 }
+    },
+    {
+      "id": "baffle",
+      "label": { "en": "One-Way Baffle", "es": "Deflector de Un Sentido" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["baffle"],
+      "estimate": { "base_time": 5, "per_unit": 2, "per_part": 7 }
+    },
+    {
+      "id": "closure",
+      "label": { "en": "Permanent Closure", "es": "Sello Permanente" },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": ["closure"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "lid", "label": { "en": "Threaded Lid", "es": "Tapa" }, "render_mode": 0, "color": "#a03030" },
+    { "id": "baffle", "label": { "en": "Baffle", "es": "Deflector" }, "render_mode": 0, "color": "#b84848" },
+    { "id": "closure", "label": { "en": "Closure", "es": "Sello" }, "render_mode": 0, "color": "#c96060" }
+  ],
+  "parameter_groups": [
+    { "id": "vessel", "label": { "en": "Jar Thread", "es": "Rosca del Frasco" } },
+    { "id": "safety", "label": { "en": "Entry & One-Way", "es": "Entrada y Un Sentido" } },
+    { "id": "build", "label": { "en": "Build", "es": "Construcción" } }
+  ],
+  "parameters": [
+    {
+      "id": "jar_thread_std", "type": "select", "default": "70-400",
+      "options": [
+        { "value": "63-400", "label": "63-400 CT (63 mm jar finish)" },
+        { "value": "70-400", "label": "70-400 CT (70 mm jar finish)" },
+        { "value": "89-400", "label": "89-400 CT (89 mm wide-mouth)" }
+      ],
+      "group": "vessel", "modes": ["lid", "baffle", "closure"],
+      "label": { "en": "Jar Thread Finish", "es": "Acabado de Rosca" },
+      "tooltip": { "en": "GPI/SPI continuous-thread finish. The leading number is the nominal thread OD in mm; -400 is the shallow single-lead CT code", "es": "Acabado de rosca continua GPI/SPI. El número inicial es el Ø nominal de rosca en mm; -400 es el código de rosca continua de un solo hilo" }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.5, "min": 0.0, "max": 1.2, "step": 0.05,
+      "group": "vessel", "modes": ["lid", "baffle", "closure"], "advanced": true,
+      "label": { "en": "Thread Fit (mm)", "es": "Ajuste de Rosca (mm)" },
+      "tooltip": { "en": "Printed-thread slop per side; raise if the lid binds on the jar", "es": "Holgura de rosca impresa por lado; auméntala si la tapa se atora" }
+    },
+    {
+      "id": "slot_width_mm", "type": "slider", "default": 11.0, "min": 6.0, "max": 22.0, "step": 0.5,
+      "group": "safety", "modes": ["lid", "baffle"],
+      "label": { "en": "Entry Slot Width (mm)", "es": "Ancho de Ranura (mm)" },
+      "tooltip": { "en": "Must pass a Luer hub (7.5 mm nominal) but not a hand. The build enforces a hub-derived floor and a 22 mm ceiling regardless of this value", "es": "Debe dejar pasar un cono Luer (7.5 mm nominal) pero no una mano. La construcción impone un piso derivado del cono y un techo de 22 mm sin importar este valor" }
+    },
+    {
+      "id": "needle_gauge_max", "type": "select", "default": "18G",
+      "options": [
+        { "value": "14G", "label": "14G (2.11 mm cannula)" },
+        { "value": "16G", "label": "16G (1.65 mm)" },
+        { "value": "18G", "label": "18G (1.27 mm)" },
+        { "value": "21G", "label": "21G (0.82 mm)" },
+        { "value": "23G", "label": "23G (0.64 mm)" },
+        { "value": "25G", "label": "25G (0.51 mm)" },
+        { "value": "30G", "label": "30G (0.31 mm)" }
+      ],
+      "group": "safety", "modes": ["lid", "baffle"],
+      "label": { "en": "Largest Needle Gauge", "es": "Calibre Máximo de Aguja" },
+      "tooltip": { "en": "Largest gauge the container must accept. Sets a floor on slot width — a heavy 14G on a big hub needs more room than a 30G insulin needle", "es": "Calibre mayor que debe aceptar el contenedor. Fija un piso al ancho de ranura — una 14G gruesa sobre un cono grande necesita más espacio que una 30G de insulina" }
+    },
+    {
+      "id": "one_way_baffle", "type": "checkbox", "default": true,
+      "group": "safety", "modes": ["lid"],
+      "label": { "en": "One-Way Baffle Seat", "es": "Asiento de Deflector" },
+      "tooltip": { "en": "Cut the ledge the baffle drops onto. Without a baffle the container is not one-way and contents can be reached or spilled", "es": "Corta la ceja donde asienta el deflector. Sin deflector el contenedor no es de un solo sentido y el contenido se puede alcanzar o derramar" }
+    },
+    {
+      "id": "lock_style", "type": "select", "default": "snap",
+      "options": [
+        { "value": "snap", "label": "Snap bead (permanent)" },
+        { "value": "tab", "label": "Tab bead (permanent, easier print)" },
+        { "value": "screw", "label": "No bead (closure not used)" }
+      ],
+      "group": "build", "modes": ["lid"],
+      "label": { "en": "Lock Style", "es": "Tipo de Cierre" },
+      "tooltip": { "en": "Snap and tab add the retaining bead the permanent closure catches on", "es": "Snap y tab añaden el resalte que engancha el sello permanente" }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 3.0, "min": 2.0, "max": 6.0, "step": 0.2,
+      "group": "build", "modes": ["lid", "baffle", "closure"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)" },
+      "tooltip": { "en": "Wall thickness. This is a puncture barrier, not a cosmetic shell — do not thin it to save filament", "es": "Espesor de pared. Es una barrera contra punción, no una cáscara estética — no la adelgaces para ahorrar filamento" }
+    }
+  ],
+  "presets": [
+    {
+      "id": "clinic_70", "mode": "lid",
+      "label": { "en": "Clinic Standard (70-400, 18G)", "es": "Estándar de Clínica (70-400, 18G)" },
+      "values": { "jar_thread_std": "70-400", "slot_width_mm": 11.0, "needle_gauge_max": "18G", "wall": 3.0, "one_way_baffle": true }
+    },
+    {
+      "id": "widemouth_89", "mode": "lid",
+      "label": { "en": "Wide-Mouth (89-400, 14G)", "es": "Boca Ancha (89-400, 14G)" },
+      "values": { "jar_thread_std": "89-400", "slot_width_mm": 14.0, "needle_gauge_max": "14G", "wall": 3.4 }
+    },
+    {
+      "id": "insulin_63", "mode": "lid",
+      "label": { "en": "Insulin / Home Use (63-400, 30G)", "es": "Insulina / Uso Doméstico (63-400, 30G)" },
+      "values": { "jar_thread_std": "63-400", "slot_width_mm": 9.0, "needle_gauge_max": "30G", "wall": 3.0 }
+    },
+    {
+      "id": "baffle_70", "mode": "baffle",
+      "label": { "en": "Baffle for 70-400", "es": "Deflector para 70-400" },
+      "values": { "jar_thread_std": "70-400", "slot_width_mm": 11.0, "wall": 3.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": { "en": "Wall must be at least 2 mm; this is a puncture barrier, not a cosmetic shell", "es": "La pared debe ser de al menos 2 mm; es una barrera contra punción, no una cáscara estética" }
+    },
+    {
+      "expression": "wall >= 3.0",
+      "severity": "warning",
+      "message": { "en": "Below 3 mm a printed wall is a weak puncture barrier; prefer 3 mm or more for any container that will be handled or transported", "es": "Por debajo de 3 mm una pared impresa es una barrera débil; prefiere 3 mm o más para cualquier contenedor que se manipule o transporte" }
+    },
+    {
+      "expression": "slot_width_mm <= 16.0",
+      "severity": "warning",
+      "message": { "en": "Slots wider than 16 mm admit fingers as readily as syringes and defeat the one-way principle", "es": "Ranuras de más de 16 mm dejan entrar dedos tan fácil como jeringas y anulan el principio de un solo sentido" }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico" }, "position": [120, 120, 100] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal" }, "position": [0, -170, 30] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 4, "per_part": 13,
+    "fn_factor": 64, "wasm_multiplier": 3, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "medical",
+    "cdg_interfaces": [
+      {
+        "id": "jar_ct_thread",
+        "label": { "en": "Jar CT Thread", "es": "Rosca CT de Frasco" },
+        "geometry_type": "thread",
+        "standard": "GPI/SPI continuous-thread finishes 63-400 / 70-400 / 89-400 (pitch 4.23 mm)",
+        "parameters": ["jar_thread_std", "clearance", "wall"],
+        "compatible_with": ["jar-adapter", "jar-rack", "spice-jar", "bottle-thread"]
+      },
+      {
+        "id": "sharps_entry_slot",
+        "label": { "en": "Sharps Entry Slot", "es": "Ranura de Entrada" },
+        "geometry_type": "pocket",
+        "standard": "Luer hub nominal Ø 7.5 mm floor; 22 mm hard ceiling so a hand cannot enter; needle gauge series 14G-30G",
+        "parameters": ["slot_width_mm", "needle_gauge_max"],
+        "compatible_with": ["needle-gauge", "sharps-lid"]
+      },
+      {
+        "id": "one_way_baffle_seat",
+        "label": { "en": "One-Way Baffle Seat", "es": "Asiento de Deflector" },
+        "geometry_type": "socket",
+        "standard": "internal — living-hinge flap seat, sized from the jar bore",
+        "parameters": ["one_way_baffle", "wall", "jar_thread_std"]
+      },
+      {
+        "id": "permanent_closure_bead",
+        "label": { "en": "Permanent Closure Bead", "es": "Resalte de Sello" },
+        "geometry_type": "snap",
+        "standard": "internal — one-way catch ring; opens only by destruction",
+        "parameters": ["lock_style", "wall", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Needlestick injury is the most common occupational exposure in health care and the route by which bloodborne infection reaches the people least able to absorb it: cleaners, waste handlers, community health workers, and the family members of anyone injecting at home. The engineering answer has been settled for decades — a rigid, puncture-resistant container that admits sharps and does not give them back — and it is one of the few safety interventions whose effectiveness is not seriously disputed. What is not settled is availability. Purpose-made containers are a recurring purchase in hard currency, and when a clinic's supply lapses the substitute is not nothing, it is a soft drink bottle or a tin with an open mouth, which is worse than useless because it invites reaching in and recapping. The scarce component is never the vessel; it is the lid. Publishing the lid as printable geometry, keyed to jar finishes that already exist in every kitchen and pharmacy, removes the imported part from the chain and leaves only the jar — which is free.",
+      "es": "El pinchazo con aguja es la exposición ocupacional más común en salud y la vía por la que la infección de transmisión sanguínea llega a quienes menos pueden absorberla: personal de limpieza, manejadores de residuos, promotores de salud y los familiares de quien se inyecta en casa. La respuesta de ingeniería está resuelta desde hace décadas — un contenedor rígido y resistente a punción que admite punzocortantes y no los devuelve — y es de las pocas intervenciones de seguridad cuya eficacia no se discute en serio. Lo que no está resuelto es la disponibilidad. Los contenedores de fábrica son una compra recurrente en divisa dura, y cuando falla el abasto de una clínica el sustituto no es nada, es una botella de refresco o una lata de boca abierta, que es peor que inútil porque invita a meter la mano y a reencapuchar. El componente escaso nunca es el recipiente; es la tapa. Publicar la tapa como geometría imprimible, referida a acabados de frasco que ya existen en cualquier cocina y farmacia, saca la pieza importada de la cadena y deja sólo el frasco — que es gratis."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["sharps", "needlestick", "biosafety", "clinic", "jar-thread", "ct-finish", "needle-gauge", "one-way", "medical", "hyperobject", "commons"]
+}

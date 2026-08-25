@@ -15,8 +15,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # NOT `submodules: recursive`: that clones every submodule at checkout
+          # time, including the private client repos (tablaco, tablaco-v2), which
+          # the default GITHUB_TOKEN cannot read — GitHub returns 404 and the whole
+          # job aborts. `update = none` in .gitmodules does NOT stop checkout's
+          # initial clone, only later `git submodule update`. So init explicitly
+          # below, honoring `update = none`.
+          submodules: false
           fetch-depth: 1
+      - name: Init submodules (skip those marked update = none)
+        run: |
+          # Initialize every submodule except the ones opted out with
+          # `update = none` in .gitmodules (the private client repos). Same skip
+          # signal the update step below already honors. Paths that are opted out
+          # are collected once, so there is no per-submodule git lookup.
+          set -euo pipefail
+          skip=$(git config --file .gitmodules --list \
+            | sed -n 's/^submodule\.\(.*\)\.update=none$/\1/p')
+          echo "Opted out (update = none):" ${skip:-<none>}
+          git config --file .gitmodules --get-regexp '^submodule\..*\.path$' \
+            | while read -r _ path; do
+                if [ -n "$skip" ] && printf '%s\n' "$skip" | grep -qxF "$path"; then
+                  echo "Skipping $path (update = none)"
+                  continue
+                fi
+                git submodule update --init --depth 1 "$path"
+              done
       - name: Update all submodules to latest
         run: |
           # Honors `update = none` in .gitmodules for any submodule that

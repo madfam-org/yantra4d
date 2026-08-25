@@ -12,7 +12,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # NOT `submodules: recursive`: it clones the private client submodules
+          # (tablaco, tablaco-v2) at checkout, which the default GITHUB_TOKEN cannot
+          # read → 404 → job aborts before Docker ever starts. Init only the
+          # non-private submodules below (`update = none` marks the private ones).
+          submodules: false
+
+      - name: Init submodules (skip those marked update = none)
+        run: |
+          # Init every submodule except the private ones opted out with
+          # `update = none` in .gitmodules. Opted-out paths collected once.
+          set -euo pipefail
+          skip=$(git config --file .gitmodules --list \
+            | sed -n 's/^submodule\.\(.*\)\.update=none$/\1/p')
+          echo "Opted out (update = none):" ${skip:-<none>}
+          git config --file .gitmodules --get-regexp '^submodule\..*\.path$' \
+            | while read -r _ path; do
+                if [ -n "$skip" ] && printf '%s\n' "$skip" | grep -qxF "$path"; then
+                  echo "Skipping $path (update = none)"
+                  continue
+                fi
+                git submodule update --init --depth 1 "$path"
+              done
 
       - name: Start Docker stack
         run: |

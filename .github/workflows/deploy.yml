@@ -143,10 +143,32 @@ jobs:
           chmod +x "$RUNNER_TEMP/cosign"
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
+      # Retry: 2026-08-26 crea-frontend run 33010085743 lost a deploy when
+      # GitHub's OIDC endpoint returned non-JSON ("invalid character 'u'") and
+      # cosign died. Image was pushed, digest never pinned, ArgoCD never rolled.
       - name: Sign image with cosign
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend@${{ steps.build.outputs.digest }}
         run: |
-          cosign sign --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/backend@${{ steps.build.outputs.digest }}
+          set -euo pipefail
+          signed=0
+          for wait in 0 20 60; do
+            if [ "$wait" -gt 0 ]; then
+              echo "::warning::cosign sign failed for ${IMAGE_REF} (transient OIDC/Fulcio/Rekor?); retrying in ${wait}s..."
+              sleep "$wait"
+            fi
+            if cosign sign --yes "${IMAGE_REF}"; then
+              signed=1
+              break
+            fi
+          done
+          if [ "$signed" -ne 1 ]; then
+            echo "::error::cosign sign failed 3 times for ${IMAGE_REF}."
+            echo "::error::The image was BUILT AND PUSHED but is NOT signed, so it will not be"
+            echo "::error::pinned and ArgoCD will not roll it: the live host is still serving the"
+            echo "::error::PREVIOUS build even though this commit is on main. Rerun the failed jobs."
+            exit 1
+          fi
 
   build-studio:
     name: Build Studio
@@ -219,10 +241,32 @@ jobs:
           chmod +x "$RUNNER_TEMP/cosign"
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
+      # Retry: 2026-08-26 crea-frontend run 33010085743 lost a deploy when
+      # GitHub's OIDC endpoint returned non-JSON ("invalid character 'u'") and
+      # cosign died. Image was pushed, digest never pinned, ArgoCD never rolled.
       - name: Sign image with cosign
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio@${{ steps.build.outputs.digest }}
         run: |
-          cosign sign --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/studio@${{ steps.build.outputs.digest }}
+          set -euo pipefail
+          signed=0
+          for wait in 0 20 60; do
+            if [ "$wait" -gt 0 ]; then
+              echo "::warning::cosign sign failed for ${IMAGE_REF} (transient OIDC/Fulcio/Rekor?); retrying in ${wait}s..."
+              sleep "$wait"
+            fi
+            if cosign sign --yes "${IMAGE_REF}"; then
+              signed=1
+              break
+            fi
+          done
+          if [ "$signed" -ne 1 ]; then
+            echo "::error::cosign sign failed 3 times for ${IMAGE_REF}."
+            echo "::error::The image was BUILT AND PUSHED but is NOT signed, so it will not be"
+            echo "::error::pinned and ArgoCD will not roll it: the live host is still serving the"
+            echo "::error::PREVIOUS build even though this commit is on main. Rerun the failed jobs."
+            exit 1
+          fi
 
   build-landing:
     name: Build Landing
@@ -290,10 +334,32 @@ jobs:
           chmod +x "$RUNNER_TEMP/cosign"
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
+      # Retry: 2026-08-26 crea-frontend run 33010085743 lost a deploy when
+      # GitHub's OIDC endpoint returned non-JSON ("invalid character 'u'") and
+      # cosign died. Image was pushed, digest never pinned, ArgoCD never rolled.
       - name: Sign image with cosign
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing@${{ steps.build.outputs.digest }}
         run: |
-          cosign sign --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/landing@${{ steps.build.outputs.digest }}
+          set -euo pipefail
+          signed=0
+          for wait in 0 20 60; do
+            if [ "$wait" -gt 0 ]; then
+              echo "::warning::cosign sign failed for ${IMAGE_REF} (transient OIDC/Fulcio/Rekor?); retrying in ${wait}s..."
+              sleep "$wait"
+            fi
+            if cosign sign --yes "${IMAGE_REF}"; then
+              signed=1
+              break
+            fi
+          done
+          if [ "$signed" -ne 1 ]; then
+            echo "::error::cosign sign failed 3 times for ${IMAGE_REF}."
+            echo "::error::The image was BUILT AND PUSHED but is NOT signed, so it will not be"
+            echo "::error::pinned and ArgoCD will not roll it: the live host is still serving the"
+            echo "::error::PREVIOUS build even though this commit is on main. Rerun the failed jobs."
+            exit 1
+          fi
 
   build-admin:
     name: Build Admin
@@ -366,10 +432,32 @@ jobs:
           chmod +x "$RUNNER_TEMP/cosign"
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
+      # Retry: 2026-08-26 crea-frontend run 33010085743 lost a deploy when
+      # GitHub's OIDC endpoint returned non-JSON ("invalid character 'u'") and
+      # cosign died. Image was pushed, digest never pinned, ArgoCD never rolled.
       - name: Sign image with cosign
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/admin@${{ steps.build.outputs.digest }}
         run: |
-          cosign sign --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}/admin@${{ steps.build.outputs.digest }}
+          set -euo pipefail
+          signed=0
+          for wait in 0 20 60; do
+            if [ "$wait" -gt 0 ]; then
+              echo "::warning::cosign sign failed for ${IMAGE_REF} (transient OIDC/Fulcio/Rekor?); retrying in ${wait}s..."
+              sleep "$wait"
+            fi
+            if cosign sign --yes "${IMAGE_REF}"; then
+              signed=1
+              break
+            fi
+          done
+          if [ "$signed" -ne 1 ]; then
+            echo "::error::cosign sign failed 3 times for ${IMAGE_REF}."
+            echo "::error::The image was BUILT AND PUSHED but is NOT signed, so it will not be"
+            echo "::error::pinned and ArgoCD will not roll it: the live host is still serving the"
+            echo "::error::PREVIOUS build even though this commit is on main. Rerun the failed jobs."
+            exit 1
+          fi
 
   commit-digests:
     name: Commit Image Digests

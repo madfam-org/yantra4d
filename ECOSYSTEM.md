@@ -7,7 +7,6 @@
 > access as platform bootstrap or documented break-glass only, and record any
 > missing Enclii adapter gap.
 
-
 > **Parametric CAD + "Hyperobjects Commons" — SDF-based geometry compiler with marketplace.**
 
 This file is self-contained: a Claude session on a fresh machine can operate
@@ -51,8 +50,8 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
 
 ### Downstream consumers (this repo is consumed by)
 
-- digifab-quoting (parametric designs → quotes)
-- forj (storefront listings)
+- forj (WIRED — the catalog materializer reads `GET /api/projects` + `GET /api/projects/<slug>/storefront` and drives `POST /api/render` for glb+stl, authenticated as the `forj-catalog-materializer` Janua client_credentials client with scope `yantra4d:render`)
+- digifab-quoting (PLANNED — no quoting call exists; parametric designs → quotes is aspirational)
 - pravara-mes (print-ready G-code export)
 - external creators (Hyperobjects Commons contributors)
 
@@ -62,6 +61,8 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
 - `R2_ACCESS_KEY_ID / R2_SECRET — asset storage`
 - `JANUA_JWKS_URI — auth`
 - `SELVA_BASE_URL — LLM routing`
+- `YANTRA4D_OPENSCAD_BACKEND — auto (default) / manifold / cgal; auto-probes the OpenSCAD build and falls back when Manifold is unavailable`
+- `YANTRA4D_CQ_WORKERS — warm CadQuery worker pool size (default 2; 0 disables the pool)`
 
 ---
 
@@ -141,11 +142,12 @@ to kubectl only for the gaps listed at the end of this section.
 # macOS
 brew install enclii/tap/enclii
 
-# Linux
-curl -sSL https://get.enclii.dev | bash
+# Linux / from source (any OS with Go 1.22+)
+git clone https://github.com/madfam-org/enclii.git
+cd enclii && make install-cli
 
-# From source (in the enclii repo)
-make build-cli && ./bin/enclii --version
+# Build only (no install)
+make build-cli && ./bin/enclii version
 ```
 
 ### Auth
@@ -189,7 +191,7 @@ enclii rollback yantra4d-backend --to-revision 5
 enclii releases yantra4d-backend                          # list builds
 enclii releases yantra4d-backend --latest --output json
 
-# Secrets (routed through Lockbox → Vault → ESO → K8s)
+# Secrets (routed through Lockbox -> Vault -> ESO -> K8s)
 enclii secrets list yantra4d-backend
 enclii secrets set MY_KEY=value --service yantra4d-backend --secret
 enclii secrets rm MY_KEY --service yantra4d-backend
@@ -209,7 +211,7 @@ enclii junctions list yantra4d-backend
 enclii functions list
 
 # Local dev environment
-enclii local up         # spin up dependent services (postgres, redis, …)
+enclii local up         # spin up dependent services (postgres, redis, ...)
 enclii local logs
 enclii local down
 ```
@@ -264,7 +266,7 @@ go through Enclii web, API, or CLI.
 
 ## Document provenance
 
-Generated 2026-04-23 as part of the "each repo stands alone" docs sweep. If the
-ecosystem map or CLI reference drifts from reality, update the generator at
-`madfam-org/enclii/docs/templates/ECOSYSTEM.md.template` and re-render — don't
-edit per-repo copies in isolation.
+Generated 2026-04-23 as part of the "each repo stands alone" docs sweep. The
+generator and per-repo metadata live at `madfam-org/enclii/docs/templates/ecosystem/`.
+Re-render (don't hand-edit per-repo copies) when the ecosystem map or CLI
+reference needs to update across the fleet.

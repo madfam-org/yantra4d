@@ -113,14 +113,96 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
     finally:
         sys.argv = old_argv
 
+def serve_forever(stdin=None, stdout=None):
+    """Persistent worker mode: import CadQuery once, then serve jobs forever.
+
+    Importing cadquery pulls in OCCT and costs 1-3s. Paying that per render made
+    every CadQuery job carry a fixed cold-start tax. In ``--serve`` mode the
+    import happens once here, at startup, and each subsequent job reuses the
+    warm interpreter.
+
+    Protocol: one JSON object per line on stdin, one JSON object per line on
+    stdout. Request keys mirror the argv contract exactly — script_path,
+    output_path, params_json, export_format. Response is
+    ``{"ok": bool, "output": str}``; ``output`` carries the same text the
+    subprocess mode would have written to stdout, so the caller's error surface
+    is unchanged.
+
+    Every job routes through ``run_cadquery_script``, so the commons_sandbox
+    validation and restricted-builtins execution are the identical code path as
+    the one-shot mode — the security core is not duplicated or relaxed here.
+    ``run_cadquery_script`` signals failure with ``sys.exit(1)``; that raises
+    SystemExit, which we catch per job so one bad cartridge ends that job rather
+    than the worker.
+    """
+    import contextlib
+    import io
+
+    stdin = stdin if stdin is not None else sys.stdin
+    stdout = stdout if stdout is not None else sys.stdout
+
+    # Warm the kernel before announcing readiness so the first real job does not
+    # pay the import. A failure here is fatal and must be visible: the pool
+    # reads this line to decide whether to fall back to per-render spawns.
+    try:
+        import cadquery  # noqa: F401
+        ready = {"ready": True}
+    except Exception as exc:
+        ready = {"ready": False, "error": f"CadQuery import failed: {exc}"}
+    stdout.write(json.dumps(ready) + "\n")
+    stdout.flush()
+    if not ready["ready"]:
+        return
+
+    for line in stdin:
+        line = line.strip()
+        if not line:
+            continue
+        buf = io.StringIO()
+        try:
+            request = json.loads(line)
+        except json.JSONDecodeError as exc:
+            stdout.write(json.dumps({"ok": False, "output": f"Malformed job: {exc}"}) + "\n")
+            stdout.flush()
+            continue
+
+        if request.get("cmd") == "shutdown":
+            return
+
+        ok = True
+        try:
+            # Capture the runner's prints so they can be returned to the caller
+            # verbatim, matching what capture_output would have collected.
+            with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+                run_cadquery_script(
+                    request["script_path"],
+                    request["output_path"],
+                    request["params_json"],
+                    request["export_format"],
+                )
+        except SystemExit as exc:
+            ok = (exc.code or 0) == 0
+        except Exception as exc:
+            ok = False
+            buf.write(f"Error executing CadQuery script: {exc}\n")
+
+        stdout.write(json.dumps({"ok": ok, "output": buf.getvalue()}) + "\n")
+        stdout.flush()
+
+
 if __name__ == "__main__":
+    if len(sys.argv) >= 2 and sys.argv[1] == "--serve":
+        serve_forever()
+        sys.exit(0)
+
     if len(sys.argv) < 5:
         print("Usage: python cq_runner.py <script_path> <output_path> <params_json> <export_format>")
+        print("       python cq_runner.py --serve")
         sys.exit(1)
-        
+
     script_path = sys.argv[1]
     output_path = sys.argv[2]
     params_json = sys.argv[3]
     export_format = sys.argv[4]
-    
+
     run_cadquery_script(script_path, output_path, params_json, export_format)

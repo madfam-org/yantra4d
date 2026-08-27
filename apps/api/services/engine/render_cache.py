@@ -78,13 +78,41 @@ class RenderCache:
         self._max_entries = max_entries
 
     @staticmethod
-    def _make_key(project: str, scad_file: str, params: dict, part: str, export_format: str, scad_content_hash: str | None = None) -> str:
+    def _engine_signature() -> str:
+        """Identity of the geometry evaluator that produces cached artifacts.
+
+        CACHE INTEGRITY: OpenSCAD's Manifold and CGAL backends are different
+        geometry kernels. For identical parameters they can emit different
+        tessellations (differing vertex counts and ordering, and volumes that
+        agree only to floating-point tolerance). If the key ignored which one
+        ran, a cache populated under CGAL would be served to a process now
+        running Manifold and vice versa — silently interleaving two kernels'
+        output for what the user is told is one deterministic render. So the
+        effective backend, plus the OpenSCAD version string, is folded into the
+        key. Changing backend or upgrading OpenSCAD partitions the cache rather
+        than corrupting it; stale entries simply age out on TTL.
+
+        Imported lazily and defensively: the cache is also used by CadQuery,
+        implicit and graph renders, and a probe failure must degrade to a
+        single shared namespace, never break caching outright.
+        """
+        try:
+            from services.engine.openscad import backend_cache_signature
+            return backend_cache_signature()
+        except Exception:
+            logger.debug("Backend signature unavailable for cache key", exc_info=True)
+            return "unknown"
+
+    @classmethod
+    def _make_key(cls, project: str, scad_file: str, params: dict, part: str, export_format: str, scad_content_hash: str | None = None) -> str:
         raw = json.dumps({
             "project": project,
             "scad_file": scad_file,
             "params": params,
             "part": part,
             "format": export_format,
+            # See _engine_signature: keeps Manifold and CGAL outputs disjoint.
+            "engine": cls._engine_signature(),
             **({"scad_hash": scad_content_hash} if scad_content_hash else {}),
         }, sort_keys=True)
         return hashlib.sha256(raw.encode()).hexdigest()

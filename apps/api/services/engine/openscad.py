@@ -179,9 +179,152 @@ def validate_params(params: dict, project_slug: str | None = None) -> dict:
     return cleaned
 
 
+# ---------------------------------------------------------------------------
+# Geometry backend selection (CGAL vs Manifold)
+# ---------------------------------------------------------------------------
+# OpenSCAD 2023+ ships a second geometry kernel, Manifold, selected with
+# `--backend=`. CGAL degrades superlinearly on the boolean- and thread-heavy
+# cartridges that dominate this commons; measured locally on
+# projects/faircap-filter (BOSL2 threading) with OpenSCAD 2026.02.13:
+# CGAL 47.44s vs Manifold 6.62s, both watertight, volumes agreeing to 5e-7.
+#
+# Support cannot be assumed: release builds predating the feature reject the
+# flag, and some nightlies already default to Manifold. So probe the actual
+# installed binary once, and cache it — a subprocess per render would spend the
+# win it is meant to deliver.
+
+BACKEND_AUTO = "auto"
+BACKEND_CGAL = "cgal"
+BACKEND_MANIFOLD = "manifold"
+
+# Canonical spellings OpenSCAD accepts for --backend (it matches case-insensitively
+# but we emit its own documented casing).
+_BACKEND_ARG = {BACKEND_CGAL: "CGAL", BACKEND_MANIFOLD: "Manifold"}
+
+_backend_probe_lock = threading.Lock()
+_backend_probe: dict | None = None
+
+
+def _probe_openscad_backend() -> dict:
+    """Interrogate the installed OpenSCAD binary for --backend support.
+
+    Returns a dict with ``supported`` (bool), ``version`` (str|None) and
+    ``detail`` (str, for logging/diagnosis).
+
+    Detection reads ``--help`` for the flag rather than trying a render with it.
+    That matters: this binary exits 0 for ``--backend=NotABackend`` and only
+    reports the rejection on stderr, so an exit code is not evidence the flag
+    was honoured. Presence in the help text is.
+    """
+    binary = Config.OPENSCAD_PATH
+    version = None
+    try:
+        # check=False: a nonzero exit still carries the banner we want to read,
+        # and a failed probe must degrade, never raise into the render path.
+        vproc = subprocess.run(
+            [binary, "--version"], capture_output=True, text=True, timeout=15,
+            check=False,
+        )
+        # OpenSCAD historically prints its version banner on stderr.
+        version = ((vproc.stdout or "") + (vproc.stderr or "")).strip().splitlines()
+        version = version[0].strip() if version else None
+    except Exception as exc:
+        logger.warning("OpenSCAD version probe failed for %s: %s", binary, exc)
+
+    try:
+        # check=False: some builds exit nonzero from --help; the text is what matters.
+        proc = subprocess.run(
+            [binary, "--help"], capture_output=True, text=True, timeout=15,
+            check=False,
+        )
+    except Exception as exc:
+        logger.warning(
+            "OpenSCAD backend probe failed for %s (%s); assuming no --backend support",
+            binary, exc,
+        )
+        return {"supported": False, "version": version,
+                "detail": f"probe failed: {exc}"}
+
+    help_text = (proc.stdout or "") + (proc.stderr or "")
+    supported = "--backend" in help_text
+    detail = ("--backend advertised in --help" if supported
+              else "--backend absent from --help")
+    logger.info(
+        "OpenSCAD backend probe: %s (version=%s, binary=%s)", detail, version, binary
+    )
+    return {"supported": supported, "version": version, "detail": detail}
+
+
+def get_backend_probe() -> dict:
+    """Return the cached backend probe, running it once on first use."""
+    global _backend_probe
+    if _backend_probe is None:
+        with _backend_probe_lock:
+            if _backend_probe is None:
+                _backend_probe = _probe_openscad_backend()
+    return _backend_probe
+
+
+def reset_backend_probe() -> None:
+    """Drop the cached probe. For tests and for OPENSCAD_PATH changes."""
+    global _backend_probe
+    with _backend_probe_lock:
+        _backend_probe = None
+
+
+def effective_backend() -> str | None:
+    """Resolve the backend to pass to OpenSCAD, or None to pass no flag.
+
+    ``YANTRA4D_OPENSCAD_BACKEND`` accepts ``auto`` (default), ``manifold`` or
+    ``cgal``. ``auto`` uses Manifold when the binary advertises it and otherwise
+    behaves exactly as before this change — no flag at all. An explicit choice
+    is honoured only if the binary supports the flag; asking for a backend a
+    binary cannot select would abort every render, so we warn and fall back.
+    """
+    requested = os.getenv("YANTRA4D_OPENSCAD_BACKEND", BACKEND_AUTO).strip().lower()
+    if requested not in (BACKEND_AUTO, BACKEND_CGAL, BACKEND_MANIFOLD):
+        logger.warning(
+            "Unknown YANTRA4D_OPENSCAD_BACKEND=%r; falling back to %r",
+            requested, BACKEND_AUTO,
+        )
+        requested = BACKEND_AUTO
+
+    if not get_backend_probe()["supported"]:
+        if requested != BACKEND_AUTO:
+            logger.warning(
+                "YANTRA4D_OPENSCAD_BACKEND=%s requested but this OpenSCAD build "
+                "has no --backend flag; rendering with the built-in default",
+                requested,
+            )
+        return None
+
+    if requested == BACKEND_AUTO:
+        return _BACKEND_ARG[BACKEND_MANIFOLD]
+    return _BACKEND_ARG[requested]
+
+
+def backend_cache_signature() -> str:
+    """Identity of the geometry backend, for the render cache key.
+
+    Manifold and CGAL are different evaluators and can produce different
+    tessellations for identical parameters. See render_cache._make_key: this
+    string is folded into the key so their outputs can never be served for one
+    another.
+    """
+    probe = get_backend_probe()
+    backend = effective_backend() or "default"
+    return f"{backend}|{probe.get('version') or 'unknown'}"
+
+
 def build_openscad_command(output_path: str, scad_path: str, params: dict, mode_id: int = 0) -> list:
     """Build OpenSCAD command with parameters."""
     cmd = [Config.OPENSCAD_PATH, "-o", output_path]
+
+    # Geometry backend. Appended after -o/output so the historical positional
+    # contract (cmd[0]=binary, cmd[1]="-o", cmd[2]=output, cmd[-1]=scad) holds.
+    backend = effective_backend()
+    if backend:
+        cmd.append(f"--backend={backend}")
 
     for key, value in params.items():
         if key == 'scad_file':

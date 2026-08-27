@@ -11,6 +11,7 @@ import time
 from collections.abc import Callable
 
 from config import Config
+from services.engine.cq_pool import cq_pool
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager
 
 logger = logging.getLogger(__name__)
@@ -40,10 +41,69 @@ def build_cadquery_command(output_path: str, script_path: str, params: dict, exp
     return cmd
 
 
+def _job_from_cmd(cmd: list) -> dict | None:
+    """Recover the render job from a command built by build_cadquery_command.
+
+    The warm pool speaks jobs, not argv, but every caller (worker, animations,
+    git_ops) hands us a cmd list. Rather than change that contract — and every
+    call site with it — we destructure the command we ourselves built, and
+    return None for anything that is not exactly that shape so an unexpected
+    command still runs down the historical subprocess path.
+    """
+    if len(cmd) != 6 or not str(cmd[1]).endswith("cq_runner.py"):
+        return None
+    return {
+        "script_path": cmd[2],
+        "output_path": cmd[3],
+        "params_json": cmd[4],
+        "export_format": cmd[5],
+    }
+
+
+def _pool_enabled() -> bool:
+    return os.getenv("YANTRA4D_CQ_POOL_ENABLED", "1").strip().lower() not in (
+        "0", "false", "no",
+    )
+
+
+def _try_warm_pool(
+    cmd: list, is_cancelled: Callable[[], bool] | None = None
+) -> tuple[bool, str] | None:
+    """Attempt the render on a warm worker. None means 'not handled'."""
+    if not _pool_enabled():
+        return None
+    job = _job_from_cmd(cmd)
+    if job is None:
+        return None
+    try:
+        return cq_pool.submit(env=_cadquery_env(), is_cancelled=is_cancelled, **job)
+    except Exception:
+        logger.warning("CadQuery warm pool raised; falling back to subprocess",
+                       exc_info=True)
+        return None
+
+
 def run_render(
     cmd: list, scad_path: str | None = None, is_cancelled: Callable[[], bool] | None = None
 ) -> tuple[bool, str]:
-    """Execute CadQuery render synchronously. Returns (success, stderr/stdout)."""
+    """Execute CadQuery render synchronously. Returns (success, stderr/stdout).
+
+    Prefers a warm worker from the CadQuery pool, which has already paid the
+    OCCT import cost. Falls back to the historical per-render subprocess spawn
+    whenever the pool declines the job (disabled, saturated, unable to start,
+    or the worker died mid-job). The returned contract is identical either way.
+
+    Cancellation is honoured on both paths. The pool polls *is_cancelled* while
+    waiting and kills the worker if it fires — the render worker always supplies
+    that callback, so gating the pool on its absence would have left this lever
+    unused in production.
+    """
+    pooled = _try_warm_pool(cmd, is_cancelled)
+    if pooled is not None:
+        success, output = pooled
+        logger.info("CadQuery render served by warm pool (success=%s)", success)
+        return success, output
+
     logger.info(f"Running CadQuery: {' '.join(cmd)}")
     try:
         if is_cancelled is None:

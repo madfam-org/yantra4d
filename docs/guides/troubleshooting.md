@@ -14,6 +14,52 @@ Common issues and their solutions when working with the Yantra4D platform.
 - **Docker timeout**: The default OpenSCAD timeout in Docker is 300s (`OPENSCAD_TIMEOUT` in `docker-compose.yml`). For local dev, the default is 120s.
 - **WASM mode**: Client-side rendering is ~4x slower than server-side. Reduce parameter complexity.
 
+### Render performance
+
+Two knobs control how fast server-side renders run. Both default to the fast path
+and degrade safely, so you normally do not need to touch them.
+
+**OpenSCAD geometry backend.** OpenSCAD 2023+ ships a Manifold kernel alongside
+the older CGAL one. CGAL degrades superlinearly on the boolean- and thread-heavy
+cartridges that dominate this commons — measured on `projects/faircap-filter`
+(BOSL2 threading) with OpenSCAD 2026.02.13:
+
+| Backend | Wall time | Mesh verdict |
+|---------|----------:|--------------|
+| CGAL | 47.4s | watertight (volume 22715.16) |
+| Manifold | 6.6s | watertight (volume 22715.17) |
+
+The backend is probed **once** from the installed binary's `--help` and cached.
+Binaries without `--backend` behave exactly as before — no flag is passed.
+
+```bash
+export YANTRA4D_OPENSCAD_BACKEND=auto      # default: Manifold when available
+export YANTRA4D_OPENSCAD_BACKEND=cgal      # pin the old kernel to compare output
+```
+
+> The render cache key includes the effective backend **and** the OpenSCAD
+> version, so Manifold and CGAL artifacts are never served for one another.
+> Switching backends partitions the cache; it does not corrupt it. Old entries
+> age out on TTL.
+
+**Warm CadQuery pool.** `import cadquery` (OCCT) costs 1-3s and used to be paid
+on every render. A pool of persistent workers imports once and then serves jobs:
+
+| Path | Median wall time |
+|------|-----------------:|
+| Cold spawn per render | 9.7s |
+| Warm pool worker | 0.23s |
+
+```bash
+export YANTRA4D_CQ_WORKERS=4               # more workers for parallel renders
+export YANTRA4D_CQ_WORKERS=0               # disable; every render spawns fresh
+export YANTRA4D_CQ_POOL_ENABLED=0          # kill switch, same effect
+```
+
+If a worker cannot start (e.g. CadQuery is not installed, or the environment
+forbids extra processes) the pool logs a warning and every render falls back to
+the historical per-render spawn. A pool problem never fails a render.
+
 ### "OpenSCAD not found"
 
 **Symptom**: Health check returns `"status": "degraded"` with `"checks": { "openscad": { "ok": false } }`. The API still serves requests (200) but server-side rendering is unavailable — clients fall back to WASM.
@@ -156,6 +202,10 @@ If Redis is unreachable, Flask-Limiter will log a warning and fall back to in-me
 | `AI_API_KEY` | — | API key for AI features |
 | `RATE_LIMIT_STORAGE` | `memory://` | Rate limiter backend (`memory://` or `redis://host:port`) |
 | `OPENSCAD_TIMEOUT` | `120` | Render timeout in seconds |
+| `YANTRA4D_OPENSCAD_BACKEND` | `auto` | Geometry kernel: `auto`, `manifold`, or `cgal`. See [Render performance](#render-performance) |
+| `YANTRA4D_CQ_WORKERS` | `2` | Warm CadQuery worker processes (`0` disables the pool) |
+| `YANTRA4D_CQ_WORKER_MAX_JOBS` | `50` | Recycle a CadQuery worker after this many jobs (`0` = never) |
+| `YANTRA4D_CQ_POOL_ENABLED` | `1` | Kill switch for the warm CadQuery pool |
 
 ### Port Conflicts
 

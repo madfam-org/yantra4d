@@ -10,6 +10,7 @@ import logging
 
 from flask import Blueprint, Response, request
 
+from services.core.project_access import require_project_access
 from utils.project_resolver import require_project
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
@@ -156,6 +157,7 @@ def _generate_html(manifest: dict, params: dict, lang: str = "en") -> str:
 @datasheet_bp.route("/api/projects/<slug>/datasheet", methods=["GET"])
 @require_valid_slug
 @require_project()
+@require_project_access
 def generate_datasheet(slug: str, project_dir) -> Response | tuple[Response, int]:
     """Generate a project datasheet as PDF (if reportlab available) or HTML."""
     manifest = _load_manifest(project_dir)

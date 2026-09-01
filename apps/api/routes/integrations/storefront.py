@@ -17,6 +17,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from config import Config
+from services.core.project_access import require_project_access
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
@@ -76,6 +77,7 @@ def _sanitize_for_storefront(manifest: dict, mode_id: str | None = None) -> dict
 
 @storefront_bp.route("/api/projects/<slug>/storefront", methods=["GET"])
 @require_valid_slug
+@require_project_access
 def get_storefront_manifest(slug: str):
     """
     Return a storefront-safe manifest for the given project.
@@ -98,6 +100,7 @@ def get_storefront_manifest(slug: str):
 
 @storefront_bp.route("/api/projects/<slug>/share/<preset_id>", methods=["GET"])
 @require_valid_slug
+@require_project_access
 def get_share_url(slug: str, preset_id: str):
     """
     Return a shareable URL for a specific preset configuration.

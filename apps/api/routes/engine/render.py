@@ -13,6 +13,7 @@ import rate_limits
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth, require_render_scope
+from services.core.project_access import check_project_access
 from services.core.tier_service import (
     export_format_allowed,
     get_render_limit,
@@ -168,6 +169,9 @@ def estimate_render_time():
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
+    denied = check_project_access(data.get("project"))
+    if denied is not None:
+        return denied
     tier = _effective_tier()
     payload = extract_render_payload(data)
 
@@ -226,6 +230,9 @@ def render_stl():
 def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json
+    denied = check_project_access(data.get("project"))
+    if denied is not None:
+        return denied
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
@@ -259,6 +266,14 @@ def render_stl_stream():
 @require_render_scope
 def cancel_render_endpoint():
     """Cancel the active render process."""
+    # Cancellation is a write against a project's in-flight work, so it is
+    # gated like the renders it stops. The slug is optional here, and an
+    # absent one leaves today's behaviour untouched.
+    body = request.get_json(silent=True) or {}
+    if isinstance(body, dict):
+        denied = check_project_access(body.get("project"))
+        if denied is not None:
+            return denied
     cancelled = cancel_all_renders()
     return jsonify({
         "status": "cancelled" if cancelled else "no_active_render",

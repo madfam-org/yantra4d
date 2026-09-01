@@ -172,7 +172,36 @@ modes. This is pinned by a test using FC's exact token shape.
 
 ---
 
-## Configuration
+## Identity tier overrides
+
+`resolve_tier()` (`apps/api/services/core/tier_service.py`) is the single funnel
+every tier decision goes through, so the override lives there rather than at
+each call site.
+
+`TIER_OVERRIDES` is a JSON object mapping a **lower-cased email address** to a
+tier name:
+
+```json
+{"someone@example.com": "madfam"}
+```
+
+- Read from the environment at call time (like `RENDER_SCOPE_ENFORCEMENT`), and
+  parsed at most once per distinct value — rolling the secret needs no restart.
+- Unset, empty, non-JSON, or a non-object value all mean *no overrides*, with a
+  warning. A broken map never takes the API down and never grants anything.
+- Entries naming an unknown tier are dropped with a warning.
+- An override is **authoritative**: it applies whether it raises a tier (a staff
+  identity to `madfam`) or lowers one, and it beats the token's `yantra4d_tier`.
+- Email addresses are identities: they are counted in logs, never printed above
+  `DEBUG`.
+
+`/api/me` reports `entitlement.source = "tier_override"` when one applied, so a
+tier that the token does not carry is never unexplained.
+
+The override map is deployment configuration (a Kubernetes secret). No identity
+is ever committed to this repository.
+
+-## Configuration
 
 Auth settings are defined in `apps/api/config.py`.
 
@@ -182,6 +211,7 @@ Auth settings are defined in `apps/api/config.py`.
 | `JANUA_AUDIENCE` | `yantra4d-api` | The expected JWT `aud` claim. Must match the audience registered in the Janua seed script. |
 | `AUTH_ENABLED` | `true` | Set to `false` to disable all auth checks for local development. |
 | `RENDER_SCOPE_ENFORCEMENT` | `log` | `log` warns and allows machine tokens missing `yantra4d:render`; `enforce` returns 403. Read from the environment at call time, not via `Config`. See [Machine tokens and render scope](#machine-tokens-and-render-scope). |
+| `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "madfam"}`. Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
 

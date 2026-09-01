@@ -14,7 +14,7 @@ from services.ai.ai_code_editor import stream_response as stream_code_editor
 from services.ai.ai_configurator import stream_response as stream_configurator
 from services.ai.ai_session import create_session, get_session
 from services.ai.ai_synthesizer import stream_synthesis_response
-from services.core.tier_service import get_tier_limits, resolve_tier
+from services.core.tier_service import get_tier_limits, is_unlimited, resolve_tier
 from utils.route_helpers import error_response, require_json_body
 
 logger = logging.getLogger(__name__)
@@ -24,12 +24,28 @@ MAX_AI_MESSAGE_CHARS = 5000  # Max characters allowed per chat message
 ai_bp = Blueprint("ai", __name__)
 
 
-def _get_ai_rate_limit() -> str:
-    """Dynamic rate limit based on user tier's ai_requests_per_hour."""
+def _ai_request_limit() -> int:
+    """AI requests-per-hour for the caller's tier (-1 means no cap)."""
     claims = getattr(request, "auth_claims", None)
     tier = resolve_tier(claims)
-    limits = get_tier_limits(tier)
-    return f"{limits.get('ai_requests_per_hour', 0)}/hour"
+    return get_tier_limits(tier).get("ai_requests_per_hour", 0)
+
+
+def _get_ai_rate_limit() -> str:
+    """Dynamic rate limit based on user tier's ai_requests_per_hour."""
+    limit = _ai_request_limit()
+    if is_unlimited(limit):
+        return rate_limits.UNLIMITED_PLACEHOLDER
+    return f"{limit}/hour"
+
+
+def _ai_limit_exempt() -> bool:
+    """``exempt_when`` companion to :func:`_get_ai_rate_limit`.
+
+    See rate_limits.UNLIMITED_PLACEHOLDER for why an unlimited tier needs both
+    a placeholder string and this predicate rather than just "-1/hour".
+    """
+    return is_unlimited(_ai_request_limit())
 
 
 @ai_bp.route("/api/ai/session", methods=["POST"])
@@ -67,7 +83,7 @@ def create_ai_session():
 
 @ai_bp.route("/api/ai/chat-stream", methods=["POST"])
 @require_tier("essentials")
-@limiter.limit(_get_ai_rate_limit)
+@limiter.limit(_get_ai_rate_limit, exempt_when=_ai_limit_exempt)
 @require_json_body
 def chat_stream():
     """SSE streaming chat endpoint. Dispatches to configurator or code-editor."""
@@ -121,7 +137,7 @@ def chat_stream():
 
 @ai_bp.route("/api/ai/synthesize", methods=["POST"])
 @require_tier("pro")
-@limiter.limit(_get_ai_rate_limit)
+@limiter.limit(_get_ai_rate_limit, exempt_when=_ai_limit_exempt)
 @require_json_body
 def synthesize_project():
     """SSE streaming endpoint for synthesizing a new Yantra4D Project."""

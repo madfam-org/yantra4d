@@ -89,7 +89,9 @@ jobs:
       # The branch is already pushed by the time PR creation is refused, so
       # point the operator at it instead of leaving a bare red X.
       - name: Explain PR creation failure
-        if: failure()
+        # Only when the create-PR step itself was refused — an earlier failure
+        # (submodule update, manifest regen) has no pushed branch to point at.
+        if: failure() && steps.create-pr.outcome == 'failure'
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
           ### Submodule PR was not created

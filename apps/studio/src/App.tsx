@@ -64,7 +64,7 @@ function App() {
 
   const isMobile = useIsMobile()
   const { layout, setSidebarSize, toggleSidebar, setConsoleSize, toggleConsole } = usePanelLayout()
-  const { manifestError: _manifestError } = useManifest() as { manifestError: string | null }
+  const { manifestError, manifestAuthRequired } = useManifest()
 
   // Get state from ProjectContext
   const {
@@ -193,19 +193,34 @@ function App() {
   // user a project was gone when it had no way to know — the server never
   // answered. Retry is offered because, unlike a 404, the condition is very
   // often transient.
-  if (_manifestError) {
-    const notFound = _manifestError === 'project_not_found'
+  //
+  // 'project_locked' is a private project (401/403 + error_code
+  // "project_locked"). It is not retryable either — reloading anonymously gets
+  // the same answer — so the way forward is the sign-in CTA. That is what
+  // `manifestAuthRequired` distinguishes: an anonymous caller can sign in with
+  // an authorized account, while an already-signed-in caller simply lacks
+  // access. AuthButton renders nothing in auth-disabled builds, which leaves
+  // the body text as the explanation.
+  if (manifestError) {
+    const notFound = manifestError === 'project_not_found'
+    const locked = manifestError === 'project_locked'
+    const glyph = locked ? '🔒' : notFound ? '🔍' : '📡'
+    const titleKey = locked
+      ? 'error.project_locked_title'
+      : notFound ? 'error.project_not_found_title' : 'error.server_unreachable_title'
+    const bodyKey = locked
+      ? (manifestAuthRequired ? 'error.project_locked_body' : 'error.project_locked_signed_in_body')
+      : notFound ? 'error.project_not_found_body' : 'error.server_unreachable_body'
     return (
       <div className="flex flex-col items-center justify-center h-dvh bg-background text-foreground gap-4 px-4 text-center">
-        <div className="text-6xl">{notFound ? '🔍' : '📡'}</div>
-        <h1 className="text-2xl font-bold">
-          {t(notFound ? 'error.project_not_found_title' : 'error.server_unreachable_title')}
-        </h1>
+        <div className="text-6xl">{glyph}</div>
+        <h1 className="text-2xl font-bold">{t(titleKey)}</h1>
         <p className="text-muted-foreground max-w-md">
-          {t(notFound ? 'error.project_not_found_body' : 'error.server_unreachable_body', { slug: projectSlug })}
+          {t(bodyKey, { slug: projectSlug })}
         </p>
-        <div className="flex gap-2">
-          {!notFound && (
+        <div className="flex items-center gap-2">
+          {locked && <AuthButton />}
+          {!notFound && !locked && (
             <Button onClick={() => window.location.reload()} variant="default" className="min-h-[44px]">
               {t('status.retry')}
             </Button>

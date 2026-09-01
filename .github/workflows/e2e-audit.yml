@@ -3,7 +3,9 @@ name: E2E Browser Audit (Nightly)
 # Audits the Studio against a REAL backend (no API mocks): live OpenSCAD renders,
 # downloads, axe checks — the 23-browser-audit suite. Same shape as ci.yml's e2e
 # job: the backend is started directly on the runner and the built Studio is
-# served by Playwright's own webServer. It used to start a `docker compose`
+# served by Playwright's own webServer, with Redis and the dedicated render
+# worker alongside (every render goes through the worker; there is no inline
+# path). It used to start a `docker compose`
 # stack instead, which never came up once on madfam-runners-blue — the docker
 # CLI is on the runner image but the Compose plugin is not, so `docker compose
 # -f …` died with `unknown shorthand flag: 'f' in -f` (exit 125) — and the test
@@ -85,12 +87,23 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install OpenSCAD and backend dependencies
+      - name: Install OpenSCAD, Redis and backend dependencies
         working-directory: apps/api
         run: |
-          sudo apt-get update && sudo apt-get install -y openscad
+          sudo apt-get update && sudo apt-get install -y openscad redis-server
           pip install -r requirements.txt
           pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
+
+      # The API never renders inline: /api/render enqueues to Redis and waits on
+      # the dedicated worker's pub/sub reply, and answers 503 "Render worker
+      # unavailable" unless the worker's heartbeat is in Redis. docker-compose.dev
+      # (the stack this suite was written against) shipped Redis but no worker,
+      # so the suite could not have rendered there either.
+      - name: Start Redis
+        run: |
+          redis-server --daemonize yes --port 6379 --save "" --appendonly no
+          for _ in 1 2 3 4 5; do redis-cli ping 2>/dev/null | grep -q PONG && break; sleep 1; done
+          redis-cli ping
 
       - name: Start backend
         id: backend
@@ -104,6 +117,7 @@ jobs:
           # otherwise trip the per-tier render quota and fail the audit for a
           # reason unrelated to the product under test.
           RATE_LIMIT_ENABLED: "false"
+          REDIS_URL: redis://localhost:6379
           PROJECTS_DIR: ${{ github.workspace }}/projects
         # Fails LOUDLY and as a *setup* error, distinct from a test failure, so
         # the tracking issue below only ever hears about test results.
@@ -133,6 +147,40 @@ jobs:
           # skips itself; the project list decides which cartridges get audited.
           curl -fsS http://localhost:5000/api/health | python3 -c 'import sys,json; d=json.load(sys.stdin); print("openscad:", d.get("checks",{}).get("openscad"))'
           curl -fsS http://localhost:5000/api/projects | python3 -c 'import sys,json; d=json.load(sys.stdin); ps=d.get("projects", d) if isinstance(d, dict) else d; print("projects served:", len(ps))'
+
+      - name: Start render worker
+        id: worker
+        working-directory: apps/api
+        env:
+          FLASK_DEBUG: "false"
+          AUTH_ENABLED: "false"
+          RATE_LIMIT_ENABLED: "false"
+          REDIS_URL: redis://localhost:6379
+          PROJECTS_DIR: ${{ github.workspace }}/projects
+          # The worker imports the API package from here (default is the
+          # container path /app/backend).
+          YANTRA4D_BACKEND_PATH: ${{ github.workspace }}/apps/api
+        run: |
+          set -uo pipefail
+          python ../worker/render_worker.py > "$RUNNER_TEMP/worker.log" 2>&1 &
+          worker_pid=$!
+          deadline=$(( SECONDS + 120 ))
+          until curl -fsS http://localhost:5000/api/health | python3 -c 'import sys,json; sys.exit(0 if json.load(sys.stdin)["checks"]["render_worker"]["ok"] else 1)' 2>/dev/null; do
+            if ! kill -0 "$worker_pid" 2>/dev/null; then
+              echo "::error title=Audit setup failed::render worker exited before publishing a heartbeat (this is a HARNESS failure, not a test failure)"
+              echo "--- worker.log ---"; cat "$RUNNER_TEMP/worker.log"
+              exit 1
+            fi
+            if (( SECONDS >= deadline )); then
+              echo "::error title=Audit setup failed::render worker heartbeat not seen by the API within 120s (this is a HARNESS failure, not a test failure)"
+              echo "--- worker.log ---"; cat "$RUNNER_TEMP/worker.log"
+              kill "$worker_pid" 2>/dev/null || true
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "render worker heartbeat seen after ${SECONDS}s"
+          curl -fsS http://localhost:5000/api/health | python3 -c 'import sys,json; d=json.load(sys.stdin); print("health:", d["status"], "| render_worker:", d["checks"]["render_worker"]["detail"])'
 
       # ── Studio + Playwright (mirrors ci.yml › e2e) ──────────────────────────
       - uses: actions/setup-node@v4
@@ -183,12 +231,14 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
-      - name: Upload backend log
+      - name: Upload backend and worker logs
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: browser-audit-backend-log-${{ github.run_id }}
-          path: ${{ runner.temp }}/backend.log
+          path: |
+            ${{ runner.temp }}/backend.log
+            ${{ runner.temp }}/worker.log
           retention-days: 14
           if-no-files-found: ignore
 
@@ -235,7 +285,7 @@ jobs:
           {
             echo "## Nightly browser audit did not reach the test step"
             echo
-            echo "A setup step failed (checkout/submodules, apt or pip, backend start, studio build, or browser install)."
+            echo "A setup step failed (checkout/submodules, apt or pip, Redis, backend start, render-worker heartbeat, studio build, or browser install)."
             echo "This is a HARNESS failure, not a test result, so it is deliberately not posted to the e2e-audit-failure tracking issue."
             echo "Tonight's audit result is UNKNOWN until the harness is fixed."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -94,6 +94,26 @@ jobs:
           submodules: recursive
           token: ${{ secrets.MADFAM_BOT_PAT }}
 
+      # The client-private cartridges are `update = none` submodules, which the
+      # recursive checkout above skips even with the PAT, so until now the
+      # backend image never contained them and /api/projects/tablaco was a 404
+      # in production. They are served only to authorized identities
+      # (PRIVATE_PROJECTS / access_control.view = private, see docs/AUTH.md),
+      # and the GHCR image is private, so they belong in this image. Only the
+      # cartridges listed here are pulled in; `--checkout` is git's documented
+      # override for `update = none`.
+      - name: Init client-private cartridges
+        env:
+          MADFAM_BOT_PAT: ${{ secrets.MADFAM_BOT_PAT }}
+        run: |
+          set -euo pipefail
+          for path in projects/tablaco; do
+            git -c "url.https://x-access-token:${MADFAM_BOT_PAT}@github.com/.insteadOf=https://github.com/" \
+              submodule update --init --checkout --depth 1 "$path"
+            test -f "$path/project.json" || { echo "::error::$path/project.json missing after init"; exit 1; }
+            echo "initialised $path"
+          done
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:

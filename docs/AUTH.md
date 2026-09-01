@@ -182,6 +182,9 @@ Auth settings are defined in `apps/api/config.py`.
 | `JANUA_AUDIENCE` | `yantra4d-api` | The expected JWT `aud` claim. Must match the audience registered in the Janua seed script. |
 | `AUTH_ENABLED` | `true` | Set to `false` to disable all auth checks for local development. |
 | `RENDER_SCOPE_ENFORCEMENT` | `log` | `log` warns and allows machine tokens missing `yantra4d:render`; `enforce` returns 403. Read from the environment at call time, not via `Config`. See [Machine tokens and render scope](#machine-tokens-and-render-scope). |
+| `TIER_OVERRIDES` | unset | JSON object mapping a lower-cased `email` claim to a tier name (`guest`/`essentials`/`pro`/`madfam`). Authoritative for that identity: it can raise or lower the tier the `yantra4d_tier` claim would give. Read at call time. Lives in a Secret in production; never in this repo. |
+| `PRIVATE_PROJECTS` | unset | Comma-separated project slugs forced private regardless of their manifest (fail-closed for client cartridges). |
+| `PROJECT_ACCESS_GRANTS` | unset | JSON object `{ "<slug>": ["<email>", …] }` granting private-project access to specific identities. Read at call time. Lives in a Secret in production. |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
 
@@ -208,6 +211,74 @@ The audience claim `yantra4d-api` is aligned with the Janua seed script that pre
 A mismatch in any of these causes token validation to fail with a 401 error.
 
 ---
+
+## Private projects and identity tier overrides
+
+Two related mechanisms, both configured through the environment so that the
+public repository never carries an identity.
+
+### Identity tier overrides
+
+`resolve_tier()` is the single funnel from JWT claims to a tier. When
+`TIER_OVERRIDES` names the caller's lower-cased `email` claim, that mapping wins
+over the `yantra4d_tier` claim — in both directions. It exists so staff can hold
+the top tier without waiting on the Janua-side entitlement push (gate `[Y1]`),
+and so an identity can be pinned down as well as up. `/api/me` reports the
+source as `tier_override` so the diagnostic stays honest.
+
+The top tier, `madfam`, is **unlimited** for `backend_renders_per_hour` and
+`ai_requests_per_hour`: `tiers.json` uses `-1` as the sentinel (the same one
+`max_projects` already used), the rate-limiter exempts those requests instead of
+being handed a `-1/hour` string, and the render response carries
+`X-RateLimit-Limit: unlimited` with no `Remaining`/`Reset`.
+
+### Private projects
+
+A project is private when its slug is listed in `PRIVATE_PROJECTS` **or** its
+manifest declares `access_control.view: "private"` (the schema's `access_control`
+enum gained the value `private`; the env list is the fail-closed backstop for
+client cartridges whose manifests live in other repositories).
+
+A private project is visible to a caller when any of these hold:
+
+- the caller resolves to the `madfam` tier (including via `TIER_OVERRIDES`);
+- the caller's claims carry the `admin` role;
+- the caller's lower-cased `email` is listed for that slug in `PROJECT_ACCESS_GRANTS`.
+
+Everyone else — anonymous or signed in — receives **HTTP 403** with
+`error_code: "project_locked"` and `auth_required: true|false` (true when the
+caller is anonymous), from every surface that could leak the cartridge: the
+project list (the project is simply absent), manifest, meta and parts, render /
+render-stream / render-cancel, download and export, verify, storefront and share
+links, BOM / datasheet / assembly / animations / cart, the editor routes, and the
+`/static/<slug>_preview_*` render artifacts (whose names are otherwise
+predictable). Private manifests are served with `Cache-Control: private,
+no-store`. `unlisted` is unchanged and orthogonal.
+
+Not gated in this change: the render **WebSocket** progress channel (it relays
+job progress for a job the API already authorized) and the admin-only
+`/api/admin/projects/tablaco/public-link` (it returns a URL; the URL itself now
+lands on the locked screen for anyone without access).
+
+### Operator playbook
+
+1. Put the identities in the `yantra4d-secrets` Secret via Enclii (never in a
+   manifest):
+   - `TIER_OVERRIDES` — e.g. `{"person@example.com":"madfam"}`
+   - `PROJECT_ACCESS_GRANTS` — e.g. `{"tablaco":["client@example.com"]}` (only
+     needed for identities that must see a private project **without** the
+     `madfam` tier)
+2. Confirm `PRIVATE_PROJECTS` in `k8s/production/yantra4d-backend-deployment.yaml`
+   lists every client cartridge the backend image carries (the image build
+   initialises them explicitly in `deploy.yml › build-backend`).
+3. Roll the backend (a new digest pin or `kubectl rollout restart` through
+   Enclii) so the pod reads the new keys — they are read at call time, but the
+   Secret is mounted at pod start.
+4. Verify without touching a secret: `curl -s -o /dev/null -w '%{http_code}'
+   https://api.yantra4d.com/api/projects/tablaco/manifest` → `403` anonymously;
+   the same request with an authorized bearer → `200`; the Studio at
+   `/project/tablaco` shows the locked screen anonymously and renders after an
+   authorized sign-in.
 
 ## Future Work
 

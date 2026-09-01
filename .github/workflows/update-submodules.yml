@@ -66,6 +66,15 @@ jobs:
         id: create-pr
         uses: peter-evans/create-pull-request@v7
         with:
+          # The org setting "Allow GitHub Actions to create and approve pull
+          # requests" is OFF, so the default GITHUB_TOKEN is refused here no
+          # matter what `permissions:` grants — which is why every run of this
+          # workflow has died at this step. DISPATCH_TOKEN is the estate's PAT
+          # convention (see project-ci-reusable.yml; issue #69 tracks
+          # provisioning it once at org level). An unprovisioned secret is the
+          # empty string, so this falls back to today's behaviour until it
+          # exists.
+          token: ${{ secrets.DISPATCH_TOKEN || github.token }}
           commit-message: "chore(deps): update submodules"
           title: "chore(deps): update submodules"
           body: |
@@ -77,3 +86,21 @@ jobs:
             automatically (none currently opt out).
           branch: chore/update-submodules
           delete-branch: true
+      # The branch is already pushed by the time PR creation is refused, so
+      # point the operator at it instead of leaving a bare red X.
+      - name: Explain PR creation failure
+        if: failure()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ### Submodule PR was not created
+
+          PR creation was refused: GitHub Actions may not open pull requests
+          with the default token while the org toggle is off. The branch
+          `chore/update-submodules` has been pushed and can be opened by hand:
+
+          https://github.com/${{ github.repository }}/compare/main...chore/update-submodules?expand=1
+
+          Permanent fix: provision the `DISPATCH_TOKEN` secret (org level, see
+          issue #69), or enable "Allow GitHub Actions to create and approve
+          pull requests".
+          EOF

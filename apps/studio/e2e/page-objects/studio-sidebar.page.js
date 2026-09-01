@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test'
 import { BasePage } from './base.page.js'
 
 export class StudioSidebarPage extends BasePage {
@@ -157,31 +158,73 @@ export class StudioSidebarPage extends BasePage {
     return row.locator('[role="button"], input[type="number"]').last()
   }
 
-  /** Click the slider value to enter edit mode, type a value, and commit. */
-  async editSliderValue(paramId, value) {
+  /**
+   * Click the slider value to enter edit mode, set a value, and commit.
+   *
+   * Convergent, not single-shot. SliderControl renders `editing ? <input> : <span>`
+   * and flips `editing` from a plain React onClick, so a click that lands before
+   * the handler is attached (WebKit on the contended ARC pods) is silently lost
+   * and no input ever appears. The previous body clicked once and then waited an
+   * unretried 3 s for `input[type="number"]` — that is the failure PR #56 called
+   * out in this page object and worked around locally as
+   * helpers/test-utils.js#setSliderValue; this is the same discipline applied
+   * where all 29 callers actually go through.
+   *
+   * @param {string} paramId
+   * @param {number|string} value
+   * @param {number} [timeout] budget per phase (edit-mode, fill, commit)
+   */
+  async editSliderValue(paramId, value, timeout = 15_000) {
     const row = this.sidebar.locator(`.flex.justify-between:has(#param-label-${paramId})`)
-    const valSpan = this.sliderValue(paramId)
-    // 15s, not 5s. The param rows are re-rendered when the preset that
-    // goToStudio's URL settle step applies lands, and on a contended runner
-    // that re-render can arrive after the old 5s budget — the post-failure
-    // snapshot shows the row present and correct
-    // (`button "Width: 30. Click to edit"`), just later than the wait allowed.
-    // Every caller of this helper is asserting on what happens AFTER the edit,
-    // so waiting longer here costs nothing on a fast machine (the locator
-    // resolves as soon as it appears) and removes a whole class of ARC flake.
-    await valSpan.waitFor({ state: 'visible', timeout: 15_000 })
-    await valSpan.click()
-    // Scope input to the parameter's row to avoid matching other inputs
-    const input = row.locator(`input[type="number"]`)
-    await input.waitFor({ state: 'visible', timeout: 3000 })
-    // Use fill() to atomically clear and set the value. Previous approaches
-    // (selectText, triple-click, Ctrl+A) all raced with React's autoFocus
-    // under parallel test load, especially in Chromium where the Selection API
-    // is restricted for <input type="number">.
-    await input.fill(String(value))
+    // `span[role="button"]`, not the index-based sliderValue() pick: the row's
+    // contents swap with `editing`, so `.last()` is a guess about a DOM mid-swap.
+    const valSpan = row.locator('span[role="button"]').first()
+    const input = row.locator('input[type="number"]')
+
+    // The row itself must be rendered first (param rows re-render when the
+    // preset applied by goToStudio's URL-settle step lands; on a contended
+    // runner that arrives after the old 5 s budget).
+    await expect(valSpan.or(input).first()).toBeVisible({ timeout })
+
+    // Click until the row reports itself in edit mode. Guarded by an up-front
+    // isVisible on the SPAN: once a click lands the span unmounts, and a click
+    // issued against an unmounted locator does not fail fast — it waits out its
+    // whole actionability budget while the locator re-resolves.
+    await expect
+      .poll(
+        async () => {
+          if (await input.isVisible().catch(() => false)) return true
+          if (!(await valSpan.isVisible().catch(() => false))) return input.isVisible().catch(() => false)
+          await valSpan.click({ timeout: 5_000 }).catch(() => { })
+          return input.isVisible().catch(() => false)
+        },
+        {
+          timeout,
+          message:
+            `Slider row "${paramId}" never entered edit mode — the click on its ` +
+            "value span was lost before React attached SliderControl's onClick.",
+        },
+      )
+      .toBe(true)
+
+    // Fill until the controlled input actually holds the value. `fill()` dispatches
+    // an input event, but the input's value comes from React state, so a fill that
+    // lands during a re-render can be discarded and commitEdit would then write
+    // the OLD value back.
+    await expect
+      .poll(
+        async () => {
+          if ((await input.inputValue().catch(() => null)) === String(value)) return true
+          await input.fill(String(value))
+          return (await input.inputValue().catch(() => null)) === String(value)
+        },
+        { timeout, message: `Slider input for "${paramId}" never held ${value} — React discarded the fill.` },
+      )
+      .toBe(true)
+
     await input.press('Enter')
-    // Wait for the input to disappear (confirming commit back to display mode)
-    await input.waitFor({ state: 'hidden', timeout: 3000 })
+    // The input unmounting is `editing === false`, i.e. commitEdit ran.
+    await expect(input).toBeHidden({ timeout })
   }
 
   /** Get text input by param id. */

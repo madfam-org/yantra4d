@@ -16,7 +16,7 @@ test.describe.configure({ mode: 'serial' })
 
 test.describe('Tablaco — Browser Audit', () => {
   test.beforeAll(async ({ request }, testInfo) => {
-    await skipIfNoBackend(request, testInfo)
+    await skipIfNoBackend(request, testInfo, ['tablaco'])
   })
 
   test.beforeEach(async ({ page }) => {

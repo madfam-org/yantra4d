@@ -1,6 +1,6 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
 import { setLanguage } from '../../helpers/test-utils.js'
-import { skipIfNoBackend, goToRealProject } from './audit-helpers.js'
+import { skipIfNoBackend, skipUnlessProject, goToRealProject } from './audit-helpers.js'
 
 test.use({
   mockAPIs: false,
@@ -10,7 +10,7 @@ test.describe.configure({ mode: 'serial' })
 
 test.describe('Responsive (Mobile) — Browser Audit', () => {
   test.beforeAll(async ({ request }, testInfo) => {
-    await skipIfNoBackend(request, testInfo)
+    await skipIfNoBackend(request, testInfo, ['gridfinity'])
   })
 
   test.beforeEach(async ({ page }) => {
@@ -47,12 +47,14 @@ test.describe('Responsive (Mobile) — Browser Audit', () => {
   // ── Tablaco ──────────────────────────────────────────────────────
 
   test('tablaco: mobile bar and viewer visible', async ({ page }) => {
+    skipUnlessProject(test, 'tablaco')
     await goToRealProject(page, 'tablaco', 'Tablaco Studio')
     await expect(page.locator('canvas').first()).toBeVisible()
     await expect(page.locator('header').first()).toBeVisible()
   })
 
   test('tablaco: preset buttons are tappable (44px targets)', async ({ page }) => {
+    skipUnlessProject(test, 'tablaco')
     await goToRealProject(page, 'tablaco', 'Tablaco Studio')
     // Find preset buttons on mobile
     const presetBtn = page.locator('button', { hasText: /Standard|Mini/ }).first()

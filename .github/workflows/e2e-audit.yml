@@ -1,20 +1,43 @@
 name: E2E Browser Audit (Nightly)
 
+# Audits the Studio against a REAL backend (no API mocks): live OpenSCAD renders,
+# downloads, axe checks — the 23-browser-audit suite. Same shape as ci.yml's e2e
+# job: the backend is started directly on the runner and the built Studio is
+# served by Playwright's own webServer. It used to start a `docker compose`
+# stack instead, which never came up once on madfam-runners-blue — the docker
+# CLI is on the runner image but the Compose plugin is not, so `docker compose
+# -f …` died with `unknown shorthand flag: 'f' in -f` (exit 125) — and the test
+# step had been skipped on every run of this workflow since 2026-03-21.
+
 on:
   schedule:
     - cron: '0 3 * * *'  # Daily at 3am UTC
-  workflow_dispatch:       # Manual trigger
+  workflow_dispatch:
+    inputs:
+      include_private_projects:
+        description: >-
+          Also check out the client-private cartridges (the `update = none`
+          submodules: projects/tablaco, projects/tablaco-v2) with MADFAM_BOT_PAT
+          so their audit specs run instead of skipping. Off by default — those
+          projects are client-private (#48, #52) and this workflow's logs and
+          report artifact are readable on a public repo.
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   browser-audit:
     runs-on: madfam-runners-blue
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
           # NOT `submodules: recursive`: it clones the private client submodules
           # (tablaco, tablaco-v2) at checkout, which the default GITHUB_TOKEN cannot
-          # read → 404 → job aborts before Docker ever starts. Init only the
+          # read → 404 → job aborts before anything else runs. Init only the
           # non-private submodules below (`update = none` marks the private ones).
           submodules: false
 
@@ -35,41 +58,86 @@ jobs:
                 git submodule update --init --depth 1 "$path"
               done
 
-      - name: Start Docker stack
+      - name: Init client-private cartridges (opt-in, workflow_dispatch only)
+        if: github.event_name == 'workflow_dispatch' && inputs.include_private_projects
+        env:
+          MADFAM_BOT_PAT: ${{ secrets.MADFAM_BOT_PAT }}
         run: |
-          docker compose -f docker-compose.dev.yml up -d --build
-          echo "Waiting for backend health..."
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:5000/api/health > /dev/null 2>&1; then
-              echo "Backend healthy after ${i}s"
-              break
-            fi
-            if [ "$i" = "60" ]; then
-              echo "::error::Backend failed to become healthy within 60s"
-              docker compose -f docker-compose.dev.yml logs backend
+          set -euo pipefail
+          if [ -z "${MADFAM_BOT_PAT:-}" ]; then
+            echo "::error title=Audit setup failed::include_private_projects was requested but MADFAM_BOT_PAT is not available to this run"
+            exit 1
+          fi
+          # The same PAT ci.yml's parity and manifest-sync jobs use for
+          # `submodules: recursive`. `--checkout` is git's documented override
+          # for a submodule whose update mode is `none`.
+          git config --global url."https://x-access-token:${MADFAM_BOT_PAT}@github.com/".insteadOf "https://github.com/"
+          git config --file .gitmodules --list \
+            | sed -n 's/^submodule\.\(.*\)\.update=none$/\1/p' \
+            | while read -r name; do
+                path=$(git config --file .gitmodules --get "submodule.$name.path")
+                echo "Initialising client-private cartridge $path"
+                git submodule update --init --checkout --depth 1 "$path"
+              done
+
+      # ── Backend, directly on the runner (mirrors ci.yml › e2e) ──────────────
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install OpenSCAD and backend dependencies
+        working-directory: apps/api
+        run: |
+          sudo apt-get update && sudo apt-get install -y openscad
+          pip install -r requirements.txt
+          pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
+
+      - name: Start backend
+        id: backend
+        working-directory: apps/api
+        env:
+          PORT: "5000"
+          FLASK_DEBUG: "false"
+          AUTH_ENABLED: "false"
+          # The audit suite was written against docker-compose.dev.yml, which runs
+          # with rate limiting off. ~80 serial real renders from one client would
+          # otherwise trip the per-tier render quota and fail the audit for a
+          # reason unrelated to the product under test.
+          RATE_LIMIT_ENABLED: "false"
+          PROJECTS_DIR: ${{ github.workspace }}/projects
+        # Fails LOUDLY and as a *setup* error, distinct from a test failure, so
+        # the tracking issue below only ever hears about test results.
+        run: |
+          set -uo pipefail
+          python app.py > "$RUNNER_TEMP/backend.log" 2>&1 &
+          backend_pid=$!
+          deadline=$(( SECONDS + 180 ))
+          delay=1
+          until curl -fsS http://localhost:5000/api/health > /dev/null 2>&1; do
+            if ! kill -0 "$backend_pid" 2>/dev/null; then
+              echo "::error title=Audit setup failed::backend process exited before serving /api/health (this is a HARNESS failure, not a test failure)"
+              echo "--- backend.log ---"; cat "$RUNNER_TEMP/backend.log"
               exit 1
             fi
-            sleep 1
-          done
-
-      - name: Wait for Studio
-        run: |
-          for i in $(seq 1 120); do
-            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
-              echo "Studio ready after ${i}s"
-              break
-            fi
-            if [ "$i" = "120" ]; then
-              echo "::error::Studio failed to start within 120s"
-              docker compose -f docker-compose.dev.yml logs studio
+            if (( SECONDS >= deadline )); then
+              echo "::error title=Audit setup failed::backend did not serve /api/health within 180s (this is a HARNESS failure, not a test failure)"
+              echo "--- backend.log ---"; cat "$RUNNER_TEMP/backend.log"
+              kill "$backend_pid" 2>/dev/null || true
               exit 1
             fi
-            sleep 1
+            sleep "$delay"
+            (( delay < 5 )) && delay=$(( delay + 1 ))
           done
+          echo "backend healthy after ${SECONDS}s"
+          # What the audit will see. `openscad.ok` must be true or every spec
+          # skips itself; the project list decides which cartridges get audited.
+          curl -fsS http://localhost:5000/api/health | python3 -c 'import sys,json; d=json.load(sys.stdin); print("openscad:", d.get("checks",{}).get("openscad"))'
+          curl -fsS http://localhost:5000/api/projects | python3 -c 'import sys,json; d=json.load(sys.stdin); ps=d.get("projects", d) if isinstance(d, dict) else d; print("projects served:", len(ps))'
 
+      # ── Studio + Playwright (mirrors ci.yml › e2e) ──────────────────────────
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
 
@@ -78,6 +146,10 @@ jobs:
         run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
+
+      - name: Build studio
+        working-directory: apps/studio
+        run: npm run build
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -89,13 +161,18 @@ jobs:
         working-directory: apps/studio
         run: npx playwright install --with-deps chromium
 
+      # Playwright's webServer (playwright.config.js) serves the built Studio on
+      # :5173 with `vite preview`, whose /api proxy targets the backend on :5000
+      # — the same wiring ci.yml's e2e job relies on. The audit project is
+      # serial by design: real renders on one runner.
       - name: Run browser audit tests
+        id: audit
         working-directory: apps/studio
         run: npx playwright test --project=audit
         env:
           CI: true
 
-      - name: Upload test report
+      - name: Upload audit report
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -103,14 +180,31 @@ jobs:
           path: |
             apps/studio/playwright-report/
             apps/studio/test-results/
-          retention-days: 30
+          retention-days: 14
+          if-no-files-found: ignore
 
-      - name: Create issue on failure
+      - name: Upload backend log
+        uses: actions/upload-artifact@v4
         if: failure()
+        with:
+          name: browser-audit-backend-log-${{ github.run_id }}
+          path: ${{ runner.temp }}/backend.log
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # Only a TEST failure reaches the tracking issue. Before 2026-09-01 every
+      # run of this workflow failed in setup, and each one posted "Nightly audit
+      # failed again" to the open e2e-audit-failure issue as if a test had
+      # failed — 165 comments that hid the fact the audit had never executed.
+      # Harness failures now stop at an annotation, the job summary and the
+      # workflow's own failure notification.
+      - name: Report test failure on the tracking issue
+        if: failure() && steps.audit.outcome == 'failure'
         uses: actions/github-script@v7
         with:
           script: |
             const today = new Date().toISOString().split('T')[0];
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -123,7 +217,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issues[0].number,
-                body: `Nightly audit failed again on ${today}. [Run #${context.runNumber}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+                body: `Nightly audit reported test failures on ${today}. [Run #${context.runNumber}](${runUrl}) — see the \`browser-audit-report-${context.runId}\` artifact.`,
               });
               return;
             }
@@ -131,10 +225,18 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `E2E Browser Audit failure — ${today}`,
-              body: `The nightly browser audit (86 tests) failed.\n\n**Run:** [#${context.runNumber}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})\n\nCheck the Playwright report artifact for details.`,
+              body: `The nightly browser audit (23-browser-audit suite against a real backend) reported test failures.\n\n**Run:** [#${context.runNumber}](${runUrl})\n\nCheck the \`browser-audit-report-${context.runId}\` artifact for the Playwright report.`,
               labels: ['e2e-audit-failure', 'bug'],
             });
 
-      - name: Stop Docker stack
-        if: always()
-        run: docker compose -f docker-compose.dev.yml down -v
+      - name: Report harness failure in the job summary
+        if: failure() && steps.audit.outcome != 'failure'
+        run: |
+          {
+            echo "## Nightly browser audit did not reach the test step"
+            echo
+            echo "A setup step failed (checkout/submodules, apt or pip, backend start, studio build, or browser install)."
+            echo "This is a HARNESS failure, not a test result, so it is deliberately not posted to the e2e-audit-failure tracking issue."
+            echo "Tonight's audit result is UNKNOWN until the harness is fixed."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error title=Audit harness failed::no test result tonight — see the job summary"

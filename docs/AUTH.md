@@ -172,6 +172,99 @@ modes. This is pinned by a test using FC's exact token shape.
 
 ---
 
+## Identity tier overrides
+
+`resolve_tier()` (`apps/api/services/core/tier_service.py`) is the single funnel
+every tier decision goes through, so the override lives there rather than at
+each call site.
+
+`TIER_OVERRIDES` is a JSON object mapping a **lower-cased email address** to a
+tier name:
+
+```json
+{"someone@example.com": "madfam"}
+```
+
+- Read from the environment at call time (like `RENDER_SCOPE_ENFORCEMENT`), and
+  parsed at most once per distinct value — rolling the secret needs no restart.
+- Unset, empty, non-JSON, or a non-object value all mean *no overrides*, with a
+  warning. A broken map never takes the API down and never grants anything.
+- Entries naming an unknown tier are dropped with a warning.
+- An override is **authoritative**: it applies whether it raises a tier (a staff
+  identity to `madfam`) or lowers one, and it beats the token's `yantra4d_tier`.
+- Email addresses are identities: they are counted in logs, never printed above
+  `DEBUG`.
+
+`/api/me` reports `entitlement.source = "tier_override"` when one applied, so a
+tier that the token does not carry is never unexplained.
+
+The override map is deployment configuration (a Kubernetes secret). No identity
+is ever committed to this repository.
+
+---
+
+## Private projects
+
+A project is *private* when it must render only for identities entitled to it.
+Everything else gets one machine-readable refusal:
+
+```http
+HTTP/1.1 403 Forbidden
+```
+```json
+{
+  "status": "error",
+  "error": "This project is private",
+  "error_code": "project_locked",
+  "auth_required": true,
+  "request_id": "…"
+}
+```
+
+`auth_required` tells the Studio which call to action to show: `true` means
+nobody is signed in (offer sign-in), `false` means the caller is signed in and
+still not entitled (offer request-access).
+
+### Declaring privacy
+
+| Source | Shape | Notes |
+|---|---|---|
+| Manifest | `access_control.view: "private"` | The cartridge's own statement; travels with the project. |
+| `PRIVATE_PROJECTS` | `"acme-bracket,client-widget"` | Comma-separated slugs forced private **regardless of the manifest**. Fail-closed defence for client cartridges: a regenerated or submodule-bumped manifest cannot re-open them. |
+
+`unlisted` is unchanged and independent: it hides a public project from the
+index, privacy withholds the project itself.
+
+### Who may view a private project
+
+Checked in order by `can_view_project()`
+(`apps/api/services/core/project_access.py`):
+
+1. the top tier — `resolve_tier(claims) == "madfam"`, which includes anyone
+   seated there by `TIER_OVERRIDES`;
+2. the `admin` role on the token;
+3. `PROJECT_ACCESS_GRANTS`, a JSON object mapping slug to allowed emails:
+   `{"acme-bracket": ["someone@example.com"]}`.
+
+Anonymous callers never qualify — there is no identity to check.
+
+### What is gated
+
+Project listing (private entries are dropped before the `unlisted` filter),
+manifest, meta, parts, storefront and share, downloads and exports, render /
+render-stream / render-cancel, verify, bom / datasheet / assembly / animations /
+cart, fork, editor and git routes, analysis, simulation, the Cotiza export, the
+analytics summary, and `/static/<slug>_preview_*` render artifacts.
+
+Responses that depend on who is asking are never shared-cached: the private
+manifest is served `private, no-store` with no ETag, and the project list drops
+to `private, no-store` as soon as any project in it is private.
+
+Both env vars are read at call time and both are deployment configuration (a
+Kubernetes secret). No identity is ever committed to this repository.
+
+---
+
 ## Configuration
 
 Auth settings are defined in `apps/api/config.py`.
@@ -182,7 +275,10 @@ Auth settings are defined in `apps/api/config.py`.
 | `JANUA_AUDIENCE` | `yantra4d-api` | The expected JWT `aud` claim. Must match the audience registered in the Janua seed script. |
 | `AUTH_ENABLED` | `true` | Set to `false` to disable all auth checks for local development. |
 | `RENDER_SCOPE_ENFORCEMENT` | `log` | `log` warns and allows machine tokens missing `yantra4d:render`; `enforce` returns 403. Read from the environment at call time, not via `Config`. See [Machine tokens and render scope](#machine-tokens-and-render-scope). |
-| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `madfam`. Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. See [Harness tier](#harness-tier). |
+| `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "madfam"}`. Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
+| `PRIVATE_PROJECTS` | *(unset)* | Comma-separated slugs forced private regardless of their manifest. Read at call time. See [Private projects](#private-projects). |
+| `PROJECT_ACCESS_GRANTS` | *(unset)* | JSON object mapping slug to a list of emails granted access to that private project, e.g. `{"acme-bracket": ["someone@example.com"]}`. Read at call time. |
+| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `madfam`. Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. Distinct from `TIER_OVERRIDES`, which keys off a signed identity and therefore needs auth ON. See [Harness tier](#harness-tier). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
 
@@ -216,6 +312,11 @@ AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
   already report `madfam` whenever auth is off, so setting
   `HARNESS_TIER=madfam` makes the server agree with what the client was
   already being told.
+- It does **not** overlap [Identity tier overrides](#identity-tier-overrides).
+  `TIER_OVERRIDES` maps a signed identity's email to a tier and so applies only
+  when auth is ON and a token is present; a harness running with
+  `AUTH_ENABLED=false` sends no token and has no identity to match. The two are
+  mutually exclusive by construction.
 
 Implemented by `harness_tier_override()` in
 `apps/api/services/core/tier_service.py`; both directions are pinned by
@@ -244,6 +345,27 @@ The audience claim `yantra4d-api` is aligned with the Janua seed script that pre
 A mismatch in any of these causes token validation to fail with a 401 error.
 
 ---
+
+## Operator playbook: private projects and tier overrides
+
+
+1. Put the identities in the `yantra4d-secrets` Secret via Enclii (never in a
+   manifest):
+   - `TIER_OVERRIDES` — e.g. `{"person@example.com":"madfam"}`
+   - `PROJECT_ACCESS_GRANTS` — e.g. `{"tablaco":["client@example.com"]}` (only
+     needed for identities that must see a private project **without** the
+     `madfam` tier)
+2. Confirm `PRIVATE_PROJECTS` in `k8s/production/yantra4d-backend-deployment.yaml`
+   lists every client cartridge the backend image carries (the image build
+   initialises them explicitly in `deploy.yml › build-backend`).
+3. Roll the backend (a new digest pin or `kubectl rollout restart` through
+   Enclii) so the pod reads the new keys — they are read at call time, but the
+   Secret is mounted at pod start.
+4. Verify without touching a secret: `curl -s -o /dev/null -w '%{http_code}'
+   https://api.yantra4d.com/api/projects/tablaco/manifest` → `403` anonymously;
+   the same request with an authorized bearer → `200`; the Studio at
+   `/project/tablaco` shows the locked screen anonymously and renders after an
+   authorized sign-in.
 
 ## Future Work
 

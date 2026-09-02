@@ -8,6 +8,7 @@ let mockIsAuthEnabled = true
 
 vi.mock('../../services/core/apiClient', () => ({
   useRateLimit: () => mockRateLimit,
+  isUnlimited: (value) => typeof value === 'number' && value < 0,
 }))
 
 vi.mock('../../hooks/system/useTier', () => ({
@@ -53,6 +54,14 @@ describe('RateLimitBanner', () => {
 
   it('hidden when plenty remaining', () => {
     mockRateLimit = { remaining: 80, limit: 100, tier: 'pro' }
+    const { container } = render(<RateLimitBanner />)
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('hidden when the tier is unlimited', () => {
+    // `X-RateLimit-Limit: unlimited` is stored as the -1 sentinel and clears
+    // Remaining; even a stale 0 must not warn against a ceiling that is gone.
+    mockRateLimit = { remaining: 0, limit: -1, tier: 'madfam' }
     const { container } = render(<RateLimitBanner />)
     expect(container.firstChild).toBeNull()
   })

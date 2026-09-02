@@ -22,7 +22,7 @@ import shutil
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flask import Flask, g, jsonify, send_from_directory
+from flask import Flask, after_this_request, g, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 from config import Config
@@ -157,6 +157,38 @@ def create_app():
     CORS(app, origins=Config.CORS_ORIGINS)
 
     limiter.init_app(app)
+
+    # ── Private render artifacts ───────────────────────────────────────
+    # Renders land in the static directory named `<slug>_preview_<part>.<fmt>`,
+    # so gating the render endpoint alone would still leave the geometry of a
+    # private project readable to anyone who could guess the file name.
+    #
+    # This is a before_request hook rather than a check inside the /static view
+    # because two rules answer that path — Flask's built-in `static` endpoint
+    # and the app's own `serve_static` — and only the hook is guaranteed to run
+    # whichever of them Werkzeug picks.
+    @app.before_request
+    def _gate_private_render_artifacts():
+        static_prefix = f"{app.static_url_path or '/static'}/"
+        if not request.path.startswith(static_prefix):
+            return None
+
+        from services.core.project_access import (
+            check_static_artifact_access,
+            is_private_artifact,
+        )
+        filename = request.path[len(static_prefix):]
+        denied = check_static_artifact_access(filename)
+        if denied is not None:
+            return denied
+
+        if is_private_artifact(filename):
+            @after_this_request
+            def _no_store(resp):
+                # An entitled caller may read it; no intermediary may keep it.
+                resp.headers["Cache-Control"] = "private, no-store"
+                return resp
+        return None
 
     # Dev only: never let /api responses sit in the browser HTTP cache, so manifest
     # and parameter edits are picked up on reload without a stale cache. Guarded by

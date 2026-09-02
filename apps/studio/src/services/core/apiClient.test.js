@@ -102,6 +102,31 @@ describe('useRateLimit', () => {
     expect(result.current).toHaveProperty('tier')
   })
 
+  it('treats an unlimited limit header as no ceiling', async () => {
+    const { renderHook, act } = await import('@testing-library/react')
+    const mod = await import('./apiClient')
+    const { result } = renderHook(() => mod.useRateLimit())
+
+    // An unlimited tier answers `unlimited` and sends no Remaining/Reset.
+    const headers = new Map([
+      ['X-RateLimit-Limit', 'unlimited'],
+      ['X-RateLimit-Tier', 'madfam'],
+    ])
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      headers: { get: (k) => headers.get(k) || null },
+    })
+
+    await act(async () => {
+      await mod.apiFetch('http://api/test')
+    })
+
+    // -1, not NaN: the same "no ceiling" sentinel the tier API uses.
+    expect(result.current.limit).toBe(-1)
+    expect(result.current.remaining).toBeNull()
+    expect(mod.isRateLimitExhausted()).toBe(false)
+  })
+
   it('updates state when rate limit headers change', async () => {
     const { renderHook, act } = await import('@testing-library/react')
     const mod = await import('./apiClient')

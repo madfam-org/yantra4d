@@ -501,6 +501,20 @@ jobs:
           pip install -e 'packages/commons-sandbox[dev]'
           pytest packages/commons-sandbox/tests -q
 
+  # deploy.yml decides what to rebuild from a base resolved by a shell script
+  # (scripts/ci/last_successful_deploy_sha.sh). A deploy that silently drops a
+  # service is precisely the failure that script exists to prevent, so its
+  # fail-closed contract is pinned here against recorded API fixtures — no
+  # network, no submodules, a few seconds. It runs on docs-only pull requests
+  # too: it costs nothing and it guards the machinery that skipping relies on.
+  ci-scripts:
+    runs-on: madfam-runners-blue
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy change-detection base resolver
+        run: ./scripts/ci/tests/test_last_successful_deploy_sha.sh
+
   manifest-validation:
     runs-on: madfam-runners-blue
     timeout-minutes: 5
@@ -659,6 +673,7 @@ jobs:
       - test-geometric-parity
       - manifest-sync
       - manifest-validation
+      - ci-scripts
       - metadata-consistency
       - openapi-validation
       - spec-conformance

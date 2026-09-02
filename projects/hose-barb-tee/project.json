@@ -1,0 +1,287 @@
+{
+  "project": {
+    "name": "Hose Barb Tee",
+    "slug": "hose-barb-tee",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The junction the commons' own tube series never had. pneumatic-barb-port publishes a barb series sized by tube inner diameter — 2 / 3 / 4 mm — and four more cartridges consume it: bellows-actuator, pneu-net-finger, suction-cup-bellows and vacuum-manifold-block. Five objects speak one tube series, and between any two of them there is a length of silicone tube and nothing else. No tee, no elbow, no reducer, and no way to plug one cartridge's barb straight into another's port. This is that missing fitting set, generated from the same four expressions, so a stem built here at tube_id 3 grips the same tube as a port built there at tube_id 3. Every mode's first port takes a selectable form: a barb for tube, a socket that receives another cartridge's barb with no tube between them, or a parallel stem for a commercial push-in fitting.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La unión que la propia serie de manguera del procomún nunca tuvo. pneumatic-barb-port publica una serie de espigas dimensionada por el diámetro interior de la manguera — 2 / 3 / 4 mm — y otros cuatro cartuchos la consumen: bellows-actuator, pneu-net-finger, suction-cup-bellows y vacuum-manifold-block. Cinco objetos hablan una misma serie, y entre cualesquiera dos de ellos hay un tramo de manguera de silicón y nada más. Ninguna te, ningún codo, ninguna reducción, y ninguna manera de meter la espiga de un cartucho directo en el puerto de otro. Este es ese juego de conexiones faltante, generado con las mismas cuatro expresiones, de modo que una espiga hecha aquí con tube_id 3 agarra la misma manguera que un puerto hecho allá con tube_id 3. El primer puerto de cada modo lleva forma seleccionable: espiga para manguera, receptáculo que recibe la espiga de otro cartucho sin manguera de por medio, o vástago paralelo para conexión rápida comercial.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Le raccord que la propre série de tube du commun n'a jamais eu. pneumatic-barb-port publie une série de cannelures dimensionnée par le diamètre intérieur du tube — 2 / 3 / 4 mm — et quatre autres cartouches la consomment : bellows-actuator, pneu-net-finger, suction-cup-bellows et vacuum-manifold-block. Cinq objets parlent une même série, et entre deux d'entre eux il y a une longueur de tube silicone et rien d'autre. Pas de té, pas de coude, pas de réduction, et aucun moyen d'enficher la cannelure d'une cartouche directement dans le piquage d'une autre. Voici ce jeu de raccords manquant, engendré par les quatre mêmes expressions : une tétine faite ici à tube_id 3 serre le même tube qu'un piquage fait là-bas à tube_id 3. Le premier orifice de chaque mode prend une forme au choix : cannelure pour tube, emboîture qui reçoit la cannelure d'une autre cartouche sans tube entre les deux, ou fût parallèle pour un raccord instantané du commerce.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "A junção que a própria série de mangueira do comum nunca teve. O pneumatic-barb-port publica uma série de espigões dimensionada pelo diâmetro interno da mangueira — 2 / 3 / 4 mm — e outros quatro cartuchos a consomem: bellows-actuator, pneu-net-finger, suction-cup-bellows e vacuum-manifold-block. Cinco objetos falam uma mesma série, e entre dois quaisquer deles há um trecho de mangueira de silicone e nada mais. Nenhum tê, nenhum cotovelo, nenhuma redução, e nenhum jeito de enfiar o espigão de um cartucho direto no bocal de outro. Este é esse conjunto de conexões que faltava, gerado pelas mesmas quatro expressões, de modo que uma haste feita aqui com tube_id 3 agarra a mesma mangueira que um bocal feito lá com tube_id 3. O primeiro bocal de cada modo tem forma selecionável: espigão para mangueira, encaixe que recebe o espigão de outro cartucho sem mangueira entre eles, ou haste paralela para engate rápido comercial.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/hose-barb-tee.webp",
+    "difficulty": "intermediate",
+    "tags": ["hose-barb", "tee", "elbow", "reducer", "pneumatic", "soft-robotics", "tube-fitting", "low-pressure", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "tee",
+      "label": { "en": "Tee", "es": "Te", "fr": "Té", "pt": "Tê" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["tee"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "elbow",
+      "label": { "en": "Elbow", "es": "Codo", "fr": "Coude", "pt": "Cotovelo" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["elbow"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "reducer",
+      "label": { "en": "Reducer", "es": "Reducción", "fr": "Réduction", "pt": "Redução" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["reducer"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 16 }
+    }
+  ],
+  "parts": [
+    { "id": "tee", "render_mode": 0, "color": "#2e7d68",
+      "label": { "en": "Tee", "es": "Te", "fr": "Té", "pt": "Tê" } },
+    { "id": "elbow", "render_mode": 0, "color": "#3f9b81",
+      "label": { "en": "Elbow", "es": "Codo", "fr": "Coude", "pt": "Cotovelo" } },
+    { "id": "reducer", "render_mode": 0, "color": "#5cb89c",
+      "label": { "en": "Reducer", "es": "Reducción", "fr": "Réduction", "pt": "Redução" } }
+  ],
+  "parameter_groups": [
+    { "id": "series", "label": { "en": "Tube Series", "es": "Serie de Manguera", "fr": "Série de tube", "pt": "Série de Mangueira" } },
+    { "id": "barb", "label": { "en": "Barb Form", "es": "Forma de Espiga", "fr": "Forme de cannelure", "pt": "Forma do Espigão" } },
+    { "id": "body", "label": { "en": "Body", "es": "Cuerpo", "fr": "Corps", "pt": "Corpo" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_id", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "series", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "Tube Inner Ø (mm)", "es": "Ø Interior de Manguera (mm)", "fr": "Ø intérieur du tube (mm)", "pt": "Ø Interno da Mangueira (mm)" },
+      "tooltip": {
+        "en": "The commons' shared barb series: the tube's INNER diameter, not its outer. Same 1.5-10 mm range as pneumatic-barb-port, deliberately — a series is only a series if both ends of it accept the same numbers",
+        "es": "La serie de espigas compartida del procomún: el diámetro INTERIOR de la manguera, no el exterior. El mismo rango de 1.5-10 mm que pneumatic-barb-port, a propósito — una serie solo es serie si ambos extremos aceptan los mismos números",
+        "fr": "La série de cannelures partagée du commun : le diamètre INTÉRIEUR du tube, pas l'extérieur. Même plage 1,5-10 mm que pneumatic-barb-port, délibérément — une série n'est une série que si ses deux bouts acceptent les mêmes valeurs",
+        "pt": "A série de espigões compartilhada do comum: o diâmetro INTERNO da mangueira, não o externo. A mesma faixa de 1,5-10 mm do pneumatic-barb-port, de propósito — uma série só é série se as duas pontas aceitam os mesmos números"
+      }
+    },
+    {
+      "id": "tube_id_b", "type": "slider", "default": 2.0, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "series", "modes": ["reducer"],
+      "label": { "en": "Second Tube Ø (mm)", "es": "Ø de Segunda Manguera (mm)", "fr": "Ø du second tube (mm)", "pt": "Ø da Segunda Mangueira (mm)" },
+      "tooltip": {
+        "en": "The other end of the reducer. Setting both the same is legitimate — it becomes a straight splice on one series",
+        "es": "El otro extremo de la reducción. Poner ambos iguales es legítimo — se vuelve un empalme recto en una sola serie",
+        "fr": "L'autre bout de la réduction. Mettre les deux identiques est légitime — cela devient un manchon droit sur une seule série",
+        "pt": "A outra ponta da redução. Colocar os dois iguais é legítimo — vira uma emenda reta numa única série"
+      }
+    },
+    {
+      "id": "port_a_form", "type": "select", "default": "barb",
+      "options": [
+        { "value": "barb", "label": "Barb (for tube)" },
+        { "value": "socket", "label": "Socket (receives a barb)" },
+        { "value": "push_in", "label": "Push-in stem (collet fitting)" }
+      ],
+      "group": "series", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "First Port Form", "es": "Forma del Primer Puerto", "fr": "Forme du premier orifice", "pt": "Forma do Primeiro Bocal" },
+      "tooltip": {
+        "en": "The socket form is the point of this cartridge as much as the junction is: all five members of the barb series publish their barb as a profile, and a profile does not mate a profile — so the series is published but not self-mating. A socket is what consumes it",
+        "es": "La forma de receptáculo es tanto el punto de este cartucho como la unión misma: los cinco miembros de la serie publican su espiga como perfil, y un perfil no embona con otro perfil — así que la serie está publicada pero no embona consigo misma. Un receptáculo es lo que la consume",
+        "fr": "La forme emboîture est tout autant le propos de cette cartouche que le raccord lui-même : les cinq membres de la série publient leur cannelure comme un profil, et un profil ne s'accouple pas à un profil — la série est donc publiée mais non auto-accouplante. C'est une emboîture qui la consomme",
+        "pt": "A forma de encaixe é tanto o ponto deste cartucho quanto a própria junção: os cinco membros da série publicam seu espigão como perfil, e perfil não casa com perfil — então a série está publicada mas não casa consigo mesma. Um encaixe é o que a consome"
+      }
+    },
+    {
+      "id": "push_od", "type": "slider", "default": 6.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "series", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "Push-in Stem Ø (mm)", "es": "Ø de Vástago Rápido (mm)", "fr": "Ø du fût instantané (mm)", "pt": "Ø da Haste de Engate (mm)" },
+      "tooltip": {
+        "en": "Outer diameter of the parallel stem, when the first port is a push-in. 4 and 6 mm are the ubiquitous metric pneumatic tube sizes a one-touch collet expects. The stem is SMOOTH — a barb would shred the collet's gripping ring",
+        "es": "Diámetro exterior del vástago paralelo, cuando el primer puerto es de conexión rápida. 4 y 6 mm son las medidas métricas ubicuas de manguera neumática que espera una pinza de un toque. El vástago es LISO — una espiga destrozaría el anillo de agarre",
+        "fr": "Diamètre extérieur du fût parallèle, quand le premier orifice est instantané. 4 et 6 mm sont les tailles métriques ubiquitaires de tube pneumatique qu'attend une pince instantanée. Le fût est LISSE — une cannelure déchirerait la bague de serrage",
+        "pt": "Diâmetro externo da haste paralela, quando o primeiro bocal é de engate rápido. 4 e 6 mm são as medidas métricas ubíquas de mangueira pneumática que uma pinça de um toque espera. A haste é LISA — um espigão destruiria o anel de garra"
+      }
+    },
+    {
+      "id": "barb_count", "type": "slider", "default": 3.0, "min": 1.0, "max": 6.0, "step": 1.0,
+      "group": "barb", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "Barb Ridges", "es": "Crestas de Espiga", "fr": "Crans de cannelure", "pt": "Cristas do Espigão" },
+      "tooltip": {
+        "en": "How many ridges each stem carries. The stem length is derived FROM the ridge count, so more ridges make a longer stem rather than a crowded one",
+        "es": "Cuántas crestas lleva cada espiga. El largo del vástago se deriva DEL número de crestas, así que más crestas dan un vástago más largo, no uno apretado",
+        "fr": "Nombre de crans par tétine. La longueur du fût dérive DU nombre de crans : plus de crans donne un fût plus long, pas un fût encombré",
+        "pt": "Quantas cristas cada espigão carrega. O comprimento da haste deriva DO número de cristas, então mais cristas dão uma haste mais longa, não uma apertada"
+      }
+    },
+    {
+      "id": "barb_pitch", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.1,
+      "group": "barb", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "Ridge Pitch (mm)", "es": "Paso de Cresta (mm)", "fr": "Pas des crans (mm)", "pt": "Passo das Cristas (mm)" },
+      "tooltip": {
+        "en": "Axial spacing between ridges. Matches pneumatic-barb-port's range so a tube cut for one fits the other",
+        "es": "Separación axial entre crestas. Coincide con el rango de pneumatic-barb-port para que una manguera cortada para uno sirva en el otro",
+        "fr": "Espacement axial entre crans. Identique à la plage de pneumatic-barb-port, pour qu'un tube coupé pour l'un aille sur l'autre",
+        "pt": "Espaçamento axial entre cristas. Igual à faixa do pneumatic-barb-port, para que uma mangueira cortada para um sirva no outro"
+      }
+    },
+    {
+      "id": "barb_rise", "type": "slider", "default": 0.7, "min": 0.2, "max": 2.0, "step": 0.05,
+      "group": "barb", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "Ridge Rise (mm)", "es": "Altura de Cresta (mm)", "fr": "Saillie des crans (mm)", "pt": "Altura das Cristas (mm)" },
+      "tooltip": {
+        "en": "How far a ridge stands proud of the stem. This is the whole grip: too little and the tube walks off, too much and soft tube tears going on",
+        "es": "Cuánto sobresale una cresta del vástago. En esto consiste todo el agarre: poca y la manguera se sale, mucha y la manguera blanda se rasga al entrar",
+        "fr": "Saillie d'un cran par rapport au fût. C'est là tout le maintien : trop peu et le tube s'échappe, trop et un tube souple se déchire à l'enfilage",
+        "pt": "O quanto uma crista se projeta da haste. Nisso consiste toda a garra: pouca e a mangueira sai, muita e a mangueira macia rasga ao entrar"
+      }
+    },
+    {
+      "id": "elbow_angle", "type": "slider", "default": 90.0, "min": 30.0, "max": 150.0, "step": 5.0,
+      "group": "body", "modes": ["elbow"],
+      "label": { "en": "Elbow Angle (deg)", "es": "Ángulo de Codo (grados)", "fr": "Angle du coude (deg)", "pt": "Ângulo do Cotovelo (graus)" },
+      "tooltip": {
+        "en": "Angle between the two ports. Below about 45 degrees a soft tube kinks at the fitting instead of turning, which closes the passage the fitting exists to keep open",
+        "es": "Ángulo entre los dos puertos. Por debajo de unos 45 grados la manguera blanda se dobla en la conexión en vez de girar, y cierra el paso que la conexión existe para mantener abierto",
+        "fr": "Angle entre les deux orifices. En dessous d'environ 45 degrés, un tube souple se plie au raccord au lieu de tourner, ce qui ferme le passage que le raccord existe pour garder ouvert",
+        "pt": "Ângulo entre os dois bocais. Abaixo de uns 45 graus a mangueira macia dobra na conexão em vez de virar, e fecha a passagem que a conexão existe para manter aberta"
+      }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 1.6, "min": 0.8, "max": 8.0, "step": 0.1,
+      "group": "body", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "Passage Ø (mm)", "es": "Ø de Paso (mm)", "fr": "Ø de passage (mm)", "pt": "Ø da Passagem (mm)" },
+      "tooltip": {
+        "en": "The air or fluid passage. Capped so it can never eat more than 0.6 mm per side of a stem — a bore that hollows its own barb is not a bore",
+        "es": "El paso de aire o fluido. Limitado para no comerse más de 0.6 mm por lado del vástago — un barreno que ahueca su propia espiga no es un barreno",
+        "fr": "Le passage d'air ou de fluide. Plafonné pour ne jamais entamer plus de 0,6 mm par côté d'une tétine — un perçage qui évide sa propre cannelure n'est pas un perçage",
+        "pt": "A passagem de ar ou fluido. Limitada para nunca comer mais de 0,6 mm por lado de uma haste — um furo que esvazia o próprio espigão não é um furo"
+      }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.6, "min": 0.8, "max": 4.0, "step": 0.1,
+      "group": "body", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)", "fr": "Paroi (mm)", "pt": "Parede (mm)" },
+      "tooltip": {
+        "en": "Material around the passage, and the floor under the stem radius. The hub radius is derived from the largest port plus this, so a thin wall never leaves a hub thinner than its own port",
+        "es": "Material alrededor del paso, y piso del radio del vástago. El radio del cubo se deriva del puerto mayor más esto, así que una pared delgada nunca deja un cubo más delgado que su propio puerto",
+        "fr": "Matière autour du passage, et plancher du rayon de fût. Le rayon du moyeu dérive du plus grand orifice plus cette valeur : une paroi fine ne laisse jamais un moyeu plus mince que son propre orifice",
+        "pt": "Material em volta da passagem, e piso do raio da haste. O raio do cubo deriva do maior bocal mais isto, então uma parede fina nunca deixa um cubo mais fino que o próprio bocal"
+      }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.25, "min": 0.1, "max": 0.6, "step": 0.05,
+      "group": "body", "modes": ["tee", "elbow", "reducer"],
+      "label": { "en": "Socket Clearance (mm)", "es": "Holgura de Receptáculo (mm)", "fr": "Jeu d'emboîture (mm)", "pt": "Folga do Encaixe (mm)" },
+      "tooltip": {
+        "en": "Per-side slop where a socket receives another cartridge's barb. Two printed parts meeting need more than one printed part meeting a moulded one",
+        "es": "Holgura por lado donde un receptáculo recibe la espiga de otro cartucho. Dos piezas impresas que se encuentran necesitan más que una impresa contra una moldeada",
+        "fr": "Jeu par côté là où une emboîture reçoit la cannelure d'une autre cartouche. Deux pièces imprimées qui se rencontrent en demandent plus qu'une imprimée contre une moulée",
+        "pt": "Folga por lado onde um encaixe recebe o espigão de outro cartucho. Duas peças impressas que se encontram precisam de mais do que uma impressa contra uma moldada"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "soft_robotics_3mm", "mode": "tee",
+      "label": { "en": "Soft-Robotics Tee (3 mm ID)", "es": "Te de Robótica Blanda (3 mm ID)", "fr": "Té robotique souple (3 mm ID)", "pt": "Tê de Robótica Mole (3 mm ID)" },
+      "values": { "tube_id": 3.0, "barb_count": 3.0, "barb_rise": 0.7, "bore": 1.6, "port_a_form": "barb" }
+    },
+    {
+      "id": "direct_port_socket", "mode": "tee",
+      "label": { "en": "Direct Port Socket (no tube)", "es": "Receptáculo Directo (sin manguera)", "fr": "Emboîture directe (sans tube)", "pt": "Encaixe Direto (sem mangueira)" },
+      "values": { "tube_id": 3.0, "port_a_form": "socket", "clearance": 0.3, "wall": 2.0 }
+    },
+    {
+      "id": "push_in_6mm", "mode": "elbow",
+      "label": { "en": "6 mm Push-in Elbow", "es": "Codo de Conexión Rápida 6 mm", "fr": "Coude instantané 6 mm", "pt": "Cotovelo de Engate 6 mm" },
+      "values": { "port_a_form": "push_in", "push_od": 6.0, "tube_id": 4.0, "elbow_angle": 90.0 }
+    },
+    {
+      "id": "four_to_two", "mode": "reducer",
+      "label": { "en": "4 mm to 2 mm Reducer", "es": "Reducción de 4 mm a 2 mm", "fr": "Réduction 4 mm vers 2 mm", "pt": "Redução de 4 mm para 2 mm" },
+      "values": { "tube_id": 4.0, "tube_id_b": 2.0, "barb_count": 3.0, "bore": 1.4 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "barb_rise >= 0.4",
+      "severity": "warning",
+      "message": {
+        "en": "Below 0.4 mm of rise the ridge is inside the print's own layer resolution and the tube walks off under the first pressure cycle",
+        "es": "Por debajo de 0.4 mm de altura la cresta queda dentro de la propia resolución de capa de la impresión y la manguera se sale en el primer ciclo de presión",
+        "fr": "En dessous de 0,4 mm de saillie, le cran tient dans la résolution de couche de l'impression elle-même et le tube s'échappe au premier cycle de pression",
+        "pt": "Abaixo de 0,4 mm de altura a crista fica dentro da própria resolução de camada da impressão e a mangueira sai no primeiro ciclo de pressão"
+      }
+    },
+    {
+      "expression": "elbow_angle >= 45.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below 45 degrees a soft tube kinks at the fitting instead of turning, which closes the passage the fitting exists to keep open",
+        "es": "Por debajo de 45 grados la manguera blanda se dobla en la conexión en vez de girar, y cierra el paso que la conexión existe para mantener abierto",
+        "fr": "En dessous de 45 degrés, un tube souple se plie au raccord au lieu de tourner, ce qui ferme le passage que le raccord existe pour garder ouvert",
+        "pt": "Abaixo de 45 graus a mangueira macia dobra na conexão em vez de virar, e fecha a passagem que a conexão existe para manter aberta"
+      }
+    },
+    {
+      "expression": "wall >= 1.2",
+      "severity": "warning",
+      "message": {
+        "en": "Below 1.2 mm a printed wall around a pressurised passage is porous at the layer lines; it will weep long before it bursts, and a slow leak in a soft-robotics rig looks exactly like a weak actuator",
+        "es": "Por debajo de 1.2 mm una pared impresa alrededor de un paso presurizado es porosa en las líneas de capa; goteará mucho antes de reventar, y una fuga lenta en un montaje de robótica blanda se ve idéntica a un actuador débil",
+        "fr": "En dessous de 1,2 mm, une paroi imprimée autour d'un passage sous pression est poreuse aux lignes de couche ; elle suintera bien avant d'éclater, et une fuite lente dans un montage robotique souple ressemble exactement à un actionneur faible",
+        "pt": "Abaixo de 1,2 mm uma parede impressa em volta de uma passagem pressurizada é porosa nas linhas de camada; vai vazar muito antes de estourar, e um vazamento lento num arranjo de robótica mole parece exatamente um atuador fraco"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [55, 45, 40] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal", "fr": "De face", "pt": "Frontal" }, "position": [0, -80, 8] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 13, "per_unit": 4, "per_part": 17,
+    "fn_factor": 64, "wasm_multiplier": 3, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "commons_barb_series",
+        "label": { "en": "Commons Barb Series Socket", "es": "Receptáculo de Serie de Espigas del Procomún", "fr": "Emboîture de la série de cannelures du commun", "pt": "Encaixe da Série de Espigões do Comum" },
+        "geometry_type": "socket",
+        "standard": "internal (2 / 3 / 4 mm tube ID)",
+        "parameters": ["tube_id", "clearance", "wall", "port_a_form"],
+        "compatible_with": ["pneumatic-barb-port", "bellows-actuator", "pneu-net-finger", "suction-cup-bellows", "vacuum-manifold-block"]
+      },
+      {
+        "id": "barb_stem_series",
+        "label": { "en": "Barb Stem Series", "es": "Serie de Vástago de Espiga", "fr": "Série de tétines cannelées", "pt": "Série de Haste Espigada" },
+        "geometry_type": "profile",
+        "standard": "internal (2 / 3 / 4 mm tube ID)",
+        "parameters": ["tube_id", "tube_id_b", "barb_count", "barb_pitch", "barb_rise"],
+        "compatible_with": ["pneumatic-barb-port", "bellows-actuator", "pneu-net-finger", "suction-cup-bellows", "vacuum-manifold-block"]
+      },
+      {
+        "id": "push_in_stem",
+        "label": { "en": "Push-in Collet Stem", "es": "Vástago para Pinza Rápida", "fr": "Fût pour pince instantanée", "pt": "Haste para Pinça de Engate" },
+        "geometry_type": "profile",
+        "standard": "4 / 6 mm metric pneumatic tube OD, smooth collet stem",
+        "parameters": ["push_od", "bore", "wall"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Soft pneumatics is the cheapest capable robotics there is: a bellows, a finger, a suction cup and a length of silicone tube will pick fruit, turn a page, hold a limb or grip a wet dish, and every one of those parts can be printed. What cannot be printed today, in this commons, is the plumbing between them — so a rig with two actuators has a hand-cut splice in it, and a hand-cut splice is where a demonstration stops being a machine. Fittings are the least glamorous objects in any system and they are the ones that decide whether it can be built by someone who did not design it. Publishing the junction on the series that already exists, rather than inventing a sixth convention, is the whole contribution: it costs nothing to anyone already using the series and it turns five isolated objects into a kit. Recycled filament is not offered — this part carries pressure against a printed wall, and reground feedstock has unpredictable layer adhesion.",
+      "es": "La neumática blanda es la robótica capaz más barata que existe: un fuelle, un dedo, una ventosa y un tramo de manguera de silicón pueden cosechar fruta, voltear una página, sostener un miembro o agarrar un traste mojado, y todas esas piezas se pueden imprimir. Lo que hoy no se puede imprimir en este procomún es la tubería entre ellas — así que un montaje con dos actuadores lleva un empalme hecho a mano, y un empalme hecho a mano es donde una demostración deja de ser una máquina. Las conexiones son los objetos menos vistosos de cualquier sistema y son los que deciden si alguien que no lo diseñó puede armarlo. Publicar la unión sobre la serie que ya existe, en vez de inventar una sexta convención, es toda la contribución: no le cuesta nada a quien ya usa la serie y convierte cinco objetos aislados en un juego. No se ofrece filamento reciclado — esta pieza soporta presión contra una pared impresa, y el material regranulado tiene adhesión entre capas impredecible.",
+      "fr": "La pneumatique souple est la robotique capable la moins chère qui soit : un soufflet, un doigt, une ventouse et une longueur de tube silicone cueillent un fruit, tournent une page, soutiennent un membre ou saisissent une assiette mouillée — et chacune de ces pièces s'imprime. Ce qui ne s'imprime pas aujourd'hui, dans ce commun, c'est la tuyauterie entre elles : un montage à deux actionneurs comporte donc un raccord bricolé, et un raccord bricolé, c'est là qu'une démonstration cesse d'être une machine. Les raccords sont les objets les moins spectaculaires d'un système et ce sont eux qui décident si quelqu'un qui ne l'a pas conçu peut le monter. Publier le raccord sur la série qui existe déjà, plutôt que d'inventer une sixième convention, est toute la contribution : cela ne coûte rien à qui utilise déjà la série et cela transforme cinq objets isolés en un kit. Le filament recyclé n'est pas proposé — cette pièce tient une pression contre une paroi imprimée, et la matière régénérée a une adhésion inter-couches imprévisible.",
+      "pt": "A pneumática mole é a robótica capaz mais barata que existe: um fole, um dedo, uma ventosa e um trecho de mangueira de silicone colhem fruta, viram uma página, sustentam um membro ou agarram um prato molhado, e cada uma dessas peças pode ser impressa. O que hoje não se imprime neste comum é o encanamento entre elas — então um arranjo com dois atuadores carrega uma emenda feita à mão, e uma emenda feita à mão é onde uma demonstração deixa de ser uma máquina. Conexões são os objetos menos vistosos de qualquer sistema e são os que decidem se alguém que não o projetou consegue montá-lo. Publicar a junção sobre a série que já existe, em vez de inventar uma sexta convenção, é toda a contribuição: não custa nada a quem já usa a série e transforma cinco objetos isolados num kit. Filamento reciclado não é oferecido — esta peça sustenta pressão contra uma parede impressa, e material regranulado tem adesão entre camadas imprevisível."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["hose-barb", "tee", "elbow", "reducer", "pneumatic", "soft-robotics", "tube-fitting", "low-pressure", "industrial", "hyperobject", "commons"]
+}

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
@@ -112,16 +112,29 @@ const baseContext = {
   cachedVariants: null,
 }
 
+// StudioMainView mounts only the layout tree that is on screen, decided by
+// `(min-width: 1024px)` — the same width as the `lg:` classes. jsdom reports no
+// match for anything unless told otherwise, so a viewport has to be declared or
+// every test would silently run the mobile tree.
+const LG = '(min-width: 1024px)'
+const setViewport = (kind) => globalThis.__setMediaQuery(LG, kind === 'desktop')
+
 beforeEach(() => {
   vi.clearAllMocks()
   useProject.mockReturnValue(baseContext)
   useLanguage.mockReturnValue({ t })
+  // Most of this spec asserts the desktop structure (resizable panels, the
+  // always-open console, the estimate strip), so desktop is the default.
+  setViewport('desktop')
+})
+
+afterEach(() => {
+  globalThis.__resetMediaQueries()
 })
 
 describe('StudioMainView', () => {
   it('renders viewer and console log area', () => {
     render(<StudioMainView />)
-    // Viewer content is shared across desktop + mobile layouts (both in DOM)
     expect(screen.getAllByTestId('viewer').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByRole('log').length).toBeGreaterThanOrEqual(1)
   })
@@ -177,8 +190,42 @@ describe('StudioMainView', () => {
   })
 
   it('renders mobile console toggle button', () => {
+    setViewport('mobile')
     render(<StudioMainView />)
     expect(screen.getByLabelText('Toggle console panel')).toBeInTheDocument()
+  })
+
+  // --- One layout tree ------------------------------------------------------
+  // The desktop and mobile trees each mount viewerContent, so rendering both
+  // and hiding one with CSS put a second <Viewer> — a second <canvas> and a
+  // second WebGL render loop — in every page, inside a display:none subtree.
+
+  it('mounts exactly one viewer at a desktop viewport', () => {
+    setViewport('desktop')
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('viewer')).toHaveLength(1)
+  })
+
+  it('mounts exactly one viewer at a mobile viewport', () => {
+    setViewport('mobile')
+    render(<StudioMainView />)
+    expect(screen.getAllByTestId('viewer')).toHaveLength(1)
+  })
+
+  it('mounts only the desktop tree at a desktop viewport', () => {
+    setViewport('desktop')
+    render(<StudioMainView />)
+    // The mobile console bar is the mobile tree's marker; the resizable panel
+    // group is the desktop tree's.
+    expect(screen.queryByLabelText('Toggle console panel')).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('resizable-panel-group').length).toBeGreaterThan(0)
+  })
+
+  it('mounts only the mobile tree at a mobile viewport', () => {
+    setViewport('mobile')
+    render(<StudioMainView />)
+    expect(screen.getByLabelText('Toggle console panel')).toBeInTheDocument()
+    expect(screen.queryAllByTestId('resizable-panel-group')).toHaveLength(0)
   })
 
   it('renders print estimate overlay when estimate exists', () => {
@@ -243,8 +290,6 @@ describe('StudioMainView', () => {
     })
     render(<StudioMainView />)
     // 1 body + 4 pins.
-    // StudioMainView renders its own desktop and mobile trees, so this child
-    // appears twice; both carry the same computed count.
     expect(screen.getAllByTestId('model-info')[0]).toHaveAttribute('data-total-pieces', '5')
   })
 
@@ -328,7 +373,8 @@ describe('StudioMainView', () => {
         comparisonSlots={[{ id: 'a', parts: [] }, { id: 'b', parts: [] }]}
       />
     )
-    // The compare layout replaces the single viewer with one per slot.
+    // The compare layout replaces the single viewer with one per slot — two
+    // slots, one layout tree, so two viewers.
     expect(screen.getAllByTestId('viewer').length).toBeGreaterThan(1)
   })
 

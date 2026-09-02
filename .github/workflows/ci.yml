@@ -269,7 +269,22 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner imports it)
         run: pip install -e ../../packages/commons-sandbox
-      - run: pip install ruff pip-audit
+      # ruff was installed unpinned, so this lane's rule set was whatever ruff
+      # had released by the time the job started. A ruff release that adds a
+      # rule, widens an existing one, or changes a default turns a green branch
+      # red with no change to this repo — and the failure lands on whoever
+      # happens to push next. apps/api/pyproject.toml already pins the RULES
+      # (line length, target-version, the ignore list); this pins the ENGINE
+      # that reads them, which is the half that was still floating.
+      #
+      # 0.16.5 is what CI installed on 2026-09-02 (run 33662503138, `backend`
+      # job: "Successfully installed ... ruff-0.16.5"), so pinning it changes
+      # nothing about today's result and only removes the drift.
+      #
+      # The same pin is in apps/api/requirements-dev.txt so a developer's local
+      # ruff is the one CI runs, and scripts/tests/test_ruff_pin.py fails if the
+      # two ever disagree. Bump both together.
+      - run: pip install "ruff==0.16.5" pip-audit
       - run: pip-audit --desc || true
       - run: ruff check .
       # apps/worker was never linted by anything: this job's `ruff check .` runs
@@ -286,6 +301,17 @@ jobs:
       # deliberately absent from requirements.txt, since the API image has no
       # business shipping a mocking library.
       - run: pip install pytest pytest-cov "moto[s3]"
+      # scripts/tests/test_verify_parity.py runs HERE for the same reason the
+      # openapi tests moved into openapi-validation: it needs trimesh and numpy
+      # to build the meshes its geometry cases compare, and manifest-validation
+      # installs neither, so there the whole module skips. This job installs
+      # apps/api/requirements.txt, which carries trimesh~=4.0 and numpy>=1.24,
+      # plus the pytest above — nothing else is needed, because the suite stubs
+      # the two render backends rather than importing them, and therefore never
+      # shells out to OpenSCAD or builds CadQuery geometry. Under a second.
+      - name: Parity-checker decision-logic tests
+        working-directory: ${{ github.workspace }}
+        run: python3 -m pytest scripts/tests/test_verify_parity.py -q
       - name: Check for pending migrations
         run: |
           cd $GITHUB_WORKSPACE/apps/api
@@ -735,6 +761,17 @@ jobs:
       # Also rejects duplicate mapping keys, which PyYAML resolves silently
       # by keeping the last definition — the plain validator cannot see them.
       - run: python3 scripts/qa/check_openapi.py
+      # The duplicate-key gate's own tests run HERE, not only in
+      # manifest-validation's whole-suite step. They need PyYAML (to build the
+      # strict loader) and openapi_spec_validator (for the three cases that
+      # reach the validator), and manifest-validation installs neither — so
+      # there the module skips, and a suite that skips pins nothing. This job
+      # already has both: openapi-spec-validator pulls PyYAML in transitively
+      # via jsonschema-path, so pytest is the only addition, and all 15 tests
+      # run. Seconds, no network, no submodules.
+      - run: pip install pytest
+      - name: Duplicate-key gate's own tests
+        run: python3 -m pytest scripts/tests/test_check_openapi.py -q
 
   ai-integration:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

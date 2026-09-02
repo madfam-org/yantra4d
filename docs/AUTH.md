@@ -172,6 +172,134 @@ modes. This is pinned by a test using FC's exact token shape.
 
 ---
 
+## WebSocket channels
+
+`apps/api/routes/core/websocket.py` registers three flask-sock routes. They are
+not covered by the decorators above — see "Why the decorators do not apply".
+
+| Channel | Anonymous | Auth required for | Mutates server state |
+|---------|-----------|-------------------|----------------------|
+| `/api/ws/render/<session_id>` | Readable: connect, `ping`/`pong` | n/a — no action is permitted to any caller | No |
+| `/api/ws/printer/<printer_id>` | Readable: heartbeat + printer status broadcast, `ping`/`pong` | n/a — read-only broadcast | No |
+| `/api/ws/telemetry/<slug>` | Readable: MQTT telemetry broadcast for the slug, `ping`/`pong` | n/a — read-only broadcast | No |
+
+### Why the decorators do not apply
+
+`@require_auth` returns a 401 *response*, which is meaningless once a connection
+has been upgraded, and neither it nor `@optional_auth` reads the `?token=` query
+parameter — the only place a browser can put a JWT, since browsers cannot set
+headers on a WebSocket handshake. `middleware/auth.py::resolve_ws_claims()` is
+the WS-shaped equivalent: it accepts a bearer from the `Authorization` header
+(preferred; query strings end up in proxy logs) or from `?token=` /
+`?access_token=`, populates `request.auth_claims` and `request.current_user`
+exactly as `@optional_auth` does, and returns `None` for an anonymous or invalid
+caller instead of a response.
+
+### Why `cancel` was removed from the render channel
+
+The render channel's `cancel` action used to call
+`render_orchestrator.cancel_active_render()`, a "backward-compatible alias" for
+`cancel_all_renders()`. The route carried no auth decorator, no scope check and
+no rate limit, so any anonymous client could cancel every in-flight render for
+every user — the backend runs a single replica, so "every render" is literal.
+
+`cancel` is now refused for every caller, with the reason stated in the reply
+(`authentication_required` for anonymous, `render_owner_unknown` otherwise), and
+the alias has been deleted so the path cannot be reopened by accident. Refusing
+even authenticated callers is not conservatism for its own sake: renders carry
+no owner. `apps/worker/render_worker.py::_set_active_job` records
+job_id/part/engine/project/mode/request_id and nothing identifying the caller,
+the active-job set is global, and the `job_id` is never published to the client
+— so the channel has no way to cancel *only* the caller's renders, and the only
+cancel it could perform is the cancel-everything one being removed.
+
+`POST /api/render-cancel` is the supported cancel path, and it is now **scoped**
+— see [Cancelling a render](#cancelling-a-render) below. The follow-up that
+scoped it also closed the same hole on the HTTP side: that route used to be an
+anonymous, bodyless `cancel_all_renders()`.
+
+If a `cancel` action is ever wanted back on the socket,
+`routes/core/websocket.py::cancel_refusal_reason` is the single place to relax,
+and it must reuse the scoped helpers below rather than re-deriving ownership:
+act only on ids the caller was given, and keep `yantra4d:render` enforced on
+machine tokens, matching `@require_render_scope` on the HTTP render routes.
+
+### Connection and message limits
+
+Flask-Limiter cannot guard these routes: it counts one hit per request, and a
+flask-sock handler is one "request" that lives for the whole life of the socket,
+so a decorator would see the connect and nothing after it. Two in-process guards
+cover that gap instead — a per-IP concurrent connection cap
+(`WS_MAX_CONNECTIONS_PER_IP`, default 8, counted per channel) and a
+per-connection inbound message budget (`WS_MAX_MESSAGES_PER_MINUTE`, default
+120, a fixed 60s window; exceeding it closes the socket). Both are per-replica,
+so neither is ever the only thing standing between a caller and a privileged
+action — and on these channels there is no privileged action to reach.
+
+---
+
+## Cancelling a render
+
+| Endpoint | Anonymous | Scope check | What it cancels |
+|---|---|---|---|
+| `POST /api/render-cancel` `{request_id}` | Yes, with the id | `yantra4d:render` on machine tokens | Every job of that one render request, including its not-yet-queued parts |
+| `POST /api/render-cancel` `{job_ids:[…]}` | Yes, with the ids | `yantra4d:render` on machine tokens | Exactly those jobs |
+| `POST /api/render-cancel` `{all:true}` | **No** — 401 | `@require_role("admin")` | Every render on the box, for every user |
+| `POST /api/render-cancel` with no target | — | — | Nothing: **400** `cancel_target_required` |
+
+### Why a target is required
+
+Renders carry no owner. `apps/worker/render_worker.py::_set_active_job` records
+job_id/part/engine/project/mode/request_id and nothing identifying the caller,
+and `yantra_render_active_jobs` is one global set. So the route cannot ask "is
+this render yours?" — it can only ask "do you know which render you mean?".
+
+Until this change it asked neither. `POST /api/render-cancel` took no body and
+called `cancel_all_renders()`, which prunes the shared queue and marks every
+active job. `@optional_auth` lets anonymous callers through by design and
+`@require_render_scope` only checks machine tokens (and in `log` mode allows
+even those), so an anonymous POST over plain HTTP terminated every in-flight
+render for every user — the backend runs a single replica, so "every render" is
+literal. That is the same capability that was just removed from the WebSocket
+channel, one door along.
+
+### What stands in for ownership
+
+`/api/render-stream` now publishes a `job` SSE event carrying
+`{request_id, job_ids}` — once when the stream opens, and again as each part is
+queued. Possessing one of those identifiers is the entitlement:
+
+* **`job_id`** is a server-minted UUID4, published only on the requesting
+  client's own stream. It is unguessable, so it works as a capability.
+* **`request_id`** is caller-suppliable (`extract_render_payload` generates a
+  UUID4 only when the caller omits it). A caller that picks a *predictable*
+  request_id is choosing a predictable cancel handle — that is the caller's
+  risk, not a hole in the route, but it is why `job_ids` is the stronger of the
+  two. On `/api/render` (synchronous, answers only when the render is done)
+  supplying your own `request_id` is the only way to have something to cancel
+  with, so make it unguessable.
+
+`request_id` scope exists because job ids alone cannot cover a multi-part
+render: parts are queued one at a time, so ids for parts 2..n do not exist yet
+when the user presses Cancel. `cancel_request()` sets
+`yantra_render_cancel_request:<request_id>`, which the render loop checks before
+queueing each part.
+
+### The mechanism
+
+No worker change was needed. `render_worker.py::_is_cancelled(job_id)` already
+polled two keys for every job — the global `yantra_render_cancel_all` and the
+per-job `yantra_render_cancel_job:<job_id>` — and passes
+`lambda: _is_cancelled(job_id)` into each engine as its cancellation poll.
+Scoped cancel sets that **second** key, for the jobs it is allowed to touch,
+instead of the global one. `cancel_render_jobs()`, `cancel_request()` and
+`cancel_all_renders()` are all one predicate over the same sweep
+(`_cancel_matching` in `services/engine/render_orchestrator.py`): prune matching
+queue entries, mark matching active jobs, publish `cancelled` on their channels.
+
+An active job whose metadata has expired matches nothing but its own job_id — a
+request-scoped cancel leaves it alone rather than sweeping up work it can no
+longer attribute.
 ## Identity tier overrides
 
 `resolve_tier()` (`apps/api/services/core/tier_service.py`) is the single funnel
@@ -275,14 +403,57 @@ Auth settings are defined in `apps/api/config.py`.
 | `JANUA_AUDIENCE` | `yantra4d-api` | The expected JWT `aud` claim. Must match the audience registered in the Janua seed script. |
 | `AUTH_ENABLED` | `true` | Set to `false` to disable all auth checks for local development. |
 | `RENDER_SCOPE_ENFORCEMENT` | `log` | `log` warns and allows machine tokens missing `yantra4d:render`; `enforce` returns 403. Read from the environment at call time, not via `Config`. See [Machine tokens and render scope](#machine-tokens-and-render-scope). |
+| `WS_MAX_CONNECTIONS_PER_IP` | `8` | Concurrent WebSocket connections allowed per IP per channel. In-process, per-replica. See [WebSocket channels](#websocket-channels). |
+| `WS_MAX_MESSAGES_PER_MINUTE` | `120` | Inbound frames allowed per WebSocket connection per 60s window; the socket closes when it is exceeded. |
 | `JWKS_CACHE_LIFESPAN` | `3600` | Seconds a fetched JWKS is served before a refresh is attempted. See [JWKS Caching](#jwks-caching). |
 | `JWKS_STALE_MAX_AGE` | `86400` | Seconds past the lifespan that a last-known-good JWKS may still be served while the endpoint is unreachable. Past this, token validation fails closed. |
 | `JWKS_REFRESH_BACKOFF` | `30` | Seconds a failed JWKS refresh waits before another attempt, so a flapping Janua is not re-dialled once per request. |
 | `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "madfam"}`. Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
 | `PRIVATE_PROJECTS` | *(unset)* | Comma-separated slugs forced private regardless of their manifest. Read at call time. See [Private projects](#private-projects). |
 | `PROJECT_ACCESS_GRANTS` | *(unset)* | JSON object mapping slug to a list of emails granted access to that private project, e.g. `{"acme-bracket": ["someone@example.com"]}`. Read at call time. |
+| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `madfam`. Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. Distinct from `TIER_OVERRIDES`, which keys off a signed identity and therefore needs auth ON. See [Harness tier](#harness-tier). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
+
+### Harness tier
+
+`AUTH_ENABLED=false` does **not** by itself unlock paid features on the render
+path. `_effective_tier()` in `apps/api/routes/engine/render.py` grants the top
+tier only when auth is off **and** Flask debug is on; auth-off with debug off —
+the state CI and the whole API test suite run in — stays `guest`, which is what
+lets the tier-enforcement tests keep seeing 403s.
+
+That leaves a real harness stuck: the nightly browser audit
+(`apps/studio/e2e/tests/23-browser-audit`) exists to drive real renders, and
+gridfinity's default `bin` mode is CadQuery, which `guest` may not use
+(`apps/api/tiers.json`). Before this variable every one of those renders was
+refused and the studio answered with its upgrade prompt.
+
+`HARNESS_TIER` is the explicit way to say so:
+
+```bash
+AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
+```
+
+- **Empty by default** — no deployment or test changes behaviour unless it is
+  deliberately set.
+- **Ignored whenever `AUTH_ENABLED` is `true`**, so it cannot widen
+  entitlements in a real deployment even if the variable leaks into one.
+- **Ignored unless it names a tier in `tiers.json`**; a bad value logs a
+  warning and leaves the request gated rather than failing to boot.
+- It affects the render gating path only. `/api/me` and `require_tier()`
+  already report `madfam` whenever auth is off, so setting
+  `HARNESS_TIER=madfam` makes the server agree with what the client was
+  already being told.
+- It does **not** overlap [Identity tier overrides](#identity-tier-overrides).
+  `TIER_OVERRIDES` maps a signed identity's email to a tier and so applies only
+  when auth is ON and a token is present; a harness running with
+  `AUTH_ENABLED=false` sends no token and has no identity to match. The two are
+  mutually exclusive by construction.
+
+Implemented by `harness_tier_override()` in
+`apps/api/services/core/tier_service.py`; both directions are pinned by
+`apps/api/tests/unit/test_harness_tier.py`.
 
 ---
 

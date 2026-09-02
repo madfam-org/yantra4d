@@ -12,14 +12,18 @@ from flask import Blueprint, Response, jsonify, request
 import rate_limits
 from extensions import limiter
 from manifest import get_manifest
-from middleware.auth import optional_auth, require_render_scope
+from middleware.auth import (
+    effective_tier,
+    export_format_denied_response,
+    optional_auth,
+    require_render_scope,
+)
 from services.core.project_access import check_project_access
 from services.core.tier_service import (
     export_format_allowed,
     get_render_limit,
     get_render_limit_for_project,
     is_unlimited,
-    minimum_tier_for_export_format,
     resolve_tier,
 )
 from services.engine.render_orchestrator import (
@@ -54,18 +58,12 @@ def _make_rate_limit_headers(tier: str) -> dict:
 
 
 def _effective_tier() -> str:
-    """Gating tier. In local dev (AUTH_ENABLED off AND debug on) unlock top tier so
-    the CadQuery / server-render path is not 403-gated — mirrors require_tier() and
-    /api/me. The debug condition is load-bearing: auth-off with debug off is the
-    exact state app startup flags as must-never-run (CI and tests use it), and an
-    auth-off-only unlock silently disabled every tier gate there — guests became
-    madfam and the tier-enforcement suite could never see a 403 again."""
-    from flask import current_app
+    """Gating tier for this request — see middleware.auth.effective_tier.
 
-    from config import Config
-    if not Config.AUTH_ENABLED and current_app.debug:
-        return "madfam"
-    return resolve_tier(getattr(request, "auth_claims", None))
+    Delegates so the render-time and retrieval-time export-format gates resolve
+    a caller's tier through one implementation.
+    """
+    return effective_tier(resolve_tier)
 
 
 def _project_render_limit() -> int:
@@ -190,11 +188,7 @@ def render_stl():
     # hardcoded set, which 403'd formats the essentials tier advertises.
     export_format = payload['export_format']
     if not export_format_allowed(tier, export_format):
-        needed = minimum_tier_for_export_format(export_format)
-        if needed is None:
-            return error_response(f"Export format '{export_format}' is not available.", 403)
-        label = {"essentials": "Essentials", "pro": "Pro", "madfam": "MADFAM"}.get(needed, needed.title())
-        return error_response(f"Export format '{export_format}' requires {label} tier or above.", 403)
+        return export_format_denied_response(export_format)
 
     # Resolve engine configuration
     engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)
@@ -251,11 +245,7 @@ def render_stl_stream():
     # hardcoded set, which 403'd formats the essentials tier advertises.
     export_format = payload['export_format']
     if not export_format_allowed(tier, export_format):
-        needed = minimum_tier_for_export_format(export_format)
-        if needed is None:
-            return error_response(f"Export format '{export_format}' is not available.", 403)
-        label = {"essentials": "Essentials", "pro": "Pro", "madfam": "MADFAM"}.get(needed, needed.title())
-        return error_response(f"Export format '{export_format}' requires {label} tier or above.", 403)
+        return export_format_denied_response(export_format)
 
     # Resolve engine configuration
     engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)

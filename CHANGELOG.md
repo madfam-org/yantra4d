@@ -63,6 +63,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   customer in `essentials` with no error anywhere).
 
 ### Added
+- **Value-Extraction Audit re-measured against the 500-cartridge commons** —
+  `docs/strategy/VALUE-EXTRACTION-AUDIT.md` was the last document reasoning in
+  `x/326` ratios, a denominator that stopped existing when the commons reached
+  500. The 2026-08 findings are preserved verbatim as a dated point-in-time
+  record; a new dated 2026-09 section re-measures every one of them. New
+  `scripts/qa/value_extraction_audit.py` recomputes each ratio from
+  `projects/*/project.json`, `docs/commons-catalog.json`, the studio locale
+  files and the CDG family taxonomy in `apps/api` (stdlib only), prints a
+  metric/numerator/denominator/ratio/delta table, and offers `--json`,
+  `--write` (regenerate the table the document embeds) and `--cohorts` (split
+  the commons into the 324 cartridges present at the audit commit and the 176
+  added since). Recomputing the 2026-08 rows over that first cohort returns the
+  published figures exactly — 300 `engine: cadquery`, 287 with constraints, 310
+  with `material_awareness`, 294/30/16 material flags — which is what makes the
+  delta column a comparison rather than two unrelated measurements. Figures the
+  audit stated that are judgement, frontend import-graph reachability, or
+  another QA lane's output are listed as not-recomputable rather than
+  approximated with a proxy. Before measuring anything the script asserts the
+  on-disk cartridge count against the catalog's `counts.cartridges`: 34
+  cartridges are submodules and *every* dual-engine cartridge is one of them, so
+  an uninitialised checkout would under-count silently and still print a
+  plausible table. `--check` runs as one self-contained step in the existing
+  `manifest-validation` CI job, and `scripts/tests/test_value_extraction_audit.py`
+  adds 30 tests. What the re-measurement found: constraint coverage down 8.0 pp
+  (64.2% on new cartridges vs 88.6% on audit-era ones), quadrilingual
+  (de/fr/pt/zh) coverage down 6.6 pp as new keys landed untranslated, the public
+  landing gallery stalled at 326 of 500 cartridges, `recycled_material_toggle`
+  up from 16 to 98, and the Fashion Cabinet bridge surfaced as 72 wearables /
+  49 flange interfaces / 53 bridge READMEs, none of which existed in 2026-08.
+- **Fashion Cabinet consumers back-edge (blocking)** — The hardware bridge now
+  pins in both directions. Fashion Cabinet vendors a slice of our commons
+  catalog and resolves its `hardware_ref` notions against it, so its CI has
+  always known when we moved; ours knew nothing, and renaming a parameter here
+  went red days later in someone else's repo. Their published
+  `yantra4d-consumers.json` (contract `yantra4d_consumers_v1`) is now vendored
+  at `docs/interfaces/fashion-cabinet-consumers.snapshot.json`, commit-pinned to
+  the fashion-cabinet commit it came from, and
+  `scripts/qa/refresh_fc_consumers.py --check` resolves every linked claim in it
+  against our own manifests — 87 cartridges consumed, 299 linked consumers, 960
+  parameter references. Blocking in the `manifest-validation` CI job: rename a
+  parameter a garment drives and the failure names the garment, the cartridge
+  and the parameter, in the pull request that makes the change. Unlinked claims
+  (their `wanted` list — `hammer-loop` is a solid a garment is waiting on) are
+  reported and never enforced. Offline, stdlib-only, no timestamps; `--check`
+  also rejects a hand-edited snapshot, and `--check-upstream` (network, not in
+  CI) reports drift against the pin. Docs:
+  `docs/reference/fashion-cabinet-consumers.md`.
 - **Multi-Rack Mode (custom-msh)** — New 6th mode producing 2–5 contiguous
   staining racks joined front-to-back (Y-axis, default) or side-by-side (X-axis).
   Y-axis stacking: racks share diamond grid junction guards at Y boundaries,
@@ -74,6 +121,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `junction_guard_xz()`, `continuous_side_guards()`, parameterized segment
   positioning. `multi_num_racks` parameter (slider 2–5), preset, and
   `multi_rack_body` part (render_mode 5). 1494/1494 studio tests passing.
+
+### Changed
+- **CI Skips the Browser Matrix on Documentation-Only PRs** — every job in
+  `ci.yml` ran on every pull request, so a README-only change queued the full
+  ten-shard Playwright matrix — ten jobs with a 30 minute cap each — on the same
+  shared self-hosted pool a production deploy waits in. A new `changes` job now
+  classifies each pull request first: **docs-only** (every changed file is a
+  `*.md`, or under `docs/`, `apps/docs/`, `runbooks/`, or `.github/*.md`) skips
+  the browser matrix and its report, the studio, landing and admin builds, the
+  backend suite and the geometric parity check; **anything else is code** and
+  runs exactly what it ran before. A pull request touching documentation *and*
+  code is code, and a push to `main` always runs everything. The classification
+  uses `dorny/paths-filter` pinned to a commit, with
+  `predicate-quantifier: every` so a file counts as code unless every
+  documentation pattern excludes it, and the decision step fails closed: only a
+  filter that ran and answered exactly `false` skips anything. No test was
+  skipped, disabled or quarantined — the suite a code change runs is unchanged.
+- **`ci-success` Can Now Actually Fail** — the single required check depended on
+  nine jobs with the default `if: success()`, which meant a dependency that was
+  skipped *or failed* left `ci-success` itself skipped, and a skipped required
+  check is treated as passing. It now runs with `if: always()` and inspects
+  every dependency's result: `failure` or `cancelled` anywhere fails it,
+  `skipped` counts as passing. `cancelled` matters because of the per-PR
+  concurrency group added in #84 — a superseded run must not report green.
+  `manifest-sync` and `spec-conformance` were added to its `needs`: both already
+  ran on every pull request and spec-conformance documents itself as blocking,
+  but neither was wired into the one required check, so neither could block a
+  merge.
+- **Deploy Jobs Take Their Runner From a Repository Variable** — all eight jobs
+  in `deploy.yml` were hard-pinned to the shared pool, so a production deploy
+  queued behind whatever pull request CI happened to be running: deploy #540's
+  Build Studio sat queued from 04:01Z past 04:30Z behind roughly a hundred PR
+  shard jobs, and deploy #542 waited behind #540 in the serial deploy
+  concurrency group. Each job now resolves
+  `${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}`,
+  the operator-override form ADR-010 already permits, so deploys can be moved to
+  a dedicated runner set by setting one repository variable. Unset, the
+  expression resolves to the shared pool and behaviour is byte-for-byte what it
+  was. Both arms are MADFAM-operated runners; no GitHub-hosted fallback was
+  introduced.
 
 ### Fixed
 - **Auto-Generate No Longer Opens a Blocking Modal** — The studio renders on

@@ -5,6 +5,7 @@ Handles /api/estimate, /api/render, /api/render-stream endpoints.
 Route-level concerns only: request parsing, auth, rate limiting, and response
 formatting. All render logic is delegated to the render orchestrator service.
 """
+import json
 import logging
 
 from flask import Blueprint, Response, jsonify, request
@@ -285,6 +286,44 @@ def _cancel_every_render():
     })
 
 
+def _cancel_body() -> dict:
+    """The cancel target, parsed from a normal request OR from a page-unload beacon.
+
+    A browser abandoning a render — tab closed, back button, the Studio hook
+    unmounting — has one reliable way to tell the server: `navigator.sendBeacon`,
+    which the page does not stay alive to await. The Studio sends a JSON body
+    that way (apps/studio/src/services/engine/renderService.ts::cancelRenderOnUnload)
+    and falls back to `fetch(..., {keepalive: true})`.
+
+    `request.get_json()` alone is not enough for that. A beacon's content type is
+    whatever the Blob carries, and the fallback shape browsers accept without a
+    CORS preflight is `text/plain` — so a body that is perfectly good JSON
+    arrives under a content type Flask will not parse, `get_json(silent=True)`
+    returns None, and the cancel becomes a 400 `cancel_target_required` for a
+    render nobody is watching any more.
+
+    Being tolerant here costs nothing: the body is still parsed as JSON and every
+    field is still validated below. It only stops the content-type header from
+    deciding whether a cancel counts.
+
+    Nightly run #171 is why this matters: ~95 navigations in 40 minutes produced
+    ZERO `render-cancel` calls, so every abandoned render ran to completion
+    against a single worker while a live user waited behind it.
+    """
+    data = request.get_json(silent=True)
+    if isinstance(data, dict):
+        return data
+
+    raw = request.get_data(as_text=True) or ""
+    if not raw.strip():
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except ValueError:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
 @render_bp.route('/api/render-cancel', methods=['POST'])
 @optional_auth
 @require_render_scope
@@ -297,9 +336,7 @@ def cancel_render_endpoint():
     is caller-suppliable, so a caller that sets a predictable one is choosing a
     predictable cancel handle (see docs/AUTH.md).
     """
-    data = request.get_json(silent=True)
-    if not isinstance(data, dict):
-        data = {}
+    data = _cancel_body()
 
     # Cancellation is a write against a project's in-flight work, so it is
     # gated like the renders it stops (#78). The slug is optional here; an

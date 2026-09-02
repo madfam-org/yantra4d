@@ -66,6 +66,14 @@ interface RenderOptions {
   project?: string
   ignoreCache?: boolean
   exportFormat?: string
+  /**
+   * The render's cancellable identity, as the stream publishes it. Called once
+   * when the stream opens and again as each part is queued, so a caller can
+   * hold a target for a render it may need to abandon later — see
+   * `hooks/render/useRender.ts`. Never called on the WASM path: a browser
+   * render has nothing server-side to cancel.
+   */
+  onJob?: (target: RenderCancelTarget) => void
 }
 
 const API_BASE = getApiBase()
@@ -445,7 +453,8 @@ async function renderBackend(
   abortSignal?: AbortSignal,
   project?: string,
   ignoreCache?: boolean,
-  exportFormat?: string
+  exportFormat?: string,
+  onJob?: (target: RenderCancelTarget) => void
 ): Promise<RenderPart[]> {
   // Documented /api/render-stream contract:
   // {mode, parameters, parts, export_format?, project?} — parameters NESTED.
@@ -496,6 +505,8 @@ async function renderBackend(
         jobIds: data.job_ids ?? []
       }
       _activeRender = myIdentity
+      const target = getActiveRenderTarget()
+      if (target) onJob?.(target)
     } else if (data.event === 'part_start') {
       onProgress?.({
         part: data.part,
@@ -595,12 +606,12 @@ export async function renderParts(
   mode: string,
   params: Record<string, unknown>,
   manifest: Manifest,
-  { onProgress, abortSignal, project, ignoreCache, exportFormat }: RenderOptions = {}
+  { onProgress, abortSignal, project, ignoreCache, exportFormat, onJob }: RenderOptions = {}
 ): Promise<RenderPart[]> {
   const currentMode = await detectMode(manifest, mode, params)
   if (currentMode === 'backend') {
     try {
-      return await renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
+      return await renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat, onJob)
     } catch (err) {
       // If backend fails with network/capacity errors, try WASM fallback.
       const forceBackend = manifest?.project?.force_backend || manifest?.force_backend
@@ -647,6 +658,49 @@ export async function renderParts(
   }
 }
 
+/** The body `POST /api/render-cancel` wants: whichever ids the stream published. */
+export interface RenderCancelTarget {
+  request_id?: string
+  job_ids?: string[]
+}
+
+/**
+ * The cancel target for the backend render currently in flight, or null.
+ *
+ * Exported so a caller that must cancel SYNCHRONOUSLY (page unload) can read the
+ * identity without racing a render that starts a moment later — see
+ * `cancelRenderOnUnload`.
+ */
+export function getActiveRenderTarget(): RenderCancelTarget | null {
+  const active = _activeRender
+  if (!active) return null
+  const target: RenderCancelTarget = {}
+  if (active.requestId) target.request_id = active.requestId
+  if (active.jobIds.length) target.job_ids = active.jobIds
+  return Object.keys(target).length > 0 ? target : null
+}
+
+/** Read the in-flight target and release the slot, so it cannot be cancelled twice. */
+function takeActiveRenderTarget(): RenderCancelTarget | null {
+  const target = getActiveRenderTarget()
+  if (target) _activeRender = null
+  return target
+}
+
+/**
+ * POST one cancel target. Awaited — for the unload path use `cancelRenderOnUnload`.
+ */
+async function postCancel(target: RenderCancelTarget | null): Promise<void> {
+  if (!target) return
+  try {
+    await apiFetch(`${API_BASE}/api/render-cancel`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(target)
+    })
+  } catch { /* best-effort cancel */ }
+}
+
 /**
  * Cancel the current render.
  *
@@ -657,25 +711,93 @@ export async function renderParts(
  * a 400, and the cancel-everything behaviour it used to have was the bug.
  */
 export async function cancelRender(): Promise<void> {
-  const active = _activeRender
-  const target: Record<string, unknown> = {}
-  if (active?.requestId) target.request_id = active.requestId
-  if (active?.jobIds.length) target.job_ids = active.jobIds
-
-  if (Object.keys(target).length > 0) {
-    try {
-      await apiFetch(`${API_BASE}/api/render-cancel`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(target)
-      })
-    } catch { /* best-effort cancel */ }
-  }
+  await postCancel(takeActiveRenderTarget())
 
   if (_worker) {
     _worker.terminate()
     _worker = null
     _initPromise = null
+  }
+}
+
+/**
+ * Cancel the in-flight render because a new one is replacing it.
+ *
+ * Returns true when a cancel was sent. The target is taken (read and cleared)
+ * SYNCHRONOUSLY, before the caller opens the new stream, so this can never
+ * cancel the render that supersedes it — the new stream publishes its own `job`
+ * event into a slot this call has already emptied.
+ *
+ * Without it, a user dragging a slider left a trail of abandoned renders in
+ * front of a single worker, each one delaying the render they actually wanted.
+ */
+export function cancelSupersededRender(): boolean {
+  const target = takeActiveRenderTarget()
+  if (!target) return false
+  void postCancel(target)
+  return true
+}
+
+/**
+ * SYNCHRONOUS best-effort cancel for a page that is going away.
+ *
+ * Returns true when a cancel was handed to the browser, false when there was
+ * nothing in flight to cancel.
+ *
+ * WHY THIS EXISTS. Nightly run #171 navigated ~95 times in 40 minutes and
+ * produced ZERO `render-cancel` calls: `pagehide` gives a page no chance to
+ * await a `fetch`, so every abandoned render kept running. Against a single
+ * render worker that is not merely wasteful — the abandoned work sits in front
+ * of a live user's render, and the queue starves.
+ *
+ * WHY sendBeacon FIRST. It is the only transport the browser promises to
+ * deliver after the document is gone; a normal `fetch` is cancelled with the
+ * page. `keepalive: true` is the documented fallback and is honoured by modern
+ * browsers, but it is capped (64 KiB across all keepalive requests) and is not
+ * available everywhere `sendBeacon` is, so it is second, not first.
+ *
+ * WHY THE CONTENT TYPE IS TRIED TWICE. `sendBeacon(url, string)` sends
+ * `text/plain`; a Blob lets the beacon carry `application/json`, which is the
+ * honest type for the body. But `application/json` is not CORS-safelisted, so
+ * cross-origin (`VITE_API_BASE` pointing at api.yantra4d.com) it needs a
+ * preflight that a beacon may not get. `text/plain` is a simple request and
+ * always goes. So: JSON first, `text/plain` if the queue refuses it, then
+ * keepalive fetch. `POST /api/render-cancel` parses either
+ * (`routes/engine/render.py::_cancel_body`) — the body is still JSON, only the
+ * header differs.
+ *
+ * No Authorization header is possible on a beacon, so this arrives anonymous.
+ * That is fine and by design: the cancel is scoped to the ids the server itself
+ * published on this client's stream, which is the entitlement (see docs/AUTH.md
+ * § Cancelling a render). It grants an anonymous caller nothing it did not
+ * already hold.
+ */
+export function cancelRenderOnUnload(): boolean {
+  const target = takeActiveRenderTarget()
+  if (!target) return false
+
+  const url = `${API_BASE}/api/render-cancel`
+  const body = JSON.stringify(target)
+
+  if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+    for (const type of ['application/json', 'text/plain;charset=UTF-8']) {
+      try {
+        if (navigator.sendBeacon(url, new Blob([body], { type }))) return true
+      } catch { /* try the next content type, then the fetch fallback */ }
+    }
+  }
+
+  try {
+    // Not awaited: the page is unloading and there is nothing to await it with.
+    void fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      keepalive: true,
+    })
+    return true
+  } catch {
+    return false
   }
 }
 

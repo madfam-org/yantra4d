@@ -480,3 +480,85 @@ def test_a_scoped_cancel_never_arms_the_global_switch(client, route_orch):
     client.post("/api/render-cancel", json={"job_ids": ["mine"]})
 
     assert route_orch.r.get(route_orch.CANCEL_ALL_KEY) is None
+
+
+# ──────────────────────────────────────────────
+# 6. The route accepts a page-unload beacon
+# ──────────────────────────────────────────────
+#
+# A browser abandoning a render — tab closed, back button, the Studio hook
+# unmounting — has one transport the browser promises to deliver after the page
+# is gone: `navigator.sendBeacon`. Nightly run #171 made ~95 navigations in 40
+# minutes and produced ZERO `render-cancel` calls, so every abandoned render ran
+# to completion against a single worker while a live user queued behind it.
+#
+# A beacon's content type is whatever Blob it carries, and the shape that always
+# crosses an origin without a preflight is `text/plain`. The body is still JSON;
+# only the header differs, so the route parses it rather than letting a header
+# decide whether a cancel counts. Every field is still validated exactly as
+# before — tolerance is about the content type, not the contents.
+
+BEACON_TYPES = [
+    "text/plain;charset=UTF-8",   # sendBeacon's default, and the CORS-safelisted one
+    "application/json",           # the honest type, when a preflight is available
+    "application/json;charset=UTF-8",
+    "",                           # some agents send a beacon with no type at all
+]
+
+
+@pytest.mark.parametrize("content_type", BEACON_TYPES)
+def test_a_beacon_body_cancels_the_named_job(client, route_orch, content_type):
+    _activate(route_orch, job_id="mine", request_id="req-a")
+    _activate(route_orch, job_id="theirs", request_id="req-b")
+
+    res = client.post(
+        "/api/render-cancel",
+        data=json.dumps({"request_id": "req-a"}),
+        content_type=content_type,
+    )
+
+    assert res.status_code == 200
+    assert res.get_json()["cancelled_jobs"] == ["mine"]
+    assert route_orch.r.get(_cancel_key(route_orch, "theirs")) is None
+
+
+def test_a_beacon_body_is_validated_exactly_like_a_json_one(client, route_orch):
+    """Tolerating the content type must not tolerate a bad target."""
+    res = client.post(
+        "/api/render-cancel",
+        data=json.dumps({"job_ids": "not-a-list"}),
+        content_type="text/plain",
+    )
+
+    assert res.status_code == 400
+    assert res.get_json()["error_code"] == "cancel_target_invalid"
+
+
+def test_a_beacon_body_cannot_cancel_everything(client, monkeypatch, route_orch):
+    """`{"all": true}` is still admin-only, whatever content type carries it.
+
+    A beacon carries no Authorization header — it cannot — so this is the exact
+    shape an anonymous unload could send. Tolerating its content type must not
+    hand it the operator escape hatch.
+    """
+    from config import Config
+
+    monkeypatch.setattr(Config, "AUTH_ENABLED", True)
+    _activate(route_orch, job_id="someone-elses", request_id="req-x")
+
+    res = client.post(
+        "/api/render-cancel",
+        data=json.dumps({"all": True}),
+        content_type="text/plain",
+    )
+
+    assert res.status_code == 401
+    assert route_orch.r.get(route_orch.CANCEL_ALL_KEY) is None
+
+
+@pytest.mark.parametrize("body", ["", "   ", "not json at all", "[1,2,3]", "null"])
+def test_an_unparseable_beacon_body_is_a_missing_target_not_a_crash(client, body):
+    res = client.post("/api/render-cancel", data=body, content_type="text/plain")
+
+    assert res.status_code == 400
+    assert res.get_json()["error_code"] == "cancel_target_required"

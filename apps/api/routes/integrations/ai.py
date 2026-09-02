@@ -14,6 +14,7 @@ from services.ai.ai_code_editor import stream_response as stream_code_editor
 from services.ai.ai_configurator import stream_response as stream_configurator
 from services.ai.ai_session import create_session, get_session
 from services.ai.ai_synthesizer import stream_synthesis_response
+from services.core.project_access import check_project_access
 from services.core.tier_service import get_tier_limits, is_unlimited, resolve_tier
 from utils.route_helpers import error_response, require_json_body
 
@@ -63,6 +64,12 @@ def create_ai_session():
 
     if not project_slug or mode not in ("configurator", "code-editor"):
         return error_response("project and mode (configurator|code-editor) are required", 400)
+
+    # The session binds the assistant to this project's manifest (chat-stream
+    # loads it as context), so opening one answers the project's view gate.
+    denied = check_project_access(project_slug)
+    if denied is not None:
+        return denied
 
     # Code editor requires pro+
     if mode == "code-editor":

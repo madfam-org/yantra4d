@@ -18,9 +18,11 @@ resolved, it is rejected wherever it appears rather than only at the top level,
 and it is rejected BEFORE the validator runs — a spec that is both duplicated
 and otherwise valid must be reported as duplicated, not as valid.
 
-``openapi_spec_validator`` is not installed by every lane that runs this
-suite, so the cases that need it skip rather than fail; the duplicate-key
-cases, which are the reason this script exists, need only PyYAML.
+This module runs in the ``openapi-validation`` job, which installs the
+validator (and PyYAML transitively through jsonschema-path), so all of it
+executes there. manifest-validation's whole-suite step installs neither, so it
+skips the module rather than failing — a suite that skips pins nothing, which
+is why the job that owns the dependencies runs it too.
 """
 from __future__ import annotations
 

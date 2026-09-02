@@ -26,7 +26,10 @@ Two things are separated deliberately:
 
 The render backends are stubbed at import: this suite must never shell out to
 OpenSCAD or build CadQuery geometry. The geometry cases use real trimesh
-primitives, and skip where trimesh is not installed.
+primitives, so this module runs in the ``backend`` job, whose
+apps/api/requirements.txt carries trimesh and numpy; manifest-validation's
+whole-suite step installs neither and skips it, and a suite that skips pins
+nothing.
 """
 from __future__ import annotations
 

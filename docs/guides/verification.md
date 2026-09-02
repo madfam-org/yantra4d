@@ -4,7 +4,7 @@ The project maintains a rigorous quality assurance process using the config-driv
 
 The verification engine uses `trimesh` to analyze exported STL geometry. Checks are organized into **manufacturing stages** (`geometry`, `printability`, `assembly_fit`), configurable per **mode** and per **part** from `project.json`.
 
-For Hyperobjects, an additional **Geometric Parity** check is enforced via `scripts/verify_parity.py` to ensure identical output across OpenSCAD and CadQuery engines.
+For Hyperobjects, an additional **Geometric Parity** check compares output across the OpenSCAD and CadQuery engines. The check CI enforces is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a separate, local-only tool for the same comparison; no workflow runs it.
 
 ## Script: `tests/verify_design.py`
 
@@ -115,10 +115,12 @@ Add a `verification` section to `project.json`:
 
 - If the `verification` section is missing from `project.json`, the script uses built-in defaults with all checks enabled.
 - If the config JSON argument is omitted from the CLI, built-in defaults are used.
-- For Hyperobjects, the `scripts/verify_parity.py` logic is invoked periodically. It supports:
-    - **AABB Alignment**: Exact matching of bounding box extents.
-    - **Relative Volume Tolerance**: Allows up to 2% difference for complex kerneled meshes (CSG vs B-Rep).
-    - **Hausdorff Distance Proxy**: Allows up to 0.5mm divergence for tessellation noise.
+- For Hyperobjects, `scripts/qa/verify_parity.py` compares a mode's two kernel outputs. It is run by hand, not on a schedule and not by any workflow, and it decides parity as:
+    - **AABB Alignment**: bounding-box extents must match within the tolerance. Hard.
+    - **Relative Volume Tolerance**: up to 2% difference for complex kerneled meshes (CSG vs B-Rep). Hard.
+    - **Hausdorff Distance Proxy**: up to 0.5mm divergence for tessellation noise. Reported as a warning only — it never changes the verdict.
+    - A mode declaring no `cq_file` is skipped; a mode naming a file that is not on disk is a failure.
+  Its decision logic is covered by `scripts/tests/test_verify_parity.py`, which runs in the `backend` job.
 
 ## Web Interface Integration
 

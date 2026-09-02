@@ -431,6 +431,31 @@ components:
             the render.
       required: [mode]
 
+    RenderCancelRequest:
+      type: object
+      description: |
+        The cancel target. At least one of `request_id`, `job_ids` or `all` must
+        be present; a body with none is a 400 `cancel_target_required`.
+      properties:
+        request_id:
+          type: string
+          description: Cancel every job of this render request
+        job_ids:
+          type: array
+          maxItems: 64
+          items:
+            type: string
+          description: Cancel exactly these jobs
+        all:
+          type: boolean
+          description: Cancel every render on the box. Requires the admin role.
+        project:
+          type: string
+          description: |
+            Optional project slug. When given, the private-project gate is
+            applied before anything is cancelled.
+      minProperties: 1
+
     RenderResponse:
       type: object
       properties:
@@ -948,6 +973,14 @@ paths:
 
         `{"all": true}` cancels every render on the box and requires the `admin`
         role.
+
+        The body is parsed as JSON regardless of its `Content-Type`. A page
+        being unloaded can only reach this endpoint through
+        `navigator.sendBeacon`, whose content type is whatever Blob it carries,
+        and the shape that always crosses an origin without a preflight is
+        `text/plain`. Only the header is tolerated — the body is still JSON and
+        every field is validated identically, so `text/plain` grants no caller
+        anything `application/json` would not.
       operationId: cancelRender
       security:
         - bearerAuth: []
@@ -957,21 +990,12 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                request_id:
-                  type: string
-                  description: Cancel every job of this render request
-                job_ids:
-                  type: array
-                  maxItems: 64
-                  items:
-                    type: string
-                  description: Cancel exactly these jobs
-                all:
-                  type: boolean
-                  description: Cancel every render on the box. Requires the admin role.
-              minProperties: 1
+              $ref: '#/components/schemas/RenderCancelRequest'
+          # A JSON body sent by navigator.sendBeacon on page unload: same
+          # schema, only the content type differs.
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/RenderCancelRequest'
       responses:
         "200":
           description: Cancel result

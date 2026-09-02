@@ -1,0 +1,20 @@
+{
+  "total_count": 1,
+  "workflow_runs": [
+    {
+      "id": 33044190871,
+      "name": "Deploy to K8s (GHCR)",
+      "head_branch": "main",
+      "head_sha": "61e45153051a0161a3a8c7f6ef002b8967253a61",
+      "path": ".github/workflows/deploy.yml",
+      "display_title": "feat: identity tier overrides (unlimited top tier) + private projects (#78)",
+      "run_number": 540,
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "workflow_id": 84119302,
+      "created_at": "2026-09-02T04:01:11Z",
+      "updated_at": "2026-09-02T04:58:02Z"
+    }
+  ]
+}

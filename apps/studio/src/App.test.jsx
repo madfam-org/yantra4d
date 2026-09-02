@@ -13,6 +13,8 @@ expect.extend(toHaveNoViolations)
 vi.mock('./services/engine/renderService', () => ({
   renderParts: vi.fn(() => Promise.resolve([{ type: 'main', url: 'blob:mock-url', blob: new Blob() }])),
   cancelRender: vi.fn(() => Promise.resolve()),
+  cancelRenderOnUnload: vi.fn(() => false),
+  cancelSupersededRender: vi.fn(() => false),
   estimateRenderTime: vi.fn(() => 10),
   getRenderMode: vi.fn(() => 'detecting'),
   // The sidebar's placement indicator reads these. `ensureCapabilityProbe` must

@@ -141,6 +141,7 @@ packages/
 | `scripts/cli/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `scripts/prerender-carousel.sh` | Pre-render GLB models for landing carousel + auto-generate `manifest.json` | RARELY |
 | `scripts/qa/i18n_audit.py` | i18n key parity checker + hardcoded string scanner | RARELY |
+| `scripts/qa/value_extraction_audit.py` | Recomputes every ratio in `docs/strategy/VALUE-EXTRACTION-AUDIT.md` from the manifests + commons catalog. `--check` (CI, `manifest-validation`) fails on drift, `--write` refreshes the generated table, `--cohorts` splits audit-era vs added-since. Needs the project submodules checked out or it aborts | RARELY |
 | `scripts/qa/refresh_fc_consumers.py` | Vendors and checks the Fashion Cabinet consumers back-edge; `--check` fails CI when a parameter rename breaks a garment | RARELY |
 | `docs/interfaces/fashion-cabinet-consumers.snapshot.json` | Vendored, commit-pinned copy of Fashion Cabinet's published `yantra4d-consumers.json` -- refresh with the script above, never by hand | **NEVER** |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |

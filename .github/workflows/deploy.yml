@@ -57,23 +57,123 @@ concurrency:
 # Unset or empty resolves to madfam-runners-blue, so today's behaviour is
 # unchanged until the variable exists. The variable holds ONE runner label.
 
+# ---------------------------------------------------------------------------
+# Change detection is measured from the LAST SUCCESSFUL DEPLOY, not from the
+# previous push.
+#
+# This workflow's concurrency group is serial on purpose (cancel-in-progress:
+# false, #84), and GitHub holds at most ONE pending run per group: a third push
+# REPLACES the queued second one, which then never runs. Per-push detection is
+# therefore unsafe here — the commits of a replaced run are examined by nobody.
+# On 2026-09-02 merges #541 → #542 → #543 landed back to back, each replacing
+# the pending run; the surviving run's filter saw only #543, which touched the
+# backend alone, so the Studio image #542 needed was never built and production
+# kept serving the previous Studio. The operator recovered it by hand with
+# workflow_dispatch + force_deploy=true.
+#
+# `base` is resolved by scripts/ci/last_successful_deploy_sha.sh (tested in
+# scripts/ci/tests/) from this workflow's own run history:
+# GET /actions/workflows/deploy.yml/runs?branch=main&status=success&per_page=1
+# → head_sha, using the job's GITHUB_TOKEN with `actions: read`. A dropped run
+# is then harmless: the next run still diffs every path changed since the last
+# commit that actually shipped. A run that failed is not "successful", so its
+# commits stay inside the next run's diff and get rebuilt — the safe direction.
+#
+# When the lookup fails — first deploy, empty history, HTTP or transport error,
+# unparseable response, a head_sha that is not a 40-character SHA — the script
+# exits non-zero and this workflow FAILS CLOSED TO BUILDING EVERY SERVICE, says
+# so in the job summary and raises a warning annotation. An unresolved base is
+# never read as "nothing changed": a silent no-op deploy is the defect above.
+# workflow_dispatch with force_deploy=true still builds everything and skips the
+# lookup entirely.
+#
+# Digest commits do not loop: `deploy(yantra4d): update digests` touches only
+# k8s/production/kustomization.yaml, which matches no trigger path above (so the
+# workflow does not start) and no filter below (so even when it rides along
+# inside a later diff it builds nothing).
+# ---------------------------------------------------------------------------
+
 jobs:
   detect-changes:
     name: Detect Changes
     runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    permissions:
+      contents: read
+      # Reading this workflow's own run history to find the last successful
+      # deploy is an Actions API call, not a contents one. Nothing here writes.
+      actions: read
     outputs:
       backend: ${{ steps.decide.outputs.backend }}
       studio: ${{ steps.decide.outputs.studio }}
       landing: ${{ steps.decide.outputs.landing }}
       admin: ${{ steps.decide.outputs.admin }}
+      base: ${{ steps.base.outputs.sha }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # The base is an older commit on main than the one being deployed
+          # and the filter diffs `base..HEAD` against it. A depth-1 checkout
+          # does not contain it: the action would fall back to fetching that
+          # single SHA shallowly, and a fetch that fails is a hard error in the
+          # middle of a deploy. Full history keeps the diff a local operation.
+          # No submodules are checked out here — this job only reads paths.
+          fetch-depth: 0
+
+      - name: Resolve the change-detection base
+        id: base
+        # force_deploy builds everything regardless, so do not spend an API call
+        # (or risk a confusing warning) on a base nothing will read.
+        if: github.event.inputs.force_deploy != 'true'
+        env:
+          # github.token, scoped by this job's `actions: read` above. The script
+          # reads GITHUB_REPOSITORY and GITHUB_API_URL from the runner.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          reason_file="${RUNNER_TEMP:-/tmp}/deploy-base-reason.txt"
+          status=0
+          sha="$(scripts/ci/last_successful_deploy_sha.sh 2>"$reason_file")" || status=$?
+          reason="$(cat "$reason_file" 2>/dev/null || true)"
+
+          if [ "$status" -eq 0 ] && [ -n "$sha" ]; then
+            {
+              echo "sha=$sha"
+              echo "build_everything=false"
+            } >> "$GITHUB_OUTPUT"
+            {
+              echo "### Change detection"
+              echo
+              echo "Base: last successful deploy \`$sha\` — not the previous push."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            # Fail closed. Everything gets built, and the reason is on the run
+            # page rather than in a log nobody opens.
+            {
+              echo "sha="
+              echo "build_everything=true"
+            } >> "$GITHUB_OUTPUT"
+            echo "::warning title=Deploy base unresolved::Building every service. ${reason:-no reason reported}"
+            {
+              echo "### Change detection"
+              echo
+              echo "**The last successful deploy could not be resolved, so every service is built.**"
+              echo
+              echo '```'
+              echo "${reason:-no reason reported}"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Path filter
         id: filter
+        # Runs only when the base step answered with a usable SHA. A skipped or
+        # unresolved base leaves this step out and the next one builds
+        # everything — never the other way round.
+        if: steps.base.outputs.build_everything == 'false'
         uses: dorny/paths-filter@v3
         with:
+          base: ${{ steps.base.outputs.sha }}
           filters: |
             backend:
               - 'apps/api/**'
@@ -93,18 +193,55 @@ jobs:
 
       - name: Decide what to build
         id: decide
+        env:
+          FORCE_DEPLOY: ${{ github.event.inputs.force_deploy }}
+          BUILD_EVERYTHING: ${{ steps.base.outputs.build_everything }}
+          FILTER_BACKEND: ${{ steps.filter.outputs.backend }}
+          FILTER_STUDIO: ${{ steps.filter.outputs.studio }}
+          FILTER_LANDING: ${{ steps.filter.outputs.landing }}
+          FILTER_ADMIN: ${{ steps.filter.outputs.admin }}
         run: |
-          if [ "${{ github.event.inputs.force_deploy }}" = "true" ]; then
-            echo "backend=true" >> $GITHUB_OUTPUT
-            echo "studio=true" >> $GITHUB_OUTPUT
-            echo "landing=true" >> $GITHUB_OUTPUT
-            echo "admin=true" >> $GITHUB_OUTPUT
+          set -euo pipefail
+
+          # Only a filter that actually ran and answered exactly "false" skips a
+          # build. An empty value — the step was skipped, the action changed its
+          # contract — is read as "build it".
+          skip_unless_false() {
+            if [ "${1:-}" = "false" ]; then echo false; else echo true; fi
+          }
+
+          if [ "${FORCE_DEPLOY:-}" = "true" ]; then
+            reason="workflow_dispatch with force_deploy=true"
+            backend=true; studio=true; landing=true; admin=true
+          elif [ "${BUILD_EVERYTHING:-}" != "false" ]; then
+            reason="the change-detection base could not be resolved (see above)"
+            backend=true; studio=true; landing=true; admin=true
           else
-            echo "backend=${{ steps.filter.outputs.backend }}" >> $GITHUB_OUTPUT
-            echo "studio=${{ steps.filter.outputs.studio }}" >> $GITHUB_OUTPUT
-            echo "landing=${{ steps.filter.outputs.landing }}" >> $GITHUB_OUTPUT
-            echo "admin=${{ steps.filter.outputs.admin }}" >> $GITHUB_OUTPUT
+            reason="paths changed since the last successful deploy"
+            backend="$(skip_unless_false "${FILTER_BACKEND:-}")"
+            studio="$(skip_unless_false "${FILTER_STUDIO:-}")"
+            landing="$(skip_unless_false "${FILTER_LANDING:-}")"
+            admin="$(skip_unless_false "${FILTER_ADMIN:-}")"
           fi
+
+          {
+            echo "backend=$backend"
+            echo "studio=$studio"
+            echo "landing=$landing"
+            echo "admin=$admin"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo
+            echo "Building ($reason):"
+            echo
+            echo "| service | build |"
+            echo "| --- | --- |"
+            echo "| backend | $backend |"
+            echo "| studio | $studio |"
+            echo "| landing | $landing |"
+            echo "| admin | $admin |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   build-backend:
     name: Build Backend

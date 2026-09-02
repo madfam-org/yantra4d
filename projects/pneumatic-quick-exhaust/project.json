@@ -1,0 +1,309 @@
+{
+  "project": {
+    "name": "Pneumatic Quick Exhaust",
+    "slug": "pneumatic-quick-exhaust",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A three-port shuttle valve on the commons' own barb series. A soft actuator inflates as fast as the supply can push air in, and deflates as slowly as that same air can crawl back out through the whole length of the supply line. Retraction speed is the stated weakness of the entire soft-robotics family here: bellows-actuator, pneu-net-finger and suction-cup-bellows all inflate briskly and all release slowly, and the reason is plumbing rather than material. A quick-exhaust valve fixes it with three ports and one loose disc — when supply pressure drops, the actuator's own air lifts the shuttle, seals the supply seat, and dumps straight out of a large aperture instead of back up the line. It is a cup, a lid and a disc, and it is the difference between an actuator that releases in a second and one that releases in ten.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una válvula de lanzadera de tres puertos sobre la serie de espigas del propio procomún. Un actuador blando se infla tan rápido como el suministro pueda meter aire, y se desinfla tan lento como ese mismo aire pueda arrastrarse de regreso por todo el largo de la línea. La velocidad de retracción es la debilidad declarada de toda la familia de robótica blanda de aquí: bellows-actuator, pneu-net-finger y suction-cup-bellows se inflan con brío y se liberan con lentitud, y la razón es la tubería, no el material. Una válvula de escape rápido lo resuelve con tres puertos y un disco suelto — al caer la presión de suministro, el aire del propio actuador levanta la lanzadera, sella el asiento de suministro y se descarga por una abertura grande en vez de regresar por la línea. Es una taza, una tapa y un disco, y es la diferencia entre un actuador que libera en un segundo y uno que libera en diez.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Une valve navette à trois orifices sur la série de cannelures du commun lui-même. Un actionneur souple se gonfle aussi vite que l'alimentation peut y pousser de l'air, et se dégonfle aussi lentement que ce même air peut ramper en sens inverse sur toute la longueur de la ligne. La vitesse de rétraction est la faiblesse déclarée de toute la famille robotique souple d'ici : bellows-actuator, pneu-net-finger et suction-cup-bellows se gonflent vivement et se relâchent lentement, et la cause est la tuyauterie, non le matériau. Une valve d'échappement rapide y remédie avec trois orifices et un disque libre — quand la pression d'alimentation tombe, l'air de l'actionneur soulève la navette, obture le siège d'alimentation et se vide par une grande ouverture au lieu de remonter la ligne. C'est une coupelle, un couvercle et un disque, et c'est la différence entre un actionneur qui relâche en une seconde et un qui relâche en dix.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "Uma válvula de lançadeira de três bocais sobre a série de espigões do próprio comum. Um atuador mole infla tão rápido quanto a alimentação consiga empurrar ar, e esvazia tão devagar quanto esse mesmo ar consiga rastejar de volta por todo o comprimento da linha. A velocidade de retração é a fraqueza declarada de toda a família de robótica mole daqui: bellows-actuator, pneu-net-finger e suction-cup-bellows inflam com vigor e soltam devagar, e a razão é o encanamento, não o material. Uma válvula de escape rápido resolve isso com três bocais e um disco solto — quando a pressão de alimentação cai, o ar do próprio atuador levanta a lançadeira, veda a sede de alimentação e descarrega por uma abertura grande em vez de voltar pela linha. É um copo, uma tampa e um disco, e é a diferença entre um atuador que solta em um segundo e um que solta em dez.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pneumatic-quick-exhaust.webp",
+    "difficulty": "advanced",
+    "tags": ["quick-exhaust", "shuttle-valve", "check-valve", "pneumatic", "soft-robotics", "actuator", "low-pressure", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "valve_body",
+      "label": { "en": "Valve Body", "es": "Cuerpo de Válvula", "fr": "Corps de valve", "pt": "Corpo da Válvula" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["valve_body"],
+      "estimate": { "base_time": 16, "per_unit": 5, "per_part": 22 }
+    },
+    {
+      "id": "valve_cap",
+      "label": { "en": "Valve Cap", "es": "Tapa de Válvula", "fr": "Couvercle de valve", "pt": "Tampa da Válvula" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["valve_cap"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 17 }
+    },
+    {
+      "id": "shuttle_disc",
+      "label": { "en": "Shuttle Disc", "es": "Disco de Lanzadera", "fr": "Disque navette", "pt": "Disco da Lançadeira" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["shuttle_disc"],
+      "estimate": { "base_time": 7, "per_unit": 3, "per_part": 9 }
+    }
+  ],
+  "parts": [
+    { "id": "valve_body", "render_mode": 0, "color": "#2f5d7c",
+      "label": { "en": "Body", "es": "Cuerpo", "fr": "Corps", "pt": "Corpo" } },
+    { "id": "valve_cap", "render_mode": 0, "color": "#4682a8",
+      "label": { "en": "Cap", "es": "Tapa", "fr": "Couvercle", "pt": "Tampa" } },
+    { "id": "shuttle_disc", "render_mode": 0, "color": "#7fb2cd",
+      "label": { "en": "Shuttle", "es": "Lanzadera", "fr": "Navette", "pt": "Lançadeira" } }
+  ],
+  "parameter_groups": [
+    { "id": "series", "label": { "en": "Tube Series", "es": "Serie de Manguera", "fr": "Série de tube", "pt": "Série de Mangueira" } },
+    { "id": "valve", "label": { "en": "Valve", "es": "Válvula", "fr": "Valve", "pt": "Válvula" } },
+    { "id": "build", "label": { "en": "Wall & Fit", "es": "Pared y Ajuste", "fr": "Paroi et ajustement", "pt": "Parede e Ajuste" } }
+  ],
+  "parameters": [
+    {
+      "id": "tube_id", "type": "slider", "default": 3.0, "min": 1.5, "max": 10.0, "step": 0.1,
+      "group": "series", "modes": ["valve_body", "valve_cap", "shuttle_disc"],
+      "label": { "en": "Tube Inner Ø (mm)", "es": "Ø Interior de Manguera (mm)", "fr": "Ø intérieur du tube (mm)", "pt": "Ø Interno da Mangueira (mm)" },
+      "tooltip": {
+        "en": "The commons' shared barb series — the tube's INNER diameter. Identical expressions to pneumatic-barb-port and hose-barb-tee, so a stem built here grips the same tube as a port built there at the same number",
+        "es": "La serie de espigas compartida del procomún — el diámetro INTERIOR de la manguera. Expresiones idénticas a pneumatic-barb-port y hose-barb-tee, así que una espiga hecha aquí agarra la misma manguera que un puerto hecho allá con el mismo número",
+        "fr": "La série de cannelures partagée du commun — le diamètre INTÉRIEUR du tube. Expressions identiques à pneumatic-barb-port et hose-barb-tee : une tétine faite ici serre le même tube qu'un piquage fait là-bas au même chiffre",
+        "pt": "A série de espigões compartilhada do comum — o diâmetro INTERNO da mangueira. Expressões idênticas às de pneumatic-barb-port e hose-barb-tee, então uma haste feita aqui agarra a mesma mangueira que um bocal feito lá no mesmo número"
+      }
+    },
+    {
+      "id": "supply_form", "type": "select", "default": "barb",
+      "options": [
+        { "value": "barb", "label": "Barb (for tube)" },
+        { "value": "socket", "label": "Socket (receives a barb)" },
+        { "value": "push_in", "label": "Push-in stem (collet fitting)" }
+      ],
+      "group": "series", "modes": ["valve_cap"],
+      "label": { "en": "Supply Port Form", "es": "Forma del Puerto de Suministro", "fr": "Forme de l'orifice d'alimentation", "pt": "Forma do Bocal de Alimentação" },
+      "tooltip": {
+        "en": "The socket form receives another cartridge's barb stem directly, with no tube between them — which is what the series has always lacked, since a profile does not mate a profile",
+        "es": "La forma de receptáculo recibe directo la espiga de otro cartucho, sin manguera de por medio — que es justo lo que a la serie le ha faltado siempre, pues un perfil no embona con otro perfil",
+        "fr": "La forme emboîture reçoit directement la cannelure d'une autre cartouche, sans tube entre les deux — c'est précisément ce qui a toujours manqué à la série, puisqu'un profil ne s'accouple pas à un profil",
+        "pt": "A forma de encaixe recebe direto o espigão de outro cartucho, sem mangueira entre eles — que é justamente o que sempre faltou à série, já que perfil não casa com perfil"
+      }
+    },
+    {
+      "id": "barb_count", "type": "slider", "default": 3.0, "min": 1.0, "max": 6.0, "step": 1.0,
+      "group": "series", "modes": ["valve_body", "valve_cap"],
+      "label": { "en": "Barb Ridges", "es": "Crestas de Espiga", "fr": "Crans de cannelure", "pt": "Cristas do Espigão" },
+      "tooltip": {
+        "en": "Ridges per stem. Stem length is derived FROM the count, so more ridges give a longer stem rather than a crowded one",
+        "es": "Crestas por espiga. El largo del vástago se deriva DEL número, así que más crestas dan un vástago más largo, no uno apretado",
+        "fr": "Crans par tétine. La longueur du fût dérive DU nombre : plus de crans donne un fût plus long, pas un fût encombré",
+        "pt": "Cristas por espigão. O comprimento da haste deriva DO número, então mais cristas dão uma haste mais longa, não uma apertada"
+      }
+    },
+    {
+      "id": "barb_pitch", "type": "slider", "default": 3.0, "min": 1.6, "max": 8.0, "step": 0.1,
+      "group": "series", "modes": ["valve_body", "valve_cap"],
+      "label": { "en": "Ridge Pitch (mm)", "es": "Paso de Cresta (mm)", "fr": "Pas des crans (mm)", "pt": "Passo das Cristas (mm)" },
+      "tooltip": {
+        "en": "Axial spacing between ridges — the same range as the rest of the series",
+        "es": "Separación axial entre crestas — el mismo rango que el resto de la serie",
+        "fr": "Espacement axial entre crans — la même plage que le reste de la série",
+        "pt": "Espaçamento axial entre cristas — a mesma faixa do resto da série"
+      }
+    },
+    {
+      "id": "barb_rise", "type": "slider", "default": 0.7, "min": 0.2, "max": 2.0, "step": 0.05,
+      "group": "series", "modes": ["valve_body", "valve_cap"],
+      "label": { "en": "Ridge Rise (mm)", "es": "Altura de Cresta (mm)", "fr": "Saillie des crans (mm)", "pt": "Altura das Cristas (mm)" },
+      "tooltip": {
+        "en": "How far a ridge stands proud of the stem. This is the whole grip on the tube",
+        "es": "Cuánto sobresale una cresta del vástago. En esto consiste todo el agarre sobre la manguera",
+        "fr": "Saillie d'un cran par rapport au fût. C'est là tout le maintien sur le tube",
+        "pt": "O quanto uma crista se projeta da haste. Nisso consiste toda a garra na mangueira"
+      }
+    },
+    {
+      "id": "push_od", "type": "slider", "default": 6.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "series", "modes": ["valve_cap"],
+      "label": { "en": "Push-in Stem Ø (mm)", "es": "Ø de Vástago Rápido (mm)", "fr": "Ø du fût instantané (mm)", "pt": "Ø da Haste de Engate (mm)" },
+      "tooltip": {
+        "en": "Outer diameter of the smooth stem when the supply port is a push-in. 4 and 6 mm are the ubiquitous metric pneumatic tube sizes a one-touch collet expects",
+        "es": "Diámetro exterior del vástago liso cuando el puerto de suministro es de conexión rápida. 4 y 6 mm son las medidas métricas ubicuas que espera una pinza de un toque",
+        "fr": "Diamètre extérieur du fût lisse quand l'orifice d'alimentation est instantané. 4 et 6 mm sont les tailles métriques ubiquitaires qu'attend une pince instantanée",
+        "pt": "Diâmetro externo da haste lisa quando o bocal de alimentação é de engate rápido. 4 e 6 mm são as medidas métricas ubíquas que uma pinça de um toque espera"
+      }
+    },
+    {
+      "id": "chamber_dia", "type": "slider", "default": 18.0, "min": 10.0, "max": 40.0, "step": 0.5,
+      "group": "valve", "modes": ["valve_body", "valve_cap", "shuttle_disc"],
+      "label": { "en": "Chamber Ø (mm)", "es": "Ø de Cámara (mm)", "fr": "Ø de chambre (mm)", "pt": "Ø da Câmara (mm)" },
+      "tooltip": {
+        "en": "The bore the shuttle slides in. Larger gives a bigger disc, which moves on less pressure difference but is slower to move — the whole valve is that trade",
+        "es": "El barreno donde corre la lanzadera. Más grande da un disco mayor, que se mueve con menos diferencia de presión pero tarda más — toda la válvula es ese compromiso",
+        "fr": "L'alésage dans lequel coulisse la navette. Plus grand donne un disque plus large, qui bouge sous une moindre différence de pression mais met plus de temps — toute la valve est ce compromis",
+        "pt": "O furo em que a lançadeira desliza. Maior dá um disco maior, que se move com menos diferença de pressão mas demora mais — a válvula inteira é esse compromisso"
+      }
+    },
+    {
+      "id": "chamber_h", "type": "slider", "default": 10.0, "min": 5.0, "max": 30.0, "step": 0.5,
+      "group": "valve", "modes": ["valve_body", "valve_cap", "shuttle_disc"],
+      "label": { "en": "Chamber Height (mm)", "es": "Altura de Cámara (mm)", "fr": "Hauteur de chambre (mm)", "pt": "Altura da Câmara (mm)" },
+      "tooltip": {
+        "en": "Travel available to the shuttle, plus the disc's own thickness. Too short and the disc cannot lift clear of the exhaust seat; too long and it rattles",
+        "es": "Recorrido disponible para la lanzadera, más el espesor del propio disco. Muy corta y el disco no despega del asiento de escape; muy larga y traquetea",
+        "fr": "Course disponible pour la navette, plus l'épaisseur du disque. Trop courte, le disque ne décolle pas du siège d'échappement ; trop longue, il claque",
+        "pt": "Curso disponível para a lançadeira, mais a espessura do próprio disco. Curta demais e o disco não descola da sede de escape; longa demais e ele chacoalha"
+      }
+    },
+    {
+      "id": "seat_dia", "type": "slider", "default": 8.0, "min": 3.0, "max": 24.0, "step": 0.5,
+      "group": "valve", "modes": ["valve_body", "valve_cap", "shuttle_disc"],
+      "label": { "en": "Seat Ø (mm)", "es": "Ø de Asiento (mm)", "fr": "Ø de siège (mm)", "pt": "Ø da Sede (mm)" },
+      "tooltip": {
+        "en": "The exhaust aperture, and the ring the shuttle seals against. This is the reason the valve exists: a wide exhaust is a fast release. The geometry keeps it inside the chamber and outside its own bore, whatever you ask for",
+        "es": "La abertura de escape, y el anillo contra el que sella la lanzadera. Es la razón de ser de la válvula: un escape ancho es una liberación rápida. La geometría lo mantiene dentro de la cámara y fuera de su propio barreno, pidas lo que pidas",
+        "fr": "L'ouverture d'échappement, et la portée contre laquelle la navette obture. C'est la raison d'être de la valve : un large échappement, c'est un relâchement rapide. La géométrie la garde dans la chambre et hors de son propre alésage, quoi que vous demandiez",
+        "pt": "A abertura de escape, e o anel contra o qual a lançadeira veda. É a razão de ser da válvula: um escape largo é uma liberação rápida. A geometria o mantém dentro da câmara e fora do próprio furo, seja lá o que você peça"
+      }
+    },
+    {
+      "id": "shroud_windows", "type": "slider", "default": 4.0, "min": 2.0, "max": 8.0, "step": 1.0,
+      "group": "valve", "modes": ["valve_body"],
+      "label": { "en": "Shroud Windows", "es": "Ventanas de Faldón", "fr": "Fenêtres de jupe", "pt": "Janelas da Saia" },
+      "tooltip": {
+        "en": "Openings in the skirt below the exhaust, so the aperture cannot be blindfolded by whatever the valve is lying on. Counted from the space that survives the end margins",
+        "es": "Aberturas en el faldón bajo el escape, para que la abertura no quede tapada por aquello sobre lo que esté la válvula. Se cuentan a partir del espacio que sobrevive a los márgenes",
+        "fr": "Ouvertures dans la jupe sous l'échappement, pour que l'orifice ne soit pas aveuglé par ce sur quoi la valve repose. Comptées à partir de l'espace qui subsiste après les marges",
+        "pt": "Aberturas na saia sob o escape, para que a abertura não fique tapada por aquilo sobre o que a válvula estiver apoiada. Contadas a partir do espaço que sobra depois das margens"
+      }
+    },
+    {
+      "id": "bore", "type": "slider", "default": 1.6, "min": 0.8, "max": 8.0, "step": 0.1,
+      "group": "build", "modes": ["valve_body", "valve_cap"],
+      "label": { "en": "Port Passage Ø (mm)", "es": "Ø de Paso de Puerto (mm)", "fr": "Ø de passage d'orifice (mm)", "pt": "Ø da Passagem do Bocal (mm)" },
+      "tooltip": {
+        "en": "The supply and actuator passages. Capped so it can never eat more than 0.6 mm per side of a stem",
+        "es": "Los pasos de suministro y de actuador. Limitado para no comerse más de 0.6 mm por lado de un vástago",
+        "fr": "Les passages d'alimentation et d'actionneur. Plafonné pour ne jamais entamer plus de 0,6 mm par côté d'une tétine",
+        "pt": "As passagens de alimentação e de atuador. Limitada para nunca comer mais de 0,6 mm por lado de uma haste"
+      }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.0, "min": 1.2, "max": 5.0, "step": 0.1,
+      "group": "build", "modes": ["valve_body", "valve_cap", "shuttle_disc"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)", "fr": "Paroi (mm)", "pt": "Parede (mm)" },
+      "tooltip": {
+        "en": "Body wall, floor and seat width. A printed wall around a pressurised chamber is porous at the layer lines and weeps long before it bursts",
+        "es": "Pared del cuerpo, piso y ancho de asiento. Una pared impresa alrededor de una cámara presurizada es porosa en las líneas de capa y gotea mucho antes de reventar",
+        "fr": "Paroi du corps, fond et largeur de portée. Une paroi imprimée autour d'une chambre sous pression est poreuse aux lignes de couche et suinte bien avant d'éclater",
+        "pt": "Parede do corpo, piso e largura da sede. Uma parede impressa em volta de uma câmara pressurizada é porosa nas linhas de camada e vaza muito antes de estourar"
+      }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.30, "min": 0.1, "max": 0.6, "step": 0.05,
+      "group": "build", "modes": ["valve_body", "valve_cap", "shuttle_disc"],
+      "label": { "en": "Sliding Clearance (mm)", "es": "Holgura de Deslizamiento (mm)", "fr": "Jeu de coulissement (mm)", "pt": "Folga de Deslizamento (mm)" },
+      "tooltip": {
+        "en": "Gap between the shuttle and the chamber, and between the cap spigot and the bore. Too tight and the disc sticks — a stuck shuttle is a valve that has quietly become a plain tee",
+        "es": "Holgura entre la lanzadera y la cámara, y entre la espiga de la tapa y el barreno. Muy apretada y el disco se pega — una lanzadera pegada es una válvula que en silencio se volvió una simple te",
+        "fr": "Jeu entre la navette et la chambre, et entre le téton du couvercle et l'alésage. Trop serré, le disque colle — une navette collée, c'est une valve devenue silencieusement un simple té",
+        "pt": "Folga entre a lançadeira e a câmara, e entre o espigão da tampa e o furo. Apertada demais e o disco gruda — uma lançadeira grudada é uma válvula que silenciosamente virou um tê comum"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "finger_3mm", "mode": "valve_body",
+      "label": { "en": "Finger Actuator (3 mm ID)", "es": "Actuador de Dedo (3 mm ID)", "fr": "Actionneur doigt (3 mm ID)", "pt": "Atuador de Dedo (3 mm ID)" },
+      "values": { "tube_id": 3.0, "chamber_dia": 18.0, "chamber_h": 10.0, "seat_dia": 8.0 }
+    },
+    {
+      "id": "fast_dump", "mode": "valve_body",
+      "label": { "en": "Fast Dump (wide exhaust)", "es": "Descarga Rápida (escape ancho)", "fr": "Décharge rapide (large échappement)", "pt": "Descarga Rápida (escape largo)" },
+      "values": { "chamber_dia": 26.0, "seat_dia": 14.0, "chamber_h": 12.0, "shroud_windows": 6.0 }
+    },
+    {
+      "id": "socket_cap", "mode": "valve_cap",
+      "label": { "en": "Cap with Direct Socket", "es": "Tapa con Receptáculo Directo", "fr": "Couvercle à emboîture directe", "pt": "Tampa com Encaixe Direto" },
+      "values": { "supply_form": "socket", "tube_id": 3.0, "clearance": 0.3, "wall": 2.4 }
+    },
+    {
+      "id": "matched_shuttle", "mode": "shuttle_disc",
+      "label": { "en": "Shuttle for 18 mm Chamber", "es": "Lanzadera para Cámara de 18 mm", "fr": "Navette pour chambre 18 mm", "pt": "Lançadeira para Câmara de 18 mm" },
+      "values": { "chamber_dia": 18.0, "chamber_h": 10.0, "seat_dia": 8.0, "clearance": 0.3 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance >= 0.2",
+      "severity": "warning",
+      "message": {
+        "en": "Below 0.2 mm the shuttle sticks in its bore, and a stuck shuttle is a valve that has quietly become a plain tee — it will look installed and do nothing",
+        "es": "Por debajo de 0.2 mm la lanzadera se pega en su barreno, y una lanzadera pegada es una válvula que en silencio se volvió una simple te — parecerá instalada y no hará nada",
+        "fr": "En dessous de 0,2 mm, la navette colle dans son alésage, et une navette collée est une valve devenue silencieusement un simple té — elle aura l'air installée et ne fera rien",
+        "pt": "Abaixo de 0,2 mm a lançadeira gruda no furo, e uma lançadeira grudada é uma válvula que silenciosamente virou um tê comum — vai parecer instalada e não fará nada"
+      }
+    },
+    {
+      "expression": "chamber_h >= 7.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below 7 mm of chamber the disc has almost no travel between the two seats, and a shuttle that cannot lift clear of the exhaust seat never opens the exhaust at all",
+        "es": "Con menos de 7 mm de cámara el disco casi no tiene recorrido entre los dos asientos, y una lanzadera que no despega del asiento de escape nunca abre el escape",
+        "fr": "En dessous de 7 mm de chambre, le disque n'a presque pas de course entre les deux sièges, et une navette qui ne décolle pas du siège d'échappement n'ouvre jamais l'échappement",
+        "pt": "Abaixo de 7 mm de câmara o disco quase não tem curso entre as duas sedes, e uma lançadeira que não descola da sede de escape nunca abre o escape"
+      }
+    },
+    {
+      "expression": "seat_dia >= 5.0",
+      "severity": "warning",
+      "message": {
+        "en": "A narrow exhaust aperture defeats the whole point: the valve exists so that air leaves through a wide hole rather than a long tube",
+        "es": "Una abertura de escape angosta echa por tierra todo el propósito: la válvula existe para que el aire salga por un agujero ancho en vez de por una manguera larga",
+        "fr": "Une ouverture d'échappement étroite ruine tout le propos : la valve existe pour que l'air sorte par un large trou plutôt que par un long tube",
+        "pt": "Uma abertura de escape estreita destrói todo o propósito: a válvula existe para que o ar saia por um buraco largo em vez de por uma mangueira longa"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [60, 50, 45] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal", "fr": "De face", "pt": "Frontal" }, "position": [0, -90, 10] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 15, "per_unit": 5, "per_part": 20,
+    "fn_factor": 64, "wasm_multiplier": 3, "warning_threshold_seconds": 120
+  },
+  "hyperobject": {
+    "domain": "soft-robotics",
+    "cdg_interfaces": [
+      {
+        "id": "commons_barb_series",
+        "label": { "en": "Commons Barb Series Socket", "es": "Receptáculo de Serie de Espigas del Procomún", "fr": "Emboîture de la série de cannelures du commun", "pt": "Encaixe da Série de Espigões do Comum" },
+        "geometry_type": "socket",
+        "standard": "internal (2 / 3 / 4 mm tube ID)",
+        "parameters": ["tube_id", "supply_form", "clearance", "wall"],
+        "compatible_with": ["pneumatic-barb-port", "bellows-actuator", "pneu-net-finger", "suction-cup-bellows", "vacuum-manifold-block", "hose-barb-tee"]
+      },
+      {
+        "id": "barb_stem_series",
+        "label": { "en": "Barb Stem Series", "es": "Serie de Vástago de Espiga", "fr": "Série de tétines cannelées", "pt": "Série de Haste Espigada" },
+        "geometry_type": "profile",
+        "standard": "internal (2 / 3 / 4 mm tube ID)",
+        "parameters": ["tube_id", "barb_count", "barb_pitch", "barb_rise"],
+        "compatible_with": ["pneumatic-barb-port", "bellows-actuator", "pneu-net-finger", "suction-cup-bellows", "vacuum-manifold-block", "hose-barb-tee"]
+      },
+      {
+        "id": "shuttle_chamber",
+        "label": { "en": "Shuttle Chamber", "es": "Cámara de Lanzadera", "fr": "Chambre de navette", "pt": "Câmara da Lançadeira" },
+        "geometry_type": "socket",
+        "standard": "internal — chamber bore and paired seat rings, shared by all three modes",
+        "parameters": ["chamber_dia", "chamber_h", "seat_dia", "clearance"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Soft pneumatic actuators are the cheapest capable gripper anyone can make: silicone, air, and printed fittings will pick soft fruit without bruising it, turn a page for someone who cannot, hold a limb steady for a dressing change, or grip a wet dish. Their practical limit has never been the gripping — it is the letting go. An actuator that takes ten seconds to release cannot pick at the rate a person picks, cannot follow a hand, and cannot be used in any sequence with a rhythm. The three-port shuttle valve is a hundred-year-old idea and the whole of the fix, and it is not sold in the small sizes soft robotics uses because there is no market for a two-dollar valve. Printing it on the series the commons already speaks turns a family of slow demonstrations into a family of usable machines, for the cost of a cup, a lid and a disc. Recycled filament is not offered: this part holds pressure against a printed wall, and reground feedstock has unpredictable layer adhesion.",
+      "es": "Los actuadores neumáticos blandos son la pinza capaz más barata que cualquiera puede hacer: silicón, aire y conexiones impresas cosechan fruta blanda sin magullarla, voltean una página para quien no puede, sostienen un miembro para un cambio de vendaje o agarran un traste mojado. Su límite práctico nunca ha sido agarrar — es soltar. Un actuador que tarda diez segundos en liberar no puede cosechar al ritmo de una persona, no puede seguir una mano y no sirve en ninguna secuencia con cadencia. La válvula de lanzadera de tres puertos es una idea centenaria y es toda la solución, y no se vende en las medidas chicas que usa la robótica blanda porque no hay mercado para una válvula de dos dólares. Imprimirla sobre la serie que el procomún ya habla convierte una familia de demostraciones lentas en una familia de máquinas usables, al costo de una taza, una tapa y un disco. No se ofrece filamento reciclado: esta pieza retiene presión contra una pared impresa, y el material regranulado tiene adhesión entre capas impredecible.",
+      "fr": "Les actionneurs pneumatiques souples sont la pince capable la moins chère que l'on puisse fabriquer : du silicone, de l'air et des raccords imprimés cueillent un fruit tendre sans le meurtrir, tournent une page pour qui ne le peut pas, maintiennent un membre le temps d'un pansement, ou saisissent une assiette mouillée. Leur limite pratique n'a jamais été la préhension — c'est le relâchement. Un actionneur qui met dix secondes à relâcher ne peut pas cueillir au rythme d'une personne, ne peut pas suivre une main, et ne sert dans aucune séquence cadencée. La valve navette à trois orifices est une idée centenaire et constitue tout le remède, et elle n'est pas vendue dans les petites tailles qu'emploie la robotique souple parce qu'il n'existe pas de marché pour une valve à deux euros. L'imprimer sur la série que le commun parle déjà transforme une famille de démonstrations lentes en une famille de machines utilisables, pour le prix d'une coupelle, d'un couvercle et d'un disque. Le filament recyclé n'est pas proposé : cette pièce retient une pression contre une paroi imprimée, et la matière régénérée a une adhésion inter-couches imprévisible.",
+      "pt": "Atuadores pneumáticos moles são a garra capaz mais barata que qualquer um consegue fazer: silicone, ar e conexões impressas colhem fruta macia sem machucar, viram uma página para quem não pode, seguram um membro numa troca de curativo, ou agarram um prato molhado. O limite prático deles nunca foi agarrar — é soltar. Um atuador que leva dez segundos para liberar não colhe no ritmo de uma pessoa, não acompanha uma mão e não serve em nenhuma sequência com cadência. A válvula de lançadeira de três bocais é uma ideia centenária e é toda a solução, e não é vendida nos tamanhos pequenos que a robótica mole usa porque não há mercado para uma válvula de dois dólares. Imprimi-la sobre a série que o comum já fala transforma uma família de demonstrações lentas numa família de máquinas usáveis, ao custo de um copo, uma tampa e um disco. Filamento reciclado não é oferecido: esta peça retém pressão contra uma parede impressa, e material regranulado tem adesão entre camadas imprevisível."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["quick-exhaust", "shuttle-valve", "check-valve", "pneumatic", "soft-robotics", "actuator", "low-pressure", "hyperobject", "commons"]
+}

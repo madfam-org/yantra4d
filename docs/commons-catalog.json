@@ -2,23 +2,23 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 500,
-    "with_cdg_interfaces": 486,
-    "with_commons_license": 500,
+    "cartridges": 510,
+    "with_cdg_interfaces": 496,
+    "with_commons_license": 510,
     "dual_engine": 22
   },
   "domains": {
-    "household": 125,
-    "industrial": 108,
-    "commercial": 75,
+    "household": 127,
+    "industrial": 112,
+    "commercial": 76,
     "wearable": 72,
     "medical": 44,
-    "infrastructure": 33,
+    "infrastructure": 34,
     "hybrid": 14,
     "uncategorized": 13,
-    "soft-robotics": 7,
+    "soft-robotics": 8,
     "agriculture": 5,
-    "consumer": 2,
+    "consumer": 3,
     "construction": 1,
     "energy": 1
   },
@@ -79,11 +79,14 @@
     "3/4in x 3/8in miter slot; 19mm T-track",
     "3/8 in (9.53 mm) punched blank, 100 / 150 / 304.8 mm centres",
     "3/8\"-16 UNC — major Ø9.525 mm, pitch 1.5875 mm, minor Ø7.749 mm",
+    "3/8-16 stand thread (16 TPI)",
     "3/8-3/4 in tube barb",
     "34 mm flask neck OD (250/500 mL)",
     "38-400 continuous-thread finish",
+    "4 / 6 mm metric pneumatic tube OD, smooth collet stem",
     "4 in safety-pattern hasp (No.8/M4 screws)",
     "4/6mm pneumatic tube",
+    "5/8-27 mic stand thread",
     "5/8-27 mic thread",
     "5/8in (16mm) baby pin",
     "5050/2835 strip",
@@ -103,6 +106,7 @@
     "70-450 / 86-450 mason CT finish",
     "8 mm indicator stem (Mitutoyo Series 2 / AGD Group 2)",
     "8 mm indicator stem (Mitutoyo Series 2)",
+    "8 mm plain axle shaft, 608 bearing bore",
     "830-pt breadboard",
     "90mm petri",
     "ANSI-SLAS microplate 9 mm pitch",
@@ -122,6 +126,7 @@
     "D-shaft / spline bore",
     "DIN 3975",
     "DIN 3975 cylindrical worm gear pair",
+    "DIN 43880 modular device pitch, 17.5 mm per unit",
     "DIN 5480 (spline) / keyway",
     "DIN EN 60715",
     "DIN EN 60715 TS35",
@@ -151,6 +156,7 @@
     "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
     "H1Z2Z2-K 4-6 mm2 solar lead OD series",
     "IEC 60061 E26 / E27 (7 TPI)",
+    "IEC 60529 IP2X access probe, 12 mm jointed test finger; apertures capped at 11 mm minor dimension",
     "ISO 15 (608/625/6900)",
     "ISO 15 (623/625/6900)",
     "ISO 15 (625/608)",
@@ -227,6 +233,7 @@
     "RMS W0.800in x 36 TPI (20.32 mm, DIN 58888) / M25 x 0.75",
     "RPi 40-pin form factor",
     "RPi HAT",
+    "Raspberry Pi HAT 58 x 49 mm hole pattern",
     "SAE J1128 4/7-pin",
     "SAE J1962",
     "SBS 9mm pitch (small)",
@@ -296,13 +303,17 @@
     "internal bond socket",
     "internal peg grid 8mm",
     "internal solids 40mm",
+    "internal — chamber bore and paired seat rings, shared by all three modes",
     "internal — cradle lip sized from tray rim and stack height",
+    "internal — folded cantilever, stiffness set by spring_thick",
     "internal — hand-tool slot, clamped inside the plug",
     "internal — living-hinge flap seat, sized from the jar bore",
+    "internal — measured spool core bore, 20-90 mm; no issuing body exists for this dimension",
     "internal — mouth as a fraction of bore Ø",
     "internal — mouth capped so two retaining legs always survive",
     "internal — one-way catch ring; opens only by destruction",
     "internal — pitch floored at slot width plus a 2 mm bar",
+    "internal — through passage sized from the bore series, for an airlock stem or a tube",
     "internal/aocl",
     "iso_8559",
     "kinematic (Maxwell / Kelvin) 3-ball coupling",
@@ -4349,6 +4360,100 @@
       }
     },
     {
+      "slug": "brick-baseplate",
+      "name": "Brick Baseplate",
+      "domain": "consumer",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "cols",
+        "rows",
+        "stud_dia",
+        "stud_h",
+        "tube_od",
+        "tube_id",
+        "underside",
+        "gf_x",
+        "gf_y",
+        "plate_h",
+        "wall"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Construction bricks are the most widely distributed precision plastic object on earth, and the most widely inherited: a bucket of them passes between families, schools and clinics for decades and outlives every toy bought alongside it. What runs out first is never the bricks — it is the baseplates, which are large, expensive relative to their weight, and the first thing lost or cracked. A printable baseplate on the published grid restores a whole bucket to usefulness for a few hours of filament. Bridging it to Gridfinity does something else again: it turns a shelf of storage bins into a modular play and work surface, so a therapy room, a classroom or a repair bench can reconfigure the same square metre between sorting, building and putting away. Recycled filament is entirely appropriate here — this part is loaded gently, at room temperature, with no seal and no spring — and saying so matters more than a blanket rule, because a baseplate is exactly the kind of large, low-stress object that reground material should be used for.",
+        "es": "Los ladrillos de construcción son el objeto de plástico de precisión más distribuido del planeta, y el más heredado: una cubeta de ellos pasa entre familias, escuelas y clínicas durante décadas y sobrevive a todos los juguetes comprados junto a ella. Lo que se acaba primero nunca son los ladrillos — son las placas base, que son grandes, caras en relación con su peso y lo primero que se pierde o se rompe. Una placa base imprimible sobre la retícula publicada devuelve una cubeta entera a la utilidad por unas horas de filamento. Puentearla con Gridfinity hace algo más: convierte un estante de cajas de almacenamiento en una superficie modular de juego y trabajo, para que un consultorio de terapia, un salón de clases o un banco de reparación reconfiguren el mismo metro cuadrado entre clasificar, construir y guardar. El filamento reciclado es del todo apropiado aquí — esta pieza trabaja con suavidad, a temperatura ambiente, sin sello ni resorte — y decirlo importa más que una regla general, porque una placa base es exactamente el tipo de objeto grande y de bajo esfuerzo para el que debería usarse material regranulado.",
+        "fr": "Les briques de construction sont l'objet en plastique de précision le plus largement diffusé de la planète, et le plus largement hérité : un seau de briques passe entre familles, écoles et dispensaires pendant des décennies et survit à tous les jouets achetés en même temps. Ce qui manque en premier, ce ne sont jamais les briques — ce sont les plaques de base, grandes, chères au regard de leur poids, et les premières à être perdues ou fendues. Une plaque imprimable sur la trame publiée rend tout un seau à nouveau utile pour quelques heures de filament. La relier à Gridfinity fait autre chose encore : elle transforme une étagère de bacs de rangement en surface modulaire de jeu et de travail, si bien qu'une salle de rééducation, une classe ou un établi de réparation peuvent reconfigurer le même mètre carré entre trier, construire et ranger. Le filament recyclé convient tout à fait ici — cette pièce travaille doucement, à température ambiante, sans joint ni ressort — et le dire importe plus qu'une règle générale, car une plaque de base est exactement le genre de grand objet peu sollicité auquel la matière régénérée devrait servir.",
+        "pt": "Blocos de montar são o objeto de plástico de precisão mais distribuído do planeta, e o mais herdado: um balde deles passa entre famílias, escolas e postos de saúde por décadas e sobrevive a todo brinquedo comprado junto. O que acaba primeiro nunca são os blocos — são as placas base, que são grandes, caras em relação ao peso e a primeira coisa a se perder ou trincar. Uma placa base imprimível sobre a malha publicada devolve um balde inteiro à utilidade por algumas horas de filamento. Fazer a ponte com o Gridfinity faz ainda outra coisa: transforma uma prateleira de caixas de organização numa superfície modular de brincar e trabalhar, de modo que uma sala de terapia, uma sala de aula ou uma bancada de reparo reconfigurem o mesmo metro quadrado entre separar, construir e guardar. Filamento reciclado é inteiramente apropriado aqui — esta peça trabalha com suavidade, à temperatura ambiente, sem vedação e sem mola — e dizer isso importa mais que uma regra geral, porque uma placa base é exatamente o tipo de objeto grande e de baixo esforço para o qual material regranulado deveria servir."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "stud_grid",
+          "label": "Construction Brick Stud Grid",
+          "geometry_type": "grid",
+          "standard": "construction brick 8mm",
+          "parameters": [
+            "cols",
+            "rows",
+            "stud_dia",
+            "stud_h"
+          ]
+        },
+        {
+          "id": "clutch_tube",
+          "label": "Underside Clutch Tube",
+          "geometry_type": "socket",
+          "standard": "construction brick 8mm",
+          "parameters": [
+            "tube_od",
+            "tube_id",
+            "underside"
+          ]
+        },
+        {
+          "id": "gridfinity_dock",
+          "label": "Gridfinity 42 mm Module",
+          "geometry_type": "socket",
+          "standard": "Gridfinity 42 mm",
+          "parameters": [
+            "gf_x",
+            "gf_y",
+            "plate_h"
+          ]
+        }
+      ],
+      "standards": [
+        "Gridfinity 42 mm",
+        "construction brick 8mm"
+      ],
+      "source": {
+        "manifest": "projects/brick-baseplate/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/brick-baseplate"
+      }
+    },
+    {
       "slug": "brick-tile",
       "name": "Building-Brick Compatible Tile",
       "domain": "commercial",
@@ -4424,6 +4529,192 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/brick-tile"
+      }
+    },
+    {
+      "slug": "bucket-lid-adapter",
+      "name": "Bucket Lid Adapter",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "bore_dia",
+        "lid_thick",
+        "retention",
+        "retain_bead",
+        "thread_turns",
+        "vent_bore",
+        "flange_over",
+        "wall",
+        "clearance"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A food-grade bucket is the cheapest large vessel in the world and the one most widely already owned: it stores grain, ferments, carries water, holds a rainwater catch, doses a drip line. What it cannot do is anything a port would let it do, and the ports that are sold are proprietary, regional, and priced as though the bucket were not free. The PCO 1881 neck is the opposite of proprietary — it is the finish on every carbonated-drink bottle manufactured anywhere, which means the mating half is already in the waste stream of every settlement on earth. Joining those two, on a bore a hole saw makes, turns a bucket into a plumbed vessel with one printed disc and a bottle someone threw away. Recycled filament is deliberately NOT offered here: this cartridge is used against food, drinking water and ferments, and reground feedstock has unknown provenance.",
+        "es": "Una cubeta de grado alimenticio es el recipiente grande más barato del mundo y el que más gente ya tiene: guarda grano, fermenta, acarrea agua, recoge lluvia, dosifica una línea de goteo. Lo que no puede hacer es todo aquello que permitiría un puerto, y los puertos que se venden son propietarios, regionales y con precio de que la cubeta no fuera gratis. El cuello PCO 1881 es lo contrario de propietario — es el pico de toda botella de refresco fabricada en cualquier parte, lo que significa que la mitad que embona ya está en el flujo de residuos de cualquier asentamiento del planeta. Unir ambos, sobre un barreno que hace una broca de copa, convierte una cubeta en recipiente entubado con un disco impreso y una botella que alguien tiró. Aquí NO se ofrece filamento reciclado a propósito: este cartucho se usa contra alimento, agua de beber y fermentos, y el material regranulado tiene procedencia desconocida.",
+        "fr": "Un seau de qualité alimentaire est le plus grand récipient bon marché du monde et celui que l'on possède déjà le plus souvent : il stocke du grain, fait fermenter, transporte l'eau, recueille la pluie, alimente un goutte-à-goutte. Ce qu'il ne peut pas faire, c'est tout ce qu'un piquage permettrait, et les piquages vendus sont propriétaires, régionaux et tarifés comme si le seau n'était pas gratuit. La bague PCO 1881 est l'inverse du propriétaire — c'est la bague de toute bouteille de soda fabriquée où que ce soit, donc la moitié complémentaire est déjà dans le flux de déchets de chaque agglomération de la planète. Réunir les deux, sur un perçage fait à la scie-cloche, transforme un seau en récipient raccordé avec un disque imprimé et une bouteille jetée. Le filament recyclé n'est délibérément PAS proposé ici : cette cartouche sert au contact d'aliments, d'eau de boisson et de ferments, et la matière régénérée est de provenance inconnue.",
+        "pt": "Um balde de grau alimentício é o maior recipiente barato do mundo e o que mais gente já tem: guarda grão, fermenta, carrega água, recolhe chuva, dosa uma linha de gotejamento. O que ele não faz é tudo aquilo que uma tomada permitiria, e as tomadas vendidas são proprietárias, regionais e precificadas como se o balde não fosse de graça. O gargalo PCO 1881 é o oposto de proprietário — é o bocal de toda garrafa de refrigerante fabricada em qualquer lugar, o que significa que a metade que casa já está no fluxo de resíduos de qualquer povoado do planeta. Unir os dois, num furo que uma serra-copo faz, transforma um balde em recipiente encanado com um disco impresso e uma garrafa que alguém descartou. Filamento reciclado NÃO é oferecido aqui de propósito: este cartucho é usado contra alimento, água de beber e fermentos, e material regranulado tem procedência desconhecida."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "pail_mouth_bore",
+          "label": "Carboy / Bucket Bore",
+          "geometry_type": "socket",
+          "standard": "carboy/bucket bore",
+          "parameters": [
+            "bore_dia",
+            "lid_thick",
+            "clearance",
+            "retain_bead"
+          ]
+        },
+        {
+          "id": "pco1881_port_thread",
+          "label": "PCO 1881 Bottle Finish",
+          "geometry_type": "thread",
+          "standard": "PCO 1881",
+          "parameters": [
+            "thread_turns",
+            "clearance",
+            "wall"
+          ]
+        },
+        {
+          "id": "grommet_boss",
+          "label": "Grommet / Stem Boss",
+          "geometry_type": "socket",
+          "standard": "internal — through passage sized from the bore series, for an airlock stem or a tube",
+          "parameters": [
+            "bore_dia",
+            "wall",
+            "vent_bore"
+          ]
+        }
+      ],
+      "standards": [
+        "PCO 1881",
+        "carboy/bucket bore",
+        "internal — through passage sized from the bore series, for an airlock stem or a tube"
+      ],
+      "source": {
+        "manifest": "projects/bucket-lid-adapter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/bucket-lid-adapter"
+      }
+    },
+    {
+      "slug": "busbar-insulating-shroud",
+      "name": "Busbar Insulating Shroud",
+      "domain": "infrastructure",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "rail_depth_class",
+        "spring_thick",
+        "plate_th",
+        "run_len",
+        "bar_w",
+        "bar_h",
+        "barrier_h",
+        "wall",
+        "aperture",
+        "lead_outs"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Most electrical work in the world happens on boards that were never finished to a drawing: a school extension, a clinic generator changeover, a workshop that grew, a village mini-grid assembled from what arrived. Those boards are worked on by people who did not build them, often in poor light, often with the supply still on because turning it off means turning off the clinic. The exposed run between two terminals is where a hand goes, and the shroud that should be over it is a moulded part for a specific manufacturer's terminal, in a catalogue, in another country. A printed cover on the rail that is already there does not make an installation compliant and does not pretend to — but a barrier between a hand and a conductor is a barrier whether or not it has a certificate, and the alternative on most of these boards is nothing at all. Recycled filament is not offered: the sprung hook must hold for years in a warm cabinet, and a shroud that falls off is worse than no shroud, because it was trusted.",
+        "es": "La mayor parte del trabajo eléctrico del mundo ocurre en tableros que nunca se terminaron conforme a un plano: la ampliación de una escuela, la transferencia de planta de una clínica, un taller que fue creciendo, una microrred armada con lo que fue llegando. En esos tableros trabaja gente que no los construyó, muchas veces con mala luz y muchas veces con el suministro encendido, porque apagarlo significa apagar la clínica. El tramo expuesto entre dos bornes es adonde va una mano, y la cubierta que debería estar ahí es una pieza moldeada para el borne de un fabricante en particular, en un catálogo, en otro país. Una tapa impresa sobre el riel que ya está ahí no vuelve conforme a la instalación y no pretende hacerlo — pero una barrera entre una mano y un conductor es una barrera tenga o no certificado, y la alternativa en la mayoría de esos tableros es nada. No se ofrece filamento reciclado: el gancho de resorte debe aguantar años en un gabinete caliente, y una cubierta que se cae es peor que ninguna cubierta, porque en ella se confiaba.",
+        "fr": "L'essentiel du travail électrique dans le monde se fait sur des tableaux qui n'ont jamais été achevés selon un plan : l'extension d'une école, l'inversion de source d'un dispensaire, un atelier qui a grandi, un mini-réseau assemblé avec ce qui est arrivé. Ces tableaux sont manipulés par des gens qui ne les ont pas construits, souvent dans une lumière médiocre, souvent sous tension, parce que couper signifie couper le dispensaire. La portée nue entre deux bornes est l'endroit où passe une main, et le capot qui devrait s'y trouver est une pièce moulée pour la borne d'un fabricant précis, dans un catalogue, dans un autre pays. Un capot imprimé sur le rail déjà présent ne rend pas une installation conforme et ne prétend pas le faire — mais une barrière entre une main et un conducteur est une barrière, certificat ou non, et l'alternative sur la plupart de ces tableaux, c'est rien du tout. Le filament recyclé n'est pas proposé : le crochet ressort doit tenir des années en armoire chaude, et un capot qui tombe est pire que pas de capot, parce qu'on lui faisait confiance.",
+        "pt": "A maior parte do trabalho elétrico do mundo acontece em quadros que nunca foram terminados conforme um projeto: a ampliação de uma escola, a transferência de gerador de um posto de saúde, uma oficina que foi crescendo, uma minirrede montada com o que foi chegando. Nesses quadros mexe gente que não os construiu, muitas vezes com pouca luz e muitas vezes com a alimentação ligada, porque desligar significa desligar o posto de saúde. O trecho exposto entre dois bornes é aonde a mão vai, e a capa que deveria estar ali é uma peça moldada para o borne de um fabricante específico, num catálogo, em outro país. Uma tampa impressa na calha que já está ali não torna a instalação conforme e não finge tornar — mas uma barreira entre uma mão e um condutor é uma barreira, com certificado ou sem, e a alternativa na maioria desses quadros é nada. Filamento reciclado não é oferecido: o gancho de mola precisa aguentar anos num painel quente, e uma capa que cai é pior que nenhuma capa, porque nela se confiava."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "din_ts35_rail",
+          "label": "DIN TS35 Rail",
+          "geometry_type": "rail",
+          "standard": "DIN EN 60715 TS35",
+          "parameters": [
+            "rail_depth_class",
+            "run_len",
+            "plate_th",
+            "spring_thick"
+          ]
+        },
+        {
+          "id": "finger_safe_aperture",
+          "label": "Finger-Safe Aperture",
+          "geometry_type": "pocket",
+          "standard": "IEC 60529 IP2X access probe, 12 mm jointed test finger; apertures capped at 11 mm minor dimension",
+          "parameters": [
+            "aperture",
+            "lead_outs",
+            "wall"
+          ]
+        },
+        {
+          "id": "compliant_spring_hook",
+          "label": "Compliant Spring Hook",
+          "geometry_type": "snap",
+          "standard": "internal — folded cantilever, stiffness set by spring_thick",
+          "parameters": [
+            "spring_thick",
+            "plate_th"
+          ]
+        }
+      ],
+      "standards": [
+        "DIN EN 60715 TS35",
+        "IEC 60529 IP2X access probe, 12 mm jointed test finger; apertures capped at 11 mm minor dimension",
+        "internal — folded cantilever, stiffness set by spring_thick"
+      ],
+      "source": {
+        "manifest": "projects/busbar-insulating-shroud/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/busbar-insulating-shroud"
       }
     },
     {
@@ -8662,6 +8953,99 @@
       }
     },
     {
+      "slug": "din-rail-end-stop",
+      "name": "DIN Rail End Stop",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 10,
+      "parameter_ids": [
+        "rail_depth_class",
+        "spring_thick",
+        "plate_th",
+        "width",
+        "stop_h",
+        "module_units",
+        "module_h",
+        "module_depth",
+        "cable_slots",
+        "label_slot"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "The end stop is the part nobody orders and every panel needs. It costs almost nothing new, which is exactly why it is never in the box when a board is being rebuilt in a school, a clinic, a workshop or a village mini-grid — and a row of breakers that migrates along its rail is not a cosmetic problem: it loads the terminals sideways, opens gaps at the busbar, and eventually leaves a live way exposed. The blanking module is the same argument at higher stakes. An empty way in a consumer unit is an opening straight to the busbar, and the honest field repair for it today is tape or a piece of card. A printed blank on the modular pitch is a physical barrier that fits flush, stays put, and can be made on the spot. None of this is clever and all of it is the difference between a board that passes an inspection and one that does not. Recycled filament is not offered: the sprung hook must keep its spring for years in a warm cabinet, and reground feedstock has unpredictable interlayer strength.",
+        "es": "El tope de riel es la pieza que nadie pide y que todo tablero necesita. Cuesta casi nada nueva, y justo por eso nunca está en la caja cuando se rearma un tablero en una escuela, una clínica, un taller o una microrred comunitaria — y una fila de interruptores que se corre por su riel no es un problema estético: carga los bornes de lado, abre huecos en la barra y termina por dejar una vía viva expuesta. El módulo ciego es el mismo argumento con más en juego. Una vía vacía en un centro de carga es una abertura directa a la barra, y la reparación honesta de campo hoy es cinta o un pedazo de cartón. Un ciego impreso en el paso modular es una barrera física que queda al ras, se queda puesta y se puede hacer ahí mismo. Nada de esto es ingenioso y todo ello es la diferencia entre un tablero que pasa una inspección y uno que no. No se ofrece filamento reciclado: el gancho de resorte debe conservar su elasticidad durante años en un gabinete caliente, y el material regranulado tiene resistencia entre capas impredecible.",
+        "fr": "La butée d'arrêt est la pièce que personne ne commande et dont tout tableau a besoin. Elle ne coûte presque rien neuve, et c'est précisément pour cela qu'elle n'est jamais dans la boîte quand on refait un tableau dans une école, un dispensaire, un atelier ou un mini-réseau villageois — et une rangée de disjoncteurs qui migre le long de son rail n'est pas un problème esthétique : elle charge les bornes de travers, ouvre des jours au niveau du peigne, et finit par laisser un emplacement sous tension à découvert. L'obturateur est le même argument avec un enjeu plus lourd. Un emplacement vide dans un tableau est une ouverture directe sur le peigne, et la réparation de terrain honnête aujourd'hui, c'est du ruban adhésif ou un morceau de carton. Un obturateur imprimé au pas modulaire est une barrière physique qui affleure, qui reste en place et que l'on peut faire sur-le-champ. Rien de tout cela n'est astucieux, et c'est tout entier la différence entre un tableau qui passe une visite et un tableau qui échoue. Le filament recyclé n'est pas proposé : le crochet ressort doit garder son élasticité des années en armoire chaude, et la matière régénérée a une tenue inter-couches imprévisible.",
+        "pt": "A trava de fim de calha é a peça que ninguém pede e que todo quadro precisa. Custa quase nada nova, e é exatamente por isso que nunca está na caixa quando se refaz um quadro numa escola, num posto de saúde, numa oficina ou numa minirrede comunitária — e uma fileira de disjuntores que caminha pela calha não é um problema estético: carrega os bornes de lado, abre vãos no barramento e acaba deixando uma via energizada exposta. O módulo cego é o mesmo argumento com mais em jogo. Uma via vazia num quadro de distribuição é uma abertura direta para o barramento, e o reparo honesto de campo hoje é fita ou um pedaço de papelão. Um cego impresso no passo modular é uma barreira física que fica rente, permanece no lugar e pode ser feito na hora. Nada disso é engenhoso e tudo isso é a diferença entre um quadro que passa numa inspeção e um que não passa. Filamento reciclado não é oferecido: o gancho de mola precisa manter a elasticidade por anos num painel quente, e material regranulado tem resistência entre camadas imprevisível."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "din_ts35_rail",
+          "label": "DIN TS35 Rail",
+          "geometry_type": "rail",
+          "standard": "DIN EN 60715 TS35",
+          "parameters": [
+            "rail_depth_class",
+            "width",
+            "plate_th",
+            "spring_thick"
+          ]
+        },
+        {
+          "id": "module_pitch",
+          "label": "Modular Device Pitch",
+          "geometry_type": "profile",
+          "standard": "DIN 43880 modular device pitch, 17.5 mm per unit",
+          "parameters": [
+            "module_units",
+            "module_h",
+            "module_depth"
+          ]
+        },
+        {
+          "id": "compliant_spring_hook",
+          "label": "Compliant Spring Hook",
+          "geometry_type": "snap",
+          "standard": "internal — folded cantilever, stiffness set by spring_thick",
+          "parameters": [
+            "spring_thick",
+            "plate_th"
+          ]
+        }
+      ],
+      "standards": [
+        "DIN 43880 modular device pitch, 17.5 mm per unit",
+        "DIN EN 60715 TS35",
+        "internal — folded cantilever, stiffness set by spring_thick"
+      ],
+      "source": {
+        "manifest": "projects/din-rail-end-stop/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/din-rail-end-stop"
+      }
+    },
+    {
       "slug": "din-relay",
       "name": "DIN Rail Relay Holder",
       "domain": "infrastructure",
@@ -11610,6 +11994,103 @@
       }
     },
     {
+      "slug": "filament-spool-adapter",
+      "name": "Filament Spool Adapter",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 12,
+      "parameter_ids": [
+        "core_dia",
+        "core_depth",
+        "grip_fingers",
+        "roller_len",
+        "bearing_od",
+        "bearing_w",
+        "bearing_bore",
+        "press_fit",
+        "flange_dia",
+        "bolt_dia",
+        "wall",
+        "clearance"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "This is the commons talking to its own audience, and it is worth doing plainly. A spool dragging on a printed axle is the commonest cause of under-extrusion that is not the extruder's fault, and it is a particularly cruel one because the drag is not constant: it rises as the spool empties and the tension arm has less mass to fight, so the failure appears late in a long print and looks exactly like a heat or retraction problem. People chase it for weeks. Fifty cents of bearing and a printed insert remove it entirely. That matters most where a printer is a shared or a scarce resource — a school, a library, a fab lab, a clinic printing its own fittings — because there a failed twelve-hour print is not an annoyance, it is a day. The bearing is also the most recoverable component in the machine: 608s come out of skateboards, fidget spinners and dead fans, and this cartridge is designed so a slip fit is one slider away when you want the bearing back afterwards.",
+        "es": "Aquí el procomún le habla a su propio público, y vale la pena decirlo con claridad. Un carrete que arrastra sobre un eje impreso es la causa más común de subextrusión que no es culpa del extrusor, y es particularmente cruel porque el arrastre no es constante: aumenta conforme el carrete se vacía y el brazo tensor tiene menos masa que vencer, así que la falla aparece tarde en una impresión larga y se ve idéntica a un problema de temperatura o de retracción. La gente la persigue durante semanas. Cincuenta centavos de balero y un inserto impreso la eliminan por completo. Eso importa más donde una impresora es un recurso compartido o escaso — una escuela, una biblioteca, un fab lab, una clínica que imprime sus propias conexiones — porque ahí una impresión fallida de doce horas no es una molestia, es un día. El balero es además el componente más recuperable de la máquina: los 608 salen de patinetas, spinners y ventiladores muertos, y este cartucho está hecho para que un ajuste deslizante esté a un deslizador de distancia cuando quieras recuperarlo.",
+        "fr": "Ici, le commun s'adresse à son propre public, et cela vaut la peine d'être dit sans détour. Une bobine qui frotte sur un axe imprimé est la cause la plus fréquente de sous-extrusion qui n'est pas la faute de l'extrudeur, et elle est particulièrement perverse parce que le frottement n'est pas constant : il augmente à mesure que la bobine se vide et que le bras de tension a moins de masse à vaincre, si bien que la panne apparaît tard dans une longue impression et ressemble exactement à un problème de température ou de rétraction. On la traque des semaines durant. Cinquante centimes de roulement et un insert imprimé la suppriment entièrement. Cela compte surtout là où une imprimante est une ressource partagée ou rare — une école, une bibliothèque, un fab lab, un dispensaire qui imprime ses propres raccords — car là, une impression ratée de douze heures n'est pas un désagrément, c'est une journée. Le roulement est en outre le composant le plus récupérable de la machine : les 608 sortent de planches à roulettes, de hand spinners et de ventilateurs morts, et cette cartouche est conçue pour qu'un ajustement glissant soit à un curseur de distance quand on veut le récupérer.",
+        "pt": "Aqui o comum fala com o próprio público, e vale a pena dizer sem rodeios. Um carretel arrastando num eixo impresso é a causa mais comum de subextrusão que não é culpa do extrusor, e é particularmente cruel porque o arrasto não é constante: cresce conforme o carretel esvazia e o braço tensor tem menos massa para vencer, então a falha aparece tarde numa impressão longa e parece exatamente um problema de temperatura ou de retração. As pessoas caçam isso por semanas. Cinquenta centavos de rolamento e um inserto impresso eliminam o problema por completo. Isso importa mais onde uma impressora é um recurso compartilhado ou escasso — uma escola, uma biblioteca, um fab lab, um posto de saúde que imprime as próprias conexões — porque ali uma impressão de doze horas que falha não é um aborrecimento, é um dia. O rolamento é ainda o componente mais recuperável da máquina: 608 saem de skates, spinners e ventiladores mortos, e este cartucho é feito para que um ajuste deslizante esteja a um controle de distância quando você quiser o rolamento de volta."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "bearing_608_seat",
+          "label": "608 Bearing Seat",
+          "geometry_type": "socket",
+          "standard": "608 bearing (ISO 15 — 8×22×7)",
+          "parameters": [
+            "bearing_od",
+            "bearing_w",
+            "bearing_bore",
+            "press_fit",
+            "wall"
+          ]
+        },
+        {
+          "id": "axle_shaft_8mm",
+          "label": "8 mm Axle Shaft",
+          "geometry_type": "socket",
+          "standard": "8 mm plain axle shaft, 608 bearing bore",
+          "parameters": [
+            "bearing_bore",
+            "press_fit"
+          ]
+        },
+        {
+          "id": "spool_core_series",
+          "label": "Spool Core Series",
+          "geometry_type": "profile",
+          "standard": "internal — measured spool core bore, 20-90 mm; no issuing body exists for this dimension",
+          "parameters": [
+            "core_dia",
+            "core_depth",
+            "clearance",
+            "grip_fingers"
+          ]
+        }
+      ],
+      "standards": [
+        "608 bearing (ISO 15 — 8×22×7)",
+        "8 mm plain axle shaft, 608 bearing bore",
+        "internal — measured spool core bore, 20-90 mm; no issuing body exists for this dimension"
+      ],
+      "source": {
+        "manifest": "projects/filament-spool-adapter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/filament-spool-adapter"
+      }
+    },
+    {
       "slug": "filter-step-ring",
       "name": "Lens Filter Step Ring",
       "domain": "commercial",
@@ -12663,6 +13144,93 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/french-cleat"
+      }
+    },
+    {
+      "slug": "french-cleat-keyhole-plate",
+      "name": "French Cleat Keyhole Plate",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 13,
+      "parameter_ids": [
+        "angle",
+        "cleat_h",
+        "cleat_depth",
+        "fit",
+        "plate_w",
+        "plate_h",
+        "wall",
+        "shelf_depth",
+        "keyhole_dia",
+        "keyhole_slot",
+        "keyhole_drop",
+        "pattern_dx",
+        "stud_head_h"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A wall that can be rearranged in an afternoon is the difference between a room that serves one activity and a room that serves a household, a class, a repair café and a workshop in the same week. The French cleat is the oldest and cheapest way to get that: one angled strip on the wall and everything else hangs, moves and comes off without a drill. What has always broken the pattern is everything bought rather than made — a speaker, a power strip, a router, a first-aid box, a radio — because those things hang on keyholes, and a keyhole needs a screw in a wall. This plate is the joint between the reconfigurable wall and the manufactured object, so a rented room, a shared space or a building nobody is allowed to drill into can still be organised and reorganised. It is the smallest object in this tranche and it closes two families at once, which is a fair summary of why unglamorous adapters are worth building at all.",
+        "es": "Una pared que se puede reacomodar en una tarde es la diferencia entre un cuarto que sirve para una actividad y uno que sirve a una casa, una clase, un café de reparación y un taller en la misma semana. La cuña francesa es la forma más antigua y barata de lograrlo: una tira en ángulo en la pared y todo lo demás se cuelga, se mueve y se quita sin taladro. Lo que siempre ha roto el patrón es todo lo comprado en vez de hecho — una bocina, un multicontacto, un router, un botiquín, un radio — porque esas cosas cuelgan de bocallaves, y una bocallave necesita un tornillo en la pared. Esta placa es la unión entre la pared reconfigurable y el objeto manufacturado, para que un cuarto rentado, un espacio compartido o un edificio en el que no se permite taladrar se puedan organizar y reorganizar igual. Es el objeto más chico de esta tanda y cierra dos familias a la vez, que es un buen resumen de por qué vale la pena construir adaptadores sin gracia.",
+        "fr": "Un mur que l'on peut réagencer en une après-midi, c'est la différence entre une pièce qui sert à une activité et une pièce qui sert à un foyer, à un cours, à un repair café et à un atelier dans la même semaine. Le tasseau biseauté est la façon la plus ancienne et la moins chère d'y parvenir : une latte inclinée au mur, et tout le reste s'accroche, se déplace et se retire sans perceuse. Ce qui a toujours cassé le motif, c'est tout ce qui est acheté plutôt que fabriqué — une enceinte, un bloc multiprise, un routeur, une trousse de secours, une radio — parce que ces objets s'accrochent par des trous de serrure, et un trou de serrure exige une vis dans le mur. Cette platine est la jonction entre le mur reconfigurable et l'objet manufacturé, pour qu'une pièce louée, un espace partagé ou un bâtiment où l'on n'a pas le droit de percer puissent tout de même s'organiser et se réorganiser. C'est le plus petit objet de cette tranche et il referme deux familles à la fois, ce qui résume assez bien pourquoi les adaptateurs sans éclat valent la peine d'être construits.",
+        "pt": "Uma parede que se pode rearranjar numa tarde é a diferença entre um cômodo que serve a uma atividade e um que serve a uma casa, uma aula, um café de reparo e uma oficina na mesma semana. O sarrafo em bisel é o jeito mais antigo e barato de conseguir isso: uma régua inclinada na parede e todo o resto pendura, move e sai sem furadeira. O que sempre quebrou o padrão é tudo o que é comprado em vez de feito — uma caixa de som, uma régua de tomadas, um roteador, uma caixa de primeiros socorros, um rádio — porque essas coisas penduram por fechaduras, e uma fechadura precisa de um parafuso na parede. Esta placa é a junta entre a parede reconfigurável e o objeto manufaturado, para que um quarto alugado, um espaço compartilhado ou um prédio onde não se pode furar ainda assim possam ser organizados e reorganizados. É o menor objeto desta leva e fecha duas famílias de uma vez, o que resume bem por que adaptadores sem graça valem a pena."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": true,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "french_cleat_45",
+          "label": "45° French Cleat",
+          "geometry_type": "rail",
+          "standard": "French cleat 45 deg",
+          "parameters": [
+            "angle",
+            "cleat_h",
+            "cleat_depth",
+            "fit"
+          ]
+        },
+        {
+          "id": "wall_keyhole_pattern",
+          "label": "Wall Keyhole Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "Wall Keyhole",
+          "parameters": [
+            "keyhole_dia",
+            "keyhole_slot",
+            "keyhole_drop",
+            "pattern_dx",
+            "stud_head_h"
+          ]
+        }
+      ],
+      "standards": [
+        "French cleat 45 deg",
+        "Wall Keyhole"
+      ],
+      "source": {
+        "manifest": "projects/french-cleat-keyhole-plate/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/french-cleat-keyhole-plate"
       }
     },
     {
@@ -16333,6 +16901,102 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/hose-adapter"
+      }
+    },
+    {
+      "slug": "hose-barb-tee",
+      "name": "Hose Barb Tee",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "tube_id",
+        "tube_id_b",
+        "port_a_form",
+        "push_od",
+        "barb_count",
+        "barb_pitch",
+        "barb_rise",
+        "elbow_angle",
+        "bore",
+        "wall",
+        "clearance"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Soft pneumatics is the cheapest capable robotics there is: a bellows, a finger, a suction cup and a length of silicone tube will pick fruit, turn a page, hold a limb or grip a wet dish, and every one of those parts can be printed. What cannot be printed today, in this commons, is the plumbing between them — so a rig with two actuators has a hand-cut splice in it, and a hand-cut splice is where a demonstration stops being a machine. Fittings are the least glamorous objects in any system and they are the ones that decide whether it can be built by someone who did not design it. Publishing the junction on the series that already exists, rather than inventing a sixth convention, is the whole contribution: it costs nothing to anyone already using the series and it turns five isolated objects into a kit. Recycled filament is not offered — this part carries pressure against a printed wall, and reground feedstock has unpredictable layer adhesion.",
+        "es": "La neumática blanda es la robótica capaz más barata que existe: un fuelle, un dedo, una ventosa y un tramo de manguera de silicón pueden cosechar fruta, voltear una página, sostener un miembro o agarrar un traste mojado, y todas esas piezas se pueden imprimir. Lo que hoy no se puede imprimir en este procomún es la tubería entre ellas — así que un montaje con dos actuadores lleva un empalme hecho a mano, y un empalme hecho a mano es donde una demostración deja de ser una máquina. Las conexiones son los objetos menos vistosos de cualquier sistema y son los que deciden si alguien que no lo diseñó puede armarlo. Publicar la unión sobre la serie que ya existe, en vez de inventar una sexta convención, es toda la contribución: no le cuesta nada a quien ya usa la serie y convierte cinco objetos aislados en un juego. No se ofrece filamento reciclado — esta pieza soporta presión contra una pared impresa, y el material regranulado tiene adhesión entre capas impredecible.",
+        "fr": "La pneumatique souple est la robotique capable la moins chère qui soit : un soufflet, un doigt, une ventouse et une longueur de tube silicone cueillent un fruit, tournent une page, soutiennent un membre ou saisissent une assiette mouillée — et chacune de ces pièces s'imprime. Ce qui ne s'imprime pas aujourd'hui, dans ce commun, c'est la tuyauterie entre elles : un montage à deux actionneurs comporte donc un raccord bricolé, et un raccord bricolé, c'est là qu'une démonstration cesse d'être une machine. Les raccords sont les objets les moins spectaculaires d'un système et ce sont eux qui décident si quelqu'un qui ne l'a pas conçu peut le monter. Publier le raccord sur la série qui existe déjà, plutôt que d'inventer une sixième convention, est toute la contribution : cela ne coûte rien à qui utilise déjà la série et cela transforme cinq objets isolés en un kit. Le filament recyclé n'est pas proposé — cette pièce tient une pression contre une paroi imprimée, et la matière régénérée a une adhésion inter-couches imprévisible.",
+        "pt": "A pneumática mole é a robótica capaz mais barata que existe: um fole, um dedo, uma ventosa e um trecho de mangueira de silicone colhem fruta, viram uma página, sustentam um membro ou agarram um prato molhado, e cada uma dessas peças pode ser impressa. O que hoje não se imprime neste comum é o encanamento entre elas — então um arranjo com dois atuadores carrega uma emenda feita à mão, e uma emenda feita à mão é onde uma demonstração deixa de ser uma máquina. Conexões são os objetos menos vistosos de qualquer sistema e são os que decidem se alguém que não o projetou consegue montá-lo. Publicar a junção sobre a série que já existe, em vez de inventar uma sexta convenção, é toda a contribuição: não custa nada a quem já usa a série e transforma cinco objetos isolados num kit. Filamento reciclado não é oferecido — esta peça sustenta pressão contra uma parede impressa, e material regranulado tem adesão entre camadas imprevisível."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "commons_barb_series",
+          "label": "Commons Barb Series Socket",
+          "geometry_type": "socket",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "clearance",
+            "wall",
+            "port_a_form"
+          ]
+        },
+        {
+          "id": "barb_stem_series",
+          "label": "Barb Stem Series",
+          "geometry_type": "profile",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "tube_id_b",
+            "barb_count",
+            "barb_pitch",
+            "barb_rise"
+          ]
+        },
+        {
+          "id": "push_in_stem",
+          "label": "Push-in Collet Stem",
+          "geometry_type": "profile",
+          "standard": "4 / 6 mm metric pneumatic tube OD, smooth collet stem",
+          "parameters": [
+            "push_od",
+            "bore",
+            "wall"
+          ]
+        }
+      ],
+      "standards": [
+        "4 / 6 mm metric pneumatic tube OD, smooth collet stem",
+        "internal (2 / 3 / 4 mm tube ID)"
+      ],
+      "source": {
+        "manifest": "projects/hose-barb-tee/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/hose-barb-tee"
       }
     },
     {
@@ -20231,6 +20895,102 @@
       }
     },
     {
+      "slug": "mic-stand-thread-adapter",
+      "name": "Mic Stand Thread Adapter",
+      "domain": "commercial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 9,
+      "parameter_ids": [
+        "thread_top",
+        "thread_bottom",
+        "turns",
+        "register_h",
+        "collar_h",
+        "flats",
+        "grip",
+        "clearance",
+        "thru_bore"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Three incompatible threads on the same shelf is a tax on everyone who records, films, teaches or broadcasts on borrowed equipment. It is invisible to anyone whose kit was bought as a set, and it is decisive for a school, a community radio station, a field researcher or a touring collective, whose gear arrives from a dozen donors and a dozen decades. The commercial answer is a two-dollar brass bushing that is sold in the wrong size, in the wrong city, on the day it is needed. Printing the adapter turns a mismatch from a cancelled session into a ten-minute wait. Nothing here is novel and that is the point: the value is entirely in the fact that all nine combinations come out of one file that can be carried on a phone and printed anywhere. Recycled filament is not offered — this part holds a microphone above people's heads, and reground feedstock has unpredictable layer strength.",
+        "es": "Tres roscas incompatibles en el mismo estante son un impuesto para todo el que graba, filma, enseña o transmite con equipo prestado. Es invisible para quien compró su equipo como juego, y decisivo para una escuela, una radio comunitaria, un investigador de campo o un colectivo de gira, cuyo equipo llega de una docena de donantes y una docena de décadas. La respuesta comercial es un buje de latón de dos dólares que se vende en la medida equivocada, en la ciudad equivocada, el día que se necesita. Imprimir el adaptador convierte una incompatibilidad de sesión cancelada en una espera de diez minutos. Nada aquí es novedoso, y ese es el punto: el valor está por completo en que las nueve combinaciones salen de un archivo que cabe en un teléfono y se imprime en cualquier parte. No se ofrece filamento reciclado — esta pieza sostiene un micrófono sobre la cabeza de la gente, y el material regranulado tiene resistencia entre capas impredecible.",
+        "fr": "Trois filetages incompatibles sur la même étagère, c'est un impôt pour quiconque enregistre, filme, enseigne ou diffuse avec du matériel emprunté. C'est invisible pour qui a acheté son équipement en kit, et décisif pour une école, une radio associative, un chercheur de terrain ou un collectif en tournée, dont le matériel arrive de douze donateurs et de douze décennies. La réponse commerciale, c'est une douille en laiton à deux euros vendue dans la mauvaise taille, dans la mauvaise ville, le jour où on en a besoin. Imprimer l'adaptateur transforme une incompatibilité — donc une séance annulée — en une attente de dix minutes. Rien ici n'est nouveau, et c'est précisément le point : la valeur tient entièrement au fait que les neuf combinaisons sortent d'un fichier qui tient dans un téléphone et s'imprime n'importe où. Le filament recyclé n'est pas proposé — cette pièce tient un micro au-dessus de la tête des gens, et la matière régénérée a une tenue inter-couches imprévisible.",
+        "pt": "Três roscas incompatíveis na mesma prateleira são um imposto sobre todo mundo que grava, filma, ensina ou transmite com equipamento emprestado. É invisível para quem comprou o kit fechado, e decisivo para uma escola, uma rádio comunitária, um pesquisador de campo ou um coletivo em turnê, cujo equipamento chega de uma dúzia de doadores e uma dúzia de décadas. A resposta comercial é uma bucha de latão de dois dólares vendida no tamanho errado, na cidade errada, no dia em que se precisa dela. Imprimir o adaptador transforma uma incompatibilidade — ou seja, uma sessão cancelada — numa espera de dez minutos. Nada aqui é novo, e é exatamente esse o ponto: o valor está inteiramente no fato de que as nove combinações saem de um arquivo que cabe num celular e se imprime em qualquer lugar. Filamento reciclado não é oferecido — esta peça segura um microfone sobre a cabeça das pessoas, e material regranulado tem resistência entre camadas imprevisível."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "mic_stand_thread",
+          "label": "5/8-27 Mic Stand Thread",
+          "geometry_type": "thread",
+          "standard": "5/8-27 mic stand thread",
+          "parameters": [
+            "thread_top",
+            "thread_bottom",
+            "turns",
+            "clearance",
+            "register_h"
+          ]
+        },
+        {
+          "id": "three_eighths_thread",
+          "label": "3/8-16 Stand Thread",
+          "geometry_type": "thread",
+          "standard": "3/8-16 stand thread (16 TPI)",
+          "parameters": [
+            "thread_top",
+            "thread_bottom",
+            "turns",
+            "clearance"
+          ]
+        },
+        {
+          "id": "quarter_twenty_thread",
+          "label": "1/4-20 UNC Camera Thread",
+          "geometry_type": "thread",
+          "standard": "ASME B1.1 1/4-20 UNC",
+          "parameters": [
+            "thread_top",
+            "thread_bottom",
+            "turns",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "3/8-16 stand thread (16 TPI)",
+        "5/8-27 mic stand thread",
+        "ASME B1.1 1/4-20 UNC"
+      ],
+      "source": {
+        "manifest": "projects/mic-stand-thread-adapter/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/mic-stand-thread-adapter"
+      }
+    },
+    {
       "slug": "microplate-tray",
       "name": "SBS/SLAS Microplate Tray",
       "domain": "medical",
@@ -23969,6 +24729,101 @@
       }
     },
     {
+      "slug": "pi-din-carrier",
+      "name": "Pi DIN Carrier",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 11,
+      "parameter_ids": [
+        "rail_depth_class",
+        "rail_len",
+        "spring_thick",
+        "hole_dx",
+        "hole_dy",
+        "hole_dia",
+        "standoff_h",
+        "board_margin",
+        "plate_th",
+        "hood_h",
+        "vent_style"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Small computers now run irrigation controllers, clinic refrigerator loggers, village mesh nodes, machine monitors and school lab benches, and almost all of that hardware ends up mounted the same way: cable-tied to a board, taped inside a box, or resting on the floor of a cabinet where the next person to open it will put a screwdriver through it. DIN rail is the answer the electrical trades settled on a lifetime ago — a numbered, universal, mechanically boring standard that every enclosure, every panel shop and every electrician on earth already stocks. Putting the commons' single-board computers on that rail costs one printed plate and makes a hobby installation into one a trained electrician can service, document and hand over. That is the difference between a demonstration and infrastructure. Recycled filament is deliberately not offered: the sprung hook relies on layer adhesion holding its spring over years in a warm cabinet, and reground feedstock has unpredictable interlayer strength.",
+        "es": "Las computadoras pequeñas hoy controlan riego, registran temperaturas de refrigeradores de clínica, sostienen nodos de malla comunitaria, monitorean máquinas y equipan laboratorios escolares, y casi todo ese equipo termina montado igual: amarrado con cincho a una tabla, pegado con cinta dentro de una caja, o tirado en el piso de un gabinete donde el siguiente que lo abra le meterá un desarmador. El riel DIN es la respuesta que los oficios eléctricos acordaron hace generaciones — una norma numerada, universal y mecánicamente aburrida que todo gabinete, todo taller de tableros y todo electricista ya maneja. Poner las placas del procomún sobre ese riel cuesta una placa impresa y convierte una instalación de aficionado en una que un electricista puede dar servicio, documentar y entregar. Esa es la diferencia entre una demostración y una infraestructura. No se ofrece filamento reciclado a propósito: el gancho de resorte depende de que la adhesión entre capas conserve su elasticidad por años en un gabinete caliente, y el material regranulado tiene resistencia intercapa impredecible.",
+        "fr": "Les petits ordinateurs pilotent aujourd'hui des régulations d'irrigation, des enregistreurs de réfrigérateurs de dispensaire, des nœuds de réseau maillé villageois, des surveillances de machines et des paillasses de lycée, et presque tout ce matériel finit monté de la même façon : ligaturé sur une planche, scotché dans une boîte, ou posé au fond d'une armoire où le prochain qui l'ouvrira y passera un tournevis. Le rail DIN est la réponse que les métiers de l'électricité ont arrêtée il y a des générations — une norme numérotée, universelle et mécaniquement ennuyeuse que toute armoire, tout tableautier et tout électricien possède déjà. Mettre les cartes du commun sur ce rail coûte une platine imprimée et transforme une installation d'amateur en une installation qu'un électricien peut entretenir, documenter et livrer. C'est la différence entre une démonstration et une infrastructure. Le filament recyclé n'est délibérément pas proposé : le crochet ressort repose sur une adhésion inter-couches qui doit garder son élasticité pendant des années en armoire chaude, et la matière régénérée a une tenue inter-couches imprévisible.",
+        "pt": "Computadores pequenos hoje controlam irrigação, registram temperatura de geladeiras de posto de saúde, sustentam nós de rede mesh comunitária, monitoram máquinas e equipam bancadas de laboratório escolar, e quase todo esse equipamento acaba montado do mesmo jeito: amarrado com abraçadeira numa tábua, colado com fita dentro de uma caixa, ou largado no fundo de um painel onde o próximo que abrir vai enfiar uma chave de fenda. A calha DIN é a resposta que os ofícios elétricos fecharam há gerações — uma norma numerada, universal e mecanicamente entediante que todo painel, toda montadora de quadros e todo eletricista já tem. Colocar as placas do comum nessa calha custa uma base impressa e transforma uma instalação de hobby numa que um eletricista pode manter, documentar e entregar. Essa é a diferença entre uma demonstração e uma infraestrutura. Filamento reciclado não é oferecido de propósito: o gancho de mola depende de a adesão entre camadas manter sua elasticidade por anos num painel quente, e material regranulado tem resistência entre camadas imprevisível."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "din_ts35_rail",
+          "label": "DIN TS35 Rail",
+          "geometry_type": "rail",
+          "standard": "DIN EN 60715 TS35",
+          "parameters": [
+            "rail_depth_class",
+            "rail_len",
+            "spring_thick",
+            "plate_th"
+          ]
+        },
+        {
+          "id": "rpi_hat_pattern",
+          "label": "Raspberry Pi HAT Pattern",
+          "geometry_type": "bolt_pattern",
+          "standard": "Raspberry Pi HAT 58 x 49 mm hole pattern",
+          "parameters": [
+            "hole_dx",
+            "hole_dy",
+            "hole_dia",
+            "standoff_h"
+          ]
+        },
+        {
+          "id": "compliant_spring_hook",
+          "label": "Compliant Spring Hook",
+          "geometry_type": "snap",
+          "standard": "internal — folded cantilever, stiffness set by spring_thick",
+          "parameters": [
+            "spring_thick",
+            "plate_th"
+          ]
+        }
+      ],
+      "standards": [
+        "DIN EN 60715 TS35",
+        "Raspberry Pi HAT 58 x 49 mm hole pattern",
+        "internal — folded cantilever, stiffness set by spring_thick"
+      ],
+      "source": {
+        "manifest": "projects/pi-din-carrier/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pi-din-carrier"
+      }
+    },
+    {
       "slug": "pi-hat-case",
       "name": "Pi HAT Case",
       "domain": "industrial",
@@ -25327,6 +26182,104 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pneumatic-barb-port"
+      }
+    },
+    {
+      "slug": "pneumatic-quick-exhaust",
+      "name": "Pneumatic Quick Exhaust",
+      "domain": "soft-robotics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 13,
+      "parameter_ids": [
+        "tube_id",
+        "supply_form",
+        "barb_count",
+        "barb_pitch",
+        "barb_rise",
+        "push_od",
+        "chamber_dia",
+        "chamber_h",
+        "seat_dia",
+        "shroud_windows",
+        "bore",
+        "wall",
+        "clearance"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Soft pneumatic actuators are the cheapest capable gripper anyone can make: silicone, air, and printed fittings will pick soft fruit without bruising it, turn a page for someone who cannot, hold a limb steady for a dressing change, or grip a wet dish. Their practical limit has never been the gripping — it is the letting go. An actuator that takes ten seconds to release cannot pick at the rate a person picks, cannot follow a hand, and cannot be used in any sequence with a rhythm. The three-port shuttle valve is a hundred-year-old idea and the whole of the fix, and it is not sold in the small sizes soft robotics uses because there is no market for a two-dollar valve. Printing it on the series the commons already speaks turns a family of slow demonstrations into a family of usable machines, for the cost of a cup, a lid and a disc. Recycled filament is not offered: this part holds pressure against a printed wall, and reground feedstock has unpredictable layer adhesion.",
+        "es": "Los actuadores neumáticos blandos son la pinza capaz más barata que cualquiera puede hacer: silicón, aire y conexiones impresas cosechan fruta blanda sin magullarla, voltean una página para quien no puede, sostienen un miembro para un cambio de vendaje o agarran un traste mojado. Su límite práctico nunca ha sido agarrar — es soltar. Un actuador que tarda diez segundos en liberar no puede cosechar al ritmo de una persona, no puede seguir una mano y no sirve en ninguna secuencia con cadencia. La válvula de lanzadera de tres puertos es una idea centenaria y es toda la solución, y no se vende en las medidas chicas que usa la robótica blanda porque no hay mercado para una válvula de dos dólares. Imprimirla sobre la serie que el procomún ya habla convierte una familia de demostraciones lentas en una familia de máquinas usables, al costo de una taza, una tapa y un disco. No se ofrece filamento reciclado: esta pieza retiene presión contra una pared impresa, y el material regranulado tiene adhesión entre capas impredecible.",
+        "fr": "Les actionneurs pneumatiques souples sont la pince capable la moins chère que l'on puisse fabriquer : du silicone, de l'air et des raccords imprimés cueillent un fruit tendre sans le meurtrir, tournent une page pour qui ne le peut pas, maintiennent un membre le temps d'un pansement, ou saisissent une assiette mouillée. Leur limite pratique n'a jamais été la préhension — c'est le relâchement. Un actionneur qui met dix secondes à relâcher ne peut pas cueillir au rythme d'une personne, ne peut pas suivre une main, et ne sert dans aucune séquence cadencée. La valve navette à trois orifices est une idée centenaire et constitue tout le remède, et elle n'est pas vendue dans les petites tailles qu'emploie la robotique souple parce qu'il n'existe pas de marché pour une valve à deux euros. L'imprimer sur la série que le commun parle déjà transforme une famille de démonstrations lentes en une famille de machines utilisables, pour le prix d'une coupelle, d'un couvercle et d'un disque. Le filament recyclé n'est pas proposé : cette pièce retient une pression contre une paroi imprimée, et la matière régénérée a une adhésion inter-couches imprévisible.",
+        "pt": "Atuadores pneumáticos moles são a garra capaz mais barata que qualquer um consegue fazer: silicone, ar e conexões impressas colhem fruta macia sem machucar, viram uma página para quem não pode, seguram um membro numa troca de curativo, ou agarram um prato molhado. O limite prático deles nunca foi agarrar — é soltar. Um atuador que leva dez segundos para liberar não colhe no ritmo de uma pessoa, não acompanha uma mão e não serve em nenhuma sequência com cadência. A válvula de lançadeira de três bocais é uma ideia centenária e é toda a solução, e não é vendida nos tamanhos pequenos que a robótica mole usa porque não há mercado para uma válvula de dois dólares. Imprimi-la sobre a série que o comum já fala transforma uma família de demonstrações lentas numa família de máquinas usáveis, ao custo de um copo, uma tampa e um disco. Filamento reciclado não é oferecido: esta peça retém pressão contra uma parede impressa, e material regranulado tem adesão entre camadas imprevisível."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": true,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "commons_barb_series",
+          "label": "Commons Barb Series Socket",
+          "geometry_type": "socket",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "supply_form",
+            "clearance",
+            "wall"
+          ]
+        },
+        {
+          "id": "barb_stem_series",
+          "label": "Barb Stem Series",
+          "geometry_type": "profile",
+          "standard": "internal (2 / 3 / 4 mm tube ID)",
+          "parameters": [
+            "tube_id",
+            "barb_count",
+            "barb_pitch",
+            "barb_rise"
+          ]
+        },
+        {
+          "id": "shuttle_chamber",
+          "label": "Shuttle Chamber",
+          "geometry_type": "socket",
+          "standard": "internal — chamber bore and paired seat rings, shared by all three modes",
+          "parameters": [
+            "chamber_dia",
+            "chamber_h",
+            "seat_dia",
+            "clearance"
+          ]
+        }
+      ],
+      "standards": [
+        "internal (2 / 3 / 4 mm tube ID)",
+        "internal — chamber bore and paired seat rings, shared by all three modes"
+      ],
+      "source": {
+        "manifest": "projects/pneumatic-quick-exhaust/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/yantra4d && cd yantra4d && git sparse-checkout set projects/pneumatic-quick-exhaust"
       }
     },
     {

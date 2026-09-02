@@ -14,6 +14,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Hyperobjects Commons: the sixth hundred, tranche 1 (#501–510)** — Ten new
+  in-repo cartridges, built in the ranked order of the sixth-hundred plan's
+  "top ten by leverage" (yantra4d #91 §3.12) under the ratification recorded in
+  internal-devops ADR-015 (method ratified, tranche 1 authorised, later slots
+  not pre-ratified). Ranked order, with the partner count MEASURED by running
+  `normalize_family()` and the shipped geometry rules over the live catalog
+  rather than estimated:
+  1. `bucket-lid-adapter` (household) — a bored pail or carboy lid given a PCO
+     1881 bottle finish. **P = 9.** Consumers: the nine live PCO 1881 cartridges
+     (`pco-cap`, `jar-adapter`, `bottle-coupler`, `bottle-thread`,
+     `faircap-filter`, `filter-straw`, `bird-feeder`, `pet-dispenser`,
+     `rain-gauge-funnel`).
+  2. `pi-din-carrier` (industrial) — the Raspberry Pi HAT pattern on one face
+     and DIN EN 60715 TS35 on the other. **P = 11** (9 pre-existing +
+     `din-rail-end-stop` and `busbar-insulating-shroud` from this tranche).
+  3. `mic-stand-thread-adapter` (commercial) — 5/8"-27 ⇄ 3/8"-16 ⇄ 1/4"-20 in
+     all nine combinations. **P = 6.** Closes `mic-thread-5/8-27` and
+     `unc-3/8-16`, joins `unc-1/4-20`.
+  4. `din-rail-end-stop` (industrial) — the parts that terminate a rail rather
+     than ride on it: end stop, cable-comb spacer, DIN 43880 blanking module.
+     **P = 9.**
+  5. `hose-barb-tee` (industrial) — tee, elbow and reducer on the commons' own
+     2/3/4 mm barb series, with a socket form that consumes it. **P = 0 today**
+     (see gaps).
+  6. `pneumatic-quick-exhaust` (soft-robotics) — a three-port shuttle valve on
+     the same series, for the retraction speed the soft-robotics family lacks.
+     **P = 0 today** (see gaps).
+  7. `busbar-insulating-shroud` (infrastructure) — busbar tunnel, terminal
+     shroud and phase barrier on TS35, every aperture capped below the IEC
+     60529 IP2X access probe in the geometry rather than in a warning.
+     **P = 9.**
+  8. `french-cleat-keyhole-plate` (household) — closes `french-cleat` and
+     `keyhole-hanger` with one T1 plate. **P = 2.**
+  9. `brick-baseplate` (consumer) — the construction-brick stud grid bridged to
+     the Gridfinity 42 mm module, in both directions. **P = 4.** Closes
+     `brick-8mm-stud`.
+  10. `filament-spool-adapter` (industrial) — a 608 seat for a spool core that
+      has no standard. **P = 6.**
+  Every cartridge is quadrilingual (en/es/fr/pt) at authoring time per the
+  2026-08-25 ratification, declares `difficulty`, and ships CERN-OHL-W-2.0 by
+  the ADR-011-symmetric ruling. Each carries a full min/max/corner extremes
+  sweep rendered through the real `cq_runner` sandbox — **660 cases across the
+  tranche, all watertight with `body_count == 1`** — recorded per cartridge in
+  its commit body and README.
+  **Gaps recorded rather than papered over.** Three of the plan's partner counts
+  depend on taxonomy fixes that ADR-015 did *not* ratify, so they are not landed
+  and the affected counts are reported as measured today, not as planned:
+  `hose-barb-tee` and `pneumatic-quick-exhaust` need the proposed
+  `commons:<series>` namespace (plan §4.5 F6, an explicit open operator question
+  in §5) before the five-member barb series is visible to the graph at all —
+  the mating is physically real today regardless; `bucket-lid-adapter` needs the
+  `bucket-bore` family (F5) for its `airlock-grommet` and `sharps-lid` edges;
+  and `mic-stand-thread-adapter` needs the one-character `unc-1/4-20` regex fix
+  (F1) for its `tripod-hub` edge. Each cartridge declares the string its
+  existing family members declare, character for character, so every one of
+  those edges appears the day the corresponding ruling lands, with no geometry
+  change.
 - **Multi-Rack Mode (custom-msh)** — New 6th mode producing 2–5 contiguous
   staining racks joined front-to-back (Y-axis, default) or side-by-side (X-axis).
   Y-axis stacking: racks share diamond grid junction guards at Y boundaries,

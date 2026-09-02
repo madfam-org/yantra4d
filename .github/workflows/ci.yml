@@ -17,6 +17,14 @@ concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# The actions cache client waits SEGMENT_DOWNLOAD_TIMEOUT_MINS (default 10) for a stalled
+# segment before giving up and letting the job proceed without the cache. On 2026-09-02 a
+# studio npm-cache restore stalled at 87 % for the full ten minutes and the lane then hit
+# its budget; a fresh `npm ci` took twenty seconds. Two minutes is plenty for a healthy
+# restore and turns a stalled one into a cheap miss.
+env:
+  SEGMENT_DOWNLOAD_TIMEOUT_MINS: "2"
+
 jobs:
   # Round two of the CI economics work #84 started. #84 stopped a *superseded*
   # run from burning the pool; this stops a run that never needed to exist.
@@ -103,7 +111,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: apps/studio

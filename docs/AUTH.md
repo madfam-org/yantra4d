@@ -493,8 +493,10 @@ When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request contex
 ### Harness tier
 
 `AUTH_ENABLED=false` does **not** by itself unlock paid features on the render
-path. `_effective_tier()` in `apps/api/routes/engine/render.py` grants the top
-tier only when auth is off **and** Flask debug is on; auth-off with debug off —
+path. `effective_tier()` in `apps/api/middleware/auth.py` — which the render
+routes reach through the one-line `_effective_tier()` wrapper in
+`apps/api/routes/engine/render.py` — grants the top tier only when auth is off
+**and** Flask debug is on; auth-off with debug off —
 the state CI and the whole API test suite run in — stays `guest`, which is what
 lets the tier-enforcement tests keep seeing 403s.
 

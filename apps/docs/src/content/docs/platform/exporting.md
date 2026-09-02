@@ -29,6 +29,8 @@ Not every format is available for every project. It depends on the rendering eng
 
 The export panel only shows formats that the current project supports. The project manifest declares which formats are available via its `export_formats` field.
 
+Your tier is checked **twice**: when the render that produces the file is generated, and again when the file is downloaded. A download link for a format above your tier is refused at retrieval, so an old or shared link cannot hand out a format your account does not include.
+
 ## How to export
 
 1. Open the **Export** panel in the studio sidebar.
@@ -36,6 +38,8 @@ The export panel only shows formats that the current project supports. The proje
 3. Click the download button.
 
 For non-GLB formats, the studio triggers a dedicated render with the target format. The 3D viewer always displays GLB (converted automatically from STL) regardless of your export choice.
+
+**Anything but STL renders on the server.** Most renders happen in your own browser, which is free and does not use up your hourly render allowance. The browser engine can only write STL and has no format converter, so choosing STEP, 3MF, OFF, OBJ, GLB or GLTF sends that one render to the server and it counts against your allowance. Picking STL again puts you back in the browser. This is not something the placement control can override — see [Configuring models](/platform/configuring-models/) for the control itself.
 
 ### Multi-part exports
 

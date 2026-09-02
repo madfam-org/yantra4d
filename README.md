@@ -25,9 +25,9 @@ Geometry is meaningless without material context. The Yantra4D Commons pioneers 
 ### 🌡️ Interactive Digital Twin (4D Simulation) — partially implemented / roadmap
 The vision: apply simulated energy to any hyperobject and watch the continuous SDF morph in real-time as it crosses material phase boundaries (glass transition, yield, melt).
 
-**What is real today (2026-07-04):** the Studio energy slider (`simulated_energy`) drives a thermodynamic-collapse heuristic in the implicit SDF engine (sag past glass-transition temperature), and the **WASM Circuit Breaker** genuinely routes complex renders from browser WASM to the server backend (`apps/studio/src/services/engine/renderService.ts`).
+**What is real today:** the Studio energy slider (`simulated_energy`) drives a thermodynamic-collapse heuristic in the implicit SDF engine (sag past glass-transition temperature), and a render whose browser estimate exceeds the device's budget is placed on the server by `apps/studio/src/services/engine/renderPlacement.ts` — one rule in the placement table below, not a "circuit breaker" bolted onto `renderService.ts`.
 
-**What is mocked or heuristic today:** the "full physics simulation" pipeline (`POST /api/projects/:slug/simulate/physics`) generates a PPF solver script but never executes it — the background worker produces synthetic progress frames only (`apps/api/tasks/simulation_tasks.py`). The FEA stress endpoint returns a labeled geometry-derived **stress proxy**, not a structural solve. Real PPF/FEM execution on GPU nodes is **roadmap**. See the [Current status](#-current-status-2026-07-04) section.
+**What is mocked or heuristic today:** the "full physics simulation" pipeline (`POST /api/projects/:slug/simulate/physics`) generates a PPF solver script but never executes it — the background worker produces synthetic progress frames only (`apps/api/tasks/simulation_tasks.py`). The FEA stress endpoint returns a labeled geometry-derived **stress proxy**, not a structural solve. Real PPF/FEM execution on GPU nodes is **roadmap**. See the [Current status](#-current-status-2026-09-02) section.
 
 ---
 
@@ -39,12 +39,12 @@ The vision: apply simulated energy to any hyperobject and watch the continuous S
 
 ---
 
-## ✅ Current status (2026-07-04)
+## ✅ Current status (2026-09-02)
 
 Honest, code-verified snapshot. **Working today:**
 
 - **Interactive 3D preview** — Studio (React 19 + Three.js) renders projects live with parameter controls.
-- **Dual rendering paths** — browser-side OpenSCAD **WASM** worker plus server-side native rendering, with automatic backend detection and a complexity **circuit breaker** that falls back between them.
+- **Browser-first rendering** — the visitor's browser is the **default** placement: the OpenSCAD **WASM** worker renders there, free for us and unmetered for them, and the server's native OpenSCAD/CadQuery is the only metered path. Which one runs is decided by `decideRenderPlacement()`, a pure 11-rule precedence function: four HARD server rules first (a `cadquery`/`graph`/`implicit` mode, manifest `render.server_only`, an unusable wasm bundle, and **any `export_format` but `stl`** — the browser kernel writes one `/output.stl` and has no converter), then the `?render=` override, the visitor's preference, the measured device tier, this session's browser failures, the estimate budget, the legacy `force_backend` **soft hint**, and finally the browser. A *soft* server decision flips back to the browser when the API is unreachable; a hard one does not. Full table: [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md).
 - **STL / mesh export** — server render pipeline produces STL/GLB/3MF artifacts.
 - **Geometry verification** — dedicated verify endpoint (`apps/api/routes/engine/verify.py`) and parity QA scripts (`scripts/qa/verify_parity.py`).
 - **Cartridge project system** — `project.json` manifests, 500-cartridge CadQuery-first Commons catalog (including curated art/misc projects), admin app, Janua-authenticated admin flows. <!-- fact source: docs/commons-catalog.json → counts.cartridges; see the generated table under "The Commons Catalog" below -->
@@ -144,8 +144,8 @@ sports, marine/RV, pet, generative art, safety).
 
 **Dual-engine flagships** (CadQuery B-Rep modes + original OpenSCAD modes):
 Gridfinity · Gears · Fasteners · DIN Rail Clip · Soft Jaw · Faircap Filter ·
-Parametric Connector · Microscope Slide Holder · Prosthetic Socket — plus 14 more;
-[`COMMONS.md`](./COMMONS.md) lists all 23.
+Parametric Connector · Microscope Slide Holder — plus 14 more;
+[`COMMONS.md`](./COMMONS.md) lists all 22 (`counts.dual_engine` in the catalog).
 
 > **Machine-readable catalog:** [`docs/commons-catalog.json`](docs/commons-catalog.json)
 > — one entry per cartridge with its CDG interfaces, referenced standards, engines, and

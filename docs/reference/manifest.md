@@ -528,7 +528,7 @@ The distinction is carried by `GenerateOptions.automatic`, the third argument of
 
 Alternatively, use the CLI tool: `tools/yantra4d-init <scad-directory> --slug my-project --install`
 
-See [Multi-Project Platform](./multi-project.md) and [Developer Experience Guide](./devx-guide.md) for details.
+See [Multi-Project Platform](../guides/multi-project.md) and [Developer Experience Guide](../guides/devx-guide.md) for details.
 
 ### Single-Project Mode (legacy)
 
@@ -559,7 +559,7 @@ Ensure your `project.json` follows this root structure. **Common mistake:** defi
 
 ## Relationship to Other Docs
 
-- The backend loader is part of the architecture described in [Web Interface](./web_interface.md)
-- Verification modes map to manifest mode IDs, as described in [Verification Suite](./verification.md)
+- The backend loader is part of the architecture described in [Web Interface](../architecture/web_interface.md)
+- Verification modes map to manifest mode IDs, as described in [Verification Suite](../guides/verification.md)
 
-[Back to Index](./index.md)
+[Back to Index](../index.md)

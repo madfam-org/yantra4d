@@ -15,7 +15,7 @@ npm run preview   # Preview production build
 
 The frontend is data-driven via a **project manifest** fetched from the backend at `/api/manifest`. See [Project Manifest docs](../../docs/reference/manifest.md) for the schema.
 
-### Provider Hierarchy (`main.jsx`)
+### Provider Hierarchy (`main.tsx`)
 
 ```
 ThemeProvider → ManifestProvider → LanguageProvider → App
@@ -29,13 +29,15 @@ ThemeProvider → ManifestProvider → LanguageProvider → App
 
 | File | Role |
 |------|------|
-| `src/App.jsx` | Main shell — state, API calls, layout, keyboard shortcuts |
-| `src/components/controls/Controls.jsx` | Data-driven sliders and checkboxes for physical/geometric parameters |
-| `src/components/controls/AppearancePanel.jsx` | Viewport visualization settings (lighting, wireframe, clipping, materials) |
-| `src/components/bom/BomPanel.jsx` | Smart Bill of Materials parsing physical parts and required hardware |
-| `src/components/Viewer.jsx` | Three.js STL viewer with camera controls and snapshot export |
-| `src/contexts/ManifestProvider.jsx` | Manifest fetch, fallback, typed accessors via `useManifest()` |
-| `src/config/fallback-manifest.json` | Bundled copy of `scad/project.json` |
+| `src/App.tsx` | Main shell — state, API calls, layout, keyboard shortcuts |
+| `src/components/controls/Controls.tsx` | Data-driven sliders and checkboxes for physical/geometric parameters |
+| `src/components/controls/AppearancePanel.tsx` | Viewport visualization settings (lighting, wireframe, clipping, materials) |
+| `src/components/bom/BomPanel.tsx` | Smart Bill of Materials parsing physical parts and required hardware |
+| `src/components/viewer/Viewer.tsx` | Three.js STL viewer with camera controls and snapshot export |
+| `src/contexts/project/ManifestProvider.tsx` | Manifest fetch, fallback, typed accessors via `useManifest()` |
+| `src/services/engine/renderPlacement.ts` | The pure placement policy — the precedence table above lives here |
+| `src/services/engine/renderCapability.ts` | Device capability probe (`capable` / `limited` / `incapable`), cached in `localStorage` |
+| `src/config/fallback-manifest.json` | Bundled copy of `projects/gridfinity/project.json` minus `project.force_backend`; kept in step by `scripts/qa/sync_fallback_manifest.py --check` (blocking in CI: `manifest-sync`) — never edit it by hand |
 
 ### Environment Variables
 

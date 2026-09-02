@@ -16,20 +16,25 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Web Interface](./architecture/web_interface.md): Full-stack architecture (Flask/React), API reference, component structure.
 
 ### Guides
+-   [Authentication, tiers and rate-limit identity](./AUTH.md): Janua JWT, the `guest | essentials | pro | premium` ladder and the permanent `madfam` alias, `TIER_OVERRIDES`, `HARNESS_TIER`, the private-project gate, and the WebSocket read matrix.
 -   [Verification Suite](./guides/verification.md): Automated STL quality checks — watertightness, volume count, assembly fit.
 -   [Developer Experience Guide](./guides/devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
--   [WASM Mode](./guides/wasm-mode.md): Client-side rendering fallback — detection, architecture, limitations, browser support.
+-   [Browser rendering and render placement](./guides/wasm-mode.md): the browser is the DEFAULT placement — the 11-rule precedence table, the capability probe, the wasm bundle, limitations and browser support.
 -   [Multi-Project Platform](./guides/multi-project.md): Multi-project setup, project switching, and Docker configuration.
 -   [AI Features](./guides/ai-features.md): AI Configurator, Code Editor, and Synthesizer — setup, API reference, session management, tier access.
 -   [Physics Simulation](./guides/physics-simulation.md): PPF Contact Solver pipeline (execution mocked), a labeled FEA stress proxy, heuristic topology optimization — architecture, REST API, local dev mock mode.
 -   [Implicit SDF Engine](./guides/implicit-engine.md): TPMS lattice rendering, `engine: "implicit"` manifest usage, Digital Twin phase simulation.
 -   [MQTT Telemetry](./guides/mqtt-telemetry.md): Real-time sensor data injection for 4D hyperobjects — MQTT client, parameter merging, SSE streaming.
--   [Rate Limiting](./guides/rate-limiting.md): Flask-Limiter, per-tier render limits, WASM fallback, production Redis setup.
+-   [Rate Limiting](./guides/rate-limiting.md): Flask-Limiter, per-tier render limits, why a browser render costs no quota, production Redis setup.
 -   [White-Labeling](./guides/white-labeling.md): Deploying branded instances — env vars, Docker Compose override, Kubernetes pattern, license key enforcement.
 -   [Troubleshooting](./guides/troubleshooting.md): Common issues — render timeouts, CORS, Docker.
 
 ### Strategy & Planning
 -   [Platform Manifesto](./strategy/MANIFESTO.md): Vision and philosophical hyperobject principles.
+-   [Value-Extraction Audit](./strategy/VALUE-EXTRACTION-AUDIT.md): every ratio the 2026-08 audit stated, recomputed against today's commons. The table between the `VALUE_EXTRACTION_TABLE` markers is generated — refresh it with `scripts/qa/value_extraction_audit.py --write`, never by hand.
+-   [SIXTH-100 strategy](./strategy/SIXTH-100-STRATEGY.md): ranked leverage×demand plan for cartridges 501–600 (**proposed**, not ratified).
+-   [CDG mating-rule candidates](./strategy/CDG-MATING-RULES-PROPOSAL.md): rules derived from the declared interfaces and scored against the author-written answer key (**proposed**); the derivation is `scripts/qa/derive_mating_candidates.py`, gated on staleness in CI.
+-   [Trim glyphs](./strategy/TRIM-GLYPHS.md): the notion→cartridge→parameter inventory behind Fashion Cabinet flats v2.
 -   [Competitive Landscape](./strategy/competitive-landscape.md): Market research, competitor analysis, and feature context.
 -   [Roadmap](../ROADMAP.md): Strategic features planned for future implementation.
 

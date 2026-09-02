@@ -23,23 +23,27 @@ This roadmap outlines the strategic path towards a world-class hyperobject commo
 > _Status notes (2026-09-02) — nothing above is re-checked here; these only say what is now
 > known about the items that stay open or whose checkmark needs a scope._
 >
-> - **P1.3 (WASM Fallback Testing)** stays checked: the fallback tests exist and pass. Their
->   scope is the **test suite**, not production. On `main`,
->   `apps/studio/src/services/engine/renderService.ts` still contains
->   `if (API_BASE) return 'backend'` inside `detectMode()`, and production always sets
->   `VITE_API_BASE` — so every heuristic below that line (complexity circuit breaker, hardware
->   check, `force_backend`) is unreachable in production and no visitor render has actually
->   run in the browser. Removing that pin is [#80](https://github.com/madfam-org/yantra4d/pull/80)
->   (browser-first rendering); until it lands, read this item as "tested", not "shipped".
+> - **P1.3 (WASM Fallback Testing)** stays checked, and as of
+>   [#80](https://github.com/madfam-org/yantra4d/pull/80) (merged 2026-09-02) it is shipped
+>   rather than merely tested. The `if (API_BASE) return 'backend'` pin inside `detectMode()`
+>   is gone, so the heuristics below it are no longer dead code in production. The framing has
+>   also inverted: the browser is now the **default** placement and the server is the
+>   exception, decided by the pure 11-rule `decideRenderPlacement()` in
+>   `apps/studio/src/services/engine/renderPlacement.ts`. "Fallback" is the wrong word for it
+>   now — see [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md).
 > - **P1.6 (Full Playwright Audit Closure)** stays unchecked, but the harness is no longer the
 >   blocker: since [#76](https://github.com/madfam-org/yantra4d/pull/76) (merged 2026-09-02)
 >   the nightly `e2e-audit.yml` runs the `23-browser-audit` suite **without Docker** — backend,
 >   Redis and the render worker start directly on the runner, the same shape as `ci.yml`'s e2e
 >   job. The workflow's test step had been skipped on every run since 2026-03-21 because the
 >   runner image has the docker CLI but not the Compose plugin. Run **#166** was the first to
->   execute the tests; the failures it reported are being reconciled under
->   [#79](https://github.com/madfam-org/yantra4d/issues/79). Closure means a green audit run,
->   which has not happened yet.
+>   execute the tests; [#96](https://github.com/madfam-org/yantra4d/pull/96) (merged
+>   2026-09-02) reconciled runs #166–#174 — every failure was suite-vs-product drift, not a
+>   product regression — and added the `HARNESS_TIER` knob the auth-off harness needs to render
+>   CadQuery at all, plus a queue drain between groups.
+>   [#98](https://github.com/madfam-org/yantra4d/pull/98) then fixed that drain to send the
+>   `{ all: true }` body #83 requires. Closure still means a green audit run, which has not
+>   happened yet.
 > - **P0.7 / P0.8 / P0.9 / P1.7 / P1.8** are left unchecked and unchanged: no verification of
 >   post-push workflow status, live production browser flows, the Tablaco end-to-end path, the
 >   dependency backlog, or an auth-enabled production smoke was performed for this re-baseline.
@@ -56,13 +60,14 @@ This roadmap outlines the strategic path towards a world-class hyperobject commo
 - [x] WASM Execution
 - [x] Intelligent Cloud Fallback
 
-> _Scope note (2026-09-02):_ both boxes stay checked — the WASM worker and the fallback logic
-> are implemented and covered by tests. The **production** claim is narrower than the phase
-> title suggests: `detectMode()` in `apps/studio/src/services/engine/renderService.ts` returns
-> `'backend'` as soon as `API_BASE` is set, which it always is in production, so the hybrid
-> path is exercised by the test suite and by local/no-API-base builds rather than by real
-> visitors. Making browser rendering the production default is tracked by
-> [#80](https://github.com/madfam-org/yantra4d/pull/80).
+> _Scope note (updated 2026-09-02, after
+> [#80](https://github.com/madfam-org/yantra4d/pull/80)):_ both boxes stay checked, and the
+> production claim now matches the phase title — with one correction to the title itself. The
+> cloud is not the fallback; the browser is the **default** and the server is the metered
+> exception. `detectMode()`'s `if (API_BASE) return 'backend'` pin is gone, placement is
+> decided per (device, cartridge) by the pure `decideRenderPlacement()` in
+> `apps/studio/src/services/engine/renderPlacement.ts`, and a *soft* server decision falls
+> back to the browser when the API is unreachable — the fallback runs in both directions now.
 
 ### Phase 4: glTF 2.0 Viewport Transmission
 - [x] Format Upgrade (STL → glTF/GLB)

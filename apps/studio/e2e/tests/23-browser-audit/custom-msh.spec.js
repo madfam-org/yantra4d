@@ -14,7 +14,7 @@ test.describe('Custom MSH — Browser Audit', () => {
   test.use({ mockAPIs: false })
   test.describe.configure({ mode: 'serial' })
   test.beforeAll(async ({ request }, testInfo) => {
-    await skipIfNoBackend(request, testInfo)
+    await skipIfNoBackend(request, testInfo, ['custom-msh'])
   })
 
   test.beforeEach(async ({ page }) => {

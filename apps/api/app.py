@@ -22,7 +22,7 @@ import shutil
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flask import Flask, after_this_request, g, jsonify, request, send_from_directory
+from flask import Flask, abort, after_this_request, g, jsonify, request
 from flask_cors import CORS
 
 from config import Config
@@ -62,6 +62,7 @@ from routes.users.admin import admin_bp
 from routes.users.onboard import onboard_bp
 from routes.users.user import user_bp
 from services.core.mqtt_telemetry import telemetry_service
+from services.storage.serving import send_static_artifact
 
 # Configure logging
 from utils.logging_config import setup_logging
@@ -136,6 +137,15 @@ def _check_capabilities():
     if static_error:
         capabilities["static_dir"]["error"] = static_error
 
+    # Render artifact store. Reachability is enforced separately and fatally in
+    # create_app; this entry is the observability half — which backend actually
+    # took effect, visible in the startup log without reading the environment.
+    try:
+        from services.storage import get_artifact_store
+        capabilities["artifact_store"] = {"status": "ok", **get_artifact_store().describe()}
+    except Exception as exc:
+        capabilities["artifact_store"] = {"status": "misconfigured", "error": str(exc)}
+
     # Optional AI credentials
     if Config.AI_API_KEY:
         capabilities["ai"] = {"status": "configured", "provider": Config.AI_PROVIDER}
@@ -152,7 +162,24 @@ def create_app():
     init_posthog()
     atexit.register(posthog_shutdown)
 
-    app = Flask(__name__)
+    # ── Render artifact store ──────────────────────────────────────────
+    # Fail closed and loud: an API that cannot reach its artifact store would
+    # serve 404s for every render the worker completed, which looks like a
+    # rendering fault and is not one. Under the default `fs` store this only
+    # asserts the static directory is readable and writable — the check the
+    # startup capability probe already made non-fatally.
+    from services.storage import check_artifact_store_ready, get_artifact_store
+    artifact_store = check_artifact_store_ready()
+
+    # Flask registers its own `static` endpoint for the same `/static/<path>`
+    # URL this app also serves, and Werkzeug picks between the two rules. That
+    # is harmless while both read the same directory. It is not harmless once
+    # artifacts live in a bucket: the built-in rule would answer out of a local
+    # directory holding nothing, so a render would 404 depending on which rule
+    # matched. With a non-filesystem store there is no local directory to serve
+    # from, and the built-in rule is not registered at all.
+    serves_from_disk = artifact_store.local_root() is not None
+    app = Flask(__name__) if serves_from_disk else Flask(__name__, static_folder=None)
     app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB upload limit
     CORS(app, origins=Config.CORS_ORIGINS)
 
@@ -275,10 +302,15 @@ def create_app():
     # WebSocket support (additive — SSE endpoints untouched)
     init_websocket(app)
 
-    # Static file serving
+    # Static file serving. Artifacts are read back through the store, so the
+    # same URL works whether they sit on the local volume or in a bucket — and
+    # a bucket artifact is *streamed* through this route rather than redirected
+    # to, which is what keeps the private-project gate above applying to it.
     @app.route('/static/<path:filename>')
     def serve_static(filename):
-        resp = send_from_directory(str(Config.STATIC_DIR), filename)
+        resp = send_static_artifact(filename)
+        if resp is None:
+            abort(404)
         resp.headers["Cache-Control"] = "public, max-age=3600"
         return resp
 
@@ -311,6 +343,7 @@ def create_app():
     logger.info(f"SCAD Directory: {Config.SCAD_DIR}")
     logger.info(f"Projects Directory: {Config.PROJECTS_DIR}")
     logger.info(f"Multi-project mode: {Config.MULTI_PROJECT}")
+    logger.info(f"Render artifact store: {get_artifact_store().describe()}")
     logger.info(f"OpenSCAD Path: {Config.OPENSCAD_PATH}")
     startup_caps = _check_capabilities()
     logger.info("Startup capabilities: %s", startup_caps)

@@ -15,6 +15,7 @@ from config import Config
 from manifest import get_manifest
 from services.engine.format_converter import convert_mesh, stl_to_glb
 from services.engine.openscad import compute_scad_hash, validate_params
+from services.engine.render_cache import entry_key as cache_entry_key
 from services.engine.render_cache import render_cache
 from services.engine.render_contract import (
     RENDER_EVENT_CANCELLED,
@@ -27,6 +28,7 @@ from services.engine.render_contract import (
     render_channel_for_job,
     render_final_channel_for_job,
 )
+from services.storage import publish_artifact_best_effort
 
 r = redis.Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
 
@@ -335,7 +337,7 @@ def _render_static_part(part, static_stl_map, stl_prefix, export_format, project
         conv_filename = f"{stl_prefix}{part}_static.{export_format}"
         conv_path = os.path.join(STATIC_FOLDER, conv_filename)
         if convert_mesh(str(static_path), conv_path):
-            serve_url = f"/static/{conv_filename}"
+            serve_url = f"/static/{publish_artifact_best_effort(conv_path)}"
 
     try:
         size_bytes = os.path.getsize(static_path)
@@ -526,7 +528,7 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
         if cached:
             cache_hits += 1
             combined_log += f"[{part}] cache HIT\n"
-            generated_parts.append({"type": part, "url": f"/static/{os.path.basename(cached['path'])}", "size_bytes": cached["size_bytes"]})
+            generated_parts.append({"type": part, "url": f"/static/{cache_entry_key(cached)}", "size_bytes": cached["size_bytes"]})
             continue
 
         if not is_render_worker_available():
@@ -633,7 +635,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             generated_parts.append(
                 {
                     "type": part,
-                    "url": f"/static/{os.path.basename(cached['path'])}",
+                    "url": f"/static/{cache_entry_key(cached)}",
                     "size_bytes": cached["size_bytes"],
                 }
             )

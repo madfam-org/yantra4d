@@ -35,6 +35,7 @@ from services.engine.render_orchestrator import (
     RenderPayloadError,
     extract_render_payload,
 )
+from services.storage import publish_artifact_best_effort
 from utils.route_helpers import (
     cleanup_old_stl_files,
     error_response,
@@ -340,10 +341,14 @@ def render_head(slug):
                 continue
 
             combined_log += f"[{part}] {stderr}\n"
+            size_bytes = os.path.getsize(output_path) if os.path.exists(output_path) else None
+            # This render happens in the API process, not the worker, but it is
+            # still served from /static — so it is published through the store
+            # like any other artifact. A no-op under the filesystem default.
             generated_parts.append({
                 "type": part,
-                "url": f"/static/{output_filename}",
-                "size_bytes": os.path.getsize(output_path) if os.path.exists(output_path) else None
+                "url": f"/static/{publish_artifact_best_effort(output_path)}",
+                "size_bytes": size_bytes,
             })
 
         return jsonify({

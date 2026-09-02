@@ -13,7 +13,7 @@ Thanks for your interest in contributing to Yantra4D! This guide covers everythi
 
 ```bash
 # Clone with submodules
-git clone --recurse-submodules https://github.com/madfam/yantra4d.git
+git clone --recurse-submodules https://github.com/madfam-org/yantra4d.git
 cd yantra4d
 
 # If already cloned without submodules
@@ -116,19 +116,23 @@ See `docs/reference/manifest.md` for the full manifest schema.
   `runbooks/**` and `.github/*.md`.
 - **Docs-only PR** — the ten-shard Playwright browser matrix, the studio,
   landing and admin builds, the backend test suite and the geometric parity
-  check are all skipped. The manifest, spec-conformance, metadata/licence and
-  OpenAPI checks still run, because those are what a documentation change can
-  actually break.
+  check are all skipped. The manifest, spec-conformance, metadata/licence,
+  OpenAPI, i18n and `ci-scripts` checks still run, because those are what a
+  documentation change can actually break — and `ci-scripts` guards the deploy
+  change-detection resolver that the skipping itself relies on.
 - **Anything else is a code PR** and runs the full matrix. A PR that touches
   documentation *and* code is a code PR — there is no way to opt a code change
   out of the matrix, and that is deliberate.
 - **Pushes to `main`** always run everything, whatever they touch.
 
 `ci-success` is the single required check. It runs even when jobs ahead of it
-were skipped or failed, and it fails if any job it depends on reported `failure`
-or `cancelled`; a job skipped by the path filter counts as passed. So a green
-`ci-success` on a docs-only PR means "nothing that could break was skipped", not
-"the tests were turned off".
+were skipped or failed (`if: ${{ !cancelled() }}`), and it fails if any job it
+depends on reported `failure` or `cancelled`; a job skipped by the path filter
+counts as passed. So a green `ci-success` on a docs-only PR means "nothing that
+could break was skipped", not "the tests were turned off". The one run it does
+not report on is a run the concurrency group cancelled, which is the point — a
+superseded run must not queue an aggregator on the shared pool while the head
+that replaced it waits.
 
 If you are surprised that your PR skipped the browser matrix, open the `changes`
 job's summary — it says which way it classified the PR and why.
@@ -136,7 +140,7 @@ job's summary — it says which way it classified the PR and why.
 ## Do NOT Edit
 
 - `apps/studio/src/components/ui/*` — Shadcn UI managed components (use shadcn CLI to regenerate)
-- `libs/*` — Git submodules (BOSL2, NopSCADlib, Round-Anything)
+- `libs/*` — Git submodules (BOSL2, NopSCADlib, Round-Anything, threads-scad, MCAD, dotSCAD)
 - `node_modules/`, `dist/` — Generated artifacts
 - `.github/workflows/*` — Only with explicit CI/CD intent
 
@@ -152,7 +156,7 @@ OpenSCAD libraries in `libs/` and federated projects in `projects/` are git subm
 
 - **Weekly auto-update**: The `update-submodules.yml` workflow updates all submodules weekly and creates a PR
 - **Per-push auto-bump**: The `bump-submodule.yml` workflow bumps individual project submodules when their upstream repos push to main
-- **Excluded submodules**: `tablaco` has `update = none` in `.gitmodules` and is excluded from automated updates (managed separately via its own deployment pipeline)
+- **Excluded submodules**: the client-private `projects/tablaco` and `projects/tablaco-v2` carry `update = none` in `.gitmodules` and are excluded from automated updates (managed separately via their own deployment pipeline). The other 35 `projects/*` submodules are public. `git submodule update` honours `update = none`, so never add `--checkout` — that overrides it and tries to clone the private repos, which a normal contributor cannot read
 
 To manually update a specific submodule:
 ```bash

@@ -59,7 +59,11 @@ The platform supports four access tiers:
 | Pro | 150 | Unlimited | STL, 3MF, OFF, STEP, GLB, GLTF, OBJ | Configurator + Code Editor |
 | Premium | Unlimited | Unlimited | All formats | All features + GitHub sync |
 
-WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to backend API calls.
+Browser (WASM) rendering is unlimited at every tier, and it is the **default** placement -- so the ordinary
+case of dragging a slider and watching the model change consumes none of the allowance above. The
+per-hour numbers count only the renders that actually run on our servers: a mode built on the CadQuery,
+graph or implicit engines, an export format other than STL, a device too weak to run the kernel, an
+estimate over the budget, or an explicit **Server** choice.
 
 Guest access requires no account. For self-hosted deployments, authentication can be disabled entirely (all users receive full access).
 

@@ -1,6 +1,6 @@
 # Yantra4D Production Verification Prompt
 
-Run this after deploying Yantra4D to the `enclii-production` namespace to verify all three services are online, healthy, and correctly integrated.
+Run this after deploying Yantra4D to the `enclii-production` namespace to verify every service is online, healthy, and correctly integrated. Unlike the dated snapshots beside it in `docs/audits/`, this is a **live runbook** — keep it current with what the platform does.
 
 ---
 
@@ -11,6 +11,7 @@ Run this after deploying Yantra4D to the `enclii-production` namespace to verify
 | Landing | `yantra4d.com` | 80 | `/` (200 + HTML) |
 | API | `api.yantra4d.com` | 5000 | `/api/health` (200 + JSON) |
 | Studio | `app.yantra4d.com` | 80 | `/` (200 + HTML) |
+| Admin | `admin.yantra4d.com` | 80 | `/` (200 + HTML) |
 
 ---
 
@@ -66,7 +67,9 @@ curl -sS https://api.yantra4d.com/api/health | python3 -m json.tool
 }
 ```
 
-**Fail criteria**: Non-200 status, `status: "unhealthy"`, `debug_mode: true`, connection refused. Note: `checks.openscad.ok: false` results in `"degraded"` (200), not a failure — the platform falls back to WASM rendering.
+**Fail criteria**: Non-200 status, `status: "unhealthy"`, `debug_mode: true`, connection refused. Note: `checks.openscad.ok: false` results in `"degraded"` (200), not a failure. Read that degradation correctly: since browser-first rendering landed, the browser is the DEFAULT placement, so most OpenSCAD cartridges keep working — but anything **hard-pinned to the server** has nowhere to run (a `cadquery`/`graph`/`implicit` mode, a manifest declaring `render.server_only`, and every export format except STL). It is not a fallback the platform reaches for; it is a set of renders that now fail.
+
+Also check `GET /api/health/ready`, which this prompt does not yet cover: it additionally reports the render-worker heartbeat age and, when Redis is reachable, the Redis queue depth and the lease-backed active-job count. A missing or stale worker heartbeat is a degraded render plane even when the API process is healthy — see [production-checklist.md](../guides/production-checklist.md).
 
 ---
 

@@ -82,7 +82,7 @@ backend:
 
 1. Create `projects/{slug}/`
 2. Add `.scad` files
-3. Create `project.json` following the [manifest schema](manifest.md)
+3. Create `project.json` following the [manifest schema](../reference/manifest.md)
 4. Restart backend (or manifests are loaded on first request)
 
 ### Quick Start Template

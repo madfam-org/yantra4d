@@ -63,15 +63,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   customer in `essentials` with no error anywhere).
 
 ### Added
+- **Derived CDG Mating-Rule Candidates (PROPOSED)** — `scripts/qa/derive_mating_candidates.py`
+  reads the CDG interfaces the cartridges already declare, derives the mating rules
+  those declarations imply, scores each candidate against the author-written answer
+  key, and proposes a ratification order. Output is
+  `docs/interfaces/mating-candidates.json` plus the narrative in
+  `docs/strategy/CDG-MATING-RULES-PROPOSAL.md`. Nothing is ratified by this: the
+  document is explicitly **PROPOSED**, and the only thing CI enforces is that the
+  derivation is not stale — `--check` runs in the `manifest-sync` job, so a manifest
+  that changes what the interfaces imply cannot leave the proposal describing a
+  commons that no longer exists.
+- **Rasters for the 174 Cartridges That Had None** — every cartridge that shipped
+  only the type-on-flat SVG placeholder now has a real thumbnail: 348 WEBP files
+  (two sizes each), wearables first. `docs/strategy/TRIM-GLYPHS.md` lands with them —
+  the notion→cartridge→parameter inventory behind Fashion Cabinet flats v2, mapping
+  each garment notion to the cartridge that makes it and the parameter that sizes it.
+  The landing gallery reads each card's raster from what is on disk, so
+  `apps/landing/src/data/projects.ts` was regenerated in the same wave.
+- **SIXTH-100 Strategy (proposed)** — `docs/strategy/SIXTH-100-STRATEGY.md` ranks
+  candidates for cartridges 501–600 by leverage × demand, computed from
+  `docs/commons-catalog.json` at 500 cartridges and from the Fashion Cabinet
+  indexes. Proposed, not ratified: it commits nothing and nothing in CI enforces it.
 - **Browser-First Render Placement** — The visitor's browser is now the DEFAULT
   place a render runs; the server is the exception. `decideRenderPlacement()`
   (`apps/studio/src/services/engine/renderPlacement.ts`) is a PURE function with
-  a 10-rule precedence table: three HARD rules first (the MODE's engine is
+  an 11-rule precedence table: four HARD rules first (the MODE's engine is
   `cadquery`/`graph`/`implicit`, manifest `render.server_only`, a wasm bundle
-  that is unavailable or names `unsupported`/`unresolved`), then `?render=` /
+  that is unavailable or names `unsupported`/`unresolved`, and an `export_format`
+  the browser kernel cannot emit), then `?render=` /
   `VITE_RENDER_MODE`, the visitor's placement preference, capability tier, this
   session's browser failures for the slug, the estimate budget, the SOFT
-  `force_backend` hint, and finally **browser**. A soft server decision flips
+  `force_backend` hint, and finally **browser**. The export-format rule is per
+  REQUEST, not per cartridge, and it sits **above** `?render=wasm` and above the
+  visitor's own preference: the worker writes one `/output.stl` and has no
+  converter, so a placement choice cannot make the kernel emit STEP. `useRender`
+  forwards the export panel's format on every render, so without that rule a
+  cartridge set to `step` rendered STL in the browser and the download saved it
+  as `.step` — and skipped both of #87's tier gates, which sit only on the
+  server's generation and retrieval paths. A soft server decision flips
   back to the browser when `/api/health` says the server is unreachable; a hard
   one does not. Engine is resolved PER MODE by `effectiveModeEngine()`, mirroring
   `ProjectManifest.mode_engine()`, so the 8 dual-engine cartridges keep their
@@ -215,7 +244,126 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   positioning. `multi_num_racks` parameter (slider 2–5), preset, and
   `multi_rack_body` part (render_mode 5). 1494/1494 studio tests passing.
 
+### Security
+- **Render Cancellation Is Scoped to the Caller's Own Jobs** — the render
+  WebSocket channel's `cancel` action called a cancel-everything orchestrator alias
+  with no auth, no scope check and no rate limit, so any anonymous client could
+  kill every in-flight render on the single backend replica. `cancel` is now always
+  refused on the socket and the alias is deleted. `POST /api/render-cancel` is the
+  supported path and it is a **capability**: it cancels only the `request_id` /
+  `job_ids` the caller was handed on its own render stream. `{"all": true}` still
+  reaches `cancel_all_renders()` but sits behind `require_role("admin")`. An empty
+  body is refused with 400 `cancel_target_required` rather than silently meaning
+  "everything".
+- **Every WebSocket Channel Authorises the Read** — #83 gave the WebSocket module
+  an identity but left the two broadcast channels anonymous-readable, on the
+  reasoning that a read-only stream discloses nothing. It does:
+  `/api/ws/printer/<id>` forwards the same shop-floor status that
+  `GET /api/printers/<id>/status` serves behind `@require_tier("pro")`, so
+  connecting to the socket instead of calling the route skipped the tier gate
+  entirely; `/api/ws/telemetry/<slug>` streams live sensor data for one project,
+  including cartridges listed in `PRIVATE_PROJECTS`, which no HTTP route serves at
+  all. The matrix is now `render` anonymous (ping/pong; `cancel` refused to
+  everyone), `printer` at the `pro` tier its HTTP twin requires, and `telemetry`
+  signed-in **plus** the private-project gate — resolved through
+  `project_access.project_view_denied_reason`, a response-free sibling of
+  `check_project_access`, so the HTTP and WS answers cannot drift. A refused reader
+  gets one `error` frame and is closed before any payload, before the MQTT queue is
+  read, and without occupying a per-IP connection slot. `AUTH_ENABLED=false`
+  short-circuits both gates exactly as `@require_tier` does. Anonymous gained no
+  capability; two channels lost capabilities they should never have had.
+- **Export-Format Downloads Are Gated at Retrieval, Not Only at Generation** — the
+  tier check sat on the render that produces a file and not on the route that hands
+  it over, so a guest who knew a `step`/`glb` filename got a 200.
+  `export_format_allowed(effective_tier(), fmt)` now runs on the download route
+  after the access-control check; `scad` stays source-gated, and a missing
+  premium-tier artifact answers 403 rather than 404 so the refusal does not depend
+  on whether the file happens to exist. `effective_tier()` and
+  `export_format_denied_response()` moved to `middleware/auth.py` so the
+  render-time and download-time gates share one binding instead of two that can
+  drift.
+- **Stale JWKS Is Served While a Refresh Is Failing** — `PyJWKClient` is now the
+  fetcher only; `middleware/auth.py` owns a stale-while-revalidate cache: fresh →
+  serve, expired → refresh and on failure warn, mark stale and keep serving,
+  unknown `kid` → one refresh, stale past the ceiling or never fetched → fail
+  closed. Single-flighted with backoff. New settings `JWKS_CACHE_LIFESPAN`,
+  `JWKS_STALE_MAX_AGE`, `JWKS_REFRESH_BACKOFF`. A Janua blip no longer logs
+  everyone out of a running deployment, and an indefinitely unreachable issuer
+  still fails closed rather than trusting an ancient key set forever.
+- **The Legacy Manifest, Config, Estimate and AI-Session Routes Answer the
+  Private-Project Gate** — the private-project check landed on the current routes
+  but the older single-project aliases still served a private cartridge's manifest,
+  its config, its estimate and an AI session against it. All four now go through
+  the same `can_view_project` path as everything else.
+- **A Missing Project's 404 Names the Slug, Not the Filesystem** —
+  `manifest.py::load_manifest` interpolated the resolved manifest path into its
+  error, and every manifest route answers a missing project with
+  `{"error": str(e)}`. Because `_resolve_project_dir` falls back to
+  `Config.SCAD_DIR` for a slug it cannot resolve, the body disclosed the
+  deployment's absolute filesystem path *and* the name of the single-project
+  default — in production, `gridfinity`. The message now names the requested slug
+  and nothing else; the path is still logged at ERROR, which is the useful half.
+
 ### Changed
+- **Registry Logins Retry With Backoff Instead of Dying On One Timeout** —
+  `docker/login-action@v3` has no retry of its own, so a single transient network
+  failure at login killed a whole build job, and because *Commit Image Digests*
+  needs all four builds it killed the deploy. Deploy run 33633417615 was lost that
+  way twice on 2026-09-02, both times on `net/http: TLS handshake timeout` reaching
+  GHCR, while the other build jobs logged in to the same registry seconds later.
+  Both logins in all four build jobs are now a `run:` step keeping the exact
+  credentials the action used: the password goes in on stdin under `set +x` so
+  nothing is echoed, and the login is retried five times with a 10/20/30/40 s
+  backoff before the job fails with a message naming the registry. A matching
+  `docker logout` runs in an `if: always()` step, mirroring what the action did in
+  its post step.
+- **CI Bounds `apt-get` and the Cache Restore, Lints `apps/worker`, and Stops
+  Cancelled Runs Holding the Concurrency Group** — four unrelated ways CI was
+  spending the shared pool badly, all observed on 2026-09-02. (1) An unreachable
+  `git-core` PPA hung an e2e shard for 28 minutes until the job timeout, so every
+  `apt-get` is now bounded (`timeout 300`, `Acquire::http/https::Timeout=30`,
+  `Acquire::Retries=3`) with the offending source removed first. (2) A studio
+  npm-cache restore stalled at 87 % for the full `SEGMENT_DOWNLOAD_TIMEOUT_MINS`
+  default of ten minutes when a fresh `npm ci` takes twenty seconds; the workflow
+  now sets it to `"2"`, turning a stalled restore into a cheap miss. (3)
+  `apps/worker` — the process every render actually executes on — was linted by
+  nothing, because `backend`'s `ruff check .` runs under
+  `working-directory: apps/api` and no other job installs ruff; it now runs
+  `ruff check --config apps/api/pyproject.toml apps/worker`, pointing at the API's
+  own config rather than copying the rule set into a second file that can drift.
+  (4) The `always()` aggregators (`ci-success`, `e2e-report`) still queued on a run
+  the concurrency group had cancelled, holding the group while the superseding head
+  waited; both now use `!cancelled()`, which reports exactly the same thing for
+  every run that was not cancelled. The checkout-heavy budgets were widened to
+  match what those checkouts actually cost: `manifest-validation` and
+  `metadata-consistency` to 10 minutes, `studio` to 20.
+- **Deploys Diff Against the Last SUCCESSFUL Deploy** — deploy change detection
+  compared against the newest push, and `deploy.yml`'s concurrency group is serial,
+  so GitHub keeps only ONE pending run per group and a third push REPLACES the
+  queued second one. The replaced run never executes and its commits are never
+  examined by any path filter: on 2026-09-02 merges #541 → #542 → #543 landed back
+  to back, the surviving run saw only #543 (backend-only), and the Studio image
+  #542 needed was never built. `scripts/ci/last_successful_deploy_sha.sh` now
+  resolves the head SHA of the last successful deploy and hands it to
+  `dorny/paths-filter` as the base, so a dropped run is harmless — the next run
+  still sees every path that changed since the last shipped commit. Every non-zero
+  exit means *build every service*; an unresolved base is never read as "nothing
+  changed". Pinned against recorded API fixtures by
+  `scripts/ci/tests/test_last_successful_deploy_sha.sh` in the `ci-scripts` job,
+  which runs on docs-only pull requests too because it guards the machinery that
+  skipping relies on. Single-service rollouts are health-checked rather than
+  assumed.
+- **Quality Ratchets: Uninitialised Submodules Fail, i18n Parity Is Gated, the axe
+  Gate Widens to Serious** — three checks that could pass for the wrong reason.
+  `scripts/qa/validate_manifests.py` now treats a `projects/<slug>` submodule that
+  checked out empty as a FAILURE rather than a skip, and the local escape hatch
+  `--allow-uninitialised-submodules` is never set in CI — a partial checkout must
+  not be able to pass the job whose whole point is judging the commons. Locale key
+  parity became a hard gate in its own `i18n-audit` job (a missing key ships
+  untranslated UI), with the hardcoded-string count ratcheted against
+  `scripts/qa/i18n_baseline.json` so the existing backlog does not block unrelated
+  work but adding to it does. The accessibility gate widened from `critical` to
+  `serious`, and the #59 click workaround was retired.
 - **CI Skips the Browser Matrix on Documentation-Only PRs** — every job in
   `ci.yml` ran on every pull request, so a README-only change queued the full
   ten-shard Playwright matrix — ten jobs with a 30 minute cap each — on the same
@@ -234,9 +382,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`ci-success` Can Now Actually Fail** — the single required check depended on
   nine jobs with the default `if: success()`, which meant a dependency that was
   skipped *or failed* left `ci-success` itself skipped, and a skipped required
-  check is treated as passing. It now runs with `if: always()` and inspects
+  check is treated as passing. It now runs unconditionally and inspects
   every dependency's result: `failure` or `cancelled` anywhere fails it,
-  `skipped` counts as passing. `cancelled` matters because of the per-PR
+  `skipped` counts as passing. (The condition shipped as `if: always()` and was
+  narrowed to `if: ${{ !cancelled() }}` in #106 — see *CI Stops Cancelled Runs
+  Holding the Concurrency Group* below — which changes nothing about what it
+  reports and stops a cancelled run's aggregator queueing on the pool.) `cancelled` matters because of the per-PR
   concurrency group added in #84 — a superseded run must not report green.
   `manifest-sync` and `spec-conformance` were added to its `needs`: both already
   ran on every pull request and spec-conformance documents itself as blocking,
@@ -256,6 +407,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   introduced.
 
 ### Fixed
+- **The Landing Gallery Under-Reported the Commons and Listed a Private Cartridge**
+  — `apps/landing/src/data/projects.ts` is generated from the manifests and
+  committed, and nothing checked it. It had drifted to 328 entries against a
+  501-cartridge commons, because the generator needs every submodule present and,
+  run in a checkout without them, silently emitted the shorter list and overwrote
+  the good one — no lane could see it, since the `landing` CI job checks out no
+  submodules and the deploy's Build Landing job did not either. It also carried
+  `tablaco`, a client-private cartridge the API has hidden from `/api/projects`
+  since access control landed, with its description and a link to a Studio page
+  that refuses to load. The generator now skips private cartridges on both signals
+  the backend uses (`access_control.view == "private"` and the `PRIVATE_PROJECTS`
+  env var, with the built-in list a floor rather than a default an empty variable
+  can clear), refuses to write when a public `projects/*` submodule has no manifest
+  on disk (exit 2) unless `--allow-partial`, and grew a `--check` that reports
+  drift and an incomplete checkout as distinct, named failures. `--check` blocks a
+  stale commit in `manifest-validation`, the only job whose checkout is complete
+  enough to judge the file, and `build-landing` now regenerates at deploy so the
+  shipped gallery is correct by construction. Regenerated: **328 → 501 entries**,
+  `tablaco` removed. `project.unlisted` is untouched — unlisted means "not in API
+  listings but reachable by URL", which is not private.
+- **Active Render Jobs Have a Lease, So the Count Stays Truthful** —
+  `yantra_render_active_jobs` was a plain Redis set with no expiry: the worker adds
+  a job at start and removes it at finish, both in code that only runs if it
+  reaches its `finally`, which a pod roll, an OOM kill or a node eviction never
+  does. `/api/health` then reported `active jobs 1` against `queue depth 0`
+  forever — observed in production across five samples and two rollouts, the count
+  surviving the very restarts that should have cleared it. The fix is a lease, not
+  a bigger cleanup: `yantra_render_job_meta:<job_id>` already carries a TTL and is
+  already written and deleted alongside every set mutation, so it is exactly the
+  expiring per-job key the set lacked. `prune_active_jobs()` drops members whose
+  lease is gone or stamped longer ago than any real render can run, the worker
+  renews the lease of everything it holds on each heartbeat tick, and
+  `reconcile_active_jobs()` runs once at worker start before the first `blpop` so
+  health is truthful immediately after a rollout. Redis failures degrade to "leave
+  it alone": a blip never sweeps live work, and an unreadable set reports
+  `active_jobs: null` rather than `0`.
+- **The Studio Cancels the Render a Page Abandons** — nightly run #171 made ~95
+  navigations in 40 minutes and produced ZERO `render-cancel` calls, so every
+  abandoned render ran to completion against the single render worker while a live
+  user's render queued behind it — starvation, not waste. `useRender` now keeps the
+  cancellable identity of the render in flight (learned from `/api/render-stream`'s
+  `job` event) and cancels it on `pagehide` and on unmount: `pagehide` rather than
+  `beforeunload`, which does not fire for a page entering the back/forward cache
+  and is unreliable on mobile Safari, with the unmount cleanup covering an in-app
+  route change where no page event fires at all. The send is synchronous —
+  `navigator.sendBeacon` first, then `fetch(..., {keepalive: true})` — and the
+  identity is *taken*, not read, so a cancel cannot fire twice or land on a render
+  that already finished. A new render also cancels the one it supersedes, so
+  dragging a slider no longer leaves a trail of abandoned renders in front of the
+  work the user is waiting for. `POST /api/render-cancel` parses its body as JSON
+  regardless of Content-Type, because a beacon's type is whatever Blob it carries;
+  every field is validated exactly as before and `{"all": true}` over a beacon is
+  still refused by the same admin gate.
+- **The Nightly Browser Audit Reconciled With the Shipped Product** — the first
+  real results of the nightly (runs #166–#174) were four failures, and every one
+  was drift between the suite and what the cartridges and the product actually
+  ship: `gridfinity` is named "Gridfinity" with five modes, `custom-msh` gained
+  `multi_rack`, a language-toggle click could never land because the Long Render
+  Warning's Radix overlay was over it, and `locator('canvas').first()` resolved to
+  a hidden canvas in the second layout tree. No product code needed fixing. The
+  harness also gained the two things it was missing: `HARNESS_TIER`, so an
+  auth-disabled harness can be gated as a real tier (auth-off alone does not unlock
+  CadQuery, and an unknown value is dropped with a log line, silently running the
+  job as `guest`), and a queue drain between spec groups so one group's abandoned
+  work cannot starve the next. The drain posted an empty body to
+  `POST /api/render-cancel`, which since #83 answers that with 400
+  `cancel_target_required`; it now sends `{"all": true}`, the one form that still
+  reaches `cancel_all_renders()`.
+- **The Active Preset Is Matched Among the Ones the Mode Offers** — applying a
+  preset in `custom-msh`'s assembly mode appeared to do nothing: no button ever
+  highlighted, so nothing told the user the preset had landed. `Controls` derives
+  the active preset by matching the current params against preset values — which is
+  right, because the highlight then drops the moment a value is edited — but it
+  searched the WHOLE preset list and took the first full match. Preset value sets
+  overlap heavily, so a preset belonging to a *different* mode can win: after
+  applying `assembly_rack_slides`, `custom-msh`'s earlier-declared `default_holder`
+  is still fully satisfied, and it is not rendered in assembly mode at all
+  (`visible_in_modes: ["holder"]`), so the active id pointed at a button that does
+  not exist and all three visible ones stayed grey. It now searches
+  `visiblePresets`, the list actually rendered. Not `custom-msh`-specific: any
+  cartridge whose presets share a common parameter core hits this, and the
+  earlier-declared mode always won.
 - **Auto-Generate No Longer Opens a Blocking Modal** — The studio renders on
   load and after every parameter change (the debounced effect in
   `useProjectParams.ts`), and `useRender` answered an over-threshold estimate

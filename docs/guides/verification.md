@@ -122,7 +122,7 @@ Add a `verification` section to `project.json`:
 
 ## Web Interface Integration
 
-The verification suite is invoked from the [Web Interface](./web_interface.md) via the "Run Verification Suite" button. The backend endpoint `POST /api/verify` accepts a `mode` field (e.g., `"unit"`, `"assembly"`, `"grid"`) and an optional `project` slug for multi-project routing.
+The verification suite is invoked from the [Web Interface](../architecture/web_interface.md) via the "Run Verification Suite" button. The backend endpoint `POST /api/verify` accepts a `mode` field (e.g., `"unit"`, `"assembly"`, `"grid"`) and an optional `project` slug for multi-project routing.
 
 The backend:
 1. Loads the manifest for the project
@@ -131,4 +131,4 @@ The backend:
 4. Passes the resolved config as a JSON argument to the verification script
 5. Parses structured JSON output for the API response
 
-[Back to Index](./index.md)
+[Back to Index](../index.md)

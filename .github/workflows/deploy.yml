@@ -286,19 +286,48 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:v0.13.1
 
+      # Retry: 2026-09-02 deploy 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the GHCR login.
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+        env:
+          REGISTRY_HOST: docker.io
+          REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+        run: |
+          set -euo pipefail
+          set +x
+          for attempt in 1 2 3 4 5; do
+            if printf '%s' "$REGISTRY_PASSWORD" \
+              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
+          exit 1
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: madfam-bot
-          password: ${{ secrets.MADFAM_BOT_PAT }}
+        env:
+          REGISTRY_HOST: ${{ env.REGISTRY }}
+          REGISTRY_USER: madfam-bot
+          REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
+        run: |
+          set -euo pipefail
+          set +x
+          for attempt in 1 2 3 4 5; do
+            if printf '%s' "$REGISTRY_PASSWORD" \
+              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
+          exit 1
 
       - name: Extract metadata
         id: meta
@@ -357,6 +386,13 @@ jobs:
             exit 1
           fi
 
+      # Mirrors the logout docker/login-action@v3 ran in its post step.
+      - name: Log out of the registries
+        if: always()
+        run: |
+          docker logout docker.io || true
+          docker logout "$REGISTRY" || true
+
   build-studio:
     name: Build Studio
     runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
@@ -377,19 +413,48 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:v0.13.1
 
+      # Retry: 2026-09-02 deploy 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the GHCR login.
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+        env:
+          REGISTRY_HOST: docker.io
+          REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+        run: |
+          set -euo pipefail
+          set +x
+          for attempt in 1 2 3 4 5; do
+            if printf '%s' "$REGISTRY_PASSWORD" \
+              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
+          exit 1
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: madfam-bot
-          password: ${{ secrets.MADFAM_BOT_PAT }}
+        env:
+          REGISTRY_HOST: ${{ env.REGISTRY }}
+          REGISTRY_USER: madfam-bot
+          REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
+        run: |
+          set -euo pipefail
+          set +x
+          for attempt in 1 2 3 4 5; do
+            if printf '%s' "$REGISTRY_PASSWORD" \
+              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
+          exit 1
 
       - name: Extract metadata
         id: meta
@@ -454,6 +519,13 @@ jobs:
             echo "::error::PREVIOUS build even though this commit is on main. Rerun the failed jobs."
             exit 1
           fi
+
+      # Mirrors the logout docker/login-action@v3 ran in its post step.
+      - name: Log out of the registries
+        if: always()
+        run: |
+          docker logout docker.io || true
+          docker logout "$REGISTRY" || true
 
   build-landing:
     name: Build Landing
@@ -524,19 +596,48 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:v0.13.1
 
+      # Retry: 2026-09-02 deploy 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the GHCR login.
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+        env:
+          REGISTRY_HOST: docker.io
+          REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+        run: |
+          set -euo pipefail
+          set +x
+          for attempt in 1 2 3 4 5; do
+            if printf '%s' "$REGISTRY_PASSWORD" \
+              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
+          exit 1
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: madfam-bot
-          password: ${{ secrets.MADFAM_BOT_PAT }}
+        env:
+          REGISTRY_HOST: ${{ env.REGISTRY }}
+          REGISTRY_USER: madfam-bot
+          REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
+        run: |
+          set -euo pipefail
+          set +x
+          for attempt in 1 2 3 4 5; do
+            if printf '%s' "$REGISTRY_PASSWORD" \
+              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
+          exit 1
 
       - name: Extract metadata
         id: meta
@@ -597,6 +698,13 @@ jobs:
             exit 1
           fi
 
+      # Mirrors the logout docker/login-action@v3 ran in its post step.
+      - name: Log out of the registries
+        if: always()
+        run: |
+          docker logout docker.io || true
+          docker logout "$REGISTRY" || true
+
   build-admin:
     name: Build Admin
     runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
@@ -617,19 +725,48 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:v0.13.1
 
+      # Retry: 2026-09-02 deploy 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the GHCR login.
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+        env:
+          REGISTRY_HOST: docker.io
+          REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+        run: |
+          set -euo pipefail
+          set +x
+          for attempt in 1 2 3 4 5; do
+            if printf '%s' "$REGISTRY_PASSWORD" \
+              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
+          exit 1
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: madfam-bot
-          password: ${{ secrets.MADFAM_BOT_PAT }}
+        env:
+          REGISTRY_HOST: ${{ env.REGISTRY }}
+          REGISTRY_USER: madfam-bot
+          REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
+        run: |
+          set -euo pipefail
+          set +x
+          for attempt in 1 2 3 4 5; do
+            if printf '%s' "$REGISTRY_PASSWORD" \
+              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
+          exit 1
 
       - name: Extract metadata
         id: meta
@@ -694,6 +831,13 @@ jobs:
             echo "::error::PREVIOUS build even though this commit is on main. Rerun the failed jobs."
             exit 1
           fi
+
+      # Mirrors the logout docker/login-action@v3 ran in its post step.
+      - name: Log out of the registries
+        if: always()
+        run: |
+          docker logout docker.io || true
+          docker logout "$REGISTRY" || true
 
   commit-digests:
     name: Commit Image Digests

@@ -218,8 +218,12 @@ def is_private_project(slug: str | None, manifest=None) -> bool:
 def _dev_unlock_active() -> bool:
     """Local-development escape hatch: auth OFF **and** the Flask debugger ON.
 
-    Mirrors ``routes/engine/render.py::_effective_tier`` (the #48 fix): the
-    conjunct matters. Auth is also off in CI and in the test suite, and an
+    Mirrors ``middleware.auth.effective_tier`` (the #48 fix), which is where
+    that conjunct lives — ``routes/engine/render.py::_effective_tier`` is a thin
+    wrapper over it, so naming the wrapper here sent a reader to one call site
+    instead of to the rule.
+
+    The conjunct matters. Auth is also off in CI and in the test suite, and an
     auth-off-only unlock would make every private cartridge public exactly
     where nobody is watching. With the debugger on, a developer running
     ``FLASK_DEBUG=true`` against a checkout that contains a private cartridge

@@ -43,9 +43,18 @@ def app():
 
 
 def _effective_tier():
-    """Call the render route's gating helper (imported late; it needs Config)."""
-    from routes.engine.render import _effective_tier as impl
-    return impl()
+    """Call the gating helper HARNESS_TIER actually flows through.
+
+    ``middleware.auth.effective_tier`` is the implementation. Since #87 the
+    render route's ``_effective_tier`` is a one-line wrapper over it that only
+    hands in its own ``resolve_tier`` binding, and the retrieval-time download
+    gate calls the middleware function directly — so importing the wrapper here
+    pinned one caller's spelling rather than the rule both callers share, and a
+    HARNESS_TIER regression on the download path could not fail this suite.
+    Imported late: it reads Config at call time.
+    """
+    from middleware.auth import effective_tier
+    return effective_tier()
 
 
 class TestHarnessTierOverride:

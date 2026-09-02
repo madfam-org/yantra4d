@@ -553,6 +553,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Deploy change-detection base resolver
         run: ./scripts/ci/tests/test_last_successful_deploy_sha.sh
+      # The registry login is the other piece of deploy.yml that is a shell
+      # script rather than an action, and for the same reason: an action that
+      # cannot retry loses a whole build job — and with it the deploy — to one
+      # transient GHCR timeout. It used to be inline YAML duplicated across
+      # eight steps in the four build jobs, so nothing could run it outside a
+      # deploy and its retry loop was only ever exercised by a real outage.
+      # The suite stubs `docker` and `sleep` on PATH: no registry is contacted
+      # and the 10/20/30/40s backoff is asserted as recorded data rather than
+      # waited out, so this step costs no wall clock even for the exhausted case.
+      - name: Registry login retry
+        run: ./scripts/ci/tests/test_registry_login.sh
 
   manifest-validation:
     runs-on: madfam-runners-blue
@@ -594,9 +605,10 @@ jobs:
       # --check recomputes the ratios from the manifests and the catalog and
       # fails when the committed table no longer describes what is on disk.
       # It lands here rather than in a job of its own because this job already
-      # has Python 3.12 and the recursive checkout the recomputation needs — 34
-      # cartridges are submodules and every dual-engine one is among them, so a
-      # partial checkout would under-count. Stdlib only: no install step.
+      # has Python 3.12 and the recursive checkout the recomputation needs — 35
+      # cartridges are public submodules and every dual-engine one is among
+      # them, so a partial checkout would under-count. Stdlib only: no install
+      # step.
       - name: Value-extraction audit is current
         run: python3 scripts/qa/value_extraction_audit.py --check
       # The other half of the Fashion Cabinet hardware bridge. FC vendors a

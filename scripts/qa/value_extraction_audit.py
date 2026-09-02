@@ -22,12 +22,14 @@ computed is worse than an honest gap.
 
 The submodule-empty trap
 ------------------------
-34 of the 500 cartridges live in submodules, and every dual-engine cartridge is
-one of them. With `projects/*` uninitialised the manifests simply are not there,
-each metric silently loses those cartridges, and the table still prints. So the
-on-disk cartridge count is asserted against `counts.cartridges` in the committed
-catalog before any number is trusted; a mismatch is a hard failure with the
-`git submodule update` line needed to fix it.
+35 of the 500 cartridges live in public submodules, and every dual-engine
+cartridge is one of them (`.gitmodules` declares 37 under `projects/`; the two
+client-private `tablaco*` entries are `update = none` and are excluded from
+every count here). With `projects/*` uninitialised the manifests simply are not
+there, each metric silently loses those cartridges, and the table still prints.
+So the on-disk cartridge count is asserted against `counts.cartridges` in the
+committed catalog before any number is trusted; a mismatch is a hard failure
+with the `git submodule update` line needed to fix it.
 
 Usage:
     python3 scripts/qa/value_extraction_audit.py            # print the table

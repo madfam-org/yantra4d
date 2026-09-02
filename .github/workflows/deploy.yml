@@ -286,48 +286,25 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:v0.13.1
 
-      # Retry: 2026-09-02 deploy 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the GHCR login.
+      # Not docker/login-action@v3: it has no retry, and on 2026-09-02 deploy
+      # 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the
+      # GHCR login — which loses the whole deploy, because Commit Image Digests
+      # needs all four builds. The script retries five times with a 10/20/30/40s
+      # backoff, feeds the password on stdin under `set +x`, and is pinned by
+      # scripts/ci/tests/test_registry_login.sh in ci.yml's ci-scripts job.
       - name: Log in to Docker Hub
         env:
           REGISTRY_HOST: docker.io
           REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
-        run: |
-          set -euo pipefail
-          set +x
-          for attempt in 1 2 3 4 5; do
-            if printf '%s' "$REGISTRY_PASSWORD" \
-              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
-              exit 0
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
-              sleep $((attempt * 10))
-            fi
-          done
-          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
-          exit 1
+        run: ./scripts/ci/registry_login.sh
 
       - name: Log in to GHCR
         env:
           REGISTRY_HOST: ${{ env.REGISTRY }}
           REGISTRY_USER: madfam-bot
           REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
-        run: |
-          set -euo pipefail
-          set +x
-          for attempt in 1 2 3 4 5; do
-            if printf '%s' "$REGISTRY_PASSWORD" \
-              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
-              exit 0
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
-              sleep $((attempt * 10))
-            fi
-          done
-          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
-          exit 1
+        run: ./scripts/ci/registry_login.sh
 
       - name: Extract metadata
         id: meta
@@ -413,48 +390,25 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:v0.13.1
 
-      # Retry: 2026-09-02 deploy 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the GHCR login.
+      # Not docker/login-action@v3: it has no retry, and on 2026-09-02 deploy
+      # 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the
+      # GHCR login — which loses the whole deploy, because Commit Image Digests
+      # needs all four builds. The script retries five times with a 10/20/30/40s
+      # backoff, feeds the password on stdin under `set +x`, and is pinned by
+      # scripts/ci/tests/test_registry_login.sh in ci.yml's ci-scripts job.
       - name: Log in to Docker Hub
         env:
           REGISTRY_HOST: docker.io
           REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
-        run: |
-          set -euo pipefail
-          set +x
-          for attempt in 1 2 3 4 5; do
-            if printf '%s' "$REGISTRY_PASSWORD" \
-              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
-              exit 0
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
-              sleep $((attempt * 10))
-            fi
-          done
-          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
-          exit 1
+        run: ./scripts/ci/registry_login.sh
 
       - name: Log in to GHCR
         env:
           REGISTRY_HOST: ${{ env.REGISTRY }}
           REGISTRY_USER: madfam-bot
           REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
-        run: |
-          set -euo pipefail
-          set +x
-          for attempt in 1 2 3 4 5; do
-            if printf '%s' "$REGISTRY_PASSWORD" \
-              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
-              exit 0
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
-              sleep $((attempt * 10))
-            fi
-          done
-          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
-          exit 1
+        run: ./scripts/ci/registry_login.sh
 
       - name: Extract metadata
         id: meta
@@ -596,48 +550,25 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:v0.13.1
 
-      # Retry: 2026-09-02 deploy 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the GHCR login.
+      # Not docker/login-action@v3: it has no retry, and on 2026-09-02 deploy
+      # 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the
+      # GHCR login — which loses the whole deploy, because Commit Image Digests
+      # needs all four builds. The script retries five times with a 10/20/30/40s
+      # backoff, feeds the password on stdin under `set +x`, and is pinned by
+      # scripts/ci/tests/test_registry_login.sh in ci.yml's ci-scripts job.
       - name: Log in to Docker Hub
         env:
           REGISTRY_HOST: docker.io
           REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
-        run: |
-          set -euo pipefail
-          set +x
-          for attempt in 1 2 3 4 5; do
-            if printf '%s' "$REGISTRY_PASSWORD" \
-              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
-              exit 0
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
-              sleep $((attempt * 10))
-            fi
-          done
-          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
-          exit 1
+        run: ./scripts/ci/registry_login.sh
 
       - name: Log in to GHCR
         env:
           REGISTRY_HOST: ${{ env.REGISTRY }}
           REGISTRY_USER: madfam-bot
           REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
-        run: |
-          set -euo pipefail
-          set +x
-          for attempt in 1 2 3 4 5; do
-            if printf '%s' "$REGISTRY_PASSWORD" \
-              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
-              exit 0
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
-              sleep $((attempt * 10))
-            fi
-          done
-          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
-          exit 1
+        run: ./scripts/ci/registry_login.sh
 
       - name: Extract metadata
         id: meta
@@ -725,48 +656,25 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:v0.13.1
 
-      # Retry: 2026-09-02 deploy 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the GHCR login.
+      # Not docker/login-action@v3: it has no retry, and on 2026-09-02 deploy
+      # 33633417615 lost two build jobs to `net/http: TLS handshake timeout` at the
+      # GHCR login — which loses the whole deploy, because Commit Image Digests
+      # needs all four builds. The script retries five times with a 10/20/30/40s
+      # backoff, feeds the password on stdin under `set +x`, and is pinned by
+      # scripts/ci/tests/test_registry_login.sh in ci.yml's ci-scripts job.
       - name: Log in to Docker Hub
         env:
           REGISTRY_HOST: docker.io
           REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
-        run: |
-          set -euo pipefail
-          set +x
-          for attempt in 1 2 3 4 5; do
-            if printf '%s' "$REGISTRY_PASSWORD" \
-              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
-              exit 0
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
-              sleep $((attempt * 10))
-            fi
-          done
-          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
-          exit 1
+        run: ./scripts/ci/registry_login.sh
 
       - name: Log in to GHCR
         env:
           REGISTRY_HOST: ${{ env.REGISTRY }}
           REGISTRY_USER: madfam-bot
           REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
-        run: |
-          set -euo pipefail
-          set +x
-          for attempt in 1 2 3 4 5; do
-            if printf '%s' "$REGISTRY_PASSWORD" \
-              | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin; then
-              exit 0
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              echo "::warning::login to $REGISTRY_HOST failed (attempt $attempt of 5); retrying in $((attempt * 10))s..."
-              sleep $((attempt * 10))
-            fi
-          done
-          echo "::error::login to $REGISTRY_HOST failed 5 times; the deploy cannot push or pull."
-          exit 1
+        run: ./scripts/ci/registry_login.sh
 
       - name: Extract metadata
         id: meta

@@ -5,6 +5,8 @@ import { useRender } from './useRender'
 vi.mock('../../services/engine/renderService', () => ({
   renderParts: vi.fn(() => Promise.resolve([{ type: 'main', url: 'blob:mock' }])),
   cancelRender: vi.fn(() => Promise.resolve()),
+  cancelRenderOnUnload: vi.fn(() => true),
+  cancelSupersededRender: vi.fn(() => false),
   estimateRenderTime: vi.fn(() => 10),
 }))
 
@@ -427,5 +429,112 @@ describe('useRender', () => {
       expect.objectContaining({ exportFormat: 'step' })
     )
   })
-})
 
+  // --- Cancelling an abandoned render --------------------------------------
+  // Nightly run #171 made ~95 navigations in 40 minutes and produced ZERO
+  // `render-cancel` calls: nothing cancelled on the way out, so every abandoned
+  // render ran to completion against the single render worker while a live
+  // user's render queued behind it. Starvation, not waste.
+
+  /** Start a render, let its `job` event land, and leave it in flight. */
+  async function startRenderAndPublishJob(result, target = { request_id: 'req-1', job_ids: ['job-1'] }) {
+    const { renderParts } = await import('../../services/engine/renderService')
+    let resolveRender
+    renderParts.mockImplementationOnce((mode, params, manifest, opts) => {
+      opts.onJob?.(target)
+      return new Promise(resolve => { resolveRender = resolve })
+    })
+    act(() => { result.current.handleGenerate(true) })
+    return () => resolveRender?.([])
+  }
+
+  it('cancels on pagehide while a render is in flight', async () => {
+    const { cancelRenderOnUnload } = await import('../../services/engine/renderService')
+    const { result } = renderUseRender()
+    const finish = await startRenderAndPublishJob(result)
+
+    act(() => { window.dispatchEvent(new Event('pagehide')) })
+
+    expect(cancelRenderOnUnload).toHaveBeenCalledTimes(1)
+    await act(async () => { finish() })
+  })
+
+  it('cancels on unmount while a render is in flight', async () => {
+    const { cancelRenderOnUnload } = await import('../../services/engine/renderService')
+    const { result, unmount } = renderUseRender()
+    const finish = await startRenderAndPublishJob(result)
+
+    act(() => { unmount() })
+
+    expect(cancelRenderOnUnload).toHaveBeenCalledTimes(1)
+    finish()
+  })
+
+  it('sends nothing on pagehide when no render is in flight', async () => {
+    const { cancelRenderOnUnload } = await import('../../services/engine/renderService')
+    renderUseRender()
+
+    act(() => { window.dispatchEvent(new Event('pagehide')) })
+
+    expect(cancelRenderOnUnload).not.toHaveBeenCalled()
+  })
+
+  it('sends nothing on unmount after the render has finished', async () => {
+    const { cancelRenderOnUnload } = await import('../../services/engine/renderService')
+    const { result, unmount } = renderUseRender()
+
+    await act(async () => { await result.current.handleGenerate(true) })
+    act(() => { unmount() })
+
+    // The stream is over: holding its ids would fire a cancel at a finished render.
+    expect(cancelRenderOnUnload).not.toHaveBeenCalled()
+  })
+
+  it('cancels only once when pagehide is followed by unmount', async () => {
+    const { cancelRenderOnUnload } = await import('../../services/engine/renderService')
+    const { result, unmount } = renderUseRender()
+    const finish = await startRenderAndPublishJob(result)
+
+    act(() => { window.dispatchEvent(new Event('pagehide')) })
+    act(() => { unmount() })
+
+    expect(cancelRenderOnUnload).toHaveBeenCalledTimes(1)
+    finish()
+  })
+
+  it('stops listening for pagehide after unmount', async () => {
+    const { cancelRenderOnUnload } = await import('../../services/engine/renderService')
+    const { unmount } = renderUseRender()
+
+    act(() => { unmount() })
+    act(() => { window.dispatchEvent(new Event('pagehide')) })
+
+    expect(cancelRenderOnUnload).not.toHaveBeenCalled()
+  })
+
+  // --- Superseding renders --------------------------------------------------
+
+  it('a new render cancels the one it supersedes, server-side as well as locally', async () => {
+    const { cancelSupersededRender } = await import('../../services/engine/renderService')
+    const { result } = renderUseRender()
+    const finish = await startRenderAndPublishJob(result)
+
+    // Aborting the fetch only stops THIS page reading the stream; the server
+    // keeps rendering unless it is told to stop.
+    await act(async () => { await result.current.handleGenerate(true) })
+
+    expect(cancelSupersededRender).toHaveBeenCalled()
+    finish()
+  })
+
+  it('the first render of a session supersedes nothing', async () => {
+    const { cancelSupersededRender } = await import('../../services/engine/renderService')
+    const { result } = renderUseRender()
+
+    await act(async () => { await result.current.handleGenerate(true) })
+
+    // It is still called — the service is the one that knows whether anything
+    // is in flight — but it must report that there was nothing to cancel.
+    expect(cancelSupersededRender).toHaveReturnedWith(false)
+  })
+})

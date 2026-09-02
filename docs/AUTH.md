@@ -177,23 +177,71 @@ modes. This is pinned by a test using FC's exact token shape.
 `apps/api/routes/core/websocket.py` registers three flask-sock routes. They are
 not covered by the decorators above — see "Why the decorators do not apply".
 
-| Channel | Anonymous | Auth required for | Mutates server state |
-|---------|-----------|-------------------|----------------------|
-| `/api/ws/render/<session_id>` | Readable: connect, `ping`/`pong` | n/a — no action is permitted to any caller | No |
-| `/api/ws/printer/<printer_id>` | Readable: heartbeat + printer status broadcast, `ping`/`pong` | n/a — read-only broadcast | No |
-| `/api/ws/telemetry/<slug>` | Readable: MQTT telemetry broadcast for the slug, `ping`/`pong` | n/a — read-only broadcast | No |
+Every channel resolves an identity on the upgrade (`resolve_ws_claims`) and then
+authorises the **read**. A socket is not a lesser door: an anonymous reader gets
+exactly what an anonymous HTTP caller gets, and nothing more.
+
+| Channel | Anonymous may read | Gate for everyone else | Mirrors | Mutates server state |
+|---|---|---|---|---|
+| `/api/ws/render/<session_id>` | Yes — connect, `ping`/`pong`. Nothing else is disclosed | none | — | No. `cancel` is refused to every caller |
+| `/api/ws/printer/<printer_id>` | **No** — `authentication_required` | `pro` tier (`insufficient_tier` below it) | `GET /api/printers/<id>/status`, `@require_tier("pro")` | No |
+| `/api/ws/telemetry/<slug>` | **No** — `authentication_required` | signed in, **and** the private-project gate (`project_locked`) | `can_view_project`, the same check the HTTP routes use | No |
+
+A refused connection is answered with one frame and then closed:
+
+```json
+{"type": "error", "error": "read not permitted",
+ "reason": "authentication_required", "message": "…"}
+```
+
+The socket never sees a payload it may not read — no heartbeat, no telemetry,
+no queue read — and a refused reader never occupies one of the per-IP connection
+slots.
+
+### Why the two broadcast channels are gated
+
+"Read-only" answers *whether a caller can change anything*. It does not answer
+*whether a caller may see this*, and those two were being conflated:
+
+* **Printer.** The socket forwards the same shop-floor status that
+  `GET /api/printers/<printer_id>/status` proxies, and that route is
+  `@require_tier("pro")`. An ungated socket was therefore a tier bypass with a
+  different scheme — connect instead of calling the route and the gate is gone.
+  `PRINTER_MIN_TIER` in `routes/core/websocket.py` is pinned to the route's tier
+  by a test, so the two cannot drift.
+* **Telemetry.** A live MQTT sensor stream for one project is not "public
+  project status". No HTTP route serves it anonymously — no HTTP route serves it
+  at all — so there was never an anonymous surface for it to match. For a
+  cartridge in `PRIVATE_PROJECTS` it is exactly the class of event that
+  configuration exists to withhold, which is why the second gate is the
+  private-project check itself (`project_view_denied_reason`, the response-free
+  sibling of `check_project_access`) rather than a second implementation of it.
+
+Anonymous gained no capability here; two channels lost capabilities they should
+never have had. Telemetry is not tier-gated because there is no HTTP telemetry
+surface to take a tier from — identity plus project entitlement is the honest
+gate, and a tier would be an invented one.
+
+`AUTH_ENABLED=false` short-circuits both gates to "allowed", exactly as
+`@require_tier` and `@require_auth` do on the HTTP routes. Same escape hatch,
+not a wider one.
 
 ### Why the decorators do not apply
 
-`@require_auth` returns a 401 *response*, which is meaningless once a connection
-has been upgraded, and neither it nor `@optional_auth` reads the `?token=` query
-parameter — the only place a browser can put a JWT, since browsers cannot set
+`@require_auth` and `@require_tier` return a 401/403 *response*, which is
+meaningless once a connection has been upgraded, and neither they nor
+`@optional_auth` read the `?token=` query parameter — the only place a browser can put a JWT, since browsers cannot set
 headers on a WebSocket handshake. `middleware/auth.py::resolve_ws_claims()` is
 the WS-shaped equivalent: it accepts a bearer from the `Authorization` header
 (preferred; query strings end up in proxy logs) or from `?token=` /
 `?access_token=`, populates `request.auth_claims` and `request.current_user`
 exactly as `@optional_auth` does, and returns `None` for an anonymous or invalid
 caller instead of a response.
+
+The gates are the same shape: `printer_read_denial(claims)` and
+`telemetry_read_denial(slug, claims)` in `routes/core/websocket.py` return
+`(reason, message)` or `None`, never a response. Any channel added later gets
+one of its own — the module has no "default open" path left.
 
 ### Why `cancel` was removed from the render channel
 
@@ -300,6 +348,33 @@ queue entries, mark matching active jobs, publish `cancelled` on their channels.
 An active job whose metadata has expired matches nothing but its own job_id — a
 request-scoped cancel leaves it alone rather than sweeping up work it can no
 longer attribute.
+
+### Cancelling from a page that is going away
+
+A browser that abandons a render — tab closed, back button, an in-app route
+change — cannot await a `fetch`. Until this was handled, it simply did not
+cancel: nightly run #171 made ~95 navigations in 40 minutes and produced **zero**
+`render-cancel` calls, so every abandoned render ran to completion against the
+single render worker while a live user's render queued behind it. Starvation,
+not waste.
+
+`apps/studio/src/hooks/render/useRender.ts` cancels on `pagehide` and on hook
+unmount, through
+`renderService.ts::cancelRenderOnUnload` — `navigator.sendBeacon` first (the
+only transport a browser promises to deliver after the document is gone), then
+`fetch(..., {keepalive: true})`.
+
+A beacon carries no `Authorization` header; it cannot. That is fine, and it is
+the capability model doing its job: the beacon cancels only ids the server
+itself published on this client's own stream, so an anonymous unload can stop
+its own render and nothing else. `{"all": true}` over a beacon is still refused,
+by the same `@require_role("admin")` as every other caller.
+
+The endpoint therefore parses the body as JSON regardless of `Content-Type`
+(`routes/engine/render.py::_cancel_body`): a beacon's type is whatever Blob it
+carries, and the shape that always crosses an origin without a preflight is
+`text/plain`. Only the *header* is tolerated — every field is validated exactly
+as before, so `text/plain` grants nothing `application/json` would not.
 ## Identity tier overrides
 
 `resolve_tier()` (`apps/api/services/core/tier_service.py`) is the single funnel
@@ -411,8 +486,49 @@ Auth settings are defined in `apps/api/config.py`.
 | `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "madfam"}`. Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
 | `PRIVATE_PROJECTS` | *(unset)* | Comma-separated slugs forced private regardless of their manifest. Read at call time. See [Private projects](#private-projects). |
 | `PROJECT_ACCESS_GRANTS` | *(unset)* | JSON object mapping slug to a list of emails granted access to that private project, e.g. `{"acme-bracket": ["someone@example.com"]}`. Read at call time. |
+| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `madfam`. Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. Distinct from `TIER_OVERRIDES`, which keys off a signed identity and therefore needs auth ON. See [Harness tier](#harness-tier). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
+
+### Harness tier
+
+`AUTH_ENABLED=false` does **not** by itself unlock paid features on the render
+path. `_effective_tier()` in `apps/api/routes/engine/render.py` grants the top
+tier only when auth is off **and** Flask debug is on; auth-off with debug off —
+the state CI and the whole API test suite run in — stays `guest`, which is what
+lets the tier-enforcement tests keep seeing 403s.
+
+That leaves a real harness stuck: the nightly browser audit
+(`apps/studio/e2e/tests/23-browser-audit`) exists to drive real renders, and
+gridfinity's default `bin` mode is CadQuery, which `guest` may not use
+(`apps/api/tiers.json`). Before this variable every one of those renders was
+refused and the studio answered with its upgrade prompt.
+
+`HARNESS_TIER` is the explicit way to say so:
+
+```bash
+AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
+```
+
+- **Empty by default** — no deployment or test changes behaviour unless it is
+  deliberately set.
+- **Ignored whenever `AUTH_ENABLED` is `true`**, so it cannot widen
+  entitlements in a real deployment even if the variable leaks into one.
+- **Ignored unless it names a tier in `tiers.json`**; a bad value logs a
+  warning and leaves the request gated rather than failing to boot.
+- It affects the render gating path only. `/api/me` and `require_tier()`
+  already report `madfam` whenever auth is off, so setting
+  `HARNESS_TIER=madfam` makes the server agree with what the client was
+  already being told.
+- It does **not** overlap [Identity tier overrides](#identity-tier-overrides).
+  `TIER_OVERRIDES` maps a signed identity's email to a tier and so applies only
+  when auth is ON and a token is present; a harness running with
+  `AUTH_ENABLED=false` sends no token and has no identity to match. The two are
+  mutually exclusive by construction.
+
+Implemented by `harness_tier_override()` in
+`apps/api/services/core/tier_service.py`; both directions are pinned by
+`apps/api/tests/unit/test_harness_tier.py`.
 
 ---
 

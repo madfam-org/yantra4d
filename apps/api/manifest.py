@@ -224,6 +224,16 @@ def resolve_part_config(base_config: dict, part_id: str) -> dict:
     return {"stages": result}
 
 
+def _manifest_not_found_message(slug: str | None) -> str:
+    """The 404 body for a manifest that is not there — slug only, never a path.
+
+    Kept module-level and tiny so both the message and the reason it is shaped
+    this way sit in one place; see the call site in ``load_manifest``.
+    """
+    if slug:
+        return f"Project manifest not found for '{slug}'"
+    return "Project manifest not found"
+
 
 class ManifestService:
     """Service for managing project manifests."""
@@ -361,8 +371,25 @@ class ManifestService:
             with open(manifest_path) as f:
                 data = json.load(f)
         except FileNotFoundError:
+            # The message reaches the client verbatim: routes answer a missing
+            # manifest with `{"error": str(e)}` and a 404
+            # (routes/core/manifest_route.py, routes/projects/projects.py,
+            # routes/core/config_route.py, routes/core/materials.py). So it
+            # names the slug the caller asked for and nothing else.
+            #
+            # It used to interpolate `manifest_path`, which is not the caller's
+            # slug at all: `_resolve_project_dir` falls back to Config.SCAD_DIR
+            # for any slug it cannot resolve, so a request for a project that
+            # does not exist answered with the deployment's absolute filesystem
+            # path and the name of whichever cartridge happens to be the
+            # single-project default — in production, "gridfinity". A 404 for
+            # "does-not-exist" disclosed the container layout and a project
+            # slug the caller never mentioned.
+            #
+            # The path is still logged: it is the useful half server-side, and
+            # logs are not the response body.
             logger.error(f"Manifest not found: {manifest_path}")
-            raise RuntimeError(f"Project manifest not found at {manifest_path}")
+            raise RuntimeError(_manifest_not_found_message(slug))
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON in manifest {manifest_path}: {e}")
             raise RuntimeError(f"Project manifest contains invalid JSON: {e}")

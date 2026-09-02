@@ -1,4 +1,28 @@
 #!/usr/bin/env python3
+"""Compare a hyperobject's OpenSCAD and CadQuery output, mode by mode.
+
+Candidate selection mirrors ``scripts/qa/generate_commons_catalog.py``'s
+``_engine_support``, and must keep mirroring it. A CadQuery-only cartridge
+declares ``scad_file`` pointing at its own ``.py`` source as a placeholder, so a
+declared ``scad_file`` proves nothing on its own: the kernel a mode really has
+is decided by which source is actually on disk and what its suffix is. Handing
+such a placeholder to OpenSCAD asks it to parse Python, which it cannot do —
+before this rule existed that was every mode in the commons, 1363 of 1363
+reported as parity failures when not one of them was a comparable pair.
+
+A mode is therefore a CANDIDATE only when both kernels really exist for it: a
+``scad_file`` that ends in ``.scad`` and is present, and a CadQuery source that
+ends in ``.py`` and is present. Everything else is one of
+
+  - SKIPPED (placeholder): ``scad_file`` does not name a ``.scad`` at all, so
+    the mode is CadQuery-only and there is nothing to compare it against;
+  - SKIPPED (no CadQuery source): a genuine OpenSCAD-only mode;
+  - FAILED: the manifest declares a file it does not ship.
+
+The distinction between the last two is the point. An inferred sibling ``.py``
+that is absent is an OpenSCAD-only mode; a ``cq_file`` the manifest explicitly
+declares and does not ship is a broken manifest.
+"""
 import sys
 import json
 import argparse
@@ -21,6 +45,61 @@ try:
 except ImportError as e:
     logger.error(f"Failed to import Yantra4D engine services: {e}")
     sys.exit(1)
+
+SCAD_SUFFIX = ".scad"
+CQ_SUFFIX = ".py"
+
+
+def iter_modes(manifest):
+    """Modes as a list of dicts, whichever shape the manifest uses.
+
+    Mirrors generate_commons_catalog._modes: some manifests carry `modes` as a
+    mapping keyed by mode id, and iterating that yields strings.
+    """
+    modes = manifest.get("modes") or []
+    if isinstance(modes, dict):
+        modes = list(modes.values())
+    return [m for m in modes if isinstance(m, dict)]
+
+
+def classify_mode(mode, project_dir: Path):
+    """Decide what a mode is, before anything is rendered.
+
+    Returns (verdict, scad_path, cq_path, detail) where verdict is one of
+    "candidate", "skip", "fail". Pure: it only reads the manifest and stats
+    files, so the whole selection is testable without a kernel.
+    """
+    scad_file = mode.get("scad_file") or ""
+    declared_cq = mode.get("cq_file") or ""
+    # An undeclared CadQuery source is INFERRED from the .scad sibling, exactly
+    # as _engine_support does. Inference is a guess, so its absence is a skip;
+    # a declaration is a promise, so its absence is a failure.
+    cq_file = declared_cq or (
+        scad_file[: -len(SCAD_SUFFIX)] + CQ_SUFFIX if scad_file.endswith(SCAD_SUFFIX) else "")
+
+    if not scad_file:
+        return "fail", None, None, "Missing scad_file."
+    if not scad_file.endswith(SCAD_SUFFIX):
+        # The CadQuery-only placeholder. Never hand this to OpenSCAD.
+        detail = (f"scad_file '{scad_file}' is a CadQuery-only placeholder, not "
+                  f"OpenSCAD source — no OpenSCAD side to compare against")
+        return "skip", None, None, detail
+    scad_path = project_dir / scad_file
+    if not scad_path.exists():
+        return "fail", None, None, f"SCAD file missing: {scad_file}"
+    if not cq_file:
+        return "skip", None, None, "No cq_file declared (skipping parity check)."
+    if not cq_file.endswith(CQ_SUFFIX):
+        return ("skip", None, None,
+                f"cq_file '{cq_file}' is not a CadQuery source")
+    cq_path = project_dir / cq_file
+    if not cq_path.exists():
+        if declared_cq:
+            return "fail", None, None, f"CadQuery file missing: {cq_file}"
+        return ("skip", None, None,
+                f"OpenSCAD-only mode (no {cq_file} alongside {scad_file})")
+    return "candidate", scad_path, cq_path, ""
+
 
 def check_mesh_parity(mesh1_path, mesh2_path, tolerance=0.001):
     try:
@@ -70,7 +149,8 @@ def check_mesh_parity(mesh1_path, mesh2_path, tolerance=0.001):
 
     return True, f"Meshes are identical within {max_divergence:.6f}mm tolerance."
 
-def verify_project(project_dir: Path, tolerance: float = 0.001) -> bool:
+def verify_project(project_dir: Path, tolerance: float = 0.001,
+                   stats: "dict | None" = None) -> bool:
     manifest_path = project_dir / "project.json"
     if not manifest_path.exists():
         return True # Not a project
@@ -88,38 +168,34 @@ def verify_project(project_dir: Path, tolerance: float = 0.001) -> bool:
         return True
 
     logger.info(f"\n🔍 Analyzing Hyperobject parity: {project_dir.name}")
-    
-    modes = manifest.get("modes", [])
+
+    modes = iter_modes(manifest)
     if not modes:
         logger.error(f"❌ {project_dir.name}: No modes defined.")
         return False
 
     all_passed = True
-    
+    if stats is None:
+        stats = {}
+
+    def count(key):
+        stats[key] = stats.get(key, 0) + 1
+
     for mode in modes:
-        scad_file = mode.get("scad_file")
-        cq_file = mode.get("cq_file")
-        
-        if not scad_file:
-            logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: Missing scad_file.")
+        verdict, scad_path, cq_path, detail = classify_mode(mode, project_dir)
+
+        if verdict == "fail":
+            logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: {detail}")
+            count("mode_failed")
             all_passed = False
             continue
-        if not cq_file:
-            logger.warning(f"⚠️  {project_dir.name} [{mode.get('id')}]: No cq_file declared (skipping parity check).")
+        if verdict == "skip":
+            logger.warning(f"⚠️  {project_dir.name} [{mode.get('id')}]: {detail}")
+            count("mode_skipped_placeholder" if "placeholder" in detail
+                  else "mode_skipped_no_cq")
             continue
-            
-        scad_path = project_dir / scad_file
-        cq_path = project_dir / cq_file
-        
-        if not scad_path.exists():
-            logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: SCAD file missing: {scad_file}")
-            all_passed = False
-            continue
-        if not cq_path.exists():
-            logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: CadQuery file missing: {cq_file}")
-            all_passed = False
-            continue
-            
+
+        count("mode_candidate")
         exports_dir = project_dir / "exports"
         exports_dir.mkdir(exist_ok=True)
         scad_out = exports_dir / f"{mode.get('id')}_scad.stl"
@@ -137,14 +213,22 @@ def verify_project(project_dir: Path, tolerance: float = 0.001) -> bool:
         success, out = run_render(cmd, scad_path=str(scad_path))
         if not success:
             logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: OpenSCAD render failed:\n{out}")
+            count("mode_failed")
             all_passed = False
             continue
 
         # 2. CadQuery
         try:
             run_cadquery_script(str(cq_path), str(cq_out), params_json, "STL")
-        except Exception as e:
+        # SystemExit as well as Exception: the sandbox rejects a script by
+        # calling sys.exit (e.g. "Import of 'sys' is not allowed in CadQuery
+        # scripts"), and SystemExit is not an Exception — so one rejected
+        # cartridge used to kill the whole audit before it printed a summary.
+        # A cartridge the sandbox refuses is a failure of that cartridge, not
+        # of the run. KeyboardInterrupt still propagates.
+        except (Exception, SystemExit) as e:
             logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: CadQuery build failed:\n{e}")
+            count("mode_failed")
             all_passed = False
             continue
 
@@ -153,8 +237,10 @@ def verify_project(project_dir: Path, tolerance: float = 0.001) -> bool:
         
         if is_parity:
             logger.info(f"✅ {project_dir.name} [{mode.get('id')}]: Parity Check PASSED. {reason}")
+            count("mode_passed")
         else:
             logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: Parity Check FAILED. {reason}")
+            count("mode_failed")
             all_passed = False
 
     return all_passed
@@ -175,29 +261,52 @@ def main():
     passed = 0
     failed = 0
     skipped = 0
-    
+    nothing_to_compare = 0
+    totals: dict = {}
+
     for p in sorted(projects_to_check):
         if not (p / "project.json").exists():
             continue
-            
-        with open(p/ "project.json", 'r') as f:
+
+        with open(p / "project.json", 'r') as f:
             manifest = json.load(f)
             is_ho = manifest.get("project", {}).get("hyperobject", {}).get("is_hyperobject", False)
             has_top_ho = bool(manifest.get("hyperobject", {}).get("cdg_interfaces"))
             if not is_ho and not has_top_ho:
                 skipped += 1
                 continue
-                
-        if verify_project(p, args.tolerance):
+
+        stats: dict = {}
+        ok = verify_project(p, args.tolerance, stats)
+        for key, value in stats.items():
+            totals[key] = totals.get(key, 0) + value
+
+        if not ok:
+            failed += 1
+        elif stats.get("mode_candidate"):
             passed += 1
         else:
-            failed += 1
+            # Every mode was skipped: a CadQuery-only cartridge has no parity to
+            # verify. Counting it as "passed" would report agreement that was
+            # never measured.
+            nothing_to_compare += 1
+
+    candidates = totals.get("mode_candidate", 0)
+    placeholders = totals.get("mode_skipped_placeholder", 0)
+    no_cq = totals.get("mode_skipped_no_cq", 0)
 
     print("\n--- Geometric Parity Audit Results ---")
     print(f"Hyperobjects Tested: {passed + failed}")
     print(f"Passed: {passed}")
     print(f"Failed: {failed}")
-    
+    print(f"No comparable pair: {nothing_to_compare}")
+    print(f"Not hyperobjects: {skipped}")
+    print("\nMode pairs")
+    print(f"  Candidates compared: {candidates}"
+          f"  (passed {totals.get('mode_passed', 0)}, failed {totals.get('mode_failed', 0)})")
+    print(f"  Skipped, CadQuery-only placeholder scad_file: {placeholders}")
+    print(f"  Skipped, no CadQuery source for the mode: {no_cq}")
+
     if failed > 0:
         sys.exit(1)
     else:

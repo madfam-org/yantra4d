@@ -293,7 +293,7 @@ POST `/api/verify` with `{mode}` -- runs `apps/api/tests/verify_design.py` on re
 | POST | `/api/projects/<slug>/git/connect-remote` | `{url}` | Set GitHub remote (pro+) |
 | POST | `/api/github/validate` | `{url}` | Validate GitHub repo URL (pro+) |
 | POST | `/api/github/import` | `{url, slug?, private?}` | Import GitHub repo as project (pro+) |
-| POST | `/api/github/sync` | `{slug}` | Sync project with GitHub source (madfam) |
+| POST | `/api/github/sync` | `{slug}` | Sync project with GitHub source (premium) |
 | POST | `/api/ai/session` | `{project, mode}` | Create AI chat session (basic+) |
 | POST | `/api/ai/chat-stream` | `{session_id, message, current_params}` | SSE streaming AI chat (basic+/pro+) |
 | GET | `/api/projects/<slug>/bom` | query params | Bill of materials as JSON/CSV |
@@ -340,16 +340,16 @@ Access is gated by user tier. Tier definitions live in `apps/api/tiers.json`; en
 | guest | 10 | 0 | STL | openscad, implicit | -- | -- | -- | 0 |
 | essentials | 30 | 5 | STL/3MF/OBJ | openscad, implicit | -- | Yes | -- | 20 |
 | pro | 150 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | + cadquery, graph | import, editor, private | Yes | Yes | 100 |
-| madfam | 500 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | + cadquery, graph | import, sync, editor, private | Yes | Yes | 300 |
+| premium | unlimited | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | + cadquery, graph | import, sync, editor, private | Yes | Yes | unlimited |
 
 The `cadquery_engine` and `graph_engine` keys gate the two B-Rep kernels; a
-cartridge that declares either renders only for pro and madfam.
+cartridge that declares either renders only for pro and premium.
 
 > **Note**: WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to `/api/render*` endpoints.
 
 Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/services/tier_service.py`, `apps/studio/src/contexts/auth/AuthProvider.tsx`, `apps/studio/src/contexts/auth/TierProvider.tsx`.
 
-**Note**: Set `AUTH_ENABLED=false` to bypass auth in development (all users get madfam tier).
+**Note**: Set `AUTH_ENABLED=false` to bypass auth in development (all users get the top `premium` tier).
 
 **Billing**: Tier upgrades via external Dhanam platform (`apps/studio/src/lib/billing.ts` generates checkout URLs, `UpgradeModal.tsx` presents upgrade flow). Tier assignment handled by Dhanam webhooks to Janua auth -- JWT `yantra4d_tier` claim drives backend gating.
 
@@ -400,7 +400,7 @@ GitHub features are tier-gated:
 |----------|--------|------|---------|
 | `/api/github/validate` | POST | pro+ | Validate GitHub repo URL, detect SCAD files |
 | `/api/github/import` | POST | pro+ | Clone repo as new project |
-| `/api/github/sync` | POST | madfam | Sync imported project with upstream |
+| `/api/github/sync` | POST | premium | Sync imported project with upstream |
 | `/api/projects/<slug>/git/*` | GET/POST | pro+ | Git status, diff, commit, push, pull, connect-remote |
 | `/api/projects/<slug>/files/*` | GET/PUT/DELETE | pro+ | SCAD file CRUD with auto git-init |
 
@@ -449,6 +449,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Client-side WASM | `openscad-worker.ts` runs in a Web Worker; cannot access DOM |
 | Backend outage resilience | `detectMode()` checks backend availability *before* `API_BASE` preferences. If backend is down, WASM fallback activates automatically (except CadQuery and `force_backend` projects). `isBackendAvailable()` uses TTL cache: 30s negative (retries), 5min positive. `renderParts()` catches network errors **and HTTP 429 rate limit responses** and retries with WASM for non-`force_backend` projects. `force_backend` projects never fall back to WASM -- on rate limit they show a clear upgrade/wait message instead. ProjectsView shows Retry + Open Demo buttons on error. The fallback manifest omits `force_backend` so WASM works offline |
 | Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: per-tier (see tier table above), Estimate: 200/hr, Verify: 50/hr. WASM renders are unlimited. Projects can declare `guest_render_limit` in `project.json` to override the guest tier limit (e.g., for client demos) |
+| Tier names (`madfam` is an alias, forever) | The top tier is `premium` (ADR-006 D4). `madfam` is a **permanent** alias, not a migration window: Janua's machine-token claim builder still emits the literal `"madfam"` and an operator's `TIER_OVERRIDES` Secret may still say it, so deleting the entry from `LEGACY_TIER_MAP` (`services/core/tier_service.py`) seats every service client in `essentials` — silently, because `resolve_tier` fails closed. Aliases are resolved in `_normalize_tier` only, which every input path funnels through (`yantra4d_tier` claim, `TIER_OVERRIDES` values, both sides of `has_tier`); the deprecation note is logged once per process per alias, not per request. Outputs are always canonical — `/api/me`, `/api/tiers`, `X-RateLimit-Tier`, 403 upsell copy. Never compare a tier string by hand: Python uses `TOP_TIER` / `has_tier`, the Studio uses `tierAtLeast` from `src/lib/tiers.ts`. **The checkout SKU is the deliberate exception**: `plan=yantra4d_madfam` is unchanged because the slug is tulana catalog data, and `billing.ts` maps tier→plan id through an explicit table rather than deriving it (ADR-006 D5: never pass the plan id as the tier) |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |
 | Shareable URLs | `?p=` query param encodes non-default params as base64url JSON diff; shared links use path-based format `/project/slug/share/mode?p=...`. Legacy hash-based shared links auto-redirect via `main.tsx` |

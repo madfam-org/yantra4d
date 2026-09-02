@@ -13,6 +13,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Changed
+- **Top Tier Renamed `madfam` → `premium`, With a Permanent Alias** — ADR-006
+  Decision 4: a company name was doing duty as a tier name on a MADFAM product,
+  and `premium` is already dhanam's top tier. The ladder is now
+  `guest | essentials | pro | premium`, and `premium` is the key in
+  `apps/api/tiers.json`, the top of `TIER_HIERARCHY`, and what every output
+  emits — `/api/me` (`tier` and `entitlement.resolved_tier`), `/api/tiers`, the
+  `X-RateLimit-Tier` header, and the 403 upsell copy.
+
+  **The alias guarantee: `madfam` is accepted forever, on every input path.**
+  This is not a deprecation window with an end date. Janua's machine-token claim
+  builder still synthesises the literal `yantra4d_tier: "madfam"` for any client
+  holding a `yantra4d:`-namespaced scope, and an operator's `TIER_OVERRIDES`
+  Secret may still say `madfam` — so the alias is load-bearing in production
+  today. A token, a `TIER_OVERRIDES` value, or a `has_tier()` argument carrying
+  the old name resolves to `premium` and seats exactly the same entitlements:
+  unlimited renders, unlimited AI requests, GitHub sync, every export format,
+  and access to private projects. **No Kubernetes Secret needs rotating and no
+  consumer needs to re-mint anything.** Removing the alias would silently
+  downgrade live callers to `essentials` (`resolve_tier` fails closed), so
+  `LEGACY_TIER_MAP` is treated as permanent contract, pinned by tests.
+
+  Aliases resolve in one place, `_normalize_tier`, which is the funnel
+  `resolve_tier` and the config parser both go through — no call site knows an
+  alias exists. The deprecation note is logged **once per process per alias**
+  rather than once per request, because the alias sits on the hot path.
+
+  Studio: one helper (`src/lib/tiers.ts` — `tierAtLeast`, `normalizeTier`,
+  `TOP_TIER`) now owns every tier comparison that used to be a hard-coded
+  string, so a cached `/api/me` still reporting `madfam` grants what `premium`
+  grants instead of gating a paying user out. Tier display names are i18n keys
+  (`tier.name_*`) in all six locales, and the cloud-render upsell string is no
+  longer hard-coded English. The unlimited rate-limit display from #78 is
+  unchanged.
+
+  **Deliberately unchanged: the checkout SKU.** `plan=yantra4d_madfam` still
+  goes to dhanam. The SKU slug lives in tulana's catalog, not in this repo, and
+  is a different namespace from the tier name; `billing.ts` now maps tier to
+  plan id through an explicit table rather than deriving one from the other
+  (ADR-006 Decision 5 — writing a plan id into the claim seats a paying
+  customer in `essentials` with no error anywhere).
+
 ### Added
 - **Multi-Rack Mode (custom-msh)** — New 6th mode producing 2–5 contiguous
   staining racks joined front-to-back (Y-axis, default) or side-by-side (X-axis).

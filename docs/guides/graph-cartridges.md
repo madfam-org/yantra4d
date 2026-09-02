@@ -163,6 +163,6 @@ python3 scripts/qa/check_licenses.py
 ## Tier gating
 
 The graph engine is gated by the `graph_engine` key in
-[`apps/api/tiers.json`](../../apps/api/tiers.json) — pro and madfam. A guest
+[`apps/api/tiers.json`](../../apps/api/tiers.json) — pro and premium. A guest
 render of a graph cartridge returns 403 with a message naming the tier, which
 is the expected behaviour, not a bug.

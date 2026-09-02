@@ -23,7 +23,7 @@ Tulana SKU keys use the double-underscore convention.
 | SKU (proposed key) | What is being priced | Billing shape | Entitlement mechanism |
 | :-- | :-- | :-- | :-- |
 | `yantra4d__pro` | Pro tier: 150 backend renders/hr, all export formats incl. STEP, CadQuery engine, GitHub import + code editor, AI code editor (100 req/hr), print dispatch, manufacturing quotes | Monthly subscription via dhanam checkout (`plan=yantra4d_pro`) | Janua `yantra4d_tier` claim (see `docs/integrations/billing-entitlement-contract.md`) |
-| `yantra4d__madfam` | Top tier: 500 renders/hr, 300 AI req/hr, GitHub sync | Subscription (`plan=yantra4d_madfam` already supported by `billing.ts`) | Same |
+| `yantra4d__madfam` | Top tier (`premium`, renamed from `madfam` per ADR-006 D4 — the **SKU slug is unchanged**, it is tulana catalog data): unlimited renders and AI requests, GitHub sync | Subscription (`plan=yantra4d_madfam` already supported by `billing.ts`) | Same |
 | `yantra4d__whitelabel` | Tenant license: custom branding, private catalog (unlisted + guest overrides), public demo links, hosted | Annual per-tenant license | `YANTRA4D_LICENSE_KEY` (complete mechanism; runbook: `docs/runbooks/white-label-license-minting.md`) |
 | `yantra4d__fulfillment_take` | Take-rate on completed manufacturing quotes booked through Cotiza, and/or margin over ForgeSight p50 market pricing | % of order value | `cotiza_quotes` projection records `total_amount`/`currency` per order |
 | `yantra4d__compute_credits` | Metered heavy compute beyond tier quotas (physics 20/hr, topology 20/hr, animation 10/hr today) | Credit packs (later phase) | Per-tier dynamic limits already enforced |

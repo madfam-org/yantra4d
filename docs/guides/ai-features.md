@@ -188,7 +188,7 @@ Response: SSE stream with events:
 | guest | — | — | — | 0 |
 | essentials | Yes | — | — | 20 |
 | pro | Yes | Yes | Yes | 100 |
-| madfam | Yes | Yes | Yes | 300 |
+| premium | Yes | Yes | Yes | unlimited |
 
 ## Session Management
 

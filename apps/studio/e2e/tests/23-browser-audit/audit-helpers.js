@@ -210,10 +210,10 @@ export async function goToRealProject(page, slug, expectedName) {
   await page.waitForURL(/\/project\/[^/]+\/[^/]+/, { timeout: 10_000 })
     .catch(() => {})
 
-  // Wait for the first VISIBLE mode tab. App.tsx renders its desktop and mobile
-  // trees at the same time (`hidden lg:flex` / `lg:hidden`), so `[role="tab"]`
-  // .first() is a tab in whichever tree is display:none at this viewport and
-  // never becomes visible — 10 s burned on every mobile navigation.
+  // Wait for the first VISIBLE mode tab. #81 made App.tsx mount only the tree
+  // that is on screen, so this is usually the only tab there is; the filter
+  // stays because it is what makes the wait honest — an unfiltered .first()
+  // waited out its whole 10 s on any tab that is present but not shown.
   await page.locator('[role="tab"]').filter({ visible: true }).first()
     .waitFor({ state: 'visible', timeout: 10_000 })
     .catch(() => {})
@@ -231,8 +231,13 @@ export async function goToRealProject(page, slug, expectedName) {
   // on all three attempts with the dialog sitting in the page snapshot. Cancel
   // the one already up, so the page is clean immediately — including for the
   // axe audits, which reach the page through page.evaluate: neither an action
-  // nor an assertion, so nothing there ever triggers a locator handler...
-  await dismissRenderWarning(page, 'cancel', 2500)
+  // nor an assertion, so nothing there ever triggers a locator handler.
+  //
+  // Since #82 a load-time automatic render is skipped with a toast and opens no
+  // dialog at all, so this finds nothing and is purely a safety net for a build
+  // or cartridge where one still appears — hence the short budget: it is paid
+  // in full on every navigation in the suite...
+  await dismissRenderWarning(page, 'cancel', 1000)
 
   // ...and arm the handler for every one that comes after: the settle, a mode
   // switch and a preset each re-arm the auto-generate, so a single cancel here
@@ -419,8 +424,8 @@ export async function triggerAndWaitRender(sidebar, page, paramId, value, timeou
   const dialog = await expectRenderWarning(page)
   await dismissRenderWarning(page, 'cancel', 500)
   const generateBtn = page.locator('button', { hasText: /Generate|Generar/ }).first()
-  // Both layout trees render the console; take the one on screen. Absent (or
-  // collapsed) it reads null, and the Generate-disabled evidence stands alone.
+  // The console on screen. Absent (or collapsed) it reads null, and the
+  // Generate-disabled evidence stands alone.
   const renderLog = page.locator('[role="log"]').filter({ visible: true }).first()
   const logBefore = await renderLog.textContent().catch(() => null)
 

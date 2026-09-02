@@ -21,8 +21,7 @@ const GRIDFINITY = 'Gridfinity'
 
 // The mode tabs, and only those: the sidebar's section tabs
 // (Design/View/BOM/Export) are a [role="tablist"] too and come FIRST in the
-// DOM, so an unscoped `[role="tab"]`.first() reads "Design"/"Diseño". App.tsx
-// also keeps its desktop and mobile trees mounted at once, hence :visible.
+// DOM, so an unscoped `[role="tab"]`.first() reads "Design"/"Diseño".
 const modeTabs = page =>
   page.locator('[role="tablist"][aria-label="Mode selection"] [role="tab"]').filter({ visible: true })
 

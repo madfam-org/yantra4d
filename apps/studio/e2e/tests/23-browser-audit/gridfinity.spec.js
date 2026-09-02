@@ -37,8 +37,7 @@ test.describe('Gridfinity — Browser Audit', () => {
     // 5 modes in project.json: bin + baseplate (cadquery) and cup,
     // baseplate_scad, lid (openscad, labelled "… (OpenSCAD Extended)").
     // Scoped to the mode tablist and to what is on screen: the sidebar's
-    // section tabs (Design/View/BOM/Export) are a [role="tablist"] too, and
-    // App.tsx keeps its desktop and mobile trees mounted side by side.
+    // section tabs (Design/View/BOM/Export) are a [role="tablist"] too.
     const tabs = page.locator('[role="tablist"][aria-label="Mode selection"] [role="tab"]')
       .filter({ visible: true })
     await expect(tabs).toHaveCount(5)

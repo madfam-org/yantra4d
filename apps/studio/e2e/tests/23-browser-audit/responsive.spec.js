@@ -14,14 +14,15 @@ const GRIDFINITY = 'Gridfinity'
 /**
  * The viewer canvas the phone actually shows.
  *
- * App.tsx and StudioMainView.tsx each render a desktop tree and a mobile tree
- * at the same time (`hidden lg:flex` / `lg:hidden`) and hand the same
- * viewerContent to both, so four <canvas> elements are mounted at 375 px and
- * the first three are inside a display:none subtree. `locator('canvas')
- * .first()` therefore resolves to a permanently hidden canvas — that is what
- * run #166 reported as "13 x locator resolved to <canvas> ... hidden", not a
- * collapsed viewport: the mobile controls sheet was shut in the failure
- * snapshot and the mobile viewer keeps its own flex:1.618 row.
+ * Run #166 failed here on `locator('canvas').first()` resolving to a hidden
+ * canvas. App.tsx and StudioMainView.tsx each rendered a desktop tree AND a
+ * mobile tree and handed the same viewerContent to both, so four <canvas>
+ * elements were mounted at 375 px with the first three inside display:none
+ * subtrees — never a collapsed viewport: the controls sheet was shut in that
+ * snapshot and the mobile viewer keeps its own flex:1.618 row. #81 now mounts
+ * only the tree on screen, so there is one canvas again. The filter stays
+ * because it states what the test means — a viewer the user can see — and
+ * costs nothing when only one exists.
  */
 const visibleCanvas = page => page.locator('canvas').filter({ visible: true }).first()
 
@@ -48,11 +49,12 @@ test.describe('Responsive (Mobile) — Browser Audit', () => {
     await goToRealProject(page, 'gridfinity', GRIDFINITY)
     // The mobile bar's sheet trigger (StudioSidebar variant="mobile") is an
     // icon button whose only text is the sr-only t('btn.open_controls').
-    // data-testid="studio-sidebar" is on the DESKTOP sidebar only, so the old
-    // locator chain pointed into the display:none tree, matched several
-    // elements at once, and its isVisible() threw strict-mode into the catch —
-    // the sheet was never opened and the slider asserted below was the hidden
-    // desktop one.
+    // data-testid="studio-sidebar" is on the DESKTOP sidebar only — which at
+    // this width was a display:none subtree before #81 and is not mounted at
+    // all after it — so the old locator chain never found the trigger, matched
+    // several elements at once, and its isVisible() threw strict-mode into the
+    // catch: the sheet was never opened and the slider asserted below was one
+    // the phone does not show.
     await page.getByRole('button', { name: /Open controls|Abrir controles/i })
       .first()
       .click()
@@ -88,9 +90,9 @@ test.describe('Responsive (Mobile) — Browser Audit', () => {
   test('custom-msh: 6 mode tabs scroll/wrap on mobile', async ({ page }) => {
     await goToRealProject(page, 'custom-msh', 'Custom MSH')
     // On a phone the mode tabs are the mobile bar's Radix TabsList, which
-    // carries no aria-label (that is on the desktop ModeTabs, display:none
-    // here) — so filter by what is on screen rather than by label. Unfiltered
-    // this counted every tab in both layout trees.
+    // carries no aria-label — that is on the desktop ModeTabs, which this
+    // width does not mount — so filter by what is on screen rather than by
+    // label.
     const tabs = page.locator('[role="tablist"] [role="tab"]').filter({ visible: true })
     const count = await tabs.count()
     expect(count).toBe(6)

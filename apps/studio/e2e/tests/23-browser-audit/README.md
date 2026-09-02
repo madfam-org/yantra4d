@@ -96,7 +96,9 @@ default `beforeAll` skips the entire audit for everyone.
 
   - `goToRealProject()` cancels the one already up — the axe audits reach the
     page through `page.evaluate`, which is neither an action nor an assertion
-    and so never triggers a handler — and then
+    and so never triggers a handler. Since #82 that one-shot finds nothing (an
+    automatic render is skipped with a toast and opens no dialog), so it runs on
+    a short budget as a safety net. It then
     registers `autoCancelRenderWarning(page)`, a `page.addLocatorHandler()` on
     `[role="alertdialog"]` that cancels it before **every** later action.
     Registered once per page, uncapped, `noWaitAfter`. Order matters: arming it
@@ -145,10 +147,14 @@ default `beforeAll` skips the entire audit for everyone.
   when neither signal was ever seen. Do not "simplify" it back into dismiss +
   wait: answering a dialog that no longer appears and then waiting on a button
   that was never disabled passes without any render happening.
-- **Assert what is on screen.** `App.tsx` mounts its desktop and mobile trees at
-  the same time (`hidden lg:flex` / `lg:hidden`), so `locator('canvas').first()`
-  or `[role="tab"]` counts pick up permanently hidden elements. Always
-  `.filter({ visible: true })`, and scope mode tabs to
+- **Assert what is on screen.** `App.tsx` used to mount its desktop and mobile
+  trees at the same time (`hidden lg:flex` / `lg:hidden`), so
+  `locator('canvas').first()` and `[role="tab"]` counts picked up permanently
+  hidden elements — four canvases on a phone, three of them in display:none
+  subtrees. #81 mounts only the tree on screen, so the duplicates are gone, but
+  keep `.filter({ visible: true })`: it says what the assertion means, it costs
+  nothing when nothing is hidden, and the mobile controls sheet still mounts a
+  second copy of the sidebar's contents while it is open. Scope mode tabs to
   `[role="tablist"][aria-label="Mode selection"]` — the sidebar's
   Design/View/BOM/Export tablist comes first in the DOM.
 

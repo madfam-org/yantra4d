@@ -193,6 +193,41 @@ export async function expectRenderWarning(page) {
 }
 
 /**
+ * Fail immediately, and by name, if the studio is showing its manifest error
+ * screen instead of the project.
+ *
+ * App.tsx replaces the ENTIRE app with that screen when the manifest fetch
+ * fails — no header, no sidebar, no tabs — so every later assertion fails on an
+ * absence and reports a count of zero rather than the reason. Run #170 lost an
+ * attempt of "loads gridfinity and shows manifest data" to exactly that: the
+ * page was "📡 Can't Reach the Server", and the test said only that it wanted
+ * five mode tabs and found none.
+ *
+ * Detected by the absence of the studio's <header>, which the error screen does
+ * not render — locale-free, and true for all three variants (unreachable, not
+ * found, locked).
+ */
+export async function assertStudioLoaded(page, slug = '') {
+  // The studio always has a <header>; the error screen replaces the whole app
+  // and has none. Checked that way round rather than by matching its copy, so
+  // it holds in every locale and for all three variants (unreachable, not
+  // found, locked). goToRealProject has already waited for the header once by
+  // the time this runs, so its absence now means the app tore it down.
+  if (await page.locator('header').first().isVisible().catch(() => false)) return
+  const heading = (await page.locator('h1').first().textContent().catch(() => '')) || ''
+  if (!heading.trim()) return
+  const body = (await page.locator('p').first().textContent().catch(() => '')) || ''
+  throw new Error(
+    `The studio never loaded${slug ? ` "${slug}"` : ''}: it replaced the app with its ` +
+    `manifest error screen — "${heading.trim()}" / "${body.trim().slice(0, 200)}". ` +
+    'This is the app, not the harness: check the backend log for the manifest ' +
+    'request it made. A slug-less GET /api/manifest is a 400 on any multi-project ' +
+    'backend, and ManifestProvider falls back to it whenever the projects-list ' +
+    'fetch is aborted by its 2 s timeout.',
+  )
+}
+
+/**
  * Navigate to a real project and wait for manifest + UI to load.
  */
 export async function goToRealProject(page, slug, expectedName) {
@@ -238,6 +273,10 @@ export async function goToRealProject(page, slug, expectedName) {
   // or cartridge where one still appears — hence the short budget: it is paid
   // in full on every navigation in the suite...
   await dismissRenderWarning(page, 'cancel', 1000)
+
+  // By now the manifest request has resolved one way or the other, so a failure
+  // is reportable as itself rather than as whatever is missing downstream.
+  await assertStudioLoaded(page, slug)
 
   // ...and arm the handler for every one that comes after: the settle, a mode
   // switch and a preset each re-arm the auto-generate, so a single cancel here

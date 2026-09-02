@@ -192,11 +192,19 @@ export class StudioSidebarPage extends BasePage {
    * @param {number} [timeout] budget per phase (edit-mode, fill, commit)
    */
   async editSliderValue(paramId, value, timeout = 15_000) {
-    const row = this.sidebar.locator(`.flex.justify-between:has(#param-label-${paramId})`)
+    // `.first()` on the row, not just on what hangs off it. `:has()` matches
+    // EVERY ancestor that contains the label, so a second `.flex.justify-between`
+    // higher up makes this a multi-element locator — and then `input` below is
+    // multi-element too, `isVisible()` raises strict mode, and the `.catch()`
+    // swallowing it turns "the input is right there" into a silent `false` that
+    // no amount of clicking can fix. That is a candidate for run #170's
+    // custom-msh flake, where the poll clicked for its whole 15 s against an
+    // idle page with the value span plainly present in the snapshot.
+    const row = this.sidebar.locator(`.flex.justify-between:has(#param-label-${paramId})`).first()
     // `span[role="button"]`, not the index-based sliderValue() pick: the row's
     // contents swap with `editing`, so `.last()` is a guess about a DOM mid-swap.
     const valSpan = row.locator('span[role="button"]').first()
-    const input = row.locator('input[type="number"]')
+    const input = row.locator('input[type="number"]').first()
 
     // The row itself must be rendered first (param rows re-render when the
     // preset applied by goToStudio's URL-settle step lands; on a contended
@@ -207,22 +215,39 @@ export class StudioSidebarPage extends BasePage {
     // isVisible on the SPAN: once a click lands the span unmounts, and a click
     // issued against an unmounted locator does not fail fast — it waits out its
     // whole actionability budget while the locator re-resolves.
-    await expect
-      .poll(
-        async () => {
-          if (await input.isVisible().catch(() => false)) return true
-          if (!(await valSpan.isVisible().catch(() => false))) return input.isVisible().catch(() => false)
-          await valSpan.click({ timeout: 5_000 }).catch(() => { })
-          return input.isVisible().catch(() => false)
-        },
-        {
-          timeout,
-          message:
-            `Slider row "${paramId}" never entered edit mode — the click on its ` +
-            "value span was lost before React attached SliderControl's onClick.",
-        },
+    //
+    // Every failure here used to be swallowed, so a poll that ran out reported
+    // only that it had run out. Keep the swallowing — one lost click is not a
+    // test failure — but remember WHY each attempt failed and put the last
+    // reason in the message, so the next run says whether the click was
+    // intercepted, the element detached, or the locator was never unique.
+    let lastReason = 'no click was ever attempted'
+    const why = (err) => {
+      lastReason = String(err && err.message ? err.message : err).split('\n')[0].slice(0, 300)
+      return false
+    }
+    // The rethrow below is what makes that work: expect.poll's `message` is a
+    // string built when the poll STARTS, so interpolating lastReason into it
+    // would always report the placeholder.
+    try {
+      await expect
+        .poll(
+          async () => {
+            if (await input.isVisible().catch(why)) return true
+            if (!(await valSpan.isVisible().catch(why))) return input.isVisible().catch(why)
+            await valSpan.click({ timeout: 5_000 }).catch(why)
+            return input.isVisible().catch(why)
+          },
+          { timeout },
+        )
+        .toBe(true)
+    } catch {
+      throw new Error(
+        `Slider row "${paramId}" never entered edit mode within ${timeout}ms — the ` +
+        "click on its value span was lost before React attached SliderControl's " +
+        `onClick. Last failure seen while polling: ${lastReason}`,
       )
-      .toBe(true)
+    }
 
     // Fill until the controlled input actually holds the value. `fill()` dispatches
     // an input event, but the input's value comes from React state, so a fill that

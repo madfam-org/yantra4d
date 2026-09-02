@@ -119,12 +119,24 @@ test.describe('Cross-Cutting — Browser Audit', () => {
     await setLanguage(page, 'en')
     await page.goto('/projects')
     await page.waitForSelector('header', { timeout: 15_000 })
-    await page.waitForTimeout(1000)
+
+    // Search for each one rather than expecting it on the landing page. The
+    // commons is 501 cartridges and ProjectsView pages at PAGE_SIZE = 60 sorted
+    // by name, so the first page ends around "Bag Reseal & Pour Clip" — run #170
+    // failed here 3/3 looking for a gridfinity card that was ~440 cards further
+    // down. Scrolling 500 cards in would test the pager, not the catalogue; the
+    // search box is how a user finds a known project, and the slug is in the
+    // server-side haystack (services/core/catalog_index.py).
+    const search = page.getByRole('searchbox', { name: /Search projects|Buscar proyectos/i })
+    await expect(search).toBeVisible({ timeout: 10_000 })
 
     // Verify a card for every audit project the backend serves (the private
     // cartridges only appear when this checkout includes them)
     for (const slug of [...PUBLIC_AUDIT_SLUGS, ...PRIVATE_AUDIT_SLUGS.filter(hasProject)]) {
-      await expect(page.locator(`a[href="/project/${slug}"]`)).toBeVisible({ timeout: 5000 })
+      await search.fill(slug)
+      // Covers the 250 ms input debounce plus the /api/catalog/search round trip.
+      await expect(page.locator(`a[href="/project/${slug}"]`)).toBeVisible({ timeout: 15_000 })
+      await search.fill('')
     }
   })
 })

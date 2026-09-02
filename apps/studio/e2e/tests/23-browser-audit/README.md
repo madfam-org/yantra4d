@@ -136,6 +136,16 @@ default `beforeAll` skips the entire audit for everyone.
   `assertNoUpgradePrompt(page)` fails fast by name; it runs inside
   `waitForRenderDone()` and `clickGenerateWithWarning()`, so a future tier
   regression is reported in one line instead of a 180 s timeout.
+- **Name the failure, do not inherit it.** Two assertion helpers run inside the
+  shared helpers so a product-side problem is reported as itself instead of as
+  whatever is missing afterwards: `assertNoUpgradePrompt(page)` (tier gate) and
+  `assertStudioLoaded(page, slug)` (the manifest error screen, which replaces
+  the whole app — run #170 reported it only as "wanted 5 mode tabs, found 0").
+  Neither dismisses anything.
+- **Find a project by searching for it.** The commons is 500+ cartridges and
+  `ProjectsView` pages at 60 sorted by name, so a card for a specific slug is
+  almost never on the first page. Fill the searchbox with the slug — the slug is
+  in the server-side haystack — rather than scrolling the pager.
 - **`sidebar.selectModeByLabel(label)`** for a mode whose id is not a substring
   of its label — `selectMode('baseplate_scad')` cannot find "Baseplate
   (OpenSCAD Extended)".

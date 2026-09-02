@@ -1,21 +1,56 @@
 /**
- * Render service with dual-mode support:
- * - Backend mode: uses Flask API (native OpenSCAD, faster)
- * - WASM mode: uses openscad-wasm in a Web Worker (for offline/static deploy)
+ * Render service.
  *
- * Auto-detects which mode to use by checking if the backend is reachable.
+ * A render runs in one of two PLACEMENTS:
+ *   - browser: `openscad-wasm` in a Web Worker. Free for us, unmetered for the
+ *              visitor. THE DEFAULT.
+ *   - server:  the Flask API's native OpenSCAD/CadQuery. Costs us CPU and costs
+ *              the visitor a rate-limit unit.
+ *
+ * The policy that chooses between them is a PURE function in `renderPlacement.ts`.
+ * This file supplies its inputs (capability probe, bundle availability, backend
+ * health, per-slug failure history) and executes the result.
  */
 
 import { isBackendAvailable, getApiBase, resetDetection } from '../core/backendDetection'
 import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
 import { apiFetch } from '../core/apiClient'
+import {
+  decideRenderPlacement,
+  canRenderInBrowser,
+  canRenderAnyModeInBrowser,
+  effectiveModeEngine,
+  placementToLegacyMode,
+  type Placement,
+  type PlacementDecision,
+} from './renderPlacement'
+import {
+  getCapabilityTier,
+  getPlacementPreference,
+  probeDeviceCapability,
+} from './renderCapability'
+import {
+  fetchWasmBundle,
+  peekBundle,
+  resolveEntryPath,
+  BundleUnavailableError,
+  type WasmBundle,
+} from './wasmBundle'
+import type { RenderFailureKind } from './openscad-worker'
 
 interface Manifest {
   modes: ModeConfig[]
   parts: PartDef[]
   engine?: string
-  project?: { force_backend?: boolean }
+  project?: { slug?: string; force_backend?: boolean }
   force_backend?: boolean
+  /**
+   * HARD server pin. Unlike `project.force_backend` — which across the commons
+   * mostly encodes "WASM cannot load our BOSL2 include or our font", a gap the
+   * wasm-bundle now closes — this says the cartridge genuinely cannot be
+   * rendered client-side, and nothing overrides it.
+   */
+  render?: { server_only?: boolean }
   estimate_constants?: EstimateConstants
   grid_presets?: Record<string, unknown>
   [key: string]: unknown
@@ -25,6 +60,12 @@ interface ModeConfig {
   id: string
   scad_file: string
   parts: string[]
+  /**
+   * Per-mode kernel override. Engine is a MODE property, not a project one:
+   * `gridfinity` declares `project.engine: "cadquery"` and then three modes
+   * with `engine: "openscad"`, and those three can render in a browser.
+   */
+  engine?: string
   estimate?: {
     formula?: string
     formula_vars?: string[]
@@ -43,6 +84,9 @@ interface EstimateConstants {
   per_unit: number
   per_part: number
   wasm_multiplier?: number
+  warning_threshold_seconds?: number
+  /** Ceiling on a single browser render, in seconds. Defaults to 120. */
+  wasm_timeout_seconds?: number
 }
 
 interface ProgressEvent {
@@ -70,7 +114,21 @@ interface RenderOptions {
 
 const API_BASE = getApiBase()
 
-let _hardwareMode: 'backend' | 'wasm' | null = null
+/**
+ * Placement decided per cartridge, not per module.
+ *
+ * The old `_hardwareMode` was a single module-global: the first cartridge to
+ * render pinned the path for every cartridge afterwards, so opening one
+ * CadQuery project sent every subsequent OpenSCAD project to the server for the
+ * rest of the session. Placement is a property of (device, cartridge), so it is
+ * keyed by slug.
+ */
+const _placementBySlug = new Map<string, Placement>()
+const _decisionBySlug = new Map<string, PlacementDecision>()
+/** Why a browser render failed for a slug this session; blocks a retry loop. */
+const _lastBrowserFailure = new Map<string, RenderFailureKind>()
+/** Which slug's bundle the live worker currently has mounted. */
+let _workerSlug: string | null = null
 let _worker: Worker | null = null
 let _initPromise: Promise<void> | null = null
 //: Wall-clock seconds of the last WASM render, compile INCLUDED. This is the
@@ -80,12 +138,14 @@ let _initPromise: Promise<void> | null = null
 let _lastObservedRenderSeconds: number | null = null
 
 /**
- * Detect hardware capabilities
+ * Whether this device could run a browser render at all.
+ *
+ * Replaces the old `hardwareConcurrency >= 4 && deviceMemory >= 4` one-liner,
+ * which invented a memory figure for every Firefox and Safari visitor and never
+ * measured anything. See `renderCapability.ts` for what it does instead.
  */
-function hasWasmCapabilities(): boolean {
-  const cores = navigator.hardwareConcurrency || 2
-  const mem = (navigator as { deviceMemory?: number }).deviceMemory || 4
-  return cores >= 4 && mem >= 4
+function isBrowserRenderPossible(): boolean {
+  return getCapabilityTier() !== 'incapable'
 }
 
 /**
@@ -112,7 +172,11 @@ function parseRenderMode(value: string | null | undefined): 'backend' | 'wasm' |
  * Precedence, highest first:
  *   1. `?render=backend` | `?render=wasm`  — per-session, what support hands a user
  *   2. `VITE_RENDER_MODE=backend|wasm`     — build-time pin for a whole deployment
- *   3. null                                — defer to the hardware heuristic
+ *   3. null                                — defer to `decideRenderPlacement`
+ *
+ * The override sits at rule 4 of the placement table: below the three facts
+ * that make a browser render impossible (engine, `render.server_only`, an
+ * unsupported bundle) and above everything a heuristic could say.
  */
 const RENDER_MODE_OVERRIDE: 'backend' | 'wasm' | null = (() => {
   let fromQuery: 'backend' | 'wasm' | null = null
@@ -133,83 +197,189 @@ export function getRenderModeOverride(): 'backend' | 'wasm' | null {
   return RENDER_MODE_OVERRIDE
 }
 
-/**
- * Detect whether to use 'backend' or 'wasm' rendering mode.
- *
- * An explicit override (`?render=` / `VITE_RENDER_MODE`) wins over everything
- * below it. Absent one, this checks backend availability BEFORE respecting
- * force_backend/API_BASE preferences, so the app can fall back to WASM when the
- * backend is unreachable.
- */
-async function detectMode(manifest: Manifest | null, mode: string, params: Record<string, unknown>): Promise<'backend' | 'wasm'> {
-  // Backend-only engines have no WASM path — always backend.
-  // Deliberately ABOVE the override: `?render=wasm` on a CadQuery/graph project
-  // cannot be honoured (the kernel only exists server-side), and pretending
-  // otherwise would trade a working render for a guaranteed failure.
-  if (manifest && BACKEND_ONLY_ENGINES.has(manifest.engine ?? '')) {
-    return 'backend'
-  }
-
-  // Explicit override — consulted BEFORE backend probing and the hardware
-  // heuristic, so a pinned path is honoured regardless of core count, of
-  // whether /api/health answers, and of force_backend.
-  if (RENDER_MODE_OVERRIDE) {
-    console.warn(`[Render Mode] Override active: forcing '${RENDER_MODE_OVERRIDE}' rendering (hardware heuristic bypassed).`)
-    _hardwareMode = RENDER_MODE_OVERRIDE
-    return RENDER_MODE_OVERRIDE
-  }
-
-  // Check backend availability first (uses TTL-cached result)
-  const available = await isBackendAvailable()
-
-  if (available) {
-    // Backend is up — respect preferences, but override if rate-limited and WASM-capable
-    if (manifest && (manifest.project?.force_backend || manifest.force_backend)) {
-      return 'backend'
-    }
-    if (API_BASE) {
-      return 'backend'
-    }
-    // Complexity circuit breaker
-    if (manifest && mode && params) {
-      const tempMode = _hardwareMode
-      _hardwareMode = 'backend'
-      const est = estimateRenderTime(mode, params, manifest)
-      _hardwareMode = tempMode
-
-      if (est > 15.0) {
-        console.warn(`[Circuit Breaker] Mesh complexity too high (est. ${est.toFixed(1)}s). Bypassing WASM and falling back to Server Backend.`)
-        return 'backend'
-      }
-    }
-    if (_hardwareMode) return _hardwareMode
-    _hardwareMode = hasWasmCapabilities() ? 'wasm' : 'backend'
-    return _hardwareMode
-  }
-
-  // Backend unavailable — fall back to WASM if capable
-  if (hasWasmCapabilities()) {
-    console.warn('[Fallback] Backend unavailable, falling back to WASM rendering.')
-    _hardwareMode = 'wasm'
-    return 'wasm'
-  }
-
-  // No WASM either — return backend (will fail, but renderBackend will throw with a clear error)
-  return 'backend'
+/** The cartridge's slug, from wherever the manifest happens to carry it. */
+function manifestSlug(manifest: Manifest | null, project?: string): string {
+  return project || (manifest?.project?.slug as string | undefined) || '__default__'
 }
 
 /**
- * Engines the browser cannot run: CadQuery and graph documents execute
- * server-side kernels (graph transpiles to CadQuery). Implicit is additionally
- * excluded from WASM in canRunWasm but keeps its own detectMode behavior.
+ * Resolve where one render runs.
+ *
+ * Gathers the inputs — capability tier, user preference, override, bundle
+ * state, backend health, this slug's failure history — and hands them to the
+ * pure `decideRenderPlacement`. The policy itself lives there; this function
+ * only fetches facts.
+ *
+ * WHAT CHANGED. The old `detectMode()` contained the line
+ *
+ *     if (API_BASE) return 'backend'
+ *
+ * which unconditionally pinned every render to the server whenever
+ * `VITE_API_BASE` was set — and production always sets it. Every heuristic
+ * below that line (the complexity breaker, the hardware check, `force_backend`)
+ * was therefore dead code in production, and every visitor's render was billed
+ * to us and rate-limited to them even when their laptop could have done it for
+ * free. That line is gone.
  */
-const BACKEND_ONLY_ENGINES = new Set(['cadquery', 'graph'])
+async function resolvePlacement(
+  manifest: Manifest | null,
+  mode: string,
+  params: Record<string, unknown>,
+  project?: string,
+): Promise<PlacementDecision> {
+  const slug = manifestSlug(manifest, project)
+  // Engine is resolved PER MODE. Reading `manifest.engine` alone would send
+  // every mode of a dual-engine cartridge to the server, including the ones the
+  // browser can render perfectly well.
+  const engine = effectiveModeEngine(manifest, mode)
+  const tier = getCapabilityTier()
+
+  // Backend health is only consulted to learn whether a SERVER placement is
+  // even possible. It never decides the browser's case.
+  let backendAvailable = true
+  if (canRenderInBrowser(engine)) {
+    try {
+      backendAvailable = await isBackendAvailable()
+    } catch {
+      backendAvailable = false
+    }
+  }
+
+  const cachedBundle = peekBundle(slug)
+  const decision = decideRenderPlacement({
+    engine,
+    override: RENDER_MODE_OVERRIDE,
+    userPreference: getPlacementPreference(),
+    capabilityTier: tier,
+    bundle: cachedBundle
+      ? {
+          available: true,
+          unsupported: cachedBundle.unsupported ?? [],
+          unresolved: cachedBundle.unresolved ?? [],
+        }
+      : null,
+    serverOnly: manifest?.render?.server_only === true,
+    forceBackendHint: Boolean(manifest?.project?.force_backend || manifest?.force_backend),
+    estimateSeconds: manifest && mode ? estimateRenderTime(mode, params, manifest, 'browser') : null,
+    backendAvailable,
+    lastBrowserFailure: _lastBrowserFailure.get(slug) ?? null,
+  })
+
+  _placementBySlug.set(slug, decision.placement)
+  _decisionBySlug.set(slug, decision)
+  return decision
+}
 
 /**
- * Check whether the current manifest supports client-side WASM rendering.
+ * Whether this cartridge supports client-side WASM rendering.
+ *
+ * With a `modeId`, answers for that mode. Without one, answers "could ANY mode
+ * run in the browser?" — which is what a surface with no single mode in scope
+ * (the rate-limit banner's "browser rendering is still available") actually
+ * means. A dual-engine cartridge like `gridfinity` answers yes to the second
+ * question even though its project engine is CadQuery.
  */
-export function canRunWasm(manifest: Manifest | null): boolean {
-  return !BACKEND_ONLY_ENGINES.has(manifest?.engine ?? '') && manifest?.engine !== 'implicit'
+export function canRunWasm(manifest: Manifest | null, modeId?: string | null): boolean {
+  if (modeId) return canRenderInBrowser(effectiveModeEngine(manifest, modeId))
+  return canRenderAnyModeInBrowser(manifest)
+}
+
+/**
+ * The placement decision most recently taken for a slug, for UI and diagnostics.
+ * Null until this slug has rendered (or been asked about) at least once.
+ */
+export function getPlacementDecision(slug: string): PlacementDecision | null {
+  return _decisionBySlug.get(slug) ?? null
+}
+
+/**
+ * Decide a placement WITHOUT touching the network, for UI that needs an answer
+ * synchronously. Uses the last known backend health rather than probing, so it
+ * can differ from the render's own decision during an outage — the badge
+ * catches up on the next render.
+ */
+export function previewPlacement(
+  // Loose on purpose. `ManifestProvider` exports its own `Manifest` interface
+  // for the same JSON document, and the two are structurally incompatible in
+  // TypeScript's eyes only because that one carries an index signature (so
+  // `mode.scad_file` types as `unknown`). Widening here keeps the one cast in
+  // this module, where the equivalence is documented, instead of pushing an
+  // `as unknown as` into every UI caller.
+  manifestInput: Manifest | Record<string, unknown> | null,
+  mode: string,
+  params: Record<string, unknown>,
+  project?: string,
+): PlacementDecision {
+  const manifest = manifestInput as Manifest | null
+  const slug = manifestSlug(manifest, project)
+  const cachedBundle = peekBundle(slug)
+  return decideRenderPlacement({
+    engine: effectiveModeEngine(manifest, mode),
+    override: RENDER_MODE_OVERRIDE,
+    userPreference: getPlacementPreference(),
+    capabilityTier: getCapabilityTier(),
+    bundle: cachedBundle
+      ? {
+          available: true,
+          unsupported: cachedBundle.unsupported ?? [],
+          unresolved: cachedBundle.unresolved ?? [],
+        }
+      : null,
+    serverOnly: manifest?.render?.server_only === true,
+    forceBackendHint: Boolean(manifest?.project?.force_backend || manifest?.force_backend),
+    estimateSeconds: manifest && mode ? estimateRenderTime(mode, params, manifest, 'browser') : null,
+    backendAvailable: true,
+    lastBrowserFailure: _lastBrowserFailure.get(slug) ?? null,
+  })
+}
+
+/**
+ * Kick off the capability micro-benchmark in the render worker.
+ *
+ * Runs once per device per `CAPABILITY_VERSION` per 7 days; concurrent callers
+ * share one probe. Deliberately fire-and-forget: a page that never renders
+ * should not pay for a WASM instantiation, and a page that does render gets a
+ * static-signal answer immediately and the measured one shortly after.
+ */
+export function ensureCapabilityProbe(): Promise<unknown> {
+  return probeDeviceCapability(runWorkerBenchmark).catch(() => { /* never fatal */ })
+}
+
+/** One-shot worker whose only job is to time an instantiate + tiny render. */
+function runWorkerBenchmark(): Promise<number> {
+  return new Promise<number>((resolve, reject) => {
+    let worker: Worker
+    try {
+      worker = new Worker(new URL('./openscad-worker.js', import.meta.url), { type: 'module' })
+    } catch (e) {
+      reject(e as Error)
+      return
+    }
+    // A machine that cannot finish the reference render inside this window is
+    // beyond `incapable` anyway; the ceiling only stops the promise hanging.
+    const timer = setTimeout(() => {
+      worker.terminate()
+      reject(new Error('capability benchmark timed out'))
+    }, 30_000)
+
+    worker.addEventListener('message', (e: MessageEvent) => {
+      if (e.data?.type === 'benchmark-done') {
+        clearTimeout(timer)
+        worker.terminate()
+        resolve(e.data.ms as number)
+      } else if (e.data?.type === 'error' || e.data?.type === 'init-error') {
+        clearTimeout(timer)
+        worker.terminate()
+        reject(new Error(e.data.message || e.data.error || 'benchmark failed'))
+      }
+    })
+    worker.addEventListener('error', (e: Event) => {
+      clearTimeout(timer)
+      worker.terminate()
+      reject(new Error((e as ErrorEvent).message || 'benchmark worker error'))
+    })
+    worker.postMessage({ type: 'benchmark' })
+  })
 }
 
 /**
@@ -239,33 +409,89 @@ function isRenderWorkerUnavailableError(err: unknown): boolean {
 }
 
 /**
- * Initialize the WASM worker (lazy, called on first WASM render).
+ * A browser render that failed in a way the server could plausibly survive.
+ *
+ * Carries the worker's failure `kind` so `renderParts()` can tell an
+ * environment failure (retry on the server) from a SCAD error (do not — the
+ * server compiles the same source and produces the same message, for the price
+ * of one rate-limit unit).
  */
-function initWorker(manifest: Manifest | null): Promise<void> {
-  if (_initPromise) return _initPromise
+export class BrowserRenderError extends Error {
+  readonly kind: RenderFailureKind
+  constructor(message: string, kind: RenderFailureKind) {
+    super(message)
+    this.name = 'BrowserRenderError'
+    this.kind = kind
+  }
+}
 
-  _initPromise = new Promise((resolve, reject) => {
-    _worker = new Worker(
-      new URL('./openscad-worker.js', import.meta.url),
-      { type: 'module' }
-    )
+/** Failure kinds worth re-attempting on the server. */
+const SERVER_RETRYABLE_KINDS: ReadonlySet<RenderFailureKind> = new Set([
+  'init-error',
+  'oom',
+  'timeout',
+])
 
-    const handler = (e: MessageEvent) => {
-      if (e.data.type === 'init-done') {
-        _worker!.removeEventListener('message', handler)
-        resolve()
-      } else if (e.data.type === 'init-error') {
-        _worker!.removeEventListener('message', handler)
-        reject(new Error(e.data.error))
+/** Default ceiling on one browser render. `estimate_constants` may override. */
+const DEFAULT_WASM_TIMEOUT_SECONDS = 120
+
+function wasmTimeoutMs(manifest: Manifest | null): number {
+  const configured = manifest?.estimate_constants?.wasm_timeout_seconds
+  const seconds = typeof configured === 'number' && Number.isFinite(configured) && configured > 0
+    ? configured
+    : DEFAULT_WASM_TIMEOUT_SECONDS
+  return seconds * 1000
+}
+
+/** Tear the worker down and forget what it had mounted. */
+function disposeWorker(): void {
+  if (_worker) {
+    _worker.terminate()
+    _worker = null
+  }
+  _initPromise = null
+  _workerSlug = null
+}
+
+/**
+ * Initialize the WASM worker for a slug: fetch the render bundle and mount it.
+ *
+ * The bundle — not `/scad/<file>` — is the browser's source of truth. It
+ * carries the entry files, every transitively included library file, and the
+ * cartridge's fonts, so `include <../../libs/BOSL2/std.scad>` resolves and
+ * `text()` renders. See `wasmBundle.ts` for why the old path could not.
+ */
+function initWorker(manifest: Manifest | null, slug: string): Promise<void> {
+  // A worker holding a different cartridge's bundle is the wrong worker.
+  if (_initPromise && _workerSlug === slug) return _initPromise
+  if (_workerSlug !== slug) disposeWorker()
+
+  _workerSlug = slug
+  _initPromise = (async () => {
+    const bundle: WasmBundle = await fetchWasmBundle(slug, { manifest: manifest ?? undefined })
+
+    await new Promise<void>((resolve, reject) => {
+      _worker = new Worker(
+        new URL('./openscad-worker.js', import.meta.url),
+        { type: 'module' },
+      )
+
+      const handler = (e: MessageEvent) => {
+        if (e.data.type === 'init-done') {
+          _worker!.removeEventListener('message', handler)
+          resolve()
+        } else if (e.data.type === 'init-error') {
+          _worker!.removeEventListener('message', handler)
+          reject(new BrowserRenderError(e.data.error, e.data.kind ?? 'init-error'))
+        }
       }
-    }
-    _worker.addEventListener('message', handler)
+      _worker.addEventListener('message', handler)
+      _worker.postMessage({ type: 'init', bundle })
+    })
+  })()
 
-    const scadFiles = manifest
-      ? [...new Set(manifest.modes.map(m => m.scad_file))]
-      : []
-    _worker.postMessage({ type: 'init', scadFiles })
-  })
+  // A failed init must not be cached as the answer for every later render.
+  _initPromise.catch(() => { disposeWorker() })
 
   return _initPromise
 }
@@ -318,12 +544,20 @@ async function renderWasm(
   params: Record<string, unknown>,
   manifest: Manifest,
   onProgress?: OnProgress,
-  abortSignal?: AbortSignal
+  abortSignal?: AbortSignal,
+  project?: string
 ): Promise<RenderPart[]> {
-  await initWorker(manifest)
+  const slug = manifestSlug(manifest, project)
+  await initWorker(manifest, slug)
 
   const modeConfig = manifest.modes.find(m => m.id === mode)
   if (!modeConfig) throw new Error(`Unknown mode: ${mode}`)
+
+  const bundle = peekBundle(slug)
+  const entryPath = bundle
+    ? resolveEntryPath(bundle, modeConfig.scad_file)
+    : `/projects/${slug}/${modeConfig.scad_file}`
+  const timeoutMs = wasmTimeoutMs(manifest)
 
   const parts: RenderPart[] = []
   const partTimings: { part: string; seconds: number }[] = []
@@ -356,14 +590,38 @@ async function renderWasm(
     })
 
     const stlData = await new Promise<ArrayBuffer>((resolve, reject) => {
+      // THE TIMEOUT LIVES HERE, not in the worker.
+      //
+      // `callMain()` is a synchronous call into WASM: while it runs, the
+      // worker's event loop is blocked and no timer it armed could fire. Only
+      // `terminate()` from this thread can stop a runaway render — which is
+      // also why the worker is discarded rather than reused afterwards.
+      let settled = false
+      const timer = setTimeout(() => {
+        if (settled) return
+        settled = true
+        disposeWorker()
+        reject(new BrowserRenderError(
+          `Browser render exceeded ${Math.round(timeoutMs / 1000)}s`,
+          'timeout',
+        ))
+      }, timeoutMs)
+
+      const finish = (fn: () => void) => {
+        if (settled) return
+        settled = true
+        clearTimeout(timer)
+        fn()
+      }
+
       const handler = (e: MessageEvent) => {
         const msg = e.data
         if (msg.type === 'result') {
-          _worker!.removeEventListener('message', handler)
-          resolve(msg.stl)
+          _worker?.removeEventListener('message', handler)
+          finish(() => resolve(msg.stl))
         } else if (msg.type === 'error') {
-          _worker!.removeEventListener('message', handler)
-          reject(new Error(msg.message))
+          _worker?.removeEventListener('message', handler)
+          finish(() => reject(new BrowserRenderError(msg.message, msg.kind ?? 'init-error')))
         } else if (msg.type === 'progress') {
           const partPercent = basePercent + Math.round((1 / totalParts) * (msg.percent || 50))
           onProgress?.({
@@ -376,18 +634,16 @@ async function renderWasm(
       }
       if (abortSignal) {
         const onAbort = () => {
-          _worker!.removeEventListener('message', handler)
-          _worker!.terminate()
-          _worker = null
-          _initPromise = null
-          reject(new DOMException('Aborted', 'AbortError'))
+          _worker?.removeEventListener('message', handler)
+          disposeWorker()
+          finish(() => reject(new DOMException('Aborted', 'AbortError')))
         }
         abortSignal.addEventListener('abort', onAbort, { once: true })
       }
       _worker!.addEventListener('message', handler)
       _worker!.postMessage({
         type: 'render',
-        scadFile: modeConfig.scad_file,
+        entryPath,
         params: { ...params, mode },
         renderMode: partDef.render_mode
       })
@@ -417,11 +673,7 @@ async function renderWasm(
     log: `[render] observed ${observedTotal.toFixed(2)}s wall-clock across ${partTimings.length} part(s)`
   })
 
-  if (_worker) {
-    _worker.terminate()
-    _worker = null
-    _initPromise = null
-  }
+  disposeWorker()
 
   return parts
 }
@@ -450,7 +702,10 @@ async function renderBackend(
 
   if (exportFormat) {
     payload.export_format = exportFormat
-  } else if (manifest && BACKEND_ONLY_ENGINES.has(manifest.engine ?? '')) {
+  } else if (manifest && !canRenderInBrowser(effectiveModeEngine(manifest, mode))) {
+    // The server-side kernels emit GLB for the viewer; OpenSCAD emits STL.
+    // Resolved per MODE so a dual-engine cartridge's OpenSCAD modes are not
+    // asked for GLB just because the project engine is CadQuery.
     payload.export_format = 'glb'
   }
 
@@ -563,7 +818,17 @@ async function renderBackend(
 
 /**
  * Main entry point: render parts for the given mode and parameters.
- * If backend rendering fails with a network error, falls back to WASM when possible.
+ *
+ * Falls back in BOTH directions, for different reasons:
+ *
+ *   server -> browser  when the server cannot take the work (network down,
+ *                      429 rate limit, render worker unhealthy). Free capacity
+ *                      the visitor already owns beats an error page.
+ *   browser -> server  when the browser's environment failed (module would not
+ *                      init, tab ran out of memory, render blew the timeout).
+ *                      NOT on a SCAD error: the server compiles the identical
+ *                      source and would fail identically, for the price of one
+ *                      rate-limit unit.
  */
 export async function renderParts(
   mode: string,
@@ -571,54 +836,109 @@ export async function renderParts(
   manifest: Manifest,
   { onProgress, abortSignal, project, ignoreCache, exportFormat }: RenderOptions = {}
 ): Promise<RenderPart[]> {
-  const currentMode = await detectMode(manifest, mode, params)
-  if (currentMode === 'backend') {
+  const slug = manifestSlug(manifest, project)
+  const decision = await resolvePlacement(manifest, mode, params, project)
+
+  if (decision.placement === 'server') {
     try {
       return await renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
     } catch (err) {
-      // If backend fails with network/capacity errors, try WASM fallback.
-      const forceBackend = manifest?.project?.force_backend || manifest?.force_backend
       // `?render=backend` is a deliberate "keep me off WASM" instruction —
       // usually because WASM is exactly what broke for this user. Falling back
       // to it here would quietly undo the override at the one moment it matters.
-      const canFallbackToWasm = (
-        !forceBackend
+      const canFallbackToBrowser = (
+        !decision.hard
         && RENDER_MODE_OVERRIDE !== 'backend'
-        && !BACKEND_ONLY_ENGINES.has(manifest?.engine ?? '')
-        && hasWasmCapabilities()
+        && getPlacementPreference() !== 'server'
+        && canRenderInBrowser(effectiveModeEngine(manifest, mode))
+        && isBrowserRenderPossible()
+        && !_lastBrowserFailure.has(slug)
       )
       const shouldFallback = (
         isNetworkError(err)
         || isRateLimitError(err)
         || isRenderWorkerUnavailableError(err)
       )
-      if (canFallbackToWasm && shouldFallback) {
+      if (canFallbackToBrowser && shouldFallback) {
         const isRL = isRateLimitError(err)
         const isWorkerUnavailable = isRenderWorkerUnavailableError(err)
         const reason = isRL ? 'rate limited' : isWorkerUnavailable ? 'worker unavailable' : 'network'
-        console.warn(`[Fallback] Backend render failed (${reason}), retrying with WASM:`, (err as Error).message)
+        console.warn(`[Fallback] Server render failed (${reason}), retrying in the browser:`, (err as Error).message)
         if (!isRL) resetDetection() // clear cached availability so next render re-checks
-        _hardwareMode = 'wasm'
+        _placementBySlug.set(slug, 'browser')
         const fallbackLog = isRL
-          ? '[FALLBACK] Server limit reached, rendering locally...'
+          ? '[FALLBACK] Server limit reached, rendering in your browser...'
           : isWorkerUnavailable
-            ? '[FALLBACK] Render worker unavailable, rendering locally...'
-            : '[FALLBACK] Backend unavailable, using browser rendering...'
+            ? '[FALLBACK] Server render worker unavailable, rendering in your browser...'
+            : '[FALLBACK] Server unavailable, rendering in your browser...'
         onProgress?.({ log: fallbackLog })
-        return renderWasm(mode, params, manifest, onProgress, abortSignal)
+        return renderWasm(mode, params, manifest, onProgress, abortSignal, project)
       }
-      // For force_backend projects, provide a clear rate-limit message instead of cryptic WASM failure
-      if (forceBackend && isRateLimitError(err)) {
+      // A hard server pin plus an exhausted quota is a dead end; say so plainly
+      // rather than letting a cryptic WASM failure stand in for it.
+      if (decision.hard && isRateLimitError(err)) {
         onProgress?.({ log: '[ERROR] Server render limit reached. This project requires server rendering — upgrade your plan or wait for the limit to reset.' })
       }
-      if (forceBackend && isRenderWorkerUnavailableError(err)) {
+      if (decision.hard && isRenderWorkerUnavailableError(err)) {
         onProgress?.({ log: '[ERROR] Server render worker is unavailable. This project requires server rendering — retry after the render service recovers.' })
       }
       throw err // re-throw non-recoverable errors
     }
-  } else {
-    return renderWasm(mode, params, manifest, onProgress, abortSignal)
   }
+
+  try {
+    return await renderWasm(mode, params, manifest, onProgress, abortSignal, project)
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') throw err
+
+    const kind = browserFailureKind(err)
+    if (!kind) throw err
+
+    // Remember it: rule 7 of the placement table sends this slug straight to the
+    // server for the rest of the session rather than re-running a failure.
+    _lastBrowserFailure.set(slug, kind)
+    _placementBySlug.set(slug, 'server')
+
+    if (!SERVER_RETRYABLE_KINDS.has(kind)) {
+      // A SCAD error. The server would reject the same source identically.
+      onProgress?.({ log: `[ERROR] Browser render failed (${kind}). The model itself was rejected — the server would report the same error.` })
+      throw err
+    }
+    if (RENDER_MODE_OVERRIDE === 'wasm' || getPlacementPreference() === 'browser') {
+      // The visitor pinned the browser. Report the failure instead of silently
+      // spending their server quota against their stated choice.
+      onProgress?.({ log: `[ERROR] Browser render failed (${kind}) and browser rendering is pinned.` })
+      throw err
+    }
+    if (!canRenderInBrowser(effectiveModeEngine(manifest, mode))) throw err
+
+    console.warn(`[Fallback] Browser render failed (${kind}), retrying on the server:`, (err as Error).message)
+    onProgress?.({ log: `[FALLBACK] Browser render failed (${kind}), rendering on our server...` })
+    return renderBackend(mode, params, manifest, onProgress, abortSignal, project, ignoreCache, exportFormat)
+  }
+}
+
+/**
+ * Classify a browser render failure, or null when it is not one.
+ *
+ * A `BundleUnavailableError` is an init failure by another name: the browser
+ * never got the cartridge's files, so it could not have rendered it.
+ */
+function browserFailureKind(err: unknown): RenderFailureKind | null {
+  if (err instanceof BrowserRenderError) return err.kind
+  if (err instanceof BundleUnavailableError) {
+    // A locked private project is an authorization problem, not a capability
+    // one. Retrying it on the server would fail the same way, with the same 403.
+    return err.code === 'project_locked' ? null : 'init-error'
+  }
+  if (err instanceof Error) return 'init-error'
+  return null
+}
+
+/** Forget this session's browser-failure history (all slugs, or one). */
+export function resetBrowserFailures(slug?: string): void {
+  if (slug) _lastBrowserFailure.delete(slug)
+  else _lastBrowserFailure.clear()
 }
 
 /**
@@ -629,17 +949,29 @@ export async function cancelRender(): Promise<void> {
     await apiFetch(`${API_BASE}/api/render-cancel`, { method: 'POST' })
   } catch { /* best-effort cancel */ }
 
-  if (_worker) {
-    _worker.terminate()
-    _worker = null
-    _initPromise = null
-  }
+  disposeWorker()
 }
 
 /**
  * Estimate render time (pure JS, from manifest constants).
+ *
+ * `placement` names which side the estimate is FOR. The placement decision has
+ * to ask "how long would this take in the BROWSER?" before any placement has
+ * been chosen, so it passes 'browser' explicitly; callers that just want to
+ * warn the user pass nothing and get the estimate for wherever this cartridge
+ * is currently headed.
+ *
+ * The old code answered the same question by mutating the module-global
+ * `_hardwareMode` to 'backend', calling itself, and putting the global back —
+ * a temporary global write inside a "pure" estimator, and racy the moment two
+ * renders overlapped.
  */
-export function estimateRenderTime(mode: string, params: Record<string, unknown>, manifest: Manifest): number {
+export function estimateRenderTime(
+  mode: string,
+  params: Record<string, unknown>,
+  manifest: Manifest,
+  placement?: Placement,
+): number {
   const constants = manifest.estimate_constants
   if (!constants) return 0
 
@@ -676,19 +1008,36 @@ export function estimateRenderTime(mode: string, params: Record<string, unknown>
   const numParts = modeConfig.parts.length
   const estimate = constants.base_time + (units * constants.per_unit) + (numParts * constants.per_part)
 
-  // WASM is typically slower than native
-  const currentMode = _hardwareMode || (hasWasmCapabilities() ? 'wasm' : 'backend')
-  if (currentMode === 'wasm') {
+  // The browser is typically slower than native.
+  const effective: Placement = placement
+    ?? _placementBySlug.get(manifestSlug(manifest))
+    ?? (isBrowserRenderPossible() ? 'browser' : 'server')
+  if (effective === 'browser') {
     return estimate * (constants.wasm_multiplier || 3)
   }
   return estimate
 }
 
 /**
- * Get current render mode for diagnostics.
+ * Get current render mode for diagnostics, in the legacy `'backend' | 'wasm'`
+ * vocabulary. Returns the most recently decided placement for any cartridge,
+ * or 'detecting' before the first decision.
  */
 export function getRenderMode(): string {
-  return _hardwareMode || 'detecting'
+  const last = [..._placementBySlug.values()].pop()
+  return last ? placementToLegacyMode(last) : 'detecting'
+}
+
+/** Current placement for a slug, or null before its first render. */
+export function getRenderPlacement(slug: string): Placement | null {
+  return _placementBySlug.get(slug) ?? null
+}
+
+/** Test seam: forget every per-slug placement decision and failure. */
+export function resetPlacementState(): void {
+  _placementBySlug.clear()
+  _decisionBySlug.clear()
+  _lastBrowserFailure.clear()
 }
 
 /**

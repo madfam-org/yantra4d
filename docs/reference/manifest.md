@@ -23,7 +23,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "thumbnail": "/docs/images/gridfinity_thumb.png", // Path to gallery image
     "tags": ["storage", "modular", "organization"],
     "difficulty": "beginner",
-    "force_backend": true,                        // Optional: prefer backend rendering (overridden by WASM fallback when backend is unreachable)
+    "force_backend": true,                        // Optional: SOFT hint only -- see "Render placement" below
     "hard_reload": true,                          // Optional: prevents preset persistence across reloads
     "unlisted": true,                              // Optional: hidden from public listings, accessible via direct URL
     "guest_render_limit": 50,                      // Optional: per-project guest render limit override (renders/hour)
@@ -199,11 +199,64 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "per_unit": 1.5,      // Added per unit (grid cell or fixed count)
     "fn_factor": 64,      // OpenSCAD $fn resolution factor
     "per_part": 8,        // Added per part in the mode
-    "wasm_multiplier": 3, // Multiplier applied to estimates in WASM mode
-    "warning_threshold_seconds": 60  // Show confirmation dialog above this estimate
+    "wasm_multiplier": 3, // Multiplier applied to browser (WASM) estimates
+    "warning_threshold_seconds": 60, // Show confirmation dialog above this estimate
+    "wasm_timeout_seconds": 120      // Optional: ceiling on one browser render (default 120)
+  },
+
+  "render": {             // Optional: render placement policy
+    "server_only": true   // HARD pin -- this cartridge never renders client-side
   }
 }
 ```
+
+## Render placement: `render.server_only` vs `project.force_backend`
+
+Two manifest keys influence where a render runs. They are **not**
+interchangeable.
+
+| Key | Strength | Meaning |
+|-----|----------|---------|
+| `render.server_only` | **HARD** | This cartridge cannot be rendered client-side. Nothing overrides it -- not `?render=wasm`, not the visitor's placement preference. |
+| `modes[*].engine` | **HARD, per mode** | The kernel this one mode renders with. A mode whose engine is `cadquery`, `graph` or `implicit` is server-only; its siblings are unaffected. |
+| `project.force_backend` | **SOFT hint** | "Prefer the server." Honoured only when the visitor's device measures as `limited`. |
+
+Engine is resolved **per mode**, not per project: an explicit `modes[*].engine`
+wins, else the mode's `scad_file` extension decides (`.graph.json` -> graph,
+`.py` / `.cq` -> cadquery), else `project.engine` (default `openscad`). A project
+whose engine is `implicit` renders every mode with the implicit engine and
+ignores per-mode overrides. `gridfinity` is the canonical dual-engine cartridge:
+`project.engine: "cadquery"` with three modes declaring `engine: "openscad"`,
+and those three render in the browser while `bin` and `baseplate` stay on the
+server.
+
+```json
+{
+  "render": { "server_only": true }
+}
+```
+
+### Why `force_backend` was demoted
+
+490 of the 501 cartridges in the commons set `project.force_backend: true`. Among
+the OpenSCAD ones it almost always encoded a **client limitation, not a property
+of the model**: the cartridge opens with `include <../../libs/BOSL2/std.scad>`
+(nearly all of them) or calls `text()` (8 of them), and the old browser path
+fetched neither library files nor fonts, so it could not have rendered them.
+
+The `wasm-bundle` contract closes that gap -- the browser now receives the whole
+transitively-resolved include graph plus the cartridge's fonts. Continuing to
+treat the flag as a pin would keep essentially the entire commons on the metered
+server path for a reason that no longer exists.
+
+So the flag is now a hint, and cartridges that genuinely must run server-side --
+a `cadquery` kernel, a model that reaches for something the WASM build cannot do
+-- declare `render.server_only: true` instead. Engines `cadquery`, `graph` and
+`implicit` are server-only by nature and need no flag at all.
+
+The full precedence table lives in
+[`docs/guides/wasm-mode.md`](../guides/wasm-mode.md).
+
 
 ### Hyperobject Metadata (optional)
 

@@ -90,7 +90,10 @@ jobs:
       - name: Install OpenSCAD, Redis and backend dependencies
         working-directory: apps/api
         run: |
-          sudo apt-get update && sudo apt-get install -y openscad redis-server
+          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad redis-server
           pip install -r requirements.txt
           pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
 

@@ -17,6 +17,14 @@ concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# The actions cache client waits SEGMENT_DOWNLOAD_TIMEOUT_MINS (default 10) for a stalled
+# segment before giving up and letting the job proceed without the cache. On 2026-09-02 a
+# studio npm-cache restore stalled at 87 % for the full ten minutes and the lane then hit
+# its budget; a fresh `npm ci` took twenty seconds. Two minutes is plenty for a healthy
+# restore and turns a stalled one into a cheap miss.
+env:
+  SEGMENT_DOWNLOAD_TIMEOUT_MINS: "2"
+
 jobs:
   # Round two of the CI economics work #84 started. #84 stopped a *superseded*
   # run from burning the pool; this stops a run that never needed to exist.
@@ -103,7 +111,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: apps/studio
@@ -252,13 +260,28 @@ jobs:
       # installed (libGL.so.1: cannot open shared object file)". The parity and
       # e2e-audit jobs never hit this only because their openscad apt install
       # pulls libGL transitively.
-      - run: sudo apt-get update && sudo apt-get install -y libgl1 libglu1-mesa libxrender1 libxcursor1 libxft2 libxinerama1 libxext6
+      - name: Install the OCP runtime libraries
+        run: |
+          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 libgl1 libglu1-mesa libxrender1 libxcursor1 libxft2 libxinerama1 libxext6
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner imports it)
         run: pip install -e ../../packages/commons-sandbox
       - run: pip install ruff pip-audit
       - run: pip-audit --desc || true
       - run: ruff check .
+      # apps/worker was never linted by anything: this job's `ruff check .` runs
+      # under `working-directory: apps/api`, and no other job installs ruff, so
+      # the render worker — the process every render actually executes on — sat
+      # outside every lane. Same rule set on purpose, by pointing at the API's
+      # own config rather than copying it into a second file that can drift:
+      # apps/api/pyproject.toml stays the one definition of the backend's lint
+      # standard, and apps/worker ships no packaging files of its own.
+      - name: Lint the render worker
+        working-directory: ${{ github.workspace }}
+        run: ruff check --config apps/api/pyproject.toml apps/worker
       # moto backs the S3 artifact-store fidelity tests. Test-only: it is
       # deliberately absent from requirements.txt, since the API image has no
       # business shipping a mocking library.
@@ -326,7 +349,10 @@ jobs:
       - name: Install backend dependencies
         working-directory: apps/api
         run: |
-          sudo apt-get update && sudo apt-get install -y openscad
+          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad
           pip install -r requirements.txt
           pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
       - name: Start backend
@@ -422,10 +448,13 @@ jobs:
   # matters.
   e2e-report:
     needs: [changes, e2e]
-    # always() so a red suite still gets its merged total (that is the whole
-    # point of this job), but there is nothing to merge when the matrix was
-    # never scheduled.
-    if: always() && needs.changes.outputs.code == 'true'
+    # !cancelled() rather than always(): a red suite still gets its merged total
+    # (that is the whole point of this job), but a run cancelled by the
+    # concurrency group — a superseded PR head — must not queue this job, because
+    # on a saturated pool it sits there holding the group and the new head's run
+    # stays pending behind it (seen twice on 2026-09-02). There is also nothing
+    # to merge when the matrix was never scheduled.
+    if: ${{ !cancelled() && needs.changes.outputs.code == 'true' }}
     runs-on: madfam-runners-blue
     timeout-minutes: 10
     defaults:
@@ -473,7 +502,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: sudo apt-get update && sudo apt-get install -y openscad
+      - name: Install OpenSCAD
+        run: |
+          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner subprocess imports it)
         run: pip install -e ../../packages/commons-sandbox
@@ -522,7 +556,7 @@ jobs:
 
   manifest-validation:
     runs-on: madfam-runners-blue
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -660,7 +694,7 @@ jobs:
 
   metadata-consistency:
     runs-on: madfam-runners-blue
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -735,7 +769,11 @@ jobs:
   # merges shard reports after the fact, and a hiccup there should not block a
   # merge whose tests all passed.
   ci-success:
-    if: always()
+    # !cancelled() rather than always(): still runs (and fails) when a
+    # dependency failed or timed out, but not for a run the concurrency group
+    # cancelled — that run's always() aggregators otherwise queue and hold the
+    # group while the superseding head waits.
+    if: ${{ !cancelled() }}
     needs:
       - changes
       - studio

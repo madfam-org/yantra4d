@@ -1,14 +1,14 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
 import { goToStudio, goToProjects, setLanguage } from '../../helpers/test-utils.js'
 
-// Note: axe-core requires @axe-core/playwright. If not available, these tests
-// will use structural checks as fallback.
-let AxeBuilder
-try {
-  AxeBuilder = (await import('@axe-core/playwright')).default
-} catch {
-  // axe-playwright not installed — tests will use manual checks
-}
+// A STATIC import, deliberately. This used to be a `try { await import(...) }
+// catch {}` that left `AxeBuilder` undefined, and both axe tests below were
+// wrapped in `if (AxeBuilder)` — so dropping the dependency (or renaming its
+// entry point, or breaking its install) turned the entire axe gate into two
+// tests that ran no assertions and reported green. A missing dependency must
+// be RED. `@axe-core/playwright` is a declared devDependency of apps/studio;
+// if this import throws, the fix is to install it, not to guard it.
+import AxeBuilder from '@axe-core/playwright'
 
 test.describe('Accessibility', () => {
   test.beforeEach(async ({ page }) => {
@@ -17,41 +17,70 @@ test.describe('Accessibility', () => {
 
   test('studio view passes axe audit', async ({ page }) => {
     await goToStudio(page)
-    if (AxeBuilder) {
-      const results = await new AxeBuilder({ page })
-        .disableRules([
-          'color-contrast',      // Theme-dependent, tested visually
-          'landmark-one-main',   // SPA layout doesn't use <main>
-          'region',              // Content outside landmarks is intentional
-          'page-has-heading-one',// Projects view uses h2
-          'aria-required-children', // Radix UI custom component roles
-          'aria-required-parent',   // Radix TabsTrigger rendering
-          'nested-interactive',     // Shadcn compound components
-          'aria-allowed-attr',      // Radix custom data-state attributes
-          'aria-valid-attr-value',  // Radix aria-controls references
-        ])
-        .analyze()
-      // Log all violations at any impact level for visibility
-      if (results.violations.length > 0) {
-        console.log('Axe violations:', JSON.stringify(results.violations.map(v => ({
-          id: v.id, impact: v.impact, description: v.description,
-          nodes: v.nodes.length
-        })), null, 2))
-      }
-      // Only fail on critical violations (must-fix)
-      const critical = results.violations.filter(v => v.impact === 'critical')
-      expect(critical).toEqual([])
+    const results = await new AxeBuilder({ page })
+      .disableRules([
+        // The ONLY rule disabled here, and only because this run does not pin
+        // a theme: contrast is computed from rendered colours, the studio ships
+        // light and dark palettes, and the beforeEach sets a language but no
+        // theme — so the same source would pass or fail depending on which
+        // palette the run happened to load. Re-enable it together with a
+        // per-theme axe run (one Playwright project per theme), not on its own.
+        'color-contrast',
+      ])
+      .analyze()
+    // Log every violation at every impact level. The gate below is
+    // critical+serious; the rest still belong in the log so the backlog stays
+    // visible rather than silently excluded.
+    if (results.violations.length > 0) {
+      console.log('Axe violations:', JSON.stringify(results.violations.map(v => ({
+        id: v.id, impact: v.impact, description: v.description,
+        nodes: v.nodes.length
+      })), null, 2))
     }
+    // critical AND serious. `serious` is where the failures that actually stop
+    // a screen-reader or keyboard user live (nested-interactive, unlabelled
+    // controls, focus order); gating on `critical` alone let every one of them
+    // through.
+    //
+    // Eight rules that used to be disabled here are gone, because the reasons
+    // recorded against them do not hold up against this source:
+    //   - aria-allowed-attr was excused as "Radix custom data-state
+    //     attributes", but that rule inspects aria-* attributes only; data-*
+    //     is outside its scope entirely.
+    //   - aria-valid-attr-value was excused as "Radix aria-controls
+    //     references"; axe reports those as INCOMPLETE rather than violations
+    //     when the trigger carries aria-selected="false", which Radix Tabs
+    //     sets on every inactive trigger.
+    //   - nested-interactive was excused as "Shadcn compound components", but
+    //     every compound trigger reachable from the studio view
+    //     (StudioHeader's DropdownMenuTrigger, StudioSidebar's SheetTrigger)
+    //     passes `asChild`, so no interactive element nests inside another.
+    //   - aria-required-children / aria-required-parent were excused as "Radix
+    //     UI custom component roles"; StudioSidebar's ModeTabs is a hand-rolled
+    //     role="tablist" over role="tab" children, and StudioHeader's language
+    //     menu is role="listbox" over role="option" children. Both are exactly
+    //     the shape those rules ask for.
+    //   - landmark-one-main / region / page-has-heading-one are all
+    //     moderate-impact, so they cannot move a critical+serious gate in
+    //     either direction; disabling them only hid them from the log above.
+    //     (StudioHeader renders an <h1>, so "Projects view uses h2" never
+    //     described this view to begin with.)
+    const blocking = results.violations.filter(
+      v => v.impact === 'critical' || v.impact === 'serious'
+    )
+    expect(blocking.map(v => `${v.impact}: ${v.id} (${v.nodes.length} nodes)`)).toEqual([])
   })
 
   test('projects view passes axe audit', async ({ page }) => {
     await goToProjects(page)
-    if (AxeBuilder) {
-      const results = await new AxeBuilder({ page })
-        .disableRules(['color-contrast', 'landmark-one-main', 'region'])
-        .analyze()
-      expect(results.violations).toEqual([])
-    }
+    // Unchanged apart from the vacuous `if (AxeBuilder)` guard: this view
+    // already asserts on violations at EVERY impact level, which is stricter
+    // than the studio gate above. Narrowing its three exclusions is a separate
+    // change with a separate blast radius.
+    const results = await new AxeBuilder({ page })
+      .disableRules(['color-contrast', 'landmark-one-main', 'region'])
+      .analyze()
+    expect(results.violations).toEqual([])
   })
 
   test('all icon buttons have aria-labels or sr-only text', async ({ page }) => {

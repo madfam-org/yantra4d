@@ -356,6 +356,13 @@ def effective_tier(resolve=None) -> str:
     the generation-time and retrieval-time export-format gates cannot seat the
     same caller on different tiers.
 
+    A harness that needs a tier without needing debug says so explicitly with
+    HARNESS_TIER, which harness_tier_override() only honours while auth is off
+    and which is empty everywhere it is not deliberately set — so auth-off tests
+    still see guest refusals. The nightly browser audit sets it because driving
+    real CadQuery renders is the entire point of that suite; run #168 had every
+    gridfinity render answered with the studio's upgrade prompt instead.
+
     `resolve` lets a caller hand in its own `resolve_tier` binding; the render
     routes pass their module-level one so the tier they gate on and the tier
     they report in `X-RateLimit-Tier` stay the same object.
@@ -365,8 +372,14 @@ def effective_tier(resolve=None) -> str:
 
         resolve = resolve_tier
 
-    if not Config.AUTH_ENABLED and current_app.debug:
-        return "madfam"
+    if not Config.AUTH_ENABLED:
+        if current_app.debug:
+            return "madfam"
+        from services.core.tier_service import harness_tier_override
+
+        harness_tier = harness_tier_override()
+        if harness_tier:
+            return harness_tier
     return resolve(getattr(request, "auth_claims", None))
 
 
@@ -437,6 +450,67 @@ def optional_auth(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+# ──────────────────────────────────────────────
+# WebSocket identity resolution
+# ──────────────────────────────────────────────
+
+WS_TOKEN_QUERY_PARAMS = ("token", "access_token")
+
+
+def _extract_ws_token() -> str | None:
+    """Bearer token from a WebSocket upgrade request.
+
+    Prefers the Authorization header (non-browser clients can set it, and a
+    header is not written to proxy access logs). Browsers cannot set headers on
+    a WebSocket handshake at all, so a `?token=` / `?access_token=` query
+    parameter is accepted as the only mechanism available to a browser client.
+    """
+    token = _extract_bearer_token()
+    if token:
+        return token
+    for param in WS_TOKEN_QUERY_PARAMS:
+        value = request.args.get(param)
+        if value:
+            return value
+    return None
+
+
+def resolve_ws_claims() -> dict | None:
+    """Resolve the caller identity for a WebSocket upgrade. Never raises.
+
+    Returns the decoded claims, or None for an anonymous caller, a caller whose
+    token failed validation, or when AUTH_ENABLED is off. Also populates
+    `request.auth_claims` / `request.current_user` so downstream helpers
+    (`resolve_tier`, `is_machine_token`, ...) behave as they do on HTTP routes.
+
+    This exists because `@require_auth` and `@optional_auth` cannot decorate a
+    flask-sock handler: `require_auth` returns a 401 *response*, which is
+    meaningless once the connection has been upgraded, and neither reads the
+    query parameter a browser must use. Handlers call this and then decide, per
+    action, what an anonymous identity is allowed to do — see
+    `routes/core/websocket.py`.
+    """
+    request.auth_claims = None
+    request.current_user = None
+
+    if not Config.AUTH_ENABLED:
+        return None
+
+    token = _extract_ws_token()
+    if not token:
+        return None
+
+    try:
+        claims = decode_token(token)
+    except Exception as e:
+        logger.debug("WebSocket token invalid: %s", e)
+        return None
+
+    request.auth_claims = claims
+    _sync_user_from_claims(claims)
+    return claims
 
 
 # ──────────────────────────────────────────────

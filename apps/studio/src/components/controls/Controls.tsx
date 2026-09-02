@@ -327,11 +327,23 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
         return params[param.parent] === false
     }
 
-    const activePresetId = presets.find(p =>
+    const visiblePresets = presets.filter(p => !p.visible_in_modes || p.visible_in_modes.includes(mode))
+
+    // Which of the presets ON OFFER the current params correspond to. Derived
+    // rather than tracked, so the highlight drops the moment a value is edited.
+    //
+    // Searched over `visiblePresets`, not every preset in the cartridge: preset
+    // value sets overlap heavily, and `find` returns the FIRST full match, so a
+    // preset belonging to another mode — one this list does not even render —
+    // could win and leave every visible button unhighlighted. custom-msh does
+    // exactly that: `default_holder` declares a subset (substrate_length,
+    // substrate_width, holder_thickness, tolerances, wall_thickness, label_area,
+    // chamfer_pocket) that is still satisfied in assembly mode, so it matched
+    // ahead of `assembly_rack_slides` and applying that preset appeared to do
+    // nothing at all.
+    const activePresetId = visiblePresets.find(p =>
         Object.entries(p.values).every(([k, v]) => params[k] === v)
     )?.id || null
-
-    const visiblePresets = presets.filter(p => !p.visible_in_modes || p.visible_in_modes.includes(mode))
 
     const isMaterialAware = !!(manifest?.hyperobject as Record<string, unknown> | undefined)?.material_awareness
     const activeMaterialData = materials.find(m => m.material.slug === params.target_material)

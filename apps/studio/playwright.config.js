@@ -60,7 +60,9 @@ export default defineConfig({
       use: { ...devices['iPad Pro 11'] },
       testMatch: /12-responsive/,
     },
-    // Browser audit suite — runs against real Docker backend
+    // Browser audit suite — runs against a REAL backend started directly on the
+    // machine (no Docker): OpenSCAD + Redis + apps/api on :5000 + the render
+    // worker. See e2e/tests/23-browser-audit/README.md.
     {
       name: 'audit',
       use: {

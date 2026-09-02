@@ -269,7 +269,22 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner imports it)
         run: pip install -e ../../packages/commons-sandbox
-      - run: pip install ruff pip-audit
+      # ruff was installed unpinned, so this lane's rule set was whatever ruff
+      # had released by the time the job started. A ruff release that adds a
+      # rule, widens an existing one, or changes a default turns a green branch
+      # red with no change to this repo — and the failure lands on whoever
+      # happens to push next. apps/api/pyproject.toml already pins the RULES
+      # (line length, target-version, the ignore list); this pins the ENGINE
+      # that reads them, which is the half that was still floating.
+      #
+      # 0.16.5 is what CI installed on 2026-09-02 (run 33662503138, `backend`
+      # job: "Successfully installed ... ruff-0.16.5"), so pinning it changes
+      # nothing about today's result and only removes the drift.
+      #
+      # The same pin is in apps/api/requirements-dev.txt so a developer's local
+      # ruff is the one CI runs, and scripts/tests/test_ruff_pin.py fails if the
+      # two ever disagree. Bump both together.
+      - run: pip install "ruff==0.16.5" pip-audit
       - run: pip-audit --desc || true
       - run: ruff check .
       # apps/worker was never linted by anything: this job's `ruff check .` runs

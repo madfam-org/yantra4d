@@ -2,3 +2,12 @@
 -r requirements.txt
 pytest~=7.4
 pytest-cov~=4.1
+
+# Linter. Pinned, not floating: an unpinned ruff means the rule set CI enforces
+# is whatever ruff released most recently, so a new ruff version can fail a
+# branch that changed nothing. The rules themselves live in pyproject.toml.
+#
+# The same pin is in .github/workflows/ci.yml (the `backend` job's
+# `pip install`), and scripts/tests/test_ruff_pin.py fails if the two disagree.
+# Bump both together.
+ruff==0.16.5

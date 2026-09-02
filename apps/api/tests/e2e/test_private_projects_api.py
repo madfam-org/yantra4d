@@ -253,9 +253,19 @@ class TestRenderRoutes:
         res = client.post("/api/render-cancel", json={"project": PRIVATE_SLUG})
         assert res.status_code == 403
 
-    def test_render_cancel_without_a_slug_is_unchanged(self, client):
+    def test_render_cancel_without_a_slug_is_not_gated(self, client):
+        """No slug, no project gate: the scoped-cancel contract decides the answer.
+
+        A bodyless cancel is a 400 `cancel_target_required` (a target is
+        mandatory since the scoped rewrite), never a 403 `project_locked`; a
+        targeted cancel with no slug goes through untouched by the gate.
+        """
         res = client.post("/api/render-cancel", json={})
-        assert res.status_code == 200
+        assert res.status_code == 400
+        assert res.get_json()["error_code"] == "cancel_target_required"
+
+        res = client.post("/api/render-cancel", json={"request_id": "req-without-slug"})
+        assert res.status_code != 403
 
     def test_public_render_is_not_blocked_by_the_gate(self, client):
         """The public path must not acquire a 403 — whatever else it returns."""
@@ -292,3 +302,78 @@ class TestStaticArtifacts:
     def test_env_forced_private_covers_artifacts_too(self, client, monkeypatch):
         monkeypatch.setenv(PRIVATE_PROJECTS_ENV, PUBLIC_SLUG)
         assert client.get(f"/static/{PUBLIC_SLUG}_preview_main.stl").status_code == 403
+
+
+class TestLegacyQueryStringRoutes:
+    """The pre-multi-project routes take ``?project=<slug>`` (or a body slug)
+    instead of a path slug. They serve the same manifest content, so they
+    answer the same gate. Production served a private cartridge's manifest
+    through ``/api/manifest?project=`` while ``/api/projects/<slug>/manifest``
+    refused it; these pin the four routes that read a manifest by slug.
+    """
+
+    def test_legacy_manifest_public_project_is_unaffected(self, client):
+        res = client.get(f"/api/manifest?project={PUBLIC_SLUG}")
+        assert res.status_code == 200
+        assert res.headers["Cache-Control"] == "public, max-age=300"
+        assert res.headers.get("ETag")
+        assert res.get_json()["project"]["slug"] == PUBLIC_SLUG
+
+    def test_legacy_manifest_is_locked_for_anonymous(self, client):
+        res = client.get(f"/api/manifest?project={PRIVATE_SLUG}")
+        assert res.status_code == 403
+        body = res.get_json()
+        assert body["error_code"] == "project_locked"
+        assert body["auth_required"] is True
+
+    def test_legacy_manifest_is_locked_for_an_unentitled_user(self, client):
+        res = client.get(f"/api/manifest?project={PRIVATE_SLUG}",
+                         headers=auth("tok-essentials"))
+        assert res.status_code == 403
+        assert res.get_json()["auth_required"] is False
+
+    def test_legacy_manifest_is_served_to_an_entitled_caller_uncached(self, client):
+        res = client.get(f"/api/manifest?project={PRIVATE_SLUG}",
+                         headers=auth("tok-madfam"))
+        assert res.status_code == 200
+        assert res.get_json()["project"]["slug"] == PRIVATE_SLUG
+        assert res.headers["Cache-Control"] == "private, no-store"
+        assert "ETag" not in res.headers
+
+    def test_legacy_manifest_env_forced_private_beats_a_public_manifest(self, client, monkeypatch):
+        monkeypatch.setenv(PRIVATE_PROJECTS_ENV, PUBLIC_SLUG)
+        assert client.get(f"/api/manifest?project={PUBLIC_SLUG}").status_code == 403
+        assert client.get(f"/api/manifest?project={PUBLIC_SLUG}",
+                          headers=auth("tok-madfam")).status_code == 200
+
+    def test_legacy_manifest_unknown_project_still_404s(self, client):
+        assert client.get("/api/manifest?project=no-such-widget").status_code == 404
+
+    def test_legacy_config_is_gated(self, client):
+        assert client.get(f"/api/config?project={PUBLIC_SLUG}").status_code == 200
+        res = client.get(f"/api/config?project={PRIVATE_SLUG}")
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == "project_locked"
+        ok = client.get(f"/api/config?project={PRIVATE_SLUG}", headers=auth("tok-madfam"))
+        assert ok.status_code == 200
+        assert ok.headers["Cache-Control"] == "private, no-store"
+        assert "parts_map" in ok.get_json()
+
+    def test_estimate_is_gated(self, client):
+        body = {"project": PRIVATE_SLUG, "mode": "single", "params": {}}
+        res = client.post("/api/estimate", json=body)
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == "project_locked"
+        assert client.post("/api/estimate", json={**body, "project": PUBLIC_SLUG}).status_code == 200
+        assert client.post("/api/estimate", json=body, headers=auth("tok-madfam")).status_code == 200
+
+    def test_ai_session_is_gated(self, client, monkeypatch):
+        from config import Config
+        monkeypatch.setattr(Config, "AI_API_KEY", "test-key")
+        body = {"project": PRIVATE_SLUG, "mode": "configurator"}
+        res = client.post("/api/ai/session", json=body, headers=auth("tok-essentials"))
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == "project_locked"
+        ok = client.post("/api/ai/session", json=body, headers=auth("tok-madfam"))
+        assert ok.status_code == 200
+        assert ok.get_json()["session_id"]

@@ -518,10 +518,13 @@ export async function cycleThemeTo(page, expected, storageKey = 'vite-ui-theme')
       async () => {
         const now = await settledTheme(page, storageKey)
         if (now === expected) return now
-        // dispatchEvent, not click(): the theme button is one of the header
-        // icon buttons firefox lays out half a pixel above the viewport, where
-        // a real pointer click cannot land. See clickHeaderButton.
-        if (now !== null) await btn.dispatchEvent('click').catch(() => { })
+        // A real click again, as of #59 — same buttons, same fixed defect as
+        // clickHeaderButton, so the same revert applies here. The explicit
+        // timeout keeps this convergent poll convergent: a click that cannot
+        // land must give the loop its turn back well inside the 30s budget
+        // rather than consuming it, and the .catch() keeps a lost click a
+        // retry rather than a failure.
+        if (now !== null) await btn.click({ timeout: 5_000 }).catch(() => { })
         return settledTheme(page, storageKey)
       },
       {
@@ -600,35 +603,35 @@ export function redoButton(page) {
 /**
  * Click one of the header's icon buttons.
  *
- * Uses dispatchEvent('click') rather than locator.click(), and ONLY because a
- * real pointer click is impossible on firefox for these particular buttons —
- * this is working around a product layout defect, not around a timing race, and
- * it should be reverted to a plain .click() once that defect is fixed.
+ * A plain `.click()` again, as of #59.
  *
- * The defect: StudioHeader is `h-12 phone-landscape:h-11` (44px at the landscape
- * height these tests run at) and its icon buttons carry `min-h-[44px]`. Firefox
- * lays the 44px button out inside the 44px header at a fractional offset, so
- * the button's own rect comes back as top:-0.5, bottom:43.5 — half a pixel
- * above the viewport. Playwright then cannot complete its scroll-into-view step
- * (the header is not scrollable, so there is nowhere to scroll it to) and the
- * click never proceeds. Measured on firefox: locator.click() times out at 5s,
- * click({force:true}) ALSO times out at 5s — force skips actionability checks
- * but not scrolling — while dispatchEvent('click') succeeds in 74ms and the
- * app responds correctly (width reverted 150 → 30).
+ * This used to be `dispatchEvent('click')`, working around a product layout
+ * defect rather than a timing race: StudioHeader set `h-12
+ * phone-landscape:h-11`, which under Tailwind's `box-sizing: border-box` is the
+ * BORDER-box height, so `border-b` ate 1px of the content box and every 44px
+ * `min-h-[44px]` icon button laid out at top:-0.5 / bottom:43.5 — half a pixel
+ * above the viewport. Playwright's scroll-into-view step had nowhere to scroll
+ * a non-scrollable header to, so on firefox both `click()` and
+ * `click({force:true})` timed out at 5s while `dispatchEvent` succeeded.
  *
- * What this gives up: dispatchEvent does not verify the button is hittable by a
- * real user. That is an acceptable trade here only because the surrounding
- * assertions still verify the app's RESPONSE to the click, and because the
- * alternative — the `if (await btn.isVisible())` guards this file used to
- * carry — verified nothing at all. Chromium and WebKit are unaffected by the
- * layout defect; they take the same path for consistency of behaviour.
+ * #59 fixed the cause: `h-12 phone-landscape:h-11` -> `min-h-12
+ * phone-landscape:min-h-11`, so the header grows to contain its children. It
+ * measured all 9 header buttons at top:0 / bottom:44 afterwards, on firefox and
+ * chromium, at seven viewport sizes — the failure mode this helper dodged no
+ * longer exists. #59 left this helper alone on purpose and named retiring it as
+ * the follow-up; this is that follow-up.
+ *
+ * Back on `.click()` the helper verifies what a real user's pointer can reach:
+ * actionability, hit-testing and stability, none of which `dispatchEvent`
+ * checks. The visibility/enabled guards stay — they give a named locator a
+ * clear failure instead of a click into nothing.
  *
  * @param {import('@playwright/test').Locator} button
  */
 export async function clickHeaderButton(button) {
   await expect(button).toBeVisible({ timeout: 15_000 })
   await expect(button).toBeEnabled({ timeout: 15_000 })
-  await button.dispatchEvent('click')
+  await button.click()
 }
 
 /**

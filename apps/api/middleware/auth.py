@@ -4,23 +4,24 @@ Provides decorators for route-level auth enforcement.
 """
 import functools
 import logging
+import threading
+import time
 
 import jwt
-from flask import request
-from jwt import PyJWKClient
+from flask import current_app, request
+from jwt import PyJWK, PyJWKClient, PyJWKSet
+from jwt.exceptions import PyJWKClientError
 
 from config import Config
 from utils.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 
-JWKS_CACHE_LIFESPAN = 3600  # seconds
-
 # Lazy-initialized JWKS client (created on first use)
 _jwk_client = None
 
 
-def _get_jwk_client():
+def _get_jwk_client() -> PyJWKClient:
     global _jwk_client
     if _jwk_client is None:
         # An explicit User-Agent: PyJWKClient's urllib default ("Python-urllib/x.y")
@@ -30,11 +31,182 @@ def _get_jwk_client():
         # the Fashion Cabinet live-body seam; same fix as FC's body_render.py.
         _jwk_client = PyJWKClient(
             Config.JANUA_JWKS_URL,
-            cache_keys=True,
-            lifespan=JWKS_CACHE_LIFESPAN,
+            # This module owns the JWKS cache (see _JwksCache below), so
+            # PyJWKClient's own two tiers are switched off. Two caches over the
+            # same key set is how "serve the last-known-good set" turns into
+            # "serve whichever copy happened to expire last", and PyJWKClient's
+            # own policy is exactly the one being replaced: once its cache
+            # expires, a failed fetch raises and every authenticated request
+            # dies with it.
+            cache_keys=False,
+            cache_jwk_set=False,
             headers={"User-Agent": "yantra4d-api/1.0 (+https://yantra4d.com)"},
         )
     return _jwk_client
+
+
+# ──────────────────────────────────────────────
+# JWKS cache: stale-while-revalidate
+# ──────────────────────────────────────────────
+#
+# A Janua outage lasting longer than the cache lifespan used to take down all
+# authenticated traffic: PyJWKClient re-fetches the moment its cache expires,
+# the fetch raises, and `decode_token` raises with it — every bearer rejected,
+# for a signing key that had not actually changed.
+#
+# So the last successfully fetched key set is kept and kept serving while
+# refreshes fail. The policy, in order:
+#
+#   * fresh (age < JWKS_CACHE_LIFESPAN)  -> serve, no network call.
+#   * expired                            -> try to refresh; on failure log a
+#                                           WARNING, mark the set stale, and
+#                                           serve it anyway.
+#   * `kid` not in the cached set        -> try to refresh (that is what a key
+#                                           rotation looks like from here),
+#                                           then re-match.
+#   * stale beyond JWKS_STALE_MAX_AGE    -> fail closed. Keys nobody has been
+#                                           able to re-confirm for a day stop
+#                                           being trusted.
+#   * never fetched successfully at all  -> fail closed, unchanged: there is no
+#                                           last-known-good set to fall back to.
+#
+# After a failed refresh the next attempt waits JWKS_REFRESH_BACKOFF seconds, so
+# a flapping IdP gets one attempt per window rather than one per request, and the
+# whole path is single-flighted under a lock so a slow endpoint is dialled once,
+# not once per concurrent request.
+
+
+class _JwksCache:
+    """Last-known-good JWKS plus the bookkeeping the SWR policy needs."""
+
+    def __init__(self) -> None:
+        self.reset()
+
+    def reset(self) -> None:
+        self.jwk_set: PyJWKSet | None = None
+        self.fetched_at: float = 0.0    # monotonic() of the last SUCCESSFUL fetch
+        self.next_retry_at: float = 0.0  # monotonic() before which no retry is due
+        self.stale: bool = False
+        self.last_error: str | None = None
+
+    def age(self, now: float) -> float:
+        return now - self.fetched_at
+
+
+_jwks_cache = _JwksCache()
+_jwks_lock = threading.Lock()
+
+
+def reset_jwks_cache() -> None:
+    """Drop the cached client and key set, forcing a fetch on the next token."""
+    global _jwk_client
+    with _jwks_lock:
+        _jwk_client = None
+        _jwks_cache.reset()
+
+
+def _match_kid(jwk_set: PyJWKSet | None, kid: str | None) -> PyJWK | None:
+    """Find the signing key for `kid`, using PyJWKClient's own filter."""
+    if jwk_set is None or not kid:
+        return None
+    for key in jwk_set.keys:
+        if key.key_id == kid and key.public_key_use in ("sig", None):
+            return key
+    return None
+
+
+def _refresh_jwks(cache: _JwksCache, now: float) -> bool:
+    """Fetch a fresh key set into `cache`. True on success.
+
+    On failure the last-known-good set is left in place untouched — the caller
+    decides whether serving it is still permitted.
+    """
+    try:
+        data = _get_jwk_client().fetch_data()
+        if not isinstance(data, dict):
+            raise PyJWKClientError("The JWKS endpoint did not return a JSON object")
+        jwk_set = PyJWKSet.from_dict(data)
+    except Exception as exc:
+        cache.last_error = str(exc)
+        # Space out retries from the failure, not from the last attempt: a
+        # healthy cache expiring on schedule must not be held back by a backoff
+        # window that only a failure should ever open.
+        cache.next_retry_at = now + float(Config.JWKS_REFRESH_BACKOFF)
+        if cache.jwk_set is None:
+            logger.warning(
+                "JWKS fetch failed and no key set has ever been cached — "
+                "failing closed (url=%s): %s",
+                Config.JANUA_JWKS_URL, exc,
+            )
+        else:
+            cache.stale = True
+            logger.warning(
+                "JWKS refresh failed — serving the last-known-good key set "
+                "(age=%.0fs, stale ceiling=%.0fs, next attempt in %.0fs): %s",
+                cache.age(now),
+                float(Config.JWKS_STALE_MAX_AGE),
+                float(Config.JWKS_REFRESH_BACKOFF),
+                exc,
+            )
+        return False
+
+    was_stale = cache.stale
+    cache.jwk_set = jwk_set
+    cache.fetched_at = now
+    cache.next_retry_at = 0.0
+    cache.stale = False
+    cache.last_error = None
+    if was_stale:
+        logger.info("JWKS refresh recovered — cache is current again.")
+    return True
+
+
+def _get_signing_key(kid: str | None) -> PyJWK:
+    """Return the signing key for `kid`, refreshing the JWKS cache as policy allows."""
+    lifespan = float(Config.JWKS_CACHE_LIFESPAN)
+    stale_max_age = float(Config.JWKS_STALE_MAX_AGE)
+
+    with _jwks_lock:
+        cache = _jwks_cache
+        now = time.monotonic()
+
+        refreshed = False
+        if cache.jwk_set is None:
+            # Nothing has ever been cached, so there is no stale set to fall
+            # back to. Fail closed, exactly as before this cache existed.
+            if not _refresh_jwks(cache, now):
+                raise PyJWKClientError(
+                    "JWKS fetch failed and no key set has ever been cached "
+                    f"(url={Config.JANUA_JWKS_URL}): {cache.last_error}"
+                )
+            refreshed = True
+        elif cache.age(now) >= lifespan and now >= cache.next_retry_at:
+            refreshed = _refresh_jwks(cache, now)
+
+        key = _match_kid(cache.jwk_set, kid)
+        # An unknown kid is what a key rotation looks like from in here, so it
+        # earns a refresh attempt even inside the fresh window — bounded by the
+        # same backoff, so a stream of bogus kids cannot turn into a stream of
+        # outbound fetches, and skipped outright when this call already fetched
+        # the set the kid is missing from.
+        if (
+            key is None
+            and not refreshed
+            and now >= cache.next_retry_at
+            and _refresh_jwks(cache, now)
+        ):
+            key = _match_kid(cache.jwk_set, kid)
+
+        if cache.stale and cache.age(now) > stale_max_age:
+            raise PyJWKClientError(
+                f"JWKS has been unreachable for {cache.age(now):.0f}s, past the "
+                f"{stale_max_age:.0f}s stale ceiling — refusing to validate against "
+                f"keys nobody has been able to re-confirm. Last error: {cache.last_error}"
+            )
+
+        if key is None:
+            raise PyJWKClientError(f'Unable to find a signing key that matches: "{kid}"')
+        return key
 
 
 def decode_token(token: str) -> dict:
@@ -43,8 +215,8 @@ def decode_token(token: str) -> dict:
     Returns the decoded claims dict.
     Raises jwt.exceptions.PyJWTError on any validation failure.
     """
-    jwk_client = _get_jwk_client()
-    signing_key = jwk_client.get_signing_key_from_jwt(token)
+    header = jwt.get_unverified_header(token)
+    signing_key = _get_signing_key(header.get("kid"))
     claims = jwt.decode(
         token,
         signing_key.key,
@@ -170,6 +342,56 @@ def require_tier(min_tier: str):
     return decorator
 
 
+def effective_tier(resolve=None) -> str:
+    """Gating tier for the current request. Requires `@optional_auth` to have run.
+
+    In local dev (AUTH_ENABLED off AND debug on) unlock the top tier so the
+    CadQuery / server-render path is not 403-gated — mirrors require_tier() and
+    /api/me. The debug condition is load-bearing: auth-off with debug off is the
+    exact state app startup flags as must-never-run (CI and tests use it), and an
+    auth-off-only unlock silently disabled every tier gate there — guests became
+    madfam and the tier-enforcement suite could never see a 403 again.
+
+    Shared by the tier gates that need a tier *value* rather than a minimum, so
+    the generation-time and retrieval-time export-format gates cannot seat the
+    same caller on different tiers.
+
+    `resolve` lets a caller hand in its own `resolve_tier` binding; the render
+    routes pass their module-level one so the tier they gate on and the tier
+    they report in `X-RateLimit-Tier` stay the same object.
+    """
+    if resolve is None:
+        from services.core.tier_service import resolve_tier
+
+        resolve = resolve_tier
+
+    if not Config.AUTH_ENABLED and current_app.debug:
+        return "madfam"
+    return resolve(getattr(request, "auth_claims", None))
+
+
+_TIER_LABELS = {"essentials": "Essentials", "pro": "Pro", "madfam": "MADFAM"}
+
+
+def export_format_denied_response(export_format: str):
+    """The 403 returned when a caller's tier may not use `export_format`.
+
+    Single source of the export-format 403 shape. Generation (`/api/render`,
+    `/api/render-stream`) and retrieval (`/api/projects/<slug>/download/...`)
+    both answer with it, so a format that cannot be generated at a tier cannot
+    be fetched at that tier either — knowing a 10-character param-hash filename
+    was, until the retrieval gate existed, enough to pull a `step`/`glb` export
+    without the tier required to produce it.
+    """
+    from services.core.tier_service import minimum_tier_for_export_format
+
+    needed = minimum_tier_for_export_format(export_format)
+    if needed is None:
+        return error_response(f"Export format '{export_format}' is not available.", 403)
+    label = _TIER_LABELS.get(needed, needed.title())
+    return error_response(
+        f"Export format '{export_format}' requires {label} tier or above.", 403
+    )
 def apply_optional_auth() -> dict | None:
     """Populate ``request.auth_claims``/``current_user`` from an optional bearer.
 
@@ -215,6 +437,67 @@ def optional_auth(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+# ──────────────────────────────────────────────
+# WebSocket identity resolution
+# ──────────────────────────────────────────────
+
+WS_TOKEN_QUERY_PARAMS = ("token", "access_token")
+
+
+def _extract_ws_token() -> str | None:
+    """Bearer token from a WebSocket upgrade request.
+
+    Prefers the Authorization header (non-browser clients can set it, and a
+    header is not written to proxy access logs). Browsers cannot set headers on
+    a WebSocket handshake at all, so a `?token=` / `?access_token=` query
+    parameter is accepted as the only mechanism available to a browser client.
+    """
+    token = _extract_bearer_token()
+    if token:
+        return token
+    for param in WS_TOKEN_QUERY_PARAMS:
+        value = request.args.get(param)
+        if value:
+            return value
+    return None
+
+
+def resolve_ws_claims() -> dict | None:
+    """Resolve the caller identity for a WebSocket upgrade. Never raises.
+
+    Returns the decoded claims, or None for an anonymous caller, a caller whose
+    token failed validation, or when AUTH_ENABLED is off. Also populates
+    `request.auth_claims` / `request.current_user` so downstream helpers
+    (`resolve_tier`, `is_machine_token`, ...) behave as they do on HTTP routes.
+
+    This exists because `@require_auth` and `@optional_auth` cannot decorate a
+    flask-sock handler: `require_auth` returns a 401 *response*, which is
+    meaningless once the connection has been upgraded, and neither reads the
+    query parameter a browser must use. Handlers call this and then decide, per
+    action, what an anonymous identity is allowed to do — see
+    `routes/core/websocket.py`.
+    """
+    request.auth_claims = None
+    request.current_user = None
+
+    if not Config.AUTH_ENABLED:
+        return None
+
+    token = _extract_ws_token()
+    if not token:
+        return None
+
+    try:
+        claims = decode_token(token)
+    except Exception as e:
+        logger.debug("WebSocket token invalid: %s", e)
+        return None
+
+    request.auth_claims = claims
+    _sync_user_from_claims(claims)
+    return claims
 
 
 # ──────────────────────────────────────────────

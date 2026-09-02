@@ -53,6 +53,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ran on every pull request and spec-conformance documents itself as blocking,
   but neither was wired into the one required check, so neither could block a
   merge.
+- **Deploy Jobs Take Their Runner From a Repository Variable** — all eight jobs
+  in `deploy.yml` were hard-pinned to the shared pool, so a production deploy
+  queued behind whatever pull request CI happened to be running: deploy #540's
+  Build Studio sat queued from 04:01Z past 04:30Z behind roughly a hundred PR
+  shard jobs, and deploy #542 waited behind #540 in the serial deploy
+  concurrency group. Each job now resolves
+  `${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}`,
+  the operator-override form ADR-010 already permits, so deploys can be moved to
+  a dedicated runner set by setting one repository variable. Unset, the
+  expression resolves to the shared pool and behaviour is byte-for-byte what it
+  was. Both arms are MADFAM-operated runners; no GitHub-hosted fallback was
+  introduced.
 
 ### Fixed
 - **Auto-Generate No Longer Opens a Blocking Modal** — The studio renders on

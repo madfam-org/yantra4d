@@ -28,10 +28,33 @@ concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
+# Every job below picks its runner the same way: the repository variable
+# DEPLOY_RUNNER_LABEL when the operator has set one, otherwise the shared pool
+# madfam-runners-blue this workflow has always used.
+#
+# Why: a production deploy and a pull request's ten-shard browser matrix compete
+# for the same pool, and the deploy loses. On 2026-09-02 deploy #540's Build
+# Studio was queued from 04:01Z past 04:30Z behind roughly a hundred PR shard
+# jobs, and because this workflow's concurrency group is serial by design
+# (cancel-in-progress: false), deploy #542 then waited behind #540 — a shipping
+# path held up for close to an hour by work that cannot block shipping.
+# ci.yml's docs-only path filter removes a large share of that PR load; this
+# gives the operator the second lever, a small dedicated runner set deploys own,
+# without another change to this file.
+#
+# The shape follows ADR-010 (internal-devops decisions/): an operator-supplied
+# override in front of the canonical arm, the same superset form the enclii
+# reusable build-publish.yml uses for `inputs.build_runner`. Both arms are
+# MADFAM-operated runners — this workflow has no GitHub-hosted fallback and
+# gains none here, which is stricter than ADR-010 requires, not looser.
+#
+# Unset or empty resolves to madfam-runners-blue, so today's behaviour is
+# unchanged until the variable exists. The variable holds ONE runner label.
+
 jobs:
   detect-changes:
     name: Detect Changes
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     outputs:
       backend: ${{ steps.decide.outputs.backend }}
       studio: ${{ steps.decide.outputs.studio }}
@@ -78,7 +101,7 @@ jobs:
 
   build-backend:
     name: Build Backend
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: detect-changes
     if: needs.detect-changes.outputs.backend == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -192,7 +215,7 @@ jobs:
 
   build-studio:
     name: Build Studio
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: detect-changes
     if: needs.detect-changes.outputs.studio == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -290,7 +313,7 @@ jobs:
 
   build-landing:
     name: Build Landing
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: detect-changes
     if: needs.detect-changes.outputs.landing == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -383,7 +406,7 @@ jobs:
 
   build-admin:
     name: Build Admin
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: detect-changes
     if: needs.detect-changes.outputs.admin == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -481,7 +504,7 @@ jobs:
 
   commit-digests:
     name: Commit Image Digests
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: [detect-changes, build-backend, build-studio, build-landing, build-admin]
     if: |
       always() &&
@@ -545,7 +568,7 @@ jobs:
 
   verify-deploy:
     name: Post-Deploy Health Check
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: [commit-digests]
     if: needs.commit-digests.result == 'success'
     steps:
@@ -562,7 +585,7 @@ jobs:
 
   lifecycle-events:
     name: Report Lifecycle Events
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: [build-backend, build-studio, build-landing, build-admin]
     if: always()
     steps:

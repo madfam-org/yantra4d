@@ -429,7 +429,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - **CI**: `.github/workflows/ci.yml` -- studio (lint+test+coverage), landing (build), admin (lint+build+test), backend (lint+test+coverage), e2e (ten-shard Playwright matrix) + e2e-report, test-geometric-parity, manifest-sync, manifest-validation, spec-conformance, metadata-consistency, openapi-validation
 - **CI path filter**: a `changes` job classifies every PR first. **docs-only** -- every changed file is `*.md`, `docs/**`, `apps/docs/**`, `runbooks/**` or `.github/*.md` -- skips the ten-shard browser matrix, the three app builds, the backend suite and geometric parity. A PR that touches docs **and** code is code and runs everything; so does any push to main. The manifest, spec-conformance, metadata/licence and OpenAPI checks run on every PR either way
 - **CI gate**: `ci-success` is the single required check. It runs with `if: always()` and fails when any job in its `needs` reports `failure` or `cancelled`, counting `skipped` as passing -- that is what lets the path filter skip jobs without turning a red run green, and what stops a failed job from leaving the required check merely *skipped* (which branch protection reads as passing)
-- **Deploy**: Enclii PaaS -- auto-deploy on push to main (deploy.yml builds Docker images -> GHCR -> K8s via ArgoCD)
+- **Deploy**: Enclii PaaS -- auto-deploy on push to main (deploy.yml builds Docker images -> GHCR -> K8s via ArgoCD). Every deploy job takes its runner from `${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}`, so the operator can move deploys onto a dedicated runner set by setting one repository variable -- no change to the workflow (ADR-010 form)
 - **Accessibility**: `eslint-plugin-jsx-a11y` enforces a11y rules; jest-axe audits in component tests
 
 ## Known Gotchas
@@ -481,6 +481,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 
 | Target | Method |
 |--------|--------|
+| Deploy runners | Every job in `deploy.yml` runs on `${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}`. Unset -> the shared pool, exactly as before. Set to a dedicated runner label -> deploys stop queueing behind PR CI on the shared pool. Both arms are MADFAM-operated runners; there is no GitHub-hosted arm (ADR-010) |
 | Enclii PaaS | Auto-deploy on push to main -- `yantra4d-landing` at yantra4d.com, `yantra4d-studio` at app.yantra4d.com, `yantra4d-backend` at api.yantra4d.com, `yantra4d-admin` at admin.yantra4d.com |
 | Docker | `docker compose up` (backend + studio + landing + admin, local) |
 | Local | Flask dev server (5000) + Vite dev server (5173) + Astro dev server (4321) + Admin dev server (5174) |

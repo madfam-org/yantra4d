@@ -103,6 +103,14 @@ class TestOverrideInputPath:
         }))
         assert load_tier_overrides() == {"legacy@example.com": CANONICAL_TOP}
 
+    def test_a_legacy_override_value_gets_the_top_tier_limits(self, monkeypatch):
+        """The production Secret still says `madfam`, so this is the live path."""
+        monkeypatch.setenv(TIER_OVERRIDES_ENV,
+                           json.dumps({"staff@example.com": LEGACY_TOP}))
+        seated = resolve_tier({"email": "staff@example.com"})
+        assert get_tier_limits(seated) == get_tier_limits(CANONICAL_TOP)
+        assert get_render_limit(seated) == get_render_limit(CANONICAL_TOP)
+
 
 class TestOutputsAreCanonical:
     def test_resolve_tier_never_returns_the_old_name(self):
@@ -156,3 +164,75 @@ class TestDeprecationNotice:
         with caplog.at_level(logging.WARNING, logger="services.core.tier_service"):
             resolve_tier({"yantra4d_tier": CANONICAL_TOP})
         assert "Deprecated tier name" not in caplog.text
+
+
+class TestTheDevUnlock:
+    """`effective_tier`'s auth-off + debug unlock names the top tier by CONSTANT.
+
+    The unlock (middleware/auth.py, shared since #87 by the generation-time and
+    retrieval-time export-format gates) used to `return "madfam"`. A spelled-out
+    tier name there is the one place a rename can half-land without a single
+    test going red: `get_tier_limits` and `check_feature` normalise their
+    argument, so the gates keep passing — but the string is also reported
+    verbatim as `X-RateLimit-Tier`, and `TIER_HIERARCHY.get(...)` of a name the
+    hierarchy no longer holds is `0`, i.e. guest.
+    """
+
+    def _unlocked_tier(self, monkeypatch, *, debug=True, auth_enabled=False):
+        from flask import Flask
+
+        from config import Config
+        from middleware.auth import effective_tier
+
+        monkeypatch.setattr(Config, "AUTH_ENABLED", auth_enabled)
+        app = Flask(__name__)
+        app.debug = debug
+        with app.test_request_context("/"):
+            return effective_tier()
+
+    def test_the_unlock_seats_the_canonical_top_tier(self, monkeypatch):
+        assert self._unlocked_tier(monkeypatch) == CANONICAL_TOP
+
+    def test_the_unlocked_name_is_a_tier_this_build_ranks_highest(self, monkeypatch):
+        """What a leftover literal loses: a rank in the hierarchy."""
+        tier = self._unlocked_tier(monkeypatch)
+        assert tier in TIER_HIERARCHY
+        assert TIER_HIERARCHY[tier] == max(TIER_HIERARCHY.values())
+        assert has_tier(tier, "pro") is True
+
+    def test_the_unlock_still_needs_debug(self, monkeypatch):
+        """Auth-off with debug off is the state the tier suites run in: guest."""
+        assert self._unlocked_tier(monkeypatch, debug=False) == "guest"
+
+    def test_auth_on_is_never_unlocked(self, monkeypatch):
+        assert self._unlocked_tier(monkeypatch, auth_enabled=True) == "guest"
+
+    def test_the_reported_rate_limit_tier_is_canonical(self, monkeypatch):
+        """The unlocked name reaches a client verbatim in this header."""
+        from flask import Flask
+
+        from config import Config
+        from routes.engine.render import _effective_tier, _make_rate_limit_headers
+
+        monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+        app = Flask(__name__)
+        app.debug = True
+        with app.test_request_context("/"):
+            headers = _make_rate_limit_headers(_effective_tier())
+        assert headers["X-RateLimit-Tier"] == CANONICAL_TOP
+        assert headers["X-RateLimit-Tier"] != LEGACY_TOP
+
+
+class TestUpsellCopy:
+    """403 upsell copy names canonical tiers only."""
+
+    def test_every_labelled_tier_is_a_current_tier(self):
+        from middleware.auth import _TIER_LABELS
+
+        assert set(_TIER_LABELS) <= set(TIER_HIERARCHY)
+        assert LEGACY_TOP not in _TIER_LABELS
+
+    def test_the_top_tier_has_a_label(self):
+        from middleware.auth import _TIER_LABELS
+
+        assert _TIER_LABELS[TOP_TIER] == "Premium"

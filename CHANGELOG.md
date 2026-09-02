@@ -40,6 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   alias exists. The deprecation note is logged **once per process per alias**
   rather than once per request, because the alias sits on the hot path.
 
+  The local-dev unlock is named by constant, not by string. `effective_tier()`
+  (`middleware/auth.py`), which the render-time and download-time export-format
+  gates share, returns `TOP_TIER` when auth is off and Flask debug is on. The
+  literal it replaced would have survived the rename without a red test — the
+  gates normalise their argument — while going out verbatim as
+  `X-RateLimit-Tier` and ranking as guest in every hierarchy comparison.
+
   Studio: one helper (`src/lib/tiers.ts` — `tierAtLeast`, `normalizeTier`,
   `TOP_TIER`) now owns every tier comparison that used to be a hard-coded
   string, so a cached `/api/me` still reporting `madfam` grants what `premium`

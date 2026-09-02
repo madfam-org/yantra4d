@@ -8,6 +8,23 @@ test.use({
 })
 test.describe.configure({ mode: 'serial' })
 
+// projects/gridfinity/project.json declares project.name "Gridfinity".
+const GRIDFINITY = 'Gridfinity'
+
+/**
+ * The viewer canvas the phone actually shows.
+ *
+ * App.tsx and StudioMainView.tsx each render a desktop tree and a mobile tree
+ * at the same time (`hidden lg:flex` / `lg:hidden`) and hand the same
+ * viewerContent to both, so four <canvas> elements are mounted at 375 px and
+ * the first three are inside a display:none subtree. `locator('canvas')
+ * .first()` therefore resolves to a permanently hidden canvas — that is what
+ * run #166 reported as "13 x locator resolved to <canvas> ... hidden", not a
+ * collapsed viewport: the mobile controls sheet was shut in the failure
+ * snapshot and the mobile viewer keeps its own flex:1.618 row.
+ */
+const visibleCanvas = page => page.locator('canvas').filter({ visible: true }).first()
+
 test.describe('Responsive (Mobile) — Browser Audit', () => {
   test.beforeAll(async ({ request }, testInfo) => {
     await skipIfNoBackend(request, testInfo, ['gridfinity'])
@@ -20,27 +37,28 @@ test.describe('Responsive (Mobile) — Browser Audit', () => {
   // ── Gridfinity ───────────────────────────────────────────────────
 
   test('gridfinity: mobile bar and viewer visible', async ({ page }) => {
-    await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
+    await goToRealProject(page, 'gridfinity', GRIDFINITY)
     // Canvas (viewer) should be visible
-    await expect(page.locator('canvas').first()).toBeVisible()
+    await expect(visibleCanvas(page)).toBeVisible()
     // Header should be visible
     await expect(page.locator('header').first()).toBeVisible()
   })
 
   test('gridfinity: controls accessible via bottom sheet', async ({ page }) => {
-    await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
-    // On mobile, controls are in a bottom sheet or hamburger menu
-    // Look for the mobile sidebar trigger (hamburger or controls button)
-    const mobileTrigger = page.locator('[data-testid="studio-sidebar"] button').first()
-      .or(page.locator('button', { hasText: /Controls|Controles/ }).first())
-      .or(page.locator('[role="tab"]').first())
-
-    if (await mobileTrigger.isVisible().catch(() => false)) {
-      await mobileTrigger.click()
-      await page.waitForTimeout(500)
-    }
-    // A slider should become visible (either in sheet or sidebar)
-    const slider = page.locator('[role="slider"]').first()
+    await goToRealProject(page, 'gridfinity', GRIDFINITY)
+    // The mobile bar's sheet trigger (StudioSidebar variant="mobile") is an
+    // icon button whose only text is the sr-only t('btn.open_controls').
+    // data-testid="studio-sidebar" is on the DESKTOP sidebar only, so the old
+    // locator chain pointed into the display:none tree, matched several
+    // elements at once, and its isVisible() threw strict-mode into the catch —
+    // the sheet was never opened and the slider asserted below was the hidden
+    // desktop one.
+    await page.getByRole('button', { name: /Open controls|Abrir controles/i })
+      .first()
+      .click()
+    await page.waitForTimeout(500)
+    // A slider must be on screen inside the sheet
+    const slider = page.locator('[role="slider"]').filter({ visible: true }).first()
     await expect(slider).toBeVisible({ timeout: 5000 })
   })
 
@@ -49,7 +67,7 @@ test.describe('Responsive (Mobile) — Browser Audit', () => {
   test('tablaco: mobile bar and viewer visible', async ({ page }) => {
     skipUnlessProject(test, 'tablaco')
     await goToRealProject(page, 'tablaco', 'Tablaco Studio')
-    await expect(page.locator('canvas').first()).toBeVisible()
+    await expect(visibleCanvas(page)).toBeVisible()
     await expect(page.locator('header').first()).toBeVisible()
   })
 
@@ -69,7 +87,11 @@ test.describe('Responsive (Mobile) — Browser Audit', () => {
 
   test('custom-msh: 6 mode tabs scroll/wrap on mobile', async ({ page }) => {
     await goToRealProject(page, 'custom-msh', 'Custom MSH')
-    const tabs = page.locator('[role="tablist"] [role="tab"]')
+    // On a phone the mode tabs are the mobile bar's Radix TabsList, which
+    // carries no aria-label (that is on the desktop ModeTabs, display:none
+    // here) — so filter by what is on screen rather than by label. Unfiltered
+    // this counted every tab in both layout trees.
+    const tabs = page.locator('[role="tablist"] [role="tab"]').filter({ visible: true })
     const count = await tabs.count()
     expect(count).toBe(6)
     // First and last tab should both be in DOM (scroll/wrap handles overflow)
@@ -79,7 +101,7 @@ test.describe('Responsive (Mobile) — Browser Audit', () => {
 
   test('custom-msh: 3D viewer is interactive on mobile', async ({ page }) => {
     await goToRealProject(page, 'custom-msh', 'Custom MSH')
-    const canvas = page.locator('canvas').first()
+    const canvas = visibleCanvas(page)
     await expect(canvas).toBeVisible()
     // Verify touch-action: none is set on viewer container (prevents browser gestures)
     const touchAction = await canvas.evaluate(el => {

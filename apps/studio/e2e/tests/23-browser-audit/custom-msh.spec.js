@@ -6,6 +6,7 @@ import {
   goToRealProject,
   waitForRenderDone,
   waitForDownload,
+  clickGenerateWithWarning,
 } from './audit-helpers.js'
 
 const PROJECT_NAME = 'Custom MSH'
@@ -30,9 +31,11 @@ test.describe('Custom MSH — Browser Audit', () => {
   test('loads custom-msh and shows project name', async ({ page }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await expect(page.locator('header h1')).toContainText(PROJECT_NAME)
-    // 5 visible project mode tabs (Single Holder, Staining Rack, Box Base, Box Lid, Assembly)
+    // 6 visible mode tabs: project.json gained `multi_rack` ("Multi-Rack")
+    // between Staining Rack and Box Base — holder, rack, multi_rack, base, lid,
+    // assembly.
     const tabs = page.locator('[role="tablist"][aria-label="Mode selection"] [role="tab"]').filter({ visible: true })
-    await expect(tabs).toHaveCount(5)
+    await expect(tabs).toHaveCount(6)
   })
 
   test('stack_along_y is checked by default', async ({ page, sidebar }) => {
@@ -83,9 +86,14 @@ test.describe('Custom MSH — Browser Audit', () => {
 
   test('all 6 modes are navigable', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
-    const modeIds = ['holder', 'rack', 'box', 'base', 'lid', 'assembly']
-    for (const modeId of modeIds) {
-      await sidebar.selectMode(modeId)
+    // By label, not by id: there is no mode called "box", and `multi_rack`'s id
+    // does not appear in its label ("Multi-Rack"), so selectMode() would find
+    // no text match for either and silently click the first tab instead.
+    const modeLabels = [
+      'Single Holder', 'Staining Rack', 'Multi-Rack', 'Box Base', 'Box Lid', 'Assembly',
+    ]
+    for (const label of modeLabels) {
+      await sidebar.selectModeByLabel(label)
       await page.waitForTimeout(500)
       // Just verify no crash and URL updates
       expect(page.url()).toContain('custom-msh')
@@ -173,7 +181,7 @@ test.describe('Custom MSH — Browser Audit', () => {
 
   test('renders holder mode', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
-    await sidebar.clickGenerate()
+    await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)
     await expect(page.locator('canvas').first()).toBeVisible()
   })
@@ -182,7 +190,7 @@ test.describe('Custom MSH — Browser Audit', () => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await sidebar.selectMode('rack')
     await page.waitForTimeout(500)
-    await sidebar.clickGenerate()
+    await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)
     await expect(page.locator('canvas').first()).toBeVisible()
   })
@@ -191,7 +199,7 @@ test.describe('Custom MSH — Browser Audit', () => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await sidebar.selectMode('base')
     await page.waitForTimeout(500)
-    await sidebar.clickGenerate()
+    await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)
     await expect(page.locator('canvas').first()).toBeVisible()
   })
@@ -200,7 +208,7 @@ test.describe('Custom MSH — Browser Audit', () => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await sidebar.selectMode('lid')
     await page.waitForTimeout(500)
-    await sidebar.clickGenerate()
+    await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)
     await expect(page.locator('canvas').first()).toBeVisible()
   })
@@ -209,26 +217,33 @@ test.describe('Custom MSH — Browser Audit', () => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
     await sidebar.selectMode('assembly')
     await page.waitForTimeout(500)
-    await sidebar.clickGenerate()
+    await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)
     await expect(page.locator('canvas').first()).toBeVisible()
   })
 
   // ── D. Export ────────────────────────────────────────────────────
 
-  test('export panel shows 5 format buttons', async ({ page }) => {
+  // ExportPanel is mounted only while the sidebar's "export" section tab is
+  // selected, so on load these buttons are not in the DOM at all.
+  test('export panel shows 5 format buttons', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
+    await sidebar.selectSection('export')
+    const panel = page.locator('[data-testid="export-panel"]').first()
     for (const fmt of ['STL', '3MF', 'OFF', 'GLB', 'OBJ']) {
-      await expect(page.getByRole('button', { name: new RegExp(fmt) })).toBeVisible()
+      // Anchored: an unanchored /STL/ also matches the "Download STL" button.
+      await expect(panel.getByRole('button', { name: new RegExp(`^${fmt}\\b`) }).first())
+        .toBeVisible()
     }
   })
 
   test('downloads STL for holder mode', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
-    await sidebar.clickGenerate()
+    await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)
 
-    await page.getByRole('button', { name: 'STL', exact: true }).click()
+    await sidebar.selectSection('export')
+    await page.getByRole('button', { name: /^STL\b/ }).first().click()
     await page.waitForTimeout(300)
 
     const { suggestedFilename, path } = await waitForDownload(page, async () => {
@@ -240,10 +255,11 @@ test.describe('Custom MSH — Browser Audit', () => {
 
   test('downloads GLB for holder mode', async ({ page, sidebar }) => {
     await goToRealProject(page, 'custom-msh', PROJECT_NAME)
-    await sidebar.clickGenerate()
+    await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)
 
-    await page.getByRole('button', { name: /GLB/ }).click()
+    await sidebar.selectSection('export')
+    await page.getByRole('button', { name: /^GLB\b/ }).first().click()
     await page.waitForTimeout(300)
 
     const { suggestedFilename, path } = await waitForDownload(page, async () => {

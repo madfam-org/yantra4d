@@ -110,6 +110,23 @@ export class StudioSidebarPage extends BasePage {
   }
 
   /**
+   * Click a visible mode tab by its rendered label.
+   *
+   * ModeTabs (src/components/studio/StudioSidebar.tsx) renders plain buttons
+   * carrying nothing but the translated label — no data-value — so selectMode()
+   * can only reach a mode whose id appears in its own label. gridfinity's
+   * `baseplate_scad` ("Baseplate (OpenSCAD Extended)") and custom-msh's
+   * `multi_rack` ("Multi-Rack") are not reachable that way: selectMode() finds
+   * no text match and falls through to its index branch, silently clicking the
+   * FIRST tab instead of the one asked for. Match the accessible name instead.
+   */
+  async selectModeByLabel(label) {
+    const tab = this.modeTablist.getByRole('tab', { name: label, exact: true }).first()
+    await tab.click()
+    await this._waitForSelected(tab)
+  }
+
+  /**
    * Wait for a mode tab to report itself selected.
    *
    * The desktop ModeTabs are plain buttons carrying aria-selected; the mobile

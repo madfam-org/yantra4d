@@ -75,6 +75,22 @@ export async function skipIfNoBackend(request, test, requiredSlugs = PUBLIC_AUDI
 }
 
 /**
+ * Fetch a real project's manifest from the backend.
+ *
+ * Lets a test ask the cartridge what it actually declares instead of assuming.
+ * Returns null when the project or the endpoint is not available.
+ */
+export async function fetchManifest(request, slug) {
+  try {
+    const res = await request.get(`${BACKEND_URL}/api/projects/${slug}/manifest`, { timeout: 10_000 })
+    if (!res.ok()) return null
+    return await res.json()
+  } catch {
+    return null
+  }
+}
+
+/**
  * Navigate to a real project and wait for manifest + UI to load.
  */
 export async function goToRealProject(page, slug, expectedName) {
@@ -84,17 +100,36 @@ export async function goToRealProject(page, slug, expectedName) {
     .waitFor({ timeout: 15_000 })
     .catch(() => {})
 
-  // Wait for URL to settle to /project/{slug}/{preset}/{mode}
-  await page.waitForURL(/\/project\/[^/]+\/[^/]+\/[^/]+/, { timeout: 10_000 })
+  // Wait for the URL to settle on the canonical path. buildHash()
+  // (hooks/system/useHashNavigation.ts) writes /project/{slug}/{mode}/{preset}
+  // — MODE first, and the preset segment only once one is active — so the old
+  // three-segment pattern here was both in the wrong order and unsatisfiable on
+  // a cartridge with no preset. Match the mode segment and stop there.
+  await page.waitForURL(/\/project\/[^/]+\/[^/]+/, { timeout: 10_000 })
     .catch(() => {})
 
-  // Wait for first mode tab to be visible
-  await page.locator('[role="tab"]').first()
+  // Wait for the first VISIBLE mode tab. App.tsx renders its desktop and mobile
+  // trees at the same time (`hidden lg:flex` / `lg:hidden`), so `[role="tab"]`
+  // .first() is a tab in whichever tree is display:none at this viewport and
+  // never becomes visible — 10 s burned on every mobile navigation.
+  await page.locator('[role="tab"]').filter({ visible: true }).first()
     .waitFor({ state: 'visible', timeout: 10_000 })
     .catch(() => {})
 
   // Let React state settle with real (larger) manifests
   await page.waitForTimeout(1000)
+
+  // The studio auto-generates on load (debounced effect in
+  // hooks/project/useProjectParams.ts) and pops the modal Long Render Warning
+  // whenever the estimate exceeds the cartridge's warning threshold. That is
+  // now the normal path for gridfinity, whose cadquery `bin` default estimates
+  // ~2 minutes. Radix renders the alert dialog over a pointer-event-blocking
+  // overlay, so every later click waits out its full actionability budget
+  // instead of landing — in run #166 header.toggleLanguage() timed out at 180 s
+  // on all three attempts with the dialog sitting in the page snapshot. Cancel
+  // it here (the same convention tablaco.spec.js already uses) so tests act on
+  // a live page rather than on one behind a modal.
+  await dismissRenderWarning(page, 'cancel', 2500)
 }
 
 /**
@@ -165,8 +200,11 @@ export async function clickGenerateWithWarning(sidebar, page) {
   const dialog = page.locator('[role="alertdialog"]')
   const renderAnywayBtn = page.locator('[role="alertdialog"] button', { hasText: /Render Anyway/i })
 
-  // If dialog is already showing (from mode switch), click Render Anyway
-  if (await dialog.isVisible({ timeout: 10000 }).catch(() => false)) {
+  // If dialog is already showing (from a mode switch, or from the load-time
+  // auto-generate goToRealProject did not get to), click Render Anyway. Short
+  // budget: on the common path there is no dialog yet and every second here is
+  // spent once per render test.
+  if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
     await renderAnywayBtn.click()
     await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
     return
@@ -195,11 +233,12 @@ export async function clickGenerateWithWarning(sidebar, page) {
 
 /**
  * Dismiss the Long Render Warning dialog if it appears.
- * Call after mode switches that may trigger a render estimate.
+ * Call after mode switches or parameter edits that may trigger a render
+ * estimate — the dialog is modal, so anything clicked while it is up blocks.
  */
-export async function dismissRenderWarning(page, action = 'cancel') {
+export async function dismissRenderWarning(page, action = 'cancel', timeout = 5000) {
   const dialog = page.locator('[role="alertdialog"]')
-  const appeared = await dialog.waitFor({ state: 'visible', timeout: 5000 })
+  const appeared = await dialog.waitFor({ state: 'visible', timeout })
     .then(() => true).catch(() => false)
   if (!appeared) return
   const btnText = action === 'render'
@@ -214,6 +253,11 @@ export async function dismissRenderWarning(page, action = 'cancel') {
  */
 export async function triggerAndWaitRender(sidebar, page, paramId, value, timeout = 120_000) {
   await sidebar.editSliderValue(paramId, value)
+  // The edit re-arms the debounced auto-generate, and when the estimate is over
+  // the cartridge's warning threshold nothing renders until the modal is
+  // answered — so without this the caller "waits" on a render that was never
+  // started and passes on a Generate button that was simply never disabled.
+  await dismissRenderWarning(page, 'render', 3000)
   await waitForRenderDone(page, timeout)
 }
 

@@ -8,10 +8,23 @@ import {
   PRIVATE_AUDIT_SLUGS,
   goToRealProject,
   waitForRenderDone,
+  clickGenerateWithWarning,
+  dismissRenderWarning,
 } from './audit-helpers.js'
 
 test.use({ mockAPIs: false })
 test.describe.configure({ mode: 'serial' })
+
+// projects/gridfinity/project.json declares project.name "Gridfinity"; the
+// "Extended" name now belongs only to its three OpenSCAD modes.
+const GRIDFINITY = 'Gridfinity'
+
+// The mode tabs, and only those: the sidebar's section tabs
+// (Design/View/BOM/Export) are a [role="tablist"] too and come FIRST in the
+// DOM, so an unscoped `[role="tab"]`.first() reads "Design"/"Diseño". App.tsx
+// also keeps its desktop and mobile trees mounted at once, hence :visible.
+const modeTabs = page =>
+  page.locator('[role="tablist"][aria-label="Mode selection"] [role="tab"]').filter({ visible: true })
 
 test.describe('Cross-Cutting — Browser Audit', () => {
   test.beforeAll(async ({ request }, testInfo) => {
@@ -22,7 +35,7 @@ test.describe('Cross-Cutting — Browser Audit', () => {
 
   test('dark theme persists across page reload', async ({ page }) => {
     await setTheme(page, 'dark')
-    await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
+    await goToRealProject(page, 'gridfinity', GRIDFINITY)
     // Verify dark class is on html element
     await expect(page.locator('html')).toHaveClass(/dark/)
     // Reload and check persistence
@@ -35,22 +48,22 @@ test.describe('Cross-Cutting — Browser Audit', () => {
 
   test('language toggle switches to Spanish', async ({ page, header }) => {
     await setLanguage(page, 'en')
-    await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
+    await goToRealProject(page, 'gridfinity', GRIDFINITY)
     // Toggle to Spanish
     await header.toggleLanguage()
     await page.waitForTimeout(500)
     // Mode tabs should show Spanish labels
-    const tabText = await page.locator('[role="tablist"] [role="tab"]').first().textContent()
-    // Gridfinity modes in ES: Contenedor, Placa Base, Tapa
+    const tabText = await modeTabs(page).first().textContent()
+    // gridfinity modes[0] is `bin`, whose es label is "Contenedor"
     expect(tabText).toMatch(/Contenedor|Placa|Tapa/i)
   })
 
   test('Spanish persists across project navigation', async ({ page }) => {
     skipUnlessProject(test, 'tablaco')
     await setLanguage(page, 'es')
-    await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
+    await goToRealProject(page, 'gridfinity', GRIDFINITY)
     // Verify Spanish
-    const tabText1 = await page.locator('[role="tablist"] [role="tab"]').first().textContent()
+    const tabText1 = await modeTabs(page).first().textContent()
     expect(tabText1).toMatch(/Contenedor|Placa|Tapa/i)
 
     // Navigate to tablaco
@@ -58,7 +71,7 @@ test.describe('Cross-Cutting — Browser Audit', () => {
     await page.waitForSelector('header', { timeout: 15_000 })
     await page.waitForTimeout(1000)
     // Verify still Spanish
-    const tabText2 = await page.locator('[role="tablist"] [role="tab"]').first().textContent()
+    const tabText2 = await modeTabs(page).first().textContent()
     expect(tabText2).toMatch(/Unidad|Ensamble|Ret/i)
   })
 
@@ -66,12 +79,18 @@ test.describe('Cross-Cutting — Browser Audit', () => {
 
   test('share URL generation has ?p= parameter', async ({ page, header, sidebar }) => {
     await setLanguage(page, 'en')
-    await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
+    await goToRealProject(page, 'gridfinity', GRIDFINITY)
     await enableClipboard(page)
 
-    // Change a parameter to create a non-default state
-    await sidebar.editSliderValue('width_units', 4)
+    // Change a parameter to create a non-default state. grid_x, not
+    // width_units: the default `bin` mode is cadquery and width_units is
+    // declared visible_in_modes ["cup", "baseplate_scad", "lid"].
+    await sidebar.editSliderValue('grid_x', 4)
     await page.waitForTimeout(500)
+
+    // The edit re-arms the auto-generate, which asks before a long render — and
+    // that dialog is modal, so the share click below would never land.
+    await dismissRenderWarning(page, 'cancel', 3000)
 
     // Click share button
     await header.clickShare()
@@ -86,8 +105,8 @@ test.describe('Cross-Cutting — Browser Audit', () => {
 
   test('print estimate overlay shows after render', async ({ page, sidebar }) => {
     await setLanguage(page, 'en')
-    await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
-    await sidebar.clickGenerate()
+    await goToRealProject(page, 'gridfinity', GRIDFINITY)
+    await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)
 
     // Print estimate should appear after render

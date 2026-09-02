@@ -1,0 +1,40 @@
+# Shared render output volume.
+#
+# The render worker writes finished STL/GLB/3MF artifacts into
+# /app/backend/static, and the API serves them from that same path
+# (`@app.route('/static/<path:filename>')` -> send_from_directory(STATIC_DIR)).
+# While the worker was a sidecar in the API pod those were one emptyDir and the
+# sharing was implicit. Splitting the worker into its own Deployment splits the
+# filesystem too, so without a volume both pods can see, every render would
+# finish successfully and then 404 on download — the worker would report a URL
+# the API cannot serve. That is why this claim exists, and why it is
+# ReadWriteMany: the API plus every worker replica mount it at once.
+#
+# OPERATOR PREREQUISITE — the cluster must have a StorageClass that can
+# provision ReadWriteMany (NFS, CephFS, Longhorn RWX, EFS, ...). Set
+# storageClassName below to it before syncing. If no such class exists this
+# claim stays Pending, which is deliberate: sync-wave 0 never reports healthy,
+# the later waves never apply, and the running API keeps its sidecar. Do not
+# work around a Pending claim by dropping to ReadWriteOnce — the API and the
+# worker land on different nodes and the second pod would hang on multi-attach.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yantra4d-render-output
+  labels:
+    app.kubernetes.io/name: yantra4d-render-output
+    app.kubernetes.io/part-of: yantra4d
+  annotations:
+    # Wave 0: storage must be Bound before anything tries to mount it.
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      # Matches the 2Gi the emptyDir carried, and therefore
+      # RENDER_VOLUME_LIMIT_BYTES (2147483648) on both Deployments. The render
+      # GC reclaims at 75% of that figure; if the two drift the volume fills
+      # before the GC ever runs. Change all three together or none.
+      storage: 2Gi
+  # storageClassName: ""   # REQUIRED: set to the cluster's RWX-capable class.

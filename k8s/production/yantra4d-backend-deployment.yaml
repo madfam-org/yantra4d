@@ -5,7 +5,15 @@ metadata:
   labels:
     app.kubernetes.io/name: yantra4d-backend
     app.kubernetes.io/part-of: yantra4d
+  annotations:
+    # Wave 2, last. The render worker (wave 1) has to be up and beating before
+    # the sidecar leaves this pod, otherwise there is a window with no render
+    # capacity at all — and with RENDER_WORKER_REQUIRED=true that window is a
+    # 503 on /api/health/ready and a restarting API.
+    argocd.argoproj.io/sync-wave: "2"
 spec:
+  # Still 1. The worker is what needed to scale; the API is held here by its
+  # Recreate strategy and the ReadWriteOnce analytics PVC.
   replicas: 1
   revisionHistoryLimit: 3
   strategy:
@@ -49,7 +57,8 @@ spec:
               value: "redis://yantra4d-redis:6379/0"
             - name: RATE_LIMIT_STORAGE
               value: "redis://yantra4d-redis:6379/1"
-            # Must equal the render-output emptyDir sizeLimit below (2Gi).
+            # Must equal the yantra4d-render-output claim size (2Gi) and the
+            # same var on the render-worker Deployment.
             - name: RENDER_VOLUME_LIMIT_BYTES
               value: "2147483648"
             - name: CORS_ORIGINS
@@ -123,7 +132,7 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-            - name: render-output
+            - name: render-output-pvc
               mountPath: /app/backend/static
             - name: analytics-pvc
               mountPath: /app/backend/data
@@ -134,67 +143,29 @@ spec:
             limits:
               cpu: 1000m
               memory: 2Gi
-        - name: render-worker
-          image: ghcr.io/madfam-org/yantra4d/backend
-          imagePullPolicy: Always
-          command: ["python", "/app/worker/render_worker.py"]
-          securityContext:
-            privileged: false
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            runAsUser: 1001
-            capabilities:
-              drop: ["ALL"]
-          env:
-            - name: FLASK_DEBUG
-              value: "false"
-            - name: PROJECTS_DIR
-              value: "/app/projects"
-            - name: PYTHONPATH
-              value: "/app/backend"
-            - name: REDIS_URL
-              value: "redis://yantra4d-redis:6379/0"
-            - name: RATE_LIMIT_STORAGE
-              value: "redis://yantra4d-redis:6379/1"
-            - name: RENDER_WORKER_HEARTBEAT_TTL_SECONDS
-              value: "60"
-            # Must equal the render-output emptyDir sizeLimit below (2Gi).
-            - name: RENDER_VOLUME_LIMIT_BYTES
-              value: "2147483648"
-          readinessProbe:
-            exec:
-              command:
-                - python
-                - -c
-                - "import os, time, redis; r=redis.Redis.from_url(os.environ.get('REDIS_URL', 'redis://localhost:6379'), decode_responses=True); ts=r.get(os.environ.get('RENDER_WORKER_HEARTBEAT_KEY', 'yantra_render_worker_heartbeat')); raise SystemExit(0 if ts and time.time() - int(ts) < int(os.environ.get('RENDER_WORKER_HEARTBEAT_TTL_SECONDS', '60')) else 1)"
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 3
-          volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-            - name: render-output
-              mountPath: /app/backend/static
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: 1000m
-              memory: 2Gi
       volumes:
         - name: tmp
           emptyDir:
             sizeLimit: 256Mi
-        - name: render-output
-          emptyDir:
-            # Keep RENDER_VOLUME_LIMIT_BYTES on both containers in sync with this.
-            # The in-process GC reclaims at 75% of that value; if the two drift,
-            # the kubelet evicts the pod before the GC ever runs.
-            # Raised from 512Mi, which evicted the pod twice (2026-08-01 17:55 and
-            # 2026-08-04 18:00 America/Mexico_City) under bulk-render load.
-            sizeLimit: 2Gi
+        # Renamed from render-output, for exactly the reason recorded below for
+        # analytics-pvc: Argo applies this with ServerSideApply and volumes
+        # merge on `name`, so turning the existing render-output emptyDir into a
+        # persistentVolumeClaim under the same name would produce one volume
+        # holding both types — "may not specify more than 1 volume type" — and
+        # the Deployment would fail to apply at all. A new name is a new list
+        # entry: the old emptyDir is pruned and this is added.
+        #
+        # Now a claim rather than an emptyDir because the render worker moved
+        # to its own pod and writes finished artifacts here, while this pod is
+        # what serves them at /static/. Keep RENDER_VOLUME_LIMIT_BYTES on both
+        # Deployments in sync with the claim size (2Gi): the in-process GC
+        # reclaims at 75% of that value.
+        # History, from when this was an emptyDir: raised from 512Mi, which
+        # evicted the pod twice (2026-08-01 17:55 and 2026-08-04 18:00
+        # America/Mexico_City) under bulk-render load.
+        - name: render-output-pvc
+          persistentVolumeClaim:
+            claimName: yantra4d-render-output
         # Renamed from analytics-data deliberately. Argo applies this with
         # ServerSideApply, and volumes merge on `name` — so switching an
         # existing volume from emptyDir to persistentVolumeClaim under the same

@@ -1,0 +1,29 @@
+# Disruption budget for the API.
+#
+# The API runs a single replica (Recreate strategy, ReadWriteOnce analytics
+# PVC), and a single-replica PDB is a genuine fork in the road:
+#
+#   minAvailable: 1   protects the pod, and thereby blocks every node drain
+#                     forever — cluster upgrades and node maintenance deadlock
+#                     on it, with no signal beyond a drain that never finishes.
+#   maxUnavailable: 1 allows the eviction, and so protects nothing today.
+#
+# The second is chosen: at one replica there is nothing to protect anyway, and
+# an undrainable node is a worse failure than a short API restart. The object
+# exists so the policy is stated rather than absent, and so it is one line from
+# correct the moment the API can run more than one replica — at 2+ replicas
+# flip this to `minAvailable: 1` and it starts doing real work.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: yantra4d-backend
+  labels:
+    app.kubernetes.io/name: yantra4d-backend
+    app.kubernetes.io/part-of: yantra4d
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yantra4d-backend

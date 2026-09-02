@@ -550,3 +550,167 @@ def test_stream_part_timeout_stays_under_subprocess_ceiling():
     from services.engine import render_orchestrator
 
     assert render_orchestrator.RENDER_STREAM_PART_TIMEOUT_SECONDS < 300
+
+
+# ---------------------------------------------------------------------------
+# Per-worker heartbeats (scaled render-worker Deployment)
+#
+# The fleet used to share one heartbeat key, which could only ever answer "is
+# something alive". With N replicas behind an HPA the API has to be able to say
+# how many, and a wedged pod must not be able to hide behind a healthy sibling
+# refreshing the shared key.
+# ---------------------------------------------------------------------------
+
+
+class _FakeFleetRedis:
+    """Redis stub backing SCAN over per-worker heartbeat keys."""
+
+    def __init__(self, values: dict, queue_depth: int = 0, active_jobs: int = 0):
+        self._values = dict(values)
+        self._queue_depth = queue_depth
+        self._active_jobs = active_jobs
+
+    def get(self, key):
+        return self._values.get(key)
+
+    def scan_iter(self, match=None, count=None):
+        prefix = (match or "").rstrip("*")
+        for key in list(self._values):
+            if key.startswith(prefix):
+                yield key
+
+    def llen(self, _key):
+        return self._queue_depth
+
+    def scard(self, _key):
+        return self._active_jobs
+
+
+def _beat(orchestrator, worker_id, age=0, state="idle", job_id=None):
+    import json
+    import time
+
+    key = f"{orchestrator.RENDER_WORKER_HEARTBEAT_PREFIX}{worker_id}"
+    payload = json.dumps({
+        "ts": int(time.time()) - age,
+        "worker_id": worker_id,
+        "state": state,
+        "job_id": job_id,
+    })
+    return key, payload
+
+
+def test_worker_status_counts_each_live_worker(monkeypatch):
+    """Three beating pods report as three workers, not as one heartbeat."""
+    from services.engine import render_orchestrator
+
+    values = dict([
+        _beat(render_orchestrator, "yantra4d-render-worker-aaa"),
+        _beat(render_orchestrator, "yantra4d-render-worker-bbb"),
+        _beat(render_orchestrator, "yantra4d-render-worker-ccc", state="busy", job_id="j1"),
+    ])
+    monkeypatch.setattr(render_orchestrator, "r", _FakeFleetRedis(values, queue_depth=4))
+    monkeypatch.setattr(render_orchestrator, "RENDER_WORKER_HEARTBEAT_TTL_SECONDS", 60)
+
+    status = render_orchestrator.get_render_worker_status()
+    assert status["available"] is True
+    assert status["workers_total"] == 3
+    assert status["workers_busy"] == 1
+    assert status["queue_depth"] == 4
+    assert status["workers"] == [
+        "yantra4d-render-worker-aaa",
+        "yantra4d-render-worker-bbb",
+        "yantra4d-render-worker-ccc",
+    ]
+
+
+def test_worker_status_excludes_stale_workers(monkeypatch):
+    """A pod whose heartbeat has aged past the window drops out of the count."""
+    from services.engine import render_orchestrator
+
+    values = dict([
+        _beat(render_orchestrator, "fresh", age=1),
+        _beat(render_orchestrator, "stale", age=500),
+    ])
+    monkeypatch.setattr(render_orchestrator, "r", _FakeFleetRedis(values))
+    monkeypatch.setattr(render_orchestrator, "RENDER_WORKER_HEARTBEAT_TTL_SECONDS", 60)
+
+    status = render_orchestrator.get_render_worker_status()
+    assert status["workers_total"] == 1
+    assert status["workers"] == ["fresh"]
+    assert status["available"] is True
+
+
+def test_worker_unavailable_when_every_worker_is_stale(monkeypatch):
+    """All heartbeats stale means unavailable, even though keys still exist."""
+    from services.engine import render_orchestrator
+
+    values = dict([
+        _beat(render_orchestrator, "one", age=400),
+        _beat(render_orchestrator, "two", age=900),
+    ])
+    monkeypatch.setattr(render_orchestrator, "r", _FakeFleetRedis(values))
+    monkeypatch.setattr(render_orchestrator, "RENDER_WORKER_HEARTBEAT_TTL_SECONDS", 60)
+
+    status = render_orchestrator.get_render_worker_status()
+    assert status["workers_total"] == 0
+    assert status["available"] is False
+    assert not render_orchestrator.is_render_worker_available()
+
+
+def test_legacy_global_heartbeat_still_counts(monkeypatch):
+    """A pre-split worker (sidecar, or a rollback) is still seen as alive.
+
+    Guards the rollout window and the rollback path: the only heartbeat on the
+    wire is then the bare-timestamp global key, and the API must not report an
+    empty fleet while renders are in fact being served.
+    """
+    import time
+
+    from services.engine import render_orchestrator
+
+    values = {
+        render_orchestrator.RENDER_WORKER_HEARTBEAT_KEY: str(int(time.time()) - 2),
+    }
+    monkeypatch.setattr(render_orchestrator, "r", _FakeFleetRedis(values))
+    monkeypatch.setattr(render_orchestrator, "RENDER_WORKER_HEARTBEAT_TTL_SECONDS", 60)
+
+    status = render_orchestrator.get_render_worker_status()
+    assert status["available"] is True
+    assert status["workers_total"] == 1
+    assert status["workers"] == ["legacy"]
+
+
+def test_dual_written_legacy_key_is_not_double_counted(monkeypatch):
+    """Workers dual-write the legacy key; two pods must still count as two."""
+    import time
+
+    from services.engine import render_orchestrator
+
+    values = dict([
+        _beat(render_orchestrator, "pod-a"),
+        _beat(render_orchestrator, "pod-b"),
+    ])
+    values[render_orchestrator.RENDER_WORKER_HEARTBEAT_KEY] = str(int(time.time()))
+    monkeypatch.setattr(render_orchestrator, "r", _FakeFleetRedis(values))
+    monkeypatch.setattr(render_orchestrator, "RENDER_WORKER_HEARTBEAT_TTL_SECONDS", 60)
+
+    status = render_orchestrator.get_render_worker_status()
+    assert status["workers_total"] == 2
+    assert status["workers"] == ["pod-a", "pod-b"]
+
+
+def test_heartbeat_parser_accepts_both_wire_shapes():
+    """JSON per-worker payloads and bare legacy timestamps both parse."""
+    from services.engine import render_orchestrator
+
+    assert render_orchestrator._parse_heartbeat('{"ts": 100, "state": "busy"}') == {
+        "ts": 100, "state": "busy", "job_id": None,
+    }
+    assert render_orchestrator._parse_heartbeat("100") == {
+        "ts": 100, "state": None, "job_id": None,
+    }
+    assert render_orchestrator._parse_heartbeat(b"100")["ts"] == 100
+    assert render_orchestrator._parse_heartbeat("") is None
+    assert render_orchestrator._parse_heartbeat("not-a-timestamp") is None
+    assert render_orchestrator._parse_heartbeat('{"no_ts": 1}') is None

@@ -1,0 +1,62 @@
+# Horizontal autoscaling for the render worker.
+#
+# CPU-based, because CPU is what a render actually consumes and because it is
+# the one signal available with no extra cluster components. Queue depth is the
+# metric this workload really wants — `LLEN yantra_render_queue` is the true
+# backlog, and CPU only rises once work is already being done, so CPU-based
+# scaling is always reacting a step late. Serving queue depth to an HPA needs a
+# custom-metrics adapter (Prometheus Adapter or KEDA) that does not exist in
+# this cluster today; see docs/operations/render-worker-capacity.md for what
+# that follow-up involves. Nothing here fakes it.
+#
+# OPERATOR PREREQUISITE: metrics-server must be installed and serving
+# metrics.k8s.io, or this HPA reports <unknown>/70% and never scales.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: yantra4d-render-worker
+  labels:
+    app.kubernetes.io/name: yantra4d-render-worker
+    app.kubernetes.io/part-of: yantra4d
+  annotations:
+    # Wave 1, with the Deployment it scales.
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: yantra4d-render-worker
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          # Against the 500m request on the Deployment, 70% is ~350m — a worker
+          # busy about a third of a core on average. Deliberately a starting
+          # point: revisit once there is a week of real render load behind it.
+          averageUtilization: 70
+  behavior:
+    scaleUp:
+      # React within a minute of sustained load; a queued render is a user
+      # waiting.
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+      selectPolicy: Max
+    scaleDown:
+      # Deliberately slow, and one pod at a time. The HPA deletes pods directly
+      # and does NOT consult the PodDisruptionBudget, so every scale-down is a
+      # chance to interrupt a render. The worker drains on SIGTERM within its
+      # 360s grace period, but the cheapest protection is not to thrash: hold
+      # for 10 minutes of genuinely idle capacity before giving one back.
+      stabilizationWindowSeconds: 600
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 300
+      selectPolicy: Min

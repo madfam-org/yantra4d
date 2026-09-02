@@ -7,6 +7,7 @@ resources:
 - namespace.yaml
 - yantra4d-backend-deployment.yaml
 - yantra4d-backend-service.yaml
+- yantra4d-backend-pdb.yaml
 - yantra4d-studio-deployment.yaml
 - yantra4d-studio-service.yaml
 - yantra4d-landing-deployment.yaml
@@ -14,9 +15,15 @@ resources:
 - yantra4d-admin-deployment.yaml
 - yantra4d-admin-service.yaml
 - yantra4d-analytics-pvc.yaml
+- yantra4d-render-output-pvc.yaml
 - yantra4d-redis-pvc.yaml
 - yantra4d-redis-deployment.yaml
 - yantra4d-redis-service.yaml
+# Render worker: its own Deployment as of the capacity split. It runs the same
+# backend image, so the `images:` digest pin below already covers it.
+- yantra4d-render-worker-deployment.yaml
+- yantra4d-render-worker-hpa.yaml
+- yantra4d-render-worker-pdb.yaml
 
 images:
 - digest: sha256:defd426d292a39299e3f24e8451c85a366ac4b3db3da3f9631317070ae2d881c

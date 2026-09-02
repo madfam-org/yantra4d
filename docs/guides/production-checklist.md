@@ -20,7 +20,9 @@ Essential configuration for deploying Yantra4D in production.
 |----------|---------|---------|
 | `LOG_FORMAT` | `text` | Set to `json` for structured logging in production |
 | `REDIS_URL` | — | Redis URL for shared cache and rate limiting |
-| `RENDER_WORKER_HEARTBEAT_KEY` | `yantra_render_worker_heartbeat` | Shared Redis key used for worker liveness checks |
+| `RENDER_WORKER_HEARTBEAT_KEY` | `yantra_render_worker_heartbeat` | Legacy fleet-wide heartbeat key. Still dual-written and still read, so a pre-split worker or a rolled-back API keeps working; it cannot distinguish one worker from many |
+| `RENDER_WORKER_HEARTBEAT_PREFIX` | `render_worker:heartbeat:` | Prefix for per-pod heartbeat keys (`<prefix><pod-name>`). Counting these is how the API reports fleet size; each worker's probes read only its own key |
+| `RENDER_WORKER_ID` | pod name (downward API) | This worker's heartbeat identity. Falls back to `HOSTNAME`, then the system hostname |
 | `RENDER_WORKER_HEARTBEAT_TTL_SECONDS` | `60` | TTL for worker heartbeat window (also used as staleness baseline in API) |
 | `RATE_LIMIT_STORAGE` | `memory://` | Set to `redis://host:6379` for multi-worker rate limiting |
 | `ANALYTICS_DB_PATH` | `data/analytics.db` | Path to analytics SQLite (ephemeral is acceptable for stateless API pods; use Postgres for durable user/analytics data) |

@@ -63,9 +63,20 @@ spec:
       - name: yantra4d-redis
         port: 0
         egress: [dns]
+      # Now a real Deployment rather than a sidecar in the backend pod, so this
+      # peer finally describes something that exists on its own. port 0: the
+      # worker has no listener and no Service — it pulls jobs from the Redis
+      # list and publishes results back over pub/sub.
+      #
+      # Egress narrowed to dns (to resolve yantra4d-redis) plus the explicit
+      # render-worker-to-redis rule below. The worker's import graph contains
+      # no HTTP client at all, and while flask_sqlalchemy is pulled in
+      # transitively via `extensions`, the worker never initialises an app or
+      # opens a session — so https and postgres were reachability it never
+      # used. If a future render path does need either, add it back here.
       - name: yantra4d-render-worker
         port: 0
-        egress: [dns, https, postgres]
+        egress: [dns]
     custom:
       - name: landing-to-backend
         from: { app: yantra4d-landing }

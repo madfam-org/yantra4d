@@ -7,7 +7,10 @@ Publishes progress and completion events via Redis Pub/Sub back to the API.
 import json
 import logging
 import os
+import signal
+import socket
 import sys
+import threading
 import time
 
 import redis
@@ -53,10 +56,23 @@ CANCEL_ALL_KEY = getattr(render_orchestrator, "CANCEL_ALL_KEY", "yantra_render_c
 CANCEL_JOB_PREFIX = getattr(render_orchestrator, "CANCEL_JOB_PREFIX", "yantra_render_cancel_job:")
 ACTIVE_JOB_META_TTL = getattr(render_orchestrator, "ACTIVE_JOB_META_TTL", 300)
 CANCEL_TTL_SECONDS = getattr(render_orchestrator, "CANCEL_TTL_SECONDS", 120)
+# Legacy single global heartbeat key. One key for the whole fleet, so it can
+# only ever answer "is at least one worker alive", never "how many". Kept as a
+# dual-write purely so an API still running pre-split code (a rollback) keeps
+# seeing a live worker. Remove once every reader is on the per-worker keys.
 RENDER_WORKER_HEARTBEAT_KEY = getattr(
     render_orchestrator,
     "RENDER_WORKER_HEARTBEAT_KEY",
     "yantra_render_worker_heartbeat",
+)
+# Per-worker heartbeat keys: `render_worker:heartbeat:<pod-name>`. One key per
+# pod is what makes N replicas observable — the API counts live keys, and a
+# wedged pod fails its own probe instead of hiding behind a healthy sibling
+# that happens to be refreshing a shared key.
+RENDER_WORKER_HEARTBEAT_PREFIX = getattr(
+    render_orchestrator,
+    "RENDER_WORKER_HEARTBEAT_PREFIX",
+    "render_worker:heartbeat:",
 )
 RENDER_WORKER_HEARTBEAT_TTL_SECONDS = getattr(
     render_orchestrator,
@@ -67,16 +83,112 @@ RENDER_WORKER_HEARTBEAT_TTL_SECONDS = getattr(
 STATIC_FOLDER = str(Config.STATIC_DIR)
 
 
-def _publish_heartbeat() -> None:
-    """Publish worker heartbeat metadata for API readiness probes."""
+def _resolve_worker_id() -> str:
+    """Identify this worker pod.
+
+    Kubernetes sets HOSTNAME to the pod name; RENDER_WORKER_ID is wired
+    explicitly from the downward API so the identity does not depend on that
+    implicit container behaviour. Both are absent outside a cluster.
+    """
+    for candidate in (os.environ.get("RENDER_WORKER_ID"), os.environ.get("HOSTNAME")):
+        if candidate and candidate.strip():
+            return candidate.strip()
     try:
-        r.set(
+        return socket.gethostname()
+    except OSError:
+        return f"worker-{os.getpid()}"
+
+
+WORKER_ID = _resolve_worker_id()
+WORKER_HEARTBEAT_KEY = f"{RENDER_WORKER_HEARTBEAT_PREFIX}{WORKER_ID}"
+
+# Beat well inside the TTL so a single missed tick (a Redis blip, a slow
+# scheduler) does not expire the key and fail an otherwise healthy probe.
+HEARTBEAT_INTERVAL_SECONDS = max(5, RENDER_WORKER_HEARTBEAT_TTL_SECONDS // 3)
+
+# Two separate events on purpose. _shutdown means "take no new work"; the
+# heartbeat must keep beating right through the drain, because a draining
+# worker is still alive and still finishing a render. Letting the heartbeat
+# stop at SIGTERM would make the pod vanish from the fleet for up to the whole
+# grace period — and if it were the last worker, the API would see zero
+# workers, fail readiness under RENDER_WORKER_REQUIRED and restart itself while
+# that render was still being written.
+_shutdown = threading.Event()
+_stop_beating = threading.Event()
+_state_lock = threading.Lock()
+_worker_state = {"state": "starting", "job_id": None}
+
+
+def _set_worker_state(state: str, job_id: str | None = None) -> None:
+    with _state_lock:
+        _worker_state["state"] = state
+        _worker_state["job_id"] = job_id
+
+
+def _publish_heartbeat() -> None:
+    """Publish this worker's heartbeat for the API and for its own probes.
+
+    Writes two keys:
+      * the per-worker key, carrying JSON state so the API can report a fleet;
+      * the legacy global key, as a bare timestamp, for pre-split readers.
+    """
+    now = int(time.time())
+    with _state_lock:
+        payload = json.dumps({
+            "ts": now,
+            "worker_id": WORKER_ID,
+            "state": _worker_state["state"],
+            "job_id": _worker_state["job_id"],
+        })
+    try:
+        pipe = r.pipeline()
+        pipe.set(WORKER_HEARTBEAT_KEY, payload, ex=RENDER_WORKER_HEARTBEAT_TTL_SECONDS)
+        pipe.set(
             RENDER_WORKER_HEARTBEAT_KEY,
-            str(int(time.time())),
+            str(now),
             ex=RENDER_WORKER_HEARTBEAT_TTL_SECONDS,
         )
+        pipe.execute()
     except Exception:
         logger.debug("Failed to publish render worker heartbeat", exc_info=True)
+
+
+def _heartbeat_loop() -> None:
+    """Beat on a timer, independent of the job loop.
+
+    The heartbeat used to be published only at the top of the blpop loop, so a
+    render longer than the TTL stopped the beat while the worker was doing
+    exactly what it is for. The API reads that same beat with a TTL*2 staleness
+    window and RENDER_WORKER_REQUIRED=true, so a long render could drive
+    /api/health/ready to 503 and get the API pod restarted mid-render. Beating
+    from a daemon thread decouples liveness from job duration and is what makes
+    a liveness probe on this key safe to add.
+    """
+    while not _stop_beating.wait(HEARTBEAT_INTERVAL_SECONDS):
+        _publish_heartbeat()
+
+
+def _clear_heartbeat() -> None:
+    """Drop this worker's key on a clean exit so the fleet count falls now."""
+    try:
+        r.delete(WORKER_HEARTBEAT_KEY)
+    except Exception:
+        logger.debug("Failed to clear render worker heartbeat", exc_info=True)
+
+
+def _handle_shutdown(signum, _frame) -> None:
+    """Stop taking new work; let the job in hand finish.
+
+    The HPA deletes pods to scale down and does not consult the
+    PodDisruptionBudget, so a worker can be told to stop at any moment. A job
+    already popped off the Redis list exists nowhere else — killing the process
+    mid-render loses it outright. Draining bounds that to the grace period.
+    """
+    logger.info("Received signal %s — draining after the current job", signum)
+    _shutdown.set()
+    with _state_lock:
+        if _worker_state["state"] != "busy":
+            _worker_state["state"] = "draining"
 
 
 def _is_cancelled(job_id: str) -> bool:
@@ -406,25 +518,55 @@ def process_stream_task(task):
         _clear_active_job(job_id)
 
 def run_worker():
-    logger.info("Render worker listening on queue '%s'", RENDER_QUEUE)
-    while True:
-        try:
-            _publish_heartbeat()
-            _, message = r.blpop(RENDER_QUEUE, timeout=5)
-            if message:
-                try:
-                    task = json.loads(message)
-                    if task.get('stream'):
-                        process_stream_task(task)
-                    else:
-                        process_sync_task(task)
-                except json.JSONDecodeError:
-                    logger.warning("Malformed task in render queue: %s", message)
-        except TypeError:
-            pass  # Timeout
-        except Exception as e:  # noqa: BLE001 — the worker loop must survive anything
-            logger.error(f"Worker loop error: {e}")
-            time.sleep(1)
+    logger.info(
+        "Render worker %s listening on queue '%s' (heartbeat %s)",
+        WORKER_ID,
+        RENDER_QUEUE,
+        WORKER_HEARTBEAT_KEY,
+    )
+    _set_worker_state("idle")
+    _publish_heartbeat()
+
+    heartbeat_thread = threading.Thread(
+        target=_heartbeat_loop,
+        name="render-worker-heartbeat",
+        daemon=True,
+    )
+    heartbeat_thread.start()
+
+    try:
+        while not _shutdown.is_set():
+            try:
+                _, message = r.blpop(RENDER_QUEUE, timeout=5)
+                if message:
+                    try:
+                        task = json.loads(message)
+                        _set_worker_state("busy", task.get("job_id"))
+                        try:
+                            if task.get('stream'):
+                                process_stream_task(task)
+                            else:
+                                process_sync_task(task)
+                        finally:
+                            _set_worker_state("idle")
+                    except json.JSONDecodeError:
+                        logger.warning("Malformed task in render queue: %s", message)
+            except TypeError:
+                pass  # Timeout
+            except Exception as e:  # noqa: BLE001 — the worker loop must survive anything
+                logger.error(f"Worker loop error: {e}")
+                _set_worker_state("idle")
+                time.sleep(1)
+    finally:
+        # Only now stop beating: the job in hand is done and this worker is
+        # genuinely leaving.
+        _set_worker_state("stopping")
+        _stop_beating.set()
+        _clear_heartbeat()
+        logger.info("Render worker %s stopped", WORKER_ID)
+
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, _handle_shutdown)
+    signal.signal(signal.SIGINT, _handle_shutdown)
     run_worker()

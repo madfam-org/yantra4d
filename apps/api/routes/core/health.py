@@ -71,6 +71,14 @@ def _check_render_worker() -> tuple[bool, str]:
 
         status = get_render_worker_status()
         detail_parts = []
+        # Lead with the fleet size. "heartbeat age 3s" reads identically whether
+        # one worker is up or four, which is exactly the question a scaled
+        # worker Deployment raises — so state the count first, always, even
+        # when it is zero.
+        detail_parts.append(f"workers {status.get('workers_total', 0)}")
+        busy = status.get("workers_busy")
+        if busy is not None:
+            detail_parts.append(f"busy {busy}")
         if status["age_seconds"] is None:
             detail_parts.append("heartbeat missing")
         else:

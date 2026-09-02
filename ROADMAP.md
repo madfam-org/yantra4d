@@ -20,6 +20,30 @@ This roadmap outlines the strategic path towards a world-class hyperobject commo
 - [ ] **P1.7 — Remaining Dependency Cleanup:** Safely resolve low/moderate Landing/Admin advisories through planned framework and dev-tool upgrades.
 - [ ] **P1.8 — Auth-Enabled Production Smoke:** Validate tiers, CORS, Redis cache, database persistence, webhooks, and graceful render degradation with production-like settings.
 
+> _Status notes (2026-09-02) — nothing above is re-checked here; these only say what is now
+> known about the items that stay open or whose checkmark needs a scope._
+>
+> - **P1.3 (WASM Fallback Testing)** stays checked: the fallback tests exist and pass. Their
+>   scope is the **test suite**, not production. On `main`,
+>   `apps/studio/src/services/engine/renderService.ts` still contains
+>   `if (API_BASE) return 'backend'` inside `detectMode()`, and production always sets
+>   `VITE_API_BASE` — so every heuristic below that line (complexity circuit breaker, hardware
+>   check, `force_backend`) is unreachable in production and no visitor render has actually
+>   run in the browser. Removing that pin is [#80](https://github.com/madfam-org/yantra4d/pull/80)
+>   (browser-first rendering); until it lands, read this item as "tested", not "shipped".
+> - **P1.6 (Full Playwright Audit Closure)** stays unchecked, but the harness is no longer the
+>   blocker: since [#76](https://github.com/madfam-org/yantra4d/pull/76) (merged 2026-09-02)
+>   the nightly `e2e-audit.yml` runs the `23-browser-audit` suite **without Docker** — backend,
+>   Redis and the render worker start directly on the runner, the same shape as `ci.yml`'s e2e
+>   job. The workflow's test step had been skipped on every run since 2026-03-21 because the
+>   runner image has the docker CLI but not the Compose plugin. Run **#166** was the first to
+>   execute the tests; the failures it reported are being reconciled under
+>   [#79](https://github.com/madfam-org/yantra4d/issues/79). Closure means a green audit run,
+>   which has not happened yet.
+> - **P0.7 / P0.8 / P0.9 / P1.7 / P1.8** are left unchecked and unchanged: no verification of
+>   post-push workflow status, live production browser flows, the Tablaco end-to-end path, the
+>   dependency backlog, or an auth-enabled production smoke was performed for this re-baseline.
+
 ---
 
 ## Completed Architecture Phases
@@ -31,6 +55,14 @@ This roadmap outlines the strategic path towards a world-class hyperobject commo
 ### Phase 2: Hybrid Compute Architecture (WASM + Cloud Fallback)
 - [x] WASM Execution
 - [x] Intelligent Cloud Fallback
+
+> _Scope note (2026-09-02):_ both boxes stay checked — the WASM worker and the fallback logic
+> are implemented and covered by tests. The **production** claim is narrower than the phase
+> title suggests: `detectMode()` in `apps/studio/src/services/engine/renderService.ts` returns
+> `'backend'` as soon as `API_BASE` is set, which it always is in production, so the hybrid
+> path is exercised by the test suite and by local/no-API-base builds rather than by real
+> visitors. Making browser rendering the production default is tracked by
+> [#80](https://github.com/madfam-org/yantra4d/pull/80).
 
 ### Phase 4: glTF 2.0 Viewport Transmission
 - [x] Format Upgrade (STL → glTF/GLB)
@@ -65,7 +97,10 @@ The goal is to ensure all Yantra4D projects are fully self-contained, standardiz
 - [x] **Ecosystem Attribution:** Accredited Zack Freedman, Paulo Kiefe, Keep Making in manifests.
 - [x] **Vendor Eradication:** Flattening `vendor/` folders into project roots.
 - [x] **Cross-Project Dependency Resolution:** Eliminating unsafe parent-relative paths (`../`).
-- [x] **100% Audit Passing:** Reaching zero violations across all 33 projects.
+- [x] **100% Audit Passing:** Reaching zero violations across the whole cartridge estate
+  (33 projects when this phase landed). `scripts/qa/compliance_audit.py --strict` now
+  walks every directory under `projects/` and gates CI (`.github/workflows/ci.yml`), so
+  the claim scales with the catalog instead of being pinned to a count.
 
 ### Phase 10 — Nanoscale Material Hyperobjects & Physical Intelligence (Completed)
 Treating additive manufacturing substrates as phased, nested hyperobjects to grant macroscopic geometries emergent "physical intelligence."
@@ -86,7 +121,7 @@ Treating additive manufacturing substrates as phased, nested hyperobjects to gra
 
 ---
 
-### Phase 11 — Absolute Coherence Meta-Audit (In Progress)
+### Phase 11 — Absolute Coherence Meta-Audit (Completed)
 Holistic codebase audit ensuring absolute inner coherence between research documentation, backend engine logic, and frontend UI/UX presentation.
 
 - [x] **Documentation & Research Congruency:** Synchronize `ROADMAP.md`, `README.md`, and manifest schemas with live codebase capabilities.
@@ -94,15 +129,33 @@ Holistic codebase audit ensuring absolute inner coherence between research docum
 - [x] **Browser-Based E2E Verification:** Expand Playwright test suites to validate Digital Twin UI, WASM Circuit Breaker, and Undo/Redo state management.
 - [x] **Structural Lock-In:** Achieve peak platform coherence with zero drift between documentation claims and programmatic reality.
 
+> _Status note (2026-09-02):_ all four sub-items were checked; the phase header still read
+> "In Progress". Marked complete. Coherence is a standing obligation rather than a phase —
+> the drift this re-baseline removed (a 326-cartridge claim against a 500-cartridge catalog,
+> a "33 repos" estate against 37 `projects/…` submodules) is the reason the counts in
+> `README.md` and `COMMONS.md` are now generated from `docs/commons-catalog.json` rather
+> than maintained by hand.
+
 ### Phase 12 — Federated Commons: Projects-as-Independent-Repos (Completed)
 Decentralizing the Yantra4D Commons so every hyperobject project is a sovereign, fork-friendly GitHub repository — individually versionable, independently forkable, and importable as a git submodule.
 
-- [x] **Independent GitHub Repositories:** All 33 hyperobject projects extracted from the monorepo and published as individual public repos under `madfam-org` (32 public, 1 private).
+- [x] **Independent GitHub Repositories:** The 33 hyperobject projects that existed when this phase landed were extracted from the monorepo and published as individual public repos under `madfam-org` (32 public, 1 private).
 - [x] **CERN-OHL-W-2.0 Licensing:** Every project repo carries the CERN Open Hardware Licence Version 2 — Weakly Reciprocal. License text archived at `docs/licenses/CERN-OHL-W-2.0.txt`.
-- [x] **Git Submodule Architecture:** All `projects/<slug>/` directories are now registered git submodules in `.gitmodules`, enabling `git clone --recurse-submodules` for full checkout.
+- [x] **Git Submodule Architecture:** The extracted projects are registered git submodules in `.gitmodules`, so `git clone --recurse-submodules` pulls them alongside the monorepo.
 - [x] **Stub Eradication:** Orphaned `sdk-test` and `slide-holder` stub directories removed from the monorepo.
-- [x] **LLM / Agentic Discovery:** `llms.txt` and `llms-full.txt` updated with full 33-project catalog, GitHub URLs, submodule clone instructions, and CERN license references — enabling native LLM scraping and AI agent discoverability.
+- [x] **LLM / Agentic Discovery:** `llms.txt` and `llms-full.txt` updated with the then-current 33-project catalog, GitHub URLs, submodule clone instructions, and CERN license references — enabling native LLM scraping and AI agent discoverability.
 - [x] **Documentation Sync:** `README.md`, `llms.txt`, and `llms-full.txt` reflect the federated repo architecture with per-ecosystem project groupings and correct project count.
+
+> _Estate re-baseline (2026-09-02):_ "all 33 projects" describes this phase as it landed, not
+> the estate today, and federation turned out to be the flagship pattern rather than the
+> default. The Commons now publishes **500 cartridges**
+> (fact source: `docs/commons-catalog.json` → `counts.cartridges`), the large majority of them
+> ordinary in-repo `projects/<slug>/` directories. **37** `projects/…` entries are git
+> submodules pointing at independent `madfam-org` repos
+> (fact source: the `[submodule "projects/…"]` entries in `.gitmodules`): 34 of those are published
+> cartridges in the catalog, and 3 are not — the `cq-hyperobject-test` engine fixture and the
+> client-private `tablaco` / `tablaco-v2`, the latter two marked `update = none` so public
+> clones skip them. New cartridges land in-repo; only flagships are extracted.
 
 ---
 
@@ -127,10 +180,10 @@ Achieve a high-trust testing foundation across the fragmented monorepo to ensure
 ### Sprint 13 — Per-Project CI & Federated Repo Health (Completed)
 _Dependency: None._
 
-Each of the 33 independent project repos now has its own CI to catch regressions independently of the yantra4d monorepo pipeline.
+Each federated project repo has its own CI to catch regressions independently of the yantra4d monorepo pipeline (33 repos when this sprint landed; 37 `projects/…` submodules today — see the estate re-baseline under Phase 12).
 
 - [x] **GitHub Actions template:** Reusable `.github/workflows/project-ci-reusable.yml` (52 lines) — lint SCAD, validate `project.json` against schema, run compliance audit.
-- [x] **Propagate to all 33 repos:** `scripts/ci/propagate_project_ci.sh` (185 lines) + `scripts/ci/propagate_project_ci.py` apply the CI template across all `madfam-org/<slug>` repositories.
+- [x] **Propagate to the federated repos:** `scripts/ci/propagate_project_ci.sh` + `scripts/ci/propagate_project_ci.py` apply the CI template across the `madfam-org/<slug>` repositories that back the `projects/…` submodules.
 - [x] **Submodule update automation:** `.github/workflows/project-ci.yml` triggers submodule SHA bump when a project repo's `main` branch passes CI.
 - [x] **`tablaco` exclusion hardening:** `update = none` in `.gitmodules` confirmed — public clones skip the private repo.
 
@@ -203,7 +256,7 @@ This sprint closes the gap between locally validated stability and production-gr
 - [ ] **GitHub Actions post-push confirmation:** Verify all workflows are green on `main` for `2b0c397` or newer.
 - [ ] **Live production browser audit:** Exercise `yantra4d.com`, `app.yantra4d.com`, `api.yantra4d.com`, and `admin.yantra4d.com` in desktop and mobile browsers.
 - [ ] **Tablaco browser render proof:** Validate Tablaco loads from the browser, exposes expected controls, renders successfully, degrades cleanly on backend failure/rate limit, and exports usable artifacts.
-- [ ] **Full E2E audit suite:** Run the real-backend/OpenSCAD Playwright audit project and capture screenshots/artifacts under `audit/` only when intentionally updating audit baselines.
+- [ ] **Full E2E audit suite:** Run the real-backend/OpenSCAD Playwright audit project and capture screenshots/artifacts under `audit/` only when intentionally updating audit baselines. _(2026-09-02: the nightly `e2e-audit.yml` now executes this suite without Docker since #76; results are being reconciled under #79. Same item as P1.6 — see the status notes at the top of this file.)_
 - [ ] **Production-like backend smoke:** Validate Redis L2 render cache, auth-enabled tier behavior, database persistence, CORS origins, webhook HMAC rejection/acceptance, OpenSCAD availability, and render timeout handling.
 - [ ] **Dependency modernization backlog:** Resolve remaining low/moderate advisories through deliberate Astro/Vitest/Vite upgrade work rather than force upgrades in hotfix mode.
 - [ ] **Enclii-first operations runbook:** Document the production validation path through Enclii and record any missing adapters instead of normalizing raw infrastructure access.
@@ -242,10 +295,33 @@ Transition the current mock simulation pipeline to full GPU-accelerated producti
 
 ---
 
-### Sprint 18 — CadQuery-First Commons Expansion to 200 (Completed)
+### Sprint 18 — CadQuery-First Commons Expansion (Completed — re-baselined at 500 on 2026-08-25)
 
-Grew the Commons from the original catalog to **200 CadQuery-first hyperobjects**,
-authored dual-engine-ready, and added platform support for mixed-engine cartridges.
+Grew the Commons from the original catalog to **200 CadQuery-first hyperobjects** within this
+sprint's own scope, authored dual-engine-ready, and added platform support for mixed-engine
+cartridges. Expansion then continued past the sprint: the catalog reached **500** on
+2026-08-25 (`9795f27` — "the closing six — 500", #67), and 500 is the number generated into
+`README.md` and `COMMONS.md`. This sprint's title used to read "Expansion to 200"; 200 was a
+target the catalog passed two and a half times over, so it survives only as the record of
+what this sprint itself delivered.
+
+Catalog shape at 500 (fact source: `docs/commons-catalog.json` → `counts`, and the
+per-cartridge `engines` sets — a cartridge may declare more than one engine, so the engine
+rows sum past 500):
+
+| | |
+| :-- | --: |
+| Cartridges | 500 |
+| Declaring CadQuery | 488 |
+| Declaring OpenSCAD | 32 (22 of them alongside CadQuery) |
+| Declaring Graph | 2 |
+| Declaring Implicit | 1 |
+| Flagged `dual_engine` | 22 |
+| With declared CDG interfaces | 486 |
+| Carrying an explicit `commons_license` | 500 |
+
+The API serves 501 projects — the 500 published cartridges plus the `cq-hyperobject-test`
+engine fixture, which is excluded from the catalog (as is the client-private `tablaco`).
 
 - [x] **Per-mode engine resolution:** `ManifestService.mode_engine(mode_id)` resolves the
   render engine per mode (explicit mode `engine` → `.py`/`.cq` inference → project engine;
@@ -266,3 +342,10 @@ authored dual-engine-ready, and added platform support for mixed-engine cartridg
   idiom), watertight on every mode through the real render sandbox, and geometrically
   distinct per mode (mode/part-id alignment). A body-count check additionally rejects
   negative-volume / severed-body defects that watertightness alone misses.
+
+**Next waves are RFC scale, not sprint scale.** 501–600 and anything past it is deliberately
+not committed here. At 500 cartridges the binding constraints are domain selection,
+CDG-interface leverage, licensing provenance, and the per-wave verification budget (real-sandbox
+watertightness plus the body-count check on every mode) — each of which needs an RFC that names
+the wave's domains and its verification cost before authoring starts. Until such an RFC lands,
+the roadmap commitment stops at the 500 already in `docs/commons-catalog.json`.

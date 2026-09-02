@@ -13,6 +13,7 @@ from middleware.auth import (
     export_format_denied_response,
     optional_auth,
 )
+from services.core.project_access import check_project_access
 from services.core.tier_service import export_format_allowed
 from services.engine.render_orchestrator import ALLOWED_EXPORT_FORMATS
 from utils.route_helpers import error_response, handle_exceptions, safe_join_path
@@ -38,6 +39,12 @@ def _check_access(manifest_data, action: str, claims) -> tuple | None:
 
 def _download_render_file(slug: str, filename: str, file_format: str, claims) -> Response | tuple[Response, int]:
     """Download a render artifact by file format and filename."""
+    # Privacy outranks the per-action access_control below: a private project
+    # is not downloadable at all, whatever its download_* levels say.
+    denied = check_project_access(slug)
+    if denied is not None:
+        return denied
+
     normalized_format = file_format.lower().lstrip(".")
     if normalized_format == "scad":
         return download_scad(slug, filename)
@@ -113,6 +120,10 @@ def download_by_format(slug: str, file_format: str, filename: str) -> Response |
 @handle_exceptions
 def download_scad(slug: str, filename: str) -> Response | tuple[Response, int]:
     """Download a SCAD source file for a project."""
+    denied = check_project_access(slug)
+    if denied is not None:
+        return denied
+
     # Early path-traversal check using safe_join_path against project dir
     if not safe_join_path(str(Config.PROJECTS_DIR / slug), filename):
         return error_response("Invalid filename", 400)

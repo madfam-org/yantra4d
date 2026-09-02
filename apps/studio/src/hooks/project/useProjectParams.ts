@@ -429,7 +429,10 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
       return
     }
     const timer = setTimeout(() => {
-      handleGenerate()
+      // Flagged automatic: nothing the visitor did asked for this render, so an
+      // over-threshold estimate must not stop the page with the confirm modal.
+      // useRender turns it into a toast and waits for an explicit Generate.
+      handleGenerate(false, null, { automatic: true })
     }, RENDER_DEBOUNCE_MS)
     return () => clearTimeout(timer)
   }, [params, mode, getCacheKey, manifest]) // eslint-disable-line react-hooks/exhaustive-deps

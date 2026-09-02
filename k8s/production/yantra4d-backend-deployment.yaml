@@ -66,6 +66,27 @@ spec:
                 secretKeyRef:
                   name: yantra4d-secrets
                   key: JANUA_AUDIENCE
+            # Client-private cartridges are served only to authorized identities
+            # (top tier, admin role, or an explicit grant). The slugs are public
+            # knowledge — their gitlinks are in this repo — but the identities are
+            # not: TIER_OVERRIDES and PROJECT_ACCESS_GRANTS live in the
+            # yantra4d-secrets Secret and are optional so the pod starts without
+            # them (then nobody is overridden and nobody is granted). Semantics and
+            # JSON shapes: docs/AUTH.md → "Private projects and identity tier overrides".
+            - name: PRIVATE_PROJECTS
+              value: "tablaco,tablaco-v2"
+            - name: TIER_OVERRIDES
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: TIER_OVERRIDES
+                  optional: true
+            - name: PROJECT_ACCESS_GRANTS
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: PROJECT_ACCESS_GRANTS
+                  optional: true
             - name: AI_PROVIDER
               value: "openai"
             - name: AI_BASE_URL

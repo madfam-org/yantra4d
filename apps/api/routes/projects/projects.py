@@ -18,6 +18,11 @@ from config import Config
 from extensions import limiter
 from manifest import discover_projects, get_manifest, invalidate_cache
 from middleware.auth import require_tier
+from services.core.project_access import (
+    filter_visible_projects,
+    is_private_project,
+    require_project_access,
+)
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
@@ -60,6 +65,10 @@ def _get_project_stats():
 def list_projects():
     """Return list of available projects with optional analytics counts."""
     projects = discover_projects()
+    # Privacy first, listing second: `unlisted` hides a project someone may
+    # still fetch directly, `private` withholds it entirely. Filtering in this
+    # order keeps the two independent.
+    projects, any_private = filter_visible_projects(projects)
     projects = [p for p in projects if not p.get("unlisted", False)]
     include_stats = request.args.get("stats") == "1"
     if include_stats:
@@ -73,12 +82,17 @@ def list_projects():
                 "preset_applies": project_stats.get("preset_apply", 0),
             }
     resp = jsonify(projects)
-    resp.headers["Cache-Control"] = "public, max-age=300"
+    # Once any project in the catalogue is private the list depends on who is
+    # asking, and a shared cache would hand one caller's view to the next.
+    resp.headers["Cache-Control"] = (
+        "private, no-store" if any_private else "public, max-age=300"
+    )
     return resp
 
 
 @projects_bp.route('/api/projects/<slug>/manifest', methods=['GET'])
 @require_valid_slug
+@require_project_access
 def get_project_manifest(slug):
     """Return full manifest for a specific project."""
     try:
@@ -88,6 +102,17 @@ def get_project_manifest(slug):
 
     try:
         body = json.dumps(manifest.as_json(), sort_keys=True)
+
+        if is_private_project(slug, manifest):
+            # A private manifest gets neither a shared cache nor an ETag: the
+            # ETag is a stable, guessable handle to the very content being
+            # withheld, and a 304 to an entitled caller would let an
+            # intermediary keep serving the body.
+            resp = make_response(body)
+            resp.headers["Content-Type"] = "application/json"
+            resp.headers["Cache-Control"] = "private, no-store"
+            return resp
+
         etag = hashlib.md5(body.encode()).hexdigest()
 
         if request.if_none_match and etag in request.if_none_match:
@@ -104,6 +129,7 @@ def get_project_manifest(slug):
 
 @projects_bp.route('/api/projects/<slug>/meta', methods=['GET'])
 @require_valid_slug
+@require_project_access
 def get_project_meta(slug):
     """Return project.meta.json if it exists."""
     try:
@@ -123,6 +149,7 @@ def get_project_meta(slug):
 
 @projects_bp.route('/api/projects/<slug>/parts/<path:filename>', methods=['GET'])
 @require_valid_slug
+@require_project_access
 def serve_static_part(slug, filename):
     """Serve a pre-existing STL file from a project's parts/ directory."""
     try:
@@ -139,7 +166,10 @@ def serve_static_part(slug, filename):
     if not requested.is_file():
         abort(404)
     resp = send_from_directory(str(parts_dir), filename)
-    resp.headers["Cache-Control"] = "public, max-age=86400"
+    resp.headers["Cache-Control"] = (
+        "private, no-store" if is_private_project(slug, manifest)
+        else "public, max-age=86400"
+    )
     return resp
 
 
@@ -147,6 +177,7 @@ def serve_static_part(slug, filename):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.PROJECT_FORK)
+@require_project_access
 def fork_project(slug):
     """Fork a project: copy files to a new slug owned by the user."""
     try:
@@ -194,6 +225,7 @@ def fork_project(slug):
 @require_valid_slug
 @require_tier("pro")
 @handle_exceptions
+@require_project_access
 def update_assembly_steps(slug):
     """Update assembly_steps in a project's project.json."""
     try:

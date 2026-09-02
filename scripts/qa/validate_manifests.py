@@ -88,7 +88,7 @@ def parse_gitmodules(path=GITMODULES_PATH):
     current = None
     for raw_line in text.splitlines():
         line = raw_line.strip()
-        if not line or line.startswith("#") or line.startswith(";"):
+        if not line or line.startswith(("#", ";")):
             continue
         section = _SECTION_RE.match(line)
         if section:
@@ -175,7 +175,7 @@ def classify_project(project_path, schema, registered_submodules, allow_uninitia
         return FAILED_INVALID, f"{project_slug}: Invalid JSON in project.json - {e}"
     except jsonschema.ValidationError as e:
         return FAILED_INVALID, f"{project_slug}: Schema validation failed - {e.message}"
-    except Exception as e:  # noqa: BLE001 - report, don't crash the whole sweep
+    except Exception as e:  # report, don't crash the whole sweep
         return FAILED_INVALID, f"{project_slug}: Unexpected error - {e}"
 
 

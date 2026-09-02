@@ -412,6 +412,17 @@ jobs:
       # the whole point of the check that a partial checkout cannot pass.
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
+      # scripts/tests/ had no CI home: test_ceq_coverage.py and
+      # test_validate_manifests.py passed only on developer machines, which is
+      # the same "green for the wrong reason" failure the suites themselves
+      # exist to catch. It lands here rather than in a job of its own because
+      # this job already has Python 3.12, a recursive checkout and the
+      # jsonschema the manifest tests import, and it is already in
+      # ci-success's needs. pytest is the only dependency the suite adds.
+      - name: scripts/ test suite
+        run: |
+          pip install pytest
+          python -m pytest scripts/tests -q
 
   # Locale key parity is a hard gate (a missing key ships untranslated UI); the
   # hardcoded-string count is a ratchet against scripts/qa/i18n_baseline.json,

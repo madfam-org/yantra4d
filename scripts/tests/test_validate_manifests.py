@@ -24,8 +24,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "scripts" / "qa"))
 
-import validate_manifests as vm  # noqa: E402
-
+import validate_manifests as vm
 
 SCHEMA = {
     "type": "object",

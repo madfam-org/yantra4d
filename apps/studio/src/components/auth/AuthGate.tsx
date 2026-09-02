@@ -7,7 +7,7 @@ import { useTier } from "../../hooks/system/useTier"
  * Conditionally renders children based on manifest access_control, auth state, and tier.
  *
  * @param {string} action - Key in manifest.access_control (e.g., "download_stl")
- * @param {string} tier - Minimum tier required (e.g., "pro", "madfam")
+ * @param {string} tier - Minimum tier required (e.g., "pro", "premium")
  * @param {React.ReactNode} children - Content to show when access is granted
  * @param {React.ReactNode} fallback - Content to show when access is denied (optional)
  */

@@ -8,10 +8,15 @@ function authHeaders() {
     return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+// Keyed by the tier ids `/api/tiers` returns. Deprecated names are kept so a
+// self-hosted backend on an older image still gets its badge coloured rather
+// than falling through to the grey default.
 const TIER_COLORS = {
     guest: 'text-zinc-500 border-zinc-500/40 bg-zinc-500/10',
+    essentials: 'text-blue-500 border-blue-500/40 bg-blue-500/10',
     basic: 'text-blue-500 border-blue-500/40 bg-blue-500/10',
     pro: 'text-amber-500 border-amber-500/40 bg-amber-500/10',
+    premium: 'text-violet-500 border-violet-500/40 bg-violet-500/10',
     madfam: 'text-violet-500 border-violet-500/40 bg-violet-500/10',
 }
 

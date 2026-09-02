@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest'
 vi.mock('../../contexts/auth/TierProvider', () => ({
   useTier: () => ({
     tier: 'pro',
-    canAccess: (t) => t !== 'madfam',
+    canAccess: (t) => t !== 'premium',
     loading: false,
     limits: { backend_renders_per_hour: 150 },
   }),
@@ -16,6 +16,6 @@ describe('useTier re-export', () => {
     const result = useTier()
     expect(result.tier).toBe('pro')
     expect(result.canAccess('basic')).toBe(true)
-    expect(result.canAccess('madfam')).toBe(false)
+    expect(result.canAccess('premium')).toBe(false)
   })
 })

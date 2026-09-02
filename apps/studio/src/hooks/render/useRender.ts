@@ -204,7 +204,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
       } else {
         const isProGate = (e as Error).message.includes('HTTP 403') || (e as Error).message.includes('Pro tier required');
         const msg = isProGate
-          ? "✨ Unlock cloud rendering by upgrading to a Pro or MadFam plan."
+          ? t("tier.upgrade_cloud_render")
           : (e as Error).message;
         setLogs(prev => prev + `\n${t("log.error")} ${msg}`)
 

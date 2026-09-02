@@ -9,11 +9,12 @@
  * Props:
  *   projectSlug      : string  — active project slug
  *   currentPartUrls  : string[] — GLB URLs of the current rendered parts to print
- *   tier             : string  — current user tier ('guest'|'basic'|'pro'|'madfam')
+ *   tier             : string  — current user tier ('guest'|'essentials'|'pro'|'premium')
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { apiFetch } from '../../services/core/apiClient'
+import { tierAtLeast } from '../../lib/tiers'
 import './PrintPanel.css'
 
 const POLL_INTERVAL_MS = 5000
@@ -127,7 +128,7 @@ export default function PrintPanel({ currentPartUrls = [], tier = 'guest' }: Pri
     const [success, setSuccess] = useState<string | null>(null)
     const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-    const canPrint = tier === 'pro' || tier === 'madfam'
+    const canPrint = tierAtLeast(tier, 'pro')
 
     // Load printer list once
     useEffect(() => {

@@ -151,6 +151,7 @@
   "toast.export_started": "Export started…",
   "toast.export_done": "Export completed",
   "toast.render_failed": "Render failed",
+  "toast.auto_render_skipped": "Long render skipped — about {minutes} min. Press Generate to render.",
   "bom.title": "Bill of Materials",
   "bom.item": "Item",
   "bom.qty": "Qty",

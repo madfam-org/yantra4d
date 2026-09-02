@@ -142,6 +142,7 @@
   "toast.export_started": "Export gestartet…",
   "toast.export_done": "Export abgeschlossen",
   "toast.render_failed": "Rendering fehlgeschlagen",
+  "toast.auto_render_skipped": "[UNTRANSLATED] Long render skipped — about {minutes} min. Press Generate to render.",
   "bom.title": "Stückliste",
   "bom.item": "Bauteil",
   "bom.qty": "Menge",

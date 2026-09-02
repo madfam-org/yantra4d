@@ -103,12 +103,24 @@ All endpoint limits are centralized in `apps/api/rate_limits.py`:
 
 Health endpoints are exempt from rate limiting (K8s probes).
 
-## Client-Side Behavior (WASM Fallback)
+## Client-Side Behavior (429 -> browser)
 
-When the frontend receives an HTTP 429 (rate limited) response:
+A 429 can only reach a render the placement decision had already sent to the
+server (see "Browser renders are never rate limited" above). When one comes
+back:
 
-1. **Standard projects**: `renderService.ts` catches the 429 and retries the render using client-side WASM (OpenSCAD compiled to WebAssembly). The user sees a seamless fallback with no error.
-2. **`force_backend` projects**: WASM fallback is disabled. The user sees an upgrade/wait message explaining the rate limit. These projects require server-side rendering (e.g., CadQuery engine, complex geometry).
+1. **Soft server placements**: `renderService.ts` catches the 429 and re-runs the
+   render in the browser. The user sees a log line naming the rate limit, not an
+   error.
+2. **Hard server pins**: there is no browser path to fall back to, so the user
+   sees the upgrade/wait message instead. A pin is hard only when the MODE's
+   engine is `cadquery`, `graph` or `implicit`, when the manifest sets
+   `render.server_only: true`, or when the wasm bundle is unavailable or names
+   `unsupported` / `unresolved` entries.
+
+`project.force_backend` is **not** one of them. It was demoted to a SOFT hint
+that applies only on a `limited` device, so it neither pins a project to the
+server nor disables the 429 fallback.
 
 This behavior is implemented in `apps/studio/src/services/engine/renderService.ts`.
 
@@ -138,4 +150,4 @@ Without Redis, each Gunicorn worker maintains independent counters — a user co
 | `apps/api/rate_limits.py` | Centralized limit constants for all endpoints |
 | `apps/api/tiers.json` | Per-tier feature flags and render limits |
 | `apps/api/services/core/tier_service.py` | Tier resolution from JWT claims |
-| `apps/studio/src/services/engine/renderService.ts` | Client-side 429 handling and WASM fallback |
+| `apps/studio/src/services/engine/renderService.ts` | Client-side 429 handling and the fallback to browser rendering |

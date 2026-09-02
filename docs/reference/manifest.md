@@ -500,7 +500,7 @@ The total estimated time is:
 estimated_seconds = base_time + (num_units × per_unit) + (num_parts × per_part)
 ```
 
-In WASM mode, this estimate is multiplied by `wasm_multiplier` (default: 3).
+When the render will run in the **browser** — the default placement — the estimate is multiplied by `wasm_multiplier` (default: 3), because the WASM kernel is slower than the native one. A server placement uses the unmultiplied value. The multiplied number is also what rule 8 compares against `render.browser_max_estimate_seconds`.
 
 If the estimate exceeds `warning_threshold_seconds` (default: 60), a confirmation dialog is shown before rendering.
 

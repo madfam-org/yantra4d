@@ -253,6 +253,16 @@ describe('decideRenderPlacement — rule 8: estimate threshold', () => {
     expect(decide({ estimateSeconds: 20, browserMaxEstimateSeconds: -1 }).placement).toBe('browser')
     expect(decide({ estimateSeconds: 46, browserMaxEstimateSeconds: Number.NaN }).placement).toBe('server')
     expect(decide({ estimateSeconds: 46, browserMaxEstimateSeconds: null }).placement).toBe('server')
+    // 0 is a REAL budget, not a falsy "unset". A `>= 0` test rather than a
+    // truthiness test is the whole difference: a cartridge that gives the
+    // browser zero seconds sends every render it can estimate to the server,
+    // and must not silently inherit the 45 s tier default instead.
+    expect(decide({ estimateSeconds: 0.5, browserMaxEstimateSeconds: 0 }).placement).toBe('server')
+    expect(decide({ estimateSeconds: 0.5, browserMaxEstimateSeconds: 0 }).reasons[0])
+      .toBe('estimate_over_threshold:1s>0s')
+    // An estimate of exactly the budget still renders in the browser — the rule
+    // is `>`, not `>=`, at every threshold.
+    expect(decide({ estimateSeconds: 0, browserMaxEstimateSeconds: 0 }).placement).toBe('browser')
   })
 
   it('names the numbers in the reason', () => {

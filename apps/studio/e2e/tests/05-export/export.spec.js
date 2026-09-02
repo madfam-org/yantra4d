@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
+import { forceBackendRender, goToStudio, setLanguage } from '../../helpers/test-utils.js'
 
 test.describe('Export Panel', () => {
   // ExportPanel renders inside <TabsContent value="export"> in StudioSidebar,
@@ -64,12 +64,12 @@ test.describe('Export Panel', () => {
   })
 
   test('image export buttons are enabled after render produces parts', async ({ page, sidebar }) => {
-    // Force backend rendering mode — WASM has no binary in the E2E test
-    // environment, so it fails silently. By lowering hardwareConcurrency,
-    // detectMode() picks 'backend' and the SSE mock produces real parts.
-    await page.addInitScript(() => {
-      Object.defineProperty(navigator, 'hardwareConcurrency', { value: 2 })
-    })
+    // This test needs real parts, which only the mocked SSE render produces:
+    // the E2E environment ships no WASM binary. Pin the SERVER placement with
+    // the app's own `?render=backend` override (rule 4) — lowering
+    // hardwareConcurrency no longer selects it, since a `limited` device still
+    // renders in the browser by default.
+    await forceBackendRender(page)
     await goToStudio(page)
     // goToStudio renavigates, which resets the sidebar to its default "config"
     // tab and takes ExportPanel back out of the DOM.

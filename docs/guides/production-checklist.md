@@ -51,7 +51,7 @@ otherwise alive.
 ### Readiness States
 
 - **healthy**: All checks pass
-- **degraded**: Optional dependencies (OpenSCAD, Redis, analytics) unavailable — still serving requests (WASM fallback for rendering)
+- **degraded**: Optional dependencies (OpenSCAD, Redis, analytics) unavailable — still serving requests. OpenSCAD cartridges are largely unaffected because the browser is the default render placement; anything hard-pinned to the server (a `cadquery`/`graph`/`implicit` mode, `render.server_only`) has nowhere to run
 - **unhealthy** (503): Critical failure — should not receive traffic
 
 ## Docker Compose

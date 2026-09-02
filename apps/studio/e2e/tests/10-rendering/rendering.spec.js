@@ -4,12 +4,12 @@ import { goToStudio, setLanguage, forceBackendRender, waitForRenderSettled } fro
 test.describe('Rendering Flow', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
-    // Every test in this file asserts on the behaviour of a MOCKED render.
-    // detectMode() only consults those mocks on the 'backend' path, and it
-    // chooses between backend and WASM by reading navigator.hardwareConcurrency
-    // — so without this pin the whole file silently tested the WASM path on any
-    // runner with >= 4 cores, where the mocks are never fetched and the render
-    // ends in "OpenSCAD exited with code 1" at machine-dependent speed.
+    // Every test in this file asserts on the behaviour of a MOCKED render, and
+    // only a SERVER placement fetches `/api/render-stream`. The browser is the
+    // default placement, so without this `?render=backend` pin the whole file
+    // would test the browser path — where the mocks are never fetched and the
+    // render dies in a WASM environment that ships no binary, at
+    // machine-dependent speed.
     await forceBackendRender(page)
     await goToStudio(page)
   })

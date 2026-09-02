@@ -34,7 +34,10 @@ import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
  */
 async function simulateBackendDown(page) {
     // Abort the health check — isBackendAvailable() catches the error and
-    // sets _backendAvailable = false, which causes detectMode() → 'wasm'.
+    // reports false, which is what `decideRenderPlacement`'s outage guard reads:
+    // any SOFT server decision flips back to the browser. It does not *cause*
+    // browser rendering (rule 10 already does); it removes the server as an
+    // escape hatch.
     await page.route('**/api/health', (route) => route.abort('failed'))
 
     // Also abort render-stream so any accidental backend call fails fast.

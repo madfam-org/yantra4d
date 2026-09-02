@@ -1,12 +1,23 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import {
   planBundleFsLayout,
   resolveEntryPath,
   toVirtualPath,
+  fetchWasmBundle,
+  clearBundleCache,
+  peekBundle,
+  BundleUnavailableError,
   FONT_DIR,
   FONTCONFIG_PATH,
   VIRTUAL_OPENSCADPATH,
 } from './wasmBundle'
+import { apiFetch } from '../core/apiClient'
+
+// The bundle is fetched through `apiFetch` (so the bearer token rides along)
+// against `getApiBase()`. Both are stubbed: this file is about the bundle
+// contract, not about auth or about how the API base is discovered.
+vi.mock('../core/apiClient', () => ({ apiFetch: vi.fn() }))
+vi.mock('../core/backendDetection', () => ({ getApiBase: () => 'http://api.test' }))
 
 /**
  * The bundle -> virtual-filesystem mapping.
@@ -208,5 +219,108 @@ describe('resolveEntryPath', () => {
     // Better a legible "can\'t open file" from OpenSCAD than a silent wrong path.
     expect(resolveEntryPath(GRIDFINITY, 'missing.scad'))
       .toBe('/projects/gridfinity/missing.scad')
+  })
+})
+
+// ── Fetching ────────────────────────────────────────────────────────────────
+
+/** A minimal `Response` shape — only what `fetchWasmBundle` actually reads. */
+function jsonResponse(body, status = 200) {
+  return { ok: status >= 200 && status < 300, status, json: async () => body }
+}
+
+/** A `/scad/<name>` reply for the dev-only fallback. */
+function textResponse(text, status = 200) {
+  return { ok: status >= 200 && status < 300, status, text: async () => text }
+}
+
+describe('fetchWasmBundle', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    clearBundleCache()
+    vi.mocked(apiFetch).mockReset()
+  })
+
+  it('asks the bundle endpoint for the slug, and memoises one bundle per slug', async () => {
+    vi.mocked(apiFetch).mockResolvedValue(jsonResponse(GRIDFINITY))
+
+    const first = await fetchWasmBundle('gridfinity')
+    const second = await fetchWasmBundle('gridfinity')
+
+    // Same object, one request: the bundle is a multi-megabyte blob of source
+    // text and every mode switch would otherwise re-download it.
+    expect(second).toBe(first)
+    expect(apiFetch).toHaveBeenCalledTimes(1)
+    expect(String(vi.mocked(apiFetch).mock.calls[0][0]))
+      .toBe('http://api.test/api/projects/gridfinity/wasm-bundle')
+    expect(peekBundle('gridfinity')).toBe(first)
+
+    clearBundleCache('gridfinity')
+    expect(peekBundle('gridfinity')).toBeNull()
+  })
+
+  it('surfaces a private project as project_locked, never as a browser failure', async () => {
+    // A 403 means "sign in", not "your machine cannot render this". It must not
+    // reach the /scad/ fallback either — that would answer a locked project
+    // with whatever the origin happens to serve.
+    vi.mocked(apiFetch).mockResolvedValue(jsonResponse({}, 403))
+    const rawFetch = vi.spyOn(globalThis, 'fetch')
+
+    await expect(
+      fetchWasmBundle('tablaco', { manifest: { modes: [{ scad_file: 'a.scad' }] } }),
+    ).rejects.toMatchObject({ code: 'project_locked', status: 403 })
+    expect(rawFetch).not.toHaveBeenCalled()
+
+    vi.mocked(apiFetch).mockResolvedValue(jsonResponse({}, 401))
+    await expect(fetchWasmBundle('tablaco')).rejects.toMatchObject({ code: 'project_locked' })
+  })
+
+  it('reports an unobtainable bundle as bundle_unavailable', async () => {
+    vi.mocked(apiFetch).mockResolvedValue(jsonResponse({}, 404))
+    // No manifest, so the dev fallback has no mode file to ask for.
+    const err = await fetchWasmBundle('nope').catch(e => e)
+    expect(err).toBeInstanceOf(BundleUnavailableError)
+    expect(err.code).toBe('bundle_unavailable')
+    expect(err.status).toBe(404)
+    // Rule 3 of decideRenderPlacement turns this into a HARD server placement.
+    expect(peekBundle('nope')).toBeNull()
+  })
+
+  it('rejects a malformed body rather than mounting it', async () => {
+    vi.mocked(apiFetch).mockResolvedValue(jsonResponse({ slug: 'x' })) // no files, no entry_files
+    await expect(fetchWasmBundle('x')).rejects.toMatchObject({ code: 'bundle_malformed' })
+  })
+
+  it('refuses the SPA index.html that /scad/ answers with at 200 OK', async () => {
+    // THE TRAP THE BUNDLE EXISTS TO FIX. nginx `try_files … /index.html` makes
+    // every /scad/<file> a 200 whose body is the app's own HTML, so a fallback
+    // that trusted the status code would write `<!doctype html>` into the
+    // virtual filesystem as SCAD source and blame the visitor's machine for the
+    // resulting failure.
+    vi.mocked(apiFetch).mockResolvedValue(jsonResponse({}, 404))
+    const rawFetch = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValue(textResponse('<!doctype html>\n<html><body>app</body></html>'))
+
+    await expect(
+      fetchWasmBundle('gridfinity', { manifest: { modes: [{ scad_file: 'cup.scad' }] } }),
+    ).rejects.toMatchObject({ code: 'bundle_unavailable' })
+    expect(rawFetch).toHaveBeenCalledWith('/scad/cup.scad')
+    expect(peekBundle('gridfinity')).toBeNull()
+  })
+
+  it('serves a dev-only /scad/ fallback, and says out loud what it cannot carry', async () => {
+    vi.mocked(apiFetch).mockResolvedValue(jsonResponse({}, 404))
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(textResponse('cube(1);'))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    const bundle = await fetchWasmBundle('demo', { manifest: { modes: [{ scad_file: 'a.scad' }] } })
+
+    // Keyed the way the real bundle keys it, so planBundleFsLayout puts it at
+    // /projects/demo/a.scad either way.
+    expect(bundle.files).toEqual({ 'projects/demo/a.scad': 'cube(1);' })
+    expect(bundle.entry_files).toEqual(['a.scad'])
+    // No libraries and no fonts — the two things the endpoint exists to supply.
+    expect(bundle.fonts).toBeUndefined()
+    expect(String(warn.mock.calls[0]?.[0])).toContain('DEV FALLBACK')
   })
 })

@@ -59,12 +59,12 @@ Examples of presets:
 
 ## Rendering
 
-The studio renders your model automatically when you change parameters. Two rendering paths are available:
+The studio renders your model automatically when you change parameters. Two **placements** are available:
 
-1. **WASM (client-side).** OpenSCAD runs in your browser via WebAssembly. Fast for simple models, no server needed.
-2. **Backend.** The server renders using native OpenSCAD or CadQuery. Handles complex geometry and additional export formats.
+1. **Browser.** OpenSCAD runs on your own machine via WebAssembly. **The default** -- fast for most models, no server needed, and never counted against your hourly render quota.
+2. **Server.** Our API renders using native OpenSCAD or CadQuery. Handles geometry too large for a browser tab, the engines with no browser build, and the extra export formats.
 
-If the backend is unreachable, the studio falls back to WASM automatically. Some projects with `force_backend: true` prefer server rendering but will still fall back to WASM if the server is down.
+The sidebar's placement control shows which one this render will use, why, and lets you choose **Auto**, **Browser** or **Server**. It is disabled when the choice is not yours to make: a `cadquery`, `graph` or `implicit` mode has no browser kernel, and a project may declare `render.server_only: true`. A project's legacy `force_backend: true` no longer pins anything -- it is a hint that applies only on a device measured as limited. If a server render is refused or the server is unreachable, anything that was merely preferring the server falls back to your browser.
 
 A progress indicator shows estimated render time. For models with long render times (above the project's warning threshold), a confirmation dialog appears before starting.
 

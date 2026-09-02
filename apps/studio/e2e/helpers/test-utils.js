@@ -33,44 +33,42 @@ function studioUrl(page, slug) {
 }
 
 /**
- * Pin the render pipeline to the backend (SSE) path so route mocks govern it.
+ * Pin the render pipeline to the server (SSE) path so route mocks govern it.
  *
- * PRIMARY MECHANISM: the app's own `?render=backend` override, which
- * detectMode() consults before it probes /api/health and before the hardware
- * heuristic. This is a supported product feature (see apps/studio/README.md,
- * "Render Mode Override"), so the tests now pin the path the same way support
- * tells a user to, instead of lying to the app about the machine.
+ * THE MECHANISM: the app's own `?render=backend` override — rule 4 of
+ * `decideRenderPlacement()`, above the capability tier, the visitor preference
+ * and every heuristic below it. This is a supported product feature (see
+ * apps/studio/README.md, "The override"), so the tests pin the path the same
+ * way support tells a user to, instead of lying to the app about the machine.
+ * Only the three HARD rules outrank it, and none of them applies to the mocked
+ * "test" cartridge.
  *
- * Why the override was needed at all: detectMode() picks between 'backend' and
- * 'wasm', and with no VITE_API_BASE set (the E2E build) the deciding branch was
+ * Why a pin is needed at all: since browser-first placement landed, the BROWSER
+ * is the default (rule 10), so without this the render never touches
+ * `**\/api/render-stream` on the first attempt and every mock in the file is
+ * answering a request that only arrives — if at all — through the
+ * browser->server fallback, after the worker has failed on an environment that
+ * ships no WASM binary. That is an unbounded, machine-dependent delay in front
+ * of every assertion.
  *
- *   hasWasmCapabilities() = navigator.hardwareConcurrency >= 4 && deviceMemory >= 4
- *
- * which makes the render path a property of the RUNNER, not of the test. On a
- * GitHub-hosted runner (2 cores) the app chose 'backend' and every
- * `page.route('**\/api/render-stream')` mock in the suite applied; on the
- * madfam-runners-blue ARC pods — and on any developer laptop with >= 4 cores —
- * it chose 'wasm' instead, the render never touched the network, and the mocks
- * were dead code. The WASM path then fails with "OpenSCAD exited with code 1"
- * (no WASM binary is shipped to the E2E environment) after an unbounded,
- * machine-dependent delay.
- *
- * FALLBACK: the hardwareConcurrency spoof stays, deliberately. It is what makes
- * this helper work for a navigation that does NOT go through goToStudio — a
- * bare `page.goto('/project/test')`, a `page.goto(landingUrl())`, an in-app
- * click-through — since only goToStudio knows to append the query param. It
- * also keeps the helper honest against a build predating the override. The two
- * agree by construction: both select 'backend', so whichever one the app reads
- * first gives the same answer.
+ * THE hardwareConcurrency SPOOF (2 cores) IS NO LONGER A SECOND WAY TO SELECT
+ * THE SERVER. Under `staticCapabilityCeiling()` it only demotes the device to
+ * `limited`, and a `limited` device still renders in the browser by default; it
+ * changes the rule-8 estimate budget (15 s instead of 45 s) and arms the SOFT
+ * `force_backend` hint of rule 9, nothing more. It is kept because it makes the
+ * tier a property of the test rather than of the runner — GitHub-hosted runners
+ * have 2 cores and the ARC pods have more — but a navigation that does NOT go
+ * through goToStudio (a bare `page.goto('/project/test')`, an in-app
+ * click-through) no longer inherits a server pin from it. Add `?render=backend`
+ * to such a URL explicitly, or seed a capability record the way
+ * 19-wasm-fallback and 25-render-placement do.
  *
  * Must be called BEFORE the navigation whose render it should govern:
  * addInitScript only applies to subsequent page loads, and the URL is only read
  * at app startup.
  *
- * 05-export still does the spoof inline for one test; this is the shared version.
- *
- * Do NOT use it in 19-wasm-fallback, which deliberately exercises the WASM path
- * (it forces it by aborting /api/health, independent of both mechanisms here).
+ * Do NOT use it in 19-wasm-fallback, which deliberately exercises the browser
+ * placement.
  *
  * @param {import('@playwright/test').Page} page
  */

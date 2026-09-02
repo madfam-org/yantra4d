@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createSSEStream } from '../../test/mock-streams'
 
-// We need to reset module state between tests because detectMode caches _mode
+// Module state is reset between tests: renderService memoises the placement
+// decision and the last browser failure per slug.
 let renderService
 
 beforeEach(async () => {
@@ -472,7 +473,8 @@ describe('renderParts (SSE event types)', () => {
       engine: 'cadquery',
     }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    // CadQuery always uses backend (no health check needed — detectMode short-circuits)
+    // CadQuery is rule 1 of decideRenderPlacement: server, HARD, no health
+    // check and no bundle fetch — there is no browser kernel to consider.
     fetchMock.mockResolvedValueOnce({
       ok: true,
       body: createSSEStream([
@@ -566,7 +568,8 @@ describe('renderParts (SSE event types)', () => {
   it('applies glb export_format for graph engine', async () => {
     const graphManifest = { ...manifest, engine: 'graph' }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    // Graph is backend-only (transpiles to CadQuery server-side) — detectMode short-circuits
+    // Graph is server-only (it transpiles to CadQuery server-side), so rule 1
+    // pins it HARD before any health check or bundle fetch.
     fetchMock.mockResolvedValueOnce({
       ok: true,
       body: createSSEStream([
@@ -657,6 +660,63 @@ describe('renderService estimate threshold', () => {
     const result = await renderService.renderParts('grid', { rows: 10, cols: 10 }, heavyManifest, {})
     expect(result).toHaveLength(1)
     // Health check + render = 2 calls
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('render.browser_max_estimate_seconds reaches the decision', () => {
+  // The RULE is pinned in renderPlacement.test.js, where it is a pure function
+  // of a number. What is pinned HERE is the WIRING. `render.browser_max_estimate_seconds`
+  // is a documented manifest key (docs/reference/manifest.md, "Render placement");
+  // a typo on either read of it would leave every pure test green while the key
+  // silently did nothing, which is the worst kind of documented feature.
+
+  /** 2 s native, x3 in a browser = 6 s — inside the 15 s a `limited` device tolerates. */
+  function cartridge(budgetSeconds) {
+    const m = {
+      modes: [{
+        id: 'unit',
+        parts: ['main'],
+        scad_file: 'main.scad',
+        estimate: { base_units: 1, formula: 'constant' },
+      }],
+      parts: [{ id: 'main', render_mode: 0 }],
+      estimate_constants: { base_time: 2, per_unit: 0, per_part: 0 },
+    }
+    if (budgetSeconds !== null) m.render = { browser_max_estimate_seconds: budgetSeconds }
+    return m
+  }
+
+  it('leaves a cheap render in the browser when the cartridge sets no budget', () => {
+    expect(renderService.previewPlacement(cartridge(null), 'unit', {}, 'demo').placement)
+      .toBe('browser')
+  })
+
+  it('sends the same render to the server when the cartridge budgets 1s', () => {
+    const d = renderService.previewPlacement(cartridge(1), 'unit', {}, 'demo')
+    expect(d.placement).toBe('server')
+    // The browser (multiplied) estimate is what the budget is compared against.
+    expect(d.reasons[0]).toBe('estimate_over_threshold:6s>1s')
+    // A budget, not a prohibition: the outage guard can still take it back.
+    expect(d.hard).toBe(false)
+  })
+
+  it('honours the budget on the render path, not only in the badge', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // /api/health
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ])
+    })
+
+    const result = await renderService.renderParts('unit', {}, cartridge(1), {})
+
+    expect(result).toHaveLength(1)
+    // A server placement never fetches a bundle: the sources stay on the server.
+    expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/wasm-bundle'))).toBe(false)
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 })

@@ -242,11 +242,24 @@ export OPENSCAD_PATH=/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD
 ### Render timeouts
 Complex grid renders (high rows x cols) can exceed the default timeout. Docker uses 300s. For local dev, renders may fail on very complex configurations — simplify parameters.
 
-### WASM fallback activates unexpectedly
-The studio auto-detects backend availability. If the API is down, WASM fallback activates. Check:
+### A render ran in the browser when you expected the server (or vice versa)
+The **browser is the default** placement -- free for us, unmetered for the
+visitor -- so a healthy API is not a reason to leave it. `/api/health` answers
+one question only: is a *server* placement possible? A **soft** server decision
+(an `incapable` device, an estimate over the budget, legacy `force_backend` on a
+`limited` device) flips back to the browser when the API is down; a **hard** one
+(a `cadquery`/`graph`/`implicit` mode, `render.server_only`, a bundle naming
+`unsupported`/`unresolved`) does not, and fails with a server error instead.
+Fallback runs both ways at render time: server->browser on a network error or
+HTTP 429, browser->server on `init-error`/`oom`/`timeout`, never on a
+`scad-error`.
+
+The sidebar's placement control shows the decision and the deciding rule;
+`?render=backend` / `?render=wasm` pins one for the session. Check the API with:
 ```bash
 curl http://localhost:5000/api/health
 ```
+Full precedence table: [wasm-mode.md](./wasm-mode.md).
 
 ### Redis connection errors
 Redis is optional for local dev. The render cache falls back to L1 in-memory only. For full functionality:

@@ -653,10 +653,11 @@ jobs:
           cache-to: type=gha,scope=admin,mode=max,ignore-error=true
           provenance: false
           sbom: false
+          # VITE_JANUA_CLIENT_ID is operator-supplied through the deployment secrets.
           build-args: |
             VITE_API_BASE=https://api.yantra4d.com
             VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
-            VITE_JANUA_CLIENT_ID=jnc_-v2RiP_TMO-XSExftpCh41K46xeszlKh
+            VITE_JANUA_CLIENT_ID=${{ secrets.JANUA_ADMIN_CLIENT_ID }}
             VITE_JANUA_REDIRECT_URI=https://admin.yantra4d.com
             VITE_AUTH_ENABLED=true
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}

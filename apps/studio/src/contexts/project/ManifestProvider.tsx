@@ -153,6 +153,10 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
   // Track whether the projects list has been fetched (or failed).
   // The manifest fetch must wait for this so it can use the correct endpoint.
   const [projectsResolved, setProjectsResolved] = useState(false)
+  // ...and whether it actually SUCCEEDED. "Resolved" is true either way, so on
+  // its own it cannot tell a single-project backend (list loaded, empty) from a
+  // list fetch that failed or timed out. Those need opposite endpoints.
+  const [projectsListLoaded, setProjectsListLoaded] = useState(false)
 
   // Fetch projects list on mount
   useEffect(() => {
@@ -177,6 +181,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
           setLoading(false)
         }
         setProjectsResolved(true)
+        setProjectsListLoaded(true)
       })
       .catch((err) => {
         console.warn('Projects fetch failed, using fallback:', err)
@@ -193,9 +198,27 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
 
     const controller = new AbortController()
     setLoading(true)
-    const url = projects.length > 0
-      ? `${getApiBase()}/api/projects/${projectSlug}/manifest`
-      : `${getApiBase()}/api/manifest`
+    // Only a backend that answered with an EMPTY list is single-project, and
+    // only that one serves the slug-less /api/manifest — anywhere PROJECTS_DIR
+    // is set it answers 400 ("project query param required"), which lands in
+    // the else-branch below as `manifest_load_failed` and replaces the whole app
+    // with "Can't Reach the Server".
+    //
+    // This used to key off `projects.length > 0`, which cannot tell that case
+    // from a list fetch that never delivered — and the list fetch aborts itself
+    // after PROJECTS_FETCH_TIMEOUT_MS. On a 500-cartridge commons that abort is
+    // routine under load: nightly run #170 logged `GET /api/projects 200` at
+    // 05:02:23 and a slug-less `GET /api/manifest` 400 exactly 2 s later, with
+    // no per-slug request at all, and the studio showed the error screen for a
+    // project whose own manifest endpoint was answering fine.
+    //
+    // We have `projectSlug` here — the effect returns above without one — so the
+    // per-slug endpoint is always the right question to ask unless the backend
+    // has told us there are no projects to ask about.
+    const singleProjectBackend = projectsListLoaded && projects.length === 0
+    const url = singleProjectBackend
+      ? `${getApiBase()}/api/manifest`
+      : `${getApiBase()}/api/projects/${projectSlug}/manifest`
 
     apiFetch(url, { signal: controller.signal })
       .then(async (res) => {
@@ -240,7 +263,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
     return () => controller.abort()
     // `signedIn` is a dependency so that a successful sign-in re-fetches the
     // manifest: a project that answered 403 while anonymous may now be allowed.
-  }, [projectSlug, projects.length, projectsResolved, signedIn])
+  }, [projectSlug, projects.length, projectsListLoaded, projectsResolved, signedIn])
 
   // Listen for location changes to detect cross-project navigation
   useEffect(() => {

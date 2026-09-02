@@ -213,6 +213,63 @@ describe('ManifestProvider', () => {
     expect(screen.getByTestId('print-estimation').textContent).toBe('"undefined"')
   })
 
+  // Regression: when the projects-list fetch does not deliver, the manifest
+  // must still be requested by slug.
+  //
+  // The provider aborts that list fetch after PROJECTS_FETCH_TIMEOUT_MS, and on
+  // a 500-cartridge commons under load the abort is routine — nightly run #170
+  // logged `GET /api/projects 200` and a slug-less `GET /api/manifest` 400 two
+  // seconds later, with no per-slug request at all. /api/manifest without a
+  // `project` param is a 400 on any backend with PROJECTS_DIR set
+  // (apps/api/routes/core/manifest_route.py), so the studio replaced itself
+  // with "Can't Reach the Server" for a project whose own manifest endpoint was
+  // answering fine.
+  it('requests the manifest by slug when the projects list fetch fails', async () => {
+    const fetchMock = vi.fn((url) => {
+      if (String(url).endsWith('/api/projects')) {
+        return Promise.reject(new DOMException('signal timed out', 'TimeoutError'))
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(fallbackManifest) })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(
+      <ManifestProvider>
+        <TestConsumer />
+      </ManifestProvider>
+    )
+
+    await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
+
+    const urls = fetchMock.mock.calls.map(([url]) => String(url))
+    expect(urls.some(u => u.includes('/api/projects/gridfinity/manifest'))).toBe(true)
+    // Never the slug-less legacy endpoint, which multi-project backends 400.
+    expect(urls.some(u => u.endsWith('/api/manifest'))).toBe(false)
+  })
+
+  // The legacy endpoint still has one caller: a backend that answers the list
+  // with [] really is single-project and is the only kind that serves it.
+  it('uses the legacy /api/manifest only when the backend reports no projects', async () => {
+    const fetchMock = vi.fn((url) => {
+      if (String(url).endsWith('/api/projects')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(fallbackManifest) })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(
+      <ManifestProvider>
+        <TestConsumer />
+      </ManifestProvider>
+    )
+
+    await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
+
+    const urls = fetchMock.mock.calls.map(([url]) => String(url))
+    expect(urls.some(u => u.endsWith('/api/manifest'))).toBe(true)
+  })
+
   it('fetches projects list from /api/projects on mount', async () => {
     const projectsList = [
       { slug: 'gridfinity', name: 'Gridfinity Extended', version: '1.0.0' },

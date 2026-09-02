@@ -501,7 +501,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
 }
 
 export function ProjectProvider({ children }: ProjectProviderProps) {
-  const { projectSlug, manifest, manifestError } = useManifest() as ReturnType<typeof useManifest> & { manifestError: string | null }
+  const { projectSlug, manifest, manifestError } = useManifest()
 
   // Gate: only block when the manifest belongs to a DIFFERENT project than
   // the one requested via URL.  This prevents the auto-render from firing with

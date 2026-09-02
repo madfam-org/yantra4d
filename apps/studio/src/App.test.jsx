@@ -348,6 +348,47 @@ describe('App', { timeout: 30000 }, () => {
     expect(await screen.findByText(/Can't Reach the Server/i)).toBeInTheDocument()
   })
 
+  // A private project answers 403 with `error_code: "project_locked"`. It is
+  // neither missing nor a server outage, and `auth_required` decides which of
+  // the two locked bodies applies.
+  const lockedBody = (authRequired) => ({
+    status: 'error',
+    error: 'This project is private',
+    error_code: 'project_locked',
+    auth_required: authRequired,
+    request_id: 'test-request-id',
+  })
+
+  it('a 403 project_locked tells an anonymous visitor to sign in', async () => {
+    failManifestWith(() => Promise.resolve({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve(lockedBody(true)),
+    }))
+    await renderApp(['/project/secret'])
+    expect(await screen.findByText(/Private Project/i)).toBeInTheDocument()
+    expect(screen.getByText(/Sign in with an authorized account/i)).toBeInTheDocument()
+    // Neither of the other two error pages: the project exists and the server
+    // answered, so saying otherwise would be a lie.
+    expect(screen.queryByText(/doesn't exist/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Can't Reach the Server/i)).not.toBeInTheDocument()
+    // Reloading gets the same 403 while anonymous, so no Retry is offered.
+    expect(screen.queryByRole('button', { name: /^Retry$/i })).not.toBeInTheDocument()
+  })
+
+  it('a 403 project_locked tells a signed-in visitor their account lacks access', async () => {
+    failManifestWith(() => Promise.resolve({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve(lockedBody(false)),
+    }))
+    await renderApp(['/project/secret'])
+    expect(await screen.findByText(/Private Project/i)).toBeInTheDocument()
+    expect(screen.getByText(/is private and this account/i)).toBeInTheDocument()
+    // Signing in is not the fix here, so the anonymous copy must not appear.
+    expect(screen.queryByText(/Sign in with an authorized account/i)).not.toBeInTheDocument()
+  })
+
   it('browse projects from the error page navigates away from the error', async () => {
     failManifestWith(() => Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) }))
     await renderApp(['/project/ghost'])

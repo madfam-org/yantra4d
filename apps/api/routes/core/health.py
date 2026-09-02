@@ -110,6 +110,27 @@ def _check_disk_space() -> tuple[bool, str]:
         return False, str(e)
 
 
+def _check_artifact_store() -> tuple[bool, str, str]:
+    """Report which artifact backend is serving renders, and whether it answers.
+
+    Returns ``(ok, kind, detail)``. Only the *kind* is published — never the
+    endpoint, bucket or prefix. This endpoint is unauthenticated and exempt
+    from rate limiting, so it is not a place to name cluster-internal
+    addresses; an operator reads those from the startup log instead.
+    """
+    try:
+        from services.storage import get_artifact_store
+        store = get_artifact_store()
+    except Exception as e:
+        return False, "unknown", f"misconfigured: {e}"
+
+    try:
+        store.check_ready()
+        return True, store.kind, "ready"
+    except Exception as e:
+        return False, store.kind, f"unreachable: {e}"
+
+
 def _check_memory() -> tuple[bool, str]:
     """Check process memory usage."""
     try:
@@ -178,6 +199,15 @@ def readiness():
     if not ok and overall != "unhealthy":
         overall = "degraded"
 
+    # Render artifact store — which backend is serving artifacts, and whether
+    # it still answers. A store that has gone away means every completed render
+    # is unreachable, which is a degradation of this API even though renders
+    # themselves keep succeeding.
+    ok, store_kind, detail = _check_artifact_store()
+    checks["artifact_store"] = {"ok": ok, "kind": store_kind, "detail": detail}
+    if not ok and overall != "unhealthy":
+        overall = "degraded"
+
     # Optional: MQTT
     ok, detail = _check_mqtt()
     checks["mqtt"] = {"ok": ok, "detail": detail}
@@ -198,6 +228,7 @@ def readiness():
         "checks": checks,
         "debug_mode": Config.DEBUG,
         "render_worker_required": render_worker_required,
+        "artifact_store": store_kind,
     })
     resp.headers["Cache-Control"] = "no-cache"
     return resp, status_code

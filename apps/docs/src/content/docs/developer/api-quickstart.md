@@ -217,7 +217,7 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   https://api.yantra4d.com/api/projects/my-project/files
 ```
 
-For local development, set `AUTH_ENABLED=false` in your environment to bypass authentication. All requests will receive full (madfam tier) access.
+For local development, set `AUTH_ENABLED=false` in your environment to bypass authentication. All requests will receive full (premium tier) access.
 
 ## Rate limits
 

@@ -253,7 +253,9 @@ describe('useRender', () => {
       await new Promise(r => setTimeout(r, 600))
     })
 
-    expect(result.current.logs).toContain('Unlock cloud rendering')
+    // The upsell copy is i18n'd (tier.upgrade_cloud_render); the test harness's
+    // t() echoes the key back.
+    expect(result.current.logs).toContain('tier.upgrade_cloud_render')
     expect(result.current.loading).toBe(false)
   })
 
@@ -271,7 +273,9 @@ describe('useRender', () => {
       await new Promise(r => setTimeout(r, 600))
     })
 
-    expect(result.current.logs).toContain('Unlock cloud rendering')
+    // The upsell copy is i18n'd (tier.upgrade_cloud_render); the test harness's
+    // t() echoes the key back.
+    expect(result.current.logs).toContain('tier.upgrade_cloud_render')
   })
 
   it('render error with generic message does not trigger upgrade prompt', async () => {

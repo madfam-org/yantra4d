@@ -67,7 +67,7 @@ def render_part(self, project_slug, scad_path, params, part, render_mode, export
 #### Concurrency Limits
 - Per-user: max 2 concurrent renders (enforced via Redis semaphore)
 - Global: max `RENDER_CONCURRENCY` (default: 8, configurable per tier)
-- Queue priority: madfam > pro > basic > guest
+- Queue priority: premium > pro > essentials > guest
 
 #### Sync Facade (Backward Compatibility)
 ```python

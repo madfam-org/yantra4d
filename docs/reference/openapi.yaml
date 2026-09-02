@@ -1089,6 +1089,23 @@ paths:
               schema:
                 type: string
                 format: binary
+        "206":
+          description: >
+            Partial content, in response to a `Range` request. Served on both
+            artifact-storage backends — the API streams object-storage
+            artifacts rather than redirecting to them, so it answers the range
+            itself.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "304":
+          description: >
+            Not modified — the caller's `If-None-Match` or `If-Modified-Since`
+            still matches the stored artifact.
+        "416":
+          description: Requested range is not satisfiable for this artifact.
         "400":
           description: Unsupported file format
         "401":
@@ -1126,6 +1143,23 @@ paths:
               schema:
                 type: string
                 format: binary
+        "206":
+          description: >
+            Partial content, in response to a `Range` request. Served on both
+            artifact-storage backends — the API streams object-storage
+            artifacts rather than redirecting to them, so it answers the range
+            itself.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "304":
+          description: >
+            Not modified — the caller's `If-None-Match` or `If-Modified-Since`
+            still matches the stored artifact.
+        "416":
+          description: Requested range is not satisfiable for this artifact.
         "401":
           description: Authentication required
         "404":

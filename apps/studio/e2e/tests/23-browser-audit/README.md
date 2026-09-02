@@ -126,8 +126,11 @@ default `beforeAll` skips the entire audit for everyone.
   not use the CadQuery engine (`apps/api/tiers.json`), which is what
   gridfinity's default `bin` mode is. Run #168 had every gridfinity render
   refused with a 403 and the studio answered with its **upgrade prompt**. The
-  workflow now sets `HARNESS_TIER=madfam` (docs/AUTH.md, "Harness tier"), which
-  the API honours only while auth is off.
+  workflow now sets `HARNESS_TIER=premium` (docs/AUTH.md, "Harness tier"), which
+  the API honours only while auth is off. The value has to be a tier this build
+  knows or the override is dropped and the job is back to `guest`; `premium` is
+  the canonical top tier since ADR-006 Decision 4, and the deprecated `madfam`
+  still resolves to it.
 
   That upsell is a second `[role="alertdialog"]` and is deliberately **not**
   auto-cancelled — its button reads "Maybe Later", which the handler above does

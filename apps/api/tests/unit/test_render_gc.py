@@ -102,3 +102,90 @@ class TestVolumeUsage:
         used, limit = render_gc.volume_usage(str(tmp_path / "nope"))
         assert used == 0
         assert limit > 0
+
+
+class TestObjectBackend:
+    """The sweep collects the *store*, not a directory it can see.
+
+    Before this, the GC walked `Config.STATIC_DIR` with `os.scandir`. Point the
+    deployment at an object store and that directory holds nothing — the sweep
+    reports nothing to collect, and every render ever produced stays in the
+    bucket until someone notices the bill.
+    """
+
+    def test_age_expiry_deletes_objects(self, s3_store, monkeypatch, tmp_path):
+        from services.storage import set_artifact_store
+        set_artifact_store(s3_store)
+
+        s3_store.put_bytes("old.stl", b"\x00" * 10)
+        s3_store.put_bytes("fresh.stl", b"\x00" * 10)
+        # Age the first object by moving the store's clock, not the object's:
+        # the fake reports a real LastModified, so an old artifact is one the
+        # sweep sees from far enough in the future.
+        real_time = time.time
+        monkeypatch.setattr(render_gc.time, "time", lambda: real_time() + 100_000)
+
+        removed = render_gc._gc_sweep(str(tmp_path), max_age=86_400)
+
+        assert removed == 2
+        assert s3_store.list() == []
+
+    def test_fresh_objects_survive(self, s3_store, tmp_path):
+        from services.storage import set_artifact_store
+        set_artifact_store(s3_store)
+
+        s3_store.put_bytes("fresh.stl", b"\x00" * 10)
+        assert render_gc._gc_sweep(str(tmp_path), max_age=86_400) == 0
+        assert s3_store.exists("fresh.stl")
+
+    def test_non_artifact_objects_are_left_alone(self, s3_store, tmp_path, monkeypatch):
+        from services.storage import set_artifact_store
+        set_artifact_store(s3_store)
+
+        s3_store.put_bytes("notes.txt", b"keep me")
+        s3_store.put_bytes("body.stl", b"\x00" * 10)
+        real_time = time.time
+        monkeypatch.setattr(render_gc.time, "time", lambda: real_time() + 100_000)
+
+        render_gc._gc_sweep(str(tmp_path), max_age=86_400)
+
+        assert s3_store.exists("notes.txt")
+        assert not s3_store.exists("body.stl")
+
+    def test_the_size_pass_does_not_run_against_a_bucket(self, s3_store, tmp_path, monkeypatch):
+        """`RENDER_VOLUME_LIMIT_BYTES` describes an emptyDir, not a bucket.
+
+        Enforcing a 512 MiB pod-volume limit as if it were bucket capacity
+        would delete freshly rendered artifacts the moment a busy day filled
+        it. Bucket capacity is the operator's lifecycle policy — the runbook
+        says so, and this pins it.
+        """
+        from services.storage import set_artifact_store
+        set_artifact_store(s3_store)
+
+        monkeypatch.setattr(render_gc, "VOLUME_LIMIT_BYTES", 100)
+        monkeypatch.setattr(render_gc, "HIGH_WATER", 0.75)
+        monkeypatch.setattr(render_gc, "LOW_WATER", 0.50)
+        for i in range(5):
+            s3_store.put_bytes(f"a{i}.stl", b"\x00" * 200)
+
+        removed = render_gc._gc_sweep(str(tmp_path), max_age=86_400)
+
+        assert removed == 0
+        assert len(s3_store.list()) == 5
+
+    def test_usage_reports_what_is_stored(self, s3_store, tmp_path):
+        from services.storage import set_artifact_store
+        set_artifact_store(s3_store)
+
+        s3_store.put_bytes("a.stl", b"\x00" * 100)
+        s3_store.put_bytes("b.txt", b"\x00" * 50)
+        used, limit = render_gc.volume_usage(str(tmp_path))
+        assert used == 150
+        assert limit > 0
+
+    def test_the_default_backend_still_sweeps_its_directory(self, tmp_path):
+        """`gc_store` resolves to the directory the sweep was started on."""
+        store = render_gc.gc_store(str(tmp_path))
+        assert store.kind == "fs"
+        assert store.local_root() == Path(tmp_path)

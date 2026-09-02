@@ -82,7 +82,7 @@ def get_client_config():
             user_tier = resolve_tier(claims)
             tenant_id = claims.get("tenant_id") or claims.get("org_id")
 
-            # Only allow white-label override for paying tiers (pro/madfam)
+            # Only allow white-label override for paying tiers (pro/premium)
             if has_tier(user_tier, "pro"):
                 platform_name = Config.PLATFORM_NAME
                 platform_logo = Config.PLATFORM_LOGO

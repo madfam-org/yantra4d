@@ -13,7 +13,9 @@ tulana validation.
 > **A proposed answer now exists.** ADR-006 (`internal-devops/decisions/
 > adr-006-entitlement-claim-and-tier-naming.md`, 2026-08-13) proposes the push
 > model, the five-event set, `<product>_tier` as the claim-name pattern, and a
-> `madfam` → `premium` rename. It also records a hazard this document did not:
+> `madfam` → `premium` rename (**landed** — `premium` is the canonical tier
+> name; `madfam` is accepted forever as an alias on every input path). It also
+> records a hazard this document did not:
 > **`essentials` is a PAID tier on dhanam and a FREE tier here**, on shared
 > identity infrastructure. Any dhanam→Janua mapping must be an explicit table,
 > never a pass-through of the tier string.
@@ -39,15 +41,21 @@ is the only production reader of that claim. Exact resolution semantics:
 | :-- | :-- | :-- |
 | No token / invalid token | `guest` | `tier_service.py:54-55` |
 | Valid token, **no** `yantra4d_tier` claim | `essentials` (authenticated baseline) | `tier_service.py:56` |
-| `yantra4d_tier: "basic"` (legacy) | `essentials`, with a deprecation warning logged | `LEGACY_TIER_MAP`, `tier_service.py:22`, `37-44` |
+| `yantra4d_tier: "basic"` (deprecated) | `essentials`, with a deprecation note logged once per process | `LEGACY_TIER_MAP`, `_normalize_tier` |
+| `yantra4d_tier: "madfam"` (deprecated) | `premium`, with a deprecation note logged once per process | `LEGACY_TIER_MAP`, `_normalize_tier` |
 | `yantra4d_tier` = unknown value | `essentials`, with a warning logged | `tier_service.py:58-60` |
 | `yantra4d_tier` ∈ valid set | that tier | `tier_service.py:56-61` |
 
-**Valid claim values**: `guest` / `essentials` / `pro` / `madfam`
-(`TIER_HIERARCHY`, `tier_service.py:19`; mirrored by the Studio type
-`Yantra4DTier` in `apps/studio/src/lib/billing.ts:14`). In practice a minted
-token should carry `essentials`, `pro`, or `madfam` — `guest` is the
-anonymous default, not something Janua needs to mint.
+**Valid claim values**: `guest` / `essentials` / `pro` / `premium`
+(`TIER_HIERARCHY` in `tier_service.py`; mirrored by the Studio type
+`TierName` in `apps/studio/src/lib/tiers.ts`). In practice a minted token
+should carry `essentials`, `pro`, or `premium` — `guest` is the anonymous
+default, not something Janua needs to mint.
+
+**Deprecated values that still work, permanently**: `madfam` → `premium`,
+`basic` → `essentials`. Janua's machine-token claim builder still emits the
+literal `"madfam"`, so this is not a courtesy — removing the alias would seat
+every service client in `essentials`. New tokens should carry `premium`.
 
 Consequences the billing side must understand:
 
@@ -82,7 +90,11 @@ accept:
 - Base URL: `VITE_DHANAM_CHECKOUT_URL` env at Studio build time, default
   `https://app.dhan.am/checkout` (`billing.ts:11-12`).
 - `plan`: `yantra4d_pro` or `yantra4d_madfam` — literal SKU strings Dhanam
-  must recognize (`billing.ts:25`).
+  must recognize, resolved through the explicit `CHECKOUT_PLAN_IDS` table in
+  `billing.ts`. **The top tier's SKU slug is deliberately unchanged by the
+  `madfam` → `premium` tier rename**: the slug is tulana/dhanam catalog data,
+  not a Yantra4D tier name, and deriving it from the tier would have pointed
+  checkout at a `yantra4d_premium` plan that does not exist.
 - `product`: constant `yantra4d` (`billing.ts:26`).
 - `user_id`: optional (`billing.ts:28`). The live caller passes the Janua
   SDK user id — `getCheckoutUrl('pro', user?.id, returnUrl)` in
@@ -181,9 +193,11 @@ Janua:
 
 6. Does the Dhanam→Janua webhook receiver exist today, and what is its
    endpoint, authentication, and payload contract?
-7. Confirm Janua writes the exact strings `essentials` / `pro` / `madfam`
+7. Confirm Janua writes the exact strings `essentials` / `pro` / `premium`
    into `yantra4d_tier` (never `basic`, never capitalized variants — see §1
-   fail-degraded semantics).
+   fail-degraded semantics). `madfam` still resolves to `premium` and is what
+   the machine-token claim builder emits today, so nothing breaks before this
+   is done; it is the name new tokens should carry, not a blocker.
 8. What is the access-token lifetime, and is there a refresh-token or forced
    re-mint path the Studio can trigger after checkout?
 9. On downgrade, is the claim removed or set to `essentials`? (Both resolve

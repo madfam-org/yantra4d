@@ -13,6 +13,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Changed
+- **Top Tier Renamed `madfam` → `premium`, With a Permanent Alias** — ADR-006
+  Decision 4: a company name was doing duty as a tier name on a MADFAM product,
+  and `premium` is already dhanam's top tier. The ladder is now
+  `guest | essentials | pro | premium`, and `premium` is the key in
+  `apps/api/tiers.json`, the top of `TIER_HIERARCHY`, and what every output
+  emits — `/api/me` (`tier` and `entitlement.resolved_tier`), `/api/tiers`, the
+  `X-RateLimit-Tier` header, and the 403 upsell copy.
+
+  **The alias guarantee: `madfam` is accepted forever, on every input path.**
+  This is not a deprecation window with an end date. Janua's machine-token claim
+  builder still synthesises the literal `yantra4d_tier: "madfam"` for any client
+  holding a `yantra4d:`-namespaced scope, and an operator's `TIER_OVERRIDES`
+  Secret may still say `madfam` — so the alias is load-bearing in production
+  today. A token, a `TIER_OVERRIDES` value, or a `has_tier()` argument carrying
+  the old name resolves to `premium` and seats exactly the same entitlements:
+  unlimited renders, unlimited AI requests, GitHub sync, every export format,
+  and access to private projects. **No Kubernetes Secret needs rotating and no
+  consumer needs to re-mint anything.** Removing the alias would silently
+  downgrade live callers to `essentials` (`resolve_tier` fails closed), so
+  `LEGACY_TIER_MAP` is treated as permanent contract, pinned by tests.
+
+  Aliases resolve in one place, `_normalize_tier`, which is the funnel
+  `resolve_tier` and the config parser both go through — no call site knows an
+  alias exists. The deprecation note is logged **once per process per alias**
+  rather than once per request, because the alias sits on the hot path.
+
+  The local-dev unlock is named by constant, not by string. `effective_tier()`
+  (`middleware/auth.py`), which the render-time and download-time export-format
+  gates share, returns `TOP_TIER` when auth is off and Flask debug is on. The
+  literal it replaced would have survived the rename without a red test — the
+  gates normalise their argument — while going out verbatim as
+  `X-RateLimit-Tier` and ranking as guest in every hierarchy comparison.
+
+  Studio: one helper (`src/lib/tiers.ts` — `tierAtLeast`, `normalizeTier`,
+  `TOP_TIER`) now owns every tier comparison that used to be a hard-coded
+  string, so a cached `/api/me` still reporting `madfam` grants what `premium`
+  grants instead of gating a paying user out. Tier display names are i18n keys
+  (`tier.name_*`) in all six locales, and the cloud-render upsell string is no
+  longer hard-coded English. The unlimited rate-limit display from #78 is
+  unchanged.
+
+  **Deliberately unchanged: the checkout SKU.** `plan=yantra4d_madfam` still
+  goes to dhanam. The SKU slug lives in tulana's catalog, not in this repo, and
+  is a different namespace from the tier name; `billing.ts` now maps tier to
+  plan id through an explicit table rather than deriving one from the other
+  (ADR-006 Decision 5 — writing a plan id into the claim seats a paying
+  customer in `essentials` with no error anywhere).
+
 ### Added
 - **Browser-First Render Placement** — The visitor's browser is now the DEFAULT
   place a render runs; the server is the exception. `decideRenderPlacement()`
@@ -53,6 +102,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pin) and `render.browser_max_estimate_seconds` (number, a per-cartridge browser
   budget replacing the per-tier default of 45 s capable / 15 s limited), both
   added to `packages/schemas/project-manifest.schema.json`.
+- **Render Artifacts Behind a Storage Abstraction (ADR-014)** — Finished renders
+  now go through an `ArtifactStore` (`apps/api/services/storage/`) instead of
+  straight to a shared directory, with two backends: `fs` (today's static
+  directory, **the default**) and `s3` (any S3-compatible endpoint, path-style
+  addressing, MinIO-compatible). The point is the coupling this removes: the
+  render worker writes artifacts into `/app/backend/static` and the API serves
+  them from that same path, so the two can only run in one pod sharing an
+  `emptyDir`. Split them and every render succeeds and then 404s on download —
+  quietly, with the cache recording the artifact as present. With
+  `RENDER_ARTIFACT_STORE=s3` there is no shared filesystem to split.
+  **Nothing changes by default.** Under `fs`, publishing an artifact that a
+  render already wrote to its final path is an `os.path.samefile` no-op — no
+  copy, same inode, same mtime, so a volume with a hard `sizeLimit` does not
+  double and the GC's mtime ordering is untouched — and the read path stays on
+  `send_from_directory`/`send_file`, so `ETag`, `Last-Modified`,
+  `Content-Length`, conditional 304s and range requests are byte-for-byte what
+  they were. `tests/e2e/test_artifact_store_serving.py` compares real responses
+  against the pre-change Flask calls, header for header.
+  URLs are unchanged on both backends (`/static/<slug>_preview_<hash>_<part>.<fmt>`),
+  which is what keeps #78's private-project gate and the download route's access
+  checks applying with no change — both parse the artifact *name*. Object-store
+  artifacts are **streamed through the API**, never redirected to a bucket URL,
+  so those gates run on every request; there is deliberately no presigned-URL
+  path in the S3 backend. Credentials come from the standard `AWS_*` environment
+  variables only and are never held on a config object. `s3` **fails closed and
+  loud at startup** (`HeadBucket`) in both the API and the worker rather than
+  accepting renders it cannot serve back. The render cache now records store
+  **keys** rather than absolute paths and validates entries with
+  `ArtifactStore.exists`, so a key missing from the store is simply a cache miss
+  — which is what makes flipping the flag safe in both directions, rollback
+  included. `/api/health` reports the store kind (kind only: the endpoint and
+  bucket stay out of an unauthenticated response). k8s manifests carry the
+  settings on both containers with the endpoint and credentials as `optional:
+  true` Secret references, so the pod starts without them; the bucket is
+  provisioned by the operator through Enclii.
+  The **read** side goes through the store too, which is what makes the flag
+  actually flippable: the render GC lists and deletes through it (so age expiry
+  works against a bucket instead of sweeping an empty scratch directory and
+  leaving every artifact in place forever); the three routes that each globbed
+  the static directory for "the latest render" — wall-thickness and overhang
+  analysis, the FEA stress overlay, the Cotiza quote — share one store lookup;
+  and the verifier and printer upload, which need a real file rather than a
+  stream, get one from `local_artifact()` — the artifact's own path under `fs`,
+  a temporary download removed afterwards under `s3`. The streamed read path
+  answers `Range` (206 with `Content-Range`, 416 when unsatisfiable, `If-Range`
+  honoured) and `If-None-Match`/`If-Modified-Since` (304), with ranges pushed
+  down to the bucket rather than sliced in the API pod. `/static` is now served
+  by a single store-backed rule on both backends — Flask's built-in `static`
+  endpoint shadowed the app's own view and is no longer registered — so the two
+  backends send identical headers, `Cache-Control: no-cache` included, and a
+  private project's artifact is `private, no-store` with no validator reaching
+  an unentitled caller either way. See
+  [`docs/operations/render-artifact-storage.md`](docs/operations/render-artifact-storage.md)
+  for the operator flip runbook and the rollback (flip the flag back).
 - **Value-Extraction Audit re-measured against the 500-cartridge commons** —
   `docs/strategy/VALUE-EXTRACTION-AUDIT.md` was the last document reasoning in
   `x/326` ratios, a denominator that stopped existing when the commons reached

@@ -27,7 +27,7 @@ request by `apps/api/routes/core/client_config.py:76-92`, using the same
 | `aud` | Must match `JANUA_AUDIENCE` — default `yantra4d-api` | `middleware/auth.py:43`; default in `config.py:56` |
 | `exp` | Required; expiry ends the license term | `middleware/auth.py:44` |
 | `sub` | Required; identifies the licensee principal (value is not otherwise inspected by the branding endpoint) | `middleware/auth.py:44` |
-| `yantra4d_tier` | Must be literally `"pro"` or `"madfam"` for white-labeling to activate | `client_config.py:82` (resolve) + `client_config.py:86` (`has_tier(tier, "pro")`); resolution rules in `services/core/tier_service.py:47-61` |
+| `yantra4d_tier` | Must resolve to `"pro"` or above for white-labeling to activate — i.e. `"pro"` or `"premium"` (the deprecated `"madfam"` still resolves to `"premium"`) | `client_config.py:82` (resolve) + `client_config.py:86` (`has_tier(tier, "pro")`); resolution rules in `services/core/tier_service.py` |
 | `tenant_id` (fallback: `org_id`) | Optional but recommended — returned to the Studio as `tenantId` for per-tenant localStorage namespacing | `client_config.py:83`, `client_config.py:118-119` |
 
 Signature: **RS256** against the Janua JWKS. `JWT_ALGORITHMS` defaults to
@@ -47,8 +47,10 @@ missing tier claim fails *silently* into default branding:
 - **Unknown** value (typo, e.g. `"Pro"`) → warning logged, falls back to
   `"essentials"` → refused.
 
-The only accepted values for white-labeling are `pro` and `madfam`
-(hierarchy at `tier_service.py:19`).
+The only accepted values for white-labeling are `pro` and `premium`
+(`TIER_HIERARCHY` in `tier_service.py`). The deprecated `madfam` is normalised
+to `premium` and is accepted too, so a licence minted before the rename keeps
+working.
 
 ---
 
@@ -60,7 +62,7 @@ Known-fixed parameters (from this repo's verification side):
   `JANUA_ISSUER`).
 - Algorithm: RS256, signed with a key published in the Janua JWKS.
 - Audience: `yantra4d-api` (unless the deployment overrides `JANUA_AUDIENCE`).
-- Claims: the table in section 1, with `yantra4d_tier: "pro"` or `"madfam"`
+- Claims: the table in section 1, with `yantra4d_tier: "pro"` or `"premium"`
   and a `tenant_id` naming the client.
 
 **Confirm with the Janua admin before minting — this repo cannot verify any
@@ -86,7 +88,8 @@ against the live Janua JWKS, so only Janua-published keys work.
 Before shipping the key to an environment, decode it (any JWT inspector, or
 `python3 -c "import jwt, sys; print(jwt.decode(sys.argv[1], options={'verify_signature': False}))" "$TOKEN"`)
 and check: `iss`, `aud`, `exp`, `sub` present; `yantra4d_tier` exactly `pro`
-or `madfam`; `tenant_id` set. Then verify end-to-end against a running
+or `premium` (a pre-rename licence saying `madfam` still passes); `tenant_id`
+set. Then verify end-to-end against a running
 backend (section 4, step 2).
 
 ---

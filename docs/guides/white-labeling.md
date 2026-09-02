@@ -30,7 +30,7 @@ above. Without a valid key, the platform falls back to `"Yantra4D"` branding.
 
 | Variable | Required | Description |
 |---|---|---|
-| `YANTRA4D_LICENSE_KEY` | Yes | A JWT issued by `auth.madfam.io` identifying your `pro` or `madfam` tier account |
+| `YANTRA4D_LICENSE_KEY` | Yes | A JWT issued by `auth.madfam.io` identifying your `pro` or `premium` tier account (the deprecated `madfam` tier name is still accepted) |
 | `PLATFORM_NAME` | Yes | The brand name displayed in the Studio header and browser tab title |
 | `PLATFORM_LOGO` | Yes | URL or path to your logo image (served at this path by your web server) |
 
@@ -60,8 +60,9 @@ StudioHeader / ProjectsView
 ```
 
 > **Note on license key enforcement:** The `YANTRA4D_LICENSE_KEY` is verified
-> as a JWT using the Janua JWKS endpoint and must belong to a `pro` or `madfam`
-> tier account. The verification checks signature, expiry, and audience
+> as a JWT using the Janua JWKS endpoint and must belong to a `pro` or `premium`
+> tier account (a licence minted before the `madfam` → `premium` rename still
+> validates — the old name is a permanent alias). The verification checks signature, expiry, and audience
 > (`yantra4d-api`). Expired or revoked tokens fall back to default branding
 > transparently.
 

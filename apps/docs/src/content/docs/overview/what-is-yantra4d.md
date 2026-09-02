@@ -57,7 +57,7 @@ The platform supports four access tiers:
 | Guest | 10 | 0 | STL | -- |
 | Essentials | 30 | 5 | STL, 3MF, OBJ | Configurator |
 | Pro | 150 | Unlimited | STL, 3MF, OFF, STEP, GLB, GLTF, OBJ | Configurator + Code Editor |
-| Madfam | 500 | Unlimited | All formats | All features + GitHub sync |
+| Premium | Unlimited | Unlimited | All formats | All features + GitHub sync |
 
 WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to backend API calls.
 

@@ -30,7 +30,9 @@ PRIVATE_SLUG = "secret-widget"
 # token string -> claims the patched decode_token returns for it
 TOKENS = {
     "tok-essentials": {"sub": "u1", "email": "someone@example.com"},
-    "tok-madfam": {"sub": "u2", "email": "boss@example.com", "yantra4d_tier": "madfam"},
+    "tok-premium": {"sub": "u2", "email": "boss@example.com", "yantra4d_tier": "premium"},
+    # Janua still mints the deprecated top-tier name; it must still open the gate.
+    "tok-legacy-top": {"sub": "u5", "email": "legacy@example.com", "yantra4d_tier": "madfam"},
     "tok-granted": {"sub": "u3", "email": "guest-of-honour@example.com"},
     "tok-admin": {"sub": "u4", "email": "admin@example.com", "roles": ["admin"]},
 }
@@ -138,7 +140,7 @@ class TestManifestRoute:
 
     def test_top_tier_claim_is_allowed(self, client):
         res = client.get(f"/api/projects/{PRIVATE_SLUG}/manifest",
-                         headers=auth("tok-madfam"))
+                         headers=auth("tok-premium"))
         assert res.status_code == 200
         assert res.get_json()["project"]["slug"] == PRIVATE_SLUG
 
@@ -159,6 +161,21 @@ class TestManifestRoute:
     def test_tier_override_identity_is_allowed(self, client, monkeypatch):
         """A staff identity configured in TIER_OVERRIDES reaches the top tier."""
         monkeypatch.setenv(
+            TIER_OVERRIDES_ENV, json.dumps({"someone@example.com": "premium"}),
+        )
+        res = client.get(f"/api/projects/{PRIVATE_SLUG}/manifest",
+                         headers=auth("tok-essentials"))
+        assert res.status_code == 200
+
+    def test_deprecated_top_tier_claim_still_opens_a_private_project(self, client):
+        """An old token carrying `madfam` keeps working — that is the alias guarantee."""
+        res = client.get(f"/api/projects/{PRIVATE_SLUG}/manifest",
+                         headers=auth("tok-legacy-top"))
+        assert res.status_code == 200
+
+    def test_deprecated_override_value_still_seats_the_top_tier(self, client, monkeypatch):
+        """The operator's TIER_OVERRIDES secret may still say `madfam`."""
+        monkeypatch.setenv(
             TIER_OVERRIDES_ENV, json.dumps({"someone@example.com": "madfam"}),
         )
         res = client.get(f"/api/projects/{PRIVATE_SLUG}/manifest",
@@ -167,7 +184,7 @@ class TestManifestRoute:
 
     def test_private_manifest_is_never_publicly_cached(self, client):
         res = client.get(f"/api/projects/{PRIVATE_SLUG}/manifest",
-                         headers=auth("tok-madfam"))
+                         headers=auth("tok-premium"))
         assert res.headers["Cache-Control"] == "private, no-store"
         assert "ETag" not in res.headers
 
@@ -175,7 +192,7 @@ class TestManifestRoute:
         monkeypatch.setenv(PRIVATE_PROJECTS_ENV, PUBLIC_SLUG)
         assert client.get(f"/api/projects/{PUBLIC_SLUG}/manifest").status_code == 403
         assert client.get(f"/api/projects/{PUBLIC_SLUG}/manifest",
-                          headers=auth("tok-madfam")).status_code == 200
+                          headers=auth("tok-premium")).status_code == 200
 
     def test_unknown_project_still_404s(self, client):
         res = client.get("/api/projects/no-such-thing/manifest")
@@ -196,7 +213,7 @@ class TestProjectListing:
         assert PRIVATE_SLUG not in slugs
 
     def test_top_tier_sees_it(self, client):
-        res = client.get("/api/projects", headers=auth("tok-madfam"))
+        res = client.get("/api/projects", headers=auth("tok-premium"))
         slugs = {p["slug"] for p in res.get_json()}
         assert PRIVATE_SLUG in slugs
         assert PUBLIC_SLUG in slugs
@@ -288,7 +305,7 @@ class TestStaticArtifacts:
 
     def test_private_artifact_is_served_to_an_entitled_caller(self, client):
         res = client.get(f"/static/{PRIVATE_SLUG}_preview_main.stl",
-                         headers=auth("tok-madfam"))
+                         headers=auth("tok-premium"))
         assert res.status_code == 200
         assert res.headers["Cache-Control"] == "private, no-store"
 
@@ -334,7 +351,7 @@ class TestLegacyQueryStringRoutes:
 
     def test_legacy_manifest_is_served_to_an_entitled_caller_uncached(self, client):
         res = client.get(f"/api/manifest?project={PRIVATE_SLUG}",
-                         headers=auth("tok-madfam"))
+                         headers=auth("tok-premium"))
         assert res.status_code == 200
         assert res.get_json()["project"]["slug"] == PRIVATE_SLUG
         assert res.headers["Cache-Control"] == "private, no-store"
@@ -344,7 +361,7 @@ class TestLegacyQueryStringRoutes:
         monkeypatch.setenv(PRIVATE_PROJECTS_ENV, PUBLIC_SLUG)
         assert client.get(f"/api/manifest?project={PUBLIC_SLUG}").status_code == 403
         assert client.get(f"/api/manifest?project={PUBLIC_SLUG}",
-                          headers=auth("tok-madfam")).status_code == 200
+                          headers=auth("tok-premium")).status_code == 200
 
     def test_legacy_manifest_unknown_project_still_404s(self, client):
         assert client.get("/api/manifest?project=no-such-widget").status_code == 404
@@ -354,7 +371,7 @@ class TestLegacyQueryStringRoutes:
         res = client.get(f"/api/config?project={PRIVATE_SLUG}")
         assert res.status_code == 403
         assert res.get_json()["error_code"] == "project_locked"
-        ok = client.get(f"/api/config?project={PRIVATE_SLUG}", headers=auth("tok-madfam"))
+        ok = client.get(f"/api/config?project={PRIVATE_SLUG}", headers=auth("tok-premium"))
         assert ok.status_code == 200
         assert ok.headers["Cache-Control"] == "private, no-store"
         assert "parts_map" in ok.get_json()
@@ -365,7 +382,7 @@ class TestLegacyQueryStringRoutes:
         assert res.status_code == 403
         assert res.get_json()["error_code"] == "project_locked"
         assert client.post("/api/estimate", json={**body, "project": PUBLIC_SLUG}).status_code == 200
-        assert client.post("/api/estimate", json=body, headers=auth("tok-madfam")).status_code == 200
+        assert client.post("/api/estimate", json=body, headers=auth("tok-premium")).status_code == 200
 
     def test_ai_session_is_gated(self, client, monkeypatch):
         from config import Config
@@ -374,6 +391,6 @@ class TestLegacyQueryStringRoutes:
         res = client.post("/api/ai/session", json=body, headers=auth("tok-essentials"))
         assert res.status_code == 403
         assert res.get_json()["error_code"] == "project_locked"
-        ok = client.post("/api/ai/session", json=body, headers=auth("tok-madfam"))
+        ok = client.post("/api/ai/session", json=body, headers=auth("tok-premium"))
         assert ok.status_code == 200
         assert ok.get_json()["session_id"]

@@ -143,18 +143,26 @@ def dispatch_print(printer_id: str):
     if not file_path:
         return error_response("Missing 'file_path' in request body.", 400)
 
-    # Sanitize file_path: must resolve inside STATIC_DIR
-    from config import Config
-    safe_path = safe_join_path(str(Config.STATIC_DIR), Path(file_path).name)
-    if safe_path is None or not safe_path.is_file():
+    # The file to print is a render artifact, addressed by name. Resolving it
+    # through the store keeps this working when artifacts live in a bucket, and
+    # keeps the traversal rule — a name is a key, and a key cannot escape the
+    # store, on either backend.
+    from services.storage import InvalidArtifactKey, local_artifact, normalize_key
+    try:
+        artifact_key = normalize_key(Path(file_path).name)
+    except InvalidArtifactKey:
         return error_response("Invalid or inaccessible file path.", 400)
-    file_path = str(safe_path)
 
     conn = printer["connection"]
     client = _get_client(printer)
 
     try:
-        remote_name = client.upload_file(conn["base_url"], conn.get("api_key", ""), file_path)
+        with local_artifact(artifact_key) as staged:
+            if staged is None:
+                return error_response("Invalid or inaccessible file path.", 400)
+            remote_name = client.upload_file(
+                conn["base_url"], conn.get("api_key", ""), str(staged)
+            )
         client.start_print(conn["base_url"], conn.get("api_key", ""), remote_name)
         return jsonify({
             "status": "printing",

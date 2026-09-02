@@ -61,7 +61,7 @@ Backend (server-side) render limits are defined per tier in `apps/api/tiers.json
 | guest | 10 | 0 |
 | essentials | 30 | 20 |
 | pro | 150 | 100 |
-| madfam | 500 | 300 |
+| premium | unlimited | unlimited |
 
 Render limits are enforced dynamically in the render route via `tier_service.get_render_limit_for_project()`, which reads the user's tier from JWT claims and looks up `backend_renders_per_hour` in `tiers.json`.
 

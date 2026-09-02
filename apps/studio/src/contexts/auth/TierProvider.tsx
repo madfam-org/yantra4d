@@ -2,8 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { getApiBase } from '../../services/core/backendDetection'
 import { useAuth, isAuthEnabled } from './AuthProvider'
 import { apiFetch } from '../../services/core/apiClient'
-
-type TierName = 'guest' | 'essentials' | 'basic' | 'pro' | 'madfam'
+import { TOP_TIER, tierAtLeast } from '../../lib/tiers'
 
 interface TierConfig {
   [key: string]: unknown
@@ -30,10 +29,8 @@ interface TierProviderProps {
 
 export const TierContext = createContext<TierContextValue | null>(null)
 
-const TIER_HIERARCHY: Record<string, number> = { guest: 0, essentials: 1, basic: 1, pro: 2, madfam: 3 }
-
 const FALLBACK: TierContextValue = {
-  tier: isAuthEnabled ? 'guest' : 'madfam',
+  tier: isAuthEnabled ? 'guest' : TOP_TIER,
   tierConfig: null,
   limits: null,
   allTiers: null,
@@ -70,12 +67,14 @@ export function TierProvider({ children }: TierProviderProps) {
     return () => { cancelled = true }
   }, [isAuthenticated])
 
-  const tier = userInfo?.tier || (isAuthEnabled ? 'guest' : 'madfam')
+  const tier = userInfo?.tier || (isAuthEnabled ? 'guest' : TOP_TIER)
   const limits = userInfo?.limits || (allTiers ? allTiers[tier] : null) as Record<string, unknown> | null
 
+  // `tierAtLeast` normalises deprecated names on both sides, so a cached
+  // /api/me still saying `madfam` grants exactly what `premium` grants.
   const canAccess = useCallback((requiredTier: string) => {
     if (!isAuthEnabled) return true
-    return (TIER_HIERARCHY[tier] ?? 0) >= (TIER_HIERARCHY[requiredTier] ?? 0)
+    return tierAtLeast(tier, requiredTier)
   }, [tier])
 
   const value: TierContextValue = {

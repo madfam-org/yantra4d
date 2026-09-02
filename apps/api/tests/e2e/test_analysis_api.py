@@ -33,12 +33,8 @@ def app(tmp_path, monkeypatch):
     flask_app = create_app()
     flask_app.config["TESTING"] = True
 
-    # Patch the module-level STATIC_FOLDER string that was computed at import
-    # time from Config.STATIC_DIR. Without this, _find_latest_render searches
-    # the wrong directory when the analysis module was already imported.
-    import routes.engine.analysis as analysis_mod
-    monkeypatch.setattr(analysis_mod, "STATIC_FOLDER", str(tmp_path / "static"))
-
+    # No module-level static path to patch any more: the render lookup asks the
+    # artifact store, which reads Config.STATIC_DIR (patched above) at call time.
     return flask_app
 
 

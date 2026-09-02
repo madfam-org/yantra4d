@@ -33,7 +33,7 @@ class TestClaimAbsent:
 
 
 class TestRecognisedClaims:
-    @pytest.mark.parametrize("tier", ["guest", "essentials", "pro", "madfam"])
+    @pytest.mark.parametrize("tier", ["guest", "essentials", "pro", "premium"])
     def test_each_known_tier_round_trips(self, tier):
         d = describe_entitlement({"yantra4d_tier": tier})
         assert d["source"] == "claim"
@@ -52,9 +52,18 @@ class TestTheSilentDowngrade:
         assert "PLAN ID" in d["detail"]
         assert "'pro'" in d["detail"]
 
-    def test_plan_id_for_madfam_too(self):
+    def test_plan_id_for_the_top_tier_too(self):
+        d = describe_entitlement({"yantra4d_tier": "yantra4d_premium"})
+        assert "PLAN ID" in d["detail"]
+        assert "'premium'" in d["detail"]
+
+    def test_the_registered_top_tier_plan_id_still_gets_the_hint(self):
+        """`yantra4d_madfam` is the SKU dhanam registered; the rename must not
+        stop the diagnostic recognising it. It names the canonical tier."""
         d = describe_entitlement({"yantra4d_tier": "yantra4d_madfam"})
-        assert "'madfam'" in d["detail"]
+        assert d["source"] == "claim_unrecognised"
+        assert "PLAN ID" in d["detail"]
+        assert "'premium'" in d["detail"]
 
     def test_an_unrelated_yantra4d_prefix_gets_no_false_hint(self):
         d = describe_entitlement({"yantra4d_tier": "yantra4d_enterprise"})
@@ -64,7 +73,7 @@ class TestTheSilentDowngrade:
     def test_arbitrary_garbage_lists_the_known_tiers(self):
         d = describe_entitlement({"yantra4d_tier": "platinum"})
         assert d["resolved_tier"] == "essentials"
-        for tier in ("guest", "essentials", "pro", "madfam"):
+        for tier in ("guest", "essentials", "pro", "premium"):
             assert tier in d["detail"]
 
     def test_never_echoes_anything_but_the_tier_claim(self):

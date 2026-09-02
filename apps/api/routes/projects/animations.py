@@ -35,6 +35,7 @@ from services.engine.openscad import (
 from services.engine.openscad import (
     run_render as run_openscad_render,
 )
+from services.storage import publish_artifact_best_effort
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
@@ -182,14 +183,14 @@ def render_animation(slug: str, animation_id: str):
                 # Convert STL → GLB
                 glb_filename = output_filename.replace(".stl", ".glb")
                 glb_path = os.path.join(STATIC_FOLDER, glb_filename)
-                if stl_to_glb(output_path, glb_path):
-                    serve_filename = glb_filename
-                else:
-                    serve_filename = output_filename
+                serve_path = glb_path if stl_to_glb(output_path, glb_path) else output_path
 
+                # Animation frames are rendered in the API process but served
+                # from /static, so they go through the artifact store too.
+                # A no-op under the filesystem default.
                 frame_glbs.append({
                     "part": part,
-                    "url": f"/static/{serve_filename}",
+                    "url": f"/static/{publish_artifact_best_effort(serve_path)}",
                 })
 
             progress = round(((frame_idx + 1) / n_frames) * 100, 1)

@@ -9,6 +9,7 @@ import rate_limits
 from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
+from services.core.tier_service import TOP_TIER
 from services.editor.github_import import import_repo, sync_repo, validate_repo
 from services.editor.github_token import get_github_token
 from utils.route_helpers import error_response, require_json_body
@@ -76,7 +77,7 @@ def import_github_repo():
 
 
 @github_bp.route("/api/github/sync", methods=["POST"])
-@require_tier("madfam")
+@require_tier(TOP_TIER)
 @limiter.limit(rate_limits.GITHUB_SYNC)
 @require_json_body
 def sync_github_repo():

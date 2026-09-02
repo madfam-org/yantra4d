@@ -208,17 +208,13 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "warning_threshold_seconds": 60, // Above this estimate: confirm a user-initiated
                                      // render, skip an automatic one with a notice
     "wasm_timeout_seconds": 120      // Optional: ceiling on one browser render (default 120)
-  },
-
-  "render": {             // Optional: render placement policy
-    "server_only": true   // HARD pin -- this cartridge never renders client-side
   }
 }
 ```
 
 ## Render placement: `render.server_only` vs `project.force_backend`
 
-Three manifest keys influence where a render runs, and they are deliberately
+Four manifest keys influence where a render runs, and they are deliberately
 **not** the same strength.
 
 | Key | Location | Strength | Meaning |

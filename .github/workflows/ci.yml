@@ -35,45 +35,105 @@ jobs:
   # a hundred PR shard jobs, and deploy #542 waited behind #540 in the deploy
   # concurrency group.
   #
-  # docs-only means EVERY changed file is documentation: any `*.md`, `docs/**`,
-  # `apps/docs/**` (the Starlight docs site, which no job here builds),
-  # `runbooks/**`, `.github/*.md`. A pull request that touches documentation AND
-  # code is code.
+  # PUSHES ARE CLASSIFIED TOO. They were not, and the cost was exactly one
+  # doubling: merging a pull request runs the full matrix for the merge commit,
+  # then deploy.yml pushes `deploy(yantra4d): update digests`, which touches
+  # ONLY k8s/production/kustomization.yaml — and that second push ran the whole
+  # matrix again for a file no job here reads. deploy.yml already excludes that
+  # path from its own triggers for the same reason ("Digest commits do not
+  # loop"); this is the other half of that rule.
+  #
+  # no-code means EVERY changed file is documentation or a deploy digest bump:
+  # any `*.md`, `docs/**`, `apps/docs/**` (the Starlight docs site, which no job
+  # here builds), `runbooks/**`, `.github/*.md`, and
+  # `k8s/production/kustomization.yaml`. A change that touches one of those AND
+  # code is code. Nothing in the skipped jobs reads the kustomization: the only
+  # consumer in the repository is deploy.yml, which is a different workflow, and
+  # every always-on lane here (manifest-sync, manifest-validation, ci-scripts,
+  # metadata-consistency, openapi-validation, spec-conformance, i18n-audit)
+  # keeps running and validates exactly what it validates today.
   #
   # `predicate-quantifier: every` is load-bearing and not the default. Each list
   # entry is compiled into its own matcher; the default `some` quantifier reports
   # a file as `code` when it matches ANY entry, so `'**'` alone would match
   # everything and the negations would do nothing. With `every`, a file is `code`
-  # only when it matches `'**'` AND none of the docs patterns exclude it, and the
-  # filter output is true as soon as ONE such file is in the diff. The failure
-  # direction is therefore a docs-only pull request classified as code, which
+  # only when it matches `'**'` AND none of the no-code patterns exclude it, and
+  # the filter output is true as soon as ONE such file is in the diff. The
+  # failure direction is therefore a docs-only change classified as code, which
   # runs the matrix it already runs today — there is no arrangement of these
   # patterns that lets a code change skip the matrix.
   #
-  # Only pull requests are classified. A push to main always reports code=true:
-  # main is what deploy.yml builds from, and `github.event.before` is unreliable
-  # across force pushes and first pushes, so every merged commit keeps its full
-  # run.
+  # How the two events are diffed differs, and the action decides that itself:
+  # on `pull_request` it lists the PR's files through the REST API against the
+  # PR base (the `base` input below is documented as ignored for that event), so
+  # no checkout is needed; on `push` it runs git against the commit named by
+  # `base`, so the repository has to be on disk. `github.event.before` is that
+  # commit — paths-filter v3.0.4 accepts a commit SHA as `base` and diffs
+  # directly against it.
+  #
+  # Fail-closed is unchanged and is the whole safety story: a push whose
+  # `before` is the all-zero SHA (a new branch, a first push) or is no longer
+  # reachable (a force push) does not run the filter at all, and an absent
+  # filter output classifies as code. So does any event that is neither
+  # pull_request nor push. The only way to skip anything is a filter that ran
+  # and answered exactly "false".
   changes:
     runs-on: madfam-runners-blue
     timeout-minutes: 5
     permissions:
       contents: read
       # On a pull_request event the action lists the PR's files through the API
-      # instead of cloning, so this job needs no checkout — and it must not fall
-      # back to a diff it cannot compute.
+      # instead of cloning, so that path needs no checkout — and it must not
+      # fall back to a diff it cannot compute.
       pull-requests: read
     outputs:
       code: ${{ steps.classify.outputs.code }}
     steps:
+      # Push only, deliberately: the pull_request path stays checkout-free.
+      # fetch-depth 0 because `before` is an arbitrary earlier commit — a
+      # batched push, or a merge whose first parent is several commits back —
+      # and a shallow clone that does not contain it would send the run down
+      # the fail-closed path for no reason.
+      - name: Check out for the push diff
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve the push base
+        id: base
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+        # Decides only whether a diff can be taken at all. Both rejected cases
+        # are real: GitHub reports an all-zero `before` for the first push to a
+        # new branch, and a force push can name a commit that is no longer in
+        # the history we just fetched. Neither is a reason to guess.
+        run: |
+          set -euo pipefail
+          usable=false
+          if [ -n "$BEFORE" ] \
+             && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            usable=true
+          else
+            echo "Push base '$BEFORE' is unusable — classifying as code." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "usable=$usable" >> "$GITHUB_OUTPUT"
+
       - name: Filter changed paths
         id: filter
-        if: github.event_name == 'pull_request'
+        if: >-
+          github.event_name == 'pull_request' ||
+          (github.event_name == 'push' && steps.base.outputs.usable == 'true')
         # Pinned to the commit the v3 tag resolves to (v3.0.4). deploy.yml still
         # tracks the mutable `v3` tag; pinning is the direction to move in, not a
         # disagreement with that job.
         uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
         with:
+          # Ignored on pull_request (the action uses the PR base via the API);
+          # on push it is a commit SHA and the diff is taken against it.
+          base: ${{ github.event.before }}
           predicate-quantifier: 'every'
           filters: |
             code:
@@ -83,6 +143,9 @@ jobs:
               - '!apps/docs/**'
               - '!runbooks/**'
               - '!.github/*.md'
+              # deploy.yml writes only this file when it pins the digests it
+              # just built. No job in this workflow reads it.
+              - '!k8s/production/kustomization.yaml'
 
       - name: Classify
         id: classify
@@ -90,12 +153,14 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           FILTER_CODE: ${{ steps.filter.outputs.code }}
         # Fails closed on purpose: only a filter that actually ran and answered
-        # exactly "false" skips anything. An empty output (the step was skipped,
-        # the action changed its contract, the event is not a pull request) is
-        # read as code.
+        # exactly "false" skips anything. An empty output — the step was
+        # skipped (an unusable push base, or an event that is neither
+        # pull_request nor push), or the action changed its contract — is read
+        # as code.
         run: |
           set -euo pipefail
-          if [ "$EVENT_NAME" = "pull_request" ] && [ "$FILTER_CODE" = "false" ]; then
+          if { [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "push" ]; } \
+             && [ "$FILTER_CODE" = "false" ]; then
             code=false
           else
             code=true
@@ -104,7 +169,7 @@ jobs:
           if [ "$code" = "true" ]; then
             echo "Changed paths include code — the full CI matrix runs." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "Docs-only change — the browser matrix, the app builds, the backend suite and geometric parity are skipped. Manifest, metadata, licence, OpenAPI and spec-conformance checks still run." >> "$GITHUB_STEP_SUMMARY"
+            echo "No code changed — every file is documentation or the deploy digest bump (k8s/production/kustomization.yaml). The browser matrix, the app builds, the backend suite and geometric parity are skipped. Manifest, metadata, licence, OpenAPI and spec-conformance checks still run." >> "$GITHUB_STEP_SUMMARY"
           fi
 
   studio:
@@ -570,7 +635,7 @@ jobs:
   # (scripts/ci/last_successful_deploy_sha.sh). A deploy that silently drops a
   # service is precisely the failure that script exists to prevent, so its
   # fail-closed contract is pinned here against recorded API fixtures — no
-  # network, no submodules, a few seconds. It runs on docs-only pull requests
+  # network, no submodules, a few seconds. It runs on no-code changes
   # too: it costs nothing and it guards the machinery that skipping relies on.
   ci-scripts:
     runs-on: madfam-runners-blue
@@ -800,7 +865,7 @@ jobs:
   # say no in every case that matters.
   #
   # `if: always()` is what makes the path filter above safe. Without it, a job in
-  # `needs` that is skipped — which is exactly what a docs-only pull request
+  # `needs` that is skipped — which is exactly what a no-code change
   # produces — takes this job with it, and GitHub reports a dependent job that
   # never ran as *skipped*, which branch protection counts as passing. The same
   # hole was already open for failures: with the default `if: success()` a failed
@@ -851,4 +916,4 @@ jobs:
           echo "::error title=CI failed::A required job reported failure or cancelled — see the Dependency results step above."
           exit 1
       - name: All checks passed
-        run: echo "All CI checks passed. Jobs skipped by the docs-only path filter count as passed."
+        run: echo "All CI checks passed. Jobs skipped by the no-code path filter count as passed."

@@ -91,6 +91,74 @@ export async function fetchManifest(request, slug) {
 }
 
 /**
+ * Pages currently carrying the auto-cancel handler below, mapped to the exact
+ * locator it was registered with — page.removeLocatorHandler() wants that same
+ * locator back. A WeakMap so it is dropped with the page; the `page` fixture is
+ * per-test, so no registration ever outlives the test that made it.
+ */
+const renderWarningHandled = new WeakMap()
+
+/**
+ * Cancel the Long Render Warning automatically, before every later action.
+ *
+ * One-shot dismissals were whack-a-mole. The studio re-arms its debounced
+ * auto-generate on every param/preset settle and every mode switch, so the
+ * modal comes BACK after a single cancel: run #167 still lost four tests to a
+ * 180 s `locator.click` timeout with the dialog present in all twelve failure
+ * snapshots — the post-load settle in cross-cutting, `selectMode()` in
+ * gridfinity and custom-msh, the sheet trigger in responsive. Radix renders the
+ * dialog over a pointer-event-blocking overlay, so any click issued while it is
+ * up waits out its entire actionability budget.
+ *
+ * page.addLocatorHandler() moves this from "remember to dismiss" to "cannot be
+ * hit": Playwright re-checks the locator before every action on the page and
+ * runs this first. Registered once per page, uncapped (no `times`), and
+ * `noWaitAfter` because the handler already waits for the dialog to go.
+ *
+ * Only AUTOMATIC renders are swallowed here. A test that wants the modal —
+ * anything user-initiated — calls expectRenderWarning() to take the handler off
+ * first.
+ */
+export async function autoCancelRenderWarning(page) {
+  if (renderWarningHandled.has(page)) return
+  const dialog = page.locator('[role="alertdialog"]')
+  renderWarningHandled.set(page, dialog)
+  await page.addLocatorHandler(
+    dialog,
+    async (warning) => {
+      await warning
+        .getByRole('button', { name: /^(Cancel|Cancelar)$/ })
+        .click({ timeout: 5000 })
+        .catch(() => {})
+      await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
+    },
+    { noWaitAfter: true },
+  )
+}
+
+/**
+ * Stop auto-cancelling the Long Render Warning and hand back its locator, for a
+ * test that needs to SEE the dialog — a user-initiated Generate still raises it
+ * (that stays true after the quiet-autogenerate change, which only silences the
+ * automatic path). Without this the handler would cancel the very dialog the
+ * caller is about to confirm, and the "Render Anyway" click would land on a
+ * detached button.
+ *
+ * The handler stays off for the rest of the test — simpler than re-arming
+ * around each Generate, and safe because the `page` fixture is per-test. A
+ * later goToRealProject() in the same test re-registers it, since this also
+ * clears the registry entry.
+ */
+export async function expectRenderWarning(page) {
+  const registered = renderWarningHandled.get(page)
+  if (registered) {
+    await page.removeLocatorHandler(registered)
+    renderWarningHandled.delete(page)
+  }
+  return page.locator('[role="alertdialog"]')
+}
+
+/**
  * Navigate to a real project and wait for manifest + UI to load.
  */
 export async function goToRealProject(page, slug, expectedName) {
@@ -127,9 +195,17 @@ export async function goToRealProject(page, slug, expectedName) {
   // overlay, so every later click waits out its full actionability budget
   // instead of landing — in run #166 header.toggleLanguage() timed out at 180 s
   // on all three attempts with the dialog sitting in the page snapshot. Cancel
-  // it here (the same convention tablaco.spec.js already uses) so tests act on
-  // a live page rather than on one behind a modal.
+  // the one already up, so the page is clean immediately — including for the
+  // axe audits, which reach the page through page.evaluate: neither an action
+  // nor an assertion, so nothing there ever triggers a locator handler...
   await dismissRenderWarning(page, 'cancel', 2500)
+
+  // ...and arm the handler for every one that comes after: the settle, a mode
+  // switch and a preset each re-arm the auto-generate, so a single cancel here
+  // is not enough (run #167). Registered AFTER the one-shot above, never
+  // before — with the handler live, dismissRenderWarning's own click on Cancel
+  // would race the handler for the same button.
+  await autoCancelRenderWarning(page)
 }
 
 /**
@@ -197,7 +273,10 @@ export async function waitForRenderDone(page, timeout = 120_000) {
  * Handles cases where switching modes auto-triggers the warning.
  */
 export async function clickGenerateWithWarning(sidebar, page) {
-  const dialog = page.locator('[role="alertdialog"]')
+  // User-initiated Generate: the modal is expected here, so take the
+  // auto-cancel handler off before anything is clicked. It stays off for the
+  // rest of the test (a later goToRealProject re-arms it).
+  const dialog = await expectRenderWarning(page)
   const renderAnywayBtn = page.locator('[role="alertdialog"] button', { hasText: /Render Anyway/i })
 
   // If dialog is already showing (from a mode switch, or from the load-time
@@ -244,7 +323,12 @@ export async function dismissRenderWarning(page, action = 'cancel', timeout = 50
   const btnText = action === 'render'
     ? /Render Anyway/i
     : /Cancel|Cancelar/
-  await page.locator('[role="alertdialog"] button', { hasText: btnText }).click()
+  // Tolerated failure: with autoCancelRenderWarning() armed, the handler can
+  // cancel the dialog between the wait above and this click, leaving the button
+  // detached. The state that matters is asserted on the next line.
+  await page.locator('[role="alertdialog"] button', { hasText: btnText })
+    .click({ timeout: 5000 })
+    .catch(() => {})
   await dialog.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
 }
 
@@ -268,7 +352,13 @@ export async function dismissRenderWarning(page, action = 'cancel', timeout = 50
  * the app declined to start one, and fail if no render was ever observed.
  */
 export async function triggerAndWaitRender(sidebar, page, paramId, value, timeout = 120_000) {
-  const dialog = page.locator('[role="alertdialog"]')
+  // This helper's whole job is to observe the render, so it must be able to see
+  // the warning rather than have it cancelled underneath it. Take the handler
+  // off first, then clear anything the load left up — in that order, so the
+  // cancel below cannot race the handler for the same button — and only then
+  // touch the slider.
+  const dialog = await expectRenderWarning(page)
+  await dismissRenderWarning(page, 'cancel', 500)
   const generateBtn = page.locator('button', { hasText: /Generate|Generar/ }).first()
   // Both layout trees render the console; take the one on screen. Absent (or
   // collapsed) it reads null, and the Generate-disabled evidence stands alone.

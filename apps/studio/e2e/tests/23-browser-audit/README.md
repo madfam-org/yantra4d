@@ -82,14 +82,42 @@ default `beforeAll` skips the entire audit for everyone.
 - **`PROJECT_NAME` const per spec**, read from `projects/<slug>/project.json`
   — not from memory. `gridfinity` declares `"Gridfinity"`; the "Extended" name
   now belongs only to its three `(OpenSCAD Extended)` modes.
-- **Cancel the modal first.** The studio auto-generates on load and pops the
-  Long Render Warning whenever the estimate exceeds the cartridge's threshold
-  (normal for gridfinity's cadquery `bin`, ~2 min). Radix renders it over a
-  pointer-event-blocking overlay, so every later click waits out its full
-  actionability budget instead of landing — that is how run #166 burned 180 s
-  three times in `toggleLanguage()`. `goToRealProject()` cancels it, the same
-  convention `tablaco.spec.js` already used; `dismissRenderWarning(page, …)`
-  handles the ones a mode switch or param edit raises later.
+- **The Long Render Warning is handled once, not dismissed repeatedly.** The
+  studio auto-generates on load and pops that modal whenever the estimate
+  exceeds the cartridge's threshold (normal for gridfinity's cadquery `bin`,
+  ~2 min). Radix renders it over a pointer-event-blocking overlay, so every
+  later click waits out its full actionability budget instead of landing — that
+  is how run #166 burned 180 s three times in `toggleLanguage()`.
+
+  One-shot dismissals were not enough: the studio re-arms its debounced
+  auto-generate on every param/preset settle and every mode switch, so the modal
+  comes back and run #167 lost four more tests to it (the post-load settle,
+  `selectMode()` twice, the mobile sheet trigger). So:
+
+  - `goToRealProject()` cancels the one already up — the axe audits reach the
+    page through `page.evaluate`, which is neither an action nor an assertion
+    and so never triggers a handler — and then
+    registers `autoCancelRenderWarning(page)`, a `page.addLocatorHandler()` on
+    `[role="alertdialog"]` that cancels it before **every** later action.
+    Registered once per page, uncapped, `noWaitAfter`. Order matters: arming it
+    before that one-shot would make the handler race `dismissRenderWarning()`
+    for the same Cancel button.
+  - **A test that WANTS the dialog must take the handler off first**, via
+    `expectRenderWarning(page)` — it removes the handler and returns the dialog
+    locator. `clickGenerateWithWarning()` and `triggerAndWaitRender()` already
+    call it, so every user-initiated Generate is covered; call it yourself
+    before any new code that confirms the modal. Otherwise the handler cancels
+    the very dialog you are about to confirm and "Render Anyway" lands on a
+    detached button.
+  - The handler stays off for the rest of that test (the `page` fixture is
+    per-test, so nothing leaks); a later `goToRealProject()` re-arms it.
+  - `dismissRenderWarning(page, …)` still works and is still used — its click is
+    now failure-tolerant, since the handler may cancel the dialog first.
+
+  After the quiet-autogenerate change (automatic renders no longer open the
+  modal; user-initiated ones still do) the handler simply never fires, and
+  `expectRenderWarning()` still hands the manual dialog to its caller. Nothing
+  here needs revisiting.
 - **`sidebar.selectModeByLabel(label)`** for a mode whose id is not a substring
   of its label — `selectMode('baseplate_scad')` cannot find "Baseplate
   (OpenSCAD Extended)".

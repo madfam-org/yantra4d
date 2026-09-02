@@ -1,0 +1,276 @@
+{
+  "project": {
+    "name": "Mic Stand Thread Adapter",
+    "slug": "mic-stand-thread-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The three stand threads, in every combination. Every stand, boom, clamp, spigot, shockmount and tripod head on earth terminates in one of three threads — 5/8\"-27 for microphones, 3/8\"-16 for European stands and small heads, 1/4\"-20 for cameras. None of them mates any other, all three turn up in the same rack of gear, and the adapter between any two is the most-lost object in a live-sound or camera bag. Each end takes an independent thread selection, so all nine combinations are reachable from one cartridge, as a reducer bushing, a double stud or a coupler. The threaded engagement is short by design and a plain register carries the alignment — which is also how a real stand adapter is made.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Las tres roscas de pedestal, en todas sus combinaciones. Todo pedestal, jirafa, mordaza, espiga, araña y cabezal de tripié del mundo termina en una de tres roscas — 5/8\"-27 para micrófonos, 3/8\"-16 para pedestales europeos y cabezales chicos, 1/4\"-20 para cámaras. Ninguna embona con otra, las tres aparecen en el mismo estuche, y el adaptador entre cualesquiera dos es el objeto que más se pierde en una maleta de sonido o de cámara. Cada extremo lleva su propia selección de rosca, así que las nueve combinaciones salen de un solo cartucho, como buje reductor, espárrago doble o copla. El engrane roscado es corto a propósito y un registro liso se encarga de la alineación — que es como se hace un adaptador de pedestal de verdad.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Les trois filetages de pied, dans toutes leurs combinaisons. Tout pied, perchette, pince, embase, suspension et rotule de trépied au monde se termine par l'un de trois filetages — 5/8\"-27 pour les microphones, 3/8\"-16 pour les pieds européens et les petites rotules, 1/4\"-20 pour les appareils photo. Aucun ne s'accouple avec un autre, les trois se retrouvent dans le même flight-case, et l'adaptateur entre deux d'entre eux est l'objet que l'on perd le plus souvent dans un sac de sonorisation ou de prise de vues. Chaque extrémité reçoit sa propre sélection de filetage : les neuf combinaisons sortent donc d'une seule cartouche, en douille de réduction, en goujon double ou en manchon. L'engagement fileté est court à dessein et un registre lisse assure l'alignement — c'est d'ailleurs ainsi qu'un vrai adaptateur de pied est fait.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "As três roscas de pedestal, em todas as combinações. Todo pedestal, girafa, garra, espigão, aranha e cabeça de tripé do mundo termina numa de três roscas — 5/8\"-27 para microfones, 3/8\"-16 para pedestais europeus e cabeças pequenas, 1/4\"-20 para câmeras. Nenhuma casa com outra, as três aparecem no mesmo case, e o adaptador entre duas quaisquer é o objeto que mais se perde numa mala de som ou de câmera. Cada extremidade recebe sua própria seleção de rosca, então as nove combinações saem de um único cartucho, como bucha redutora, prisioneiro duplo ou luva. O engate roscado é curto de propósito e um registro liso cuida do alinhamento — que é como um adaptador de pedestal de verdade é feito.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/mic-stand-thread-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": ["mic-stand", "thread-adapter", "5-8-27", "3-8-16", "1-4-20", "tripod", "audio", "photography", "grip", "commercial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "bushing",
+      "label": { "en": "Reducer Bushing", "es": "Buje Reductor", "fr": "Douille de réduction", "pt": "Bucha Redutora" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["bushing"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 16 }
+    },
+    {
+      "id": "double_stud",
+      "label": { "en": "Double Stud", "es": "Espárrago Doble", "fr": "Goujon double", "pt": "Prisioneiro Duplo" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["double_stud"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 17 }
+    },
+    {
+      "id": "coupler",
+      "label": { "en": "Coupler", "es": "Copla", "fr": "Manchon", "pt": "Luva" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["coupler"],
+      "estimate": { "base_time": 13, "per_unit": 4, "per_part": 17 }
+    }
+  ],
+  "parts": [
+    { "id": "bushing", "render_mode": 0, "color": "#3b3b46",
+      "label": { "en": "Bushing", "es": "Buje", "fr": "Douille", "pt": "Bucha" } },
+    { "id": "double_stud", "render_mode": 0, "color": "#4f4f5c",
+      "label": { "en": "Double Stud", "es": "Espárrago", "fr": "Goujon", "pt": "Prisioneiro" } },
+    { "id": "coupler", "render_mode": 0, "color": "#66667a",
+      "label": { "en": "Coupler", "es": "Copla", "fr": "Manchon", "pt": "Luva" } }
+  ],
+  "parameter_groups": [
+    { "id": "threads", "label": { "en": "Threads", "es": "Roscas", "fr": "Filetages", "pt": "Roscas" } },
+    { "id": "body", "label": { "en": "Body & Grip", "es": "Cuerpo y Agarre", "fr": "Corps et prise", "pt": "Corpo e Pega" } },
+    { "id": "fit", "label": { "en": "Fit", "es": "Ajuste", "fr": "Ajustement", "pt": "Ajuste" } }
+  ],
+  "parameters": [
+    {
+      "id": "thread_top", "type": "select", "default": "uns_5_8_27",
+      "options": [
+        { "value": "uns_5_8_27", "label": "5/8\"-27 mic stand" },
+        { "value": "unc_3_8_16", "label": "3/8\"-16 (16 TPI)" },
+        { "value": "unc_1_4_20", "label": "1/4\"-20 UNC" }
+      ],
+      "group": "threads", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Top Thread", "es": "Rosca Superior", "fr": "Filetage supérieur", "pt": "Rosca Superior" },
+      "tooltip": {
+        "en": "The thread at the top face. Each end is chosen independently, so all nine combinations of the three stand threads come out of this one cartridge",
+        "es": "La rosca de la cara superior. Cada extremo se elige por separado, así que las nueve combinaciones de las tres roscas salen de este mismo cartucho",
+        "fr": "Le filetage de la face supérieure. Chaque extrémité se choisit indépendamment : les neuf combinaisons des trois filetages sortent de cette même cartouche",
+        "pt": "A rosca da face superior. Cada extremidade é escolhida em separado, então as nove combinações das três roscas saem deste mesmo cartucho"
+      }
+    },
+    {
+      "id": "thread_bottom", "type": "select", "default": "unc_3_8_16",
+      "options": [
+        { "value": "uns_5_8_27", "label": "5/8\"-27 mic stand" },
+        { "value": "unc_3_8_16", "label": "3/8\"-16 (16 TPI)" },
+        { "value": "unc_1_4_20", "label": "1/4\"-20 UNC" }
+      ],
+      "group": "threads", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Bottom Thread", "es": "Rosca Inferior", "fr": "Filetage inférieur", "pt": "Rosca Inferior" },
+      "tooltip": {
+        "en": "The thread at the bottom face. Setting both ends the same is legitimate — a same-size coupler joins two studs, and a same-size double stud joins two sockets",
+        "es": "La rosca de la cara inferior. Poner ambos extremos iguales es legítimo — una copla del mismo tamaño une dos espárragos, y un espárrago doble une dos hembras",
+        "fr": "Le filetage de la face inférieure. Mettre les deux extrémités identiques est légitime — un manchon de même taille réunit deux goujons, un goujon double réunit deux embases",
+        "pt": "A rosca da face inferior. Colocar as duas extremidades iguais é legítimo — uma luva do mesmo tamanho une dois prisioneiros, e um prisioneiro duplo une duas fêmeas"
+      }
+    },
+    {
+      "id": "turns", "type": "slider", "default": 3.5, "min": 1.5, "max": 3.5, "step": 0.5,
+      "group": "threads", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Thread Turns", "es": "Vueltas de Rosca", "fr": "Tours de filetage", "pt": "Voltas de Rosca" },
+      "tooltip": {
+        "en": "Forced to a half-integer — a whole-turn helix closes on its own seam — and capped at 3.5, which is the measured ceiling of the commons' swept-helix thread primitive at every pitch this cartridge uses. The plain register below the thread, not the thread length, carries the alignment",
+        "es": "Forzadas a un medio entero — una hélice de vuelta entera se cierra sobre su propia costura — y limitadas a 3.5, el techo medido de la primitiva de rosca barrida del procomún en todos los pasos que usa este cartucho. El registro liso bajo la rosca, no el largo de la rosca, se encarga de la alineación",
+        "fr": "Forcés à un demi-entier — une hélice à tour entier se referme sur sa propre couture — et plafonnés à 3,5, plafond mesuré de la primitive de filetage balayé du commun à tous les pas employés ici. C'est le registre lisse sous le filetage, et non la longueur de filet, qui assure l'alignement",
+        "pt": "Forçadas a um meio-inteiro — uma hélice de volta inteira se fecha sobre a própria costura — e limitadas a 3,5, o teto medido da primitiva de rosca varrida do comum em todos os passos usados aqui. O registro liso abaixo da rosca, não o comprimento da rosca, cuida do alinhamento"
+      }
+    },
+    {
+      "id": "register_h", "type": "slider", "default": 4.0, "min": 0.0, "max": 14.0, "step": 0.5,
+      "group": "threads", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Plain Register (mm)", "es": "Registro Liso (mm)", "fr": "Registre lisse (mm)", "pt": "Registro Liso (mm)" },
+      "tooltip": {
+        "en": "The parallel barrel ahead of the thread. It takes the concentricity and the bending moment, which is the job a short printed thread cannot do — and it is how a real stand adapter is made. Zero removes it and leaves the thread to do everything",
+        "es": "El barril paralelo delante de la rosca. Se encarga de la concentricidad y del momento flector, que es lo que una rosca impresa corta no puede hacer — y así se hace un adaptador de pedestal de verdad. Cero lo elimina y deja que la rosca haga todo",
+        "fr": "Le fût parallèle en avant du filetage. Il reprend la concentricité et le moment de flexion, ce qu'un filet imprimé court ne sait pas faire — et c'est ainsi qu'un vrai adaptateur de pied est fait. Zéro le supprime et laisse le filetage tout assumer",
+        "pt": "O barril paralelo à frente da rosca. Assume a concentricidade e o momento fletor, que é o que uma rosca impressa curta não consegue fazer — e é assim que um adaptador de pedestal de verdade é feito. Zero o remove e deixa a rosca fazer tudo"
+      }
+    },
+    {
+      "id": "collar_h", "type": "slider", "default": 12.0, "min": 6.0, "max": 40.0, "step": 0.5,
+      "group": "body", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Collar Height (mm)", "es": "Altura de Collarín (mm)", "fr": "Hauteur de collerette (mm)", "pt": "Altura do Colar (mm)" },
+      "tooltip": {
+        "en": "The grip body between the two ends. The geometry RAISES this to whatever the bores actually need — trimming the bores to fit the collar instead would silently drop thread turns, and nothing would report it",
+        "es": "El cuerpo de agarre entre los dos extremos. La geometría SUBE este valor a lo que los barrenos realmente necesiten — recortar los barrenos para que quepan en el collarín perdería vueltas de rosca en silencio, y nada lo reportaría",
+        "fr": "Le corps de préhension entre les deux extrémités. La géométrie RELÈVE cette valeur à ce que les alésages exigent réellement — rogner les alésages pour tenir dans la collerette ferait perdre des tours de filet en silence, sans que rien ne le signale",
+        "pt": "O corpo de pega entre as duas extremidades. A geometria ELEVA este valor ao que os furos realmente exigem — aparar os furos para caber no colar perderia voltas de rosca em silêncio, e nada relataria isso"
+      }
+    },
+    {
+      "id": "flats", "type": "slider", "default": 22.0, "min": 12.0, "max": 45.0, "step": 0.5,
+      "group": "body", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Across Flats (mm)", "es": "Entre Caras (mm)", "fr": "Sur plats (mm)", "pt": "Entre Faces (mm)" },
+      "tooltip": {
+        "en": "What a spanner sees. The geometry only lets this grow the collar, never shrink it below the wall its largest bore needs",
+        "es": "Lo que ve una llave. La geometría solo deja que esto agrande el collarín, nunca que lo reduzca por debajo de la pared que exige su barreno mayor",
+        "fr": "Ce que voit une clé. La géométrie ne laisse ceci qu'agrandir la collerette, jamais la réduire sous la paroi qu'exige son plus grand alésage",
+        "pt": "O que uma chave enxerga. A geometria só deixa isto aumentar o colar, nunca reduzi-lo abaixo da parede que o maior furo exige"
+      }
+    },
+    {
+      "id": "grip", "type": "select", "default": "hex",
+      "options": [
+        { "value": "hex", "label": "Hex (spanner)" },
+        { "value": "knurl", "label": "Knurled (fingers)" },
+        { "value": "plain", "label": "Plain cylinder" }
+      ],
+      "group": "body", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Grip", "es": "Agarre", "fr": "Prise", "pt": "Pega" },
+      "tooltip": {
+        "en": "Hex takes a spanner, which is what you want on a stand that has to come apart cold and in the dark. Knurl is finger-tight only. The knurl is grip, never structure — if it fails to cut, the part still builds",
+        "es": "El hexágono acepta llave, que es lo que quieres en un pedestal que hay que desarmar en frío y a oscuras. El moleteado es solo para apretar con los dedos. El moleteado es agarre, nunca estructura — si no logra cortarse, la pieza igual se construye",
+        "fr": "L'hexagone accepte une clé, ce qu'on veut sur un pied à démonter à froid et dans le noir. Le moletage n'est que pour serrer à la main. Le moletage est une prise, jamais une structure — s'il ne se coupe pas, la pièce se construit quand même",
+        "pt": "O sextavado aceita chave, que é o que se quer num pedestal que precisa ser desmontado no frio e no escuro. O recartilhado é só para apertar com os dedos. O recartilhado é pega, nunca estrutura — se não conseguir ser cortado, a peça ainda assim se constrói"
+      }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.30, "min": 0.1, "max": 0.6, "step": 0.05,
+      "group": "fit", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Thread Clearance (mm)", "es": "Holgura de Rosca (mm)", "fr": "Jeu de filetage (mm)", "pt": "Folga de Rosca (mm)" },
+      "tooltip": {
+        "en": "Per-side slop on both threads. A printed 27 TPI thread is a fine thread by printing standards — start at 0.3 and go up, not down, if it binds",
+        "es": "Holgura por lado en ambas roscas. Una rosca impresa de 27 hilos por pulgada es fina para los estándares de impresión — empieza en 0.3 y súbela, no la bajes, si se atora",
+        "fr": "Jeu par côté sur les deux filetages. Un filet imprimé à 27 filets au pouce est un filet fin à l'échelle de l'impression — partez de 0,3 et augmentez, n'abaissez pas, s'il grippe",
+        "pt": "Folga por lado nas duas roscas. Uma rosca impressa de 27 fios por polegada é fina para os padrões de impressão — comece em 0,3 e aumente, não diminua, se emperrar"
+      }
+    },
+    {
+      "id": "thru_bore", "type": "slider", "default": 0.0, "min": 0.0, "max": 10.0, "step": 0.5,
+      "group": "fit", "modes": ["bushing", "double_stud", "coupler"],
+      "label": { "en": "Through Bore (mm)", "es": "Barreno Pasante (mm)", "fr": "Perçage traversant (mm)", "pt": "Furo Passante (mm)" },
+      "tooltip": {
+        "en": "Optional passage for a cable or a locking screw. Capped so it can never eat the minor diameter of the smallest thread present — a bore that hollows its own thread is not a bore, it is a failure",
+        "es": "Paso opcional para cable o tornillo de fijación. Limitado para no comerse nunca el diámetro menor de la rosca más chica presente — un barreno que ahueca su propia rosca no es un barreno, es una falla",
+        "fr": "Passage optionnel pour un câble ou une vis de blocage. Plafonné pour ne jamais entamer le diamètre sur flancs du plus petit filetage présent — un perçage qui évide son propre filet n'est pas un perçage, c'est une rupture",
+        "pt": "Passagem opcional para cabo ou parafuso de travamento. Limitado para nunca comer o diâmetro menor da menor rosca presente — um furo que esvazia a própria rosca não é um furo, é uma falha"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "mic_to_camera", "mode": "bushing",
+      "label": { "en": "5/8\"-27 female to 1/4\"-20 male", "es": "5/8\"-27 hembra a 1/4\"-20 macho", "fr": "5/8\"-27 femelle vers 1/4\"-20 mâle", "pt": "5/8\"-27 fêmea para 1/4\"-20 macho" },
+      "values": { "thread_top": "uns_5_8_27", "thread_bottom": "unc_1_4_20", "grip": "hex", "collar_h": 12.0 }
+    },
+    {
+      "id": "euro_to_mic", "mode": "bushing",
+      "label": { "en": "3/8\"-16 female to 5/8\"-27 male", "es": "3/8\"-16 hembra a 5/8\"-27 macho", "fr": "3/8\"-16 femelle vers 5/8\"-27 mâle", "pt": "3/8\"-16 fêmea para 5/8\"-27 macho" },
+      "values": { "thread_top": "unc_3_8_16", "thread_bottom": "uns_5_8_27", "grip": "knurl", "collar_h": 14.0 }
+    },
+    {
+      "id": "camera_to_euro_stud", "mode": "double_stud",
+      "label": { "en": "1/4\"-20 and 3/8\"-16 double stud", "es": "Espárrago doble 1/4\"-20 y 3/8\"-16", "fr": "Goujon double 1/4\"-20 et 3/8\"-16", "pt": "Prisioneiro duplo 1/4\"-20 e 3/8\"-16" },
+      "values": { "thread_top": "unc_1_4_20", "thread_bottom": "unc_3_8_16", "grip": "hex", "collar_h": 8.0 }
+    },
+    {
+      "id": "mic_coupler", "mode": "coupler",
+      "label": { "en": "5/8\"-27 stud coupler", "es": "Copla de espárrago 5/8\"-27", "fr": "Manchon de goujon 5/8\"-27", "pt": "Luva de prisioneiro 5/8\"-27" },
+      "values": { "thread_top": "uns_5_8_27", "thread_bottom": "uns_5_8_27", "grip": "knurl", "collar_h": 20.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "clearance >= 0.2",
+      "severity": "warning",
+      "message": {
+        "en": "Below 0.2 mm a printed 27 TPI thread binds before it seats, and forcing it shears the crests off inside the fitting where you cannot see them",
+        "es": "Por debajo de 0.2 mm una rosca impresa de 27 hilos se atora antes de asentar, y forzarla arranca las crestas dentro del accesorio, donde no se ven",
+        "fr": "En dessous de 0,2 mm, un filet imprimé à 27 filets grippe avant de porter, et le forcer cisaille les crêtes à l'intérieur du raccord, là où on ne les voit pas",
+        "pt": "Abaixo de 0,2 mm uma rosca impressa de 27 fios emperra antes de assentar, e forçá-la arranca as cristas dentro do acessório, onde não dá para ver"
+      }
+    },
+    {
+      "expression": "register_h >= 2.0",
+      "severity": "warning",
+      "message": {
+        "en": "With less than 2 mm of plain register the short printed thread carries the whole bending moment, and a microphone on a boom is mostly bending moment",
+        "es": "Con menos de 2 mm de registro liso la rosca impresa corta carga todo el momento flector, y un micrófono en una jirafa es casi puro momento flector",
+        "fr": "Avec moins de 2 mm de registre lisse, le filet imprimé court reprend tout le moment de flexion — et un micro sur une perche, c'est surtout du moment de flexion",
+        "pt": "Com menos de 2 mm de registro liso a rosca impressa curta carrega todo o momento fletor, e um microfone numa girafa é quase só momento fletor"
+      }
+    },
+    {
+      "expression": "flats >= 16.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below 16 mm across flats there is little to grip and nothing for a spanner; the collar will be tightened by twisting whatever is screwed into it",
+        "es": "Por debajo de 16 mm entre caras hay poco para agarrar y nada para una llave; el collarín se apretará torciendo lo que sea que esté enroscado en él",
+        "fr": "En dessous de 16 mm sur plats, il n'y a presque rien à saisir et rien pour une clé ; la collerette sera serrée en tordant ce qui y est vissé",
+        "pt": "Abaixo de 16 mm entre faces há pouco para segurar e nada para uma chave; o colar será apertado torcendo o que estiver rosqueado nele"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [70, 55, 50] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal", "fr": "De face", "pt": "Frontal" }, "position": [0, -100, 12] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 12, "per_unit": 4, "per_part": 16,
+    "fn_factor": 64, "wasm_multiplier": 3, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "commercial",
+    "cdg_interfaces": [
+      {
+        "id": "mic_stand_thread",
+        "label": { "en": "5/8-27 Mic Stand Thread", "es": "Rosca de Pedestal 5/8-27", "fr": "Filetage de pied 5/8-27", "pt": "Rosca de Pedestal 5/8-27" },
+        "geometry_type": "thread",
+        "standard": "5/8-27 mic stand thread",
+        "parameters": ["thread_top", "thread_bottom", "turns", "clearance", "register_h"],
+        "compatible_with": ["mic-clip"]
+      },
+      {
+        "id": "three_eighths_thread",
+        "label": { "en": "3/8-16 Stand Thread", "es": "Rosca de Pedestal 3/8-16", "fr": "Filetage de pied 3/8-16", "pt": "Rosca de Pedestal 3/8-16" },
+        "geometry_type": "thread",
+        "standard": "3/8-16 stand thread (16 TPI)",
+        "parameters": ["thread_top", "thread_bottom", "turns", "clearance"],
+        "compatible_with": ["camera-quarter-twenty", "spigot-adapter"]
+      },
+      {
+        "id": "quarter_twenty_thread",
+        "label": { "en": "1/4-20 UNC Camera Thread", "es": "Rosca de Cámara 1/4-20 UNC", "fr": "Filetage photo 1/4-20 UNC", "pt": "Rosca de Câmera 1/4-20 UNC" },
+        "geometry_type": "thread",
+        "standard": "ASME B1.1 1/4-20 UNC",
+        "parameters": ["thread_top", "thread_bottom", "turns", "clearance"],
+        "compatible_with": ["camera-quarter-twenty", "ball-socket", "gopro-mount", "sensor-mount-plate", "spigot-adapter"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Three incompatible threads on the same shelf is a tax on everyone who records, films, teaches or broadcasts on borrowed equipment. It is invisible to anyone whose kit was bought as a set, and it is decisive for a school, a community radio station, a field researcher or a touring collective, whose gear arrives from a dozen donors and a dozen decades. The commercial answer is a two-dollar brass bushing that is sold in the wrong size, in the wrong city, on the day it is needed. Printing the adapter turns a mismatch from a cancelled session into a ten-minute wait. Nothing here is novel and that is the point: the value is entirely in the fact that all nine combinations come out of one file that can be carried on a phone and printed anywhere. Recycled filament is not offered — this part holds a microphone above people's heads, and reground feedstock has unpredictable layer strength.",
+      "es": "Tres roscas incompatibles en el mismo estante son un impuesto para todo el que graba, filma, enseña o transmite con equipo prestado. Es invisible para quien compró su equipo como juego, y decisivo para una escuela, una radio comunitaria, un investigador de campo o un colectivo de gira, cuyo equipo llega de una docena de donantes y una docena de décadas. La respuesta comercial es un buje de latón de dos dólares que se vende en la medida equivocada, en la ciudad equivocada, el día que se necesita. Imprimir el adaptador convierte una incompatibilidad de sesión cancelada en una espera de diez minutos. Nada aquí es novedoso, y ese es el punto: el valor está por completo en que las nueve combinaciones salen de un archivo que cabe en un teléfono y se imprime en cualquier parte. No se ofrece filamento reciclado — esta pieza sostiene un micrófono sobre la cabeza de la gente, y el material regranulado tiene resistencia entre capas impredecible.",
+      "fr": "Trois filetages incompatibles sur la même étagère, c'est un impôt pour quiconque enregistre, filme, enseigne ou diffuse avec du matériel emprunté. C'est invisible pour qui a acheté son équipement en kit, et décisif pour une école, une radio associative, un chercheur de terrain ou un collectif en tournée, dont le matériel arrive de douze donateurs et de douze décennies. La réponse commerciale, c'est une douille en laiton à deux euros vendue dans la mauvaise taille, dans la mauvaise ville, le jour où on en a besoin. Imprimer l'adaptateur transforme une incompatibilité — donc une séance annulée — en une attente de dix minutes. Rien ici n'est nouveau, et c'est précisément le point : la valeur tient entièrement au fait que les neuf combinaisons sortent d'un fichier qui tient dans un téléphone et s'imprime n'importe où. Le filament recyclé n'est pas proposé — cette pièce tient un micro au-dessus de la tête des gens, et la matière régénérée a une tenue inter-couches imprévisible.",
+      "pt": "Três roscas incompatíveis na mesma prateleira são um imposto sobre todo mundo que grava, filma, ensina ou transmite com equipamento emprestado. É invisível para quem comprou o kit fechado, e decisivo para uma escola, uma rádio comunitária, um pesquisador de campo ou um coletivo em turnê, cujo equipamento chega de uma dúzia de doadores e uma dúzia de décadas. A resposta comercial é uma bucha de latão de dois dólares vendida no tamanho errado, na cidade errada, no dia em que se precisa dela. Imprimir o adaptador transforma uma incompatibilidade — ou seja, uma sessão cancelada — numa espera de dez minutos. Nada aqui é novo, e é exatamente esse o ponto: o valor está inteiramente no fato de que as nove combinações saem de um arquivo que cabe num celular e se imprime em qualquer lugar. Filamento reciclado não é oferecido — esta peça segura um microfone sobre a cabeça das pessoas, e material regranulado tem resistência entre camadas imprevisível."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["mic-stand", "thread-adapter", "5-8-27", "3-8-16", "1-4-20", "tripod", "audio", "photography", "grip", "commercial", "hyperobject", "commons"]
+}

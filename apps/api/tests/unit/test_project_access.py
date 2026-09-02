@@ -241,3 +241,49 @@ class TestArtifactSlugCandidates:
 
     def test_malformed_slug_is_not_a_candidate(self):
         assert artifact_slug_candidates("A_preview_body.stl") == []
+
+
+class TestDevUnlock:
+    """Auth off alone must NOT unlock a private project; auth off + debug does."""
+
+    def _private(self, monkeypatch):
+        monkeypatch.setenv(PRIVATE_PROJECTS_ENV, "client-widget")
+
+    def test_auth_off_without_debug_stays_locked(self, monkeypatch):
+        from flask import Flask
+
+        from config import Config
+        self._private(monkeypatch)
+        monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+        app = Flask("t")
+        app.debug = False
+        with app.app_context():
+            assert can_view_project("client-widget", {}, None) is False
+
+    def test_auth_off_with_debug_unlocks(self, monkeypatch):
+        from flask import Flask
+
+        from config import Config
+        self._private(monkeypatch)
+        monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+        app = Flask("t")
+        app.debug = True
+        with app.app_context():
+            assert can_view_project("client-widget", {}, None) is True
+
+    def test_auth_on_ignores_debug(self, monkeypatch):
+        from flask import Flask
+
+        from config import Config
+        self._private(monkeypatch)
+        monkeypatch.setattr(Config, "AUTH_ENABLED", True)
+        app = Flask("t")
+        app.debug = True
+        with app.app_context():
+            assert can_view_project("client-widget", {}, None) is False
+
+    def test_no_app_context_stays_locked(self, monkeypatch):
+        from config import Config
+        self._private(monkeypatch)
+        monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+        assert can_view_project("client-widget", {}, None) is False

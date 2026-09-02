@@ -38,7 +38,7 @@ import json
 import logging
 import os
 
-from flask import jsonify
+from flask import current_app, has_app_context, jsonify
 
 from config import Config
 from middleware.auth import claim_roles, ensure_optional_auth
@@ -215,6 +215,21 @@ def is_private_project(slug: str | None, manifest=None) -> bool:
     return access_control.get("view") == PRIVATE
 
 
+def _dev_unlock_active() -> bool:
+    """Local-development escape hatch: auth OFF **and** the Flask debugger ON.
+
+    Mirrors ``routes/engine/render.py::_effective_tier`` (the #48 fix): the
+    conjunct matters. Auth is also off in CI and in the test suite, and an
+    auth-off-only unlock would make every private cartridge public exactly
+    where nobody is watching. With the debugger on, a developer running
+    ``FLASK_DEBUG=true`` against a checkout that contains a private cartridge
+    can open it; app startup already shouts when auth is off outside debug.
+    """
+    if Config.AUTH_ENABLED:
+        return False
+    return has_app_context() and bool(current_app.debug)
+
+
 def can_view_project(slug: str | None, manifest=None, claims: dict | None = None) -> bool:
     """Whether this caller may see a project at all.
 
@@ -223,6 +238,8 @@ def can_view_project(slug: str | None, manifest=None, claims: dict | None = None
     check against, and a private project must not be reachable without one.
     """
     if not is_private_project(slug, manifest):
+        return True
+    if _dev_unlock_active():
         return True
     if claims is None:
         return False

@@ -305,55 +305,8 @@ A mismatch in any of these causes token validation to fail with a 401 error.
 
 ---
 
-## Private projects and identity tier overrides
+## Operator playbook: private projects and tier overrides
 
-Two related mechanisms, both configured through the environment so that the
-public repository never carries an identity.
-
-### Identity tier overrides
-
-`resolve_tier()` is the single funnel from JWT claims to a tier. When
-`TIER_OVERRIDES` names the caller's lower-cased `email` claim, that mapping wins
-over the `yantra4d_tier` claim — in both directions. It exists so staff can hold
-the top tier without waiting on the Janua-side entitlement push (gate `[Y1]`),
-and so an identity can be pinned down as well as up. `/api/me` reports the
-source as `tier_override` so the diagnostic stays honest.
-
-The top tier, `madfam`, is **unlimited** for `backend_renders_per_hour` and
-`ai_requests_per_hour`: `tiers.json` uses `-1` as the sentinel (the same one
-`max_projects` already used), the rate-limiter exempts those requests instead of
-being handed a `-1/hour` string, and the render response carries
-`X-RateLimit-Limit: unlimited` with no `Remaining`/`Reset`.
-
-### Private projects
-
-A project is private when its slug is listed in `PRIVATE_PROJECTS` **or** its
-manifest declares `access_control.view: "private"` (the schema's `access_control`
-enum gained the value `private`; the env list is the fail-closed backstop for
-client cartridges whose manifests live in other repositories).
-
-A private project is visible to a caller when any of these hold:
-
-- the caller resolves to the `madfam` tier (including via `TIER_OVERRIDES`);
-- the caller's claims carry the `admin` role;
-- the caller's lower-cased `email` is listed for that slug in `PROJECT_ACCESS_GRANTS`.
-
-Everyone else — anonymous or signed in — receives **HTTP 403** with
-`error_code: "project_locked"` and `auth_required: true|false` (true when the
-caller is anonymous), from every surface that could leak the cartridge: the
-project list (the project is simply absent), manifest, meta and parts, render /
-render-stream / render-cancel, download and export, verify, storefront and share
-links, BOM / datasheet / assembly / animations / cart, the editor routes, and the
-`/static/<slug>_preview_*` render artifacts (whose names are otherwise
-predictable). Private manifests are served with `Cache-Control: private,
-no-store`. `unlisted` is unchanged and orthogonal.
-
-Not gated in this change: the render **WebSocket** progress channel (it relays
-job progress for a job the API already authorized) and the admin-only
-`/api/admin/projects/tablaco/public-link` (it returns a URL; the URL itself now
-lands on the locked screen for anyone without access).
-
-### Operator playbook
 
 1. Put the identities in the `yantra4d-secrets` Secret via Enclii (never in a
    manifest):

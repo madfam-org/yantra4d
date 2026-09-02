@@ -17,6 +17,7 @@ from services.core.tier_service import (
     export_format_allowed,
     get_render_limit,
     get_render_limit_for_project,
+    harness_tier_override,
     minimum_tier_for_export_format,
     resolve_tier,
 )
@@ -50,12 +51,23 @@ def _effective_tier() -> str:
     /api/me. The debug condition is load-bearing: auth-off with debug off is the
     exact state app startup flags as must-never-run (CI and tests use it), and an
     auth-off-only unlock silently disabled every tier gate there — guests became
-    madfam and the tier-enforcement suite could never see a 403 again."""
+    madfam and the tier-enforcement suite could never see a 403 again.
+
+    A harness that needs a tier without needing debug says so explicitly with
+    HARNESS_TIER, which harness_tier_override() only honours while auth is off
+    and which is empty everywhere it is not deliberately set — so auth-off tests
+    still see guest refusals. The nightly browser audit sets it because driving
+    real CadQuery renders is the entire point of that suite; run #168 had every
+    gridfinity render answered with the studio's upgrade prompt instead."""
     from flask import current_app
 
     from config import Config
-    if not Config.AUTH_ENABLED and current_app.debug:
-        return "madfam"
+    if not Config.AUTH_ENABLED:
+        if current_app.debug:
+            return "madfam"
+        harness_tier = harness_tier_override()
+        if harness_tier:
+            return harness_tier
     return resolve_tier(getattr(request, "auth_claims", None))
 
 

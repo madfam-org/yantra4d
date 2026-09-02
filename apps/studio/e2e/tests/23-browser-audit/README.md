@@ -118,6 +118,22 @@ default `beforeAll` skips the entire audit for everyone.
   modal; user-initiated ones still do) the handler simply never fires, and
   `expectRenderWarning()` still hands the manual dialog to its caller. Nothing
   here needs revisiting.
+- **The harness must be able to render.** `AUTH_ENABLED=false` alone does not
+  unlock the render path: `_effective_tier()` grants the top tier only with auth
+  off **and** Flask debug on, so this job was gated as `guest` — and guest may
+  not use the CadQuery engine (`apps/api/tiers.json`), which is what
+  gridfinity's default `bin` mode is. Run #168 had every gridfinity render
+  refused with a 403 and the studio answered with its **upgrade prompt**. The
+  workflow now sets `HARNESS_TIER=madfam` (docs/AUTH.md, "Harness tier"), which
+  the API honours only while auth is off.
+
+  That upsell is a second `[role="alertdialog"]` and is deliberately **not**
+  auto-cancelled — its button reads "Maybe Later", which the handler above does
+  not match, because clicking it away would hide a real entitlement gate and let
+  render tests pass having rendered nothing. Instead
+  `assertNoUpgradePrompt(page)` fails fast by name; it runs inside
+  `waitForRenderDone()` and `clickGenerateWithWarning()`, so a future tier
+  regression is reported in one line instead of a 180 s timeout.
 - **`sidebar.selectModeByLabel(label)`** for a mode whose id is not a substring
   of its label — `selectMode('baseplate_scad')` cannot find "Baseplate
   (OpenSCAD Extended)".

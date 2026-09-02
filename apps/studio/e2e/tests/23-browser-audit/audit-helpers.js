@@ -137,6 +137,40 @@ export async function autoCancelRenderWarning(page) {
 }
 
 /**
+ * Fail immediately, and by name, if the studio has opened its upgrade prompt.
+ *
+ * The upsell is a second [role="alertdialog"], raised by
+ * hooks/render/useRender.ts when a render comes back tier-refused. It is NOT
+ * auto-cancelled: its Cancel button reads "Maybe Later", which
+ * autoCancelRenderWarning() deliberately does not match, because clicking it
+ * away would hide a real entitlement gate and let render tests pass having
+ * rendered nothing.
+ *
+ * What it costs when unhandled is the problem: run #168 spent 180 s per attempt
+ * waiting for a "Render Anyway" button inside the wrong dialog, and reported a
+ * bare timeout. This turns that into one line naming the cause.
+ *
+ * Matched on the checkout/pricing links rather than on any string, so it holds
+ * in either locale and survives copy changes.
+ */
+export async function assertNoUpgradePrompt(page, context = 'render') {
+  const upsell = page
+    .locator('[role="alertdialog"]')
+    .filter({ has: page.locator('a[href*="pricing"], a[href*="checkout"]') })
+  if (!(await upsell.isVisible().catch(() => false))) return
+  const shown = ((await upsell.textContent().catch(() => '')) || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 240)
+  throw new Error(
+    `Tier gate hit during ${context}: the studio opened its upgrade prompt instead of rendering. ` +
+    'The audit backend must run as a tier allowed to use this project\'s engine — the nightly ' +
+    'sets HARNESS_TIER (docs/AUTH.md, "Harness tier"); gridfinity\'s default `bin` mode is ' +
+    `CadQuery, which the guest tier may not use. Dialog said: "${shown}"`,
+  )
+}
+
+/**
  * Stop auto-cancelling the Long Render Warning and hand back its locator, for a
  * test that needs to SEE the dialog — a user-initiated Generate still raises it
  * (that stays true after the quiet-autogenerate change, which only silences the
@@ -258,6 +292,9 @@ export async function waitForRenderDone(page, timeout = 120_000) {
   // Poll until button is visible and enabled (render complete)
   const start = Date.now()
   while (Date.now() - start < timeout) {
+    // A tier-refused render never re-enables Generate on its own terms; say so
+    // now rather than after the full timeout.
+    await assertNoUpgradePrompt(page, 'waitForRenderDone')
     const visible = await generateBtn.isVisible().catch(() => false)
     if (visible) {
       const disabled = await generateBtn.isDisabled().catch(() => true)
@@ -278,6 +315,11 @@ export async function clickGenerateWithWarning(sidebar, page) {
   // rest of the test (a later goToRealProject re-arms it).
   const dialog = await expectRenderWarning(page)
   const renderAnywayBtn = page.locator('[role="alertdialog"] button', { hasText: /Render Anyway/i })
+
+  // The upsell is an alertdialog too, so check before treating one as the
+  // render warning — otherwise this waits out its whole budget looking for a
+  // "Render Anyway" button that is not in that dialog (run #168).
+  await assertNoUpgradePrompt(page, 'clickGenerateWithWarning')
 
   // If dialog is already showing (from a mode switch, or from the load-time
   // auto-generate goToRealProject did not get to), click Render Anyway. Short
@@ -302,6 +344,7 @@ export async function clickGenerateWithWarning(sidebar, page) {
   }
 
   await page.waitForTimeout(500)
+  await assertNoUpgradePrompt(page, 'clickGenerateWithWarning')
 
   // Handle dialog if Generate triggered it
   if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {

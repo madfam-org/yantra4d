@@ -182,8 +182,44 @@ Auth settings are defined in `apps/api/config.py`.
 | `JANUA_AUDIENCE` | `yantra4d-api` | The expected JWT `aud` claim. Must match the audience registered in the Janua seed script. |
 | `AUTH_ENABLED` | `true` | Set to `false` to disable all auth checks for local development. |
 | `RENDER_SCOPE_ENFORCEMENT` | `log` | `log` warns and allows machine tokens missing `yantra4d:render`; `enforce` returns 403. Read from the environment at call time, not via `Config`. See [Machine tokens and render scope](#machine-tokens-and-render-scope). |
+| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `madfam`. Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. See [Harness tier](#harness-tier). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
+
+### Harness tier
+
+`AUTH_ENABLED=false` does **not** by itself unlock paid features on the render
+path. `_effective_tier()` in `apps/api/routes/engine/render.py` grants the top
+tier only when auth is off **and** Flask debug is on; auth-off with debug off —
+the state CI and the whole API test suite run in — stays `guest`, which is what
+lets the tier-enforcement tests keep seeing 403s.
+
+That leaves a real harness stuck: the nightly browser audit
+(`apps/studio/e2e/tests/23-browser-audit`) exists to drive real renders, and
+gridfinity's default `bin` mode is CadQuery, which `guest` may not use
+(`apps/api/tiers.json`). Before this variable every one of those renders was
+refused and the studio answered with its upgrade prompt.
+
+`HARNESS_TIER` is the explicit way to say so:
+
+```bash
+AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
+```
+
+- **Empty by default** — no deployment or test changes behaviour unless it is
+  deliberately set.
+- **Ignored whenever `AUTH_ENABLED` is `true`**, so it cannot widen
+  entitlements in a real deployment even if the variable leaks into one.
+- **Ignored unless it names a tier in `tiers.json`**; a bad value logs a
+  warning and leaves the request gated rather than failing to boot.
+- It affects the render gating path only. `/api/me` and `require_tier()`
+  already report `madfam` whenever auth is off, so setting
+  `HARNESS_TIER=madfam` makes the server agree with what the client was
+  already being told.
+
+Implemented by `harness_tier_override()` in
+`apps/api/services/core/tier_service.py`; both directions are pinned by
+`apps/api/tests/unit/test_harness_tier.py`.
 
 ---
 

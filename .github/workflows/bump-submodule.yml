@@ -42,6 +42,13 @@ jobs:
         if: steps.conflict-check.outputs.conflict == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
+          # Same constraint as update-submodules.yml: the org setting "Allow
+          # GitHub Actions to create and approve pull requests" is OFF, so the
+          # default GITHUB_TOKEN cannot open this PR. DISPATCH_TOKEN is the
+          # estate's PAT convention (issue #69 tracks provisioning it at org
+          # level); unprovisioned, it is empty and this falls back to today's
+          # behaviour.
+          token: ${{ secrets.DISPATCH_TOKEN || github.token }}
           commit-message: "chore(deps): bump ${{ steps.payload.outputs.slug }} to ${{ steps.payload.outputs.sha }}"
           title: "chore(deps): bump ${{ steps.payload.outputs.slug }} (conflict detected)"
           body: |

@@ -9,6 +9,7 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/componen
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useUnitSystem } from '../../hooks/system/useUnitSystem'
+import { useIsDesktop } from '../../hooks/system/useMediaQuery'
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
 import { evaluateSafeFormula } from '../../lib/safeFormula'
 
@@ -86,6 +87,9 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   } = useProject()
 
   const { t } = useLanguage()
+  // Same 1024px breakpoint as the `lg:` classes below, so the mounted tree and
+  // the visible tree are always the same one. App.tsx makes the identical call.
+  const isDesktop = useIsDesktop()
   const { unit, format: formatDim, formatVolume } = useUnitSystem()
   const [estimateOpen, setEstimateOpen] = useState(true)
   const [consoleExpanded, setConsoleExpanded] = useState(false)
@@ -328,7 +332,14 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
       {showWelcome && (
         <WelcomeOverlay slug={projectSlug} welcome={welcomeData as never} />
       )}
-      {/* Desktop: resizable vertical layout */}
+      {/*
+        Only the tree that is on screen is mounted. Rendering both and hiding
+        one with CSS mounted viewerContent — and therefore a <Viewer>, a
+        <canvas> and a WebGL render loop — twice per StudioMainView. The `lg:`
+        classes stay so the CSS still agrees with the JS at the same width.
+      */}
+      {isDesktop ? (
+      /* Desktop: resizable vertical layout */
       <div className="hidden lg:flex flex-col flex-1 min-h-0">
         <ResizablePanelGroup
           orientation="vertical"
@@ -368,7 +379,8 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
         )}
       </div>
 
-      {/* Mobile: original layout */}
+      ) : (
+      /* Mobile: original layout */
       <div className="lg:hidden flex flex-col flex-1 min-h-0">
         {/* 3D Viewport — φ dominant (≈61.8% of vertical space) */}
         <div className="relative min-h-0" style={{ flex: 1.618 }}>
@@ -412,6 +424,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
           )}
         </div>
       </div>
+      )}
 
       <ShortcutHelpDialog open={shortcutHelpOpen} onClose={() => setShortcutHelpOpen(false)} />
     </div>

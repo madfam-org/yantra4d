@@ -40,12 +40,15 @@ test.describe('Responsive Design', () => {
   })
 
   // Mobile (375px)
-  // Note: Desktop sidebar has `hidden lg:flex w-80` — it is NOT visible below lg (1024px).
-  // On mobile, controls are in a bottom Sheet accessed via the hamburger button.
+  // Note: below lg (1024px) the desktop sidebar is not in the DOM at all — App
+  // mounts one layout tree, chosen by useIsDesktop(), and the mobile one renders
+  // StudioSidebar variant="mobile". (The `hidden lg:flex` class is still on the
+  // desktop panel, but it is no longer what keeps it off a phone.) On mobile,
+  // controls are in a bottom Sheet accessed via the hamburger button.
   test('mobile: sidebar stacks above viewer', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudio(page)
-    // At mobile, the desktop sidebar is hidden. Instead, a slim mobile bar
+    // At mobile, the desktop sidebar is not mounted. Instead, a slim mobile bar
     // with mode tabs and a hamburger button is shown above the viewer.
     const mobileBar = page.locator('.lg\\:hidden:visible').first()
     await expect(mobileBar).toBeVisible({ timeout: 5000 })
@@ -54,10 +57,11 @@ test.describe('Responsive Design', () => {
     // available in CI headless Chromium at mobile DPI.
     //
     // This used #main-content, which worked only while that id sat on
-    // StudioMainView. It now marks the whole content region — both layout
-    // trees, so that the skip link resolves to something visible at every
-    // width — and therefore starts at the same y as the mobile bar rather than
-    // below it. data-testid is the stable handle for the viewer pane itself.
+    // StudioMainView — back when it was rendered once per layout tree and the
+    // id was therefore in the DOM twice. It now wraps the single mounted tree,
+    // so the skip link resolves to something visible at every width, and it
+    // starts at the same y as the mobile bar rather than below it. data-testid
+    // is the stable handle for the viewer pane itself.
     const viewerArea = page.locator('[data-testid="studio-main-view"]:visible').first()
     await expect(viewerArea).toBeVisible({ timeout: 10000 })
     const barBox = await mobileBar.boundingBox()
@@ -245,6 +249,12 @@ test.describe('Responsive Design', () => {
   test('mobile: console is hidden below lg breakpoint', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudio(page)
+    // This now matches zero elements rather than a hidden one. The desktop tree
+    // that carried the always-mounted role="log" panel is not mounted below lg,
+    // and the mobile tree renders its console body only once the collapsed bar
+    // is tapped. toBeHidden() passes for "absent" as well as "present but not
+    // visible", so the assertion still says what the title says: no console is
+    // on screen at 375px until you ask for one.
     const console_ = page.locator('[role="log"]').first()
     await expect(console_).toBeHidden()
   })
@@ -255,9 +265,10 @@ test.describe('Responsive Design', () => {
     // On mobile, the export panel is inside the bottom sheet. Opening it is the
     // same lost-click hazard as the overflow menu — SheetTrigger is a Radix
     // Dialog Trigger — so gate on its data-state rather than on the portalled
-    // dialog appearing within a fixed 5s. (SidebarContent is rendered twice:
-    // once in the hidden desktop sidebar and once in the Sheet portal, so the
-    // assertions below stay scoped to the dialog.)
+    // dialog appearing within a fixed 5s. (SidebarContent is mounted once, in
+    // the Sheet portal — the desktop sidebar that used to hold a second copy is
+    // not in the DOM at this width — but the assertions stay scoped to the
+    // dialog because the sheet is what this test is about.)
     const sheet = await openMobileSheet(page)
     const controls = sheet.locator('button, [role="slider"], input, select')
     await expect(controls.first()).toBeVisible({ timeout: 15_000 })

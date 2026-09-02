@@ -440,10 +440,13 @@ jobs:
   # matters.
   e2e-report:
     needs: [changes, e2e]
-    # always() so a red suite still gets its merged total (that is the whole
-    # point of this job), but there is nothing to merge when the matrix was
-    # never scheduled.
-    if: always() && needs.changes.outputs.code == 'true'
+    # !cancelled() rather than always(): a red suite still gets its merged total
+    # (that is the whole point of this job), but a run cancelled by the
+    # concurrency group — a superseded PR head — must not queue this job, because
+    # on a saturated pool it sits there holding the group and the new head's run
+    # stays pending behind it (seen twice on 2026-09-02). There is also nothing
+    # to merge when the matrix was never scheduled.
+    if: ${{ !cancelled() && needs.changes.outputs.code == 'true' }}
     runs-on: madfam-runners-blue
     timeout-minutes: 10
     defaults:
@@ -758,7 +761,11 @@ jobs:
   # merges shard reports after the fact, and a hiccup there should not block a
   # merge whose tests all passed.
   ci-success:
-    if: always()
+    # !cancelled() rather than always(): still runs (and fails) when a
+    # dependency failed or timed out, but not for a run the concurrency group
+    # cancelled — that run's always() aggregators otherwise queue and hold the
+    # group while the superseding head waits.
+    if: ${{ !cancelled() }}
     needs:
       - changes
       - studio

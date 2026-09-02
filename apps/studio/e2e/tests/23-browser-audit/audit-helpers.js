@@ -250,15 +250,73 @@ export async function dismissRenderWarning(page, action = 'cancel', timeout = 50
 
 /**
  * Change a slider value and wait for the subsequent render to complete.
+ *
+ * Has to prove a render in two different worlds, because the app's answer to a
+ * param change that estimates over `warning_threshold_seconds` is changing:
+ *
+ *   - today: the debounced auto-generate raises the modal Long Render Warning
+ *     and renders nothing until it is answered;
+ *   - after the quiet-autogenerate change: an AUTOMATIC render over the
+ *     threshold is skipped altogether behind a non-blocking toast, and only a
+ *     user-initiated Generate still carries the modal.
+ *
+ * Either way a short estimate still auto-renders with no dialog at all. So this
+ * cannot just dismiss a dialog and wait: answering a dialog that no longer
+ * appears, then "waiting" on a Generate button that was never disabled, passes
+ * without a render ever happening. Wait for real evidence instead — the dialog,
+ * or Generate reporting itself disabled — ask for the render explicitly when
+ * the app declined to start one, and fail if no render was ever observed.
  */
 export async function triggerAndWaitRender(sidebar, page, paramId, value, timeout = 120_000) {
+  const dialog = page.locator('[role="alertdialog"]')
+  const generateBtn = page.locator('button', { hasText: /Generate|Generar/ }).first()
+  // Both layout trees render the console; take the one on screen. Absent (or
+  // collapsed) it reads null, and the Generate-disabled evidence stands alone.
+  const renderLog = page.locator('[role="log"]').filter({ visible: true }).first()
+  const logBefore = await renderLog.textContent().catch(() => null)
+
+  // Poll for a render being in flight — the Generate button disables for the
+  // duration. Gives up early if the modal comes up instead, since that means
+  // the app is waiting on an answer rather than rendering.
+  const renderStarted = async (budgetMs) => {
+    const deadline = Date.now() + budgetMs
+    while (Date.now() < deadline) {
+      if (await generateBtn.isDisabled().catch(() => false)) return true
+      if (await dialog.isVisible().catch(() => false)) return false
+      await page.waitForTimeout(100)
+    }
+    return false
+  }
+
   await sidebar.editSliderValue(paramId, value)
-  // The edit re-arms the debounced auto-generate, and when the estimate is over
-  // the cartridge's warning threshold nothing renders until the modal is
-  // answered — so without this the caller "waits" on a render that was never
-  // started and passes on a Generate button that was simply never disabled.
-  await dismissRenderWarning(page, 'render', 3000)
+
+  // RENDER_DEBOUNCE_MS is 500 ms (hooks/project/useProjectParams.ts); leave room
+  // for the estimate and a React commit on a contended runner.
+  let rendering = await renderStarted(2500)
+
+  if (!rendering && await dialog.isVisible().catch(() => false)) {
+    // Automatic render, long estimate, current behaviour: confirm it.
+    await dismissRenderWarning(page, 'render', 1000)
+    rendering = await renderStarted(5000)
+  }
+
+  if (!rendering) {
+    // Nothing started on its own — the quiet-autogenerate path, or a value the
+    // app already had cached. Ask for the render the way a user would; that is
+    // still the modal path, which clickGenerateWithWarning confirms.
+    await clickGenerateWithWarning(sidebar, page)
+    rendering = await renderStarted(5000)
+  }
+
   await waitForRenderDone(page, timeout)
+
+  const logAfter = await renderLog.textContent().catch(() => null)
+  if (!rendering && logAfter === logBefore) {
+    throw new Error(
+      `Setting "${paramId}" to ${value} produced no render: the Generate button was ` +
+      'never observed disabled and the render console never changed.',
+    )
+  }
 }
 
 /**

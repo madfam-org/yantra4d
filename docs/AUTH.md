@@ -348,6 +348,33 @@ queue entries, mark matching active jobs, publish `cancelled` on their channels.
 An active job whose metadata has expired matches nothing but its own job_id — a
 request-scoped cancel leaves it alone rather than sweeping up work it can no
 longer attribute.
+
+### Cancelling from a page that is going away
+
+A browser that abandons a render — tab closed, back button, an in-app route
+change — cannot await a `fetch`. Until this was handled, it simply did not
+cancel: nightly run #171 made ~95 navigations in 40 minutes and produced **zero**
+`render-cancel` calls, so every abandoned render ran to completion against the
+single render worker while a live user's render queued behind it. Starvation,
+not waste.
+
+`apps/studio/src/hooks/render/useRender.ts` cancels on `pagehide` and on hook
+unmount, through
+`renderService.ts::cancelRenderOnUnload` — `navigator.sendBeacon` first (the
+only transport a browser promises to deliver after the document is gone), then
+`fetch(..., {keepalive: true})`.
+
+A beacon carries no `Authorization` header; it cannot. That is fine, and it is
+the capability model doing its job: the beacon cancels only ids the server
+itself published on this client's own stream, so an anonymous unload can stop
+its own render and nothing else. `{"all": true}` over a beacon is still refused,
+by the same `@require_role("admin")` as every other caller.
+
+The endpoint therefore parses the body as JSON regardless of `Content-Type`
+(`routes/engine/render.py::_cancel_body`): a beacon's type is whatever Blob it
+carries, and the shape that always crosses an origin without a preflight is
+`text/plain`. Only the *header* is tolerated — every field is validated exactly
+as before, so `text/plain` grants nothing `application/json` would not.
 ## Identity tier overrides
 
 `resolve_tier()` (`apps/api/services/core/tier_service.py`) is the single funnel

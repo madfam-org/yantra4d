@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Fashion Cabinet consumers back-edge (blocking)** — The hardware bridge now
+  pins in both directions. Fashion Cabinet vendors a slice of our commons
+  catalog and resolves its `hardware_ref` notions against it, so its CI has
+  always known when we moved; ours knew nothing, and renaming a parameter here
+  went red days later in someone else's repo. Their published
+  `yantra4d-consumers.json` (contract `yantra4d_consumers_v1`) is now vendored
+  at `docs/interfaces/fashion-cabinet-consumers.snapshot.json`, commit-pinned to
+  the fashion-cabinet commit it came from, and
+  `scripts/qa/refresh_fc_consumers.py --check` resolves every linked claim in it
+  against our own manifests — 87 cartridges consumed, 299 linked consumers, 960
+  parameter references. Blocking in the `manifest-validation` CI job: rename a
+  parameter a garment drives and the failure names the garment, the cartridge
+  and the parameter, in the pull request that makes the change. Unlinked claims
+  (their `wanted` list — `hammer-loop` is a solid a garment is waiting on) are
+  reported and never enforced. Offline, stdlib-only, no timestamps; `--check`
+  also rejects a hand-edited snapshot, and `--check-upstream` (network, not in
+  CI) reports drift against the pin. Docs:
+  `docs/reference/fashion-cabinet-consumers.md`.
 - **Multi-Rack Mode (custom-msh)** — New 6th mode producing 2–5 contiguous
   staining racks joined front-to-back (Y-axis, default) or side-by-side (X-axis).
   Y-axis stacking: racks share diamond grid junction guards at Y boundaries,

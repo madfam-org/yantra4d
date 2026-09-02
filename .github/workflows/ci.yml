@@ -533,6 +533,16 @@ jobs:
       # the whole point of the check that a partial checkout cannot pass.
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
+      # The other half of the Fashion Cabinet hardware bridge. FC vendors a
+      # pinned slice of our catalog and resolves its notions against it, so its
+      # CI has always known when we moved; ours knew nothing, and a parameter
+      # rename here went red days later in someone else's repo. This lane reads
+      # the vendored back-edge (which of our parameters their garments drive)
+      # and resolves every linked claim against these same manifests, so a
+      # rename that would break a cabinet object fails in the PR that makes it.
+      # Offline and stdlib-only: no network, nothing to install.
+      - name: Fashion Cabinet consumers back-edge resolves
+        run: python3 scripts/qa/refresh_fc_consumers.py --check
       # scripts/tests/ had no CI home: test_ceq_coverage.py and
       # test_validate_manifests.py passed only on developer machines, which is
       # the same "green for the wrong reason" failure the suites themselves

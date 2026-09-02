@@ -141,6 +141,8 @@ packages/
 | `scripts/cli/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `scripts/prerender-carousel.sh` | Pre-render GLB models for landing carousel + auto-generate `manifest.json` | RARELY |
 | `scripts/qa/i18n_audit.py` | i18n key parity checker + hardcoded string scanner | RARELY |
+| `scripts/qa/refresh_fc_consumers.py` | Vendors and checks the Fashion Cabinet consumers back-edge; `--check` fails CI when a parameter rename breaks a garment | RARELY |
+| `docs/interfaces/fashion-cabinet-consumers.snapshot.json` | Vendored, commit-pinned copy of Fashion Cabinet's published `yantra4d-consumers.json` -- refresh with the script above, never by hand | **NEVER** |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `apps/api/tests/verify_design.py` | STL quality checker script | RARELY |
 | `apps/api/pyproject.toml` | pytest + coverage config | RARELY |
@@ -246,6 +248,10 @@ cd apps/landing && npm run build         # static build check
 # Backend
 cd apps/api && pytest                 # all backend tests
 cd apps/api && pytest --cov           # with coverage report
+
+# QA lanes (repo root, stdlib only)
+python3 scripts/qa/refresh_fc_consumers.py --check  # Fashion Cabinet back-edge resolves against our manifests (blocking in CI: manifest-validation)
+python3 -m pytest scripts/tests -q                  # tests for the scripts/qa lanes
 ```
 
 ### Local dev
@@ -497,6 +503,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`docs/guides/graph-cartridges.md`](docs/guides/graph-cartridges.md) -- Authoring node-graph cartridges
 - [`docs/architecture/sim4d-extraction.md`](docs/architecture/sim4d-extraction.md) -- What was taken from sim4d and what was left
 - [`docs/operations/cross-ecosystem-interventions.md`](docs/operations/cross-ecosystem-interventions.md) -- Items owed to Yantra4D from other platforms
+- [`docs/reference/fashion-cabinet-consumers.md`](docs/reference/fashion-cabinet-consumers.md) -- The Fashion Cabinet bridge back-edge: who consumes our cartridges, and what breaks CI
 - [`docs/guides/ai-features.md`](docs/guides/ai-features.md) -- AI Configurator and Code Editor
 - [`docs/guides/verification.md`](docs/guides/verification.md) -- STL quality verification system
 - [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md) -- Client-side rendering fallback

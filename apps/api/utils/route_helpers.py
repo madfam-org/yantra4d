@@ -9,8 +9,6 @@ from pathlib import Path
 
 from flask import g, jsonify, request
 
-from config import Config
-
 logger = logging.getLogger(__name__)
 
 _NON_ALNUM_RE = re.compile(r"[^a-z0-9_]+")
@@ -26,17 +24,6 @@ def _derive_error_code(message: str) -> str:
     code = _NON_ALNUM_RE.sub("_", code)
     code = re.sub(r"_+", "_", code).strip("_")
     return code
-
-
-def cleanup_old_stl_files(parts: list[str], static_folder: str, prefix: str | None = None, export_format: str = "stl") -> None:
-    """Remove old render files for the given parts and export format."""
-    stl_prefix = prefix or Config.STL_PREFIX
-    for part in parts:
-        old_path = os.path.join(static_folder, f"{stl_prefix}{part}.{export_format}")
-        try:
-            os.remove(old_path)
-        except OSError:
-            pass
 
 
 def safe_join_path(base_dir: str, filename: str) -> Path | None:

@@ -80,19 +80,24 @@ def static_dir(tmp_path):
 
 
 @pytest.fixture
-def fs_client(projects, static_dir, monkeypatch):
+def fs_app(projects, static_dir, monkeypatch):
     """The app on its default store, with two artifacts already rendered."""
     (static_dir / ARTIFACT).write_bytes(MESH)
     (static_dir / PRIVATE_ARTIFACT).write_bytes(MESH)
     monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
     monkeypatch.setattr(Config, "RENDER_ARTIFACT_STORE", "fs")
-    set_artifact_store(FilesystemArtifactStore())
+    store = FilesystemArtifactStore()
+    set_artifact_store(store)
 
     from app import create_app
     application = create_app()
     application.config["TESTING"] = True
-    application.static_folder = str(static_dir)
-    return application.test_client()
+    return application, store
+
+
+@pytest.fixture
+def fs_client(fs_app):
+    return fs_app[0].test_client()
 
 
 @pytest.fixture
@@ -178,22 +183,28 @@ class TestFilesystemDefaultIsByteIdentical:
         assert got.headers.get("Last-Modified")
         assert got.headers["Content-Length"] == str(len(MESH))
 
-    def test_flasks_builtin_static_rule_is_what_answers(self, fs_client):
-        """A pre-existing fact this change had to preserve rather than fix.
+    def test_one_rule_answers_static_and_it_goes_through_the_store(self, fs_app):
+        """Two rules used to answer `/static/<path>`, and the wrong one won.
 
-        `Flask(__name__)` registers a `static` endpoint for `/static/<path>`,
-        and `app.py` registers its own `serve_static` view for the very same
-        URL. Werkzeug resolves the tie in registration order, so the built-in
-        rule wins and `serve_static` never runs in production — which means its
-        `Cache-Control: public, max-age=3600` never applies either. Artifacts
-        are served `no-cache`, from Werkzeug's `send_file` default.
+        `Flask(__name__)` registers a `static` endpoint for that URL and
+        `app.py` registers its own `serve_static` view for it; Werkzeug
+        resolves the tie in registration order, so the built-in rule won and
+        `serve_static` never ran — which is why the header it meant to set
+        never applied. `app.py` already knew the pair was ambiguous: that is
+        exactly why #78's private-project gate is a `before_request` hook
+        rather than a check inside the view.
 
-        `app.py` already knew the two rules were ambiguous: that is exactly why
-        the private-project gate added in #78 is a `before_request` hook rather
-        than a check inside the view. Nothing here changes which rule wins on
-        the filesystem backend; this test pins the behaviour so a later change
-        to that dead view cannot silently alter what production sends.
+        There is now one rule, on both backends, and it reads through the
+        store. Production does not move: under the default store that view
+        delegates to `send_from_directory`, which is what the built-in rule
+        did — the response above is compared header-for-header to prove it.
         """
+        application, _store = fs_app
+        assert "static" not in application.view_functions
+        assert application.static_folder is None
+
+    def test_artifacts_are_still_served_no_cache(self, fs_client):
+        """Werkzeug's `send_file` default, and what production has always sent."""
         got = fs_client.get(f"/static/{ARTIFACT}")
         assert got.headers["Cache-Control"] == "no-cache"
 
@@ -242,23 +253,20 @@ class TestObjectBackendServing:
         # Same MIME type the filesystem branch would have sent.
         assert got.headers["Content-Type"].startswith("model/stl")
 
-    def test_caching_changes_when_the_backend_does_and_that_is_deliberate(self, s3_client):
-        """The one header that differs between the two backends.
+    def test_caching_is_the_same_on_both_backends(self, s3_client, fs_client):
+        """Flipping the flag must not change how cacheable an artifact is.
 
-        On `fs`, Flask's built-in static rule shadows the app's view (see
-        `test_flasks_builtin_static_rule_is_what_answers`) and artifacts go out
-        `no-cache`. On an object store that rule does not exist, the app's view
-        runs, and its long-intended `public, max-age=3600` finally applies.
-        Safe, because artifact names carry the parameter hash — different
-        parameters are a different name, so a cached response can never be a
-        stale render — and because a *private* project's artifact is still
-        stamped `private, no-store` by the gate, which runs after the view.
-        Recorded in docs/operations/render-artifact-storage.md so an operator
-        flipping the flag is not surprised by it.
+        An earlier cut of this branch let the object-store path send
+        `public, max-age=3600` — the header the app's shadowed view had always
+        meant to set — while the filesystem path kept Werkzeug's `no-cache`.
+        That made the same artifact shared-cacheable on one deployment and not
+        the other, which is a security property (a private project's render
+        sitting in an intermediary) hanging off a storage flag. Both send
+        `no-cache`; #78's gate downgrades that to `private, no-store` for a
+        private project, again on both.
         """
-        assert s3_client.get(f"/static/{ARTIFACT}").headers["Cache-Control"] == (
-            "public, max-age=3600"
-        )
+        assert s3_client.get(f"/static/{ARTIFACT}").headers["Cache-Control"] == "no-cache"
+        assert fs_client.get(f"/static/{ARTIFACT}").headers["Cache-Control"] == "no-cache"
 
     def test_a_private_artifact_is_never_cacheable(self, s3_client, s3_app, monkeypatch):
         """The gate's `private, no-store` outranks the view, on either backend."""
@@ -303,6 +311,16 @@ class TestObjectBackendServing:
         assert "static" not in application.view_functions
         assert application.static_folder is None
 
+    def test_a_stray_local_file_cannot_shadow_the_download_route_either(
+        self, s3_client, static_dir
+    ):
+        """The download route reads the store, not the pod's disk."""
+        (static_dir / f"{PUBLIC_SLUG}_preview_stale_body.stl").write_bytes(b"stale")
+        got = s3_client.get(
+            f"/api/projects/{PUBLIC_SLUG}/download/stl/{PUBLIC_SLUG}_preview_stale_body.stl"
+        )
+        assert got.status_code == 404
+
     def test_download_streams_as_an_attachment(self, s3_client):
         got = s3_client.get(f"/api/projects/{PUBLIC_SLUG}/download/stl/{ARTIFACT}")
         assert got.status_code == 200
@@ -346,3 +364,294 @@ class TestHealthReportsTheBackend:
         rendered = json.dumps(body)
         assert "object-store.test" not in rendered
         assert "renders/v1" not in rendered
+
+
+# ──────────────────────────────────────────────
+# 3. Conditional and ranged requests, identically on both backends
+# ──────────────────────────────────────────────
+
+
+@pytest.fixture(params=["fs", "s3"])
+def backend(request):
+    """A client and its store, once per backend.
+
+    Resolved lazily: both app fixtures install a process-wide store, so asking
+    for them together would leave whichever ran last in charge of a client
+    built against the other.
+    """
+    app_fixture = "fs_app" if request.param == "fs" else "s3_app"
+    application, store = request.getfixturevalue(app_fixture)
+    return application.test_client(), store, request.param
+
+
+class TestValidatorsAndRanges:
+    """The half of `/static` that a byte stream does not get for free.
+
+    Under `fs` all of this comes from Werkzeug's `send_file`; under `s3` it is
+    implemented over `ArtifactStore.stat` and a ranged `open`. A viewer, a
+    resumed `curl -C -` and any CDN in front of the API cannot tell which
+    backend is behind them, so neither may these responses.
+    """
+
+    def test_a_plain_get_carries_a_validator_and_a_length(self, backend):
+        client, _store, _kind = backend
+        got = client.get(f"/static/{ARTIFACT}")
+        assert got.status_code == 200
+        assert got.headers.get("ETag")
+        assert got.headers.get("Last-Modified")
+        assert got.headers["Content-Length"] == str(len(MESH))
+        # And no `Accept-Ranges`: Werkzeug's `send_file` only advertises range
+        # support on a response that actually is one, so neither backend does.
+        assert "Accept-Ranges" not in got.headers
+
+    def test_the_validator_is_stable_across_requests(self, backend):
+        client, _store, _kind = backend
+        first = client.get(f"/static/{ARTIFACT}").headers["ETag"]
+        assert client.get(f"/static/{ARTIFACT}").headers["ETag"] == first
+
+    def test_if_none_match_revalidates_to_304(self, backend):
+        client, _store, _kind = backend
+        first = client.get(f"/static/{ARTIFACT}")
+        again = client.get(
+            f"/static/{ARTIFACT}", headers={"If-None-Match": first.headers["ETag"]}
+        )
+        assert again.status_code == 304
+        assert again.data == b""
+        assert again.headers["ETag"] == first.headers["ETag"]
+
+    def test_if_modified_since_revalidates_to_304(self, backend):
+        client, _store, _kind = backend
+        first = client.get(f"/static/{ARTIFACT}")
+        again = client.get(
+            f"/static/{ARTIFACT}",
+            headers={"If-Modified-Since": first.headers["Last-Modified"]},
+        )
+        assert again.status_code == 304
+
+    def test_an_older_if_modified_since_still_sends_the_artifact(self, backend):
+        client, _store, _kind = backend
+        got = client.get(
+            f"/static/{ARTIFACT}",
+            headers={"If-Modified-Since": "Wed, 21 Oct 2015 07:28:00 GMT"},
+        )
+        assert got.status_code == 200
+        assert got.data == MESH
+
+    def test_a_stale_validator_gets_the_new_bytes(self, backend):
+        """A reused artifact name has to invalidate the client's copy."""
+        client, store, _kind = backend
+        stale = client.get(f"/static/{ARTIFACT}").headers["ETag"]
+        store.put_bytes(ARTIFACT, MESH + b"more geometry\n")
+
+        got = client.get(f"/static/{ARTIFACT}", headers={"If-None-Match": stale})
+
+        assert got.status_code == 200
+        assert got.data == MESH + b"more geometry\n"
+        assert got.headers["ETag"] != stale
+
+    @pytest.mark.parametrize(
+        "header,expected",
+        [
+            ("bytes=0-4", slice(0, 5)),
+            ("bytes=5-9", slice(5, 10)),
+            ("bytes=10-", slice(10, None)),
+            ("bytes=-5", slice(-5, None)),
+        ],
+    )
+    def test_a_range_request_is_a_206_with_those_bytes(self, backend, header, expected):
+        client, _store, _kind = backend
+        got = client.get(f"/static/{ARTIFACT}", headers={"Range": header})
+        assert got.status_code == 206
+        assert got.data == MESH[expected]
+        assert got.headers["Content-Length"] == str(len(MESH[expected]))
+        assert got.headers["Content-Range"].startswith("bytes ")
+        assert got.headers["Content-Range"].endswith(f"/{len(MESH)}")
+        assert got.headers["Accept-Ranges"] == "bytes"
+
+    def test_an_unsatisfiable_range_is_a_416_naming_the_length(self, backend):
+        client, _store, _kind = backend
+        got = client.get(f"/static/{ARTIFACT}", headers={"Range": "bytes=9999-10000"})
+        assert got.status_code == 416
+        assert got.headers["Content-Range"] == f"bytes */{len(MESH)}"
+
+    def test_if_range_with_the_current_validator_serves_the_range(self, backend):
+        client, _store, _kind = backend
+        etag = client.get(f"/static/{ARTIFACT}").headers["ETag"]
+        got = client.get(
+            f"/static/{ARTIFACT}", headers={"Range": "bytes=0-4", "If-Range": etag}
+        )
+        assert got.status_code == 206
+        assert got.data == MESH[:5]
+
+    def test_if_range_with_a_stale_validator_resends_the_whole_artifact(self, backend):
+        """RFC 9110: the artifact changed under the client, so the range is void."""
+        client, _store, _kind = backend
+        got = client.get(
+            f"/static/{ARTIFACT}",
+            headers={"Range": "bytes=0-4", "If-Range": '"not-the-current-one"'},
+        )
+        assert got.status_code == 200
+        assert got.data == MESH
+
+    def test_the_download_route_ranges_too(self, backend):
+        client, _store, _kind = backend
+        got = client.get(
+            f"/api/projects/{PUBLIC_SLUG}/download/stl/{ARTIFACT}",
+            headers={"Range": "bytes=0-4"},
+        )
+        assert got.status_code == 206
+        assert got.data == MESH[:5]
+        assert got.headers["Content-Disposition"] == f"attachment; filename={ARTIFACT}"
+
+    def test_the_download_route_revalidates_too(self, backend):
+        client, _store, _kind = backend
+        url = f"/api/projects/{PUBLIC_SLUG}/download/stl/{ARTIFACT}"
+        first = client.get(url)
+        again = client.get(url, headers={"If-None-Match": first.headers["ETag"]})
+        assert again.status_code == 304
+
+
+class TestPrivateArtifactsRevealNothing:
+    """#78/#87's discipline survives the validators being added.
+
+    An ETag is a fingerprint of content. It must never reach a caller who is
+    not entitled to that content — and neither must a `Last-Modified`, which
+    tells them when a private project was last rendered.
+    """
+
+    @pytest.mark.parametrize("headers", [
+        {},
+        {"If-None-Match": '"anything"'},
+        {"Range": "bytes=0-4"},
+        {"If-Modified-Since": "Wed, 21 Oct 2015 07:28:00 GMT"},
+    ])
+    def test_an_unentitled_caller_gets_no_validator_by_any_route(self, backend, headers):
+        client, _store, _kind = backend
+        refused = client.get(f"/static/{PRIVATE_ARTIFACT}", headers=headers)
+        assert refused.status_code == 403
+        assert refused.get_json()["error_code"] == "project_locked"
+        assert "ETag" not in refused.headers
+        assert "Last-Modified" not in refused.headers
+        assert "Content-Range" not in refused.headers
+
+    def test_a_conditional_request_cannot_probe_for_existence(self, backend):
+        """The refusal is identical whether or not the artifact is there."""
+        client, store, _kind = backend
+        present = client.get(f"/static/{PRIVATE_ARTIFACT}")
+        assert store.delete(PRIVATE_ARTIFACT) is True
+        absent = client.get(f"/static/{PRIVATE_ARTIFACT}")
+
+        assert present.status_code == absent.status_code == 403
+        assert present.get_json()["error_code"] == absent.get_json()["error_code"]
+
+    def test_no_response_on_either_backend_is_shared_cacheable(self, backend):
+        client, _store, _kind = backend
+        refused = client.get(f"/static/{PRIVATE_ARTIFACT}")
+        assert "public" not in refused.headers.get("Cache-Control", "")
+
+
+class TestTheTwoBackendsAnswerTheSameWay:
+    """One app, one URL, both stores — compared header for header.
+
+    The class above asserts each backend's behaviour separately, which can
+    drift into two correct-looking specifications of different things. This
+    swaps the store underneath a single app between requests, so any divergence
+    shows up as a diff rather than as two passing tests.
+
+    ETag and Last-Modified are compared for *presence*: their values are
+    supposed to differ (S3 hands back the object's MD5, a file's is derived
+    from mtime and size), and a test demanding they match would be demanding
+    the wrong thing.
+    """
+
+    #: Everything the artifact response itself decides.
+    SHAPE = (
+        "content-type", "content-length", "content-range", "cache-control",
+        "accept-ranges", "content-disposition", "content-encoding", "vary",
+    )
+
+    @pytest.fixture
+    def swap(self, projects, static_dir, monkeypatch, fake_s3_client):
+        """A client plus a switch between the two stores.
+
+        The app itself is backend-agnostic — one `/static` rule, resolved
+        through `get_artifact_store()` per request — which is what makes this
+        comparison possible at all.
+        """
+        (static_dir / ARTIFACT).write_bytes(MESH)
+        (static_dir / PRIVATE_ARTIFACT).write_bytes(MESH)
+        monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
+
+        fs_store = FilesystemArtifactStore()
+        s3_store = S3ArtifactStore(
+            bucket="renders", endpoint_url="http://object-store.test:9000",
+            prefix="renders/v1", client=fake_s3_client,
+        )
+        s3_store.put_bytes(ARTIFACT, MESH)
+        s3_store.put_bytes(PRIVATE_ARTIFACT, MESH)
+
+        set_artifact_store(fs_store)
+        from app import create_app
+        application = create_app()
+        application.config["TESTING"] = True
+        client = application.test_client()
+
+        def request(**kwargs):
+            answers = {}
+            for name, store in (("fs", fs_store), ("s3", s3_store)):
+                set_artifact_store(store)
+                answers[name] = client.get(**kwargs)
+            return answers["fs"], answers["s3"]
+
+        return request
+
+    def _shape(self, response):
+        lowered = {k.lower(): v for k, v in response.headers.items()}
+        return (
+            response.status_code,
+            {name: lowered.get(name) for name in self.SHAPE},
+            "etag" in lowered,
+            "last-modified" in lowered,
+        )
+
+    def test_a_plain_get_matches(self, swap):
+        fs, s3 = swap(path=f"/static/{ARTIFACT}")
+        assert fs.data == s3.data == MESH
+        assert self._shape(fs) == self._shape(s3)
+
+    def test_a_range_request_matches(self, swap):
+        fs, s3 = swap(path=f"/static/{ARTIFACT}", headers={"Range": "bytes=3-11"})
+        assert fs.status_code == 206
+        assert fs.data == s3.data == MESH[3:12]
+        assert self._shape(fs) == self._shape(s3)
+
+    def test_an_unsatisfiable_range_matches(self, swap):
+        fs, s3 = swap(path=f"/static/{ARTIFACT}", headers={"Range": "bytes=900-999"})
+        assert fs.status_code == 416
+        assert fs.headers["Content-Range"] == s3.headers["Content-Range"]
+        assert fs.status_code == s3.status_code
+
+    def test_a_revalidation_matches(self, swap):
+        """Each backend is handed back *its own* validator, and must 304."""
+        fs_first, s3_first = swap(path=f"/static/{ARTIFACT}")
+        fs_again, _ = swap(
+            path=f"/static/{ARTIFACT}",
+            headers={"If-None-Match": fs_first.headers["ETag"]},
+        )
+        _, s3_again = swap(
+            path=f"/static/{ARTIFACT}",
+            headers={"If-None-Match": s3_first.headers["ETag"]},
+        )
+        assert fs_again.status_code == s3_again.status_code == 304
+        assert self._shape(fs_again) == self._shape(s3_again)
+
+    def test_a_missing_artifact_matches(self, swap):
+        fs, s3 = swap(path="/static/never-rendered.stl")
+        assert fs.status_code == s3.status_code == 404
+        assert fs.get_json()["status"] == s3.get_json()["status"] == "error"
+
+    def test_the_private_refusal_matches(self, swap):
+        fs, s3 = swap(path=f"/static/{PRIVATE_ARTIFACT}")
+        assert fs.status_code == s3.status_code == 403
+        assert fs.get_json()["error_code"] == s3.get_json()["error_code"]
+        assert self._shape(fs) == self._shape(s3)

@@ -12,6 +12,7 @@ import pytest
 
 from services.engine.render_artifacts import (
     MESH_EXTENSIONS,
+    discard_render_artifacts,
     find_latest_render_key,
     render_key_prefix,
 )
@@ -89,3 +90,32 @@ class TestFindLatest:
 
     def test_the_default_format_order_is_the_shared_one(self):
         assert MESH_EXTENSIONS == (".glb", ".stl", ".3mf")
+
+
+class TestDiscard:
+    """Superseding a previous render has to actually remove it.
+
+    The filesystem version built a path and called `os.remove`, which quietly
+    did nothing against an object store — leaving the old object in place to
+    answer a URL the new render was about to reuse.
+    """
+
+    def test_the_previous_render_of_each_part_goes(self, store):
+        prefix = f"{SLUG}_preview_head_"
+        _touch(store, f"{prefix}body.stl")
+        _touch(store, f"{prefix}lid.stl")
+
+        assert discard_render_artifacts(["body", "lid"], prefix, "stl", store=store) == 2
+        assert store.list() == []
+
+    def test_nothing_to_discard_is_not_an_error(self, store):
+        assert discard_render_artifacts(["body"], "nope_", "stl", store=store) == 0
+
+    def test_other_formats_and_parts_are_left_alone(self, store):
+        prefix = f"{SLUG}_preview_head_"
+        _touch(store, f"{prefix}body.stl")
+        kept_format = _touch(store, f"{prefix}body.glb")
+        kept_part = _touch(store, f"{prefix}lid.stl")
+
+        assert discard_render_artifacts(["body"], prefix, "stl", store=store) == 1
+        assert sorted(info.key for info in store.list()) == sorted([kept_format, kept_part])

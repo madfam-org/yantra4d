@@ -169,17 +169,25 @@ def create_app():
     # asserts the static directory is readable and writable — the check the
     # startup capability probe already made non-fatally.
     from services.storage import check_artifact_store_ready, get_artifact_store
-    artifact_store = check_artifact_store_ready()
+    check_artifact_store_ready()
 
-    # Flask registers its own `static` endpoint for the same `/static/<path>`
-    # URL this app also serves, and Werkzeug picks between the two rules. That
-    # is harmless while both read the same directory. It is not harmless once
-    # artifacts live in a bucket: the built-in rule would answer out of a local
-    # directory holding nothing, so a render would 404 depending on which rule
-    # matched. With a non-filesystem store there is no local directory to serve
-    # from, and the built-in rule is not registered at all.
-    serves_from_disk = artifact_store.local_root() is not None
-    app = Flask(__name__) if serves_from_disk else Flask(__name__, static_folder=None)
+    # No built-in static rule, on either backend.
+    #
+    # `Flask(__name__)` registers a `static` endpoint for `/static/<path>` and
+    # this app registers its own `serve_static` view for the very same URL.
+    # Werkzeug resolves the tie in registration order, so the built-in rule won
+    # and `serve_static` never ran — which is why its intended headers never
+    # applied. Harmless while both rules read the same directory; not harmless
+    # once artifacts live in a bucket, because the built-in rule would answer
+    # out of a local directory holding nothing and a render would 404 depending
+    # on which rule matched.
+    #
+    # So there is one rule, it goes through the artifact store, and it is the
+    # same rule on both backends. Production does not move: `serve_static`
+    # delegates to `send_from_directory` under the default store, which is
+    # exactly what Flask's built-in rule did, down to the `no-cache` and the
+    # conditional/ranged handling Werkzeug's `send_file` provides.
+    app = Flask(__name__, static_folder=None)
     app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB upload limit
     CORS(app, origins=Config.CORS_ORIGINS)
 
@@ -306,12 +314,18 @@ def create_app():
     # same URL works whether they sit on the local volume or in a bucket — and
     # a bucket artifact is *streamed* through this route rather than redirected
     # to, which is what keeps the private-project gate above applying to it.
+    #
+    # No Cache-Control is set here. Both branches send `no-cache` — the
+    # filesystem one from Werkzeug's `send_file` default, the streaming one
+    # explicitly — and the gate above replaces that with `private, no-store`
+    # for a private project's artifact. Stamping `public` on this route would
+    # make a private render shared-cacheable on the object-store backend only,
+    # which is exactly the kind of difference the flag must not introduce.
     @app.route('/static/<path:filename>')
     def serve_static(filename):
         resp = send_static_artifact(filename)
         if resp is None:
             abort(404)
-        resp.headers["Cache-Control"] = "public, max-age=3600"
         return resp
 
     # Global error handlers — include request_id for traceability

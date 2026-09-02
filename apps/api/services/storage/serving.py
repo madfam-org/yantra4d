@@ -8,9 +8,10 @@ branches:
 The branch is literally the code it replaced: ``send_from_directory`` for
 `/static`, ``safe_join_path`` plus ``send_file`` for the download. Nothing is
 re-implemented, so ``ETag``, ``Last-Modified``, ``Content-Length``,
-``Accept-Ranges``, conditional 304s, the zero-copy send and the 404 shape are
-all byte-for-byte what they were before object storage existed. That is the
-point: the flag defaults to ``fs``, and ``fs`` must be indistinguishable.
+``Accept-Ranges``, conditional 304s, ranged 206s, the zero-copy send and the
+404 shape are all byte-for-byte what they were before object storage existed.
+That is the point: the flag defaults to ``fs``, and ``fs`` must be
+indistinguishable.
 
 **Anything else** — the artifact is streamed out of the store in chunks. The
 API stays in the request path, which is what keeps #78's private-project gate
@@ -18,19 +19,47 @@ on `/static` and the tier gate on the download route applying to object-storage
 artifacts exactly as they apply to files on disk. A presigned or public bucket
 URL would route around both, so none is ever produced.
 
-Known difference on the streaming branch: no ``Range`` support and no
-conditional revalidation, because the upstream object store is not asked for
-either. Meshes are fetched whole by the viewer and by download clients, so this
-costs nothing today; it is recorded in
-`docs/operations/render-artifact-storage.md` rather than left to be discovered.
+The streaming branch answers the same conditional and range requests the
+filesystem branch does, because a viewer, a `curl -C -` and a CDN in front of
+the API do not know which backend is behind it:
+
+``ETag`` / ``Last-Modified``
+    From ``ArtifactStore.stat``. S3 supplies a real ETag on every HEAD; a
+    backend that cannot is given one derived from size and mtime, which is the
+    same information Werkzeug derives a file's ETag from.
+
+``If-None-Match`` / ``If-Modified-Since`` → 304
+    Checked before anything is read, so a revalidation costs one HEAD and no
+    object body at all.
+
+``Range`` → 206 / 416
+    Parsed here and pushed down into the store, so a range read fetches *that
+    range* from the bucket rather than dragging the whole object through the
+    API pod to slice it. ``If-Range`` is honoured: a stale validator falls back
+    to the full 200, as RFC 9110 requires.
+
+Cache-Control is deliberately **not** set here. `/static` responses come out
+``no-cache`` on both backends — the filesystem branch from Werkzeug's
+``send_file`` default, the streaming branch from the same value set explicitly
+— and #78's gate replaces that with ``private, no-store`` for a private
+project's artifact, on either backend. Nothing in this module can make an
+artifact shared-cacheable.
 """
 from __future__ import annotations
 
+import datetime as dt
 import logging
 
-from flask import Response, send_file, send_from_directory, stream_with_context
+from flask import Response, request, send_file, send_from_directory, stream_with_context
+from werkzeug.http import (
+    http_date,
+    is_resource_modified,
+    parse_if_range_header,
+    parse_range_header,
+)
 
 from services.storage import (
+    ArtifactInfo,
     ArtifactNotFound,
     ArtifactStore,
     InvalidArtifactKey,
@@ -45,10 +74,15 @@ logger = logging.getLogger(__name__)
 #: syscall count and per-request memory with many concurrent downloads.
 STREAM_CHUNK_BYTES = 64 * 1024
 
+#: What Werkzeug's ``send_file`` sends when no max-age is configured, which is
+#: how `/static` has always been served. Repeated here so the streaming branch
+#: is not accidentally more cacheable than the branch it stands in for.
+DEFAULT_CACHE_CONTROL = "no-cache"
 
-def _stream(store: ArtifactStore, key: str):
+
+def _stream(store: ArtifactStore, key: str, start: int | None, end: int | None):
     """Yield the artifact's bytes, closing the underlying stream either way."""
-    body = store.open(key)
+    body = store.open(key, start=start, end=end)
     try:
         while True:
             chunk = body.read(STREAM_CHUNK_BYTES)
@@ -64,6 +98,88 @@ def _stream(store: ArtifactStore, key: str):
                 logger.debug("Failed to close artifact stream for %r", key, exc_info=True)
 
 
+def artifact_etag(info: ArtifactInfo) -> str:
+    """A validator for this artifact.
+
+    The backend's own when it has one — S3's ETag is the object's MD5, so it
+    changes when and only when the bytes do. Otherwise size and mtime, which is
+    what Werkzeug builds a file's ETag from and is exactly as strong.
+
+    Rendered artifacts carry the parameter hash in their *name*, so two renders
+    that differ are two different keys; the validator is what catches the case
+    a name is reused, which is what the `head_` git-diff renders do.
+    """
+    if info.etag:
+        return info.etag
+    return f"{int(info.modified_at)}-{info.size}"
+
+
+def _set_disposition(response: Response, as_attachment: bool, name: str) -> None:
+    """The ``Content-Disposition`` Werkzeug's ``send_file`` would have sent.
+
+    ``inline`` with the file name for an ordinary read, ``attachment`` for a
+    download — ``send_file`` sets one either way, and `Headers.set` renders the
+    RFC 6266 ``filename*`` form for a non-ASCII name exactly as it does.
+    """
+    response.headers.set(
+        "Content-Disposition",
+        "attachment" if as_attachment else "inline",
+        filename=name,
+    )
+
+
+def _not_modified(etag: str, info: ArtifactInfo, as_attachment: bool, name: str) -> Response:
+    """A 304 carrying the validators and nothing else.
+
+    No body and no entity headers: a 304 that advertised a Content-Length it
+    was not sending would hang a client waiting for bytes. ``Content-Type`` and
+    ``Content-Length`` go, ``Content-Disposition`` stays — which is what
+    Werkzeug's ``make_conditional`` does to a 304 off ``send_file``.
+    """
+    response = Response(status=304)
+    response.headers["ETag"] = f'"{etag}"'
+    response.headers["Last-Modified"] = http_date(info.modified_at)
+    response.headers["Cache-Control"] = DEFAULT_CACHE_CONTROL
+    _set_disposition(response, as_attachment, name)
+    return response
+
+
+def _unsatisfiable_range(info: ArtifactInfo) -> Response:
+    """416, naming the length the client should have asked within."""
+    response = Response(status=416)
+    response.headers["Content-Range"] = f"bytes */{info.size}"
+    response.headers["Cache-Control"] = DEFAULT_CACHE_CONTROL
+    return response
+
+
+def _modified_at(info: ArtifactInfo) -> dt.datetime:
+    """The artifact's mtime as the aware, second-resolution datetime HTTP uses.
+
+    Werkzeug's conditional helpers want a datetime, and HTTP dates have no
+    sub-second component — so the comparison has to happen at the resolution
+    the header is written at, or a client would revalidate forever.
+    """
+    return dt.datetime.fromtimestamp(info.modified_at, dt.UTC).replace(microsecond=0)
+
+
+def _if_range_matches(etag: str, info: ArtifactInfo) -> bool:
+    """Whether a conditional range may be served.
+
+    Absent ``If-Range`` means "just serve the range". Present, it is either the
+    validator the client already holds or a date; either way a mismatch means
+    the artifact changed under them and the whole thing has to be re-sent as a
+    200, which is what RFC 9110 asks for.
+    """
+    if_range = parse_if_range_header(request.headers.get("If-Range"))
+    if if_range is None:
+        return True
+    if if_range.etag is not None:
+        return if_range.etag.strip('"') == etag
+    if if_range.date is not None:
+        return _modified_at(info) <= if_range.date
+    return True
+
+
 def _streamed_response(
     store: ArtifactStore,
     key: str,
@@ -72,24 +188,58 @@ def _streamed_response(
     download_name: str | None,
 ) -> Response | None:
     """Stream *key* out of a non-filesystem store, or ``None`` when it is absent."""
-    size = store.size(key)
-    if size is None and not store.exists(key):
+    info = store.stat(key)
+    if info is None:
         return None
 
+    etag = artifact_etag(info)
+    name = download_name or key.rsplit("/", 1)[-1]
+
+    # Revalidation first: a 304 must cost a HEAD and no object body.
+    if not is_resource_modified(
+        request.environ, etag=f'"{etag}"', last_modified=_modified_at(info)
+    ):
+        return _not_modified(etag, info, as_attachment, name)
+
+    start: int | None = None
+    end: int | None = None
+    status = 200
+    content_range = None
+
+    range_header = request.headers.get("Range")
+    if range_header and _if_range_matches(etag, info):
+        parsed = parse_range_header(range_header)
+        if parsed is None or parsed.units != "bytes":
+            # Unparseable or a unit we do not speak: RFC 9110 says ignore it.
+            pass
+        else:
+            span = parsed.range_for_length(info.size)
+            if span is None:
+                return _unsatisfiable_range(info)
+            start, end = span
+            status = 206
+            content_range = parsed.to_content_range_header(info.size)
+
     response = Response(
-        stream_with_context(_stream(store, key)),
+        stream_with_context(_stream(store, key, start, end)),
+        status=status,
+        # The name decides the type, not what the object was stored with:
+        # `fs` serves whatever Werkzeug would guess from the file name, and
+        # the two branches must label the same mesh the same way.
         mimetype=guess_content_type(key),
     )
-    if size is not None:
-        response.headers["Content-Length"] = str(size)
-    if as_attachment:
-        # Headers.set renders the RFC 6266 filename* form for non-ASCII names,
-        # matching what send_file would have produced.
-        response.headers.set(
-            "Content-Disposition",
-            "attachment",
-            filename=download_name or key.rsplit("/", 1)[-1],
-        )
+    length = info.size if start is None else (end - start)
+    response.headers["Content-Length"] = str(length)
+    response.headers["ETag"] = f'"{etag}"'
+    response.headers["Last-Modified"] = http_date(info.modified_at)
+    response.headers["Cache-Control"] = DEFAULT_CACHE_CONTROL
+    if content_range:
+        response.headers["Content-Range"] = content_range
+        # Werkzeug advertises range support on the ranged response and nowhere
+        # else — a plain 200 off `send_file` carries no `Accept-Ranges` — and
+        # the two backends have to agree header for header.
+        response.headers["Accept-Ranges"] = "bytes"
+    _set_disposition(response, as_attachment, name)
     return response
 
 

@@ -30,6 +30,7 @@ from services.engine.cadquery_engine import build_cadquery_command
 from services.engine.cadquery_engine import run_render as run_cadquery_render
 from services.engine.openscad import build_openscad_command
 from services.engine.openscad import run_render as run_openscad_render
+from services.engine.render_artifacts import discard_render_artifacts
 from services.engine.render_orchestrator import (
     STATIC_FOLDER,
     RenderPayloadError,
@@ -37,7 +38,6 @@ from services.engine.render_orchestrator import (
 )
 from services.storage import publish_artifact_best_effort
 from utils.route_helpers import (
-    cleanup_old_stl_files,
     error_response,
     handle_exceptions,
     require_json_body,
@@ -307,7 +307,7 @@ def render_head(slug):
     generated_parts = []
     combined_log = ""
     
-    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
+    discard_render_artifacts(parts_to_render, stl_prefix, export_format)
     
     manifest = get_manifest(slug)
     engine = manifest.mode_engine(payload.get('mode'))

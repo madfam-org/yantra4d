@@ -69,3 +69,26 @@ def find_latest_render_key(
             best = candidate
 
     return best[2] if best is not None else None
+
+
+def discard_render_artifacts(
+    parts: list[str],
+    stl_prefix: str,
+    export_format: str,
+    *,
+    store: ArtifactStore | None = None,
+) -> int:
+    """Remove the previous render of *parts*, returning how many went away.
+
+    Replaces `utils.route_helpers.cleanup_old_stl_files`, which built a path
+    under the static directory and called `os.remove`. That silently did
+    nothing against an object store: the stale objects stayed, and the next
+    render's URL could be answered by the previous render's bytes until the GC
+    got to them a day later.
+    """
+    store = store or get_artifact_store()
+    removed = 0
+    for part in parts:
+        if store.delete(f"{stl_prefix}{part}.{export_format}"):
+            removed += 1
+    return removed

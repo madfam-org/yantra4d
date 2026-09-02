@@ -252,13 +252,28 @@ jobs:
       # installed (libGL.so.1: cannot open shared object file)". The parity and
       # e2e-audit jobs never hit this only because their openscad apt install
       # pulls libGL transitively.
-      - run: sudo apt-get update && sudo apt-get install -y libgl1 libglu1-mesa libxrender1 libxcursor1 libxft2 libxinerama1 libxext6
+      - name: Install the OCP runtime libraries
+        run: |
+          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 libgl1 libglu1-mesa libxrender1 libxcursor1 libxft2 libxinerama1 libxext6
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner imports it)
         run: pip install -e ../../packages/commons-sandbox
       - run: pip install ruff pip-audit
       - run: pip-audit --desc || true
       - run: ruff check .
+      # apps/worker was never linted by anything: this job's `ruff check .` runs
+      # under `working-directory: apps/api`, and no other job installs ruff, so
+      # the render worker — the process every render actually executes on — sat
+      # outside every lane. Same rule set on purpose, by pointing at the API's
+      # own config rather than copying it into a second file that can drift:
+      # apps/api/pyproject.toml stays the one definition of the backend's lint
+      # standard, and apps/worker ships no packaging files of its own.
+      - name: Lint the render worker
+        working-directory: ${{ github.workspace }}
+        run: ruff check --config apps/api/pyproject.toml apps/worker
       # moto backs the S3 artifact-store fidelity tests. Test-only: it is
       # deliberately absent from requirements.txt, since the API image has no
       # business shipping a mocking library.
@@ -326,7 +341,10 @@ jobs:
       - name: Install backend dependencies
         working-directory: apps/api
         run: |
-          sudo apt-get update && sudo apt-get install -y openscad
+          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad
           pip install -r requirements.txt
           pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
       - name: Start backend
@@ -473,7 +491,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: sudo apt-get update && sudo apt-get install -y openscad
+      - name: Install OpenSCAD
+        run: |
+          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner subprocess imports it)
         run: pip install -e ../../packages/commons-sandbox

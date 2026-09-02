@@ -532,7 +532,7 @@ def process_stream_task(task):
                     )
                     emitted_final = True
                     break
-            except Exception as e:  # noqa: BLE001 — one bad event must not kill the stream
+            except Exception as e:  # one bad event must not kill the stream
                 logger.error(f"Error parsing stream event: {e}")
 
         if not emitted_final:
@@ -607,7 +607,7 @@ def run_worker():
                     logger.warning("Malformed task in render queue: %s", message)
         except TypeError:
             pass  # Timeout
-        except Exception as e:  # noqa: BLE001 — the worker loop must survive anything
+        except Exception as e:  # the worker loop must survive anything
             logger.error(f"Worker loop error: {e}")
             time.sleep(1)
 

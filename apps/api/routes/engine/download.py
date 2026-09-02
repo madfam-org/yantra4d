@@ -8,7 +8,12 @@ from flask import Blueprint, Response, request, send_file
 
 from config import Config
 from manifest import get_manifest
-from middleware.auth import optional_auth
+from middleware.auth import (
+    effective_tier,
+    export_format_denied_response,
+    optional_auth,
+)
+from services.core.tier_service import export_format_allowed
 from services.engine.render_orchestrator import ALLOWED_EXPORT_FORMATS
 from utils.route_helpers import error_response, handle_exceptions, safe_join_path
 from utils.validators import require_valid_slug
@@ -63,6 +68,16 @@ def _download_render_file(slug: str, filename: str, file_format: str, claims) ->
         denied = _check_access(m._data, "download_stl", claims)
     if denied:
         return denied
+
+    # Export-format tier gate, at RETRIEVAL as well as at generation.
+    # Generation is gated in routes/engine/render.py, but rendered artifacts are
+    # named `{prefix}{part}.{format}` / by a 10-character param hash and live for
+    # the 24 h render-GC window, so a caller who learns (or guesses) a filename
+    # could fetch a `step`/`glb` export their tier may not produce. `stl` stays
+    # open because tiers.json lists it for guest. `scad` never reaches here — it
+    # is source, not an export, and is gated by the manifest allowlist above.
+    if not export_format_allowed(effective_tier(), normalized_format):
+        return export_format_denied_response(normalized_format)
 
     # Try static dir first (rendered previews), then exports dir
     project_dir = Config.PROJECTS_DIR / slug

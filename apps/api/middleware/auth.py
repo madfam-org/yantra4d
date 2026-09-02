@@ -6,7 +6,7 @@ import functools
 import logging
 
 import jwt
-from flask import request
+from flask import current_app, request
 from jwt import PyJWKClient
 
 from config import Config
@@ -152,6 +152,58 @@ def require_tier(min_tier: str):
             return f(*args, **kwargs)
         return decorated
     return decorator
+
+
+def effective_tier(resolve=None) -> str:
+    """Gating tier for the current request. Requires `@optional_auth` to have run.
+
+    In local dev (AUTH_ENABLED off AND debug on) unlock the top tier so the
+    CadQuery / server-render path is not 403-gated — mirrors require_tier() and
+    /api/me. The debug condition is load-bearing: auth-off with debug off is the
+    exact state app startup flags as must-never-run (CI and tests use it), and an
+    auth-off-only unlock silently disabled every tier gate there — guests became
+    madfam and the tier-enforcement suite could never see a 403 again.
+
+    Shared by the tier gates that need a tier *value* rather than a minimum, so
+    the generation-time and retrieval-time export-format gates cannot seat the
+    same caller on different tiers.
+
+    `resolve` lets a caller hand in its own `resolve_tier` binding; the render
+    routes pass their module-level one so the tier they gate on and the tier
+    they report in `X-RateLimit-Tier` stay the same object.
+    """
+    if resolve is None:
+        from services.core.tier_service import resolve_tier
+
+        resolve = resolve_tier
+
+    if not Config.AUTH_ENABLED and current_app.debug:
+        return "madfam"
+    return resolve(getattr(request, "auth_claims", None))
+
+
+_TIER_LABELS = {"essentials": "Essentials", "pro": "Pro", "madfam": "MADFAM"}
+
+
+def export_format_denied_response(export_format: str):
+    """The 403 returned when a caller's tier may not use `export_format`.
+
+    Single source of the export-format 403 shape. Generation (`/api/render`,
+    `/api/render-stream`) and retrieval (`/api/projects/<slug>/download/...`)
+    both answer with it, so a format that cannot be generated at a tier cannot
+    be fetched at that tier either — knowing a 10-character param-hash filename
+    was, until the retrieval gate existed, enough to pull a `step`/`glb` export
+    without the tier required to produce it.
+    """
+    from services.core.tier_service import minimum_tier_for_export_format
+
+    needed = minimum_tier_for_export_format(export_format)
+    if needed is None:
+        return error_response(f"Export format '{export_format}' is not available.", 403)
+    label = _TIER_LABELS.get(needed, needed.title())
+    return error_response(
+        f"Export format '{export_format}' requires {label} tier or above.", 403
+    )
 
 
 def optional_auth(f):

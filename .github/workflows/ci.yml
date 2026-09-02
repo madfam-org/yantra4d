@@ -419,6 +419,16 @@ jobs:
       - run: pip install jsonschema
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
+      # docs/strategy/VALUE-EXTRACTION-AUDIT.md reasons in ratios over the
+      # commons, so every cartridge added or edited can silently falsify it.
+      # --check recomputes the ratios from the manifests and the catalog and
+      # fails when the committed table no longer describes what is on disk.
+      # It lands here rather than in a job of its own because this job already
+      # has Python 3.12 and the recursive checkout the recomputation needs — 34
+      # cartridges are submodules and every dual-engine one is among them, so a
+      # partial checkout would under-count. Stdlib only: no install step.
+      - name: Value-extraction audit is current
+        run: python3 scripts/qa/value_extraction_audit.py --check
 
   # The extracted commons bar (hyperobjects-spec, docs/P1B_ADOPTION.md): a third
   # party's "it passes" and CI's "it passes" become the same sentence.

@@ -136,6 +136,19 @@ default `beforeAll` skips the entire audit for everyone.
   `assertNoUpgradePrompt(page)` fails fast by name; it runs inside
   `waitForRenderDone()` and `clickGenerateWithWarning()`, so a future tier
   regression is reported in one line instead of a 180 s timeout.
+- **Drain the render queue between groups.** One worker serves the whole suite,
+  and nothing else ever empties its queue: the Studio does not cancel an
+  in-flight render when the page is navigated away or closed, so every test that
+  leaves mid-render abandons work the worker must still finish. Run #171 had
+  **zero** cancel calls in 40 minutes; custom-msh's failing assembly test renders
+  every part and serial-mode re-ran it three times, and gridfinity's first render
+  test then timed out at 180 s four render requests deep without ever reaching
+  the front of the queue — a queueing failure that reads as a render failure.
+  `drainRenderQueue(request, reason)` runs in each spec's `afterAll` and in
+  `afterEach` after a failed test (which is when work gets abandoned), logs the
+  worker's `queue depth` before and after, and never throws. `waitForRenderDone`
+  puts the same figure in its timeout message, so starvation reads as
+  starvation.
 - **Name the failure, do not inherit it.** Two assertion helpers run inside the
   shared helpers so a product-side problem is reported as itself instead of as
   whatever is missing afterwards: `assertNoUpgradePrompt(page)` (tier gate) and

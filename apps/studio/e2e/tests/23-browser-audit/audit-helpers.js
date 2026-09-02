@@ -75,6 +75,98 @@ export async function skipIfNoBackend(request, test, requiredSlugs = PUBLIC_AUDI
 }
 
 /**
+ * The backend's own view of the render worker: "heartbeat age Ns; queue depth N;
+ * active jobs N" (apps/api/routes/core/health.py::_check_render_worker).
+ *
+ * `ctx` is any APIRequestContext — the `request` fixture in a hook, or
+ * `page.request` where only a page is in scope.
+ */
+export async function renderWorkerDetail(ctx) {
+  try {
+    const res = await ctx.get(`${BACKEND_URL}/api/health`, { timeout: 5000 })
+    if (!res.ok()) return `/api/health answered ${res.status()}`
+    const body = await res.json()
+    const worker = body?.checks?.render_worker
+    if (!worker) return 'no render_worker check in /api/health'
+    return `${worker.ok ? 'ok' : 'NOT ok'} — ${worker.detail}`
+  } catch (err) {
+    return `unreadable (${err.message})`
+  }
+}
+
+/** Last resort when the API refuses the blanket cancel: talk to the harness's own Redis. */
+async function drainViaRedisCli() {
+  const { execFile } = await import('node:child_process')
+  const { promisify } = await import('node:util')
+  const run = promisify(execFile)
+  // The two keys render_orchestrator.py names: the queue itself, and the global
+  // cancel flag the worker checks for work already in flight.
+  const commands = [
+    ['DEL', 'yantra_render_queue'],
+    ['SET', 'yantra_render_cancel_all', String(Math.floor(Date.now() / 1000)), 'EX', '300'],
+  ]
+  const results = []
+  for (const args of commands) {
+    try {
+      const { stdout } = await run('redis-cli', args, { timeout: 5000 })
+      results.push(`${args[0]} ${args[1]} -> ${stdout.trim()}`)
+    } catch (err) {
+      results.push(`${args[0]} ${args[1]} -> ${err.message.split('\n')[0]}`)
+    }
+  }
+  return results.join('; ')
+}
+
+/**
+ * Cancel every queued and in-flight render, and say what was drained.
+ *
+ * One harness worker serves the whole suite, and nothing else ever empties its
+ * queue: the Studio does not cancel its in-flight render when the page is
+ * navigated away or closed, so every test that leaves mid-render abandons work
+ * that the worker still has to chew through. Run #171 had ZERO cancel calls in
+ * 40 minutes, and custom-msh's failing assembly test — which renders every part,
+ * re-run three times by serial-mode retries — left enough behind that
+ * gridfinity's "renders bin with default params" timed out at 180 s four render
+ * requests deep without ever reaching the front of the queue. It is a queueing
+ * failure that reads as a render failure.
+ *
+ * Called per spec file in afterAll, and in afterEach after a test that failed,
+ * so one bad group cannot starve the next.
+ *
+ * POST /api/render-cancel with an empty body cancels everything today
+ * (`cancel_all_renders()`), and `require_render_scope` is a no-op for an
+ * anonymous caller with AUTH_ENABLED off. Should a later change scope the
+ * blanket form to a role the harness does not hold, the 401/403 falls through to
+ * redis-cli rather than silently leaving the queue full.
+ */
+export async function drainRenderQueue(ctx, reason = '') {
+  const before = await renderWorkerDetail(ctx)
+  let how = 'POST /api/render-cancel'
+  let outcome
+  try {
+    const res = await ctx.post(`${BACKEND_URL}/api/render-cancel`, { data: {}, timeout: 10_000 })
+    if (res.ok()) {
+      outcome = JSON.stringify(await res.json().catch(() => ({})))
+    } else if (res.status() === 401 || res.status() === 403) {
+      how = `POST /api/render-cancel refused ${res.status()}, redis-cli`
+      outcome = await drainViaRedisCli()
+    } else {
+      outcome = `HTTP ${res.status()}`
+    }
+  } catch (err) {
+    outcome = `failed (${err.message})`
+  }
+  const after = await renderWorkerDetail(ctx)
+  // eslint-disable-next-line no-console
+  console.log(
+    `[audit] render queue drained${reason ? ` after ${reason}` : ''} via ${how}: ${outcome}\n` +
+    `        worker before: ${before}\n` +
+    `        worker after:  ${after}`,
+  )
+  return { before, after }
+}
+
+/**
  * Fetch a real project's manifest from the backend.
  *
  * Lets a test ask the cartridge what it actually declares instead of assuming.
@@ -346,7 +438,18 @@ export async function waitForRenderDone(page, timeout = 120_000) {
     }
     await page.waitForTimeout(500)
   }
-  throw new Error(`Render did not complete within ${timeout}ms`)
+  // Say WHICH kind of not-finishing this was. One worker serves the whole suite
+  // and abandoned renders are never cancelled, so the likeliest reason a render
+  // does not finish is that it never started — it is still behind someone else's
+  // work. Run #171 reported this as "Render did not complete", which reads as a
+  // broken renderer; the queue depth says starvation.
+  const worker = await renderWorkerDetail(page.request)
+  throw new Error(
+    `Render did not complete within ${timeout}ms. Render worker at timeout: ${worker}. ` +
+    'A non-zero queue depth here means this render was still waiting its turn — ' +
+    'check whether an earlier group left work behind (drainRenderQueue runs in ' +
+    'afterAll and after a failed test) rather than assuming the renderer is broken.',
+  )
 }
 
 /**

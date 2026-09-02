@@ -10,6 +10,7 @@ import {
   waitForRenderDone,
   clickGenerateWithWarning,
   dismissRenderWarning,
+  drainRenderQueue,
 } from './audit-helpers.js'
 
 test.use({ mockAPIs: false })
@@ -28,6 +29,23 @@ const modeTabs = page =>
 test.describe('Cross-Cutting — Browser Audit', () => {
   test.beforeAll(async ({ request }, testInfo) => {
     await skipIfNoBackend(request, testInfo)
+  })
+
+  // One worker serves the whole suite and nothing else empties its queue: the
+  // Studio does not cancel an in-flight render when the page goes away, so a
+  // test that leaves mid-render abandons work the worker still has to finish.
+  // Run #171 starved gridfinity's first render test that way, from custom-msh's
+  // failing assembly group re-rendering every part on each serial-mode retry.
+  // Drain after a failure — which is when work is abandoned — and once at the
+  // end, so the next group starts on an empty queue.
+  test.afterEach(async ({ request }, testInfo) => {
+    if (testInfo.status !== testInfo.expectedStatus) {
+      await drainRenderQueue(request, `failed test "${testInfo.title}"`)
+    }
+  })
+
+  test.afterAll(async ({ request }) => {
+    await drainRenderQueue(request, 'the cross-cutting group')
   })
 
   // ── Theme ────────────────────────────────────────────────────────

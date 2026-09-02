@@ -173,7 +173,18 @@ jobs:
           YANTRA4D_BACKEND_PATH: ${{ github.workspace }}/apps/api
         run: |
           set -uo pipefail
-          python ../worker/render_worker.py > "$RUNNER_TEMP/worker.log" 2>&1 &
+          # Timestamp every worker line. render_worker.py calls
+          # logging.basicConfig(level=INFO) with no format and honours no env
+          # knob, so its log is bare "LEVEL:name:message" — run #171's worker.log
+          # was 53 undated lines, enough to see WHICH renders ran and not enough
+          # to see how long any took or when the queue backed up. Prefixed here
+          # rather than by touching the worker.
+          #
+          # Process substitution, not a pipe: `$!` after a pipeline is the PID of
+          # its LAST command, and the liveness check below must watch the worker
+          # itself. `-u` on both so timestamps track the work, not a flush.
+          stamp="import sys,time;[sys.stdout.write(time.strftime('%Y-%m-%dT%H:%M:%SZ ',time.gmtime())+l) for l in sys.stdin]"
+          python -u ../worker/render_worker.py > >(python3 -u -c "$stamp" > "$RUNNER_TEMP/worker.log") 2>&1 &
           worker_pid=$!
           deadline=$(( SECONDS + 120 ))
           until curl -fsS http://localhost:5000/api/health | python3 -c 'import sys,json; sys.exit(0 if json.load(sys.stdin)["checks"]["render_worker"]["ok"] else 1)' 2>/dev/null; do

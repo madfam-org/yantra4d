@@ -14,7 +14,7 @@ test.describe.configure({ mode: 'serial' })
 
 test.describe('Gridfinity — Browser Audit', () => {
   test.beforeAll(async ({ request }, testInfo) => {
-    await skipIfNoBackend(request, testInfo)
+    await skipIfNoBackend(request, testInfo, ['gridfinity'])
   })
 
   test.beforeEach(async ({ page }) => {

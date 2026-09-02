@@ -2,6 +2,10 @@ import { test, expect } from '../../fixtures/app.fixture.js'
 import { setLanguage, setTheme, enableClipboard, readClipboard } from '../../helpers/test-utils.js'
 import {
   skipIfNoBackend,
+  skipUnlessProject,
+  hasProject,
+  PUBLIC_AUDIT_SLUGS,
+  PRIVATE_AUDIT_SLUGS,
   goToRealProject,
   waitForRenderDone,
 } from './audit-helpers.js'
@@ -42,6 +46,7 @@ test.describe('Cross-Cutting — Browser Audit', () => {
   })
 
   test('Spanish persists across project navigation', async ({ page }) => {
+    skipUnlessProject(test, 'tablaco')
     await setLanguage(page, 'es')
     await goToRealProject(page, 'gridfinity', 'Gridfinity Extended')
     // Verify Spanish
@@ -92,14 +97,15 @@ test.describe('Cross-Cutting — Browser Audit', () => {
 
   // ── Projects View ────────────────────────────────────────────────
 
-  test('projects view shows all three audit projects', async ({ page }) => {
+  test('projects view shows every available audit project', async ({ page }) => {
     await setLanguage(page, 'en')
     await page.goto('/projects')
     await page.waitForSelector('header', { timeout: 15_000 })
     await page.waitForTimeout(1000)
 
-    // Verify cards for all 3 audit projects
-    for (const slug of ['gridfinity', 'tablaco', 'custom-msh']) {
+    // Verify a card for every audit project the backend serves (the private
+    // cartridges only appear when this checkout includes them)
+    for (const slug of [...PUBLIC_AUDIT_SLUGS, ...PRIVATE_AUDIT_SLUGS.filter(hasProject)]) {
       await expect(page.locator(`a[href="/project/${slug}"]`)).toBeVisible({ timeout: 5000 })
     }
   })

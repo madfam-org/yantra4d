@@ -281,13 +281,18 @@ jobs:
       - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/${{ matrix.shards }} --reporter=blob,list
         env:
           CI: true
+      # if: always() stays — e2e-report merges these even when shards fail, and a
+      # red suite is exactly when the total matters. Retention is 1 day because
+      # the only consumer is the merge job in the same run; the merged HTML
+      # report is what anyone reads afterwards. 5 projects x 3 shards is ~1,700
+      # of these artifacts against the org quota for no post-run value.
       - name: Upload blob report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: blob-${{ matrix.project }}-${{ matrix.shard }}
           path: apps/studio/blob-report/
-          retention-days: 3
+          retention-days: 1
       - name: Upload backend log
         uses: actions/upload-artifact@v4
         if: failure()
@@ -340,7 +345,9 @@ jobs:
         with:
           name: playwright-report-merged
           path: apps/studio/playwright-report/
-          retention-days: 14
+          # The one Playwright artifact worth keeping past the run. A week
+          # covers the triage window without carrying a fortnight of reports.
+          retention-days: 7
 
   test-geometric-parity:
     runs-on: madfam-runners-blue

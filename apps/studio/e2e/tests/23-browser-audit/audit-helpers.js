@@ -4,22 +4,54 @@
  */
 
 const BACKEND_URL = 'http://localhost:5000'
-const AUDIT_SLUGS = ['gridfinity', 'tablaco', 'custom-msh']
+
+// Public commons cartridges — present in every checkout of this repo.
+export const PUBLIC_AUDIT_SLUGS = ['gridfinity', 'custom-msh']
+// Client-private cartridges: `update = none` submodules (#48, #52). Absent from a
+// default checkout; present only when the nightly is dispatched with
+// `include_private_projects`, or locally with the submodule initialised.
+export const PRIVATE_AUDIT_SLUGS = ['tablaco']
+
+// Populated by skipIfNoBackend from the backend's live project list.
+let availableSlugs = null
+
+/** True when the running backend serves this project. */
+export function hasProject(slug) {
+  return availableSlugs?.has(slug) ?? false
+}
+
+function missingReason(slug) {
+  return PRIVATE_AUDIT_SLUGS.includes(slug)
+    ? `Project "${slug}" is a client-private cartridge (update = none) and is not in this checkout — dispatch the nightly with include_private_projects to audit it`
+    : `Project "${slug}" not found in backend`
+}
 
 /**
- * Skip the test if the Docker backend is not running or OpenSCAD is unavailable.
- * Also verifies that all 3 audit projects are listed.
+ * Skip a single test unless the backend serves `slug`. Use inside a test body
+ * for the private cartridges, so a public-only checkout reports them as
+ * SKIPPED with the reason instead of failing on a 404.
  */
-export async function skipIfNoBackend(request, test) {
+export function skipUnlessProject(test, slug) {
+  test.skip(!hasProject(slug), missingReason(slug))
+}
+
+/**
+ * Skip the whole group if the real backend is not running, OpenSCAD is
+ * unavailable, or any of `requiredSlugs` is not served. Records the served
+ * project list for hasProject()/skipUnlessProject(). Groups that only need the
+ * public cartridges take the default, so the private ones being absent no
+ * longer skips the entire audit.
+ */
+export async function skipIfNoBackend(request, test, requiredSlugs = PUBLIC_AUDIT_SLUGS) {
   try {
     const health = await request.get(`${BACKEND_URL}/api/health`, { timeout: 5000 })
     if (!health.ok()) {
-      test.skip('Docker backend not reachable')
+      test.skip('Real backend not reachable on :5000')
       return
     }
     const body = await health.json()
     if (!body.checks?.openscad?.ok) {
-      test.skip('OpenSCAD not available in Docker backend')
+      test.skip('OpenSCAD not available in the real backend')
       return
     }
 
@@ -30,14 +62,15 @@ export async function skipIfNoBackend(request, test) {
     }
     const projectList = await projects.json()
     const slugs = (projectList.projects || projectList).map(p => p.slug || p.project?.slug)
-    for (const slug of AUDIT_SLUGS) {
-      if (!slugs.includes(slug)) {
-        test.skip(`Project "${slug}" not found in backend`)
+    availableSlugs = new Set(slugs)
+    for (const slug of requiredSlugs) {
+      if (!availableSlugs.has(slug)) {
+        test.skip(missingReason(slug))
         return
       }
     }
   } catch {
-    test.skip('Docker stack not running')
+    test.skip('Real backend not running on :5000')
   }
 }
 

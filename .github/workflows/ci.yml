@@ -18,7 +18,90 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Round two of the CI economics work #84 started. #84 stopped a *superseded*
+  # run from burning the pool; this stops a run that never needed to exist.
+  # Every job below used to run on every pull request, so a README-only change
+  # queued the full ten-shard browser matrix — ten jobs with a 30 minute cap
+  # each — on the same shared pool a production deploy waits in. On 2026-09-02
+  # deploy #540's Build Studio sat queued from 04:01Z past 04:30Z behind roughly
+  # a hundred PR shard jobs, and deploy #542 waited behind #540 in the deploy
+  # concurrency group.
+  #
+  # docs-only means EVERY changed file is documentation: any `*.md`, `docs/**`,
+  # `apps/docs/**` (the Starlight docs site, which no job here builds),
+  # `runbooks/**`, `.github/*.md`. A pull request that touches documentation AND
+  # code is code.
+  #
+  # `predicate-quantifier: every` is load-bearing and not the default. Each list
+  # entry is compiled into its own matcher; the default `some` quantifier reports
+  # a file as `code` when it matches ANY entry, so `'**'` alone would match
+  # everything and the negations would do nothing. With `every`, a file is `code`
+  # only when it matches `'**'` AND none of the docs patterns exclude it, and the
+  # filter output is true as soon as ONE such file is in the diff. The failure
+  # direction is therefore a docs-only pull request classified as code, which
+  # runs the matrix it already runs today — there is no arrangement of these
+  # patterns that lets a code change skip the matrix.
+  #
+  # Only pull requests are classified. A push to main always reports code=true:
+  # main is what deploy.yml builds from, and `github.event.before` is unreliable
+  # across force pushes and first pushes, so every merged commit keeps its full
+  # run.
+  changes:
+    runs-on: madfam-runners-blue
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      # On a pull_request event the action lists the PR's files through the API
+      # instead of cloning, so this job needs no checkout — and it must not fall
+      # back to a diff it cannot compute.
+      pull-requests: read
+    outputs:
+      code: ${{ steps.classify.outputs.code }}
+    steps:
+      - name: Filter changed paths
+        id: filter
+        if: github.event_name == 'pull_request'
+        # Pinned to the commit the v3 tag resolves to (v3.0.4). deploy.yml still
+        # tracks the mutable `v3` tag; pinning is the direction to move in, not a
+        # disagreement with that job.
+        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
+        with:
+          predicate-quantifier: 'every'
+          filters: |
+            code:
+              - '**'
+              - '!**/*.md'
+              - '!docs/**'
+              - '!apps/docs/**'
+              - '!runbooks/**'
+              - '!.github/*.md'
+
+      - name: Classify
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          FILTER_CODE: ${{ steps.filter.outputs.code }}
+        # Fails closed on purpose: only a filter that actually ran and answered
+        # exactly "false" skips anything. An empty output (the step was skipped,
+        # the action changed its contract, the event is not a pull request) is
+        # read as code.
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "pull_request" ] && [ "$FILTER_CODE" = "false" ]; then
+            code=false
+          else
+            code=true
+          fi
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" = "true" ]; then
+            echo "Changed paths include code — the full CI matrix runs." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Docs-only change — the browser matrix, the app builds, the backend suite and geometric parity are skipped. Manifest, metadata, licence, OpenAPI and spec-conformance checks still run." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   studio:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
     timeout-minutes: 15
     defaults:
@@ -77,6 +160,8 @@ jobs:
           fi
 
   landing:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
     timeout-minutes: 15
     defaults:
@@ -101,6 +186,8 @@ jobs:
       - run: npm run build
 
   admin:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
     timeout-minutes: 15
     defaults:
@@ -144,6 +231,8 @@ jobs:
       - run: npm run test:coverage
 
   backend:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
     timeout-minutes: 15
     defaults:
@@ -184,6 +273,8 @@ jobs:
         run: cd $GITHUB_WORKSPACE/apps/api && pytest --cov=. --cov-report=term-missing --cov-fail-under=80
 
   e2e:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     # Each desktop project runs 321 specs, and playwright.config.js pins CI to a
     # single worker, so a full pass takes ~38 min against the old 25 min cap. The
     # suite had never once reached the end: it was cancelled around test 212
@@ -327,8 +418,11 @@ jobs:
   # Runs even when shards fail, because a red suite is exactly when the total
   # matters.
   e2e-report:
-    needs: e2e
-    if: always()
+    needs: [changes, e2e]
+    # always() so a red suite still gets its merged total (that is the whole
+    # point of this job), but there is nothing to merge when the matrix was
+    # never scheduled.
+    if: always() && needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
     timeout-minutes: 10
     defaults:
@@ -361,6 +455,8 @@ jobs:
           retention-days: 7
 
   test-geometric-parity:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
     timeout-minutes: 30
     defaults:
@@ -407,6 +503,20 @@ jobs:
           pip install -e 'packages/commons-sandbox[dev]'
           pytest packages/commons-sandbox/tests -q
 
+  # deploy.yml decides what to rebuild from a base resolved by a shell script
+  # (scripts/ci/last_successful_deploy_sha.sh). A deploy that silently drops a
+  # service is precisely the failure that script exists to prevent, so its
+  # fail-closed contract is pinned here against recorded API fixtures — no
+  # network, no submodules, a few seconds. It runs on docs-only pull requests
+  # too: it costs nothing and it guards the machinery that skipping relies on.
+  ci-scripts:
+    runs-on: madfam-runners-blue
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy change-detection base resolver
+        run: ./scripts/ci/tests/test_last_successful_deploy_sha.sh
+
   manifest-validation:
     runs-on: madfam-runners-blue
     timeout-minutes: 5
@@ -425,6 +535,16 @@ jobs:
       # the whole point of the check that a partial checkout cannot pass.
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
+      # The other half of the Fashion Cabinet hardware bridge. FC vendors a
+      # pinned slice of our catalog and resolves its notions against it, so its
+      # CI has always known when we moved; ours knew nothing, and a parameter
+      # rename here went red days later in someone else's repo. This lane reads
+      # the vendored back-edge (which of our parameters their garments drive)
+      # and resolves every linked claim against these same manifests, so a
+      # rename that would break a cabinet object fails in the PR that makes it.
+      # Offline and stdlib-only: no network, nothing to install.
+      - name: Fashion Cabinet consumers back-edge resolves
+        run: python3 scripts/qa/refresh_fc_consumers.py --check
       # scripts/tests/ had no CI home: test_ceq_coverage.py and
       # test_validate_manifests.py passed only on developer machines, which is
       # the same "green for the wrong reason" failure the suites themselves
@@ -562,9 +682,56 @@ jobs:
         env:
           AI_API_KEY: ${{ secrets.AI_API_KEY_TEST }}
 
+  # The single required status check on main. Every other job reports its own
+  # result, but this is the one branch protection reads, so it has to be able to
+  # say no in every case that matters.
+  #
+  # `if: always()` is what makes the path filter above safe. Without it, a job in
+  # `needs` that is skipped — which is exactly what a docs-only pull request
+  # produces — takes this job with it, and GitHub reports a dependent job that
+  # never ran as *skipped*, which branch protection counts as passing. The same
+  # hole was already open for failures: with the default `if: success()` a failed
+  # `backend` left this check skipped rather than red.
+  #
+  # So this job always runs and decides for itself: `failure` or `cancelled`
+  # anywhere in `needs` fails it, and `skipped` counts as passing. `cancelled` is
+  # in there for the concurrency group added in #84 — a superseded run must not
+  # report a green required check for work that stopped halfway.
+  #
+  # `manifest-sync` and `spec-conformance` are new to this list. Both already ran
+  # on every pull request and spec-conformance's own comment calls itself
+  # BLOCKING, but neither was in `needs`, so neither could actually block a merge
+  # through the one required check. `e2e-report` is deliberately still out: it
+  # merges shard reports after the fact, and a hiccup there should not block a
+  # merge whose tests all passed.
   ci-success:
+    if: always()
+    needs:
+      - changes
+      - studio
+      - landing
+      - admin
+      - backend
+      - e2e
+      - test-geometric-parity
+      - manifest-sync
+      - manifest-validation
+      - ci-scripts
+      - metadata-consistency
+      - openapi-validation
+      - spec-conformance
+      - i18n-audit
     runs-on: madfam-runners-blue
-    needs: [studio, landing, admin, backend, e2e, test-geometric-parity, manifest-validation, i18n-audit, metadata-consistency, openapi-validation]
+    timeout-minutes: 5
     steps:
+      - name: Dependency results
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: printf '%s\n' "$NEEDS_JSON"
+      - name: Fail if any dependency failed or was cancelled
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "::error title=CI failed::A required job reported failure or cancelled — see the Dependency results step above."
+          exit 1
       - name: All checks passed
-        run: echo "All CI checks passed successfully!"
+        run: echo "All CI checks passed. Jobs skipped by the docs-only path filter count as passed."

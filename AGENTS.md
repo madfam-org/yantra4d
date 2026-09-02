@@ -141,6 +141,8 @@ packages/
 | `scripts/cli/yantra4d-init` | CLI tool for onboarding external SCAD projects | RARELY |
 | `scripts/prerender-carousel.sh` | Pre-render GLB models for landing carousel + auto-generate `manifest.json` | RARELY |
 | `scripts/qa/i18n_audit.py` | i18n key parity checker + hardcoded string scanner | RARELY |
+| `scripts/qa/refresh_fc_consumers.py` | Vendors and checks the Fashion Cabinet consumers back-edge; `--check` fails CI when a parameter rename breaks a garment | RARELY |
+| `docs/interfaces/fashion-cabinet-consumers.snapshot.json` | Vendored, commit-pinned copy of Fashion Cabinet's published `yantra4d-consumers.json` -- refresh with the script above, never by hand | **NEVER** |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
 | `apps/api/tests/verify_design.py` | STL quality checker script | RARELY |
 | `apps/api/pyproject.toml` | pytest + coverage config | RARELY |
@@ -246,6 +248,10 @@ cd apps/landing && npm run build         # static build check
 # Backend
 cd apps/api && pytest                 # all backend tests
 cd apps/api && pytest --cov           # with coverage report
+
+# QA lanes (repo root, stdlib only)
+python3 scripts/qa/refresh_fc_consumers.py --check  # Fashion Cabinet back-edge resolves against our manifests (blocking in CI: manifest-validation)
+python3 -m pytest scripts/tests -q                  # tests for the scripts/qa lanes
 ```
 
 ### Local dev
@@ -426,14 +432,17 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - **Landing**: `npm run build` (Astro static build)
 - **Backend**: pytest + pytest-cov, coverage threshold 80%, tests in `apps/api/tests/` directory
 - **Pre-commit**: Husky runs `lint-staged` -> ESLint fix + Vitest on changed files
-- **CI**: `.github/workflows/ci.yml` -- studio (lint+test+coverage), landing (build), backend (lint+test+coverage), manifest-sync
-- **Deploy**: Enclii PaaS -- auto-deploy on push to main (deploy.yml builds Docker images -> GHCR -> K8s via ArgoCD)
+- **CI**: `.github/workflows/ci.yml` -- studio (lint+test+coverage), landing (build), admin (lint+build+test), backend (lint+test+coverage), e2e (ten-shard Playwright matrix) + e2e-report, test-geometric-parity, manifest-sync, manifest-validation, spec-conformance, metadata-consistency, openapi-validation
+- **CI path filter**: a `changes` job classifies every PR first. **docs-only** -- every changed file is `*.md`, `docs/**`, `apps/docs/**`, `runbooks/**` or `.github/*.md` -- skips the ten-shard browser matrix, the three app builds, the backend suite and geometric parity. A PR that touches docs **and** code is code and runs everything; so does any push to main. The manifest, spec-conformance, metadata/licence and OpenAPI checks run on every PR either way
+- **CI gate**: `ci-success` is the single required check. It runs with `if: always()` and fails when any job in its `needs` reports `failure` or `cancelled`, counting `skipped` as passing -- that is what lets the path filter skip jobs without turning a red run green, and what stops a failed job from leaving the required check merely *skipped* (which branch protection reads as passing)
+- **Deploy**: Enclii PaaS -- auto-deploy on push to main (deploy.yml builds Docker images -> GHCR -> K8s via ArgoCD). Every deploy job takes its runner from `${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}`, so the operator can move deploys onto a dedicated runner set by setting one repository variable -- no change to the workflow (ADR-010 form)
 - **Accessibility**: `eslint-plugin-jsx-a11y` enforces a11y rules; jest-axe audits in component tests
 
 ## Known Gotchas
 
 | Issue | Detail |
 |-------|--------|
+| CI path filter | `ci.yml`'s `changes` job classifies each PR docs-only vs code with `dorny/paths-filter` (SHA-pinned) under **`predicate-quantifier: every`**. That input is load-bearing: each list entry compiles to its own matcher, so under the default `some` quantifier every file would match `'**'`, the `!docs` negations would be inert and the filter would never fire. Two rules when editing `ci.yml`: a new **heavy** job must be gated on `needs.changes.outputs.code == 'true'` or docs-only PRs pay for it again, and a new **always-run** job must be added to `ci-success`'s `needs` or it cannot block a merge |
 | DB migrations | Alembic migrations must be idempotent -- use `sa.inspect(bind).get_table_names()` guard before `create_table`. The Dockerfile runs `flask db upgrade` at startup; non-idempotent migrations crash the pod on persistent volumes |
 | Manifest sync | After editing `project.json`, update `fallback-manifest.json` for Pages mode |
 | URL format | Path-based routing: `/project/slug/preset/mode`. Legacy hash URLs (`#/slug/preset/mode`) auto-redirect via pre-mount script in `main.tsx` |
@@ -479,6 +488,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 
 | Target | Method |
 |--------|--------|
+| Deploy runners | Every job in `deploy.yml` runs on `${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}`. Unset -> the shared pool, exactly as before. Set to a dedicated runner label -> deploys stop queueing behind PR CI on the shared pool. Both arms are MADFAM-operated runners; there is no GitHub-hosted arm (ADR-010) |
 | Enclii PaaS | Auto-deploy on push to main -- `yantra4d-landing` at yantra4d.com, `yantra4d-studio` at app.yantra4d.com, `yantra4d-backend` at api.yantra4d.com, `yantra4d-admin` at admin.yantra4d.com |
 | Docker | `docker compose up` (backend + studio + landing + admin, local) |
 | Local | Flask dev server (5000) + Vite dev server (5173) + Astro dev server (4321) + Admin dev server (5174) |
@@ -493,6 +503,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`docs/guides/graph-cartridges.md`](docs/guides/graph-cartridges.md) -- Authoring node-graph cartridges
 - [`docs/architecture/sim4d-extraction.md`](docs/architecture/sim4d-extraction.md) -- What was taken from sim4d and what was left
 - [`docs/operations/cross-ecosystem-interventions.md`](docs/operations/cross-ecosystem-interventions.md) -- Items owed to Yantra4D from other platforms
+- [`docs/reference/fashion-cabinet-consumers.md`](docs/reference/fashion-cabinet-consumers.md) -- The Fashion Cabinet bridge back-edge: who consumes our cartridges, and what breaks CI
 - [`docs/guides/ai-features.md`](docs/guides/ai-features.md) -- AI Configurator and Code Editor
 - [`docs/guides/verification.md`](docs/guides/verification.md) -- STL quality verification system
 - [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md) -- Client-side rendering fallback

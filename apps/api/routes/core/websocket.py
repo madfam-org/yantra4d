@@ -7,17 +7,42 @@ WebSocket Blueprint — real-time channels alongside the existing SSE endpoints.
 
 Auth posture (mirrored in docs/AUTH.md § WebSocket channels):
 
-  * These channels are anonymous-readable by design. They carry no private
-    per-user data: the render channel only answers ping/pong, and the printer
-    and telemetry channels are one-way broadcasts of shop-floor status.
+  * Every channel resolves an identity on the upgrade
+    (`middleware.auth.resolve_ws_claims`) and then decides, per channel, what
+    that identity may READ. A socket is not a lesser door: an anonymous reader
+    gets exactly what an anonymous HTTP caller gets and nothing more.
   * Nothing on a WebSocket may MUTATE server state. The `cancel` action used to
     call the orchestrator's cancel-everything helper with no identity check at
     all; it is now always refused (see `cancel_refusal_reason`), and the helper
     is deliberately not imported in this module.
-  * `@require_auth` / `@optional_auth` cannot decorate these handlers: both may
-    return a Flask response (a 401 body), which is meaningless once the socket
-    has been upgraded. `middleware.auth.resolve_ws_claims()` is the WS-shaped
-    equivalent — it resolves an identity and never returns a response.
+  * `@require_auth` / `@optional_auth` / `@require_tier` cannot decorate these
+    handlers: all may return a Flask response (a 401/403 body), which is
+    meaningless once the socket has been upgraded. `resolve_ws_claims()` is the
+    WS-shaped identity resolver, and the `*_read_denial` helpers below are the
+    WS-shaped gates — each returns a reason, never a response.
+
+Read authorisation, and why each channel has the gate it has:
+
+  * render     — anonymous. It answers `ping` with `pong` and refuses `cancel`
+                 to everyone, so it discloses nothing an anonymous HTTP caller
+                 could not already learn from `GET /api/health`.
+  * printer    — `pro` tier, mirroring `GET /api/printers/<id>/status`
+                 (`@require_tier("pro")` in routes/integrations/printer.py).
+                 The socket forwards the same shop-floor status that route
+                 proxies, so leaving it open was a straight tier bypass: connect
+                 to the socket instead of calling the route and the gate is
+                 gone.
+  * telemetry  — authenticated, plus the private-project gate. MQTT sensor
+                 streams are not "public project status": they are live
+                 shop-floor data for one project, and for a private cartridge
+                 they are exactly the events `PRIVATE_PROJECTS` exists to
+                 withhold. There is no anonymous HTTP surface that serves them,
+                 so there is no anonymous WS surface either.
+
+Anonymous gained nothing here; two channels lost what they should never have
+had. A refused connection is answered with one `{"type": "error", ...}` frame
+naming the reason, then closed — the socket never sees a payload it may not
+read.
 
 All WS endpoints fall back gracefully — existing SSE code is untouched.
 """
@@ -31,7 +56,11 @@ from contextlib import contextmanager
 
 from flask import Blueprint, request
 
+from config import Config
 from middleware.auth import is_machine_token, machine_client_id, resolve_ws_claims
+from services.core.project_access import project_view_denied_reason
+from services.core.tier_service import has_tier, resolve_tier
+from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +162,126 @@ def _identity_label(claims: dict | None) -> str:
     if is_machine_token(claims):
         return f"machine:{machine_client_id(claims)}"
     return "human"
+
+
+# ──────────────────────────────────────────────
+# Read authorisation
+# ──────────────────────────────────────────────
+#
+# One shape for every channel gate: `(reason, message)` when the caller may not
+# read this channel, `None` when it may. A reason — never a response — because
+# the connection is already upgraded by the time these run; `_refuse` turns one
+# into the single frame the client sees before the socket closes.
+#
+# `Config.AUTH_ENABLED` off short-circuits to "allowed", exactly as
+# `@require_tier` and `@require_auth` do on the HTTP routes. That keeps local
+# development and the test suite (conftest sets AUTH_ENABLED=False) behaving as
+# they do for the equivalent HTTP endpoint, and it is the same escape hatch —
+# not a wider one.
+
+#: Mirrors `@require_tier("pro")` on `GET /api/printers/<id>/status`. The socket
+#: forwards the same status that route proxies, so the two gates must agree; if
+#: the HTTP tier ever moves, move this with it.
+PRINTER_MIN_TIER = "pro"
+
+WS_UNAUTHORISED = "read not permitted"
+
+
+def _refuse(ws, reason: str, message: str) -> None:
+    """Send the one refusal frame a denied reader gets, then let the caller close."""
+    _send(ws, {
+        "type": "error",
+        "error": WS_UNAUTHORISED,
+        "reason": reason,
+        "message": message,
+    })
+
+
+def printer_read_denial(claims: dict | None) -> tuple[str, str] | None:
+    """Why this caller may not read the printer status channel, or None.
+
+    The gate is the tier gate on `GET /api/printers/<id>/status`, not a new
+    policy: printer status is `pro`, and reading it over a socket instead of
+    over HTTP must not be the cheaper door. Anonymous resolves to the guest
+    tier, so it is refused by the same comparison rather than by a special case
+    — but it gets the reason that tells the Studio to offer sign-in rather than
+    an upgrade, mirroring `auth_required` on the private-project refusal.
+    """
+    if not Config.AUTH_ENABLED:
+        return None
+    if has_tier(resolve_tier(claims), PRINTER_MIN_TIER):
+        return None
+    if not claims:
+        return (
+            "authentication_required",
+            (
+                "Printer status requires a signed-in Pro identity. "
+                "Present a bearer token on the upgrade request "
+                "(Authorization header, or ?token= from a browser)."
+            ),
+        )
+    return (
+        "insufficient_tier",
+        f"Printer status requires {PRINTER_MIN_TIER} tier or above.",
+    )
+
+
+def telemetry_read_denial(project_slug: str, claims: dict | None) -> tuple[str, str] | None:
+    """Why this caller may not read `project_slug`'s telemetry stream, or None.
+
+    Two gates, in order:
+
+      1. an identity. Telemetry is live shop-floor sensor data for one project.
+         No HTTP route serves it anonymously — no route serves it at all — so
+         there is nothing an anonymous caller could already read here, and
+         "read-only" is not on its own a reason to publish it.
+      2. the private-project gate, reusing the very check the HTTP routes use
+         (`services.core.project_access`). A private cartridge's telemetry is
+         precisely the class of event `PRIVATE_PROJECTS` exists to withhold, and
+         a second implementation of "may this identity see this slug?" is how
+         the two answers drift apart.
+
+    The slug is attacker-chosen path input, so it is validated before it reaches
+    the manifest lookup — same as `@require_valid_slug` on the HTTP routes.
+    """
+    if not Config.AUTH_ENABLED:
+        return None
+
+    if validate_project_slug(project_slug) is not None:
+        return ("invalid_project", "Invalid project slug.")
+
+    if not claims:
+        return (
+            "authentication_required",
+            (
+                "Project telemetry requires a signed-in identity. Present a "
+                "bearer token on the upgrade request (Authorization header, "
+                "or ?token= from a browser)."
+            ),
+        )
+
+    denied = project_view_denied_reason(project_slug, claims)
+    if denied is not None:
+        return (denied, "This project is private.")
+    return None
+
+
+def _deny(ws, channel: str, subject: str, claims: dict | None,
+          denial: tuple[str, str] | None) -> bool:
+    """Refuse and log when `denial` is set. True when the connection was refused.
+
+    Logged at WARNING with the coarse identity label only: never the token,
+    never the caller's `sub`.
+    """
+    if denial is None:
+        return False
+    reason, message = denial
+    logger.warning(
+        "WS %s read refused (subject=%s identity=%s reason=%s ip=%s)",
+        channel, subject, _identity_label(claims), reason, request.remote_addr,
+    )
+    _refuse(ws, reason, message)
+    return True
 
 
 # ──────────────────────────────────────────────
@@ -244,19 +393,29 @@ def ws_render(ws, session_id):
 # ──────────────────────────────────────────────
 
 def ws_printer(ws, printer_id):
-    """Live printer status WebSocket.
+    """Live printer status WebSocket. READ-ONLY, `pro` tier and above.
 
-    READ-ONLY BROADCAST. The only client frame this understands is `ping`;
-    there is no action that mutates server state, starts or stops a print, or
-    reaches a printer. It therefore stays anonymous-readable like the SSE
-    dashboards it feeds — the auth gate added to the render channel exists
-    because that channel had a mutating action, and this one has none. Any
-    future action that writes anything must resolve an identity first
-    (`middleware.auth.resolve_ws_claims`) rather than inheriting this comment.
+    Read-only is not the same as public. This forwards the shop-floor status
+    that `GET /api/printers/<printer_id>/status` proxies, and that route is
+    `@require_tier("pro")` — so an ungated socket was a tier bypass with a
+    different scheme, not a harmless dashboard feed. `printer_read_denial`
+    holds the gate and mirrors that route's tier.
+
+    The only client frame understood is `ping`; no action mutates server state,
+    starts or stops a print, or reaches a printer. Any future action that writes
+    anything needs its own check on top of this one — this gate authorises
+    *reading*.
 
     Server → Client: {"type": "heartbeat", ...} | {"type": "pong", ...}
     """
-    logger.info("WS printer connection: printer=%s", printer_id)
+    claims = resolve_ws_claims()
+    logger.info(
+        "WS printer connection: printer=%s identity=%s",
+        printer_id, _identity_label(claims),
+    )
+    if _deny(ws, "printer", printer_id, claims, printer_read_denial(claims)):
+        return
+
     from services.core.mqtt_telemetry import telemetry_service
 
     budget = MessageBudget()
@@ -305,16 +464,26 @@ def ws_printer(ws, printer_id):
 # ──────────────────────────────────────────────
 
 def ws_telemetry(ws, project_slug):
-    """MQTT → WebSocket bridge for project telemetry.
+    """MQTT → WebSocket bridge for project telemetry. READ-ONLY, signed-in only.
 
-    READ-ONLY BROADCAST. Like the printer channel, `ping` is the only client
-    frame it understands and no action mutates server state, so it keeps its
-    existing anonymous-readable posture. Forwards MQTT messages from
-    yantra4d/{slug}/telemetry/# to WebSocket clients.
+    Forwards MQTT messages from yantra4d/{slug}/telemetry/# to WebSocket
+    clients. `ping` is the only client frame understood and no action mutates
+    server state — but a live sensor stream for one project is not public
+    project status, and for a private cartridge it is exactly what the
+    private-project gate exists to withhold. `telemetry_read_denial` requires an
+    identity and then reuses that gate.
 
     Server → Client: {"type": "telemetry", "topic": "...", "payload": {...}}
     """
-    logger.info("WS telemetry connection: project=%s", project_slug)
+    claims = resolve_ws_claims()
+    logger.info(
+        "WS telemetry connection: project=%s identity=%s",
+        project_slug, _identity_label(claims),
+    )
+    if _deny(ws, "telemetry", project_slug, claims,
+             telemetry_read_denial(project_slug, claims)):
+        return
+
     from services.core.mqtt_telemetry import telemetry_queue
 
     budget = MessageBudget()

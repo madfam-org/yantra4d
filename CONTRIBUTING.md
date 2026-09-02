@@ -107,6 +107,32 @@ See `docs/reference/manifest.md` for the full manifest schema.
 4. **Push and open a PR** against `main`
 5. CI runs lint, tests, and coverage checks — all must pass
 
+### What CI runs on your PR
+
+`.github/workflows/ci.yml` classifies your PR before it schedules anything. The
+`changes` job asks one question: is every changed file documentation?
+
+- **Documentation** means any `*.md`, plus `docs/**`, `apps/docs/**`,
+  `runbooks/**` and `.github/*.md`.
+- **Docs-only PR** — the ten-shard Playwright browser matrix, the studio,
+  landing and admin builds, the backend test suite and the geometric parity
+  check are all skipped. The manifest, spec-conformance, metadata/licence and
+  OpenAPI checks still run, because those are what a documentation change can
+  actually break.
+- **Anything else is a code PR** and runs the full matrix. A PR that touches
+  documentation *and* code is a code PR — there is no way to opt a code change
+  out of the matrix, and that is deliberate.
+- **Pushes to `main`** always run everything, whatever they touch.
+
+`ci-success` is the single required check. It runs even when jobs ahead of it
+were skipped or failed, and it fails if any job it depends on reported `failure`
+or `cancelled`; a job skipped by the path filter counts as passed. So a green
+`ci-success` on a docs-only PR means "nothing that could break was skipped", not
+"the tests were turned off".
+
+If you are surprised that your PR skipped the browser matrix, open the `changes`
+job's summary — it says which way it classified the PR and why.
+
 ## Do NOT Edit
 
 - `apps/studio/src/components/ui/*` — Shadcn UI managed components (use shadcn CLI to regenerate)

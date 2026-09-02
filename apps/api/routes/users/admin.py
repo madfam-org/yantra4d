@@ -17,9 +17,9 @@ from manifest import discover_projects, get_manifest
 from middleware.auth import optional_auth, require_role
 from models.analytics import AnalyticsEvent
 from services.engine.render_orchestrator import (
-    ACTIVE_RENDER_JOBS_KEY,
     ACTIVE_RENDER_META_PREFIX,
     RENDER_QUEUE,
+    active_job_ids,
     r,
 )
 from utils.route_helpers import error_response
@@ -64,7 +64,11 @@ def _collect_active_render_state() -> dict:
 
     try:
         queued_jobs = int(r.llen(RENDER_QUEUE) or 0)
-        active_ids = r.smembers(ACTIVE_RENDER_JOBS_KEY) or []
+        # Pruned rather than raw: an entry whose lease expired is a job no
+        # worker is holding, and listing it here as "active" with a duration
+        # that grows forever is exactly what sent an operator looking for a
+        # render that had already died with its pod.
+        active_ids = active_job_ids()
     except Exception as exc:
         logger.warning("Render activity unavailable from Redis: %s", exc)
         return {

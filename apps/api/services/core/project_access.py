@@ -329,6 +329,34 @@ def check_project_access(slug: str | None):
     return project_locked_response(slug, claims)
 
 
+def project_view_denied_reason(slug: str | None, claims: dict | None) -> str | None:
+    """``LOCKED_ERROR_CODE`` when this caller may not view ``slug``, else None.
+
+    The response-free sibling of :func:`check_project_access`, for callers that
+    cannot answer with one: the WebSocket channels in
+    ``routes/core/websocket.py`` run after the connection has been upgraded, so
+    a Flask 403 has nowhere to go. Claims are passed in rather than resolved
+    here because those callers resolve identity their own way
+    (``middleware.auth.resolve_ws_claims`` reads the ``?token=`` query parameter
+    a browser must use on a handshake).
+
+    It resolves privacy through exactly the same ``_private_and_manifest`` +
+    :func:`can_view_project` path the HTTP gate uses, so the two cannot answer
+    differently for the same slug and identity. An unknown slug is reported
+    viewable, matching :func:`check_project_access`: privacy is not where a
+    not-found is invented.
+    """
+    if not slug or not isinstance(slug, str):
+        return None
+
+    private, manifest = _private_and_manifest(slug)
+    if not private:
+        return None
+    if can_view_project(slug, manifest, claims):
+        return None
+    return LOCKED_ERROR_CODE
+
+
 def require_project_access(fn):
     """Decorator for routes with a ``<slug>`` path parameter.
 

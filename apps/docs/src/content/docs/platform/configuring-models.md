@@ -66,7 +66,7 @@ The studio renders your model automatically when you change parameters. Two rend
 
 If the backend is unreachable, the studio falls back to WASM automatically. Some projects with `force_backend: true` prefer server rendering but will still fall back to WASM if the server is down.
 
-A progress indicator shows estimated render time. For models with long render times (above the project's warning threshold), a confirmation dialog appears before starting.
+A progress indicator shows estimated render time. Models estimated above the project's warning threshold are treated differently depending on how the render was asked for: when you press Generate, a confirmation dialog appears before starting; when the studio was going to render on its own — on load, or after a parameter change — it skips the render instead and tells you so with a brief notice, leaving the model unrendered until you press Generate. Below the threshold, both render straight away.
 
 ## 3D viewer controls
 

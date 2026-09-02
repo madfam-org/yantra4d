@@ -12,12 +12,20 @@ vi.mock('../system/useUpgradePrompt', () => ({
   useUpgradePrompt: () => ({ triggerUpgradePrompt: vi.fn() }),
 }))
 
+vi.mock('sonner', () => ({
+  toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() },
+}))
+
 const mockManifest = {
   parameters: [{ id: 'size' }],
   estimate_constants: { warning_threshold_seconds: 60 },
 }
 
-const mockT = (key) => key
+// Stands in for LanguageProvider's t. Real locale strings are not loaded here,
+// so the interpolation params are appended to the key instead of substituted
+// into it — that keeps them assertable without pinning English wording.
+const mockT = (key, params) =>
+  params ? `${key} ${Object.values(params).join(' ')}` : key
 const mockGetCacheKey = (m, p) => JSON.stringify({ mode: m, ...p })
 
 function renderUseRender(overrides = {}) {
@@ -73,6 +81,94 @@ describe('useRender', () => {
       await result.current.handleGenerate()
     })
     expect(renderParts).not.toHaveBeenCalled()
+  })
+
+  // --- Automatic vs user-initiated generation ------------------------------
+  // The studio auto-generates on load and on every param change (the debounced
+  // effect in useProjectParams). Handing that path the same confirm modal meant
+  // a cartridge whose default estimates over threshold — gridfinity's cadquery
+  // `bin` is ~2 min — opened a pointer-blocking Radix alertdialog on every
+  // single page load, before the visitor had asked for anything at all.
+
+  it('an automatic render over the threshold renders nothing and opens no modal', async () => {
+    const { estimateRenderTime, renderParts } = await import('../../services/engine/renderService')
+    const { toast } = await import('sonner')
+    estimateRenderTime.mockReturnValue(120)
+
+    const { result } = renderUseRender()
+
+    await act(async () => {
+      await result.current.handleGenerate(false, null, { automatic: true })
+    })
+
+    expect(result.current.showConfirmDialog).toBe(false)
+    expect(renderParts).not.toHaveBeenCalled()
+    // The visitor is told, without being blocked.
+    expect(toast.info).toHaveBeenCalledTimes(1)
+    expect(toast.info.mock.calls[0][0]).toContain('toast.auto_render_skipped')
+    // ~2 min, from the 120s estimate.
+    expect(toast.info.mock.calls[0][0]).toContain('2')
+    // The estimate is still recorded, so a later surface can show it.
+    expect(result.current.pendingEstimate).toBe(120)
+  })
+
+  it('an automatic render under the threshold renders without a notice', async () => {
+    const { estimateRenderTime, renderParts } = await import('../../services/engine/renderService')
+    const { toast } = await import('sonner')
+    estimateRenderTime.mockReturnValue(10)
+
+    const { result } = renderUseRender()
+
+    await act(async () => {
+      await result.current.handleGenerate(false, null, { automatic: true })
+    })
+
+    expect(renderParts).toHaveBeenCalled()
+    expect(result.current.parts).toHaveLength(1)
+    expect(result.current.showConfirmDialog).toBe(false)
+    expect(toast.info).not.toHaveBeenCalled()
+  })
+
+  it('a user-initiated render over the threshold still opens the confirm modal', async () => {
+    const { estimateRenderTime, renderParts } = await import('../../services/engine/renderService')
+    const { toast } = await import('sonner')
+    estimateRenderTime.mockReturnValue(120)
+
+    const { result } = renderUseRender()
+
+    await act(async () => {
+      await result.current.handleGenerate()
+    })
+
+    expect(result.current.showConfirmDialog).toBe(true)
+    expect(result.current.pendingEstimate).toBe(120)
+    expect(renderParts).not.toHaveBeenCalled()
+    // The modal is the notice here; a toast on top of it would be noise.
+    expect(toast.info).not.toHaveBeenCalled()
+  })
+
+  it('confirming after an automatic skip renders', async () => {
+    // The skip leaves no pendingPayload, so Generate — not the skipped
+    // automatic attempt — is what starts the render.
+    const { estimateRenderTime, renderParts } = await import('../../services/engine/renderService')
+    estimateRenderTime.mockReturnValue(120)
+
+    const { result } = renderUseRender()
+
+    await act(async () => {
+      await result.current.handleGenerate(false, null, { automatic: true })
+    })
+    expect(renderParts).not.toHaveBeenCalled()
+
+    await act(async () => {
+      await result.current.handleGenerate()
+    })
+    expect(result.current.showConfirmDialog).toBe(true)
+
+    await act(async () => {
+      result.current.handleConfirmRender()
+    })
+    expect(renderParts).toHaveBeenCalled()
   })
 
   it('estimate above threshold opens confirm dialog', async () => {

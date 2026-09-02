@@ -142,6 +142,7 @@
   "toast.export_started": "Exportação iniciada…",
   "toast.export_done": "Exportação concluída",
   "toast.render_failed": "Erro ao renderizar",
+  "toast.auto_render_skipped": "[UNTRANSLATED] Long render skipped — about {minutes} min. Press Generate to render.",
   "bom.title": "Lista de Materiais",
   "bom.item": "Item",
   "bom.qty": "Qtd.",

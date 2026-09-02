@@ -66,7 +66,7 @@ The studio renders your model automatically when you change parameters. Two **pl
 
 The sidebar's placement control shows which one this render will use, why, and lets you choose **Auto**, **Browser** or **Server**. It is disabled when the choice is not yours to make: a `cadquery`, `graph` or `implicit` mode has no browser kernel, and a project may declare `render.server_only: true`. A project's legacy `force_backend: true` no longer pins anything -- it is a hint that applies only on a device measured as limited. If a server render is refused or the server is unreachable, anything that was merely preferring the server falls back to your browser.
 
-A progress indicator shows estimated render time. For models with long render times (above the project's warning threshold), a confirmation dialog appears before starting.
+A progress indicator shows estimated render time. Models estimated above the project's warning threshold are treated differently depending on how the render was asked for: when you press Generate, a confirmation dialog appears before starting; when the studio was going to render on its own — on load, or after a parameter change — it skips the render instead and tells you so with a brief notice, leaving the model unrendered until you press Generate. Below the threshold, both render straight away.
 
 ## 3D viewer controls
 

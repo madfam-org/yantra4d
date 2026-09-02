@@ -9,7 +9,7 @@ import { useProject } from './contexts/project/ProjectProvider'
 import { useManifest } from './contexts/project/ManifestProvider'
 import { useThemeAndLanguage } from './hooks/system/useThemeAndLanguage'
 import { usePlatform } from './contexts/system/PlatformProvider'
-import { useIsMobile } from './hooks/system/useMediaQuery'
+import { useIsMobile, useIsDesktop } from './hooks/system/useMediaQuery'
 import { usePanelLayout } from './hooks/system/usePanelLayout'
 import StudioHeader from './components/studio/StudioHeader'
 import StudioSidebar from './components/studio/StudioSidebar'
@@ -63,6 +63,11 @@ function App() {
   }, [navigate])
 
   const isMobile = useIsMobile()
+  // Matches Tailwind's `lg` (1024px) exactly — the same breakpoint the layout
+  // classes below use — so the JS decision and the CSS never disagree.
+  // useIsMobile is `max-width: 767px`, which would leave tablets (768–1023px)
+  // on the desktop tree while the CSS hides it, so it cannot be reused here.
+  const isDesktop = useIsDesktop()
   const { layout, setSidebarSize, toggleSidebar, setConsoleSize, toggleConsole } = usePanelLayout()
   const { manifestError, manifestAuthRequired } = useManifest()
 
@@ -255,22 +260,34 @@ function App() {
       {!isEmbed && <RateLimitBanner />}
 
       {/*
-        Single #main-content spanning both layout trees.
+        Single #main-content wrapping the one mounted layout tree.
 
-        The id used to live on StudioMainView, which is rendered once here for
-        desktop and once below for mobile — so it was in the DOM twice. That is
+        The id used to live on StudioMainView, which was rendered once for
+        desktop and once for mobile — so it was in the DOM twice. That is
         invalid HTML, and it broke the skip link above: href="#main-content"
         resolves to the first match, the desktop tree, which is display:none
         under lg. Skipping to content on a phone landed on a hidden element.
-
-        Exactly one child is ever displayed (hidden lg:flex vs lg:hidden), so
-        one wrapper is unambiguous at every width and needs no JS breakpoint.
         tabIndex={-1} lets the skip link move focus here without adding a tab
         stop of its own.
       */}
       <div id="main-content" tabIndex={-1} className="flex flex-1 overflow-hidden min-h-0 outline-none">
 
-      {/* Desktop: resizable horizontal layout */}
+      {/*
+        Only the tree that is actually on screen is mounted.
+
+        Both trees used to be rendered at once and hidden with CSS, and each
+        hands the same viewerContent to a StudioMainView that splits in two
+        again — four <Viewer>s, so four <canvas> elements and four WebGL render
+        loops on every page load, three of them inside display:none subtrees.
+        The classes are kept so the CSS still agrees with the JS at the same
+        breakpoint; they are simply no longer the thing doing the hiding.
+
+        Crossing 1024px remounts the tree: the viewer re-creates its canvas, and
+        parameters/render results live in ProjectProvider above this component,
+        so nothing the user typed is lost.
+      */}
+      {isDesktop ? (
+      /* Desktop: resizable horizontal layout */
       <div className="hidden lg:flex flex-1 overflow-hidden relative">
         <ResizablePanelGroup
           orientation="horizontal"
@@ -343,7 +360,8 @@ function App() {
         )}
       </div>
 
-      {/* Mobile: original layout */}
+      ) : (
+      /* Mobile: original layout */
       <div className="flex flex-1 overflow-hidden flex-col lg:hidden">
         {/* Mobile: editor as bottom sheet */}
         {editorSheet && (
@@ -380,6 +398,7 @@ function App() {
           </div>
         </ErrorBoundary>
       </div>
+      )}
 
       </div>{/* /#main-content */}
 

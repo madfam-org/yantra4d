@@ -66,7 +66,7 @@ test.describe('Export Panel', () => {
   test('image export buttons are enabled after render produces parts', async ({ page, sidebar }) => {
     // This test needs real parts, which only the mocked SSE render produces:
     // the E2E environment ships no WASM binary. Pin the SERVER placement with
-    // the app's own `?render=backend` override (rule 4) — lowering
+    // the app's own `?render=backend` override (rule 5) — lowering
     // hardwareConcurrency no longer selects it, since a `limited` device still
     // renders in the browser by default.
     await forceBackendRender(page)

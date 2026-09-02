@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
   decideRenderPlacement,
+  canBrowserEmitFormat,
+  BROWSER_EXPORT_FORMATS,
   canRenderInBrowser,
   canRenderAnyModeInBrowser,
   effectiveModeEngine,
@@ -25,6 +27,7 @@ const BASELINE = {
   userPreference: 'auto',
   capabilityTier: 'capable',
   bundle: null,
+  exportFormat: null,
   serverOnly: false,
   forceBackendHint: false,
   estimateSeconds: 1,
@@ -133,7 +136,99 @@ describe('decideRenderPlacement — rule 3: bundle', () => {
   })
 })
 
-describe('decideRenderPlacement — rule 4: ?render= override', () => {
+describe('decideRenderPlacement — rule 4: an export format the browser cannot emit', () => {
+  // The browser kernel writes one file, `/output.stl`, and there is no second
+  // output path in the worker protocol. Every other format the Studio offers is
+  // produced on the server. So this is not a preference, it is arithmetic.
+  it('knows the browser makes STL and nothing else', () => {
+    expect([...BROWSER_EXPORT_FORMATS]).toEqual(['stl'])
+    expect(canBrowserEmitFormat('stl')).toBe(true)
+    for (const fmt of ['3mf', 'off', 'obj', 'glb', 'gltf', 'step', 'vrml', 'amf']) {
+      expect(canBrowserEmitFormat(fmt)).toBe(false)
+    }
+  })
+
+  it('treats "no format asked for" as no constraint', () => {
+    // An ordinary preview render passes nothing. That must not read as "asked
+    // for something the browser cannot do" and quietly meter every render.
+    expect(canBrowserEmitFormat(undefined)).toBe(true)
+    expect(canBrowserEmitFormat(null)).toBe(true)
+    expect(canBrowserEmitFormat('')).toBe(true)
+    expect(canBrowserEmitFormat('   ')).toBe(true)
+    expect(decide({ exportFormat: null }).placement).toBe('browser')
+    expect(decide({ exportFormat: undefined }).placement).toBe('browser')
+  })
+
+  it('normalises case and padding before deciding', () => {
+    expect(canBrowserEmitFormat('STL')).toBe(true)
+    expect(canBrowserEmitFormat(' Stl ')).toBe(true)
+    expect(decide({ exportFormat: ' STL ' }).placement).toBe('browser')
+    expect(decide({ exportFormat: ' STEP ' }).reasons[0]).toBe('export_format_server_only:step')
+  })
+
+  it('sends a step render to the server, HARD, and names the format', () => {
+    const d = decide({ exportFormat: 'step' })
+    expect(d.placement).toBe('server')
+    expect(d.hard).toBe(true)
+    expect(d.reasons[0]).toBe('export_format_server_only:step')
+  })
+
+  it('keeps an stl render on the free browser path', () => {
+    // The common case. `useRender` forwards the export panel's current format
+    // on EVERY render, and it defaults to 'stl' — so if this row ever went
+    // server the browser default would be dead for the whole product.
+    expect(decide({ exportFormat: 'stl' }).placement).toBe('browser')
+  })
+
+  it('beats the browser default, the visitor preference and ?render=wasm', () => {
+    // Rule ordering, stated as the thing that matters: nothing below rule 4 can
+    // ask the kernel for bytes it has no code to write. An override or a
+    // preference is a request for a PLACEMENT, not a request to be handed STL
+    // under a .step filename.
+    expect(decide({ exportFormat: 'step' }).placement).toBe('server')
+    expect(decide({ exportFormat: 'step', override: 'wasm' }).placement).toBe('server')
+    expect(decide({ exportFormat: 'step', userPreference: 'browser' }).placement).toBe('server')
+    expect(decide({ exportFormat: 'step', override: 'wasm', userPreference: 'browser' }))
+      .toMatchObject({ placement: 'server', hard: true, reasons: ['export_format_server_only:step'] })
+  })
+
+  it('beats the limited-device estimate budget rather than being masked by it', () => {
+    // A `limited` device tolerates only 15s in a browser, so a slow cartridge
+    // would reach the server anyway — by rule 9, SOFT, which the outage guard
+    // can flip back. A format the kernel cannot write must not depend on an
+    // estimate happening to be large: it is HARD at any estimate, on any tier.
+    const cheapOnCapable = decide({ exportFormat: 'glb', capabilityTier: 'capable', estimateSeconds: 1 })
+    expect(cheapOnCapable).toMatchObject({ placement: 'server', hard: true })
+    expect(cheapOnCapable.reasons[0]).toBe('export_format_server_only:glb')
+
+    const cheapOnLimited = decide({ exportFormat: 'glb', capabilityTier: 'limited', estimateSeconds: 1 })
+    expect(cheapOnLimited).toMatchObject({ placement: 'server', hard: true })
+    expect(cheapOnLimited.reasons[0]).toBe('export_format_server_only:glb')
+  })
+
+  it('survives a backend outage instead of flipping back to a browser that cannot help', () => {
+    // The outage guard exists so a SOFT server decision does not strand a
+    // visitor behind an unreachable queue. It must not apply here: the browser
+    // would "succeed" and return the wrong bytes, which is worse than an honest
+    // server error.
+    const d = decide({ exportFormat: '3mf', backendAvailable: false })
+    expect(d.placement).toBe('server')
+    expect(d.hard).toBe(true)
+    expect(d.reasons).toEqual(['export_format_server_only:3mf'])
+  })
+
+  it('yields to the cartridge-level hard rules above it', () => {
+    // Ordering below the three facts about the cartridge itself. Same answer
+    // either way — every hard rule says server — but the REASON should name the
+    // most fundamental cause, which is what the badge shows the visitor.
+    expect(decide({ exportFormat: 'step', engine: 'cadquery' }).reasons[0])
+      .toBe('engine_unsupported:cadquery')
+    expect(decide({ exportFormat: 'step', serverOnly: true }).reasons[0])
+      .toBe('manifest_server_only')
+  })
+})
+
+describe('decideRenderPlacement — rule 5: ?render= override', () => {
   it('?render=backend pins the server', () => {
     const d = decide({ override: 'backend' })
     expect(d.placement).toBe('server')
@@ -168,7 +263,7 @@ describe('decideRenderPlacement — rule 4: ?render= override', () => {
   })
 })
 
-describe('decideRenderPlacement — rule 5: user preference', () => {
+describe('decideRenderPlacement — rule 6: user preference', () => {
   it('browser wins over an incapable tier, a past failure and a slow estimate', () => {
     expect(decide({
       userPreference: 'browser',
@@ -194,7 +289,7 @@ describe('decideRenderPlacement — rule 5: user preference', () => {
   })
 })
 
-describe('decideRenderPlacement — rule 6: capability tier', () => {
+describe('decideRenderPlacement — rule 7: capability tier', () => {
   it('an incapable device goes to the server', () => {
     expect(decide({ capabilityTier: 'incapable' }))
       .toMatchObject({ placement: 'server', hard: false, reasons: ['capability_incapable'] })
@@ -213,7 +308,7 @@ describe('decideRenderPlacement — rule 6: capability tier', () => {
   })
 })
 
-describe('decideRenderPlacement — rule 7: a browser render already failed', () => {
+describe('decideRenderPlacement — rule 8: a browser render already failed', () => {
   it('routes to the server and names the failure', () => {
     const d = decide({ lastBrowserFailure: 'oom' })
     expect(d.placement).toBe('server')
@@ -225,7 +320,7 @@ describe('decideRenderPlacement — rule 7: a browser render already failed', ()
   })
 })
 
-describe('decideRenderPlacement — rule 8: estimate threshold', () => {
+describe('decideRenderPlacement — rule 9: estimate threshold', () => {
   it('tolerates 45s in a browser on a capable device', () => {
     expect(ESTIMATE_THRESHOLD_SECONDS.capable).toBe(45)
     expect(decide({ estimateSeconds: 45 }).placement).toBe('browser')
@@ -277,7 +372,7 @@ describe('decideRenderPlacement — rule 8: estimate threshold', () => {
   })
 })
 
-describe('decideRenderPlacement — rule 9: force_backend is a SOFT hint', () => {
+describe('decideRenderPlacement — rule 10: force_backend is a SOFT hint', () => {
   it('does NOT move a capable device off the browser', () => {
     // 490 of 501 manifests set this flag, and among the OpenSCAD cartridges it
     // almost always encoded "WASM cannot load our BOSL2 include or our font" —

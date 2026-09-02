@@ -30,13 +30,14 @@ mocks.
 | 1 | the MODE's engine is `cadquery`, `graph` or `implicit` | server, **hard** |
 | 2 | manifest `render.server_only === true` | server, **hard** |
 | 3 | the wasm bundle is unavailable, or names `unsupported` / `unresolved` | server, **hard** |
-| 4 | `?render=backend` / `?render=wasm` (or `VITE_RENDER_MODE`) | server / browser |
-| 5 | the visitor's `Auto / Browser / Server` preference | server / browser |
-| 6 | capability tier is `incapable` | server |
-| 7 | a browser render already failed for this cartridge this session | server |
-| 8 | browser estimate over the tier threshold (capable 45 s, limited 15 s) | server |
-| 9 | legacy `project.force_backend`, **only** on a `limited` device | server |
-| 10 | **default** | **browser** |
+| 4 | an `export_format` the browser kernel cannot emit (anything but `stl`) | server, **hard** |
+| 5 | `?render=backend` / `?render=wasm` (or `VITE_RENDER_MODE`) | server / browser |
+| 6 | the visitor's `Auto / Browser / Server` preference | server / browser |
+| 7 | capability tier is `incapable` | server |
+| 8 | a browser render already failed for this cartridge this session | server |
+| 9 | browser estimate over the tier threshold (capable 45 s, limited 15 s) | server |
+| 10 | legacy `project.force_backend`, **only** on a `limited` device | server |
+| 11 | **default** | **browser** |
 
 `isBackendAvailable()` (`/api/health`, TTL-cached: 30 s negative, 5 min
 positive) no longer decides anything on its own. It answers one question: is a
@@ -303,11 +304,42 @@ Default 120 s; a manifest may override with
 | browser → server | `init-error`, `oom`, `timeout` | the environment failed, not the model |
 | browser → server | **never** on `scad-error` | the server compiles the identical source and fails identically, for one rate-limit unit |
 
-A browser failure is recorded per slug (rule 7), so the next render for that
+A browser failure is recorded per slug (rule 8), so the next render for that
 cartridge goes straight to the server instead of re-running a known failure.
 
 Neither direction fires when the visitor pinned a placement — an override or a
 `browser`/`server` preference is honoured, and the failure is reported.
+
+## Export formats are a server capability
+
+The browser kernel produces **STL and nothing else**. `openscad-worker.ts`
+renders to the single hard-coded path `/output.stl` and posts those bytes back;
+there is no format argument on the worker protocol and no converter on the
+browser side. `3mf`, `off` and `obj` are written by the native binary, and
+`glb`, `gltf`, `step`, `vrml` and `amf` come out of trimesh or CadQuery — all
+of it server-side.
+
+So an explicit `export_format` other than `stl` is a **hard** server placement
+(rule 4), above the `?render=` override and the visitor's preference. Those two
+choose a placement; neither can ask the kernel for bytes it has no code to
+write.
+
+This is not a preference we are enforcing, it is a defect we were shipping.
+`useRender` forwards the export panel's current format on **every** render, not
+just on Download, so before rule 4 existed a browser-placed cartridge set to
+`step` rendered STL, `handleDownloadStl` found no URL ending in `.step`, fell
+through to the STL blob and saved it as `<slug>_<mode>_<part>.step`.
+
+It also matters for tier gating. #87 checks the caller's tier `export_formats`
+twice — when a format is GENERATED (`/api/render`, `/api/render-stream`) and
+again when it is RETRIEVED (`/api/projects/<slug>/download/...`) — so that
+knowing a param-hash filename is not enough to pull a format the tier may not
+export. A browser render reaches neither check; it was a third door on a gate
+the server keeps shut on the other two. Rule 4 puts the request back in front
+of that gate.
+
+`stl` is unaffected and stays on the free browser path — which is the common
+case, since the export panel defaults to `stl`.
 
 ## WASM bundle endpoint
 

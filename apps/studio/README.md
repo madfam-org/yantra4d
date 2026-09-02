@@ -61,13 +61,14 @@ The choice is made by the pure function `decideRenderPlacement()` in
 | 1 | the MODE's engine is `cadquery`, `graph` or `implicit` | server, **hard** |
 | 2 | manifest `render.server_only === true` | server, **hard** |
 | 3 | the wasm bundle is unavailable, or names `unsupported` / `unresolved` | server, **hard** |
-| 4 | `?render=backend` / `?render=wasm` (or `VITE_RENDER_MODE`) | server / browser |
-| 5 | the visitor's `Auto / Browser / Server` preference | server / browser |
-| 6 | capability tier is `incapable` | server |
-| 7 | a browser render already failed for this cartridge this session | server |
-| 8 | browser estimate over the tier threshold (capable 45 s, limited 15 s) | server |
-| 9 | legacy `project.force_backend`, **only** on a `limited` device | server |
-| 10 | **default** | **browser** |
+| 4 | an `export_format` the browser kernel cannot emit (anything but `stl`) | server, **hard** |
+| 5 | `?render=backend` / `?render=wasm` (or `VITE_RENDER_MODE`) | server / browser |
+| 6 | the visitor's `Auto / Browser / Server` preference | server / browser |
+| 7 | capability tier is `incapable` | server |
+| 8 | a browser render already failed for this cartridge this session | server |
+| 9 | browser estimate over the tier threshold (capable 45 s, limited 15 s) | server |
+| 10 | legacy `project.force_backend`, **only** on a `limited` device | server |
+| 11 | **default** | **browser** |
 
 After the table, one guard: a **soft** server decision flips back to the browser
 when `/api/health` says the server is unreachable. A **hard** one never does —

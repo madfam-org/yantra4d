@@ -285,7 +285,12 @@ components:
               description: If true, studio clears configuration storage and ignores preset persistence on load.
         render:
           type: object
-          description: Where a render is allowed to happen — the hard rules, as opposed to project.force_backend's preference.
+          description: |
+            Where a render is allowed to happen — the hard rules, as opposed to
+            project.force_backend's preference. These are cartridge-level facts;
+            the requested `export_format` is a per-request one that pins the
+            server just as hard.
+
           properties:
             server_only:
               type: boolean
@@ -399,6 +404,17 @@ components:
           type: string
           enum: [stl, 3mf, off, step, glb, gltf, obj]
           default: stl
+          description: |
+            Anything but `stl` is necessarily a SERVER render. The Studio's
+            browser kernel writes one file, `/output.stl`, and has no converter;
+            `3mf` and `off` come from the native binary and `step`/`glb`/`gltf`/
+            `obj` from trimesh or CadQuery. The Studio therefore treats a
+            non-`stl` format as a hard server placement (rule 4 of
+            `renderPlacement.ts`) rather than rendering in the browser and
+            returning STL bytes under the requested extension. Whichever route
+            produces it, the format is gated on the caller's tier here at
+            generation and again at retrieval on
+            `/api/projects/{slug}/download/...`.
         ignore_cache:
           type: boolean
           description: Bypass L1 and L2 caches to force a fresh render

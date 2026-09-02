@@ -180,9 +180,10 @@ function parseRenderMode(value: string | null | undefined): 'backend' | 'wasm' |
  *   2. `VITE_RENDER_MODE=backend|wasm`     — build-time pin for a whole deployment
  *   3. null                                — defer to `decideRenderPlacement`
  *
- * The override sits at rule 4 of the placement table: below the three facts
+ * The override sits at rule 5 of the placement table: below the four facts
  * that make a browser render impossible (engine, `render.server_only`, an
- * unsupported bundle) and above everything a heuristic could say.
+ * unsupported bundle, an export format the kernel cannot write) and above
+ * everything a heuristic could say.
  */
 const RENDER_MODE_OVERRIDE: 'backend' | 'wasm' | null = (() => {
   let fromQuery: 'backend' | 'wasm' | null = null
@@ -232,6 +233,7 @@ async function resolvePlacement(
   mode: string,
   params: Record<string, unknown>,
   project?: string,
+  exportFormat?: string,
 ): Promise<PlacementDecision> {
   const slug = manifestSlug(manifest, project)
   // Engine is resolved PER MODE. Reading `manifest.engine` alone would send
@@ -254,6 +256,7 @@ async function resolvePlacement(
   const cachedBundle = peekBundle(slug)
   const decision = decideRenderPlacement({
     engine,
+    exportFormat,
     override: RENDER_MODE_OVERRIDE,
     userPreference: getPlacementPreference(),
     capabilityTier: tier,
@@ -304,6 +307,11 @@ export function getPlacementDecision(slug: string): PlacementDecision | null {
  * synchronously. Uses the last known backend health rather than probing, so it
  * can differ from the render's own decision during an outage — the badge
  * catches up on the next render.
+ *
+ * `exportFormat` is part of the question, not a detail of the render: a format
+ * the browser kernel cannot emit is a HARD server placement (rule 4), so a
+ * badge that ignored it would read "Browser" for a render that is about to be
+ * metered on the server.
  */
 export function previewPlacement(
   // Loose on purpose. `ManifestProvider` exports its own `Manifest` interface
@@ -316,12 +324,14 @@ export function previewPlacement(
   mode: string,
   params: Record<string, unknown>,
   project?: string,
+  exportFormat?: string,
 ): PlacementDecision {
   const manifest = manifestInput as Manifest | null
   const slug = manifestSlug(manifest, project)
   const cachedBundle = peekBundle(slug)
   return decideRenderPlacement({
     engine: effectiveModeEngine(manifest, mode),
+    exportFormat,
     override: RENDER_MODE_OVERRIDE,
     userPreference: getPlacementPreference(),
     capabilityTier: getCapabilityTier(),
@@ -865,7 +875,7 @@ export async function renderParts(
   { onProgress, abortSignal, project, ignoreCache, exportFormat }: RenderOptions = {}
 ): Promise<RenderPart[]> {
   const slug = manifestSlug(manifest, project)
-  const decision = await resolvePlacement(manifest, mode, params, project)
+  const decision = await resolvePlacement(manifest, mode, params, project, exportFormat)
 
   if (decision.placement === 'server') {
     try {
@@ -922,7 +932,7 @@ export async function renderParts(
     const kind = browserFailureKind(err)
     if (!kind) throw err
 
-    // Remember it: rule 7 of the placement table sends this slug straight to the
+    // Remember it: rule 8 of the placement table sends this slug straight to the
     // server for the rest of the session rather than re-running a failure.
     _lastBrowserFailure.set(slug, kind)
     _placementBySlug.set(slug, 'server')

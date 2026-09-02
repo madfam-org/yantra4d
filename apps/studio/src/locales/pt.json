@@ -357,6 +357,7 @@
   "placement.reason.bundle_unsupported": "Este projeto usa recursos que o motor do navegador não executa.",
   "placement.reason.bundle_unresolved": "Este projeto tem um include que nosso servidor não conseguiu resolver.",
   "placement.reason.bundle_unavailable": "Não foi possível carregar o pacote de render do navegador.",
+  "placement.reason.export_format_server_only": "O motor do navegador só gera STL; este formato é gerado no nosso servidor.",
   "placement.reason.capability_incapable": "Este dispositivo é limitado demais para renderizar no navegador.",
   "placement.reason.browser_failed": "Um render no navegador já falhou aqui nesta sessão.",
   "placement.reason.estimate_over_threshold": "Lento demais para uma aba do navegador.",

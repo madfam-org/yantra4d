@@ -26,6 +26,37 @@ export const BROWSER_INCAPABLE_ENGINES: ReadonlySet<string> = new Set([
   'implicit',
 ])
 
+/**
+ * Export formats the BROWSER kernel can produce. Exactly one.
+ *
+ * This is not a policy choice, it is what the kernel does:
+ * `openscad-worker.ts::handleRender` renders to the single hard-coded path
+ * `/output.stl` and posts the bytes back as `{ type: 'result', stl }`. There is
+ * no second output path, no format argument on the worker protocol, and no
+ * converter on the browser side — `renderService` wraps those bytes in a
+ * `Blob({ type: 'application/sla' })` and hands them to the viewer.
+ *
+ * Every other format the Studio offers (`3mf`, `off`, `obj`, `glb`, `gltf`,
+ * `step`, `vrml`, `amf`) exists only on the server, where OpenSCAD writes some
+ * of them natively and trimesh/CadQuery converts the rest. Asking the browser
+ * for one cannot fail loudly — it succeeds and returns STL — which is why this
+ * is a HARD placement rule rather than a warning.
+ */
+export const BROWSER_EXPORT_FORMATS: ReadonlySet<string> = new Set(['stl'])
+
+/**
+ * Whether the browser kernel can emit `format`. PURE.
+ *
+ * An absent/empty format is not a request for anything, so it does not force a
+ * placement: an ordinary preview render passes no format and the viewer takes
+ * whatever the placement produces.
+ */
+export function canBrowserEmitFormat(format?: string | null): boolean {
+  const normalized = String(format ?? '').trim().toLowerCase()
+  if (!normalized) return true
+  return BROWSER_EXPORT_FORMATS.has(normalized)
+}
+
 /** Engines the platform recognises. Anything else is treated as openscad. */
 export const KNOWN_ENGINES: ReadonlySet<string> = new Set([
   'openscad',
@@ -137,6 +168,14 @@ export interface PlacementInput {
   capabilityTier?: CapabilityTier
   /** What we know about this cartridge's WASM bundle. */
   bundle?: BundleInfo | null
+  /**
+   * The export format this render was explicitly asked for, if any.
+   *
+   * Absent on an ordinary preview render. Set when the visitor picked a format
+   * in the export panel or pressed Download for one — and the browser kernel
+   * can only ever emit `stl`.
+   */
+  exportFormat?: string | null
   /** HARD manifest flag: `render.server_only === true`. */
   serverOnly?: boolean
   /** SOFT manifest hint: legacy `project.force_backend`. */
@@ -145,7 +184,7 @@ export interface PlacementInput {
   estimateSeconds?: number | null
   /**
    * The cartridge's own budget, `render.browser_max_estimate_seconds`. When set
-   * (finite, >= 0) it replaces the per-tier default in rule 8. Null/absent =
+   * (finite, >= 0) it replaces the per-tier default in rule 9. Null/absent =
    * use `ESTIMATE_THRESHOLD_SECONDS[tier]`.
    */
   browserMaxEstimateSeconds?: number | null
@@ -164,7 +203,8 @@ export interface PlacementDecision {
   reasons: string[]
   /**
    * True when nothing — not the visitor, not a backend outage — may move this
-   * render off the chosen placement. Only the three server-side facts set it.
+   * render off the chosen placement. Only the four capability facts set it:
+   * the three about the cartridge, and the one about the format asked for.
    */
   hard: boolean
 }
@@ -196,13 +236,14 @@ export function canRenderInBrowser(engine?: string | null): boolean {
  *   1. engine ∈ {cadquery, graph, implicit}   -> server, HARD
  *   2. manifest `render.server_only === true`  -> server, HARD
  *   3. bundle unavailable or reports `unsupported` features -> server, HARD
- *   4. `?render=` / `VITE_RENDER_MODE` override
- *   5. user preference `browser` | `server`
- *   6. capability tier `incapable`             -> server
- *   7. a browser render already failed for this slug this session -> server
- *   8. browser estimate > threshold (manifest `render.browser_max_estimate_seconds`, else per tier) -> server
- *   9. legacy `force_backend` SOFT hint         -> server ONLY when tier is `limited`
- *  10. default                                  -> BROWSER
+ *   4. an export format the browser kernel cannot emit -> server, HARD
+ *   5. `?render=` / `VITE_RENDER_MODE` override
+ *   6. user preference `browser` | `server`
+ *   7. capability tier `incapable`             -> server
+ *   8. a browser render already failed for this slug this session -> server
+ *   9. browser estimate > threshold (manifest `render.browser_max_estimate_seconds`, else per tier) -> server
+ *  10. legacy `force_backend` SOFT hint         -> server ONLY when tier is `limited`
+ *  11. default                                  -> BROWSER
  *
  * After the table, one guard: a non-HARD server decision flips back to the
  * browser when the backend is known to be unreachable. A queue we cannot reach
@@ -215,6 +256,7 @@ export function decideRenderPlacement(input: PlacementInput): PlacementDecision 
     userPreference = 'auto',
     capabilityTier = 'capable',
     bundle = null,
+    exportFormat = null,
     serverOnly = false,
     forceBackendHint = false,
     estimateSeconds = null,
@@ -263,7 +305,36 @@ export function decideRenderPlacement(input: PlacementInput): PlacementDecision 
     }
   }
 
-  // 4. Explicit operator/support override. Below the hard rules, above everything
+  // 4. A format the browser kernel cannot produce. HARD, and it deliberately
+  //    outranks the override and the preference below: `?render=wasm` is a
+  //    request for a placement, not a request to be handed STL bytes named
+  //    `model.step`.
+  //
+  //    Without this rule the browser default silently answered every
+  //    export-format render. `renderWasm` ignores `exportFormat` — it always
+  //    writes `/output.stl` — so `handleDownloadStl`'s `pickUrl` found no URL
+  //    ending in the requested extension and fell through to the STL blob,
+  //    which then downloaded as `<slug>_<mode>_<part>.step`. The same path runs
+  //    on an ordinary Generate, because `useRender` forwards the export panel's
+  //    current format on every render, not just on Download.
+  //
+  //    It is also the third door on a gate the server keeps shut on the other
+  //    two: #87 checks the caller's tier `export_formats` both when a format is
+  //    GENERATED (`/api/render`, `/api/render-stream`) and when it is RETRIEVED
+  //    (`/api/projects/<slug>/download/...`), so that a param-hash filename
+  //    alone cannot buy a format the tier may not export. A browser render
+  //    reaches neither check. Sending these renders to the server puts the
+  //    request back in front of the gate it belongs to — and returns the bytes
+  //    the caller actually asked for.
+  if (!canBrowserEmitFormat(exportFormat)) {
+    return {
+      placement: 'server',
+      reasons: [`export_format_server_only:${String(exportFormat).trim().toLowerCase()}`],
+      hard: true,
+    }
+  }
+
+  // 5. Explicit operator/support override. Below the hard rules, above everything
   //    a heuristic could say.
   if (override === 'backend') {
     // NOT subject to the outage guard below. `?render=backend` is what support
@@ -277,7 +348,7 @@ export function decideRenderPlacement(input: PlacementInput): PlacementDecision 
     return { placement: 'browser', reasons: ['override_browser'], hard: false }
   }
 
-  // 5. The visitor asked. Honour it — including "server", which usually means
+  // 6. The visitor asked. Honour it — including "server", which usually means
   //    "my laptop is busy and I would rather spend quota than fan noise".
   if (userPreference === 'browser') {
     return { placement: 'browser', reasons: ['preference_browser'], hard: false }
@@ -286,12 +357,12 @@ export function decideRenderPlacement(input: PlacementInput): PlacementDecision 
     return withOutageGuard({ placement: 'server', reasons: ['preference_server'], hard: false }, input)
   }
 
-  // 6. The machine measured too slow (or has no WebAssembly at all).
+  // 7. The machine measured too slow (or has no WebAssembly at all).
   if (capabilityTier === 'incapable') {
     return withOutageGuard({ placement: 'server', reasons: ['capability_incapable'], hard: false }, input)
   }
 
-  // 7. The browser already tried and failed on this cartridge in this session.
+  // 8. The browser already tried and failed on this cartridge in this session.
   //    Retrying the same failure is not resilience, it is a loop.
   if (lastBrowserFailure) {
     return withOutageGuard(
@@ -300,7 +371,7 @@ export function decideRenderPlacement(input: PlacementInput): PlacementDecision 
     )
   }
 
-  // 8. Predicted to take longer than this tier tolerates in a browser tab. A
+  // 9. Predicted to take longer than this tier tolerates in a browser tab. A
   //    cartridge may set its own budget (`render.browser_max_estimate_seconds`);
   //    that is the author's knowledge of the model and wins over the tier default.
   const threshold = (
@@ -326,7 +397,7 @@ export function decideRenderPlacement(input: PlacementInput): PlacementDecision 
     )
   }
 
-  // 9. Legacy `force_backend`. Across the commons this flag overwhelmingly
+  // 10. Legacy `force_backend`. Across the commons this flag overwhelmingly
   //    encodes "WASM cannot load our BOSL2 include / our font" — a gap the
   //    wasm-bundle contract closes — not a product preference. It is therefore a
   //    SOFT hint: it only wins on a machine we already judged `limited`.
@@ -337,15 +408,16 @@ export function decideRenderPlacement(input: PlacementInput): PlacementDecision 
     )
   }
 
-  // 10. Default: the visitor's own machine, free.
+  // 11. Default: the visitor's own machine, free.
   return { placement: 'browser', reasons: ['default_browser'], hard: false }
 }
 
 /**
  * A server placement the visitor cannot reach is not a placement.
  *
- * Applied only to SOFT decisions: the three hard rules mean the browser
- * genuinely cannot produce this model, and a backend outage does not change
+ * Applied only to SOFT decisions: the four hard rules mean the browser
+ * genuinely cannot produce this model — or cannot produce it in the format that
+ * was asked for — and a backend outage does not change
  * that — it just means the render fails with a clear server error instead of a
  * confusing WASM one.
  */

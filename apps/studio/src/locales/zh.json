@@ -357,6 +357,7 @@
   "placement.reason.bundle_unsupported": "该项目使用了浏览器引擎无法运行的功能。",
   "placement.reason.bundle_unresolved": "该项目有一个我们的服务器无法解析的 include。",
   "placement.reason.bundle_unavailable": "无法加载浏览器渲染包。",
+  "placement.reason.export_format_server_only": "浏览器引擎只能生成 STL，该格式在我们的服务器上生成。",
   "placement.reason.capability_incapable": "此设备性能不足以在浏览器中渲染。",
   "placement.reason.browser_failed": "本次会话中此项目的浏览器渲染已失败过。",
   "placement.reason.estimate_over_threshold": "在浏览器标签页中渲染太慢。",

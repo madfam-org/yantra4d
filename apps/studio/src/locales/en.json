@@ -357,6 +357,7 @@
   "placement.reason.bundle_unsupported": "This project uses features the browser engine cannot run.",
   "placement.reason.bundle_unresolved": "This project has an include our server could not resolve.",
   "placement.reason.bundle_unavailable": "The browser render bundle could not be loaded.",
+  "placement.reason.export_format_server_only": "The browser engine only makes STL — this format is made on our server.",
   "placement.reason.capability_incapable": "This device is too limited for browser rendering.",
   "placement.reason.browser_failed": "A browser render already failed here this session.",
   "placement.reason.estimate_over_threshold": "Too slow to render in a browser tab.",

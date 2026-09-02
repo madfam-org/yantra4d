@@ -357,6 +357,7 @@
   "placement.reason.bundle_unsupported": "Ce projet utilise des fonctions que le moteur navigateur ne gère pas.",
   "placement.reason.bundle_unresolved": "Ce projet a un include que notre serveur n'a pas pu résoudre.",
   "placement.reason.bundle_unavailable": "Le paquet de rendu navigateur n'a pas pu être chargé.",
+  "placement.reason.export_format_server_only": "Le moteur navigateur ne produit que du STL ; ce format est produit sur notre serveur.",
   "placement.reason.capability_incapable": "Cet appareil est trop limité pour le rendu navigateur.",
   "placement.reason.browser_failed": "Un rendu navigateur a déjà échoué ici pendant cette session.",
   "placement.reason.estimate_over_threshold": "Trop lent pour un onglet de navigateur.",

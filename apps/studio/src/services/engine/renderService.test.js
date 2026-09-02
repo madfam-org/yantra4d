@@ -671,7 +671,7 @@ describe('force_backend is a SOFT hint, not a server pin', () => {
   // unconditionally would keep essentially the whole commons on the metered
   // path for a reason that no longer exists.
   // Cheap on purpose: a 3.6 s browser estimate is under both tier thresholds,
-  // so rule 8 cannot fire and the only thing left to decide this is rule 9.
+  // so rule 9 cannot fire and the only thing left to decide this is rule 10.
   const forced = {
     ...manifest,
     project: { force_backend: true },
@@ -795,6 +795,104 @@ describe('render.browser_max_estimate_seconds reaches the decision', () => {
     // A server placement never fetches a bundle: the sources stay on the server.
     expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/wasm-bundle'))).toBe(false)
     expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('an export format the browser cannot emit reaches the server', () => {
+  // The RULE lives in renderPlacement.test.js. What is pinned HERE is that the
+  // format actually reaches the decision, on the render path — the wiring that
+  // was missing.
+  //
+  // Before rule 4, a browser-placed cartridge asked for `step` rendered in the
+  // WASM worker, which writes `/output.stl` and ignores the format entirely.
+  // `handleDownloadStl` then found no URL ending in `.step`, fell through to
+  // the STL blob, and saved it as `<slug>_<mode>_<part>.step`. It also skipped
+  // both of #87's tier gates — generation and retrieval — because neither is on
+  // the browser path at all.
+
+  /** Cheap and browser-capable: nothing but the format can move this render. */
+  const cartridge = {
+    modes: [{ id: 'unit', parts: ['main'], scad_file: 'main.scad', estimate: { base_units: 1, formula: 'constant' } }],
+    parts: [{ id: 'main', render_mode: 0 }],
+    estimate_constants: { base_time: 1, per_unit: 0, per_part: 0 },
+  }
+
+  /** A Worker that fails the test loudly if anything ever constructs it. */
+  function forbidWorker() {
+    const constructed = []
+    class ForbiddenWorker {
+      constructor() {
+        constructed.push(1)
+      }
+      postMessage() {}
+      addEventListener() {}
+      removeEventListener() {}
+      terminate() {}
+    }
+    vi.stubGlobal('Worker', ForbiddenWorker)
+    return constructed
+  }
+
+  it('renders `step` on the server and never starts the WASM worker', async () => {
+    // Pin the BROWSER, so the only thing that can send this to the server is
+    // the format. Rule 4 outranks the preference; if it did not, this test
+    // would render in the worker and see no /api/render-stream at all.
+    pinBrowser()
+    const constructed = forbidWorker()
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // /api/health
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.step"}],"progress":100}',
+        ''
+      ])
+    })
+
+    const result = await renderService.renderParts('unit', {}, cartridge, {
+      project: 'demo',
+      exportFormat: 'step',
+    })
+
+    expect(result).toHaveLength(1)
+    expect(constructed).toHaveLength(0)
+
+    const urls = fetchMock.mock.calls.map(c => String(c[0]))
+    expect(urls.some(u => u.includes('/api/render-stream'))).toBe(true)
+    // A browser render would have started by fetching the cartridge's sources.
+    expect(urls.some(u => u.includes('/wasm-bundle'))).toBe(false)
+
+    // And the server was actually asked for the format the caller wanted,
+    // which is what puts the request in front of #87's tier gate.
+    const streamCall = fetchMock.mock.calls.find(c => String(c[0]).includes('/api/render-stream'))
+    expect(JSON.parse(streamCall[1].body).export_format).toBe('step')
+  })
+
+  it('leaves the same cartridge in the browser when the format is stl', async () => {
+    // The control. `useRender` forwards the export panel's format on every
+    // render and it defaults to 'stl', so an over-broad rule here would meter
+    // every render in the product.
+    pinBrowser()
+    installMockWorker()
+    vi.spyOn(globalThis, 'fetch').mockImplementation(serveBundle)
+
+    const result = await renderService.renderParts('unit', {}, cartridge, {
+      project: 'demo',
+      exportFormat: 'stl',
+    })
+
+    expect(result).toHaveLength(1)
+    expect(renderService.getRenderPlacement('demo')).toBe('browser')
+  })
+
+  it('says so in the badge, not only on the render path', () => {
+    const d = renderService.previewPlacement(cartridge, 'unit', {}, 'demo', 'step')
+    expect(d.placement).toBe('server')
+    expect(d.hard).toBe(true)
+    expect(d.reasons[0]).toBe('export_format_server_only:step')
+    // Same cartridge, ordinary preview render: still free.
+    expect(renderService.previewPlacement(cartridge, 'unit', {}, 'demo').placement).toBe('browser')
   })
 })
 

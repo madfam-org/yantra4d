@@ -32,7 +32,7 @@ import {
  *     at the moment they are looking at it.
  */
 export default function RenderPlacementControl() {
-  const { manifest, mode, params, projectSlug } = useProject()
+  const { manifest, mode, params, projectSlug, exportFormat } = useProject()
   const { t } = useLanguage()
   const { remaining, limit } = useRateLimit()
   const [preference, setPreference] = useState<PlacementPreference>(() => getPlacementPreference())
@@ -51,12 +51,15 @@ export default function RenderPlacementControl() {
 
   useEffect(() => subscribePlacementPreference(setPreference), [])
 
+  // `exportFormat` belongs here because it can DECIDE the placement: the browser
+  // kernel only ever emits STL, so picking `step` in the export panel moves the
+  // next render to the server (rule 4) and this badge has to say so.
   const decision = useMemo(
-    () => previewPlacement(manifest, mode, params, projectSlug),
+    () => previewPlacement(manifest, mode, params, projectSlug, exportFormat),
     // `probeGeneration` is a deliberate dependency: the probe changes the tier,
     // which can change the decision, and nothing else would tell us.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [manifest, mode, params, projectSlug, preference, probeGeneration],
+    [manifest, mode, params, projectSlug, exportFormat, preference, probeGeneration],
   )
 
   const onPreferenceChange = useCallback((value: string) => {

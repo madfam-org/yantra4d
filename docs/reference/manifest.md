@@ -271,6 +271,12 @@ instead. Use `browser_max_estimate_seconds` for merely *expensive*. Engines
 `cadquery`, `graph` and `implicit` are server-only by nature and need no flag at
 all.
 
+One thing that pins the server is not a manifest key at all: the **requested
+export format**. The browser kernel only ever writes STL, so an explicit
+`export_format` of anything else is a hard server placement regardless of what
+the manifest says — see
+[`docs/guides/wasm-mode.md`](../guides/wasm-mode.md#export-formats-are-a-server-capability).
+
 The full precedence table lives in
 [`docs/guides/wasm-mode.md`](../guides/wasm-mode.md).
 
@@ -501,7 +507,7 @@ The total estimated time is:
 estimated_seconds = base_time + (num_units × per_unit) + (num_parts × per_part)
 ```
 
-When the render will run in the **browser** — the default placement — the estimate is multiplied by `wasm_multiplier` (default: 3), because the WASM kernel is slower than the native one. A server placement uses the unmultiplied value. The multiplied number is also what rule 8 compares against `render.browser_max_estimate_seconds`.
+When the render will run in the **browser** — the default placement — the estimate is multiplied by `wasm_multiplier` (default: 3), because the WASM kernel is slower than the native one. A server placement uses the unmultiplied value. The multiplied number is also what rule 9 compares against `render.browser_max_estimate_seconds`.
 
 If the estimate exceeds `warning_threshold_seconds` (default: 60), what happens next depends on **who asked for the render**:
 

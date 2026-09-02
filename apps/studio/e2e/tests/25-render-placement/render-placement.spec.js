@@ -170,7 +170,7 @@ test.describe('Render placement control', () => {
   })
 
   test('a stored Browser preference beats an incapable device', async ({ page }) => {
-    // Rule 5 sits above rule 6: if the visitor insists, they get what they asked
+    // Rule 6 sits above rule 7: if the visitor insists, they get what they asked
     // for rather than a silent charge against their server quota.
     await seedCapability(page, 'incapable', 9000)
     await seedPreference(page, 'browser')

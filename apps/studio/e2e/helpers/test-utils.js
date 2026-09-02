@@ -35,16 +35,17 @@ function studioUrl(page, slug) {
 /**
  * Pin the render pipeline to the server (SSE) path so route mocks govern it.
  *
- * THE MECHANISM: the app's own `?render=backend` override — rule 4 of
+ * THE MECHANISM: the app's own `?render=backend` override — rule 5 of
  * `decideRenderPlacement()`, above the capability tier, the visitor preference
  * and every heuristic below it. This is a supported product feature (see
  * apps/studio/README.md, "The override"), so the tests pin the path the same
  * way support tells a user to, instead of lying to the app about the machine.
- * Only the three HARD rules outrank it, and none of them applies to the mocked
- * "test" cartridge.
+ * Only the four HARD rules outrank it, and none of them applies to the mocked
+ * "test" cartridge — including the export-format rule, since these navigations
+ * ask for no format.
  *
  * Why a pin is needed at all: since browser-first placement landed, the BROWSER
- * is the default (rule 10), so without this the render never touches
+ * is the default (rule 11), so without this the render never touches
  * `**\/api/render-stream` on the first attempt and every mock in the file is
  * answering a request that only arrives — if at all — through the
  * browser->server fallback, after the worker has failed on an environment that
@@ -55,7 +56,7 @@ function studioUrl(page, slug) {
  * THE SERVER. Under `staticCapabilityCeiling()` it only demotes the device to
  * `limited`, and a `limited` device still renders in the browser by default; it
  * changes the rule-8 estimate budget (15 s instead of 45 s) and arms the SOFT
- * `force_backend` hint of rule 9, nothing more. It is kept because it makes the
+ * `force_backend` hint of rule 10, nothing more. It is kept because it makes the
  * tier a property of the test rather than of the runner — GitHub-hosted runners
  * have 2 cores and the ARC pods have more — but a navigation that does NOT go
  * through goToStudio (a bare `page.goto('/project/test')`, an in-app

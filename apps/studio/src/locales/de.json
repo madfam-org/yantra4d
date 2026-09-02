@@ -357,6 +357,7 @@
   "placement.reason.bundle_unsupported": "Dieses Projekt nutzt Funktionen, die die Browser-Engine nicht ausführt.",
   "placement.reason.bundle_unresolved": "Dieses Projekt hat ein Include, das unser Server nicht auflösen konnte.",
   "placement.reason.bundle_unavailable": "Das Browser-Render-Bundle konnte nicht geladen werden.",
+  "placement.reason.export_format_server_only": "Die Browser-Engine erzeugt nur STL — dieses Format entsteht auf unserem Server.",
   "placement.reason.capability_incapable": "Dieses Gerät ist für Browser-Rendering zu schwach.",
   "placement.reason.browser_failed": "Ein Browser-Rendering ist hier in dieser Sitzung bereits fehlgeschlagen.",
   "placement.reason.estimate_over_threshold": "Zu langsam für einen Browser-Tab.",

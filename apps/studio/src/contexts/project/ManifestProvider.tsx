@@ -74,7 +74,7 @@ export interface Manifest {
    * ones it almost always meant "WASM cannot load our BOSL2 include or our
    * font" — a gap the wasm-bundle contract closes — rather than any real
    * property of the model. `force_backend` is therefore now a SOFT hint (see
-   * renderPlacement.ts, rule 9) and this is the flag that actually pins.
+   * renderPlacement.ts, rule 10) and this is the flag that actually pins.
    */
   render?: { server_only?: boolean }
   estimate_constants?: Record<string, unknown>

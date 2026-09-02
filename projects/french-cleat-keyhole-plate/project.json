@@ -1,0 +1,297 @@
+{
+  "project": {
+    "name": "French Cleat Keyhole Plate",
+    "slug": "french-cleat-keyhole-plate",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "Two one-member families, closed by one plate. The commons publishes a 45-degree French cleat wall system and a keyhole wall-hanging pattern; both have exactly one member the graph can see, and the two systems have never met — which is odd, because in a real workshop they meet constantly. A cleat wall is how a shop reconfigures; a keyhole slot is how almost every commercial appliance, speaker, router bracket and power strip already expects to hang. This plate is the adapter between them. One mode presents keyhole slots so the plate hangs on two screws; one presents keyhole studs so a keyhole-slotted device hangs directly on the cleat wall; one carries a small shelf. The cleat cross-section is inlined from french-cleat unchanged, so it drops onto the same wall strip at the same angle with the same hang gap.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Dos familias de un solo miembro, cerradas por una sola placa. El procomún publica un sistema de pared de cuña a 45 grados y un patrón de colgado por bocallave; ambos tienen exactamente un miembro visible para el grafo, y los dos sistemas nunca se habían encontrado — lo cual extraña, porque en un taller real se encuentran a cada rato. Una pared de cuñas es como un taller se reconfigura; una bocallave es como casi todo aparato comercial, bocina, soporte de router o multicontacto ya espera colgarse. Esta placa es el adaptador entre ambos. Un modo presenta las ranuras de bocallave para que la placa cuelgue de dos tornillos; otro presenta los tetones para que un aparato con bocallave cuelgue directo de la pared de cuñas; otro lleva una repisa chica. La sección de la cuña está inlineada de french-cleat sin cambios, así que embona en la misma tira de pared, al mismo ángulo y con la misma holgura de colgado.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Deux familles à un seul membre, refermées par une seule platine. Le commun publie un système mural à tasseau biseauté à 45 degrés et un motif d'accrochage en trou de serrure ; chacun n'a qu'un membre visible du graphe, et les deux systèmes ne s'étaient jamais rencontrés — ce qui étonne, car dans un atelier réel ils se rencontrent en permanence. Un mur à tasseaux, c'est ainsi qu'un atelier se reconfigure ; un trou de serrure, c'est ainsi que presque tout appareil du commerce, enceinte, support de routeur ou bloc multiprise s'attend déjà à être accroché. Cette platine est l'adaptateur entre les deux. Un mode présente les trous de serrure pour que la platine s'accroche à deux vis ; un autre présente les tétons pour qu'un appareil à trous de serrure s'accroche directement au mur à tasseaux ; un troisième porte une petite tablette. La section du tasseau est reprise telle quelle de french-cleat, de sorte qu'elle se pose sur la même latte murale, au même angle et avec le même jeu d'accrochage.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "Duas famílias de um único membro, fechadas por uma só placa. O comum publica um sistema de parede com sarrafo em bisel de 45 graus e um padrão de pendurar em fechadura; cada um tem exatamente um membro visível para o grafo, e os dois sistemas nunca haviam se encontrado — o que espanta, porque numa oficina real eles se encontram o tempo todo. Uma parede de sarrafos é como uma oficina se reconfigura; um rasgo em fechadura é como quase todo aparelho comercial, caixa de som, suporte de roteador ou régua de tomadas já espera ser pendurado. Esta placa é o adaptador entre os dois. Um modo apresenta os rasgos em fechadura para que a placa penda de dois parafusos; outro apresenta os pinos para que um aparelho com rasgos penda direto na parede de sarrafos; outro carrega uma prateleira pequena. A seção do sarrafo vem inline do french-cleat sem alteração, então encaixa na mesma régua de parede, no mesmo ângulo e com a mesma folga de pendurar.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/french-cleat-keyhole-plate.webp",
+    "difficulty": "beginner",
+    "tags": ["french-cleat", "keyhole", "wall-mount", "workshop", "shop-wall", "shelf", "adapter", "household", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "keyhole_plate",
+      "label": { "en": "Keyhole Plate", "es": "Placa de Bocallave", "fr": "Platine à trous de serrure", "pt": "Placa de Fechadura" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["keyhole_plate"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "stud_plate",
+      "label": { "en": "Stud Plate", "es": "Placa de Tetones", "fr": "Platine à tétons", "pt": "Placa de Pinos" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["stud_plate"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "cleat_shelf",
+      "label": { "en": "Cleat Shelf", "es": "Repisa de Cuña", "fr": "Tablette sur tasseau", "pt": "Prateleira de Sarrafo" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["cleat_shelf"],
+      "estimate": { "base_time": 12, "per_unit": 4, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "keyhole_plate", "render_mode": 0, "color": "#6d4c41",
+      "label": { "en": "Keyhole Plate", "es": "Placa de Bocallave", "fr": "Platine", "pt": "Placa" } },
+    { "id": "stud_plate", "render_mode": 0, "color": "#8d6e63",
+      "label": { "en": "Stud Plate", "es": "Placa de Tetones", "fr": "Platine à tétons", "pt": "Placa de Pinos" } },
+    { "id": "cleat_shelf", "render_mode": 0, "color": "#a1887f",
+      "label": { "en": "Cleat Shelf", "es": "Repisa", "fr": "Tablette", "pt": "Prateleira" } }
+  ],
+  "parameter_groups": [
+    { "id": "cleat", "label": { "en": "Cleat", "es": "Cuña", "fr": "Tasseau", "pt": "Sarrafo" } },
+    { "id": "plate", "label": { "en": "Plate", "es": "Placa", "fr": "Platine", "pt": "Placa" } },
+    { "id": "keyhole", "label": { "en": "Keyhole", "es": "Bocallave", "fr": "Trou de serrure", "pt": "Fechadura" } }
+  ],
+  "parameters": [
+    {
+      "id": "angle", "type": "slider", "default": 45.0, "min": 30.0, "max": 60.0, "step": 1.0,
+      "group": "cleat", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Cleat Angle (deg)", "es": "Ángulo de Cuña (grados)", "fr": "Angle du tasseau (deg)", "pt": "Ângulo do Sarrafo (graus)" },
+      "tooltip": {
+        "en": "45 degrees is the convention and the default. The geometry clamps the RISE rather than the run to keep the angle exact, which is what makes this plate's mating face genuinely parallel to the wall strip's rather than nearly so",
+        "es": "45 grados es la convención y el valor por defecto. La geometría limita la ALTURA en vez del avance para mantener el ángulo exacto, y eso es lo que hace que la cara de contacto de esta placa sea de verdad paralela a la de la tira de pared, y no casi",
+        "fr": "45 degrés est la convention et la valeur par défaut. La géométrie bride la MONTÉE plutôt que la course pour garder l'angle exact, ce qui rend la face d'appui de cette platine vraiment parallèle à celle de la latte murale, et non presque",
+        "pt": "45 graus é a convenção e o padrão. A geometria limita a SUBIDA em vez do avanço para manter o ângulo exato, e é isso que torna a face de contato desta placa de fato paralela à da régua de parede, e não quase"
+      }
+    },
+    {
+      "id": "cleat_h", "type": "slider", "default": 30.0, "min": 15.0, "max": 60.0, "step": 1.0,
+      "group": "cleat", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Cleat Height (mm)", "es": "Altura de Cuña (mm)", "fr": "Hauteur de tasseau (mm)", "pt": "Altura do Sarrafo (mm)" },
+      "tooltip": {
+        "en": "Height of the cleat band. Match it to the wall strip you already printed — a taller accessory cleat on a shorter wall cleat simply hangs lower",
+        "es": "Altura de la banda de cuña. Igualála a la tira de pared que ya imprimiste — una cuña de accesorio más alta sobre una de pared más baja simplemente cuelga más abajo",
+        "fr": "Hauteur de la bande du tasseau. Alignez-la sur la latte murale déjà imprimée — un tasseau d'accessoire plus haut sur une latte plus basse pend simplement plus bas",
+        "pt": "Altura da banda do sarrafo. Iguale à régua de parede que você já imprimiu — um sarrafo de acessório mais alto sobre uma régua mais baixa simplesmente pende mais embaixo"
+      }
+    },
+    {
+      "id": "cleat_depth", "type": "slider", "default": 14.0, "min": 8.0, "max": 30.0, "step": 0.5,
+      "group": "cleat", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Cleat Depth (mm)", "es": "Profundidad de Cuña (mm)", "fr": "Profondeur du tasseau (mm)", "pt": "Profundidade do Sarrafo (mm)" },
+      "tooltip": {
+        "en": "How far the cleat stands out from the plate's back. Deeper is a longer ramp and a more forgiving hang, at the cost of standing further off the wall",
+        "es": "Cuánto sobresale la cuña del respaldo de la placa. Más profunda da una rampa más larga y un colgado más tolerante, a costa de separarse más de la pared",
+        "fr": "Saillie du tasseau derrière la platine. Plus profond donne une rampe plus longue et un accrochage plus tolérant, au prix d'un plus grand écart au mur",
+        "pt": "O quanto o sarrafo se projeta atrás da placa. Mais profundo dá uma rampa mais longa e um pendurar mais tolerante, ao custo de afastar mais da parede"
+      }
+    },
+    {
+      "id": "fit", "type": "slider", "default": 0.4, "min": 0.1, "max": 1.0, "step": 0.05,
+      "group": "cleat", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Hang Gap (mm)", "es": "Holgura de Colgado (mm)", "fr": "Jeu d'accrochage (mm)", "pt": "Folga de Pendurar (mm)" },
+      "tooltip": {
+        "en": "Clearance between the two mating ramps. Too little and the plate has to be forced down the wall strip; too much and it rattles and sits low",
+        "es": "Holgura entre las dos rampas que embonan. Muy poca y la placa hay que forzarla sobre la tira; demasiada y traquetea y queda baja",
+        "fr": "Jeu entre les deux rampes en contact. Trop peu et la platine doit être forcée sur la latte ; trop et elle claque et s'assoit bas",
+        "pt": "Folga entre as duas rampas que casam. Pouca demais e a placa precisa ser forçada na régua; demais e ela chacoalha e assenta baixo"
+      }
+    },
+    {
+      "id": "plate_w", "type": "slider", "default": 120.0, "min": 40.0, "max": 300.0, "step": 5.0,
+      "group": "plate", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Plate Width (mm)", "es": "Ancho de Placa (mm)", "fr": "Largeur de platine (mm)", "pt": "Largura da Placa (mm)" },
+      "tooltip": {
+        "en": "Across the wall. The geometry raises this if the keyholes would not fit, and moves the keyholes inward if the pattern is wider than the plate — it never cuts the plate's corners off",
+        "es": "A lo ancho de la pared. La geometría lo sube si las bocallaves no caben, y mueve las bocallaves hacia adentro si el patrón es más ancho que la placa — nunca le corta las esquinas",
+        "fr": "En travers du mur. La géométrie l'augmente si les trous de serrure n'entrent pas, et rapproche les trous si l'entraxe dépasse la platine — elle ne coupe jamais les coins",
+        "pt": "Ao longo da parede. A geometria aumenta isto se as fechaduras não couberem, e move as fechaduras para dentro se o padrão for mais largo que a placa — nunca corta os cantos"
+      }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 90.0, "min": 40.0, "max": 300.0, "step": 5.0,
+      "group": "plate", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Plate Height (mm)", "es": "Alto de Placa (mm)", "fr": "Hauteur de platine (mm)", "pt": "Altura da Placa (mm)" },
+      "tooltip": {
+        "en": "The geometry raises this to hold the cleat AND a keyhole with its full drop. Raised, never trimmed: trimming would silently shorten the slot travel, which is the one dimension that decides whether the plate can be lifted off a screw at all",
+        "es": "La geometría lo sube para alojar la cuña Y una bocallave con todo su recorrido. Se sube, nunca se recorta: recortar acortaría en silencio el recorrido de la ranura, que es la única cota que decide si la placa se puede sacar del tornillo",
+        "fr": "La géométrie l'augmente pour loger le tasseau ET un trou de serrure avec sa course complète. Augmentée, jamais rognée : rogner raccourcirait en silence la course de la fente, la seule cote qui décide si la platine peut être décrochée d'une vis",
+        "pt": "A geometria aumenta isto para acomodar o sarrafo E uma fechadura com todo o seu curso. Aumentada, nunca aparada: aparar encurtaria em silêncio o curso do rasgo, que é a única medida que decide se a placa consegue sair do parafuso"
+      }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 4.0, "min": 3.0, "max": 10.0, "step": 0.5,
+      "group": "plate", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Espesor de Placa (mm)", "fr": "Épaisseur de platine (mm)", "pt": "Espessura da Placa (mm)" },
+      "tooltip": {
+        "en": "A keyhole plate carries its whole load on the material above two slots. That material is this thickness, and it is loaded in bending",
+        "es": "Una placa de bocallave carga todo su peso sobre el material que queda arriba de dos ranuras. Ese material es este espesor, y trabaja a flexión",
+        "fr": "Une platine à trous de serrure porte toute sa charge sur la matière au-dessus de deux fentes. Cette matière, c'est cette épaisseur, et elle travaille en flexion",
+        "pt": "Uma placa de fechadura carrega toda a carga no material acima de dois rasgos. Esse material é esta espessura, e ele trabalha à flexão"
+      }
+    },
+    {
+      "id": "shelf_depth", "type": "slider", "default": 60.0, "min": 20.0, "max": 120.0, "step": 5.0,
+      "group": "plate", "modes": ["cleat_shelf"],
+      "label": { "en": "Shelf Depth (mm)", "es": "Fondo de Repisa (mm)", "fr": "Profondeur de tablette (mm)", "pt": "Profundidade da Prateleira (mm)" },
+      "tooltip": {
+        "en": "Out from the wall. Every millimetre here multiplies the moment on the cleat, so a deep shelf wants a tall cleat and a thick plate",
+        "es": "Hacia afuera de la pared. Cada milímetro aquí multiplica el momento sobre la cuña, así que una repisa profunda pide cuña alta y placa gruesa",
+        "fr": "En saillie du mur. Chaque millimètre ici multiplie le moment sur le tasseau : une tablette profonde demande un tasseau haut et une platine épaisse",
+        "pt": "Para fora da parede. Cada milímetro aqui multiplica o momento sobre o sarrafo, então uma prateleira funda pede sarrafo alto e placa grossa"
+      }
+    },
+    {
+      "id": "keyhole_dia", "type": "slider", "default": 9.0, "min": 5.0, "max": 16.0, "step": 0.5,
+      "group": "keyhole", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Keyhole Head Ø (mm)", "es": "Ø de Cabeza de Bocallave (mm)", "fr": "Ø de tête du trou de serrure (mm)", "pt": "Ø da Cabeça da Fechadura (mm)" },
+      "tooltip": {
+        "en": "The big hole the screw head passes through. 9.0 mm is speaker-bracket's default and is kept identical here on purpose, so the two cartridges present the same keyhole rather than two that nearly match",
+        "es": "El agujero grande por donde pasa la cabeza del tornillo. 9.0 mm es el valor por defecto de speaker-bracket y se mantiene idéntico aquí a propósito, para que los dos cartuchos presenten la misma bocallave y no dos que casi coinciden",
+        "fr": "Le grand trou par lequel passe la tête de vis. 9,0 mm est la valeur par défaut de speaker-bracket, gardée identique ici à dessein, pour que les deux cartouches présentent le même trou de serrure et non deux presque semblables",
+        "pt": "O furo grande por onde passa a cabeça do parafuso. 9,0 mm é o padrão do speaker-bracket e é mantido idêntico aqui de propósito, para que os dois cartuchos apresentem a mesma fechadura e não duas quase iguais"
+      }
+    },
+    {
+      "id": "keyhole_slot", "type": "slider", "default": 4.5, "min": 2.5, "max": 10.0, "step": 0.25,
+      "group": "keyhole", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Keyhole Slot (mm)", "es": "Ranura de Bocallave (mm)", "fr": "Fente du trou de serrure (mm)", "pt": "Rasgo da Fechadura (mm)" },
+      "tooltip": {
+        "en": "The narrow channel the screw shank sits in. Clamped below the head diameter by the geometry — a slot as wide as its head is not a keyhole, it is a hole",
+        "es": "El canal angosto donde queda el vástago del tornillo. La geometría lo limita por debajo del diámetro de cabeza — una ranura tan ancha como su cabeza no es bocallave, es un agujero",
+        "fr": "Le canal étroit où loge la tige de la vis. Bridé sous le diamètre de tête par la géométrie — une fente aussi large que sa tête n'est pas un trou de serrure, c'est un trou",
+        "pt": "O canal estreito onde a haste do parafuso fica. Limitado abaixo do diâmetro da cabeça pela geometria — um rasgo tão largo quanto a cabeça não é fechadura, é buraco"
+      }
+    },
+    {
+      "id": "keyhole_drop", "type": "slider", "default": 12.0, "min": 4.0, "max": 30.0, "step": 0.5,
+      "group": "keyhole", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Slot Travel (mm)", "es": "Recorrido de Ranura (mm)", "fr": "Course de la fente (mm)", "pt": "Curso do Rasgo (mm)" },
+      "tooltip": {
+        "en": "How far the plate drops onto the screws. This is the dimension that decides whether the plate can be lifted off again, so the plate height is raised to fit it rather than the travel being trimmed to fit the plate",
+        "es": "Cuánto baja la placa sobre los tornillos. Es la cota que decide si la placa se puede volver a sacar, por eso el alto de la placa se sube para alojarla, en vez de recortar el recorrido para que quepa",
+        "fr": "De combien la platine descend sur les vis. C'est la cote qui décide si la platine peut être redécrochée : la hauteur de platine est donc augmentée pour l'accueillir, plutôt que la course rognée pour tenir",
+        "pt": "O quanto a placa desce sobre os parafusos. É a medida que decide se a placa pode ser retirada de novo, por isso a altura da placa é aumentada para acomodá-la, em vez de o curso ser aparado para caber"
+      }
+    },
+    {
+      "id": "pattern_dx", "type": "slider", "default": 80.0, "min": 20.0, "max": 280.0, "step": 5.0,
+      "group": "keyhole", "modes": ["keyhole_plate", "stud_plate", "cleat_shelf"],
+      "label": { "en": "Keyhole Spacing (mm)", "es": "Separación de Bocallaves (mm)", "fr": "Entraxe des trous (mm)", "pt": "Espaçamento das Fechaduras (mm)" },
+      "tooltip": {
+        "en": "Centre-to-centre between the two keyholes. Measure the device you are hanging; a pattern wider than the plate moves the holes inward rather than cutting the plate's corners off",
+        "es": "Centro a centro entre las dos bocallaves. Mide el aparato que vas a colgar; un patrón más ancho que la placa mueve los agujeros hacia adentro en vez de cortarle las esquinas",
+        "fr": "Entraxe des deux trous de serrure. Mesurez l'appareil à accrocher ; un entraxe plus large que la platine rapproche les trous au lieu de couper les coins",
+        "pt": "Centro a centro entre as duas fechaduras. Meça o aparelho que vai pendurar; um padrão mais largo que a placa move os furos para dentro em vez de cortar os cantos"
+      }
+    },
+    {
+      "id": "stud_head_h", "type": "slider", "default": 3.0, "min": 1.5, "max": 6.0, "step": 0.25,
+      "group": "keyhole", "modes": ["stud_plate"],
+      "label": { "en": "Stud Standoff (mm)", "es": "Separación de Tetón (mm)", "fr": "Déport du téton (mm)", "pt": "Recuo do Pino (mm)" },
+      "tooltip": {
+        "en": "Gap between the plate face and the underside of the stud head — this is what the hung device's back plate sits in. Match it to that plate's thickness plus a little",
+        "es": "Hueco entre la cara de la placa y la parte baja de la cabeza del tetón — ahí se aloja el respaldo del aparato colgado. Ajústalo al espesor de ese respaldo, más un poco",
+        "fr": "Écart entre la face de la platine et le dessous de la tête du téton — c'est là que se loge le dos de l'appareil accroché. Ajustez-le à l'épaisseur de ce dos, plus un peu",
+        "pt": "Vão entre a face da placa e a parte de baixo da cabeça do pino — é aí que assenta o dorso do aparelho pendurado. Ajuste à espessura desse dorso, mais um pouco"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_cleat_plate", "mode": "keyhole_plate",
+      "label": { "en": "Standard Plate (120 x 90)", "es": "Placa Estándar (120 x 90)", "fr": "Platine standard (120 x 90)", "pt": "Placa Padrão (120 x 90)" },
+      "values": { "plate_w": 120.0, "plate_h": 90.0, "angle": 45.0, "keyhole_dia": 9.0, "keyhole_slot": 4.5 }
+    },
+    {
+      "id": "speaker_bracket_mate", "mode": "stud_plate",
+      "label": { "en": "Studs for speaker-bracket", "es": "Tetones para speaker-bracket", "fr": "Tétons pour speaker-bracket", "pt": "Pinos para speaker-bracket" },
+      "values": { "keyhole_dia": 9.0, "keyhole_slot": 4.5, "stud_head_h": 3.0, "pattern_dx": 80.0 }
+    },
+    {
+      "id": "wide_appliance", "mode": "keyhole_plate",
+      "label": { "en": "Wide Appliance (200 mm pattern)", "es": "Aparato Ancho (patrón de 200 mm)", "fr": "Appareil large (entraxe 200 mm)", "pt": "Aparelho Largo (padrão de 200 mm)" },
+      "values": { "plate_w": 240.0, "pattern_dx": 200.0, "plate_h": 110.0, "wall": 5.0 }
+    },
+    {
+      "id": "tool_shelf", "mode": "cleat_shelf",
+      "label": { "en": "Tool Shelf (60 mm deep)", "es": "Repisa de Herramienta (60 mm)", "fr": "Tablette à outils (60 mm)", "pt": "Prateleira de Ferramenta (60 mm)" },
+      "values": { "shelf_depth": 60.0, "plate_w": 140.0, "cleat_h": 34.0, "wall": 5.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 3.5",
+      "severity": "warning",
+      "message": {
+        "en": "A keyhole plate carries its whole load on the material above two slots, in bending. Below 3.5 mm that material is a couple of perimeters and it will tear out of the slot rather than break",
+        "es": "Una placa de bocallave carga todo su peso, a flexión, sobre el material arriba de dos ranuras. Por debajo de 3.5 mm ese material son un par de perímetros y se desgarrará por la ranura antes que romperse",
+        "fr": "Une platine à trous de serrure porte toute sa charge, en flexion, sur la matière au-dessus de deux fentes. En dessous de 3,5 mm, cette matière fait deux périmètres et s'arrachera par la fente plutôt que de casser",
+        "pt": "Uma placa de fechadura carrega toda a carga, à flexão, no material acima de dois rasgos. Abaixo de 3,5 mm esse material são dois perímetros e vai rasgar pelo rasgo em vez de quebrar"
+      }
+    },
+    {
+      "expression": "keyhole_slot <= 10.0",
+      "severity": "warning",
+      "message": {
+        "en": "The slot must stay narrower than the head it hangs from; the geometry clamps it below the head diameter, because a slot as wide as its head is a hole and the plate simply falls off",
+        "es": "La ranura debe seguir siendo más angosta que la cabeza de la que cuelga; la geometría la limita por debajo del diámetro de cabeza, porque una ranura tan ancha como su cabeza es un agujero y la placa simplemente se cae",
+        "fr": "La fente doit rester plus étroite que la tête dont elle dépend ; la géométrie la bride sous le diamètre de tête, car une fente aussi large que sa tête est un trou et la platine tombe tout simplement",
+        "pt": "O rasgo deve permanecer mais estreito que a cabeça da qual pende; a geometria o limita abaixo do diâmetro da cabeça, porque um rasgo tão largo quanto a cabeça é um buraco e a placa simplesmente cai"
+      }
+    },
+    {
+      "expression": "shelf_depth <= 90.0",
+      "severity": "warning",
+      "message": {
+        "en": "Every millimetre of shelf depth multiplies the moment on the cleat. Past about 90 mm a printed cleat band is the weak point, not the plate",
+        "es": "Cada milímetro de fondo de repisa multiplica el momento sobre la cuña. Pasados unos 90 mm la banda de cuña impresa es el punto débil, no la placa",
+        "fr": "Chaque millimètre de profondeur de tablette multiplie le moment sur le tasseau. Au-delà d'environ 90 mm, c'est la bande du tasseau imprimée qui est le point faible, pas la platine",
+        "pt": "Cada milímetro de profundidade da prateleira multiplica o momento sobre o sarrafo. Passados uns 90 mm, a banda do sarrafo impressa é o ponto fraco, não a placa"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [160, 130, 110] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal", "fr": "De face", "pt": "Frontal" }, "position": [200, 0, 45] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 13,
+    "fn_factor": 48, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "french_cleat_45",
+        "label": { "en": "45° French Cleat", "es": "Cuña Francesa a 45°", "fr": "Tasseau biseauté à 45°", "pt": "Sarrafo em Bisel a 45°" },
+        "geometry_type": "rail",
+        "standard": "French cleat 45 deg",
+        "parameters": ["angle", "cleat_h", "cleat_depth", "fit"],
+        "compatible_with": ["french-cleat", "grid-hub"]
+      },
+      {
+        "id": "wall_keyhole_pattern",
+        "label": { "en": "Wall Keyhole Pattern", "es": "Patrón de Bocallave de Pared", "fr": "Motif de trous de serrure muraux", "pt": "Padrão de Fechadura de Parede" },
+        "geometry_type": "bolt_pattern",
+        "standard": "Wall Keyhole",
+        "parameters": ["keyhole_dia", "keyhole_slot", "keyhole_drop", "pattern_dx", "stud_head_h"],
+        "compatible_with": ["speaker-bracket"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A wall that can be rearranged in an afternoon is the difference between a room that serves one activity and a room that serves a household, a class, a repair café and a workshop in the same week. The French cleat is the oldest and cheapest way to get that: one angled strip on the wall and everything else hangs, moves and comes off without a drill. What has always broken the pattern is everything bought rather than made — a speaker, a power strip, a router, a first-aid box, a radio — because those things hang on keyholes, and a keyhole needs a screw in a wall. This plate is the joint between the reconfigurable wall and the manufactured object, so a rented room, a shared space or a building nobody is allowed to drill into can still be organised and reorganised. It is the smallest object in this tranche and it closes two families at once, which is a fair summary of why unglamorous adapters are worth building at all.",
+      "es": "Una pared que se puede reacomodar en una tarde es la diferencia entre un cuarto que sirve para una actividad y uno que sirve a una casa, una clase, un café de reparación y un taller en la misma semana. La cuña francesa es la forma más antigua y barata de lograrlo: una tira en ángulo en la pared y todo lo demás se cuelga, se mueve y se quita sin taladro. Lo que siempre ha roto el patrón es todo lo comprado en vez de hecho — una bocina, un multicontacto, un router, un botiquín, un radio — porque esas cosas cuelgan de bocallaves, y una bocallave necesita un tornillo en la pared. Esta placa es la unión entre la pared reconfigurable y el objeto manufacturado, para que un cuarto rentado, un espacio compartido o un edificio en el que no se permite taladrar se puedan organizar y reorganizar igual. Es el objeto más chico de esta tanda y cierra dos familias a la vez, que es un buen resumen de por qué vale la pena construir adaptadores sin gracia.",
+      "fr": "Un mur que l'on peut réagencer en une après-midi, c'est la différence entre une pièce qui sert à une activité et une pièce qui sert à un foyer, à un cours, à un repair café et à un atelier dans la même semaine. Le tasseau biseauté est la façon la plus ancienne et la moins chère d'y parvenir : une latte inclinée au mur, et tout le reste s'accroche, se déplace et se retire sans perceuse. Ce qui a toujours cassé le motif, c'est tout ce qui est acheté plutôt que fabriqué — une enceinte, un bloc multiprise, un routeur, une trousse de secours, une radio — parce que ces objets s'accrochent par des trous de serrure, et un trou de serrure exige une vis dans le mur. Cette platine est la jonction entre le mur reconfigurable et l'objet manufacturé, pour qu'une pièce louée, un espace partagé ou un bâtiment où l'on n'a pas le droit de percer puissent tout de même s'organiser et se réorganiser. C'est le plus petit objet de cette tranche et il referme deux familles à la fois, ce qui résume assez bien pourquoi les adaptateurs sans éclat valent la peine d'être construits.",
+      "pt": "Uma parede que se pode rearranjar numa tarde é a diferença entre um cômodo que serve a uma atividade e um que serve a uma casa, uma aula, um café de reparo e uma oficina na mesma semana. O sarrafo em bisel é o jeito mais antigo e barato de conseguir isso: uma régua inclinada na parede e todo o resto pendura, move e sai sem furadeira. O que sempre quebrou o padrão é tudo o que é comprado em vez de feito — uma caixa de som, uma régua de tomadas, um roteador, uma caixa de primeiros socorros, um rádio — porque essas coisas penduram por fechaduras, e uma fechadura precisa de um parafuso na parede. Esta placa é a junta entre a parede reconfigurável e o objeto manufaturado, para que um quarto alugado, um espaço compartilhado ou um prédio onde não se pode furar ainda assim possam ser organizados e reorganizados. É o menor objeto desta leva e fecha duas famílias de uma vez, o que resume bem por que adaptadores sem graça valem a pena."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["french-cleat", "keyhole", "wall-mount", "workshop", "shop-wall", "shelf", "adapter", "household", "hyperobject", "commons"]
+}

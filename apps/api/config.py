@@ -84,6 +84,13 @@ class AppConfig:
     JANUA_JWKS_URL: str = field(init=False)
     JANUA_AUDIENCE: str = field(default_factory=lambda: os.getenv("JANUA_AUDIENCE", "yantra4d-api"))
     AUTH_ENABLED: bool = field(default_factory=lambda: os.getenv("AUTH_ENABLED", "true").lower() == "true")
+    # Tier an auth-disabled HARNESS asks to be gated as. Opt-in, empty by
+    # default, and only ever honoured while AUTH_ENABLED is false — see
+    # services/core/tier_service.harness_tier_override() and docs/AUTH.md.
+    # Exists because a test harness that must exercise real CadQuery renders
+    # cannot do so as the anonymous guest, and the alternative (FLASK_DEBUG)
+    # drags in the reloader and the interactive debugger.
+    HARNESS_TIER: str = field(default_factory=lambda: os.getenv("HARNESS_TIER", "").strip().lower())
     JWT_ALGORITHMS: list = field(default_factory=lambda: [a.strip().upper() for a in os.getenv("JWT_ALGORITHMS", "RS256").split(",") if a.strip()])
 
     # JWKS cache windows (stale-while-revalidate) — see docs/AUTH.md "JWKS Caching".

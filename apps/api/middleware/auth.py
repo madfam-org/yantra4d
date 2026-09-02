@@ -356,6 +356,13 @@ def effective_tier(resolve=None) -> str:
     the generation-time and retrieval-time export-format gates cannot seat the
     same caller on different tiers.
 
+    A harness that needs a tier without needing debug says so explicitly with
+    HARNESS_TIER, which harness_tier_override() only honours while auth is off
+    and which is empty everywhere it is not deliberately set — so auth-off tests
+    still see guest refusals. The nightly browser audit sets it because driving
+    real CadQuery renders is the entire point of that suite; run #168 had every
+    gridfinity render answered with the studio's upgrade prompt instead.
+
     `resolve` lets a caller hand in its own `resolve_tier` binding; the render
     routes pass their module-level one so the tier they gate on and the tier
     they report in `X-RateLimit-Tier` stay the same object.
@@ -365,8 +372,14 @@ def effective_tier(resolve=None) -> str:
 
         resolve = resolve_tier
 
-    if not Config.AUTH_ENABLED and current_app.debug:
-        return "madfam"
+    if not Config.AUTH_ENABLED:
+        if current_app.debug:
+            return "madfam"
+        from services.core.tier_service import harness_tier_override
+
+        harness_tier = harness_tier_override()
+        if harness_tier:
+            return harness_tier
     return resolve(getattr(request, "auth_claims", None))
 
 

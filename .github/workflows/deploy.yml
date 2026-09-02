@@ -570,7 +570,12 @@ jobs:
     name: Post-Deploy Health Check
     runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: [commit-digests]
-    if: needs.commit-digests.result == 'success'
+    # always() is load-bearing: on a push that builds only one service the other
+    # build jobs are skipped, and GitHub propagates "skipped" down the needs
+    # chain to every dependent that does not use a status-check function — so
+    # without it this job was skipped on every backend-only deploy even though
+    # commit-digests had succeeded (deploy #547, 2026-09-02).
+    if: always() && needs.commit-digests.result == 'success'
     steps:
       - name: Wait for backend health
         run: |

@@ -26,6 +26,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   positioning. `multi_num_racks` parameter (slider 2–5), preset, and
   `multi_rack_body` part (render_mode 5). 1494/1494 studio tests passing.
 
+### Changed
+- **CI Skips the Browser Matrix on Documentation-Only PRs** — every job in
+  `ci.yml` ran on every pull request, so a README-only change queued the full
+  ten-shard Playwright matrix — ten jobs with a 30 minute cap each — on the same
+  shared self-hosted pool a production deploy waits in. A new `changes` job now
+  classifies each pull request first: **docs-only** (every changed file is a
+  `*.md`, or under `docs/`, `apps/docs/`, `runbooks/`, or `.github/*.md`) skips
+  the browser matrix and its report, the studio, landing and admin builds, the
+  backend suite and the geometric parity check; **anything else is code** and
+  runs exactly what it ran before. A pull request touching documentation *and*
+  code is code, and a push to `main` always runs everything. The classification
+  uses `dorny/paths-filter` pinned to a commit, with
+  `predicate-quantifier: every` so a file counts as code unless every
+  documentation pattern excludes it, and the decision step fails closed: only a
+  filter that ran and answered exactly `false` skips anything. No test was
+  skipped, disabled or quarantined — the suite a code change runs is unchanged.
+- **`ci-success` Can Now Actually Fail** — the single required check depended on
+  nine jobs with the default `if: success()`, which meant a dependency that was
+  skipped *or failed* left `ci-success` itself skipped, and a skipped required
+  check is treated as passing. It now runs with `if: always()` and inspects
+  every dependency's result: `failure` or `cancelled` anywhere fails it,
+  `skipped` counts as passing. `cancelled` matters because of the per-PR
+  concurrency group added in #84 — a superseded run must not report green.
+  `manifest-sync` and `spec-conformance` were added to its `needs`: both already
+  ran on every pull request and spec-conformance documents itself as blocking,
+  but neither was wired into the one required check, so neither could block a
+  merge.
+
 ### Fixed
 - **Auto-Generate No Longer Opens a Blocking Modal** — The studio renders on
   load and after every parameter change (the debounced effect in

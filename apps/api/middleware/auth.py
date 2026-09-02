@@ -4,23 +4,24 @@ Provides decorators for route-level auth enforcement.
 """
 import functools
 import logging
+import threading
+import time
 
 import jwt
 from flask import current_app, request
-from jwt import PyJWKClient
+from jwt import PyJWK, PyJWKClient, PyJWKSet
+from jwt.exceptions import PyJWKClientError
 
 from config import Config
 from utils.route_helpers import error_response
 
 logger = logging.getLogger(__name__)
 
-JWKS_CACHE_LIFESPAN = 3600  # seconds
-
 # Lazy-initialized JWKS client (created on first use)
 _jwk_client = None
 
 
-def _get_jwk_client():
+def _get_jwk_client() -> PyJWKClient:
     global _jwk_client
     if _jwk_client is None:
         # An explicit User-Agent: PyJWKClient's urllib default ("Python-urllib/x.y")
@@ -30,11 +31,182 @@ def _get_jwk_client():
         # the Fashion Cabinet live-body seam; same fix as FC's body_render.py.
         _jwk_client = PyJWKClient(
             Config.JANUA_JWKS_URL,
-            cache_keys=True,
-            lifespan=JWKS_CACHE_LIFESPAN,
+            # This module owns the JWKS cache (see _JwksCache below), so
+            # PyJWKClient's own two tiers are switched off. Two caches over the
+            # same key set is how "serve the last-known-good set" turns into
+            # "serve whichever copy happened to expire last", and PyJWKClient's
+            # own policy is exactly the one being replaced: once its cache
+            # expires, a failed fetch raises and every authenticated request
+            # dies with it.
+            cache_keys=False,
+            cache_jwk_set=False,
             headers={"User-Agent": "yantra4d-api/1.0 (+https://yantra4d.com)"},
         )
     return _jwk_client
+
+
+# ──────────────────────────────────────────────
+# JWKS cache: stale-while-revalidate
+# ──────────────────────────────────────────────
+#
+# A Janua outage lasting longer than the cache lifespan used to take down all
+# authenticated traffic: PyJWKClient re-fetches the moment its cache expires,
+# the fetch raises, and `decode_token` raises with it — every bearer rejected,
+# for a signing key that had not actually changed.
+#
+# So the last successfully fetched key set is kept and kept serving while
+# refreshes fail. The policy, in order:
+#
+#   * fresh (age < JWKS_CACHE_LIFESPAN)  -> serve, no network call.
+#   * expired                            -> try to refresh; on failure log a
+#                                           WARNING, mark the set stale, and
+#                                           serve it anyway.
+#   * `kid` not in the cached set        -> try to refresh (that is what a key
+#                                           rotation looks like from here),
+#                                           then re-match.
+#   * stale beyond JWKS_STALE_MAX_AGE    -> fail closed. Keys nobody has been
+#                                           able to re-confirm for a day stop
+#                                           being trusted.
+#   * never fetched successfully at all  -> fail closed, unchanged: there is no
+#                                           last-known-good set to fall back to.
+#
+# After a failed refresh the next attempt waits JWKS_REFRESH_BACKOFF seconds, so
+# a flapping IdP gets one attempt per window rather than one per request, and the
+# whole path is single-flighted under a lock so a slow endpoint is dialled once,
+# not once per concurrent request.
+
+
+class _JwksCache:
+    """Last-known-good JWKS plus the bookkeeping the SWR policy needs."""
+
+    def __init__(self) -> None:
+        self.reset()
+
+    def reset(self) -> None:
+        self.jwk_set: PyJWKSet | None = None
+        self.fetched_at: float = 0.0    # monotonic() of the last SUCCESSFUL fetch
+        self.next_retry_at: float = 0.0  # monotonic() before which no retry is due
+        self.stale: bool = False
+        self.last_error: str | None = None
+
+    def age(self, now: float) -> float:
+        return now - self.fetched_at
+
+
+_jwks_cache = _JwksCache()
+_jwks_lock = threading.Lock()
+
+
+def reset_jwks_cache() -> None:
+    """Drop the cached client and key set, forcing a fetch on the next token."""
+    global _jwk_client
+    with _jwks_lock:
+        _jwk_client = None
+        _jwks_cache.reset()
+
+
+def _match_kid(jwk_set: PyJWKSet | None, kid: str | None) -> PyJWK | None:
+    """Find the signing key for `kid`, using PyJWKClient's own filter."""
+    if jwk_set is None or not kid:
+        return None
+    for key in jwk_set.keys:
+        if key.key_id == kid and key.public_key_use in ("sig", None):
+            return key
+    return None
+
+
+def _refresh_jwks(cache: _JwksCache, now: float) -> bool:
+    """Fetch a fresh key set into `cache`. True on success.
+
+    On failure the last-known-good set is left in place untouched — the caller
+    decides whether serving it is still permitted.
+    """
+    try:
+        data = _get_jwk_client().fetch_data()
+        if not isinstance(data, dict):
+            raise PyJWKClientError("The JWKS endpoint did not return a JSON object")
+        jwk_set = PyJWKSet.from_dict(data)
+    except Exception as exc:
+        cache.last_error = str(exc)
+        # Space out retries from the failure, not from the last attempt: a
+        # healthy cache expiring on schedule must not be held back by a backoff
+        # window that only a failure should ever open.
+        cache.next_retry_at = now + float(Config.JWKS_REFRESH_BACKOFF)
+        if cache.jwk_set is None:
+            logger.warning(
+                "JWKS fetch failed and no key set has ever been cached — "
+                "failing closed (url=%s): %s",
+                Config.JANUA_JWKS_URL, exc,
+            )
+        else:
+            cache.stale = True
+            logger.warning(
+                "JWKS refresh failed — serving the last-known-good key set "
+                "(age=%.0fs, stale ceiling=%.0fs, next attempt in %.0fs): %s",
+                cache.age(now),
+                float(Config.JWKS_STALE_MAX_AGE),
+                float(Config.JWKS_REFRESH_BACKOFF),
+                exc,
+            )
+        return False
+
+    was_stale = cache.stale
+    cache.jwk_set = jwk_set
+    cache.fetched_at = now
+    cache.next_retry_at = 0.0
+    cache.stale = False
+    cache.last_error = None
+    if was_stale:
+        logger.info("JWKS refresh recovered — cache is current again.")
+    return True
+
+
+def _get_signing_key(kid: str | None) -> PyJWK:
+    """Return the signing key for `kid`, refreshing the JWKS cache as policy allows."""
+    lifespan = float(Config.JWKS_CACHE_LIFESPAN)
+    stale_max_age = float(Config.JWKS_STALE_MAX_AGE)
+
+    with _jwks_lock:
+        cache = _jwks_cache
+        now = time.monotonic()
+
+        refreshed = False
+        if cache.jwk_set is None:
+            # Nothing has ever been cached, so there is no stale set to fall
+            # back to. Fail closed, exactly as before this cache existed.
+            if not _refresh_jwks(cache, now):
+                raise PyJWKClientError(
+                    "JWKS fetch failed and no key set has ever been cached "
+                    f"(url={Config.JANUA_JWKS_URL}): {cache.last_error}"
+                )
+            refreshed = True
+        elif cache.age(now) >= lifespan and now >= cache.next_retry_at:
+            refreshed = _refresh_jwks(cache, now)
+
+        key = _match_kid(cache.jwk_set, kid)
+        # An unknown kid is what a key rotation looks like from in here, so it
+        # earns a refresh attempt even inside the fresh window — bounded by the
+        # same backoff, so a stream of bogus kids cannot turn into a stream of
+        # outbound fetches, and skipped outright when this call already fetched
+        # the set the kid is missing from.
+        if (
+            key is None
+            and not refreshed
+            and now >= cache.next_retry_at
+            and _refresh_jwks(cache, now)
+        ):
+            key = _match_kid(cache.jwk_set, kid)
+
+        if cache.stale and cache.age(now) > stale_max_age:
+            raise PyJWKClientError(
+                f"JWKS has been unreachable for {cache.age(now):.0f}s, past the "
+                f"{stale_max_age:.0f}s stale ceiling — refusing to validate against "
+                f"keys nobody has been able to re-confirm. Last error: {cache.last_error}"
+            )
+
+        if key is None:
+            raise PyJWKClientError(f'Unable to find a signing key that matches: "{kid}"')
+        return key
 
 
 def decode_token(token: str) -> dict:
@@ -43,8 +215,8 @@ def decode_token(token: str) -> dict:
     Returns the decoded claims dict.
     Raises jwt.exceptions.PyJWTError on any validation failure.
     """
-    jwk_client = _get_jwk_client()
-    signing_key = jwk_client.get_signing_key_from_jwt(token)
+    header = jwt.get_unverified_header(token)
+    signing_key = _get_signing_key(header.get("kid"))
     claims = jwt.decode(
         token,
         signing_key.key,

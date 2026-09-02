@@ -5,6 +5,12 @@ on:
     branches: [main]
     paths:
       - 'apps/api/**'
+      # The render worker ships inside the backend image
+      # (apps/api/Dockerfile: `COPY apps/worker/ /app/worker/`), so a
+      # worker-only change is a backend image change. Without this the
+      # workflow never starts and the new worker code never reaches the
+      # cluster.
+      - 'apps/worker/**'
       - 'apps/studio/**'
       - 'apps/landing/**'
       - 'apps/admin/**'
@@ -71,6 +77,7 @@ jobs:
           filters: |
             backend:
               - 'apps/api/**'
+              - 'apps/worker/**'
               - 'projects/**'
               - 'libs/**'
               - 'packages/schemas/**'

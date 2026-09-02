@@ -21,6 +21,7 @@ from services.engine.render_contract import (
     RENDER_EVENT_CANCELLED,
     RENDER_EVENT_COMPLETE,
     RENDER_EVENT_ERROR,
+    RENDER_EVENT_JOB,
     RENDER_EVENT_PART_DONE,
     RENDER_STREAM_SCHEMA_VERSION,
     build_render_event,
@@ -40,6 +41,13 @@ ACTIVE_RENDER_JOBS_KEY = "yantra_render_active_jobs"
 ACTIVE_RENDER_META_PREFIX = "yantra_render_job_meta:"
 CANCEL_ALL_KEY = "yantra_render_cancel_all"
 CANCEL_JOB_PREFIX = "yantra_render_cancel_job:"
+# Request-scoped cancel flag. A multi-part render enqueues one job per part
+# *sequentially* — part i+1 is not queued until part i finishes — so marking the
+# job_ids issued so far cannot stop the parts that have not been queued yet.
+# This flag is what closes that gap: the render loop checks it before enqueuing
+# each part and stops the whole request. It is also what `cancel_all_renders()`
+# used CANCEL_ALL_KEY for, minus the blast radius.
+CANCEL_REQUEST_PREFIX = "yantra_render_cancel_request:"
 CANCEL_TTL_SECONDS = 120
 ACTIVE_JOB_META_TTL = 300
 CANCEL_EVENT_TTL_SECONDS = 30
@@ -510,10 +518,22 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
     project_slug = payload['project_slug']
     static_stl_map = payload.get('static_stl_map', {})
     
+    request_id = payload.get("request_id")
+
     generated_parts = []
     combined_log = ""
     cache_hits, cache_total = 0, 0
+
+    clear_request_cancel(request_id)
+
     for part in parts_to_render:
+        # /api/render answers only when every part is done, so a caller can
+        # cancel it only by supplying its own `request_id` up front — which is
+        # exactly what the field is for on this path.
+        if is_request_cancelled(request_id):
+            combined_log += f"[{part}] INFO: Render cancelled by user request\n"
+            break
+
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
             generated_parts.append(static_result[0])
@@ -611,8 +631,35 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
 
     num_parts = len(parts_to_render)
     generated_parts = []
+    request_id = payload.get("request_id")
+    job_ids: list[str] = []
+
+    # A fresh render supersedes any cancel still flagged against a reused
+    # request_id, so a client that supplies a fixed one is not stuck cancelled
+    # for the rest of CANCEL_TTL_SECONDS.
+    clear_request_cancel(request_id)
+
+    # Hand the client its cancellation identity before any work starts. The
+    # request_id is usable immediately and covers the parts that do not exist
+    # yet; job_ids fill in below as each part is queued.
+    yield _sse_event(build_render_event(
+        RENDER_EVENT_JOB,
+        request_id=request_id,
+        job_ids=list(job_ids),
+    ))
 
     for i, part in enumerate(parts_to_render):
+        # Parts are queued one at a time, so this is the only place a cancel can
+        # stop the parts that have not been queued yet.
+        if is_request_cancelled(request_id):
+            yield _sse_event(build_render_event(
+                RENDER_EVENT_CANCELLED,
+                part=part,
+                message="Render cancelled by user request",
+                reason="user_request",
+            ))
+            break
+
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
             generated_parts.append(static_result[0])
@@ -697,6 +744,12 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             "part_weight": part_weight,
         }
         r.rpush(RENDER_QUEUE, json.dumps(task))
+        job_ids.append(job_id)
+        yield _sse_event(build_render_event(
+            RENDER_EVENT_JOB,
+            request_id=request_id,
+            job_ids=list(job_ids),
+        ))
 
         done = False
         part_deadline = time.time() + RENDER_STREAM_PART_TIMEOUT_SECONDS
@@ -773,72 +826,188 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
 
 # ──────────────────────────────────────────────
 # Cancellation
+#
+# Three scopes, one mechanism. The worker (apps/worker/render_worker.py::
+# _is_cancelled) polls two Redis keys for every job it runs: the global
+# CANCEL_ALL_KEY and the per-job CANCEL_JOB_PREFIX + job_id. Scoped cancellation
+# therefore needs no worker change — it sets the per-job key the worker already
+# honours, for the jobs it is allowed to touch, instead of the global one.
+#
+# The third key, CANCEL_REQUEST_PREFIX + request_id, is read here rather than by
+# the worker: a multi-part render enqueues its parts one at a time, so stopping
+# a request means stopping the render loop from queueing the parts that do not
+# exist yet.
 # ──────────────────────────────────────────────
 
-def cancel_all_renders() -> bool:
-    """Cancel any active render processes across all engines."""
-    cancelled = False
-    queued_jobs: dict[str, str] = {}
-    now = int(time.time())
 
-    # Mark a global cancel signal for safety if cancellation happens mid-process.
+def _request_cancel_key(request_id: str) -> str:
+    return f"{CANCEL_REQUEST_PREFIX}{request_id}"
+
+
+def is_request_cancelled(request_id: str | None) -> bool:
+    """True while a scoped cancel is outstanding for this render request."""
+    if not request_id:
+        return False
     try:
-        r.set(CANCEL_ALL_KEY, str(now), ex=CANCEL_EVENT_TTL_SECONDS)
-    except Exception as e:
-        logger.warning("Render cancel requested but Redis is unavailable: %s", e)
+        return bool(r.get(_request_cancel_key(request_id)))
+    except Exception:
+        # Fail open: an unreachable Redis must not silently abort live renders.
+        logger.debug("Failed to read cancel flag for request %s", request_id, exc_info=True)
         return False
 
-    # Cancel queued jobs by stripping them from the queue and notifying listeners.
+
+def clear_request_cancel(request_id: str | None) -> None:
+    """Drop any stale cancel flag before a request's first part is queued.
+
+    `request_id` is caller-suppliable, so a client that reuses a fixed one would
+    otherwise inherit its own previous cancellation for CANCEL_TTL_SECONDS and
+    watch every later render die instantly. A new render supersedes an old
+    cancel.
+    """
+    if not request_id:
+        return
     try:
-        queued_tasks = r.lrange(RENDER_QUEUE, 0, -1)
-        for raw_task in queued_tasks:
-            if not raw_task:
-                continue
-            try:
-                task = json.loads(raw_task)
-            except json.JSONDecodeError:
-                continue
+        r.delete(_request_cancel_key(request_id))
+    except Exception:
+        logger.debug("Failed to clear cancel flag for request %s", request_id, exc_info=True)
 
-            job_id = task.get("job_id")
-            part = task.get("part")
-            if not job_id:
-                continue
 
-            queued_jobs[job_id] = part or ""
-            r.lrem(RENDER_QUEUE, 0, raw_task)
-            _notify_cancelled(job_id, part, emit_final=True)
-            cancelled = True
-        if queued_tasks:
-            logger.info("Cancel queue prune: removed %d pending render tasks", len(queued_jobs))
+def _iter_queued_tasks():
+    """Yield (raw_entry, parsed_task) for each readable entry in the render queue."""
+    try:
+        raw_tasks = r.lrange(RENDER_QUEUE, 0, -1)
     except Exception as e:
-        logger.warning("Failed to clear pending render queue items: %s", e)
+        logger.warning("Failed to read pending render queue items: %s", e)
+        return
+    for raw_task in raw_tasks:
+        if not raw_task:
+            continue
+        try:
+            task = json.loads(raw_task)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(task, dict):
+            yield raw_task, task
 
-    # Cancel active jobs currently being processed in the worker.
+
+def _active_job_meta(job_id: str) -> dict:
+    """Return the worker's metadata for an active job, or {} when unreadable."""
+    try:
+        meta = r.get(f"{ACTIVE_RENDER_META_PREFIX}{job_id}")
+    except Exception:
+        logger.debug("Failed to read meta for active render %s", job_id, exc_info=True)
+        return {}
+    if not meta:
+        return {}
+    try:
+        parsed = json.loads(meta)
+    except json.JSONDecodeError:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _cancel_matching(matches) -> list[str]:
+    """Cancel every queued and active job the `matches(task)` predicate accepts.
+
+    Queued entries are pruned from RENDER_QUEUE so they never start; active jobs
+    get the per-job cancel key the worker polls. Both are told on their render
+    channel. `matches` receives the queue task dict, or for an active job its
+    worker metadata with `job_id` merged in — a job whose metadata has expired
+    matches nothing but a job_id, which is the conservative direction: we cancel
+    only what we can still attribute.
+
+    Returns the job_ids actually marked.
+    """
+    cancelled: list[str] = []
+
+    for raw_task, task in _iter_queued_tasks():
+        job_id = task.get("job_id")
+        if not job_id or not matches(task):
+            continue
+        try:
+            r.lrem(RENDER_QUEUE, 0, raw_task)
+        except Exception as e:
+            logger.warning("Failed to prune queued render %s: %s", job_id, e)
+            continue
+        _notify_cancelled(job_id, task.get("part"), emit_final=True)
+        cancelled.append(job_id)
+
     try:
         active_jobs = [jid for jid in r.smembers(ACTIVE_RENDER_JOBS_KEY) if jid]
     except Exception as e:
         logger.warning("Failed to read active render jobs for cancellation: %s", e)
         active_jobs = []
+
     for job_id in active_jobs:
+        if job_id in cancelled:
+            continue
+        meta = _active_job_meta(job_id)
+        if not matches({**meta, "job_id": job_id}):
+            continue
         try:
             _set_job_cancel(job_id)
-            meta = r.get(f"{ACTIVE_RENDER_META_PREFIX}{job_id}")
-            part = ""
-            if meta:
-                try:
-                    part = json.loads(meta).get("part", "")
-                except json.JSONDecodeError:
-                    pass
-            queued_jobs.setdefault(job_id, part)
-            _notify_cancelled(job_id, part, emit_final=True)
-            cancelled = True
         except Exception as e:
             logger.warning("Failed to mark active render %s for cancellation: %s", job_id, e)
-
-    if cancelled:
-        logger.info("Render cancel requested; marked %d jobs", len(queued_jobs))
+            continue
+        _notify_cancelled(job_id, meta.get("part", ""), emit_final=True)
+        cancelled.append(job_id)
 
     return cancelled
+
+
+def cancel_render_jobs(job_ids) -> list[str]:
+    """Cancel exactly the named jobs, and nothing else.
+
+    `job_id`s are server-generated UUID4s published only on the requesting
+    client's own SSE stream (the `job` event), so knowing one is the proof of
+    entitlement that lets this endpoint stay open to anonymous callers.
+    """
+    wanted = {job_id for job_id in job_ids if job_id}
+    if not wanted:
+        return []
+    cancelled = _cancel_matching(lambda task: task.get("job_id") in wanted)
+    logger.info(
+        "Render cancel by job_id: %d requested, %d marked", len(wanted), len(cancelled)
+    )
+    return cancelled
+
+
+def cancel_request(request_id: str) -> list[str]:
+    """Cancel one render request: its queued and active parts, and its future ones.
+
+    The flag is set first so the render loop stops queueing further parts even if
+    the sweep below races the part currently in flight.
+    """
+    if not request_id:
+        return []
+    try:
+        r.set(_request_cancel_key(request_id), "1", ex=CANCEL_TTL_SECONDS)
+    except Exception as e:
+        logger.warning("Render cancel requested but Redis is unavailable: %s", e)
+        return []
+
+    cancelled = _cancel_matching(lambda task: task.get("request_id") == request_id)
+    logger.info("Render cancel by request_id: %d jobs marked", len(cancelled))
+    return cancelled
+
+
+def cancel_all_renders() -> bool:
+    """Cancel every render on the box, queued and active, for every caller.
+
+    Reachable over HTTP only via `POST /api/render-cancel {"all": true}`, which
+    requires the `admin` role — the single backend replica means "every render"
+    is literal, so this is an operator tool, not a client one.
+    """
+    try:
+        r.set(CANCEL_ALL_KEY, str(int(time.time())), ex=CANCEL_EVENT_TTL_SECONDS)
+    except Exception as e:
+        logger.warning("Render cancel requested but Redis is unavailable: %s", e)
+        return False
+
+    cancelled = _cancel_matching(lambda _task: True)
+    if cancelled:
+        logger.info("Render cancel-all requested; marked %d jobs", len(cancelled))
+    return bool(cancelled)
 
 
 def _notify_cancelled(job_id: str, part: str, emit_final: bool = True) -> None:
@@ -887,28 +1056,13 @@ def cancel_cadquery_render() -> bool:
     return _cancel_by_engine("cadquery")
 
 
-def cancel_active_render() -> bool:
-    """Backward-compatible alias used by websocket cancel path."""
-    return cancel_all_renders()
+# `cancel_active_render()` used to live here as a "backward-compatible alias"
+# for cancel_all_renders(). Its only caller was the unauthenticated WebSocket
+# render channel, which gave any anonymous client a cancel-everything button.
+# The alias is removed so that path cannot be reopened by accident; cancelling
+# from a request goes through routes/engine/render.py::cancel_render_endpoint.
 
 
 def _cancel_by_engine(engine: str) -> bool:
     """Cancel only jobs currently tracked for a specific engine."""
-    cancelled = False
-    for raw_job_id in r.smembers(ACTIVE_RENDER_JOBS_KEY):
-        if not raw_job_id:
-            continue
-        meta = r.get(f"{ACTIVE_RENDER_META_PREFIX}{raw_job_id}")
-        if not meta:
-            continue
-        try:
-            parsed = json.loads(meta)
-        except json.JSONDecodeError:
-            continue
-        if parsed.get("engine") != engine:
-            continue
-        _set_job_cancel(raw_job_id)
-        part = parsed.get("part", "")
-        _notify_cancelled(raw_job_id, part, emit_final=True)
-        cancelled = True
-    return cancelled
+    return bool(_cancel_matching(lambda task: task.get("engine") == engine))

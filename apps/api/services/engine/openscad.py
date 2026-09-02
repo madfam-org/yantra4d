@@ -34,6 +34,26 @@ def compute_scad_hash(scad_path: str) -> str | None:
 _fontconfig_cache: dict[str, str] = {}
 
 
+def fontconfig_xml(font_dirs: list[str]) -> str:
+    """Minimal fontconfig document pointing at *font_dirs*, in order.
+
+    Shared with the WASM bundle builder, which hands the same document to the
+    browser worker so a `text()` cartridge finds the very same typefaces the
+    native binary does. Keeping one generator is the point: a font that renders
+    on the server and not in the browser is the kind of divergence nobody
+    notices until a customer does.
+    """
+    dir_tags = "\n".join([f'  <dir>{d}</dir>' for d in font_dirs])
+    return (
+        '<?xml version="1.0"?>\n'
+        '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n'
+        '<fontconfig>\n'
+        f'{dir_tags}\n'
+        '  <include ignore_missing="yes">/etc/fonts/fonts.conf</include>\n'
+        '</fontconfig>\n'
+    )
+
+
 def _openscad_env(scad_path: str | None = None):
     """Return environment with OPENSCADPATH and optional font config set.
 
@@ -60,17 +80,7 @@ def _openscad_env(scad_path: str | None = None):
         cache_key = ":".join(fonts_dirs)
         if cache_key not in _fontconfig_cache:
             fd, conf_path = tempfile.mkstemp(suffix=".conf", prefix="fc_yantra_")
-            
-            dir_tags = "\n".join([f'  <dir>{d}</dir>' for d in fonts_dirs])
-            
-            os.write(fd, (
-                '<?xml version="1.0"?>\n'
-                '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n'
-                '<fontconfig>\n'
-                f'{dir_tags}\n'
-                '  <include ignore_missing="yes">/etc/fonts/fonts.conf</include>\n'
-                '</fontconfig>\n'
-            ).encode())
+            os.write(fd, fontconfig_xml(fonts_dirs).encode())
             os.close(fd)
             _fontconfig_cache[cache_key] = conf_path
             logger.info("Created fontconfig for %s → %s", cache_key, conf_path)

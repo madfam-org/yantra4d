@@ -23,7 +23,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "thumbnail": "/docs/images/gridfinity_thumb.png", // Path to gallery image
     "tags": ["storage", "modular", "organization"],
     "difficulty": "beginner",
-    "force_backend": true,                        // Optional: prefer backend rendering (overridden by WASM fallback when backend is unreachable)
+    "force_backend": true,                        // Optional, SOFT: prefer server rendering — see "Where a render happens" below
     "hard_reload": true,                          // Optional: prevents preset persistence across reloads
     "unlisted": true,                              // Optional: hidden from public listings, accessible via direct URL
     "guest_render_limit": 50,                      // Optional: per-project guest render limit override (renders/hour)
@@ -155,6 +155,11 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "default": "rendering"                   // Which preset to apply by default
   },
 
+  "render": {                              // Optional, HARD: where a render is allowed to happen
+    "server_only": true,                   // Never render in the browser
+    "browser_max_estimate_seconds": 20     // Optional: prefer the server above this estimate
+  },
+
   "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],  // Optional: supported export formats (default: ["stl"])
 
   "print_estimation": {                     // Optional: print estimation defaults
@@ -204,6 +209,34 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
   }
 }
 ```
+
+### Where a render happens
+
+Two keys decide it, and they are deliberately **not** the same strength.
+
+| Key | Location | Strength | Meaning |
+| :--- | :--- | :--- | :--- |
+| `force_backend` | `project.force_backend` (boolean) | **SOFT** | The server is *preferred*. The Studio may still render in the browser when the device is capable and the cartridge's [WASM bundle](../guides/wasm-mode.md#wasm-bundle-endpoint) is complete. |
+| `render.server_only` | top-level `render` object (boolean) | **HARD** | Never render in the browser, full stop. |
+| `render.browser_max_estimate_seconds` | top-level `render` object (number) | budget | Above this estimated render time the Studio prefers the server even on a capable device. |
+
+The split exists because `force_backend` was never really a policy. It was set on
+~490 cartridges to work around a browser renderer that could not load libraries or
+fonts, so the flag says "this failed in the browser once", not "this must not run
+in the browser". Now that `/api/projects/<slug>/wasm-bundle` hands the worker the
+whole filesystem, that historical hint should not keep a capable device on the
+server, and demoting it to a preference is what lets ~490 cartridges become
+browser-first without editing 490 manifests.
+
+`render.server_only` is the key to reach for when browser rendering would be
+genuinely *wrong* — a cartridge whose output must be produced by the same binary
+the shop runs, or one whose geometry the browser cannot express. Use
+`browser_max_estimate_seconds` for merely *expensive*, and leave `force_backend`
+for a nudge.
+
+Note that the WASM bundle carries its own veto: a non-empty `unsupported` list
+means the server is required for a faithful render regardless of what any of
+these three keys says.
 
 ### Hyperobject Metadata (optional)
 

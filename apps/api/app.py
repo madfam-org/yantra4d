@@ -41,6 +41,7 @@ from routes.engine.download import download_bp
 from routes.engine.render import render_bp
 from routes.engine.simulate import simulate_bp
 from routes.engine.verify import verify_bp
+from routes.engine.wasm_bundle import wasm_bundle_bp
 from routes.integrations.ai import ai_bp
 from routes.integrations.analytics import analytics_bp
 from routes.integrations.cotiza_export import cotiza_export_bp
@@ -267,6 +268,7 @@ def create_app():
     app.register_blueprint(printer_bp)
     app.register_blueprint(analysis_bp)
     app.register_blueprint(simulate_bp)
+    app.register_blueprint(wasm_bundle_bp)
     app.register_blueprint(cotiza_export_bp)
     app.register_blueprint(cotiza_webhook_bp)
     app.register_blueprint(forgesight_webhook_bp)

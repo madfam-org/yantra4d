@@ -13,6 +13,16 @@ Per-tier backend render limits are defined in tiers.json
 ESTIMATE = "200/hour"
 VERIFY = "50/hour"
 
+# GET /api/projects/<slug>/wasm-bundle is deliberately UNLIMITED-BY-TIER: it
+# carries only the app-wide default and has no constant here, on purpose.
+# It is the free browser path — the response is an in-process cached blob of
+# source text, so serving it costs a dictionary lookup and no CPU, while every
+# request it satisfies is a *server* render that never happens. Rationing it by
+# tier would push exactly that traffic back onto /api/render, which is the
+# expensive thing the tiers exist to ration. Same reasoning as the WASM note
+# above: browser rendering is unlimited at every tier, and the bundle is what
+# makes browser rendering possible at all.
+
 # AI
 AI_SESSION = "30/hour"
 # AI chat uses dynamic per-tier limits — see ai.py:_get_ai_rate_limit()

@@ -111,6 +111,10 @@
           "type": "boolean",
           "description": "If true, project is hidden from public listings but accessible via direct URL"
         },
+        "force_backend": {
+          "type": "boolean",
+          "description": "SOFT hint that the server is preferred; the Studio may still render in the browser when the device is capable and the bundle is complete"
+        },
         "guest_render_limit": {
           "type": "integer",
           "minimum": 1,
@@ -723,6 +727,21 @@
         "material_profiles": {
           "type": "object",
           "additionalProperties": true
+        }
+      }
+    },
+    "render": {
+      "type": "object",
+      "description": "Where a render is allowed to happen. Distinct from project.force_backend, which is only a preference: these are the hard rules and the browser-cost budget.",
+      "properties": {
+        "server_only": {
+          "type": "boolean",
+          "description": "HARD: never render in the browser. Use when browser rendering would be wrong or impossible for this cartridge, not merely slow."
+        },
+        "browser_max_estimate_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Above this estimated render time the Studio prefers the server even on a capable device. A budget, not a prohibition."
         }
       }
     },

@@ -125,6 +125,13 @@ def estimate_render_time():
     """Estimate render time based on parameters before actually rendering."""
     data = request.json
     project_slug = data.get('project')
+
+    # The estimate is computed from the manifest, so it answers the same gate
+    # as the manifest itself.
+    denied = check_project_access(project_slug)
+    if denied is not None:
+        return denied
+
     manifest = get_manifest(project_slug)
     mode_id = data.get('mode')
     scad_file = data.get('scad_file')

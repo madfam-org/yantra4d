@@ -417,6 +417,10 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install jsonschema
+      # Strict by design: a projects/<slug> submodule that checked out empty is
+      # a FAILURE here, not a skip. The local escape hatch
+      # (--allow-uninitialised-submodules) must never be set in this job — it is
+      # the whole point of the check that a partial checkout cannot pass.
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
       # `apps/landing/src/data/projects.ts` is generated from these same
@@ -436,6 +440,33 @@ jobs:
           node-version: 22
       - name: Landing project list matches the manifests
         run: node scripts/dev/generate-landing-projects.mjs --check
+      # scripts/tests/ had no CI home: test_ceq_coverage.py and
+      # test_validate_manifests.py passed only on developer machines, which is
+      # the same "green for the wrong reason" failure the suites themselves
+      # exist to catch. It lands here rather than in a job of its own because
+      # this job already has Python 3.12, a recursive checkout and the
+      # jsonschema the manifest tests import, and it is already in
+      # ci-success's needs. pytest is the only dependency the suite adds.
+      - name: scripts/ test suite
+        run: |
+          pip install pytest
+          python -m pytest scripts/tests -q
+
+  # Locale key parity is a hard gate (a missing key ships untranslated UI); the
+  # hardcoded-string count is a ratchet against scripts/qa/i18n_baseline.json,
+  # so the existing backlog does not block unrelated work but adding to it does.
+  # Its own job rather than a step in `studio`: it needs Python, not Node, and
+  # it should fail in seconds instead of after a 15-minute build.
+  i18n-audit:
+    runs-on: madfam-runners-blue
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Audit studio i18n (locale parity + hardcoded-string ratchet)
+        run: python3 scripts/qa/i18n_audit.py
 
   # The extracted commons bar (hyperobjects-spec, docs/P1B_ADOPTION.md): a third
   # party's "it passes" and CI's "it passes" become the same sentence.
@@ -548,7 +579,7 @@ jobs:
 
   ci-success:
     runs-on: madfam-runners-blue
-    needs: [studio, landing, admin, backend, e2e, test-geometric-parity, manifest-validation, metadata-consistency, openapi-validation]
+    needs: [studio, landing, admin, backend, e2e, test-geometric-parity, manifest-validation, i18n-audit, metadata-consistency, openapi-validation]
     steps:
       - name: All checks passed
         run: echo "All CI checks passed successfully!"

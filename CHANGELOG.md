@@ -68,6 +68,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `onLayout` → `onLayoutChanged`, panel `id` props), `usePanelLayout.js` (bounds
   clamping for corrupted localStorage from the broken layout period). 8 new tests.
 
+### Performance
+- **Studio Mounts One Layout Tree, Not Two** — `App.jsx` rendered a desktop tree
+  (`hidden lg:flex`) and a mobile tree (`lg:hidden`) at the same time, and the
+  `StudioMainView` inside each of them did the same again, handing the identical
+  viewer content to both halves. A page load therefore mounted four `<Viewer>`s
+  — four `<canvas>` elements and four WebGL render loops — and three of them sat
+  inside a `display:none` subtree, spending exactly the client GPU and memory
+  the product wants for the model the visitor is looking at. Both files now pick
+  the tree with `useIsDesktop()` (`min-width: 1024px`, Tailwind's `lg` — the
+  same width the classes already used, so the JS decision and the CSS can never
+  disagree); the classes stay, now redundant rather than load-bearing. Behaviour
+  is unchanged at every width. Three consequences worth knowing: `viewerRef`
+  used to be claimed by whichever `<Viewer>` mounted last (the hidden mobile
+  one) and now points at the visible viewer; `#main-content` is in the DOM once,
+  so the skip link no longer lands on a hidden element on a phone; and crossing
+  1024px remounts the tree, so the viewer re-creates its canvas while params,
+  parts and render results — owned by `ProjectProvider` above it — survive
+  untouched. 4 files, 8 new tests.
+
 ### Added
 - **Per-Project CI Template** — `.github/workflows/project-ci.yml` template created and distributed via `propagate_ci.sh` to give all 33 federated project repositories their own independent CI pipelines.
 - **Per-Project CI Propagation** — `scripts/ci/propagate_project_ci.sh`: GitHub

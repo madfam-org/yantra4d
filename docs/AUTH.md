@@ -275,6 +275,9 @@ Auth settings are defined in `apps/api/config.py`.
 | `JANUA_AUDIENCE` | `yantra4d-api` | The expected JWT `aud` claim. Must match the audience registered in the Janua seed script. |
 | `AUTH_ENABLED` | `true` | Set to `false` to disable all auth checks for local development. |
 | `RENDER_SCOPE_ENFORCEMENT` | `log` | `log` warns and allows machine tokens missing `yantra4d:render`; `enforce` returns 403. Read from the environment at call time, not via `Config`. See [Machine tokens and render scope](#machine-tokens-and-render-scope). |
+| `JWKS_CACHE_LIFESPAN` | `3600` | Seconds a fetched JWKS is served before a refresh is attempted. See [JWKS Caching](#jwks-caching). |
+| `JWKS_STALE_MAX_AGE` | `86400` | Seconds past the lifespan that a last-known-good JWKS may still be served while the endpoint is unreachable. Past this, token validation fails closed. |
+| `JWKS_REFRESH_BACKOFF` | `30` | Seconds a failed JWKS refresh waits before another attempt, so a flapping Janua is not re-dialled once per request. |
 | `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "madfam"}`. Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
 | `PRIVATE_PROJECTS` | *(unset)* | Comma-separated slugs forced private regardless of their manifest. Read at call time. See [Private projects](#private-projects). |
 | `PROJECT_ACCESS_GRANTS` | *(unset)* | JSON object mapping slug to a list of emails granted access to that private project, e.g. `{"acme-bracket": ["someone@example.com"]}`. Read at call time. |
@@ -326,11 +329,32 @@ Implemented by `harness_tier_override()` in
 
 ## JWKS Caching
 
-Token validation uses `PyJWKClient` to fetch signing keys from `{JANUA_ISSUER}/.well-known/jwks.json`.
+Token validation fetches signing keys from `{JANUA_ISSUER}/.well-known/jwks.json`
+(overridable with `JANUA_JWKS_URL`). `PyJWKClient` performs the HTTP fetch, but
+its own caching is switched off: `apps/api/middleware/auth.py` owns the cache so
+it can serve **stale-while-revalidate**.
 
-- **Cache lifespan**: 1 hour.
-- **Initialization**: Lazy. The JWKS client is created on the first request that requires authentication, not at application startup.
-- **Failure behavior**: If a JWKS fetch fails after the cache has expired, the request fails with a 500 error. There is no stale-while-revalidate fallback.
+- **Initialization**: Lazy. The JWKS client is created on the first request that
+  requires authentication, not at application startup.
+- **Cache lifespan**: `JWKS_CACHE_LIFESPAN`, default 1 hour. Within it, requests
+  are served from the cached key set with no network call.
+- **Refresh failure with a warm cache**: the last successfully fetched key set
+  keeps being served. The failure is logged at WARNING with the error, the cache
+  is marked stale, and the next attempt waits `JWKS_REFRESH_BACKOFF` seconds
+  (default 30) so a flapping IdP is not re-dialled once per request. A Janua
+  outage therefore no longer takes down authenticated traffic.
+- **Stale ceiling**: `JWKS_STALE_MAX_AGE`, default 24 hours, measured from the
+  last successful fetch. Past it the middleware fails closed rather than keep
+  trusting keys nobody has been able to re-confirm.
+- **Unknown `kid`**: a key id absent from the cached set is what a rotation looks
+  like from the resource server, so it triggers a refresh attempt (subject to the
+  same backoff) before the token is rejected.
+- **Refresh failure with an empty cache**: fails closed. With no last-known-good
+  set there is nothing safe to fall back to, so `decode_token` raises and the
+  request is rejected — 401 from `@require_auth`, and `@optional_auth` continues
+  anonymously on the guest tier, exactly as before.
+- **Concurrency**: the refresh path is single-flighted under a lock, so a slow
+  endpoint is dialled once rather than once per concurrent request.
 
 ---
 
@@ -392,13 +416,18 @@ A mismatch in any of these causes token validation to fail with a 401 error.
 - Verify the token includes the expected custom claims (`role`, `tier`).
 - Use a JWT decoder (e.g., `jwt.io`) to inspect the token payload.
 
-### 500 Internal Server Error on first request
+### Every authenticated request 401s and the logs show a JWKS fetch failure
 
-**Cause**: JWKS fetch failed. The application cannot reach the Janua issuer URL.
+**Cause**: The JWKS fetch failed with nothing in the cache to fall back on —
+either the process has never fetched successfully (the usual case: a cold start
+against an unreachable issuer), or the last-known-good key set has aged past
+`JWKS_STALE_MAX_AGE`. Both fail closed. A failure with a warm cache inside that
+window logs a WARNING and keeps validating tokens, so it will not present this
+way. See [JWKS Caching](#jwks-caching).
 
 **Fix**:
 - Verify network connectivity to the Janua instance.
-- Check that `JANUA_ISSUER` is set correctly.
+- Check that `JANUA_ISSUER` (or `JANUA_JWKS_URL`) is set correctly.
 - If running locally, ensure Janua is running and accessible.
 
 ### Auth checks active in local development

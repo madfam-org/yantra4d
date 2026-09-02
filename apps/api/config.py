@@ -66,6 +66,16 @@ class AppConfig:
     HARNESS_TIER: str = field(default_factory=lambda: os.getenv("HARNESS_TIER", "").strip().lower())
     JWT_ALGORITHMS: list = field(default_factory=lambda: [a.strip().upper() for a in os.getenv("JWT_ALGORITHMS", "RS256").split(",") if a.strip()])
 
+    # JWKS cache windows (stale-while-revalidate) — see docs/AUTH.md "JWKS Caching".
+    # LIFESPAN is how long a fetched key set is served without revalidating.
+    # STALE_MAX_AGE is how long past that a last-known-good set may still be
+    # served while the IdP is unreachable, before token validation fails closed.
+    # REFRESH_BACKOFF is how long a failed refresh waits before the next attempt,
+    # so a flapping Janua is not re-dialled once per request.
+    JWKS_CACHE_LIFESPAN: int = field(default_factory=lambda: int(os.getenv("JWKS_CACHE_LIFESPAN", "3600")))
+    JWKS_STALE_MAX_AGE: int = field(default_factory=lambda: int(os.getenv("JWKS_STALE_MAX_AGE", "86400")))
+    JWKS_REFRESH_BACKOFF: int = field(default_factory=lambda: int(os.getenv("JWKS_REFRESH_BACKOFF", "30")))
+
     # Tiers
     TIERS_FILE: Path = field(init=False)
 

@@ -104,6 +104,9 @@ npx playwright test --project=audit     # Browser audit: REAL backend + real
                                         # OpenSCAD renders, no Docker. Needs
                                         # Redis + apps/api on :5000 + the render
                                         # worker — see the suite README below.
+# i18n gate (CI job `i18n-audit`): locale key parity fails hard; the hardcoded-string
+# count is a ratchet against scripts/qa/i18n_baseline.json (`--update-baseline` to lower it).
+python3 ../../scripts/qa/i18n_audit.py
 ```
 
 The nightly browser audit suite documents its own harness, skip helpers and

@@ -157,8 +157,12 @@ test.describe('Accessibility', () => {
       route.fulfill({ json: { estimated_time: 120 } })
     })
     await goToStudio(page)
-    // Scoped to the sidebar: Generate renders in both layout trees, so the bare
-    // match resolved to 2 elements and failed strict mode.
+    // Scoped to the sidebar. The bare match used to resolve to 2 elements and
+    // fail strict mode, because Generate was rendered once per layout tree and
+    // both trees were mounted. Only the tree on screen is mounted now, so there
+    // is a single Generate at this viewport; the scoping stays because naming
+    // the sidebar is what makes the click unambiguous if the mobile sheet or a
+    // compare slot ever grows a Generate of its own.
     await sidebar.generateButton.click()
     await page.waitForTimeout(500)
     const dialog = page.locator('[role="alertdialog"]')

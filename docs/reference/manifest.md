@@ -200,7 +200,8 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "fn_factor": 64,      // OpenSCAD $fn resolution factor
     "per_part": 8,        // Added per part in the mode
     "wasm_multiplier": 3, // Multiplier applied to estimates in WASM mode
-    "warning_threshold_seconds": 60  // Show confirmation dialog above this estimate
+    "warning_threshold_seconds": 60  // Above this estimate: confirm a user-initiated
+                                     // render, skip an automatic one with a notice
   }
 }
 ```
@@ -433,7 +434,14 @@ estimated_seconds = base_time + (num_units × per_unit) + (num_parts × per_part
 
 In WASM mode, this estimate is multiplied by `wasm_multiplier` (default: 3).
 
-If the estimate exceeds `warning_threshold_seconds` (default: 60), a confirmation dialog is shown before rendering.
+If the estimate exceeds `warning_threshold_seconds` (default: 60), what happens next depends on **who asked for the render**:
+
+- **User-initiated** — the Generate button, Force re-render, `Ctrl+Enter`, save-and-render in the code editor, the storefront, the optimizer follow-up. A confirmation dialog is shown before rendering, as it always has been: confirm to render, cancel to do nothing.
+- **Automatic** — the debounced render the studio runs on load and after every parameter change. Nothing is rendered and **no dialog is opened**. The studio raises a non-blocking notice instead (`toast.auto_render_skipped` — "Long render skipped — about N min. Press Generate to render.") and leaves the render waiting for an explicit Generate, which then confirms as above.
+
+Below the threshold both kinds render immediately, with no dialog and no notice.
+
+The distinction is carried by `GenerateOptions.automatic`, the third argument of `handleGenerate` in `apps/studio/src/hooks/render/useRender.ts`; only the debounced effect in `hooks/project/useProjectParams.ts` sets it, so a new caller is user-initiated unless it opts in. A project whose defaults estimate over the threshold therefore loads quietly rather than greeting every visitor with a modal over a pointer-blocking overlay.
 
 ---
 

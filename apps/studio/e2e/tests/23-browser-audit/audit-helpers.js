@@ -307,7 +307,14 @@ export async function waitForRenderDone(page, timeout = 120_000) {
 
 /**
  * Dismiss the "Long Render Warning" dialog if present, then click Generate.
- * Handles cases where switching modes auto-triggers the warning.
+ *
+ * A mode switch no longer raises the dialog: the render it schedules is the
+ * debounced automatic one, which is now skipped with a toast instead of
+ * confirmed with a modal. Only a render the user asked for opens the dialog, so
+ * the "already showing" branch below covers a dialog left up by an earlier
+ * explicit Generate in the same test, and the later branch covers the one this
+ * function's own click raises. Both stay conditional — a project under the
+ * threshold raises neither.
  */
 export async function clickGenerateWithWarning(sidebar, page) {
   // User-initiated Generate: the modal is expected here, so take the
@@ -355,8 +362,17 @@ export async function clickGenerateWithWarning(sidebar, page) {
 
 /**
  * Dismiss the Long Render Warning dialog if it appears.
- * Call after mode switches or parameter edits that may trigger a render
- * estimate — the dialog is modal, so anything clicked while it is up blocks.
+ *
+ * Call after an explicit Generate that may estimate over the project's
+ * threshold. A mode switch or a slider edit will not put this dialog up any
+ * more — those render automatically, and an automatic render over the threshold
+ * is skipped with a non-blocking toast rather than confirmed (#82) — so after
+ * one of those this is a no-op that costs the wait below.
+ *
+ * It is still worth calling where an older cartridge or an unmerged build could
+ * raise one: the dialog is modal, so anything clicked while it is up blocks for
+ * its whole actionability budget. That is also why autoCancelRenderWarning()
+ * exists, and why the click below tolerates failure.
  */
 export async function dismissRenderWarning(page, action = 'cancel', timeout = 5000) {
   const dialog = page.locator('[role="alertdialog"]')

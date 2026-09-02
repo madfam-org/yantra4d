@@ -14,6 +14,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Render Artifacts Behind a Storage Abstraction (ADR-014)** — Finished renders
+  now go through an `ArtifactStore` (`apps/api/services/storage/`) instead of
+  straight to a shared directory, with two backends: `fs` (today's static
+  directory, **the default**) and `s3` (any S3-compatible endpoint, path-style
+  addressing, MinIO-compatible). The point is the coupling this removes: the
+  render worker writes artifacts into `/app/backend/static` and the API serves
+  them from that same path, so the two can only run in one pod sharing an
+  `emptyDir`. Split them and every render succeeds and then 404s on download —
+  quietly, with the cache recording the artifact as present. With
+  `RENDER_ARTIFACT_STORE=s3` there is no shared filesystem to split.
+  **Nothing changes by default.** Under `fs`, publishing an artifact that a
+  render already wrote to its final path is an `os.path.samefile` no-op — no
+  copy, same inode, same mtime, so a volume with a hard `sizeLimit` does not
+  double and the GC's mtime ordering is untouched — and the read path stays on
+  `send_from_directory`/`send_file`, so `ETag`, `Last-Modified`,
+  `Content-Length`, conditional 304s and range requests are byte-for-byte what
+  they were. `tests/e2e/test_artifact_store_serving.py` compares real responses
+  against the pre-change Flask calls, header for header.
+  URLs are unchanged on both backends (`/static/<slug>_preview_<hash>_<part>.<fmt>`),
+  which is what keeps #78's private-project gate and the download route's access
+  checks applying with no change — both parse the artifact *name*. Object-store
+  artifacts are **streamed through the API**, never redirected to a bucket URL,
+  so those gates run on every request; there is deliberately no presigned-URL
+  path in the S3 backend. Credentials come from the standard `AWS_*` environment
+  variables only and are never held on a config object. `s3` **fails closed and
+  loud at startup** (`HeadBucket`) in both the API and the worker rather than
+  accepting renders it cannot serve back. The render cache now records store
+  **keys** rather than absolute paths and validates entries with
+  `ArtifactStore.exists`, so a key missing from the store is simply a cache miss
+  — which is what makes flipping the flag safe in both directions, rollback
+  included. `/api/health` reports the store kind (kind only: the endpoint and
+  bucket stay out of an unauthenticated response). k8s manifests carry the
+  settings on both containers with the endpoint and credentials as `optional:
+  true` Secret references, so the pod starts without them; the bucket is
+  provisioned by the operator through Enclii. See
+  [`docs/operations/render-artifact-storage.md`](docs/operations/render-artifact-storage.md).
 - **Multi-Rack Mode (custom-msh)** — New 6th mode producing 2–5 contiguous
   staining racks joined front-to-back (Y-axis, default) or side-by-side (X-axis).
   Y-axis stacking: racks share diamond grid junction guards at Y boundaries,

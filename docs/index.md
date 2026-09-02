@@ -11,6 +11,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Authoring graph cartridges](./guides/graph-cartridges.md): node graphs compiled to sandboxed CadQuery.
 -   [Sim4D extraction record](./architecture/sim4d-extraction.md): what was taken from sim4d and what was left behind.
 -   [Cross-ecosystem interventions](./operations/cross-ecosystem-interventions.md): what Yantra4D is owed from other platforms.
+-   [Render artifact storage](./operations/render-artifact-storage.md): the artifact store behind renders — filesystem default, S3 backend, migration and rollback.
 -   [TypeScript Migration](./architecture/typescript-migration.md): Gradual TS adoption — current progress, phase status, remaining work.
 -   [Web Interface](./architecture/web_interface.md): Full-stack architecture (Flask/React), API reference, component structure.
 

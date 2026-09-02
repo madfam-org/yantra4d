@@ -413,6 +413,22 @@ jobs:
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
 
+  # Locale key parity is a hard gate (a missing key ships untranslated UI); the
+  # hardcoded-string count is a ratchet against scripts/qa/i18n_baseline.json,
+  # so the existing backlog does not block unrelated work but adding to it does.
+  # Its own job rather than a step in `studio`: it needs Python, not Node, and
+  # it should fail in seconds instead of after a 15-minute build.
+  i18n-audit:
+    runs-on: madfam-runners-blue
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Audit studio i18n (locale parity + hardcoded-string ratchet)
+        run: python3 scripts/qa/i18n_audit.py
+
   # The extracted commons bar (hyperobjects-spec, docs/P1B_ADOPTION.md): a third
   # party's "it passes" and CI's "it passes" become the same sentence.
   # BLOCKING since 2026-08-22: the 31 structural failures the bar found on day
@@ -524,7 +540,7 @@ jobs:
 
   ci-success:
     runs-on: madfam-runners-blue
-    needs: [studio, landing, admin, backend, e2e, test-geometric-parity, manifest-validation, metadata-consistency, openapi-validation]
+    needs: [studio, landing, admin, backend, e2e, test-geometric-parity, manifest-validation, i18n-audit, metadata-consistency, openapi-validation]
     steps:
       - name: All checks passed
         run: echo "All CI checks passed successfully!"

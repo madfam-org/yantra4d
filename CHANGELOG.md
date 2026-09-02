@@ -55,9 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Every cartridge is quadrilingual (en/es/fr/pt) at authoring time per the
   2026-08-25 ratification, declares `difficulty`, and ships CERN-OHL-W-2.0 by
   the ADR-011-symmetric ruling. Each carries a full min/max/corner extremes
-  sweep rendered through the real `cq_runner` sandbox — **660 cases across the
-  tranche, all watertight with `body_count == 1`** — recorded per cartridge in
-  its commit body and README.
+  sweep rendered through the real `cq_runner` sandbox — **652 cases across the
+  tranche, all watertight with `body_count == 1`** (64 · 61 · 76 · 49 · 74 · 72
+  · 57 · 83 · 57 · 59, in ranked order) — recorded per cartridge in its commit
+  body and README.
   **Gaps recorded rather than papered over.** Three of the plan's partner counts
   depend on taxonomy fixes that ADR-015 did *not* ratify, so they are not landed
   and the affected counts are reported as measured today, not as planned:

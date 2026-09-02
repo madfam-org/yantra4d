@@ -16117,16 +16117,18 @@
       "dual_engine": false,
       "modes": 3,
       "parts": 3,
-      "parameters": 8,
+      "parameters": 10,
       "parameter_ids": [
         "strip_length",
         "strip_width",
+        "overlap_mm",
         "base_t",
         "sew_margin",
         "pin_pitch",
         "pin_dia",
         "head_dia",
-        "pin_h"
+        "pin_h",
+        "tolerance"
       ],
       "export_formats": [
         "stl",
@@ -16138,13 +16140,21 @@
       ],
       "commons_license": "CERN-OHL-W-2.0",
       "societal_benefit": {
-        "en": "Hook-and-loop tape is bought by the roll and cut to waste; printing it to length lets a repair or a made-to-measure garment carry only the closure it needs, in any material a maker already has.",
-        "es": "La cinta de gancho y bucle se compra por rollo y se corta con desperdicio; imprimirla a la medida permite que una reparación o una prenda a medida lleve solo el cierre que necesita, en el material que el fabricante ya tenga."
+        "en": "Hook-and-loop tape is bought by the roll and cut to waste, and it is the one closure that hands and eyes that cannot manage a button or a zip can still work — which is why it fastens adaptive clothing, medical garments, children's wear and every high-visibility vest worn near traffic. Printing it to length lets a repair or a made-to-measure garment carry only the closure it needs, in whatever flexible material a maker already has, anywhere a roll of branded tape does not reach. Because the garment hands over its own finished overlap, the tape is sized by the closure instead of the closure being redesigned around whatever width was in stock.",
+        "es": "La cinta de gancho y bucle se compra por rollo y se corta con desperdicio, y es el único cierre que pueden manejar manos y ojos que no dan con un botón o una cremallera — por eso abrocha ropa adaptada, prendas médicas, ropa infantil y todo chaleco de alta visibilidad que se usa junto al tráfico. Imprimirla a la medida permite que una reparación o una prenda a medida lleve solo el cierre que necesita, en el material flexible que el fabricante ya tenga, donde no llega un rollo de marca. Como la prenda entrega su propio traslape terminado, la cinta se dimensiona por el cierre en vez de rediseñar el cierre alrededor del ancho que hubiera en almacén.",
+        "fr": "La bande auto-agrippante s'achète au rouleau et se coupe avec des chutes, et c'est la seule fermeture que des mains et des yeux incapables de gérer un bouton ou une fermeture à glissière peuvent encore manœuvrer — d'où son usage dans les vêtements adaptés, les tenues médicales, les vêtements d'enfant et tous les gilets haute visibilité portés près de la circulation. L'imprimer à la longueur voulue permet à une réparation ou à un vêtement sur mesure de ne porter que la fermeture nécessaire, dans le matériau souple dont dispose déjà l'atelier, là où un rouleau de marque n'arrive pas. Puisque le vêtement transmet sa propre croisure finie, la bande est dimensionnée par la fermeture au lieu que la fermeture soit redessinée autour de la largeur disponible en stock.",
+        "pt": "A fita de gancho e argola compra-se ao rolo e corta-se com desperdício, e é o único fecho que mãos e olhos incapazes de lidar com um botão ou um fecho de correr ainda conseguem operar — por isso fecha roupa adaptada, vestuário médico, roupa infantil e todo colete de alta visibilidade usado junto ao trânsito. Imprimi-la à medida permite que um conserto ou uma peça sob medida leve apenas o fecho de que precisa, no material flexível que o fabricante já tem, onde um rolo de marca não chega. Como a peça entrega o seu próprio transpasse acabado, a fita é dimensionada pelo fecho em vez de o fecho ser redesenhado em torno da largura que havia em estoque."
       },
       "material_awareness": {
         "shrinkage_compensation": false,
         "recycled_material_toggle": true,
-        "tolerance_by_material": true
+        "tolerance_by_material": true,
+        "notes": {
+          "en": "Print both strips flat on the bed, base down: the mushroom caps are a short self-supporting overhang and the waffle walls bridge nothing. TPU (Shore 95A) or a flexible PETG gives the peel-and-re-close behaviour — a flexible filament lets the stems bend out of the cell instead of snapping, which is what makes the closure reusable; set `tolerance` around 0.3-0.4 mm for TPU, which squashes under the nozzle and prints its walls fat. Rigid PLA works as a one-shot latch at `tolerance` 0.1-0.15 mm but the pins break rather than flex. Fine layers (0.12 mm) keep the cap overhang crisp; print the flexible strips slowly (< 25 mm/s) with retraction near zero. Recycled and offcut flexible filament prints this part well — there are no fine tolerances outside the engagement pair.",
+          "es": "Imprime ambas tiras planas sobre la cama, con la base abajo: las cabezas de hongo son un voladizo corto autosoportado y las paredes de la retícula no puentean nada. El TPU (95A Shore) o un PETG flexible da el comportamiento de despegar y volver a cerrar — un filamento flexible deja que los vástagos se doblen fuera de la celda en vez de romperse, que es lo que hace reutilizable el cierre; usa `tolerance` de 0.3-0.4 mm para TPU, que se aplasta bajo la boquilla e imprime paredes gruesas. El PLA rígido sirve como pestillo de un solo uso con `tolerance` de 0.1-0.15 mm, pero los pines se rompen en vez de flexionar. Capas finas (0.12 mm) mantienen nítido el voladizo de la cabeza; imprime las tiras flexibles despacio (< 25 mm/s) y con retracción casi nula. El filamento flexible reciclado o de sobrantes funciona bien aquí — no hay tolerancias finas fuera del par de enganche.",
+          "fr": "Imprimez les deux bandes à plat sur le plateau, base en bas : les têtes de champignon forment un court porte-à-faux autoporté et les parois alvéolaires ne pontent rien. Le TPU (95A Shore) ou un PETG souple donne le comportement décoller-refermer — un filament souple laisse les tiges fléchir hors de la cellule au lieu de casser, ce qui rend la fermeture réutilisable ; réglez `tolerance` vers 0,3-0,4 mm pour le TPU, qui s'écrase sous la buse et imprime des parois épaisses. Le PLA rigide fait un loquet à usage unique à `tolerance` 0,1-0,15 mm, mais les picots cassent au lieu de fléchir. Des couches fines (0,12 mm) gardent le débord de tête net ; imprimez les bandes souples lentement (< 25 mm/s) avec une rétraction quasi nulle. Le filament souple recyclé ou de chutes convient bien — il n'y a pas de tolérance fine en dehors de la paire d'engagement.",
+          "pt": "Imprima ambas as fitas planas na mesa, com a base para baixo: as cabeças de cogumelo são um ressalto curto autossustentado e as paredes alveolares não fazem ponte. O TPU (95A Shore) ou um PETG flexível dá o comportamento de descolar e voltar a fechar — um filamento flexível deixa as hastes dobrarem para fora da célula em vez de partirem, o que torna o fecho reutilizável; use `tolerance` de 0,3-0,4 mm para TPU, que se achata sob o bico e imprime paredes grossas. O PLA rígido serve como trinco de uso único com `tolerance` de 0,1-0,15 mm, mas os pinos quebram em vez de flexionar. Camadas finas (0,12 mm) mantêm nítido o ressalto da cabeça; imprima as fitas flexíveis devagar (< 25 mm/s) e com retração quase nula. Filamento flexível reciclado ou de sobras funciona bem aqui — não há tolerâncias finas fora do par de engate."
+        }
       },
       "cdg_interfaces": [
         {
@@ -16155,6 +16165,7 @@
           "parameters": [
             "strip_length",
             "strip_width",
+            "overlap_mm",
             "sew_margin"
           ]
         },
@@ -16167,7 +16178,8 @@
             "pin_pitch",
             "pin_dia",
             "head_dia",
-            "pin_h"
+            "pin_h",
+            "tolerance"
           ]
         }
       ],

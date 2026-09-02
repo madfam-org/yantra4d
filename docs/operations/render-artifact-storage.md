@@ -5,6 +5,11 @@
 production changes until an operator sets it to `s3`, and the bucket is
 provisioned through Enclii — this repository contains no MinIO Deployment.
 
+Both directions go through the store: renders are written through it, and
+every read that used to walk the static directory — serving `/static`, the
+download route, the artifact GC, "the latest render" lookups, the verifier —
+asks it instead. See [Operator flip runbook](#operator-flip-runbook).
+
 ---
 
 ## Why
@@ -61,6 +66,16 @@ stays on Flask's `send_from_directory`/`send_file`, so `ETag`, `Last-Modified`,
 all exactly what they were. `tests/e2e/test_artifact_store_serving.py` compares
 the real responses against the pre-change Flask calls, header for header.
 
+**The two backends answer identically.** Not "similarly": the same app is
+driven with each store installed in turn and the responses are diffed header
+for header — status, `Content-Type`, `Content-Length`, `Content-Range`,
+`Cache-Control`, `Accept-Ranges`, `Content-Disposition`, and the presence of
+`ETag` and `Last-Modified` (their *values* differ by construction — S3 hands
+back the object's MD5, a file's is derived from mtime and size). Ranges,
+conditional revalidation, the JSON 404 and the private-project 403 all match.
+That comparison is the contract the flag is safe to flip against, and it is
+what caught the two divergences an earlier cut of this branch had.
+
 ---
 
 ## Configuration
@@ -104,74 +119,100 @@ cluster-internal addresses; an operator reads those from the startup log.
 
 ---
 
-## Migration
+## Operator flip runbook
 
-There is no artifact backfill and none is wanted. Render artifacts are
-regenerable by definition — that is what the render cache is for.
+**Prerequisite — provision, outside this repo.** The bucket and its credentials
+are created through Enclii; this repository contains no MinIO or bucket
+manifest, by design. Give the bucket a lifecycle rule expiring objects at
+24 hours, matching `RENDER_GC_TTL`.
 
-1. **Provision the bucket** through Enclii (this repo has no MinIO manifest, by
-   design; the operator owns that). Create the credentials as
-   `RENDER_ARTIFACT_S3_ACCESS_KEY_ID` / `RENDER_ARTIFACT_S3_SECRET_ACCESS_KEY`
-   in the `yantra4d-secrets` Secret — the Deployment maps them onto the
-   `AWS_*` names both containers read.
-2. **Flip the flag** on both containers of `yantra4d-backend` at once. They must
-   agree: an API on `fs` and a worker on `s3` is precisely the split-brain this
-   change removes.
-3. **New renders go to the selected store.** Nothing migrates old ones.
-4. **Cache entries whose key is missing in the store are treated as cache
-   misses.** `RenderCache` validates an entry with `ArtifactStore.exists`, not
-   `os.path.isfile`, so entries pointing at artifacts on the old backend simply
-   do not resolve and the part is rendered again. That is what makes the flip
-   safe in *both* directions.
-5. **Rollback is flipping the flag back.** Same rule in reverse: entries written
-   against the bucket stop resolving, and renders repopulate the local
-   directory. No data has to be moved and nothing has to be cleaned up first.
+**Step 1 — put the credentials in the Secret.** The `yantra4d-secrets` Secret
+takes two keys, referenced by name only; their values live in Enclii and are
+never written here or in any manifest:
 
-Redis L2 cache entries written before this change carry an absolute `path`
-rather than a `key`. Their basename *is* the key the flat static directory
-used, so they keep hitting rather than turning the rollout into a cold cache.
-That fallback can be deleted once `RENDER_CACHE_REDIS_TTL` (24h) has elapsed
-past the rollout.
+| Secret key | Mapped to the container env var |
+|---|---|
+| `RENDER_ARTIFACT_S3_ACCESS_KEY_ID` | `AWS_ACCESS_KEY_ID` |
+| `RENDER_ARTIFACT_S3_SECRET_ACCESS_KEY` | `AWS_SECRET_ACCESS_KEY` |
+| `RENDER_ARTIFACT_S3_ENDPOINT` | `RENDER_ARTIFACT_S3_ENDPOINT` |
+
+All three are referenced with `optional: true` in
+`k8s/production/yantra4d-backend-deployment.yaml`, so the pod starts without
+them and stays on the `fs` default. Add them before step 2, not with it.
+
+**Step 2 — set the plain configuration on *both* containers.**
+`RENDER_ARTIFACT_S3_BUCKET`, `RENDER_ARTIFACT_S3_REGION` and
+`RENDER_ARTIFACT_S3_PREFIX` are not secret and live in the Deployment. The API
+and the worker must agree: an API on `fs` and a worker on `s3` is exactly the
+split-brain this change removes.
+
+**Step 3 — flip `RENDER_ARTIFACT_STORE` from `fs` to `s3` on both containers,
+in one rollout.**
+
+**Step 4 — watch the pod come up, or not.** Both containers issue a
+`HeadBucket` before serving or consuming anything; an unreachable bucket or
+rejected credentials **kills the process at startup** with a message naming the
+likely cause. A pod that is running has a bucket it can reach.
+
+**Step 5 — confirm.** `GET /api/health` reports
+`artifact_store: "s3"` and `checks.artifact_store.ok`. It reports the **kind
+only** — the endpoint, bucket and prefix stay out of an unauthenticated,
+rate-limit-exempt response; read those from the startup log. Then render
+something and download it: the URL shape does not change, so a working
+`/static/<name>` on a fresh render is the end-to-end proof.
+
+**Rollback — set `RENDER_ARTIFACT_STORE` back to `fs`.** That is the whole
+procedure. Nothing has to be migrated, drained or cleaned up first, because:
+
+- artifacts are regenerable by definition — that is what the render cache is
+  for, and there is no backfill in either direction;
+- a cache entry naming a key the current store does not hold is simply a
+  **miss** (`RenderCache` validates with `ArtifactStore.exists`), so entries
+  written against the bucket stop resolving and the part is rendered again;
+- URLs are identical on both backends, so nothing the studio holds goes stale.
+
+Leaving the credentials in the Secret after a rollback is harmless — nothing
+reads them while the store is `fs`.
+
+Redis L2 entries written before this change carry an absolute `path` rather
+than a `key`. Their basename *is* the key the flat static directory used, so
+they keep hitting rather than turning the rollout into a cold cache. That
+fallback can be deleted once `RENDER_CACHE_REDIS_TTL` (24 h) has elapsed past
+the rollout.
 
 ---
 
 ## Differences to know about before flipping to `s3`
 
-**Cache-Control on `/static` changes from `no-cache` to `public, max-age=3600`.**
-This is a consequence of a pre-existing quirk, not of object storage.
-`Flask(__name__)` registers a built-in `static` endpoint for `/static/<path>`,
-and `app.py` registers its own `serve_static` view for the same URL; Werkzeug
-resolves the tie in registration order, so **the built-in rule wins and
-`serve_static` has never run in production** — its `public, max-age=3600` line
-has never applied, and artifacts go out `no-cache`. (`app.py` already knew the
-two rules were ambiguous: that is why #78's private-artifact gate is a
-`before_request` hook rather than a check inside the view.) With a
-non-filesystem store there is no local directory to serve from, the built-in
-rule is not registered, and the app's own view finally runs.
+Short list, and none of it is a behaviour change in the API's responses.
 
-The result is safe — artifact names carry the parameter hash, so a cached
-response can never be a stale render, and a private project's artifact is still
-stamped `private, no-store` by the gate, which runs after the view — but it is
-a real change in what browsers and any CDN will do, and it should not be
-discovered in production.
+**Latency, not semantics.** Every artifact read becomes a network round trip to
+the bucket instead of a page-cache hit. A `HEAD` per request answers "is it
+there, how big, what validator" — which is also what makes a conditional
+request cheap, since a 304 costs that `HEAD` and no object body. Ranged reads
+are pushed down as `Range` headers, so a partial fetch does not drag a whole
+mesh through the API pod.
 
-**No `Range` and no conditional revalidation on the streaming path.** The
-object store is not asked for either. The viewer and download clients fetch
-meshes whole, so this costs nothing today; a partial-content client would get a
-full body.
+**The render GC's *size* pass does not run.** Age expiry does, identically:
+anything older than `RENDER_GC_TTL` (24 h) is deleted from the bucket. The size
+pass exists to keep a specific `emptyDir` under the `sizeLimit` the kubelet
+evicts on, and `RENDER_VOLUME_LIMIT_BYTES` (512 MiB) describes *that volume* —
+enforcing it as if it were bucket capacity would delete fresh renders on a busy
+day. **Set a bucket lifecycle rule matching `RENDER_GC_TTL` when provisioning
+the bucket**, as belt and braces behind the sweep.
 
-**The render GC and the read-side scanners are filesystem-only.** These are
-recorded gaps, not silent ones:
+**Routes that need a real file download one.** The verifier subprocess,
+trimesh-based analysis, the FEA overlay, the Cotiza quote and a printer upload
+all take a path, not a stream. Under `s3` the artifact is fetched to a
+temporary file for the duration of the request and removed afterwards
+(`services.storage.local_artifact`). Under `fs` the artifact's own path is
+handed over and nothing is copied. Budget disk for one concurrent mesh per
+in-flight request of those kinds.
 
-- `services/engine/render_gc.py` sweeps the local directory. Under `s3` it
-  collects the worker's scratch files (which the worker also removes itself
-  after a successful publish) but not bucket objects. Object lifetime under
-  `s3` belongs to a **bucket lifecycle rule** — set one, matching
-  `RENDER_GC_TTL` (24h), when provisioning the bucket.
-- `routes/engine/verify.py`, `routes/engine/analysis.py` and
-  `routes/engine/simulate.py` find "the latest render" by globbing the static
-  directory. Under `s3` they find nothing and report no render available. They
-  are unchanged here; moving them onto the store is follow-up work.
+**Nothing else.** In particular: `Cache-Control` is `no-cache` on both backends
+(`/static` is served by one store-backed rule now, on both), `Range` and
+conditional revalidation work on both, and a private project's artifact is
+`private, no-store` with no validator reaching an unentitled caller on both.
 
 ---
 
@@ -179,19 +220,47 @@ recorded gaps, not silent ones:
 
 | Component | Behaviour |
 |---|---|
-| `apps/api/services/storage/` | `ArtifactStore` (put from path/bytes, open, exists, size, delete) + `fs` and `s3` backends + the factory. |
+| `apps/api/services/storage/` | `ArtifactStore` (put from path/bytes, `open` with an optional byte range, `stat`, `list`, `exists`, `size`, `delete`, `local_path`/`fetch_to_path`) + `fs` and `s3` backends + the factory, plus `local_artifact()` for callers that need a real file. |
 | `apps/worker/render_worker.py` | Engines still render to a real local path — they are subprocesses. The finished artifact and its GLB companion are then published through the store; under `s3` the scratch copies are removed. A failed publish **fails the render** rather than reporting a URL that does not resolve. |
 | `services/engine/render_cache.py` | Records the artifact's **store key**, not an absolute path, and validates entries with `ArtifactStore.exists`. |
-| `app.py` → `/static/<path>` | Reads through the store. Filesystem: unchanged `send_from_directory`. Object store: streamed, and Flask's built-in static rule is not registered so a stray local file cannot shadow the bucket. |
+| `app.py` → `/static/<path>` | **One** rule, on both backends, reading through the store — Flask's built-in `static` endpoint is no longer registered, so it can neither shadow the app's view nor serve a stray local file in place of a bucket object. Filesystem: unchanged `send_from_directory`. Object store: streamed, with `ETag`, `Last-Modified`, `If-None-Match`/`If-Modified-Since` → 304, `Range` → 206/416 and `If-Range`. |
+| `services/engine/render_gc.py` | Lists and deletes through the store, so age expiry works identically on both backends. The size pass stays filesystem-only — see above. |
+| `services/engine/render_artifacts.py` | One `find_latest_render_key()` for the three routes that each had their own `glob` over the static directory, plus `discard_render_artifacts()` for superseding a previous render. |
+| `routes/engine/verify.py`, `routes/engine/analysis.py`, `routes/engine/simulate.py`, `routes/integrations/cotiza_export.py`, `routes/integrations/printer.py` | Locate the artifact through the store and materialise it with `local_artifact()` — the artifact's own path under `fs`, a temporary download under `s3`. |
 | `routes/engine/download.py` | Render artifacts come from the store (streamed, never redirected); a project's checked-in `exports/` files still come from the project directory. |
 | `routes/core/health.py` | Reports the store kind and whether it answers. |
 | `routes/editor/git_ops.py`, `routes/projects/animations.py`, `_render_static_part` | Also publish through the store — they render in the API process but serve from `/static`, so they would otherwise 404 under `s3`. |
 
-## Relationship to the dedicated render worker (#88)
+## What this leaves of the worker Deployment split (ADR-014, #88)
 
-`docs/operations/render-worker-capacity.md` splits the worker into its own
-Deployment and shares artifacts with a **ReadWriteMany PVC**. This change is the
-alternative to that PVC: with `RENDER_ARTIFACT_STORE=s3` the two pods need no
-shared filesystem at all, and the RWX StorageClass prerequisite — the one thing
-that can block that rollout — disappears. The two are compatible; only the
-sharing mechanism differs. Neither is enabled here.
+`docs/operations/render-worker-capacity.md` splits the render worker into its
+own Deployment and shares artifacts with a **ReadWriteMany PVC**. This change
+is the alternative to that PVC: with `RENDER_ARTIFACT_STORE=s3` the two pods
+need no shared filesystem at all, and the RWX StorageClass prerequisite — the
+one thing that can block that rollout — disappears.
+
+ADR-014's premise was that the split had to wait on this, because splitting the
+pod first would make every render succeed and then 404 on download, quietly.
+With the seam in place and both sides of it — write *and* read — going through
+the store, **what is left of the split is small, and none of it is about
+artifacts**:
+
+- a second Deployment manifest and its own resource requests and replica count
+  (the container image, command and environment are already the ones the
+  worker sidecar runs);
+- moving the `render-output` `emptyDir` mount to worker-only, and dropping it
+  from the API container — under `s3` the API never touches that directory,
+  and the worker uses it purely as scratch it deletes after each publish;
+- a HorizontalPodAutoscaler on the Redis queue depth, which is the point of
+  splitting at all;
+- keeping the two in step on `RENDER_ARTIFACT_STORE`. They must agree: an API
+  on `fs` and a worker on `s3` is the split-brain this whole change removes.
+  Two Deployments make that a configuration invariant rather than a shared
+  block of YAML, so it wants a check — the startup log names the backend on
+  both, and `/api/health` names the API's.
+
+The ordering is therefore: flip to `s3`, confirm the platform is happy on it,
+*then* split. The split no longer carries the artifact problem, and rolling it
+back does not require rolling back storage.
+
+Neither is enabled here.

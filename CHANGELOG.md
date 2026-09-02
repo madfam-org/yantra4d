@@ -48,8 +48,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   bucket stay out of an unauthenticated response). k8s manifests carry the
   settings on both containers with the endpoint and credentials as `optional:
   true` Secret references, so the pod starts without them; the bucket is
-  provisioned by the operator through Enclii. See
-  [`docs/operations/render-artifact-storage.md`](docs/operations/render-artifact-storage.md).
+  provisioned by the operator through Enclii.
+  The **read** side goes through the store too, which is what makes the flag
+  actually flippable: the render GC lists and deletes through it (so age expiry
+  works against a bucket instead of sweeping an empty scratch directory and
+  leaving every artifact in place forever); the three routes that each globbed
+  the static directory for "the latest render" — wall-thickness and overhang
+  analysis, the FEA stress overlay, the Cotiza quote — share one store lookup;
+  and the verifier and printer upload, which need a real file rather than a
+  stream, get one from `local_artifact()` — the artifact's own path under `fs`,
+  a temporary download removed afterwards under `s3`. The streamed read path
+  answers `Range` (206 with `Content-Range`, 416 when unsatisfiable, `If-Range`
+  honoured) and `If-None-Match`/`If-Modified-Since` (304), with ranges pushed
+  down to the bucket rather than sliced in the API pod. `/static` is now served
+  by a single store-backed rule on both backends — Flask's built-in `static`
+  endpoint shadowed the app's own view and is no longer registered — so the two
+  backends send identical headers, `Cache-Control: no-cache` included, and a
+  private project's artifact is `private, no-store` with no validator reaching
+  an unentitled caller either way. See
+  [`docs/operations/render-artifact-storage.md`](docs/operations/render-artifact-storage.md)
+  for the operator flip runbook and the rollback (flip the flag back).
 - **Multi-Rack Mode (custom-msh)** — New 6th mode producing 2–5 contiguous
   staining racks joined front-to-back (Y-axis, default) or side-by-side (X-axis).
   Y-axis stacking: racks share diamond grid junction guards at Y boundaries,

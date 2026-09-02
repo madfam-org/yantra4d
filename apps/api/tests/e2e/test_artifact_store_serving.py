@@ -127,11 +127,13 @@ def s3_client(s3_app):
 def _reference_static_client(static_dir):
     """`/static` exactly as it was wired before the artifact store existed.
 
-    Both rules, in the same order `app.py` created them: Flask's built-in
-    `static` endpoint (from `Flask(__name__)` with the static folder pointing at
-    the same directory, which is how production is wired) *and* the app's own
-    explicit view. Registering only one would measure a response the app never
-    actually produced — see `test_flasks_builtin_static_rule_is_what_answers`.
+    Both rules, in the same order `app.py` created them at the time: Flask's
+    built-in `static` endpoint (from `Flask(__name__)` with the static folder
+    pointing at the same directory, which is how production was wired) *and*
+    the app's own explicit view with the `Cache-Control` it set. The built-in
+    rule wins the tie, so this reference reproduces what production actually
+    served — which is what the current app must still match, now that the
+    ambiguity is resolved in favour of one store-backed rule.
     """
     reference = Flask(
         "reference-static", static_folder=str(static_dir), static_url_path="/static"

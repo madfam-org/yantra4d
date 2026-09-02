@@ -4,7 +4,7 @@ The project maintains a rigorous quality assurance process using the config-driv
 
 The verification engine uses `trimesh` to analyze exported STL geometry. Checks are organized into **manufacturing stages** (`geometry`, `printability`, `assembly_fit`), configurable per **mode** and per **part** from `project.json`.
 
-For Hyperobjects, an additional **Geometric Parity** check compares output across the OpenSCAD and CadQuery engines. The check CI enforces is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a separate, local-only tool for the same comparison; no workflow runs it.
+For Hyperobjects, an additional **Geometric Parity** check compares output across the OpenSCAD and CadQuery engines. The check CI enforces is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a separate, local-only tool for the same comparison; no workflow runs it, and as of 2026-09-02 it reports 10 of 29 comparable mode pairs passing — see [dual-engine.md](../architecture/dual-engine.md#the-geometric-parity-guarantee).
 
 ## Script: `tests/verify_design.py`
 
@@ -115,7 +115,7 @@ Add a `verification` section to `project.json`:
 
 - If the `verification` section is missing from `project.json`, the script uses built-in defaults with all checks enabled.
 - If the config JSON argument is omitted from the CLI, built-in defaults are used.
-- For Hyperobjects, `scripts/qa/verify_parity.py` compares a mode's two kernel outputs. It is run by hand, not on a schedule and not by any workflow, and it decides parity as:
+- For Hyperobjects, `scripts/qa/verify_parity.py` compares a mode's two kernel outputs. It is run by hand, not on a schedule and not by any workflow. It compares a mode only when both kernels really exist for it (a present `.scad` plus a present `.py`, declared or inferred from the `.scad` sibling), mirroring `generate_commons_catalog::_engine_support`; a CadQuery-only mode whose `scad_file` is a `.py` placeholder is skipped and counted apart from failures. For a comparable pair it decides parity as:
     - **AABB Alignment**: bounding-box extents must match within the tolerance. Hard.
     - **Relative Volume Tolerance**: up to 2% difference for complex kerneled meshes (CSG vs B-Rep). Hard.
     - **Hausdorff Distance Proxy**: up to 0.5mm divergence for tessellation noise. Reported as a warning only — it never changes the verdict.

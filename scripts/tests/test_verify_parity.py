@@ -13,7 +13,15 @@ but no workflow invokes it (ci.yml's ``test-geometric-parity`` job runs
 documented definition of what "the two kernels agree" means, so what it treats
 as agreement, as disagreement, and as not-applicable is worth pinning.
 
-Two things are separated deliberately:
+Three things are separated deliberately:
+
+  - ``classify_mode`` decides which modes are even comparable, and it mirrors
+    ``generate_commons_catalog._engine_support``. A CadQuery-only cartridge
+    declares ``scad_file`` pointing at its own ``.py`` as a placeholder, so
+    handing that path to OpenSCAD asks it to parse Python — which was every
+    mode in the commons (1363 of 1363 reported as parity failures, none of them
+    a comparable pair). A placeholder is now a SKIP that is counted apart from
+    failures, and the tests below assert OpenSCAD is never invoked for one.
 
   - ``check_mesh_parity`` decides agreement from geometry. Bounding box and
     volume are HARD (a real shape difference), while surface divergence only
@@ -256,6 +264,37 @@ def test_a_raising_cadquery_build_fails_rather_than_propagating(tmp_path, render
     assert renders["parity"] == []
 
 
+def test_a_sandbox_rejection_fails_the_cartridge_rather_than_the_run(
+        tmp_path, renders, monkeypatch):
+    """cq_runner rejects a script with sys.exit, and SystemExit is not an
+    Exception — one refused cartridge used to kill the audit mid-sweep."""
+    def refuse(*args):
+        raise SystemExit(1)
+
+    monkeypatch.setattr(lane, "run_cadquery_script", refuse)
+    directory = cartridge(tmp_path, hyperobject([
+        {"id": "main", "scad_file": "main.scad", "cq_file": "main.py"}]),
+        files=["main.scad", "main.py"])
+    assert lane.verify_project(directory) is False
+    assert renders["parity"] == []
+
+
+def test_a_sandbox_rejection_does_not_stop_the_remaining_cartridges(
+        tmp_path, monkeypatch, capsys, renders):
+    def refuse(*args):
+        raise SystemExit(1)
+
+    monkeypatch.setattr(lane, "run_cadquery_script", refuse)
+    commons(tmp_path, "a", hyperobject([
+        {"id": "m", "scad_file": "m.scad", "cq_file": "m.py"}]), files=["m.scad", "m.py"])
+    commons(tmp_path, "b", hyperobject([
+        {"id": "m", "scad_file": "m.scad", "cq_file": "m.py"}]), files=["m.scad", "m.py"])
+    code, out = run_audit(tmp_path, monkeypatch, capsys)
+    assert code == 1
+    assert "Failed: 2" in out          # both reached, neither aborted the sweep
+    assert "Candidates compared: 2" in out
+
+
 def test_a_failed_parity_comparison_fails_the_cartridge(tmp_path, renders, monkeypatch):
     monkeypatch.setattr(lane, "check_mesh_parity",
                         lambda a, b, t: (False, "Volumes differ by 12.0mm^3"))
@@ -355,3 +394,196 @@ def test_the_reason_reports_the_measured_surface_divergence(tmp_path):
         stl(tmp_path, "a.stl", box), stl(tmp_path, "b.stl", box))
     assert ok is True
     assert "mm tolerance" in reason
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# candidate selection — mirroring generate_commons_catalog._engine_support
+# ──────────────────────────────────────────────────────────────────────────────
+
+def classify(tmp_path, mode, files=()):
+    directory = cartridge(tmp_path, hyperobject([mode]), files=files)
+    verdict, _scad_path, _cq_path, detail = lane.classify_mode(mode, directory)
+    return verdict, detail
+
+
+def test_a_placeholder_scad_file_is_skipped_not_failed(tmp_path):
+    """A CadQuery-only mode names its own .py in scad_file; OpenSCAD cannot parse it."""
+    verdict, detail = classify(
+        tmp_path, {"id": "main", "scad_file": "main.py", "cq_file": "main.py"},
+        files=["main.py"])
+    assert verdict == "skip"
+    assert "placeholder" in detail
+
+
+def test_a_placeholder_mode_never_reaches_openscad(tmp_path, renders):
+    """The 1363-failure regression, pinned: no render, no failure, still True."""
+    directory = cartridge(tmp_path, hyperobject([
+        {"id": "main", "scad_file": "main.py", "cq_file": "main.py"}]), files=["main.py"])
+    assert lane.verify_project(directory) is True
+    assert renders["scad"] == []
+    assert renders["cq"] == []
+    assert renders["parity"] == []
+
+
+def test_a_placeholder_is_counted_apart_from_failures(tmp_path, renders):
+    stats: dict = {}
+    directory = cartridge(tmp_path, hyperobject([
+        {"id": "main", "scad_file": "main.py", "cq_file": "main.py"}]), files=["main.py"])
+    lane.verify_project(directory, stats=stats)
+    assert stats.get("mode_skipped_placeholder") == 1
+    assert stats.get("mode_failed") is None
+    assert stats.get("mode_candidate") is None
+
+
+def test_a_real_pair_is_still_a_candidate(tmp_path, renders):
+    stats: dict = {}
+    directory = cartridge(tmp_path, hyperobject([
+        {"id": "main", "scad_file": "main.scad", "cq_file": "main.py"}]),
+        files=["main.scad", "main.py"])
+    assert lane.verify_project(directory, stats=stats) is True
+    assert stats["mode_candidate"] == 1
+    assert stats["mode_passed"] == 1
+    assert len(renders["parity"]) == 1
+
+
+def test_a_placeholder_mode_does_not_suppress_a_real_pair_beside_it(tmp_path, renders):
+    stats: dict = {}
+    directory = cartridge(tmp_path, hyperobject([
+        {"id": "cq_only", "scad_file": "cq_only.py", "cq_file": "cq_only.py"},
+        {"id": "dual", "scad_file": "dual.scad", "cq_file": "dual.py"},
+    ]), files=["cq_only.py", "dual.scad", "dual.py"])
+    assert lane.verify_project(directory, stats=stats) is True
+    assert stats["mode_skipped_placeholder"] == 1
+    assert stats["mode_candidate"] == 1
+    assert renders["scad"] == [str(directory / "dual.scad")]
+
+
+def test_a_cq_file_that_is_not_python_is_skipped(tmp_path):
+    verdict, detail = classify(
+        tmp_path, {"id": "main", "scad_file": "main.scad", "cq_file": "main.json"},
+        files=["main.scad", "main.json"])
+    assert verdict == "skip"
+    assert "not a CadQuery source" in detail
+
+
+# --- inference is a guess; a declaration is a promise ----------------------
+
+def test_an_inferred_sibling_that_exists_makes_the_mode_a_candidate(tmp_path):
+    """_engine_support infers <name>.py from <name>.scad; so does this."""
+    verdict, _ = classify(tmp_path, {"id": "main", "scad_file": "main.scad"},
+                          files=["main.scad", "main.py"])
+    assert verdict == "candidate"
+
+
+def test_an_inferred_sibling_that_is_absent_is_an_openscad_only_mode(tmp_path):
+    verdict, detail = classify(tmp_path, {"id": "gauge", "scad_file": "gauge.scad"},
+                               files=["gauge.scad"])
+    assert verdict == "skip"
+    assert "OpenSCAD-only" in detail
+
+
+def test_a_declared_cq_file_that_is_absent_is_still_a_failure(tmp_path):
+    """The manifest promised a file it does not ship — not the same as absence."""
+    verdict, detail = classify(
+        tmp_path, {"id": "main", "scad_file": "main.scad", "cq_file": "main.py"},
+        files=["main.scad"])
+    assert verdict == "fail"
+    assert "CadQuery file missing" in detail
+
+
+def test_a_declared_scad_that_is_absent_is_a_failure_not_a_placeholder(tmp_path):
+    verdict, detail = classify(
+        tmp_path, {"id": "main", "scad_file": "main.scad", "cq_file": "main.py"},
+        files=["main.py"])
+    assert verdict == "fail"
+    assert "SCAD file missing" in detail
+
+
+def test_a_mode_naming_no_scad_file_at_all_is_a_failure(tmp_path):
+    verdict, detail = classify(tmp_path, {"id": "main", "cq_file": "main.py"},
+                               files=["main.py"])
+    assert verdict == "fail"
+    assert "Missing scad_file" in detail
+
+
+def test_modes_given_as_a_mapping_are_read(tmp_path, renders):
+    """Some manifests key modes by id; iterating that yields strings."""
+    directory = cartridge(tmp_path, {
+        "project": {"name": "Gears", "hyperobject": {"is_hyperobject": True}},
+        "modes": {"main": {"id": "main", "scad_file": "main.scad", "cq_file": "main.py"}},
+    }, files=["main.scad", "main.py"])
+    assert lane.verify_project(directory) is True
+    assert len(renders["parity"]) == 1
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# the audit's own arithmetic
+# ──────────────────────────────────────────────────────────────────────────────
+
+def run_audit(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["verify_parity.py"])
+    with pytest.raises(SystemExit) as exit_code:
+        lane.main()
+    return exit_code.value.code, capsys.readouterr().out
+
+
+def commons(tmp_path, slug, manifest, files=()):
+    directory = tmp_path / "projects" / slug
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "project.json").write_text(json.dumps(manifest), encoding="utf-8")
+    for name in files:
+        (directory / name).write_text("// geometry\n", encoding="utf-8")
+    return directory
+
+
+def test_an_all_placeholder_commons_reports_nothing_compared_and_exits_zero(
+        tmp_path, monkeypatch, capsys, renders):
+    commons(tmp_path, "a", hyperobject([
+        {"id": "m", "scad_file": "m.py", "cq_file": "m.py"}]), files=["m.py"])
+    commons(tmp_path, "b", hyperobject([
+        {"id": "m", "scad_file": "m.py", "cq_file": "m.py"}]), files=["m.py"])
+    code, out = run_audit(tmp_path, monkeypatch, capsys)
+    assert code == 0
+    assert "Candidates compared: 0" in out
+    assert "Skipped, CadQuery-only placeholder scad_file: 2" in out
+
+
+def test_a_cartridge_with_nothing_to_compare_is_not_reported_as_passed(
+        tmp_path, monkeypatch, capsys, renders):
+    """Counting an unmeasured cartridge as passed would claim agreement."""
+    commons(tmp_path, "a", hyperobject([
+        {"id": "m", "scad_file": "m.py", "cq_file": "m.py"}]), files=["m.py"])
+    code, out = run_audit(tmp_path, monkeypatch, capsys)
+    assert code == 0
+    assert "Passed: 0" in out
+    assert "No comparable pair: 1" in out
+
+
+def test_a_real_pair_is_counted_as_compared(tmp_path, monkeypatch, capsys, renders):
+    commons(tmp_path, "dual", hyperobject([
+        {"id": "m", "scad_file": "m.scad", "cq_file": "m.py"}]), files=["m.scad", "m.py"])
+    code, out = run_audit(tmp_path, monkeypatch, capsys)
+    assert code == 0
+    assert "Candidates compared: 1" in out
+    assert "Passed: 1" in out
+
+
+def test_a_failing_real_pair_still_exits_non_zero(
+        tmp_path, monkeypatch, capsys, renders):
+    monkeypatch.setattr(lane, "check_mesh_parity", lambda a, b, t: (False, "Volumes differ"))
+    commons(tmp_path, "dual", hyperobject([
+        {"id": "m", "scad_file": "m.scad", "cq_file": "m.py"}]), files=["m.scad", "m.py"])
+    code, out = run_audit(tmp_path, monkeypatch, capsys)
+    assert code == 1
+    assert "Failed: 1" in out
+
+
+def test_non_hyperobjects_are_counted_apart_from_everything_else(
+        tmp_path, monkeypatch, capsys, renders):
+    commons(tmp_path, "plain", {"project": {"name": "Plain"}, "modes": [
+        {"id": "m", "scad_file": "m.scad"}]}, files=["m.scad"])
+    code, out = run_audit(tmp_path, monkeypatch, capsys)
+    assert code == 0
+    assert "Not hyperobjects: 1" in out
+    assert "Hyperobjects Tested: 0" in out

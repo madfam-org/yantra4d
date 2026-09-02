@@ -1,0 +1,274 @@
+{
+  "project": {
+    "name": "Busbar Insulating Shroud",
+    "slug": "busbar-insulating-shroud",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The cover over the live metal, on the rail everything else already clips to. A control cabinet or a consumer unit is a row of terminals, a comb busbar and a great deal of exposed conductor between them. The commons has seven cartridges that clip to DIN EN 60715 TS35 rail and not one that covers anything — one terminates the rail, two carry the bar, one covers a single terminal, and the long runs between them stay open. Every one of those runs is a place a hand goes when a board is being worked on live, which is most of the times a board is worked on at all. Three modes share one compliant clip back: a tunnel over a bar run open at both ends, the same tunnel with lead-out slots, and a flat partition between two terminals. Every aperture is capped below the IEC 60529 IP2X access probe in the geometry, not in a warning.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "La tapa sobre el metal vivo, en el mismo riel al que ya se prende todo lo demás. Un gabinete de control o un centro de carga es una fila de bornes, una barra peine y bastante conductor expuesto entre ellos. El procomún tiene siete cartuchos que se prenden al riel DIN EN 60715 TS35 y ninguno que cubra nada — uno termina el riel, dos sostienen la barra, uno tapa un solo borne, y los tramos largos entre ellos quedan abiertos. Cada uno de esos tramos es un lugar al que va una mano cuando se trabaja un tablero energizado, que es la mayoría de las veces que se trabaja un tablero. Tres modos comparten un mismo dorso de clip flexible: un túnel sobre el tramo de barra, abierto en ambos extremos; el mismo túnel con ranuras de salida; y una mampara plana entre dos bornes. Toda abertura queda limitada por debajo de la sonda de acceso IP2X de IEC 60529 en la geometría, no en una advertencia.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Le capot sur le métal sous tension, sur le rail auquel tout le reste se clipse déjà. Une armoire de commande ou un tableau, c'est une rangée de bornes, un peigne de répartition et beaucoup de conducteur nu entre les deux. Le commun compte sept cartouches qui se clipsent sur rail DIN EN 60715 TS35 et aucune qui couvre quoi que ce soit — une termine le rail, deux portent la barre, une couvre une seule borne, et les longues portées entre elles restent ouvertes. Chacune de ces portées est un endroit où une main passe quand on intervient sous tension, c'est-à-dire la plupart du temps. Trois modes partagent un même dos à clip souple : un tunnel au-dessus d'une portée de barre, ouvert aux deux bouts ; le même tunnel avec des fentes de sortie ; et une cloison plane entre deux bornes. Toute ouverture est plafonnée sous le calibre d'accès IP2X de la CEI 60529 dans la géométrie, non dans un avertissement.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "A tampa sobre o metal energizado, na mesma calha em que todo o resto já se prende. Um painel de comando ou um quadro de distribuição é uma fileira de bornes, um barramento pente e bastante condutor exposto entre eles. O comum tem sete cartuchos que se prendem à calha DIN EN 60715 TS35 e nenhum que cubra coisa alguma — um termina a calha, dois sustentam o barramento, um tampa um único borne, e os trechos longos entre eles ficam abertos. Cada um desses trechos é um lugar aonde a mão vai quando se mexe num quadro energizado, que é a maioria das vezes em que se mexe num quadro. Três modos compartilham um mesmo dorso de clipe flexível: um túnel sobre o trecho de barramento, aberto nas duas pontas; o mesmo túnel com rasgos de saída; e uma divisória plana entre dois bornes. Toda abertura é limitada abaixo da sonda de acesso IP2X da IEC 60529 na geometria, não num aviso.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/busbar-insulating-shroud.webp",
+    "difficulty": "beginner",
+    "tags": ["din-rail", "ts35", "busbar", "shroud", "terminal-cover", "ip2x", "finger-safe", "control-cabinet", "infrastructure", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "busbar_shroud",
+      "label": { "en": "Busbar Shroud", "es": "Cubierta de Barra", "fr": "Capot de barre", "pt": "Capa de Barramento" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["busbar_shroud"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "terminal_shroud",
+      "label": { "en": "Terminal Shroud", "es": "Cubierta de Bornes", "fr": "Capot de bornes", "pt": "Capa de Bornes" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["terminal_shroud"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 13 }
+    },
+    {
+      "id": "end_barrier",
+      "label": { "en": "End Barrier", "es": "Mampara Separadora", "fr": "Cloison de séparation", "pt": "Divisória de Separação" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["end_barrier"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 11 }
+    }
+  ],
+  "parts": [
+    { "id": "busbar_shroud", "render_mode": 0, "color": "#8d6e63",
+      "label": { "en": "Shroud", "es": "Cubierta", "fr": "Capot", "pt": "Capa" } },
+    { "id": "terminal_shroud", "render_mode": 0, "color": "#a1887f",
+      "label": { "en": "Terminal Shroud", "es": "Cubierta de Bornes", "fr": "Capot de bornes", "pt": "Capa de Bornes" } },
+    { "id": "end_barrier", "render_mode": 0, "color": "#bcaaa4",
+      "label": { "en": "Barrier", "es": "Mampara", "fr": "Cloison", "pt": "Divisória" } }
+  ],
+  "parameter_groups": [
+    { "id": "rail", "label": { "en": "DIN Rail", "es": "Riel DIN", "fr": "Rail DIN", "pt": "Calha DIN" } },
+    { "id": "cover", "label": { "en": "Covered Zone", "es": "Zona Cubierta", "fr": "Zone couverte", "pt": "Zona Coberta" } },
+    { "id": "access", "label": { "en": "Access & Apertures", "es": "Acceso y Aberturas", "fr": "Accès et ouvertures", "pt": "Acesso e Aberturas" } }
+  ],
+  "parameters": [
+    {
+      "id": "rail_depth_class", "type": "select", "default": "ts35_7v5",
+      "options": [
+        { "value": "ts35_7v5", "label": "TS35 x 7.5 (DIN EN 60715)" },
+        { "value": "ts35_15", "label": "TS35 x 15 (DIN EN 60715)" }
+      ],
+      "group": "rail", "modes": ["busbar_shroud", "terminal_shroud", "end_barrier"],
+      "label": { "en": "Rail Section", "es": "Sección de Riel", "fr": "Section de rail", "pt": "Seção da Calha" },
+      "tooltip": {
+        "en": "Both TS35 sections share the same 35 mm span across the lips, so the hooks catch identically; only the jaw depth changes",
+        "es": "Ambas secciones TS35 comparten el mismo claro de 35 mm entre labios, así que los ganchos prenden igual; solo cambia la profundidad de la mordaza",
+        "fr": "Les deux sections TS35 partagent le même entraxe de 35 mm entre lèvres : les crochets accrochent à l'identique, seule la profondeur de la mâchoire change",
+        "pt": "As duas seções TS35 compartilham o mesmo vão de 35 mm entre lábios, então os ganchos prendem igual; só muda a profundidade da garra"
+      }
+    },
+    {
+      "id": "spring_thick", "type": "slider", "default": 2.0, "min": 1.2, "max": 4.0, "step": 0.1,
+      "group": "rail", "modes": ["busbar_shroud", "terminal_shroud", "end_barrier"],
+      "label": { "en": "Spring Beam (mm)", "es": "Viga de Resorte (mm)", "fr": "Lame ressort (mm)", "pt": "Viga de Mola (mm)" },
+      "tooltip": {
+        "en": "Thickness of the compliant cantilever. A shroud that falls off is worse than no shroud, because it was trusted",
+        "es": "Espesor del voladizo flexible. Una cubierta que se cae es peor que ninguna cubierta, porque en ella se confiaba",
+        "fr": "Épaisseur du porte-à-faux souple. Un capot qui tombe est pire que pas de capot, parce qu'on lui faisait confiance",
+        "pt": "Espessura do balanço flexível. Uma capa que cai é pior que nenhuma capa, porque nela se confiava"
+      }
+    },
+    {
+      "id": "plate_th", "type": "slider", "default": 3.0, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "rail", "modes": ["busbar_shroud", "terminal_shroud", "end_barrier"],
+      "label": { "en": "Back Plate (mm)", "es": "Placa Trasera (mm)", "fr": "Platine arrière (mm)", "pt": "Placa Traseira (mm)" },
+      "tooltip": {
+        "en": "The plate the hooks root into and the cover grows from",
+        "es": "La placa donde se arraigan los ganchos y de la que crece la cubierta",
+        "fr": "La platine dans laquelle les crochets s'enracinent et d'où part le capot",
+        "pt": "A placa em que os ganchos se enraízam e da qual a capa cresce"
+      }
+    },
+    {
+      "id": "run_len", "type": "slider", "default": 45.0, "min": 10.0, "max": 120.0, "step": 1.0,
+      "group": "cover", "modes": ["busbar_shroud", "terminal_shroud", "end_barrier"],
+      "label": { "en": "Run Length (mm)", "es": "Largo de Tramo (mm)", "fr": "Longueur de portée (mm)", "pt": "Comprimento do Trecho (mm)" },
+      "tooltip": {
+        "en": "How much rail the cover spans. Print several short ones rather than one long one — a run you can lift off in sections is a run someone will actually put back",
+        "es": "Cuánto riel abarca la cubierta. Imprime varias cortas en vez de una larga — un tramo que se puede quitar por partes es un tramo que alguien sí va a volver a poner",
+        "fr": "Longueur de rail couverte. Imprimez plusieurs courtes plutôt qu'une longue — une portée que l'on retire par sections est une portée que quelqu'un remettra vraiment",
+        "pt": "Quanto de calha a capa cobre. Imprima várias curtas em vez de uma longa — um trecho que se tira por partes é um trecho que alguém de fato vai recolocar"
+      }
+    },
+    {
+      "id": "bar_w", "type": "slider", "default": 12.0, "min": 4.0, "max": 40.0, "step": 0.5,
+      "group": "cover", "modes": ["busbar_shroud", "terminal_shroud"],
+      "label": { "en": "Covered Width (mm)", "es": "Ancho Cubierto (mm)", "fr": "Largeur couverte (mm)", "pt": "Largura Coberta (mm)" },
+      "tooltip": {
+        "en": "Across the rail: the width of the conductor zone the tunnel spans. Measure the widest thing under it, including the screw heads",
+        "es": "A través del riel: el ancho de la zona de conductor que abarca el túnel. Mide lo más ancho que quede debajo, incluidas las cabezas de tornillo",
+        "fr": "En travers du rail : largeur de la zone de conducteur couverte par le tunnel. Mesurez l'élément le plus large en dessous, têtes de vis comprises",
+        "pt": "Através da calha: a largura da zona de condutor que o túnel cobre. Meça a coisa mais larga embaixo, incluindo as cabeças de parafuso"
+      }
+    },
+    {
+      "id": "bar_h", "type": "slider", "default": 25.0, "min": 5.0, "max": 50.0, "step": 0.5,
+      "group": "cover", "modes": ["busbar_shroud", "terminal_shroud"],
+      "label": { "en": "Covered Height (mm)", "es": "Altura Cubierta (mm)", "fr": "Hauteur couverte (mm)", "pt": "Altura Coberta (mm)" },
+      "tooltip": {
+        "en": "Clearance under the tunnel roof. Leave room for the conductor's bend radius, not just for the conductor",
+        "es": "Espacio libre bajo el techo del túnel. Deja lugar para el radio de curvatura del conductor, no solo para el conductor",
+        "fr": "Dégagement sous le toit du tunnel. Prévoyez la place du rayon de courbure du conducteur, pas seulement du conducteur",
+        "pt": "Folga sob o teto do túnel. Deixe espaço para o raio de curvatura do condutor, não só para o condutor"
+      }
+    },
+    {
+      "id": "barrier_h", "type": "slider", "default": 45.0, "min": 15.0, "max": 80.0, "step": 1.0,
+      "group": "cover", "modes": ["end_barrier"],
+      "label": { "en": "Barrier Height (mm)", "es": "Altura de Mampara (mm)", "fr": "Hauteur de cloison (mm)", "pt": "Altura da Divisória (mm)" },
+      "tooltip": {
+        "en": "How far the partition stands off the rail. It has to reach past the tallest conductor on either side of it or it separates nothing",
+        "es": "Cuánto sobresale la mampara del riel. Debe rebasar el conductor más alto de cualquiera de sus dos lados, o no separa nada",
+        "fr": "Hauteur de la cloison au-dessus du rail. Elle doit dépasser le conducteur le plus haut de part et d'autre, sinon elle ne sépare rien",
+        "pt": "O quanto a divisória se ergue acima da calha. Precisa ultrapassar o condutor mais alto de cada lado, ou não separa nada"
+      }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 5.0, "step": 0.1,
+      "group": "cover", "modes": ["busbar_shroud", "terminal_shroud", "end_barrier"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)", "fr": "Paroi (mm)", "pt": "Parede (mm)" },
+      "tooltip": {
+        "en": "Cover and barrier thickness. This is the material between a hand and a conductor, so it is the last thing to make thin",
+        "es": "Espesor de cubierta y mampara. Es el material entre una mano y un conductor, así que es lo último que conviene adelgazar",
+        "fr": "Épaisseur du capot et de la cloison. C'est la matière entre une main et un conducteur : c'est la dernière chose à amincir",
+        "pt": "Espessura da capa e da divisória. É o material entre uma mão e um condutor, então é a última coisa a afinar"
+      }
+    },
+    {
+      "id": "aperture", "type": "slider", "default": 6.0, "min": 0.0, "max": 11.0, "step": 0.5,
+      "group": "access", "modes": ["terminal_shroud"],
+      "label": { "en": "Lead-out Aperture (mm)", "es": "Abertura de Salida (mm)", "fr": "Ouverture de sortie (mm)", "pt": "Abertura de Saída (mm)" },
+      "tooltip": {
+        "en": "Size of the slots conductors leave through. The slider stops at 11 mm and the GEOMETRY caps it there too — the IEC 60529 IP2X access probe is a Ø12 mm jointed test finger, and a limit enforced only in the UI is one a preset or an API call walks straight through",
+        "es": "Tamaño de las ranuras por donde salen los conductores. El deslizador se detiene en 11 mm y la GEOMETRÍA también lo limita ahí — la sonda de acceso IP2X de IEC 60529 es un dedo de prueba articulado de Ø12 mm, y un límite impuesto solo en la interfaz es uno que un preajuste o una llamada de API se salta",
+        "fr": "Taille des fentes par lesquelles sortent les conducteurs. Le curseur s'arrête à 11 mm et la GÉOMÉTRIE l'y plafonne aussi — le calibre d'accès IP2X de la CEI 60529 est un doigt d'épreuve articulé de Ø12 mm, et une limite imposée seulement dans l'interface est une limite qu'un préréglage ou un appel d'API franchit sans peine",
+        "pt": "Tamanho dos rasgos por onde os condutores saem. O controle para em 11 mm e a GEOMETRIA também limita ali — a sonda de acesso IP2X da IEC 60529 é um dedo de prova articulado de Ø12 mm, e um limite imposto só na interface é um que uma predefinição ou uma chamada de API atravessa"
+      }
+    },
+    {
+      "id": "lead_outs", "type": "slider", "default": 4.0, "min": 0.0, "max": 10.0, "step": 1.0,
+      "group": "access", "modes": ["terminal_shroud"],
+      "label": { "en": "Lead-out Count", "es": "Número de Salidas", "fr": "Nombre de sorties", "pt": "Número de Saídas" },
+      "tooltip": {
+        "en": "How many conductors leave the front face. The count is derived from the space that survives the end margins and dropped entirely when there is none — never picked first and trimmed",
+        "es": "Cuántos conductores salen por la cara frontal. El número se deriva del espacio que sobrevive a los márgenes y se descarta por completo cuando no queda — nunca se elige primero y se recorta",
+        "fr": "Nombre de conducteurs sortant en face avant. Le nombre découle de l'espace qui subsiste après les marges et est abandonné s'il n'en reste aucun — jamais choisi d'abord puis rogné",
+        "pt": "Quantos condutores saem pela face frontal. A quantidade deriva do espaço que sobra depois das margens e é descartada por completo quando não sobra — nunca escolhida primeiro e aparada depois"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "comb_run", "mode": "busbar_shroud",
+      "label": { "en": "Comb Busbar Run (45 mm)", "es": "Tramo de Barra Peine (45 mm)", "fr": "Portée de peigne (45 mm)", "pt": "Trecho de Barramento Pente (45 mm)" },
+      "values": { "run_len": 45.0, "bar_w": 12.0, "bar_h": 25.0, "wall": 2.4 }
+    },
+    {
+      "id": "wide_terminal_block", "mode": "terminal_shroud",
+      "label": { "en": "Wide Terminal Block", "es": "Bloque de Bornes Ancho", "fr": "Bornier large", "pt": "Bloco de Bornes Largo" },
+      "values": { "run_len": 70.0, "bar_w": 22.0, "bar_h": 30.0, "aperture": 8.0, "lead_outs": 6.0 }
+    },
+    {
+      "id": "sealed_run", "mode": "terminal_shroud",
+      "label": { "en": "No Lead-outs (sealed front)", "es": "Sin Salidas (frente cerrado)", "fr": "Sans sorties (face pleine)", "pt": "Sem Saídas (frente fechada)" },
+      "values": { "lead_outs": 0.0, "run_len": 45.0, "bar_w": 12.0 }
+    },
+    {
+      "id": "phase_barrier", "mode": "end_barrier",
+      "label": { "en": "Phase Barrier (45 mm)", "es": "Mampara de Fase (45 mm)", "fr": "Cloison de phase (45 mm)", "pt": "Divisória de Fase (45 mm)" },
+      "values": { "barrier_h": 45.0, "wall": 3.0, "run_len": 20.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 2.0 mm. This is the material between a hand and a conductor; a printed wall thinner than this is a gesture, not a barrier",
+        "es": "La pared debe ser de al menos 2.0 mm. Es el material entre una mano y un conductor; una pared impresa más delgada es un gesto, no una barrera",
+        "fr": "La paroi doit faire au moins 2,0 mm. C'est la matière entre une main et un conducteur ; une paroi imprimée plus fine est un geste, pas une barrière",
+        "pt": "A parede deve ter pelo menos 2,0 mm. É o material entre uma mão e um condutor; uma parede impressa mais fina é um gesto, não uma barreira"
+      }
+    },
+    {
+      "expression": "aperture <= 11.0",
+      "severity": "error",
+      "message": {
+        "en": "The IEC 60529 IP2X access probe is a Ø12 mm jointed test finger. An aperture that a finger enters is not a shroud, and the geometry caps this independently of the slider",
+        "es": "La sonda de acceso IP2X de IEC 60529 es un dedo de prueba articulado de Ø12 mm. Una abertura por la que entra un dedo no es una cubierta, y la geometría lo limita con independencia del deslizador",
+        "fr": "Le calibre d'accès IP2X de la CEI 60529 est un doigt d'épreuve articulé de Ø12 mm. Une ouverture où un doigt entre n'est pas un capot, et la géométrie la plafonne indépendamment du curseur",
+        "pt": "A sonda de acesso IP2X da IEC 60529 é um dedo de prova articulado de Ø12 mm. Uma abertura por onde um dedo entra não é uma capa, e a geometria limita isso independentemente do controle"
+      }
+    },
+    {
+      "expression": "bar_h >= 10.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below 10 mm of covered height there is no room for a conductor's bend radius, and a conductor forced against the roof of a shroud is a conductor being abraded",
+        "es": "Con menos de 10 mm de altura cubierta no hay lugar para el radio de curvatura del conductor, y un conductor forzado contra el techo de una cubierta es un conductor que se está desgastando",
+        "fr": "En dessous de 10 mm de hauteur couverte, il n'y a pas de place pour le rayon de courbure du conducteur, et un conducteur forcé contre le toit d'un capot est un conducteur qui s'abrase",
+        "pt": "Abaixo de 10 mm de altura coberta não há espaço para o raio de curvatura do condutor, e um condutor forçado contra o teto de uma capa é um condutor sendo desgastado"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [110, 90, 75] },
+    { "id": "rail", "label": { "en": "Rail End", "es": "Extremo de Riel", "fr": "Bout de rail", "pt": "Topo da Calha" }, "position": [0, -150, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 9, "per_unit": 3, "per_part": 12,
+    "fn_factor": 32, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "infrastructure",
+    "cdg_interfaces": [
+      {
+        "id": "din_ts35_rail",
+        "label": { "en": "DIN TS35 Rail", "es": "Riel DIN TS35", "fr": "Rail DIN TS35", "pt": "Calha DIN TS35" },
+        "geometry_type": "rail",
+        "standard": "DIN EN 60715 TS35",
+        "parameters": ["rail_depth_class", "run_len", "plate_th", "spring_thick"],
+        "compatible_with": ["din-module", "din-relay", "din-rail-clip", "din-terminal-comb", "terminal-cover", "busbar-support", "devboard-tray"]
+      },
+      {
+        "id": "finger_safe_aperture",
+        "label": { "en": "Finger-Safe Aperture", "es": "Abertura a Prueba de Dedo", "fr": "Ouverture protégée au doigt", "pt": "Abertura à Prova de Dedo" },
+        "geometry_type": "pocket",
+        "standard": "IEC 60529 IP2X access probe, 12 mm jointed test finger; apertures capped at 11 mm minor dimension",
+        "parameters": ["aperture", "lead_outs", "wall"]
+      },
+      {
+        "id": "compliant_spring_hook",
+        "label": { "en": "Compliant Spring Hook", "es": "Gancho Flexible", "fr": "Crochet souple", "pt": "Gancho Flexível" },
+        "geometry_type": "snap",
+        "standard": "internal — folded cantilever, stiffness set by spring_thick",
+        "parameters": ["spring_thick", "plate_th"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Most electrical work in the world happens on boards that were never finished to a drawing: a school extension, a clinic generator changeover, a workshop that grew, a village mini-grid assembled from what arrived. Those boards are worked on by people who did not build them, often in poor light, often with the supply still on because turning it off means turning off the clinic. The exposed run between two terminals is where a hand goes, and the shroud that should be over it is a moulded part for a specific manufacturer's terminal, in a catalogue, in another country. A printed cover on the rail that is already there does not make an installation compliant and does not pretend to — but a barrier between a hand and a conductor is a barrier whether or not it has a certificate, and the alternative on most of these boards is nothing at all. Recycled filament is not offered: the sprung hook must hold for years in a warm cabinet, and a shroud that falls off is worse than no shroud, because it was trusted.",
+      "es": "La mayor parte del trabajo eléctrico del mundo ocurre en tableros que nunca se terminaron conforme a un plano: la ampliación de una escuela, la transferencia de planta de una clínica, un taller que fue creciendo, una microrred armada con lo que fue llegando. En esos tableros trabaja gente que no los construyó, muchas veces con mala luz y muchas veces con el suministro encendido, porque apagarlo significa apagar la clínica. El tramo expuesto entre dos bornes es adonde va una mano, y la cubierta que debería estar ahí es una pieza moldeada para el borne de un fabricante en particular, en un catálogo, en otro país. Una tapa impresa sobre el riel que ya está ahí no vuelve conforme a la instalación y no pretende hacerlo — pero una barrera entre una mano y un conductor es una barrera tenga o no certificado, y la alternativa en la mayoría de esos tableros es nada. No se ofrece filamento reciclado: el gancho de resorte debe aguantar años en un gabinete caliente, y una cubierta que se cae es peor que ninguna cubierta, porque en ella se confiaba.",
+      "fr": "L'essentiel du travail électrique dans le monde se fait sur des tableaux qui n'ont jamais été achevés selon un plan : l'extension d'une école, l'inversion de source d'un dispensaire, un atelier qui a grandi, un mini-réseau assemblé avec ce qui est arrivé. Ces tableaux sont manipulés par des gens qui ne les ont pas construits, souvent dans une lumière médiocre, souvent sous tension, parce que couper signifie couper le dispensaire. La portée nue entre deux bornes est l'endroit où passe une main, et le capot qui devrait s'y trouver est une pièce moulée pour la borne d'un fabricant précis, dans un catalogue, dans un autre pays. Un capot imprimé sur le rail déjà présent ne rend pas une installation conforme et ne prétend pas le faire — mais une barrière entre une main et un conducteur est une barrière, certificat ou non, et l'alternative sur la plupart de ces tableaux, c'est rien du tout. Le filament recyclé n'est pas proposé : le crochet ressort doit tenir des années en armoire chaude, et un capot qui tombe est pire que pas de capot, parce qu'on lui faisait confiance.",
+      "pt": "A maior parte do trabalho elétrico do mundo acontece em quadros que nunca foram terminados conforme um projeto: a ampliação de uma escola, a transferência de gerador de um posto de saúde, uma oficina que foi crescendo, uma minirrede montada com o que foi chegando. Nesses quadros mexe gente que não os construiu, muitas vezes com pouca luz e muitas vezes com a alimentação ligada, porque desligar significa desligar o posto de saúde. O trecho exposto entre dois bornes é aonde a mão vai, e a capa que deveria estar ali é uma peça moldada para o borne de um fabricante específico, num catálogo, em outro país. Uma tampa impressa na calha que já está ali não torna a instalação conforme e não finge tornar — mas uma barreira entre uma mão e um condutor é uma barreira, com certificado ou sem, e a alternativa na maioria desses quadros é nada. Filamento reciclado não é oferecido: o gancho de mola precisa aguentar anos num painel quente, e uma capa que cai é pior que nenhuma capa, porque nela se confiava."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["din-rail", "ts35", "busbar", "shroud", "terminal-cover", "ip2x", "finger-safe", "control-cabinet", "infrastructure", "hyperobject", "commons"]
+}

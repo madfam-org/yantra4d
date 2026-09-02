@@ -57,7 +57,7 @@
     "overhang_analysis": true
   },
   "madfam": {
-    "backend_renders_per_hour": 500,
+    "backend_renders_per_hour": -1,
     "max_projects": -1,
     "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],
     "cadquery_engine": true,
@@ -68,7 +68,7 @@
     "github_private": true,
     "ai_configurator": true,
     "ai_code_editor": true,
-    "ai_requests_per_hour": 300,
+    "ai_requests_per_hour": -1,
     "premium_export": true,
     "print_dispatch": true,
     "animation": true,

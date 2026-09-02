@@ -10,6 +10,7 @@ from flask import Blueprint, Response, jsonify, request
 from extensions import limiter
 from middleware.auth import require_tier
 from routes.projects.bom import _safe_eval_formula
+from services.core.project_access import require_project_access
 from services.integrations.forgesight import forgesight_client
 from utils.project_resolver import require_project
 from utils.route_helpers import error_response
@@ -24,6 +25,7 @@ logger = logging.getLogger(__name__)
 @require_project()
 @require_tier("pro")
 @limiter.limit("30/hour")
+@require_project_access
 def get_cart(slug: str, project_dir) -> Response | tuple[Response, int]:
     """Resolve BOM items against ForgeSight for live pricing.
 

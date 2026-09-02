@@ -20,6 +20,7 @@ from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth
 from services.core.implicit_engine import run_render as run_implicit_render
+from services.core.project_access import require_project_access
 from services.core.tier_service import check_feature, resolve_tier
 from services.engine.cadquery_engine import (
     build_cadquery_command,
@@ -102,6 +103,7 @@ def _render_frame(engine: str, manifest, output_path: str, params: dict,
 @require_valid_slug
 @optional_auth
 @limiter.limit(rate_limits.ANIMATION_RENDER)
+@require_project_access
 def render_animation(slug: str, animation_id: str):
     """
     Render all frames of a parametric animation defined in project.json.
@@ -215,6 +217,7 @@ def render_animation(slug: str, animation_id: str):
 @animations_bp.route("/api/projects/<slug>/animations", methods=["GET"])
 @require_valid_slug
 @optional_auth
+@require_project_access
 def list_animations(slug: str):
     """Return the animations[] array from the project manifest."""
     tier = resolve_tier(getattr(request, "auth_claims", None))

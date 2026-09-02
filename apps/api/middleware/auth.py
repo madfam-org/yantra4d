@@ -105,6 +105,30 @@ def require_auth(f):
     return decorated
 
 
+def claim_roles(claims: dict | None) -> set[str]:
+    """Roles carried by a token.
+
+    Supports both spellings Janua may emit: a ``roles`` array (or a bare string)
+    and a singular ``role``. Returns a new set rather than mutating the claims —
+    the previous inline version appended ``role`` into the token's own ``roles``
+    list, so a second read of the same claims saw a role that was not in it.
+    """
+    if not claims:
+        return set()
+
+    roles = claims.get("roles", [])
+    if isinstance(roles, str):
+        roles = [roles]
+    elif not isinstance(roles, (list, tuple, set)):
+        roles = []
+
+    result = {str(r) for r in roles}
+    single = claims.get("role", "")
+    if single:
+        result.add(str(single))
+    return result
+
+
 def require_role(role: str):
     """Decorator factory: require_auth + check that claims contain the given role."""
     def decorator(f):
@@ -118,15 +142,7 @@ def require_role(role: str):
             if not claims:
                 return error_response("Authentication required", 401)
 
-            # Check role in claims — supports both 'role' string and 'roles' array
-            user_roles = claims.get("roles", [])
-            if isinstance(user_roles, str):
-                user_roles = [user_roles]
-            user_role = claims.get("role", "")
-            if user_role:
-                user_roles.append(user_role)
-
-            if role not in user_roles:
+            if role not in claim_roles(claims):
                 return error_response("Insufficient permissions", 403)
 
             return f(*args, **kwargs)
@@ -154,24 +170,48 @@ def require_tier(min_tier: str):
     return decorator
 
 
+def apply_optional_auth() -> dict | None:
+    """Populate ``request.auth_claims``/``current_user`` from an optional bearer.
+
+    This is the body of :func:`optional_auth`, exposed so code that is not a
+    route decorator (the project-access checks, which run inside a view) can
+    use the same decode path instead of reimplementing it.
+    """
+    request.auth_claims = None
+    request.current_user = None
+
+    if not Config.AUTH_ENABLED:
+        return None
+
+    token = _extract_bearer_token()
+    if token:
+        try:
+            request.auth_claims = decode_token(token)
+            _sync_user_from_claims(request.auth_claims)
+        except Exception as e:
+            logger.debug("Optional auth token invalid: %s", e)
+
+    return request.auth_claims
+
+
+def ensure_optional_auth() -> dict | None:
+    """Claims for this request, decoding the bearer only if nothing has yet.
+
+    Every decorator here sets ``request.auth_claims`` (to None for anonymous
+    callers) before the view runs, so its absence means no auth decorator is on
+    this route. Checking first keeps a route that already has ``@optional_auth``
+    from decoding the token — and re-running the user upsert — a second time.
+    """
+    if hasattr(request, "auth_claims"):
+        return request.auth_claims
+    return apply_optional_auth()
+
+
 def optional_auth(f):
     """Decorator: decode token if present, set request.auth_claims (None if anonymous)."""
     @functools.wraps(f)
     def decorated(*args, **kwargs):
-        request.auth_claims = None
-        request.current_user = None
-
-        if not Config.AUTH_ENABLED:
-            return f(*args, **kwargs)
-
-        token = _extract_bearer_token()
-        if token:
-            try:
-                request.auth_claims = decode_token(token)
-                _sync_user_from_claims(request.auth_claims)
-            except Exception as e:
-                logger.debug("Optional auth token invalid: %s", e)
-
+        apply_optional_auth()
         return f(*args, **kwargs)
 
     return decorated

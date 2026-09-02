@@ -15,6 +15,7 @@ from config import Config
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import require_tier
+from services.core.project_access import require_project_access
 from services.editor.git_operations import (
     git_archive_head,
     git_commit,
@@ -100,6 +101,7 @@ GITHUB_URL_PATTERN = re.compile(r"^https://github\.com/[\w.-]+/[\w.-]+(\.git)?$"
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_CONNECT)
 @require_json_body
+@require_project_access
 def connect_remote(slug):
     """Add or update origin remote URL and update project metadata."""
     project_dir, err = _get_git_project(slug)
@@ -147,6 +149,7 @@ def connect_remote(slug):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_STATUS)
+@require_project_access
 def get_status(slug):
     """Get git working tree status."""
     project_dir, err = _get_git_project(slug)
@@ -163,6 +166,7 @@ def get_status(slug):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_DIFF)
+@require_project_access
 def get_diff(slug):
     """Get unified diff for working tree or a specific file."""
     project_dir, err = _get_git_project(slug)
@@ -180,6 +184,7 @@ def get_diff(slug):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_LOG)
+@require_project_access
 def get_log(slug):
     """Get recent commit log for the project."""
     project_dir, err = _get_git_project(slug)
@@ -201,6 +206,7 @@ def get_log(slug):
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_COMMIT)
 @require_json_body
+@require_project_access
 def commit(slug):
     """Stage files and commit."""
     project_dir, err = _get_git_project(slug)
@@ -233,6 +239,7 @@ def commit(slug):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_PUSH)
+@require_project_access
 def push(slug):
     """Push commits to origin."""
     project_dir, err = _get_github_project(slug)
@@ -254,6 +261,7 @@ def push(slug):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_PULL)
+@require_project_access
 def pull(slug):
     """Pull latest from origin."""
     project_dir, err = _get_github_project(slug)
@@ -276,6 +284,7 @@ def pull(slug):
 @require_tier("pro")
 @require_json_body
 @handle_exceptions
+@require_project_access
 def render_head(slug):
     """Render the HEAD version of the selected SCAD file's parts."""
     project_dir, err = _get_git_project(slug)

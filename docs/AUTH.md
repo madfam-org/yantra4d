@@ -486,8 +486,49 @@ Auth settings are defined in `apps/api/config.py`.
 | `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "madfam"}`. Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
 | `PRIVATE_PROJECTS` | *(unset)* | Comma-separated slugs forced private regardless of their manifest. Read at call time. See [Private projects](#private-projects). |
 | `PROJECT_ACCESS_GRANTS` | *(unset)* | JSON object mapping slug to a list of emails granted access to that private project, e.g. `{"acme-bracket": ["someone@example.com"]}`. Read at call time. |
+| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `madfam`. Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. Distinct from `TIER_OVERRIDES`, which keys off a signed identity and therefore needs auth ON. See [Harness tier](#harness-tier). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
+
+### Harness tier
+
+`AUTH_ENABLED=false` does **not** by itself unlock paid features on the render
+path. `_effective_tier()` in `apps/api/routes/engine/render.py` grants the top
+tier only when auth is off **and** Flask debug is on; auth-off with debug off —
+the state CI and the whole API test suite run in — stays `guest`, which is what
+lets the tier-enforcement tests keep seeing 403s.
+
+That leaves a real harness stuck: the nightly browser audit
+(`apps/studio/e2e/tests/23-browser-audit`) exists to drive real renders, and
+gridfinity's default `bin` mode is CadQuery, which `guest` may not use
+(`apps/api/tiers.json`). Before this variable every one of those renders was
+refused and the studio answered with its upgrade prompt.
+
+`HARNESS_TIER` is the explicit way to say so:
+
+```bash
+AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
+```
+
+- **Empty by default** — no deployment or test changes behaviour unless it is
+  deliberately set.
+- **Ignored whenever `AUTH_ENABLED` is `true`**, so it cannot widen
+  entitlements in a real deployment even if the variable leaks into one.
+- **Ignored unless it names a tier in `tiers.json`**; a bad value logs a
+  warning and leaves the request gated rather than failing to boot.
+- It affects the render gating path only. `/api/me` and `require_tier()`
+  already report `madfam` whenever auth is off, so setting
+  `HARNESS_TIER=madfam` makes the server agree with what the client was
+  already being told.
+- It does **not** overlap [Identity tier overrides](#identity-tier-overrides).
+  `TIER_OVERRIDES` maps a signed identity's email to a tier and so applies only
+  when auth is ON and a token is present; a harness running with
+  `AUTH_ENABLED=false` sends no token and has no identity to match. The two are
+  mutually exclusive by construction.
+
+Implemented by `harness_tier_override()` in
+`apps/api/services/core/tier_service.py`; both directions are pinned by
+`apps/api/tests/unit/test_harness_tier.py`.
 
 ---
 

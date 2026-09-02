@@ -99,10 +99,19 @@ npm run test:coverage # With coverage thresholds
 npm run lint          # ESLint + jsx-a11y accessibility rules
 npm run analyze       # Bundle size visualization (opens stats.html)
 
+npx playwright test --project=chromium  # E2E, mocked APIs
+npx playwright test --project=audit     # Browser audit: REAL backend + real
+                                        # OpenSCAD renders, no Docker. Needs
+                                        # Redis + apps/api on :5000 + the render
+                                        # worker — see the suite README below.
 # i18n gate (CI job `i18n-audit`): locale key parity fails hard; the hardcoded-string
 # count is a ratchet against scripts/qa/i18n_baseline.json (`--update-baseline` to lower it).
 python3 ../../scripts/qa/i18n_audit.py
 ```
+
+The nightly browser audit suite documents its own harness, skip helpers and
+assertion conventions in
+[`e2e/tests/23-browser-audit/README.md`](e2e/tests/23-browser-audit/README.md).
 
 ### Coverage Thresholds
 

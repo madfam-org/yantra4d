@@ -257,10 +257,13 @@ def test_render_parts_stream_emits_unavailable_error_when_worker_unavailable(mon
         "stl",
     )
     events = [json.loads(event.split("data: ", 1)[1].strip()) for event in stream]
-    assert len(events) == 2
-    assert events[0]["event"] == "error"
-    assert events[0]["part"] == "body"
-    assert events[1]["event"] == "complete"
+    assert len(events) == 3
+    # The stream now opens by handing the client its cancellation identity.
+    assert events[0]["event"] == "job"
+    assert events[0]["job_ids"] == []
+    assert events[1]["event"] == "error"
+    assert events[1]["part"] == "body"
+    assert events[2]["event"] == "complete"
 
 
 # ---------------------------------------------------------------------------

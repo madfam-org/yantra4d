@@ -1,0 +1,292 @@
+{
+  "project": {
+    "name": "Filament Spool Adapter",
+    "slug": "filament-spool-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The spool runs on a bearing, and the core is whatever the core is. Every filament spool has a different core: 52, 54 and 56 mm are the sizes most often quoted, but they are quoted rather than specified — there is no issuing body for a spool core, and the only honest way to build against one is to measure it. What does have a numbered standard is the bearing: 608 is an ISO 15 deep-groove ball bearing, 8 x 22 x 7 mm, the most available bearing on earth and already the shared interface of six commons cartridges. So this cartridge fixes what is fixed and parameterises what is not — the bearing seat is a 608 seat, and everything about the spool is a slider you measure. A core insert, the axle stub it rides, and a roller for the other common arrangement.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "El carrete gira sobre un balero, y el núcleo es el que sea. Cada carrete de filamento tiene un núcleo distinto: 52, 54 y 56 mm son las medidas que más se citan, pero se citan, no se especifican — no hay organismo emisor para un núcleo de carrete, y la única forma honesta de construir contra uno es medirlo. Lo que sí tiene norma numerada es el balero: el 608 es un rodamiento rígido de bolas ISO 15, de 8 x 22 x 7 mm, el más disponible del planeta y ya la interfaz compartida de seis cartuchos del procomún. Así que este cartucho fija lo que está fijo y parametriza lo que no — el alojamiento es un alojamiento de 608, y todo lo del carrete es un deslizador que tú mides. Un inserto de núcleo, la espiga sobre la que gira, y un rodillo para el otro arreglo común.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "La bobine tourne sur un roulement, et le noyau est ce qu'il est. Chaque bobine de filament a un noyau différent : 52, 54 et 56 mm sont les tailles les plus souvent citées, mais elles sont citées, non spécifiées — il n'existe pas d'organisme émetteur pour un noyau de bobine, et la seule façon honnête de construire dessus est de le mesurer. Ce qui possède une norme numérotée, c'est le roulement : le 608 est un roulement rigide à billes ISO 15, 8 x 22 x 7 mm, le plus disponible au monde et déjà l'interface partagée de six cartouches du commun. Cette cartouche fige donc ce qui est figé et paramètre ce qui ne l'est pas — le logement est un logement de 608, et tout ce qui touche à la bobine est un curseur que vous mesurez. Un insert de noyau, l'axe sur lequel il tourne, et un rouleau pour l'autre disposition courante.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "O carretel gira sobre um rolamento, e o núcleo é o que for. Cada carretel de filamento tem um núcleo diferente: 52, 54 e 56 mm são as medidas mais citadas, mas são citadas, não especificadas — não há organismo emissor para um núcleo de carretel, e o único jeito honesto de construir contra um é medi-lo. O que tem norma numerada é o rolamento: o 608 é um rolamento rígido de esferas ISO 15, de 8 x 22 x 7 mm, o mais disponível do planeta e já a interface compartilhada de seis cartuchos do comum. Então este cartucho fixa o que é fixo e parametriza o que não é — o alojamento é um alojamento de 608, e tudo do carretel é um controle deslizante que você mede. Um inserto de núcleo, o eixo sobre o qual ele gira, e um rolete para o outro arranjo comum.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/filament-spool-adapter.webp",
+    "difficulty": "beginner",
+    "tags": ["filament", "spool", "608-bearing", "iso-15", "spool-holder", "roller", "3d-printing", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "core_insert",
+      "label": { "en": "Core Insert", "es": "Inserto de Núcleo", "fr": "Insert de noyau", "pt": "Inserto de Núcleo" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["core_insert"],
+      "estimate": { "base_time": 10, "per_unit": 3, "per_part": 14 }
+    },
+    {
+      "id": "axle_stub",
+      "label": { "en": "Axle Stub", "es": "Espiga de Eje", "fr": "Bout d'axe", "pt": "Ponta de Eixo" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["axle_stub"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 12 }
+    },
+    {
+      "id": "spool_roller",
+      "label": { "en": "Spool Roller", "es": "Rodillo de Carrete", "fr": "Rouleau de bobine", "pt": "Rolete de Carretel" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["spool_roller"],
+      "estimate": { "base_time": 11, "per_unit": 4, "per_part": 15 }
+    }
+  ],
+  "parts": [
+    { "id": "core_insert", "render_mode": 0, "color": "#00695c",
+      "label": { "en": "Core Insert", "es": "Inserto", "fr": "Insert", "pt": "Inserto" } },
+    { "id": "axle_stub", "render_mode": 0, "color": "#00897b",
+      "label": { "en": "Axle Stub", "es": "Espiga", "fr": "Bout d'axe", "pt": "Ponta de Eixo" } },
+    { "id": "spool_roller", "render_mode": 0, "color": "#4db6ac",
+      "label": { "en": "Roller", "es": "Rodillo", "fr": "Rouleau", "pt": "Rolete" } }
+  ],
+  "parameter_groups": [
+    { "id": "spool", "label": { "en": "Spool (measure it)", "es": "Carrete (mídelo)", "fr": "Bobine (à mesurer)", "pt": "Carretel (meça-o)" } },
+    { "id": "bearing", "label": { "en": "Bearing", "es": "Balero", "fr": "Roulement", "pt": "Rolamento" } },
+    { "id": "build", "label": { "en": "Wall & Fit", "es": "Pared y Ajuste", "fr": "Paroi et ajustement", "pt": "Parede e Ajuste" } }
+  ],
+  "parameters": [
+    {
+      "id": "core_dia", "type": "slider", "default": 54.0, "min": 20.0, "max": 90.0, "step": 0.5,
+      "group": "spool", "modes": ["core_insert"],
+      "label": { "en": "Spool Core Ø (mm)", "es": "Ø de Núcleo de Carrete (mm)", "fr": "Ø du noyau de bobine (mm)", "pt": "Ø do Núcleo do Carretel (mm)" },
+      "tooltip": {
+        "en": "Measure it. 52 / 54 / 56 mm are the sizes most often quoted, but a spool core has no issuing body and no specification — a figure copied from a forum is not a dimension",
+        "es": "Mídelo. 52 / 54 / 56 mm son las medidas más citadas, pero un núcleo de carrete no tiene organismo emisor ni especificación — una cifra copiada de un foro no es una cota",
+        "fr": "Mesurez-le. 52 / 54 / 56 mm sont les tailles les plus citées, mais un noyau de bobine n'a ni organisme émetteur ni spécification — un chiffre recopié d'un forum n'est pas une cote",
+        "pt": "Meça. 52 / 54 / 56 mm são as medidas mais citadas, mas um núcleo de carretel não tem organismo emissor nem especificação — um número copiado de um fórum não é uma medida"
+      }
+    },
+    {
+      "id": "core_depth", "type": "slider", "default": 16.0, "min": 5.0, "max": 40.0, "step": 0.5,
+      "group": "spool", "modes": ["core_insert"],
+      "label": { "en": "Insert Depth (mm)", "es": "Profundidad de Inserto (mm)", "fr": "Profondeur d'insert (mm)", "pt": "Profundidade do Inserto (mm)" },
+      "tooltip": {
+        "en": "How far the barrel enters the core. Deeper keeps the spool square on the axle; the whole core depth is rarely needed and doubles the print time",
+        "es": "Cuánto entra el barril en el núcleo. Más profundo mantiene el carrete a escuadra sobre el eje; casi nunca hace falta todo el fondo del núcleo y duplica el tiempo de impresión",
+        "fr": "Longueur du fût engagée dans le noyau. Plus profond garde la bobine d'équerre sur l'axe ; toute la profondeur du noyau est rarement nécessaire et double le temps d'impression",
+        "pt": "O quanto o barril entra no núcleo. Mais fundo mantém o carretel esquadrejado no eixo; raramente é preciso toda a profundidade do núcleo, e isso dobra o tempo de impressão"
+      }
+    },
+    {
+      "id": "grip_fingers", "type": "slider", "default": 6.0, "min": 0.0, "max": 12.0, "step": 1.0,
+      "group": "spool", "modes": ["core_insert"],
+      "label": { "en": "Grip Fingers", "es": "Dedos de Agarre", "fr": "Doigts de serrage", "pt": "Dedos de Garra" },
+      "tooltip": {
+        "en": "Axial relief slots so the barrel can compress into a core that is undersized or out of round. They are bounded inside the barrel's own length: a slot that reached the flange would sever the barrel from it",
+        "es": "Ranuras axiales de alivio para que el barril se comprima en un núcleo subdimensionado o fuera de redondo. Están acotadas dentro del propio largo del barril: una ranura que llegara a la brida lo separaría de ella",
+        "fr": "Fentes de détente axiales, pour que le fût se comprime dans un noyau sous-dimensionné ou ovalisé. Elles sont bornées dans la longueur du fût : une fente atteignant la bride l'en détacherait",
+        "pt": "Rasgos axiais de alívio para que o barril se comprima num núcleo subdimensionado ou fora de redondo. São limitados dentro do próprio comprimento do barril: um rasgo que chegasse ao flange o separaria dele"
+      }
+    },
+    {
+      "id": "roller_len", "type": "slider", "default": 60.0, "min": 20.0, "max": 140.0, "step": 1.0,
+      "group": "spool", "modes": ["spool_roller"],
+      "label": { "en": "Roller Length (mm)", "es": "Largo de Rodillo (mm)", "fr": "Longueur de rouleau (mm)", "pt": "Comprimento do Rolete (mm)" },
+      "tooltip": {
+        "en": "Long enough to carry the widest spool you own plus its rims. Two of these on a frame is the arrangement that copes with every core diameter at once, because it never touches the core",
+        "es": "Suficiente para cargar el carrete más ancho que tengas más sus cejas. Dos de estos en un bastidor es el arreglo que aguanta cualquier diámetro de núcleo, porque nunca toca el núcleo",
+        "fr": "Assez long pour porter la bobine la plus large que vous ayez, joues comprises. Deux rouleaux sur un bâti, c'est la disposition qui accepte tous les diamètres de noyau, puisqu'elle ne touche jamais le noyau",
+        "pt": "Longo o bastante para carregar o carretel mais largo que você tem, mais as abas. Dois destes num quadro é o arranjo que aguenta qualquer diâmetro de núcleo, porque nunca toca o núcleo"
+      }
+    },
+    {
+      "id": "bearing_od", "type": "slider", "default": 22.0, "min": 12.0, "max": 32.0, "step": 0.1,
+      "group": "bearing", "modes": ["core_insert", "spool_roller"],
+      "label": { "en": "Bearing OD (mm)", "es": "Ø Ext. de Balero (mm)", "fr": "Ø ext. du roulement (mm)", "pt": "Ø Ext. do Rolamento (mm)" },
+      "tooltip": {
+        "en": "22.0 mm is the 608. Exposed as a slider because the same geometry serves 623 / 624 / 625 / 688 — the seat is the interface, not the part number",
+        "es": "22.0 mm es el 608. Se expone como deslizador porque la misma geometría sirve para 623 / 624 / 625 / 688 — la interfaz es el alojamiento, no el número de parte",
+        "fr": "22,0 mm, c'est le 608. Exposé en curseur parce que la même géométrie sert aux 623 / 624 / 625 / 688 — l'interface est le logement, pas la référence",
+        "pt": "22,0 mm é o 608. Exposto como controle porque a mesma geometria serve para 623 / 624 / 625 / 688 — a interface é o alojamento, não o número da peça"
+      }
+    },
+    {
+      "id": "bearing_w", "type": "slider", "default": 7.0, "min": 3.0, "max": 14.0, "step": 0.1,
+      "group": "bearing", "modes": ["core_insert", "axle_stub", "spool_roller"],
+      "label": { "en": "Bearing Width (mm)", "es": "Ancho de Balero (mm)", "fr": "Largeur de roulement (mm)", "pt": "Largura do Rolamento (mm)" },
+      "tooltip": {
+        "en": "7.0 mm is the 608. The flange thickness is derived from this plus a shoulder, so the seat always lives entirely in the flange and never runs into the core barrel",
+        "es": "7.0 mm es el 608. El espesor de la brida se deriva de esto más un resalte, así el alojamiento vive siempre por completo en la brida y nunca se mete al barril del núcleo",
+        "fr": "7,0 mm, c'est le 608. L'épaisseur de la bride en dérive, plus un épaulement : le logement reste donc entièrement dans la bride et n'entre jamais dans le fût du noyau",
+        "pt": "7,0 mm é o 608. A espessura do flange deriva disto mais um encosto, então o alojamento vive sempre inteiramente no flange e nunca entra no barril do núcleo"
+      }
+    },
+    {
+      "id": "bearing_bore", "type": "slider", "default": 8.0, "min": 3.0, "max": 16.0, "step": 0.1,
+      "group": "bearing", "modes": ["core_insert", "axle_stub", "spool_roller"],
+      "label": { "en": "Bearing Bore (mm)", "es": "Barreno de Balero (mm)", "fr": "Alésage du roulement (mm)", "pt": "Furo do Rolamento (mm)" },
+      "tooltip": {
+        "en": "8.0 mm is the 608. The axle bore is derived from this and is always smaller than the seat, so the seat's shoulder always survives — and the shoulder touches only the OUTER race, or the bearing does nothing at all",
+        "es": "8.0 mm es el 608. El barreno del eje se deriva de esto y siempre es menor que el alojamiento, así el resalte sobrevive siempre — y el resalte toca solo la pista EXTERIOR, o el balero no sirve de nada",
+        "fr": "8,0 mm, c'est le 608. L'alésage d'axe en dérive et reste toujours plus petit que le logement : l'épaulement survit donc toujours — et il ne touche que la bague EXTÉRIEURE, sans quoi le roulement ne sert à rien",
+        "pt": "8,0 mm é o 608. O furo do eixo deriva disto e é sempre menor que o alojamento, então o encosto sempre sobrevive — e o encosto toca só a pista EXTERNA, ou o rolamento não serve para nada"
+      }
+    },
+    {
+      "id": "press_fit", "type": "slider", "default": 0.10, "min": 0.0, "max": 0.4, "step": 0.02,
+      "group": "bearing", "modes": ["core_insert", "axle_stub", "spool_roller"],
+      "label": { "en": "Press Fit (mm)", "es": "Interferencia (mm)", "fr": "Serrage (mm)", "pt": "Interferência (mm)" },
+      "tooltip": {
+        "en": "Interference on the bearing's outer race. Zero is a slip fit for a bearing you want to recover; 0.1 mm is a firm press into PETG. Too much cracks the boss on a cold day rather than on the day you fit it",
+        "es": "Interferencia sobre la pista exterior del balero. Cero es ajuste deslizante, para un balero que quieras recuperar; 0.1 mm es un ajuste a presión firme en PETG. Demasiada agrieta el buje en un día frío, no el día que lo montas",
+        "fr": "Serrage sur la bague extérieure du roulement. Zéro, c'est un ajustement glissant, pour un roulement que l'on veut récupérer ; 0,1 mm est un emmanchement ferme dans le PETG. Trop de serrage fend le bossage un jour froid, pas le jour du montage",
+        "pt": "Interferência na pista externa do rolamento. Zero é ajuste deslizante, para um rolamento que se queira recuperar; 0,1 mm é um encaixe firme em PETG. Demais trinca a bossa num dia frio, não no dia em que você monta"
+      }
+    },
+    {
+      "id": "flange_dia", "type": "slider", "default": 70.0, "min": 24.0, "max": 120.0, "step": 1.0,
+      "group": "build", "modes": ["core_insert", "axle_stub", "spool_roller"],
+      "label": { "en": "Flange Ø (mm)", "es": "Ø de Brida (mm)", "fr": "Ø de bride (mm)", "pt": "Ø do Flange (mm)" },
+      "tooltip": {
+        "en": "The disc that sits against the spool's side face. The geometry raises it if it would be narrower than the bearing seat plus a wall, or narrower than the core it has to cover",
+        "es": "El disco que se apoya contra la cara lateral del carrete. La geometría lo sube si quedara más angosto que el alojamiento más una pared, o más angosto que el núcleo que debe cubrir",
+        "fr": "Le disque qui s'appuie contre la joue de la bobine. La géométrie l'augmente s'il devenait plus étroit que le logement plus une paroi, ou que le noyau qu'il doit couvrir",
+        "pt": "O disco que encosta na face lateral do carretel. A geometria o aumenta se ficasse mais estreito que o alojamento mais uma parede, ou mais estreito que o núcleo que ele precisa cobrir"
+      }
+    },
+    {
+      "id": "bolt_dia", "type": "slider", "default": 5.0, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "build", "modes": ["axle_stub"],
+      "label": { "en": "Fixing Bolt Ø (mm)", "es": "Ø de Tornillo de Fijación (mm)", "fr": "Ø de vis de fixation (mm)", "pt": "Ø do Parafuso de Fixação (mm)" },
+      "tooltip": {
+        "en": "Clearance for the four bolts that hold the stub to a frame. The bolt circle is derived from the flange so the holes always land in material",
+        "es": "Holgura para los cuatro tornillos que sujetan la espiga a un bastidor. El círculo de tornillos se deriva de la brida para que los barrenos siempre caigan en material",
+        "fr": "Passage des quatre vis qui fixent le bout d'axe à un bâti. Le cercle de perçage dérive de la bride, pour que les trous tombent toujours dans la matière",
+        "pt": "Folga para os quatro parafusos que prendem a ponta a um quadro. O círculo de furos deriva do flange para que os furos sempre caiam em material"
+      }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 2.4, "min": 1.6, "max": 6.0, "step": 0.1,
+      "group": "build", "modes": ["core_insert", "axle_stub", "spool_roller"],
+      "label": { "en": "Wall (mm)", "es": "Pared (mm)", "fr": "Paroi (mm)", "pt": "Parede (mm)" },
+      "tooltip": {
+        "en": "Material around the bearing seat and the axle bore. A seat that splits under a press fit takes the bearing with it",
+        "es": "Material alrededor del alojamiento y del barreno del eje. Un alojamiento que se raja al meter a presión se lleva el balero con él",
+        "fr": "Matière autour du logement et de l'alésage d'axe. Un logement qui fend à l'emmanchement emporte le roulement avec lui",
+        "pt": "Material em volta do alojamento e do furo do eixo. Um alojamento que racha no encaixe leva o rolamento junto"
+      }
+    },
+    {
+      "id": "clearance", "type": "slider", "default": 0.30, "min": 0.1, "max": 0.8, "step": 0.05,
+      "group": "build", "modes": ["core_insert"],
+      "label": { "en": "Core Clearance (mm)", "es": "Holgura de Núcleo (mm)", "fr": "Jeu du noyau (mm)", "pt": "Folga do Núcleo (mm)" },
+      "tooltip": {
+        "en": "Slop between the barrel and the spool core. The grip fingers take up whatever this leaves, so start generous and let the fingers do the work",
+        "es": "Holgura entre el barril y el núcleo del carrete. Los dedos de agarre absorben lo que esto deje, así que empieza generoso y deja que los dedos trabajen",
+        "fr": "Jeu entre le fût et le noyau de la bobine. Les doigts de serrage rattrapent ce que ce jeu laisse : partez généreux et laissez les doigts travailler",
+        "pt": "Folga entre o barril e o núcleo do carretel. Os dedos de garra absorvem o que isto deixar, então comece generoso e deixe os dedos trabalharem"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "core_54", "mode": "core_insert",
+      "label": { "en": "54 mm Core, 608 Bearing", "es": "Núcleo de 54 mm, Balero 608", "fr": "Noyau 54 mm, roulement 608", "pt": "Núcleo de 54 mm, Rolamento 608" },
+      "values": { "core_dia": 54.0, "core_depth": 16.0, "bearing_od": 22.0, "bearing_w": 7.0, "bearing_bore": 8.0 }
+    },
+    {
+      "id": "core_wide", "mode": "core_insert",
+      "label": { "en": "Wide Core (76 mm)", "es": "Núcleo Ancho (76 mm)", "fr": "Noyau large (76 mm)", "pt": "Núcleo Largo (76 mm)" },
+      "values": { "core_dia": 76.0, "flange_dia": 92.0, "core_depth": 20.0, "grip_fingers": 8.0 }
+    },
+    {
+      "id": "m8_axle", "mode": "axle_stub",
+      "label": { "en": "8 mm Axle on a Bolt Flange", "es": "Eje de 8 mm en Brida Atornillada", "fr": "Axe 8 mm sur bride boulonnée", "pt": "Eixo de 8 mm em Flange Aparafusado" },
+      "values": { "bearing_bore": 8.0, "bearing_w": 7.0, "flange_dia": 46.0, "bolt_dia": 5.0 }
+    },
+    {
+      "id": "roller_bed", "mode": "spool_roller",
+      "label": { "en": "Roller Bed (60 mm)", "es": "Cama de Rodillos (60 mm)", "fr": "Berceau à rouleaux (60 mm)", "pt": "Berço de Roletes (60 mm)" },
+      "values": { "roller_len": 60.0, "bearing_od": 22.0, "bearing_w": 7.0, "flange_dia": 60.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 2.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below 2.0 mm the bearing boss splits under a press fit, and a seat that splits takes the bearing with it",
+        "es": "Por debajo de 2.0 mm el buje del balero se raja al meterlo a presión, y un alojamiento que se raja se lleva el balero con él",
+        "fr": "En dessous de 2,0 mm, le bossage du roulement fend à l'emmanchement, et un logement qui fend emporte le roulement",
+        "pt": "Abaixo de 2,0 mm a bossa do rolamento racha no encaixe, e um alojamento que racha leva o rolamento junto"
+      }
+    },
+    {
+      "expression": "press_fit <= 0.25",
+      "severity": "warning",
+      "message": {
+        "en": "Above 0.25 mm of interference a printed seat cracks — usually on a cold day months later, not on the day you fit the bearing",
+        "es": "Por encima de 0.25 mm de interferencia un alojamiento impreso se agrieta — normalmente un día frío meses después, no el día que montas el balero",
+        "fr": "Au-delà de 0,25 mm de serrage, un logement imprimé se fissure — le plus souvent un jour froid des mois plus tard, pas le jour du montage",
+        "pt": "Acima de 0,25 mm de interferência um alojamento impresso trinca — geralmente num dia frio meses depois, não no dia em que você monta o rolamento"
+      }
+    },
+    {
+      "expression": "core_depth >= 10.0",
+      "severity": "warning",
+      "message": {
+        "en": "A short barrel lets the spool cock on the axle, and a cocked spool rubs its own flange — which is the drag the bearing was fitted to remove",
+        "es": "Un barril corto deja que el carrete se ladee sobre el eje, y un carrete ladeado roza su propia ceja — que es justo el arrastre que el balero venía a quitar",
+        "fr": "Un fût court laisse la bobine se mettre de travers sur l'axe, et une bobine de travers frotte sur sa propre joue — précisément le frottement que le roulement devait supprimer",
+        "pt": "Um barril curto deixa o carretel emperrar torto no eixo, e um carretel torto raspa na própria aba — que é justamente o arrasto que o rolamento veio remover"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [110, 90, 75] },
+    { "id": "front", "label": { "en": "Front", "es": "Frontal", "fr": "De face", "pt": "Frontal" }, "position": [0, -140, 20] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 10, "per_unit": 3, "per_part": 14,
+    "fn_factor": 64, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "bearing_608_seat",
+        "label": { "en": "608 Bearing Seat", "es": "Alojamiento de Balero 608", "fr": "Logement de roulement 608", "pt": "Alojamento de Rolamento 608" },
+        "geometry_type": "socket",
+        "standard": "608 bearing (ISO 15 — 8×22×7)",
+        "parameters": ["bearing_od", "bearing_w", "bearing_bore", "press_fit", "wall"],
+        "compatible_with": ["idler-608", "gt2-idler", "bearing-housing", "linear-wheel", "roller-bracket"]
+      },
+      {
+        "id": "axle_shaft_8mm",
+        "label": { "en": "8 mm Axle Shaft", "es": "Eje de 8 mm", "fr": "Axe de 8 mm", "pt": "Eixo de 8 mm" },
+        "geometry_type": "socket",
+        "standard": "8 mm plain axle shaft, 608 bearing bore",
+        "parameters": ["bearing_bore", "press_fit"]
+      },
+      {
+        "id": "spool_core_series",
+        "label": { "en": "Spool Core Series", "es": "Serie de Núcleo de Carrete", "fr": "Série de noyaux de bobine", "pt": "Série de Núcleos de Carretel" },
+        "geometry_type": "profile",
+        "standard": "internal — measured spool core bore, 20-90 mm; no issuing body exists for this dimension",
+        "parameters": ["core_dia", "core_depth", "clearance", "grip_fingers"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "This is the commons talking to its own audience, and it is worth doing plainly. A spool dragging on a printed axle is the commonest cause of under-extrusion that is not the extruder's fault, and it is a particularly cruel one because the drag is not constant: it rises as the spool empties and the tension arm has less mass to fight, so the failure appears late in a long print and looks exactly like a heat or retraction problem. People chase it for weeks. Fifty cents of bearing and a printed insert remove it entirely. That matters most where a printer is a shared or a scarce resource — a school, a library, a fab lab, a clinic printing its own fittings — because there a failed twelve-hour print is not an annoyance, it is a day. The bearing is also the most recoverable component in the machine: 608s come out of skateboards, fidget spinners and dead fans, and this cartridge is designed so a slip fit is one slider away when you want the bearing back afterwards.",
+      "es": "Aquí el procomún le habla a su propio público, y vale la pena decirlo con claridad. Un carrete que arrastra sobre un eje impreso es la causa más común de subextrusión que no es culpa del extrusor, y es particularmente cruel porque el arrastre no es constante: aumenta conforme el carrete se vacía y el brazo tensor tiene menos masa que vencer, así que la falla aparece tarde en una impresión larga y se ve idéntica a un problema de temperatura o de retracción. La gente la persigue durante semanas. Cincuenta centavos de balero y un inserto impreso la eliminan por completo. Eso importa más donde una impresora es un recurso compartido o escaso — una escuela, una biblioteca, un fab lab, una clínica que imprime sus propias conexiones — porque ahí una impresión fallida de doce horas no es una molestia, es un día. El balero es además el componente más recuperable de la máquina: los 608 salen de patinetas, spinners y ventiladores muertos, y este cartucho está hecho para que un ajuste deslizante esté a un deslizador de distancia cuando quieras recuperarlo.",
+      "fr": "Ici, le commun s'adresse à son propre public, et cela vaut la peine d'être dit sans détour. Une bobine qui frotte sur un axe imprimé est la cause la plus fréquente de sous-extrusion qui n'est pas la faute de l'extrudeur, et elle est particulièrement perverse parce que le frottement n'est pas constant : il augmente à mesure que la bobine se vide et que le bras de tension a moins de masse à vaincre, si bien que la panne apparaît tard dans une longue impression et ressemble exactement à un problème de température ou de rétraction. On la traque des semaines durant. Cinquante centimes de roulement et un insert imprimé la suppriment entièrement. Cela compte surtout là où une imprimante est une ressource partagée ou rare — une école, une bibliothèque, un fab lab, un dispensaire qui imprime ses propres raccords — car là, une impression ratée de douze heures n'est pas un désagrément, c'est une journée. Le roulement est en outre le composant le plus récupérable de la machine : les 608 sortent de planches à roulettes, de hand spinners et de ventilateurs morts, et cette cartouche est conçue pour qu'un ajustement glissant soit à un curseur de distance quand on veut le récupérer.",
+      "pt": "Aqui o comum fala com o próprio público, e vale a pena dizer sem rodeios. Um carretel arrastando num eixo impresso é a causa mais comum de subextrusão que não é culpa do extrusor, e é particularmente cruel porque o arrasto não é constante: cresce conforme o carretel esvazia e o braço tensor tem menos massa para vencer, então a falha aparece tarde numa impressão longa e parece exatamente um problema de temperatura ou de retração. As pessoas caçam isso por semanas. Cinquenta centavos de rolamento e um inserto impresso eliminam o problema por completo. Isso importa mais onde uma impressora é um recurso compartilhado ou escasso — uma escola, uma biblioteca, um fab lab, um posto de saúde que imprime as próprias conexões — porque ali uma impressão de doze horas que falha não é um aborrecimento, é um dia. O rolamento é ainda o componente mais recuperável da máquina: 608 saem de skates, spinners e ventiladores mortos, e este cartucho é feito para que um ajuste deslizante esteja a um controle de distância quando você quiser o rolamento de volta."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["filament", "spool", "608-bearing", "iso-15", "spool-holder", "roller", "3d-printing", "industrial", "hyperobject", "commons"]
+}

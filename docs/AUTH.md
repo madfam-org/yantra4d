@@ -460,7 +460,7 @@ Auth settings are defined in `apps/api/config.py`.
 | `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "premium"}` (the deprecated `"madfam"` is still accepted). Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
 | `PRIVATE_PROJECTS` | *(unset)* | Comma-separated slugs forced private regardless of their manifest. Read at call time. See [Private projects](#private-projects). |
 | `PROJECT_ACCESS_GRANTS` | *(unset)* | JSON object mapping slug to a list of emails granted access to that private project, e.g. `{"acme-bracket": ["someone@example.com"]}`. Read at call time. |
-| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `madfam`. Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. Distinct from `TIER_OVERRIDES`, which keys off a signed identity and therefore needs auth ON. See [Harness tier](#harness-tier). |
+| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `premium` (the deprecated `madfam` is still accepted). Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. Distinct from `TIER_OVERRIDES`, which keys off a signed identity and therefore needs auth ON. See [Harness tier](#harness-tier). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
 
@@ -481,7 +481,7 @@ refused and the studio answered with its upgrade prompt.
 `HARNESS_TIER` is the explicit way to say so:
 
 ```bash
-AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
+AUTH_ENABLED=false HARNESS_TIER=premium python app.py
 ```
 
 - **Empty by default** — no deployment or test changes behaviour unless it is
@@ -489,10 +489,16 @@ AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
 - **Ignored whenever `AUTH_ENABLED` is `true`**, so it cannot widen
   entitlements in a real deployment even if the variable leaks into one.
 - **Ignored unless it names a tier in `tiers.json`**; a bad value logs a
-  warning and leaves the request gated rather than failing to boot.
+  warning and leaves the request gated rather than failing to boot. Note what
+  "gated" costs a harness: the run does not fail, it quietly proceeds as
+  `guest` and every CadQuery render 403s, which shows up only as the studio's
+  upgrade prompt in a screenshot. Deprecated tier names are *not* bad values —
+  the override normalises through `_normalize_tier`, so `HARNESS_TIER=madfam`
+  still seats `premium`
+  ([Tier names](#tier-names-and-the-one-that-was-renamed)).
 - It affects the render gating path only. `/api/me` and `require_tier()`
-  already report `madfam` whenever auth is off, so setting
-  `HARNESS_TIER=madfam` makes the server agree with what the client was
+  already report `premium` whenever auth is off, so setting
+  `HARNESS_TIER=premium` makes the server agree with what the client was
   already being told.
 - It does **not** overlap [Identity tier overrides](#identity-tier-overrides).
   `TIER_OVERRIDES` maps a signed identity's email to a tier and so applies only

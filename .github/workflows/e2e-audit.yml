@@ -117,17 +117,25 @@ jobs:
           # otherwise trip the per-tier render quota and fail the audit for a
           # reason unrelated to the product under test.
           RATE_LIMIT_ENABLED: "false"
-          # Gate this harness as madfam. Auth-off alone does NOT unlock the
-          # render path: _effective_tier() grants the top tier only with auth
-          # off AND Flask debug on, so this job was gated as `guest`, and guest
-          # may not use the CadQuery engine (tiers.json) — which is what
+          # Gate this harness as the top tier. Auth-off alone does NOT unlock
+          # the render path: _effective_tier() grants the top tier only with
+          # auth off AND Flask debug on, so this job was gated as `guest`, and
+          # guest may not use the CadQuery engine (tiers.json) — which is what
           # gridfinity's default `bin` mode is. Run #168 had every gridfinity
           # render refused 403 and the studio answered with its upgrade prompt
           # instead of a model. Debug is deliberately NOT the fix: it would drag
           # in the reloader and the interactive debugger. /api/me already tells
-          # the studio it is madfam whenever auth is off, so this makes the
+          # the studio it is `premium` whenever auth is off, so this makes the
           # server agree with the client. See docs/AUTH.md § Harness tier.
-          HARNESS_TIER: "madfam"
+          #
+          # The value must be a tier in tiers.json: harness_tier_override()
+          # refuses an unknown one with a log line and nothing else, and this
+          # job would go back to running as `guest` — run #168's failure mode,
+          # visible only as the studio's upsell in a screenshot. `madfam` is
+          # still accepted (LEGACY_TIER_MAP, pinned by
+          # apps/api/tests/unit/test_harness_tier.py), but the canonical name
+          # is what belongs in a file that is read as documentation.
+          HARNESS_TIER: "premium"
           REDIS_URL: redis://localhost:6379
           PROJECTS_DIR: ${{ github.workspace }}/projects
         # Fails LOUDLY and as a *setup* error, distinct from a test failure, so

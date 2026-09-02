@@ -4,6 +4,7 @@ import type { Location } from "react-router-dom"
 import fallbackManifest from "../../config/fallback-manifest.json"
 import { getApiBase } from "../../services/core/backendDetection"
 import { apiFetch } from "../../services/core/apiClient"
+import { useAuth } from "../auth/AuthProvider"
 
 interface ManifestMode {
   id: string
@@ -82,10 +83,38 @@ export interface Localizable {
   [key: string]: string | Record<string, string> | undefined
 }
 
+/**
+ * Why the manifest could not be loaded.
+ *
+ * 'project_locked' is a private project: the backend answers 401/403 with
+ * `error_code: "project_locked"`. That is neither a missing project nor an
+ * unreachable server, and the user can often fix it by signing in — so it
+ * needs its own kind rather than being folded into 'manifest_load_failed'.
+ */
+export type ManifestErrorKind =
+  | 'project_not_found'
+  | 'project_locked'
+  | 'manifest_load_failed'
+  | 'network_error'
+
+/** Error body shape shared by the backend's 4xx JSON responses. */
+interface ManifestErrorBody {
+  error?: string
+  error_code?: string
+  auth_required?: boolean
+}
+
 export interface ManifestContextValue {
   manifest: Manifest
   loading: boolean
   ready: boolean
+  manifestError: ManifestErrorKind | null
+  /**
+   * Only meaningful for 'project_locked': true when the caller was anonymous,
+   * so signing in with an authorized account can unlock the project; false when
+   * the caller is already signed in and simply is not authorized.
+   */
+  manifestAuthRequired: boolean
   projects: ProjectListItem[]
   projectSlug: string
   switchProject: (slug: string) => void
@@ -112,11 +141,15 @@ const PROJECTS_FETCH_TIMEOUT_MS = 2000
 
 export function ManifestProvider({ children }: ManifestProviderProps) {
   const location = useLocation()
+  // Auth-disabled builds fall back to the bypass context, where this is false.
+  const { isAuthenticated } = useAuth()
+  const signedIn = Boolean(isAuthenticated)
   const [manifest, setManifest] = useState<Manifest>(fallbackManifest as Manifest)
   const [projects, setProjects] = useState<ProjectListItem[]>([])
   const [projectSlug, setProjectSlug] = useState<string | null>(() => _getProjectSlug(location))
   const [loading, setLoading] = useState(true)
-  const [manifestError, setManifestError] = useState<string | null>(null)
+  const [manifestError, setManifestError] = useState<ManifestErrorKind | null>(null)
+  const [manifestAuthRequired, setManifestAuthRequired] = useState(false)
   // Track whether the projects list has been fetched (or failed).
   // The manifest fetch must wait for this so it can use the correct endpoint.
   const [projectsResolved, setProjectsResolved] = useState(false)
@@ -165,9 +198,24 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
       : `${getApiBase()}/api/manifest`
 
     apiFetch(url, { signal: controller.signal })
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
-          setManifestError(res.status === 404 ? 'project_not_found' : 'manifest_load_failed')
+          // The body carries `error_code` and `auth_required` for a private
+          // project. It is read defensively: an error response is not
+          // guaranteed to be JSON (a proxy or CDN may answer with HTML).
+          const body = (await res.json().catch(() => null)) as ManifestErrorBody | null
+          if (res.status === 404) {
+            setManifestAuthRequired(false)
+            setManifestError('project_not_found')
+          } else if (res.status === 401 || res.status === 403 || body?.error_code === 'project_locked') {
+            // When the body omits the flag, fall back to what the client knows:
+            // an anonymous caller can still fix this by signing in.
+            setManifestAuthRequired(typeof body?.auth_required === 'boolean' ? body.auth_required : !signedIn)
+            setManifestError('project_locked')
+          } else {
+            setManifestAuthRequired(false)
+            setManifestError('manifest_load_failed')
+          }
           setLoading(false)
           return undefined
         }
@@ -176,6 +224,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
       .then((data) => {
         if (data) {
           setManifestError(null)
+          setManifestAuthRequired(false)
           setManifest(data)
           setLoading(false)
         }
@@ -183,12 +232,15 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
       .catch((err) => {
         if (err.name === 'AbortError') return
         console.warn('Manifest fetch failed:', err)
+        setManifestAuthRequired(false)
         setManifestError('network_error')
         setLoading(false)
       })
 
     return () => controller.abort()
-  }, [projectSlug, projects.length, projectsResolved])
+    // `signedIn` is a dependency so that a successful sign-in re-fetches the
+    // manifest: a project that answered 403 while anonymous may now be allowed.
+  }, [projectSlug, projects.length, projectsResolved, signedIn])
 
   // Listen for location changes to detect cross-project navigation
   useEffect(() => {
@@ -258,6 +310,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
     loading,
     ready,
     manifestError,
+    manifestAuthRequired,
     projects,
     projectSlug: projectSlug || manifest.project.slug,
     switchProject,
@@ -272,7 +325,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
     getViewerConfig,
     getEstimateConstants,
     presets: manifest.presets || [],
-  }), [manifest, loading, ready, manifestError, projects, projectSlug, switchProject, getMode, getParametersForMode, getPartColors, getDefaultParams, getDefaultColors, getLabel, getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants])
+  }), [manifest, loading, ready, manifestError, manifestAuthRequired, projects, projectSlug, switchProject, getMode, getParametersForMode, getPartColors, getDefaultParams, getDefaultColors, getLabel, getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants])
 
   return <ManifestContext.Provider value={value}>{children}</ManifestContext.Provider>
 }

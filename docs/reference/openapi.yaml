@@ -81,6 +81,38 @@ components:
           type: string
       required: [status, error]
 
+    ProjectLocked:
+      type: object
+      description: |
+        Refusal returned with HTTP 403 by every project endpoint when the
+        project is private and the caller is not entitled to it: the listing,
+        manifest, meta, parts, storefront and share, downloads and exports,
+        render / render-stream / render-cancel, verify, bom, datasheet,
+        assembly, animations, cart, fork, the editor and git routes, analysis,
+        simulation, the Cotiza export, the analytics summary, and
+        `/static/<slug>_preview_*` render artifacts.
+
+        Branch on `error_code`, not on the message. `auth_required` says which
+        call to action to show: true when nobody is signed in (offer sign-in),
+        false when the caller is signed in and still not entitled (offer
+        request-access).
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: string
+          example: This project is private
+        error_code:
+          type: string
+          enum: [project_locked]
+        auth_required:
+          type: boolean
+          description: True when the request carried no identity at all.
+        request_id:
+          type: string
+      required: [status, error, error_code, auth_required]
+
     ProjectSummary:
       type: object
       properties:
@@ -439,6 +471,12 @@ paths:
                 $ref: "#/components/schemas/Manifest"
         "304":
           description: Not modified (ETag match)
+        "403":
+          description: Project is private and the caller is not entitled to it
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectLocked"
         "404":
           description: Project not found
           content:
@@ -656,6 +694,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "403":
+          description: Project is private and the caller is not entitled to it
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectLocked"
 
   /api/render-stream:
     post:

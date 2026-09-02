@@ -1,4 +1,4 @@
-import { useRateLimit } from '../../services/core/apiClient'
+import { useRateLimit, isUnlimited } from '../../services/core/apiClient'
 import { useTier } from '../../hooks/system/useTier'
 import { isAuthEnabled } from '../../contexts/auth/AuthProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
@@ -14,9 +14,14 @@ export default function RateLimitBanner() {
   // Don't show if auth is off or no rate limit info yet
   if (!isAuthEnabled || remaining === null) return null
 
-  const pct = limit != null && limit > 0 ? remaining! / limit : 1
-  const isWarning = pct <= 0.3 && pct > 0
-  const isExhausted = remaining <= 0
+  // An unlimited tier reports `X-RateLimit-Limit: unlimited` (stored as the -1
+  // sentinel) and no Remaining, so there is no ceiling to count down towards
+  // and nothing to warn about — and never a raw "-1/hr" in the copy.
+  const unlimited = isUnlimited(limit)
+  const limitLabel = unlimited ? t('tier.unlimited') : String(limit)
+  const pct = !unlimited && limit != null && limit > 0 ? remaining! / limit : 1
+  const isWarning = !unlimited && pct <= 0.3 && pct > 0
+  const isExhausted = !unlimited && remaining <= 0
   const wasmAvailable = canRunWasm(manifest)
 
   if (!isWarning && !isExhausted) return null
@@ -29,7 +34,7 @@ export default function RateLimitBanner() {
     }`}>
       {isExhausted ? (
         <>
-          {t('ratelimit.server_exhausted').replace('{limit}', String(limit))}{' '}
+          {t('ratelimit.server_exhausted').replace('{limit}', limitLabel)}{' '}
           {wasmAvailable && (
             <span className="font-medium">{t('ratelimit.wasm_available')}</span>
           )}

@@ -12,6 +12,7 @@ import rate_limits
 from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
+from services.core.project_access import require_project_access
 from services.geometry.stress_analyzer import compute_stress_field
 from tasks.optimization_tasks import get_opt_status, queue_optimization
 from tasks.simulation_tasks import get_job_status, queue_simulation
@@ -44,6 +45,7 @@ def _find_latest_render(slug: str) -> str | None:
 @require_tier("pro")
 @limiter.limit(rate_limits.ANALYSIS_THICKNESS)
 @handle_exceptions
+@require_project_access
 def simulate_stress(slug: str):
     """Run FEA Stress simulation overlay on latest render."""
     data = request.get_json(silent=True) or {}
@@ -81,6 +83,7 @@ def simulate_stress(slug: str):
 @require_tier("pro")
 @limiter.limit(rate_limits.SIMULATE_PHYSICS)
 @handle_exceptions
+@require_project_access
 def start_physics_simulation(slug: str):
     """Trigges a full GPU-bound PPF Physics simulation returning sequence frames."""
     data = request.get_json(silent=True) or {}
@@ -107,6 +110,7 @@ def start_physics_simulation(slug: str):
 @simulate_bp.route('/api/projects/<slug>/simulate/physics/<job_id>', methods=['GET'])
 @require_valid_slug
 @handle_exceptions
+@require_project_access
 def get_physics_simulation_status(slug: str, job_id: str):
     """Polls the status of the asynchronous physics simulation task."""
     status_data = get_job_status(job_id)
@@ -134,6 +138,7 @@ def get_physics_simulation_status(slug: str, job_id: str):
 @require_tier("pro")
 @limiter.limit(rate_limits.SIMULATE_OPTIMIZE)
 @handle_exceptions
+@require_project_access
 def start_optimization(slug: str):
     """Trigges a generative topology optimization task."""
     data = request.get_json(silent=True) or {}
@@ -156,6 +161,7 @@ def start_optimization(slug: str):
 @simulate_bp.route('/api/projects/<slug>/simulate/optimize/<job_id>', methods=['GET'])
 @require_valid_slug
 @handle_exceptions
+@require_project_access
 def get_optimization_status(slug: str, job_id: str):
     """Polls the multi-generation optimization track."""
     status_data = get_opt_status(job_id)

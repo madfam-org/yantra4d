@@ -6,6 +6,17 @@ on:
   pull_request:
     branches: [main]
 
+# Every job below runs on the shared self-hosted pool (madfam-runners-blue), and
+# the e2e matrix alone is ten shards. Without a concurrency group, each push to
+# an open PR stacked a full new run on the pool while the superseded run kept
+# going — on 2026-09-02 four open PRs queued 20–60 min per job for that reason.
+# One group per PR (or per ref for pushes): a new PR head cancels the run it
+# supersedes; pushes to main never cancel each other, so every merged commit
+# still gets its own complete run. deploy.yml has the same shape.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   studio:
     runs-on: madfam-runners-blue

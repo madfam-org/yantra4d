@@ -10,6 +10,7 @@ Tier hierarchy:
 """
 import json
 import logging
+import os
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,22 @@ logger = logging.getLogger(__name__)
 _tiers: dict | None = None
 
 TIER_HIERARCHY = {"guest": 0, "essentials": 1, "pro": 2, "madfam": 3}
+
+# The most privileged tier, derived from the hierarchy rather than spelled out
+# again, so adding a tier above `madfam` does not silently leave callers that
+# mean "the top tier" pointing at the old one.
+TOP_TIER = max(TIER_HIERARCHY, key=lambda name: TIER_HIERARCHY[name])
+
+# Sentinel used in tiers.json for a limit with no cap. It was already the
+# convention for ``max_projects``; ``is_unlimited`` makes it readable everywhere.
+UNLIMITED = -1
+
+# Name of the environment variable holding the identity -> tier override map.
+# Its VALUE is deployment configuration (a Kubernetes secret): a JSON object
+# mapping a lower-cased email address to a tier name, e.g.
+#     {"someone@example.com": "madfam"}
+# No identity is ever committed to this repository.
+TIER_OVERRIDES_ENV = "TIER_OVERRIDES"
 
 # Legacy tier name mapping
 LEGACY_TIER_MAP = {"basic": "essentials"}
@@ -34,6 +51,116 @@ def load_tiers() -> dict:
     return _tiers
 
 
+def is_unlimited(value) -> bool:
+    """Whether a tiers.json limit value means "no cap".
+
+    ``-1`` is the sentinel (see ``UNLIMITED``). Booleans are excluded on
+    purpose: ``True`` is an ``int`` in Python and a feature flag must never be
+    mistaken for a quota.
+    """
+    return isinstance(value, int) and not isinstance(value, bool) and value <= UNLIMITED
+
+
+# Cache for the parsed TIER_OVERRIDES map, keyed on the raw environment value.
+# The env var is read at call time (like RENDER_SCOPE_ENFORCEMENT in
+# middleware/auth.py) so a rolled secret takes effect without a restart and
+# tests can monkeypatch it, but the JSON is parsed at most once per value.
+_tier_overrides: dict[str, str] | None = None
+_tier_overrides_raw: str | None = None
+
+
+def _parse_tier_overrides(raw: str) -> dict[str, str]:
+    """Parse the TIER_OVERRIDES JSON object, tolerating anything malformed.
+
+    A broken or absent override map must never take the API down, so every
+    failure degrades to "no overrides" with a warning. Email addresses are
+    identities: they are counted, never logged above DEBUG.
+    """
+    raw = (raw or "").strip()
+    if not raw:
+        return {}
+
+    try:
+        parsed = json.loads(raw)
+    except (TypeError, ValueError) as e:
+        logger.warning(
+            "%s is not valid JSON (%s) — no identity tier overrides are active.",
+            TIER_OVERRIDES_ENV, e,
+        )
+        return {}
+
+    if not isinstance(parsed, dict):
+        logger.warning(
+            "%s must be a JSON object mapping email to tier name, got %s — "
+            "no identity tier overrides are active.",
+            TIER_OVERRIDES_ENV, type(parsed).__name__,
+        )
+        return {}
+
+    overrides: dict[str, str] = {}
+    skipped = 0
+    for key, value in parsed.items():
+        if not isinstance(key, str) or not isinstance(value, str):
+            skipped += 1
+            continue
+        email = key.strip().lower()
+        tier = _normalize_tier(value.strip())
+        if not email:
+            skipped += 1
+            continue
+        if tier not in TIER_HIERARCHY:
+            # The tier name is configuration, not an identity, so it is safe to
+            # name here — that is the whole point of the warning.
+            logger.warning(
+                "%s entry ignored: %r is not a known tier. Known tiers: %s.",
+                TIER_OVERRIDES_ENV, value, ", ".join(sorted(TIER_HIERARCHY)),
+            )
+            skipped += 1
+            continue
+        overrides[email] = tier
+
+    if skipped:
+        logger.warning("%s: ignored %d malformed entr%s.",
+                       TIER_OVERRIDES_ENV, skipped, "y" if skipped == 1 else "ies")
+    logger.info("Loaded %d identity tier override(s)", len(overrides))
+    logger.debug("Tier override identities: %s", sorted(overrides))
+    return overrides
+
+
+def load_tier_overrides() -> dict[str, str]:
+    """Return the identity -> tier override map (cached per raw env value)."""
+    global _tier_overrides, _tier_overrides_raw
+    raw = os.getenv(TIER_OVERRIDES_ENV, "") or ""
+    if _tier_overrides is None or raw != _tier_overrides_raw:
+        _tier_overrides = _parse_tier_overrides(raw)
+        _tier_overrides_raw = raw
+    return _tier_overrides
+
+
+def tier_override_for(auth_claims: dict | None) -> str | None:
+    """Tier configured for this identity, or None when it has no override.
+
+    An override is AUTHORITATIVE: it may raise a tier (a staff identity to the
+    top tier) or lower one, and it wins over whatever ``yantra4d_tier`` the
+    token carries. That is deliberate — the override map is the operator's
+    statement about who someone is, and the claim is the issuer's.
+    """
+    if not isinstance(auth_claims, dict):
+        return None
+    email = auth_claims.get("email")
+    if not isinstance(email, str):
+        return None
+    email = email.strip().lower()
+    if not email:
+        return None
+    tier = load_tier_overrides().get(email)
+    if tier is None:
+        return None
+    # DEBUG only: an email address never belongs in routine logs.
+    logger.debug("Tier override applied for %s -> %s", email, tier)
+    return tier
+
+
 def _normalize_tier(tier: str) -> str:
     """Normalize legacy tier names to current names."""
     normalized = LEGACY_TIER_MAP.get(tier)
@@ -44,20 +171,33 @@ def _normalize_tier(tier: str) -> str:
     return tier
 
 
+def _tier_from_claim(auth_claims: dict) -> str:
+    """Tier as stated by the token, before any identity override."""
+    tier = auth_claims.get("yantra4d_tier", "essentials")
+    tier = _normalize_tier(tier)
+    if tier not in TIER_HIERARCHY:
+        logger.warning("Unknown tier '%s' in JWT, falling back to essentials", tier)
+        return "essentials"
+    return tier
+
+
 def resolve_tier(auth_claims: dict | None) -> str:
     """Resolve tier string from JWT claims.
 
     - No claims (anonymous) -> "guest"
     - Claims without yantra4d_tier -> "essentials" (authenticated but no subscription)
     - Claims with yantra4d_tier -> that value (validated against known tiers)
+    - An identity listed in TIER_OVERRIDES -> that tier, overriding the above
+
+    This is the single funnel every tier decision goes through, which is why
+    the override lives here rather than at each call site.
     """
     if not auth_claims:
         return "guest"
-    tier = auth_claims.get("yantra4d_tier", "essentials")
-    tier = _normalize_tier(tier)
-    if tier not in TIER_HIERARCHY:
-        logger.warning("Unknown tier '%s' in JWT, falling back to essentials", tier)
-        return "essentials"
+    tier = _tier_from_claim(auth_claims)
+    override = tier_override_for(auth_claims)
+    if override is not None:
+        return override
     return tier
 
 
@@ -88,6 +228,25 @@ def describe_entitlement(auth_claims: dict | None) -> dict:
 
     raw = auth_claims.get("yantra4d_tier")
     resolved = resolve_tier(auth_claims)
+
+    override = tier_override_for(auth_claims)
+    if override is not None:
+        # Report the override plainly. Without this, an operator looking at
+        # /api/me would see a tier the token does not carry and no explanation
+        # for it — the exact opacity this diagnostic exists to remove. The
+        # identity itself is never echoed; it is already known to the caller.
+        return {
+            "source": "tier_override",
+            "claim_present": raw is not None,
+            "raw_claim": raw,
+            "resolved_tier": resolved,
+            "detail": (
+                f"This identity is listed in {TIER_OVERRIDES_ENV} and is seated in "
+                f"tier {override!r}. The override is authoritative: it applies "
+                "whether it raises or lowers the tier the token claims"
+                + (f" ({raw!r})." if raw is not None else ".")
+            ),
+        }
 
     if raw is None:
         return {
@@ -156,6 +315,10 @@ def get_render_limit(tier: str) -> int:
 
     Reads ``backend_renders_per_hour`` with fallback to the legacy
     ``renders_per_hour`` key for backward compatibility.
+
+    ``-1`` is returned unchanged: it is the unlimited sentinel, and callers
+    decide what "no cap" means for them (``is_unlimited``). Formatting it into
+    a rate-limit string would produce the nonsense "-1/hour".
     """
     limits = get_tier_limits(tier)
     return limits.get("backend_renders_per_hour", limits.get("renders_per_hour", 30))

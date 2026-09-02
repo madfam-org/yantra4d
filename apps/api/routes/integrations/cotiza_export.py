@@ -24,6 +24,7 @@ import rate_limits
 from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
+from services.core.project_access import require_project_access
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
@@ -359,6 +360,7 @@ def _send_to_cotiza(payload: dict, auth_token: str | None = None) -> dict:
 @require_tier("pro")
 @limiter.limit(rate_limits.COTIZA_EXPORT)
 @handle_exceptions
+@require_project_access
 def create_cotiza_quote_request(slug: str):
     """Export a quote request from a Yantra4D project to Cotiza.
 

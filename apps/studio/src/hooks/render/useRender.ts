@@ -1,10 +1,14 @@
 import { useState, useRef, useCallback } from 'react'
+import { toast } from 'sonner'
 import { renderParts, cancelRender, estimateRenderTime } from '../../services/engine/renderService'
 import { useUpgradePrompt } from '../system/useUpgradePrompt'
 import * as idbCache from '../../services/cache/renderCache'
 
 const INITIAL_PROGRESS = 5
 const LOADING_RESET_DELAY_MS = 500
+const SKIPPED_TOAST_DURATION_MS = 6000
+/** One id, so a run of param edits replaces the notice instead of stacking it. */
+const SKIPPED_TOAST_ID = 'auto-render-over-threshold'
 
 interface Manifest {
   modes: Array<{ id: string; parts: string[]; [key: string]: unknown }>
@@ -33,10 +37,22 @@ interface UseRenderOptions {
   mode: string
   params: Record<string, unknown>
   manifest: Manifest
-  t: (key: string) => string
+  /** LanguageProvider's t; `params` fills {placeholders} in the translation. */
+  t: (key: string, params?: Record<string, string | number>) => string
   getCacheKey: (mode: string, params: Record<string, unknown>) => string
   project?: string
   exportFormat?: string
+}
+
+/** How a render was asked for. */
+export interface GenerateOptions {
+  /**
+   * True when nothing the user did asked for THIS render — the debounced
+   * on-load / param-change effect in useProjectParams. An automatic render that
+   * is estimated over the cartridge's warning threshold is skipped with a
+   * toast rather than confirmed with a modal; see handleGenerate.
+   */
+  automatic?: boolean
 }
 
 interface UseRenderResult {
@@ -51,7 +67,7 @@ interface UseRenderResult {
   evictCache: (key: string) => void
   showConfirmDialog: boolean
   pendingEstimate: number
-  handleGenerate: (forceRender?: boolean, overridePayload?: Record<string, unknown> | null) => Promise<void>
+  handleGenerate: (forceRender?: boolean, overridePayload?: Record<string, unknown> | null, options?: GenerateOptions) => Promise<void>
   handleCancelGenerate: () => Promise<void>
   handleConfirmRender: () => void
   handleCancelRender: () => void
@@ -81,7 +97,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
     delete partsCacheRef.current[key]
   }, [])
 
-  const handleGenerate = useCallback(async (forceRender: boolean = false, overridePayload: Record<string, unknown> | null = null) => {
+  const handleGenerate = useCallback(async (forceRender: boolean = false, overridePayload: Record<string, unknown> | null = null, { automatic = false }: GenerateOptions = {}) => {
     const payload = overridePayload || { ...params, mode }
     const cacheKey = getCacheKey(mode, params)
 
@@ -127,6 +143,21 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
       const threshold = manifest.estimate_constants?.warning_threshold_seconds || 60
       if (estimate > threshold) {
         setPendingEstimate(estimate)
+        // An AUTOMATIC render — the debounced on-load / param-change effect —
+        // is one the visitor never asked for, so it must not seize the page.
+        // The confirm dialog is a Radix alertdialog over a pointer-blocking
+        // overlay, and for a cartridge whose default estimates over threshold
+        // (gridfinity's cadquery `bin` is ~2 min) that meant every single load
+        // of /project/<slug> opened a modal the visitor had to answer before
+        // the UI would respond to anything. Say so without blocking and leave
+        // the render to an explicit Generate, which still confirms below.
+        if (automatic) {
+          toast.info(
+            t('toast.auto_render_skipped', { minutes: Math.max(1, Math.round(estimate / 60)) }),
+            { id: SKIPPED_TOAST_ID, duration: SKIPPED_TOAST_DURATION_MS },
+          )
+          return
+        }
         setPendingPayload(payload)
         setShowConfirmDialog(true)
         return

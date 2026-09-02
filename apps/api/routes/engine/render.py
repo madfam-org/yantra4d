@@ -13,10 +13,12 @@ import rate_limits
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import optional_auth, require_render_scope, require_role
+from services.core.project_access import check_project_access
 from services.core.tier_service import (
     export_format_allowed,
     get_render_limit,
     get_render_limit_for_project,
+    is_unlimited,
     minimum_tier_for_export_format,
     resolve_tier,
 )
@@ -38,9 +40,16 @@ render_bp = Blueprint('render', __name__)
 
 
 def _make_rate_limit_headers(tier: str) -> dict:
-    """Build X-RateLimit-* headers for the response."""
+    """Build X-RateLimit-* headers for the response.
+
+    An unlimited tier reports the word ``unlimited`` rather than ``-1``, which
+    a client would parse as a number and count down from. Remaining/Reset are
+    deliberately absent: flask-limiter emits those only for a limit it is
+    actually tracking, and there is nothing to remain out of.
+    """
+    limit = get_render_limit(tier)
     return {
-        "X-RateLimit-Limit": str(get_render_limit(tier)),
+        "X-RateLimit-Limit": "unlimited" if is_unlimited(limit) else str(limit),
         "X-RateLimit-Tier": tier,
         "X-RateLimit-Type": "backend",
     }
@@ -61,11 +70,8 @@ def _effective_tier() -> str:
     return resolve_tier(getattr(request, "auth_claims", None))
 
 
-def _get_tiered_limit() -> str:
-    """Return dynamic rate limit string based on user tier (backend renders only).
-
-    Checks for per-project guest_render_limit override in the project manifest.
-    """
+def _project_render_limit() -> int:
+    """Renders-per-hour for this request: the tier's, or the project's guest override."""
     claims = getattr(request, "auth_claims", None)
     tier = resolve_tier(claims)
     manifest = None
@@ -76,7 +82,32 @@ def _get_tiered_limit() -> str:
             manifest = get_manifest(project_slug)
     except Exception:
         pass
-    return f"{get_render_limit_for_project(tier, manifest)}/hour"
+    return get_render_limit_for_project(tier, manifest)
+
+
+def _get_tiered_limit() -> str:
+    """Return dynamic rate limit string based on user tier (backend renders only).
+
+    Checks for per-project guest_render_limit override in the project manifest.
+    """
+    limit = _project_render_limit()
+    if is_unlimited(limit):
+        return rate_limits.UNLIMITED_PLACEHOLDER
+    return f"{limit}/hour"
+
+
+def _render_limit_exempt() -> bool:
+    """``exempt_when`` for the render limiters: True when this tier has no cap.
+
+    flask-limiter parses a decorated limit string into a bucket *before* it
+    consults ``exempt_when``, so "unlimited" cannot be expressed as "-1/hour" —
+    the parse raises. Nor can the limit be dropped: a decorated limit is what
+    suppresses the app-wide default ("500 per hour"), so returning nothing
+    would silently cap an unlimited tier at the default instead. The supported
+    pair is therefore a syntactically valid placeholder that is never enforced
+    plus this predicate, which makes the limiter skip the bucket entirely.
+    """
+    return is_unlimited(_project_render_limit())
 
 
 def _rate_limit_key() -> str:
@@ -134,12 +165,15 @@ def estimate_render_time():
 @render_bp.route('/api/render', methods=['POST'])
 @optional_auth
 @require_render_scope
-@limiter.limit(_get_tiered_limit, key_func=_rate_limit_key)
+@limiter.limit(_get_tiered_limit, key_func=_rate_limit_key, exempt_when=_render_limit_exempt)
 @require_json_body
 @handle_exceptions
 def render_stl():
     """Synchronous render endpoint."""
     data = request.json
+    denied = check_project_access(data.get("project"))
+    if denied is not None:
+        return denied
     tier = _effective_tier()
     payload = extract_render_payload(data)
 
@@ -196,11 +230,14 @@ def render_stl():
 @render_bp.route('/api/render-stream', methods=['POST'])
 @optional_auth
 @require_render_scope
-@limiter.limit(_get_tiered_limit, key_func=_rate_limit_key)
+@limiter.limit(_get_tiered_limit, key_func=_rate_limit_key, exempt_when=_render_limit_exempt)
 @require_json_body
 def render_stl_stream():
     """Stream render progress via Server-Sent Events (SSE)."""
     data = request.json
+    denied = check_project_access(data.get("project"))
+    if denied is not None:
+        return denied
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
@@ -266,6 +303,13 @@ def cancel_render_endpoint():
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         data = {}
+
+    # Cancellation is a write against a project's in-flight work, so it is
+    # gated like the renders it stops (#78). The slug is optional here; an
+    # absent one leaves the scoped behaviour untouched.
+    denied = check_project_access(data.get("project"))
+    if denied is not None:
+        return denied
 
     if data.get("all") is True:
         return _cancel_every_render()

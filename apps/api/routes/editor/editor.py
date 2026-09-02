@@ -13,6 +13,7 @@ from flask import Blueprint, jsonify, request
 import rate_limits
 from extensions import limiter
 from middleware.auth import require_tier
+from services.core.project_access import require_project_access
 from utils.project_resolver import require_project
 from utils.route_helpers import error_response, safe_join_path
 from utils.validators import require_valid_slug
@@ -67,6 +68,7 @@ def _graph_rejection(resolved: Path, content: str) -> str | None:
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_READ)
 @require_project()
+@require_project_access
 def list_files(slug, project_dir):
 
     files = []
@@ -89,6 +91,7 @@ def list_files(slug, project_dir):
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_READ)
 @require_project()
+@require_project_access
 def read_file(slug, filepath, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)
@@ -110,6 +113,7 @@ def read_file(slug, filepath, project_dir):
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_WRITE)
 @require_project(auto_git=True)
+@require_project_access
 def write_file(slug, filepath, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)
@@ -143,6 +147,7 @@ def write_file(slug, filepath, project_dir):
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_CREATE)
 @require_project(auto_git=True)
+@require_project_access
 def create_file(slug, project_dir):
 
     data = request.json
@@ -179,6 +184,7 @@ def create_file(slug, project_dir):
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_DELETE)
 @require_project(auto_git=True)
+@require_project_access
 def delete_file(slug, filepath, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)

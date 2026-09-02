@@ -56,12 +56,12 @@ class TestLoadTierOverrides:
         assert load_tier_overrides() == {}
 
     def test_valid_map_is_parsed(self, monkeypatch):
-        set_overrides(monkeypatch, {"someone@example.com": "madfam"})
-        assert load_tier_overrides() == {"someone@example.com": "madfam"}
+        set_overrides(monkeypatch, {"someone@example.com": "premium"})
+        assert load_tier_overrides() == {"someone@example.com": "premium"}
 
     def test_emails_are_lower_cased_and_stripped(self, monkeypatch):
-        set_overrides(monkeypatch, {"  SoMeOne@Example.COM  ": "madfam"})
-        assert load_tier_overrides() == {"someone@example.com": "madfam"}
+        set_overrides(monkeypatch, {"  SoMeOne@Example.COM  ": "premium"})
+        assert load_tier_overrides() == {"someone@example.com": "premium"}
 
     def test_unknown_tier_entry_is_dropped(self, monkeypatch):
         set_overrides(monkeypatch, {
@@ -81,8 +81,8 @@ class TestLoadTierOverrides:
     def test_reparses_when_env_changes(self, monkeypatch):
         set_overrides(monkeypatch, {"someone@example.com": "pro"})
         assert load_tier_overrides() == {"someone@example.com": "pro"}
-        set_overrides(monkeypatch, {"someone@example.com": "madfam"})
-        assert load_tier_overrides() == {"someone@example.com": "madfam"}
+        set_overrides(monkeypatch, {"someone@example.com": "premium"})
+        assert load_tier_overrides() == {"someone@example.com": "premium"}
 
 
 class TestTierOverrideFor:
@@ -90,33 +90,33 @@ class TestTierOverrideFor:
         assert tier_override_for(None) is None
 
     def test_no_email_claim(self, monkeypatch):
-        set_overrides(monkeypatch, {"someone@example.com": "madfam"})
+        set_overrides(monkeypatch, {"someone@example.com": "premium"})
         assert tier_override_for({"sub": "u1"}) is None
 
     def test_non_string_email_claim(self, monkeypatch):
-        set_overrides(monkeypatch, {"someone@example.com": "madfam"})
+        set_overrides(monkeypatch, {"someone@example.com": "premium"})
         assert tier_override_for({"email": ["someone@example.com"]}) is None
 
     def test_claim_email_is_matched_case_insensitively(self, monkeypatch):
-        set_overrides(monkeypatch, {"someone@example.com": "madfam"})
-        assert tier_override_for({"email": "SOMEONE@Example.com"}) == "madfam"
+        set_overrides(monkeypatch, {"someone@example.com": "premium"})
+        assert tier_override_for({"email": "SOMEONE@Example.com"}) == "premium"
 
     def test_unlisted_identity(self, monkeypatch):
-        set_overrides(monkeypatch, {"someone@example.com": "madfam"})
+        set_overrides(monkeypatch, {"someone@example.com": "premium"})
         assert tier_override_for({"email": "other@example.com"}) is None
 
 
 class TestResolveTierWithOverrides:
     def test_override_raises_tier(self, monkeypatch):
-        set_overrides(monkeypatch, {"staff@example.com": "madfam"})
+        set_overrides(monkeypatch, {"staff@example.com": "premium"})
         claims = {"sub": "u1", "email": "staff@example.com"}
-        assert resolve_tier(claims) == "madfam"
+        assert resolve_tier(claims) == "premium"
         assert resolve_tier(claims) == TOP_TIER
 
     def test_override_raises_over_an_explicit_lower_claim(self, monkeypatch):
-        set_overrides(monkeypatch, {"staff@example.com": "madfam"})
+        set_overrides(monkeypatch, {"staff@example.com": "premium"})
         claims = {"email": "staff@example.com", "yantra4d_tier": "essentials"}
-        assert resolve_tier(claims) == "madfam"
+        assert resolve_tier(claims) == "premium"
 
     def test_override_lowers_tier(self, monkeypatch):
         """An override is authoritative in both directions, not a maximum."""
@@ -130,11 +130,11 @@ class TestResolveTierWithOverrides:
         assert resolve_tier(claims) == "pro"
 
     def test_anonymous_is_still_guest(self, monkeypatch):
-        set_overrides(monkeypatch, {"staff@example.com": "madfam"})
+        set_overrides(monkeypatch, {"staff@example.com": "premium"})
         assert resolve_tier(None) == "guest"
 
     def test_other_identities_are_untouched(self, monkeypatch):
-        set_overrides(monkeypatch, {"staff@example.com": "madfam"})
+        set_overrides(monkeypatch, {"staff@example.com": "premium"})
         assert resolve_tier({"email": "someone@example.com"}) == "essentials"
         assert resolve_tier({"email": "someone@example.com", "yantra4d_tier": "pro"}) == "pro"
 
@@ -145,27 +145,27 @@ class TestResolveTierWithOverrides:
 
 class TestDescribeEntitlementWithOverrides:
     def test_reports_tier_override_source(self, monkeypatch):
-        set_overrides(monkeypatch, {"staff@example.com": "madfam"})
+        set_overrides(monkeypatch, {"staff@example.com": "premium"})
         d = describe_entitlement({"email": "staff@example.com", "yantra4d_tier": "essentials"})
         assert d["source"] == "tier_override"
-        assert d["resolved_tier"] == "madfam"
+        assert d["resolved_tier"] == "premium"
         assert d["raw_claim"] == "essentials"
         assert "authoritative" in d["detail"]
 
     def test_override_without_a_tier_claim(self, monkeypatch):
-        set_overrides(monkeypatch, {"staff@example.com": "madfam"})
+        set_overrides(monkeypatch, {"staff@example.com": "premium"})
         d = describe_entitlement({"email": "staff@example.com"})
         assert d["source"] == "tier_override"
         assert d["claim_present"] is False
-        assert d["resolved_tier"] == "madfam"
+        assert d["resolved_tier"] == "premium"
 
     def test_detail_never_echoes_the_identity(self, monkeypatch):
-        set_overrides(monkeypatch, {"staff@example.com": "madfam"})
+        set_overrides(monkeypatch, {"staff@example.com": "premium"})
         d = describe_entitlement({"email": "staff@example.com"})
         assert "staff@example.com" not in json.dumps(d)
 
     def test_unlisted_identity_keeps_the_claim_source(self, monkeypatch):
-        set_overrides(monkeypatch, {"staff@example.com": "madfam"})
+        set_overrides(monkeypatch, {"staff@example.com": "premium"})
         d = describe_entitlement({"email": "other@example.com", "yantra4d_tier": "pro"})
         assert d["source"] == "claim"
 

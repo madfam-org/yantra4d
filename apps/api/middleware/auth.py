@@ -152,14 +152,14 @@ def require_role(role: str):
 
 def require_tier(min_tier: str):
     """Decorator factory: optional_auth + check tier hierarchy."""
-    from services.core.tier_service import has_tier, resolve_tier
+    from services.core.tier_service import TOP_TIER, has_tier, resolve_tier
 
     def decorator(f):
         @functools.wraps(f)
         @optional_auth
         def decorated(*args, **kwargs):
             if not Config.AUTH_ENABLED:
-                request.user_tier = "madfam"
+                request.user_tier = TOP_TIER
                 return f(*args, **kwargs)
             user_tier = resolve_tier(getattr(request, "auth_claims", None))
             if not has_tier(user_tier, min_tier):
@@ -233,7 +233,8 @@ def optional_auth(f):
 # See janua apps/api/app/routers/v1/oauth_provider.py::_get_client_credentials_claims
 # and ::_handle_client_credentials_grant for the authoritative shapes.
 #
-# Because the `yantra4d_tier: "madfam"` claim is DERIVED from the `yantra4d:`
+# Because the `yantra4d_tier` claim Janua mints for a machine client (still the
+# literal `"madfam"`, normalised here to `premium`) is DERIVED from the `yantra4d:`
 # scope namespace, a machine client that never asks for `yantra4d:render` can
 # still present a token this API happily accepts — the scope Janua mints is
 # decorative unless the resource server checks it. That is what this enforces.

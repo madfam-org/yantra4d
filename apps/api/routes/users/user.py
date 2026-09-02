@@ -9,6 +9,7 @@ from config import Config
 from extensions import db
 from middleware.auth import optional_auth, require_auth
 from services.core.tier_service import (
+    TOP_TIER,
     describe_entitlement,
     get_tier_limits,
     load_tiers,
@@ -35,14 +36,14 @@ def get_me():
 
     Anonymous users get guest tier. Authenticated users get their persistent
     user record (upserted from JWT claims) plus associated projects.
-    When AUTH_ENABLED=false, returns madfam (all features unlocked).
+    When AUTH_ENABLED=false, returns the top tier (all features unlocked).
     """
     if not Config.AUTH_ENABLED:
         return jsonify({
-            "tier": "madfam",
+            "tier": TOP_TIER,
             "user": None,
             "projects": [],
-            "limits": get_tier_limits("madfam"),
+            "limits": get_tier_limits(TOP_TIER),
         })
 
     claims = getattr(request, "auth_claims", None)

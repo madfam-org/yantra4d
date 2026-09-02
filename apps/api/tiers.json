@@ -56,7 +56,7 @@
     "thickness_analysis": true,
     "overhang_analysis": true
   },
-  "madfam": {
+  "premium": {
     "backend_renders_per_hour": -1,
     "max_projects": -1,
     "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],

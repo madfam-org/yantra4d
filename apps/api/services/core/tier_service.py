@@ -6,7 +6,10 @@ Tier hierarchy:
   guest (0)      — unauthenticated visitors, most restricted
   essentials (1) — authenticated users / open-source self-hosters (was "basic")
   pro (2)        — paid premium features
-  madfam (3)     — ecosystem bundle
+  premium (3)    — ecosystem bundle (was "madfam"; the alias still resolves)
+
+Deprecated names are accepted forever on every input path and normalised here,
+never at a call site — see ``LEGACY_TIER_MAP`` and ``_normalize_tier``.
 """
 import json
 import logging
@@ -17,10 +20,10 @@ logger = logging.getLogger(__name__)
 
 _tiers: dict | None = None
 
-TIER_HIERARCHY = {"guest": 0, "essentials": 1, "pro": 2, "madfam": 3}
+TIER_HIERARCHY = {"guest": 0, "essentials": 1, "pro": 2, "premium": 3}
 
 # The most privileged tier, derived from the hierarchy rather than spelled out
-# again, so adding a tier above `madfam` does not silently leave callers that
+# again, so adding a tier above `premium` does not silently leave callers that
 # mean "the top tier" pointing at the old one.
 TOP_TIER = max(TIER_HIERARCHY, key=lambda name: TIER_HIERARCHY[name])
 
@@ -31,12 +34,34 @@ UNLIMITED = -1
 # Name of the environment variable holding the identity -> tier override map.
 # Its VALUE is deployment configuration (a Kubernetes secret): a JSON object
 # mapping a lower-cased email address to a tier name, e.g.
-#     {"someone@example.com": "madfam"}
-# No identity is ever committed to this repository.
+#     {"someone@example.com": "premium"}
+# Deprecated names are accepted here too: an operator secret still saying
+# "madfam" seats the same top tier (see LEGACY_TIER_MAP). No identity is ever
+# committed to this repository.
 TIER_OVERRIDES_ENV = "TIER_OVERRIDES"
 
-# Legacy tier name mapping
-LEGACY_TIER_MAP = {"basic": "essentials"}
+# Deprecated tier name -> canonical tier name.
+#
+# These aliases are PERMANENT. Every input path funnels through
+# ``_normalize_tier``: the ``yantra4d_tier`` claim, the TIER_OVERRIDES values,
+# and the tier arguments of ``has_tier`` / ``get_tier_limits``. Janua still
+# synthesises the literal ``"madfam"`` for machine tokens and an operator's
+# TIER_OVERRIDES secret may still say it, so removing an entry from this map
+# would silently downgrade live callers to essentials (ADR-006 Decision 4).
+# Outputs — /api/me, X-RateLimit-Tier, entitlement descriptions — always carry
+# the canonical name.
+LEGACY_TIER_MAP = {"basic": "essentials", "madfam": "premium"}
+
+# Which deprecated names have already been announced this process. The aliases
+# sit on the hot path (every render, every /api/me), and one warning per
+# request would bury the notice it exists to make visible.
+_alias_notices_seen: set[str] = set()
+
+
+def reset_alias_deprecation_notices() -> None:
+    """Forget which aliases have been announced (test seam)."""
+    _alias_notices_seen.clear()
+
 
 TIERS_FILE = Path(__file__).parent.parent.parent / "tiers.json"
 
@@ -162,11 +187,25 @@ def tier_override_for(auth_claims: dict | None) -> str | None:
 
 
 def _normalize_tier(tier: str) -> str:
-    """Normalize legacy tier names to current names."""
+    """Map a deprecated tier name to its canonical name.
+
+    This is the one place an alias is resolved, so every caller — claims,
+    TIER_OVERRIDES values, hierarchy comparisons, limit lookups — sees the
+    canonical name and nothing downstream has to know an alias exists.
+
+    The deprecation note is emitted at most once per process per alias: the
+    name is still supported, so this is a nudge, not an incident.
+    """
     normalized = LEGACY_TIER_MAP.get(tier)
     if normalized:
-        logger.warning("Deprecated tier name '%s' used — mapped to '%s'. "
-                       "Update client to use '%s' directly.", tier, normalized, normalized)
+        if tier not in _alias_notices_seen:
+            _alias_notices_seen.add(tier)
+            logger.warning(
+                "Deprecated tier name '%s' used — mapped to '%s'. The alias stays "
+                "supported indefinitely; update the caller to send '%s' directly. "
+                "(Logged once per process.)",
+                tier, normalized, normalized,
+            )
         return normalized
     return tier
 
@@ -190,7 +229,9 @@ def resolve_tier(auth_claims: dict | None) -> str:
     - An identity listed in TIER_OVERRIDES -> that tier, overriding the above
 
     This is the single funnel every tier decision goes through, which is why
-    the override lives here rather than at each call site.
+    the override lives here rather than at each call site. Deprecated names on
+    either input — the claim or the override value — are normalised on the way
+    through, so what comes out is always a canonical tier name.
     """
     if not auth_claims:
         return "guest"
@@ -277,7 +318,10 @@ def describe_entitlement(auth_claims: dict | None) -> dict:
 
     hint = ""
     if isinstance(raw, str) and raw.startswith("yantra4d_"):
-        candidate = raw.removeprefix("yantra4d_")
+        # Normalise the candidate: the registered SKU is `yantra4d_madfam`, and
+        # without this the rename would stop recognising the very plan id this
+        # hint exists to catch.
+        candidate = _normalize_tier(raw.removeprefix("yantra4d_"))
         if candidate in TIER_HIERARCHY:
             hint = (
                 f" This looks like the checkout PLAN ID rather than the tier name — "

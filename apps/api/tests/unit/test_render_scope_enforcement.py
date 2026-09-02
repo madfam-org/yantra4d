@@ -80,6 +80,8 @@ HUMAN_CLAIMS = {
 # confidential client requesting scope "yantra4d:render" against audience
 # "yantra4d-api". The yantra4d_tier=madfam claim is DERIVED by Janua from the
 # "yantra4d:" scope namespace — this is the claim the live MTM seam depends on.
+# Janua still emits the literal "madfam"; it is a deprecated alias here and
+# normalises to "premium", which is why the claim below is left exactly as minted.
 FC_MACHINE_CLAIMS = {
     "sub": "service-account:fc-render-client",
     "email": "fashion-cabinet@service.auth.madfam.io",
@@ -235,13 +237,15 @@ class TestMachineTokenWithScope:
     """FC's conformance proof — the live MTM seam."""
 
     @pytest.mark.parametrize("mode", ["log", "enforce"])
-    def test_fc_token_allowed_and_keeps_madfam_tier(self, client, monkeypatch, mode):
+    def test_fc_token_allowed_and_keeps_the_top_tier(self, client, monkeypatch, mode):
         monkeypatch.setenv("RENDER_SCOPE_ENFORCEMENT", mode)
         resp = _post(client, FC_MACHINE_CLAIMS)
         assert resp.status_code == 200
-        # The tier claim must resolve exactly as it does today. Regressing this
-        # breaks the live FC -> Yantra4D MTM body render.
-        assert resp.get_json()["tier"] == "madfam"
+        # The tier claim must resolve to the same seat as it does today. Janua
+        # still mints the deprecated "madfam"; it normalises to "premium" and the
+        # response reports the canonical name. Regressing either half breaks the
+        # live FC -> Yantra4D MTM body render.
+        assert resp.get_json()["tier"] == "premium"
 
     def test_fc_token_carries_the_render_scope(self):
         assert RENDER_SCOPE in token_scopes(FC_MACHINE_CLAIMS)

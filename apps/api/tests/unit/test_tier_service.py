@@ -28,8 +28,8 @@ class TestResolveTier:
     def test_explicit_tier(self):
         assert resolve_tier({"yantra4d_tier": "pro"}) == "pro"
 
-    def test_madfam_tier(self):
-        assert resolve_tier({"yantra4d_tier": "madfam"}) == "madfam"
+    def test_premium_tier(self):
+        assert resolve_tier({"yantra4d_tier": "premium"}) == "premium"
 
     def test_unknown_tier_fallback(self):
         assert resolve_tier({"yantra4d_tier": "enterprise"}) == "essentials"
@@ -40,7 +40,7 @@ class TestHasTier:
         assert has_tier("pro", "pro") is True
 
     def test_higher_tier(self):
-        assert has_tier("madfam", "pro") is True
+        assert has_tier("premium", "pro") is True
 
     def test_lower_tier(self):
         assert has_tier("guest", "pro") is False
@@ -78,10 +78,10 @@ class TestGetRenderLimit:
     def test_pro_render_limit(self):
         assert get_render_limit("pro") == 150
 
-    def test_madfam_render_limit_is_the_unlimited_sentinel(self):
+    def test_premium_render_limit_is_the_unlimited_sentinel(self):
         """The top tier has no render cap; -1 is returned verbatim, not clamped."""
-        assert get_render_limit("madfam") == -1
-        assert is_unlimited(get_render_limit("madfam")) is True
+        assert get_render_limit("premium") == -1
+        assert is_unlimited(get_render_limit("premium")) is True
 
     def test_capped_tiers_are_not_unlimited(self):
         for tier in ("guest", "essentials", "pro"):
@@ -151,4 +151,5 @@ class TestLoadTiers:
         assert "guest" in tiers
         assert "essentials" in tiers
         assert "pro" in tiers
-        assert "madfam" in tiers
+        assert "premium" in tiers
+        assert "madfam" not in tiers

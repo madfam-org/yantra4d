@@ -16,6 +16,7 @@ from middleware.auth import (
 from services.core.project_access import check_project_access
 from services.core.tier_service import export_format_allowed
 from services.engine.render_orchestrator import ALLOWED_EXPORT_FORMATS
+from services.storage.serving import send_artifact_download
 from utils.route_helpers import error_response, handle_exceptions, safe_join_path
 from utils.validators import require_valid_slug
 
@@ -83,15 +84,32 @@ def _download_render_file(slug: str, filename: str, file_format: str, claims) ->
     # could fetch a `step`/`glb` export their tier may not produce. `stl` stays
     # open because tiers.json lists it for guest. `scad` never reaches here — it
     # is source, not an export, and is gated by the manifest allowlist above.
+    #
+    # This runs before the store is consulted, so an object-storage artifact is
+    # gated exactly as a file on disk is: the tier check is not something the
+    # backend can move past.
     if not export_format_allowed(effective_tier(), normalized_format):
         return export_format_denied_response(normalized_format)
 
-    # Try static dir first (rendered previews), then exports dir
-    project_dir = Config.PROJECTS_DIR / slug
-    for base_dir in [Config.STATIC_DIR, project_dir / "exports"]:
-        safe_path = safe_join_path(str(base_dir), filename)
-        if safe_path and safe_path.exists() and safe_path.suffix.lower() == f".{normalized_format}":
-            return send_file(safe_path, as_attachment=True, download_name=filename)
+    # Rendered previews first, then the project's checked-in exports.
+    #
+    # Previews go through the artifact store, so this endpoint keeps working
+    # once artifacts live in a bucket instead of on the pod's disk — and it
+    # keeps *streaming* them rather than redirecting, so every access check
+    # above (privacy, then access_control, then the tier gate) still runs on
+    # every byte served. Handing out a bucket URL would skip all of them. Under
+    # the default filesystem store this is the same safe_join_path + send_file
+    # it always was.
+    artifact = send_artifact_download(filename, normalized_format)
+    if artifact is not None:
+        return artifact
+
+    # Exports are authored files committed alongside the cartridge, not render
+    # output, so they stay on the project directory where they live.
+    exports_dir = Config.PROJECTS_DIR / slug / "exports"
+    safe_path = safe_join_path(str(exports_dir), filename)
+    if safe_path and safe_path.exists() and safe_path.suffix.lower() == f".{normalized_format}":
+        return send_file(safe_path, as_attachment=True, download_name=filename)
 
     return error_response("File not found", 404)
 

@@ -40,6 +40,7 @@ from services.engine.render_contract import (
     render_channel_for_job,
     render_final_channel_for_job,
 )
+from services.storage import check_artifact_store_ready, get_artifact_store, publish_artifact
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -81,7 +82,65 @@ _stop_beating = threading.Event()
 _held_jobs: set[str] = set()
 _held_jobs_lock = threading.Lock()
 
+# Where the render engines write. Engines are subprocesses, so a real local
+# path is not negotiable: OpenSCAD and CadQuery emit files, not object keys.
+# Under the default `fs` store this directory *is* the artifact store and a
+# render lands at its final location with nothing to copy. Under an object
+# store it is scratch space, and `_publish_part_artifacts` uploads from it.
 STATIC_FOLDER = str(Config.STATIC_DIR)
+
+
+def _publish_part_artifacts(paths, discard=()) -> dict[str, str]:
+    """Publish freshly rendered files to the artifact store, keyed by local path.
+
+    *paths* are the files the studio will actually be handed a URL for.
+    *discard* are intermediates nobody links to — the pre-conversion mesh, the
+    3MF the GLB was made from — which are worth cleaning up but not storing.
+
+    Under the filesystem store this is a no-op per file: the artifact is
+    already at its final path, so the default deployment writes exactly what it
+    wrote before, right down to the inode and mtime, and nothing is deleted.
+    Under an object store the directory is scratch on a volume with a hard
+    sizeLimit and no GC in this container, so once a file is safely stored the
+    local copy goes.
+
+    A publish failure propagates. The caller then reports the render as failed
+    rather than handing back a URL to an artifact that was never stored — the
+    quiet "render succeeded, download 404s" failure this whole seam exists to
+    prevent.
+    """
+    store = get_artifact_store()
+    published: dict[str, str] = {}
+    for path in paths:
+        if not path or path in published:
+            continue
+        published[path] = publish_artifact(path, store=store)
+
+    if store.local_root() is None:
+        for path in (*published, *discard):
+            if not path:
+                continue
+            try:
+                os.unlink(path)
+            except OSError:
+                logger.debug("Could not remove staged artifact %s", path, exc_info=True)
+
+    return published
+
+
+def _viewer_path(viewer_filename: str | None) -> str | None:
+    """Local path of the GLB companion `_post_render_convert` may have written."""
+    return os.path.join(STATIC_FOLDER, viewer_filename) if viewer_filename else None
+
+
+def _intermediates(output_path: str, serve_path: str) -> list[str]:
+    """Scratch files a render leaves behind that nothing is ever linked to."""
+    leftovers = []
+    if serve_path != output_path:
+        leftovers.append(output_path)
+    if output_path.endswith(".stl"):
+        leftovers.append(output_path.rsplit(".stl", 1)[0] + ".3mf")
+    return leftovers
 
 
 def _publish_heartbeat() -> None:
@@ -301,39 +360,48 @@ def process_sync_task(task):
         # Post-render
         output_filename = os.path.basename(output_path)
         actual_format = output_filename.rsplit('.', 1)[-1]
-        serve_path, serve_filename, viewer_filename = _post_render_convert(
+        serve_path, _serve_filename, viewer_filename = _post_render_convert(
             output_path, output_filename, part, payload['stl_prefix'], actual_format, export_format
         )
 
+        # Size is read before publishing: under an object store the local copy
+        # is scratch and is gone by the time the cache entry is written.
         try:
             size_bytes = os.path.getsize(serve_path)
         except OSError:
             size_bytes = None
 
+        viewer_path = _viewer_path(viewer_filename)
+        published = _publish_part_artifacts(
+            (serve_path, viewer_path), discard=_intermediates(output_path, serve_path)
+        )
+        serve_key = published[serve_path]
+        viewer_key = published.get(viewer_path) if viewer_path else None
+
         render_cache.put(
             project_slug, payload['scad_filename'], params, part, export_format,
-            serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash')
+            serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash')
         )
 
         part_entry = {
             "type": part,
-            "url": f"/static/{serve_filename}",
+            "url": f"/static/{serve_key}",
             "size_bytes": size_bytes,
             "log": f"[{part}] {stderr}\n"
         }
-        if viewer_filename:
-            part_entry["viewer_url"] = f"/static/{viewer_filename}"
+        if viewer_key:
+            part_entry["viewer_url"] = f"/static/{viewer_key}"
 
         final_payload = build_render_event(
             RENDER_EVENT_PART_DONE,
             part=part,
             type=part,
-            url=f"/static/{serve_filename}",
+            url=f"/static/{serve_key}",
             size_bytes=size_bytes,
             log=f"[{part}] {stderr}\n",
         )
-        if viewer_filename:
-            final_payload["viewer_url"] = f"/static/{viewer_filename}"
+        if viewer_key:
+            final_payload["viewer_url"] = f"/static/{viewer_key}"
 
         _publish_job_event(job_id, final_payload, emit_final=True)
     except Exception as exc:
@@ -424,24 +492,33 @@ def process_stream_task(task):
                     # Finalize conversion on part_done
                     output_filename = os.path.basename(output_path)
                     actual_format = output_filename.rsplit('.', 1)[-1]
-                    serve_path, serve_filename, viewer_filename = _post_render_convert(
+                    serve_path, _serve_filename, viewer_filename = _post_render_convert(
                         output_path, output_filename, part, payload['stl_prefix'], actual_format, export_format
                     )
                     try:
                         size_bytes = os.path.getsize(serve_path)
                     except OSError:
                         size_bytes = None
+
+                    viewer_path = _viewer_path(viewer_filename)
+                    published = _publish_part_artifacts(
+                        (serve_path, viewer_path),
+                        discard=_intermediates(output_path, serve_path),
+                    )
+                    serve_key = published[serve_path]
+                    viewer_key = published.get(viewer_path) if viewer_path else None
+
                     render_cache.put(
                         project_slug, payload['scad_filename'], params, part, export_format,
-                        serve_path, size_bytes, scad_content_hash=payload.get('scad_content_hash')
+                        serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash')
                     )
                     part_entry = {
                         "type": part,
-                        "url": f"/static/{serve_filename}",
+                        "url": f"/static/{serve_key}",
                         "size_bytes": size_bytes,
                     }
-                    if viewer_filename:
-                        part_entry["viewer_url"] = f"/static/{viewer_filename}"
+                    if viewer_key:
+                        part_entry["viewer_url"] = f"/static/{viewer_key}"
 
                     # Publish the fully baked part info
                     _publish_job_event(
@@ -494,6 +571,10 @@ def _reconcile_active_jobs_on_start() -> list[str]:
 
 
 def run_worker():
+    # Fail closed before the first BLPOP. A worker that cannot reach its
+    # artifact store would render happily and publish nowhere, and every
+    # resulting URL would 404 — so it must not start at all.
+    check_artifact_store_ready()
     logger.info("Render worker listening on queue '%s'", RENDER_QUEUE)
 
     # Anything still in the active-job set belongs to the instance this one

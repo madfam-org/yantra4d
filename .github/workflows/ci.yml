@@ -259,7 +259,10 @@ jobs:
       - run: pip install ruff pip-audit
       - run: pip-audit --desc || true
       - run: ruff check .
-      - run: pip install pytest pytest-cov
+      # moto backs the S3 artifact-store fidelity tests. Test-only: it is
+      # deliberately absent from requirements.txt, since the API image has no
+      # business shipping a mocking library.
+      - run: pip install pytest pytest-cov "moto[s3]"
       - name: Check for pending migrations
         run: |
           cd $GITHUB_WORKSPACE/apps/api

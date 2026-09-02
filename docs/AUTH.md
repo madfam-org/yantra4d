@@ -463,6 +463,17 @@ Responses that depend on who is asking are never shared-cached: the private
 manifest is served `private, no-store` with no ETag, and the project list drops
 to `private, no-store` as soon as any project in it is private.
 
+The `/static` gate is a `before_request` hook, so it runs ahead of the view on
+every request to that prefix — including a conditional or ranged one. An
+unentitled caller therefore gets the same 403 whatever headers they send, and
+never receives an `ETag`, a `Last-Modified` or a `Content-Range`: those are
+fingerprints of content and of when a private project was last rendered, and a
+403 that varied with the artifact's existence would be a probe. An entitled
+caller gets the artifact with `private, no-store`. All of this holds whichever
+artifact backend is configured — `/static` is answered by one store-backed rule
+on both — see
+[`docs/operations/render-artifact-storage.md`](operations/render-artifact-storage.md).
+
 Both env vars are read at call time and both are deployment configuration (a
 Kubernetes secret). No identity is ever committed to this repository.
 

@@ -30,13 +30,14 @@ from services.engine.cadquery_engine import build_cadquery_command
 from services.engine.cadquery_engine import run_render as run_cadquery_render
 from services.engine.openscad import build_openscad_command
 from services.engine.openscad import run_render as run_openscad_render
+from services.engine.render_artifacts import discard_render_artifacts
 from services.engine.render_orchestrator import (
     STATIC_FOLDER,
     RenderPayloadError,
     extract_render_payload,
 )
+from services.storage import publish_artifact_best_effort
 from utils.route_helpers import (
-    cleanup_old_stl_files,
     error_response,
     handle_exceptions,
     require_json_body,
@@ -306,7 +307,7 @@ def render_head(slug):
     generated_parts = []
     combined_log = ""
     
-    cleanup_old_stl_files(parts_to_render, STATIC_FOLDER, stl_prefix, export_format)
+    discard_render_artifacts(parts_to_render, stl_prefix, export_format)
     
     manifest = get_manifest(slug)
     engine = manifest.mode_engine(payload.get('mode'))
@@ -340,10 +341,14 @@ def render_head(slug):
                 continue
 
             combined_log += f"[{part}] {stderr}\n"
+            size_bytes = os.path.getsize(output_path) if os.path.exists(output_path) else None
+            # This render happens in the API process, not the worker, but it is
+            # still served from /static — so it is published through the store
+            # like any other artifact. A no-op under the filesystem default.
             generated_parts.append({
                 "type": part,
-                "url": f"/static/{output_filename}",
-                "size_bytes": os.path.getsize(output_path) if os.path.exists(output_path) else None
+                "url": f"/static/{publish_artifact_best_effort(output_path)}",
+                "size_bytes": size_bytes,
             })
 
         return jsonify({

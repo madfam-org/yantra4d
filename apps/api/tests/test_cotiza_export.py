@@ -43,6 +43,11 @@ SAMPLE_GEOMETRY = {
     "bounding_box_mm": {"x": 25.0, "y": 25.0, "z": 20.0},
 }
 
+#: The artifact key `project_on_disk` stores a mesh under. It is a key, not a
+#: path: the route resolves it through the artifact store, so a stub that named
+#: `/fake/mesh.glb` would name something no store holds.
+MESH_KEY = "test-cube_preview_abc123_body.glb"
+
 
 @pytest.fixture
 def project_on_disk(tmp_path, monkeypatch):
@@ -82,12 +87,13 @@ def project_on_disk(tmp_path, monkeypatch):
     (project_dir / "project.json").write_text(json.dumps(manifest))
     (project_dir / "main.scad").write_text("cube(25);")
 
-    # Create a fake mesh file in the static dir so _find_latest_render can
-    # discover it.  The file just needs to exist on disk with matching name.
+    # Store a fake mesh so the render-artifact lookup can find it. The lookup
+    # goes through the artifact store now, so what matters is that the artifact
+    # exists under its key — which, on the default filesystem store, is still a
+    # file of that name in the static directory.
     static_dir = tmp_path / "static"
     static_dir.mkdir(exist_ok=True)
-    mesh_name = f"{slug}_{Config.STL_PREFIX}abc123_body.glb"
-    mesh_path = static_dir / mesh_name
+    mesh_path = static_dir / MESH_KEY
     mesh_path.write_bytes(b"\x00" * 64)  # dummy content
 
     monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
@@ -541,7 +547,7 @@ class TestCotizaQuoteRequestRoute:
         )
         assert resp.status_code == 400
 
-    @patch("routes.integrations.cotiza_export._find_latest_render", return_value=None)
+    @patch("routes.integrations.cotiza_export.find_latest_render_key", return_value=None)
     def test_no_rendered_mesh_returns_409(self, mock_find, client, project_on_disk):
         """When no mesh file exists, endpoint should return 409."""
         slug = project_on_disk[0]
@@ -555,7 +561,7 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_successful_quote_returns_201(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
@@ -563,7 +569,7 @@ class TestCotizaQuoteRequestRoute:
         Cotiza API returns success.  Endpoint should return 201."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
         mock_send.return_value = {
             "quote_id": "q-999",
@@ -602,14 +608,14 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_strict_unverified_cotiza_success_fails_closed(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
         """Yantra refuses client-ready relay if strict mode lacks verified market data."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
         mock_send.return_value = {
             "quote_id": "q-review",
@@ -633,14 +639,14 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_non_strict_review_response_is_truthfully_labeled(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
         """Review-only Cotiza responses remain successful but not client-ready."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
         mock_send.return_value = {
             "quote_id": "q-review",
@@ -667,14 +673,14 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_cotiza_424_is_preserved(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
         """Cotiza strict-market failures should not be hidden as a generic 502."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
         mock_send.side_effect = CotizaAPIError(
             424,
@@ -692,14 +698,14 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_cotiza_timeout_returns_502(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
         """When Cotiza API times out, endpoint returns 502."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
         mock_send.side_effect = RuntimeError("Cotiza API request timed out")
 
@@ -715,14 +721,14 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_cotiza_connection_error_returns_502(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
         """When Cotiza API is unreachable, endpoint returns 502."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
         mock_send.side_effect = RuntimeError("Could not connect to Cotiza API")
 
@@ -737,14 +743,14 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_empty_json_body_uses_defaults(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
         """When request body is empty or missing, defaults should be applied."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
         mock_send.return_value = {"quote_id": "q-default"}
 
@@ -763,14 +769,14 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_auth_token_forwarded_to_cotiza(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
         """Bearer token from the request should be forwarded to Cotiza."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = SAMPLE_GEOMETRY.copy()
         mock_send.return_value = {"quote_id": "q-auth"}
 
@@ -789,7 +795,7 @@ class TestCotizaQuoteRequestRoute:
 
     @patch("routes.integrations.cotiza_export._send_to_cotiza")
     @patch("routes.integrations.cotiza_export._extract_geometry_metrics")
-    @patch("routes.integrations.cotiza_export._find_latest_render")
+    @patch("routes.integrations.cotiza_export.find_latest_render_key")
     def test_zero_geometry_still_sends_request(
         self, mock_find, mock_geo, mock_send, client, project_on_disk
     ):
@@ -797,7 +803,7 @@ class TestCotizaQuoteRequestRoute:
         request should still be sent to Cotiza (with a warning logged)."""
         slug = project_on_disk[0]
 
-        mock_find.return_value = "/fake/mesh.glb"
+        mock_find.return_value = MESH_KEY
         mock_geo.return_value = {
             "volume_cm3": 0.0,
             "surface_area_cm2": 0.0,

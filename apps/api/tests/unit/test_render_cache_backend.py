@@ -8,6 +8,7 @@ silently interleaving two kernels' output. These tests pin that separation.
 from unittest.mock import patch
 
 from services.engine.render_cache import RenderCache
+from services.storage import FilesystemArtifactStore
 
 ARGS = ("proj", "f.scad", {"size": 10}, "main", "stl")
 
@@ -59,10 +60,10 @@ class TestEndToEndCacheBehaviour:
     def test_entry_stored_under_one_backend_is_not_served_to_another(self, tmp_path):
         artifact = tmp_path / "part.stl"
         artifact.write_bytes(b"solid\n")
-        cache = RenderCache()
+        cache = RenderCache(store=FilesystemArtifactStore(tmp_path))
 
         with patch.object(RenderCache, "_engine_signature", return_value="CGAL|v1"):
-            cache.put(*ARGS, str(artifact), 6)
+            cache.put(*ARGS, artifact.name, 6)
             assert cache.get(*ARGS) is not None  # same backend: hit
 
         with patch.object(RenderCache, "_engine_signature", return_value="Manifold|v1"):

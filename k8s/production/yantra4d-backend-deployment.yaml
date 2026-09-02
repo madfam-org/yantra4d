@@ -125,6 +125,55 @@ spec:
               value: "https://app.yantra4d.com"
             - name: ANALYTICS_DB_PATH
               value: "/app/backend/data/.analytics.db"
+            # ── Render artifact storage ────────────────────────────
+            # Where finished renders live. `fs` is the render-output emptyDir
+            # below — today's behaviour, and the default. `s3` puts them in an
+            # S3-compatible bucket instead, which is what lets the API and the
+            # render worker stop sharing a filesystem (and removes the
+            # ReadWriteMany prerequisite the dedicated-worker rollout carries).
+            #
+            # Both containers must agree: an API on `fs` and a worker on `s3`
+            # is exactly the split-brain this exists to prevent. Flip them
+            # together or not at all.
+            #
+            # The bucket is provisioned by the operator through Enclii; there
+            # is deliberately no MinIO Deployment in this repo. Give it a
+            # lifecycle rule matching RENDER_GC_TTL (24h) — the in-process GC
+            # only sweeps local disk, never bucket objects.
+            #
+            # Endpoint and credentials come from the Secret and are all
+            # `optional: true`, so the pod starts without them and stays on the
+            # `fs` default. Semantics, migration and rollback:
+            # docs/operations/render-artifact-storage.md
+            - name: RENDER_ARTIFACT_STORE
+              value: "fs"
+            - name: RENDER_ARTIFACT_S3_BUCKET
+              value: "yantra4d-render-artifacts"
+            - name: RENDER_ARTIFACT_S3_REGION
+              value: "us-east-1"
+            - name: RENDER_ARTIFACT_S3_PREFIX
+              value: "renders/v1"
+            - name: RENDER_ARTIFACT_S3_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: RENDER_ARTIFACT_S3_ENDPOINT
+                  optional: true
+            # botocore reads the standard AWS names from the environment; the
+            # Secret keys are namespaced so they cannot collide with any other
+            # AWS credential this deployment might later carry.
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: RENDER_ARTIFACT_S3_ACCESS_KEY_ID
+                  optional: true
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: RENDER_ARTIFACT_S3_SECRET_ACCESS_KEY
+                  optional: true
           livenessProbe:
             httpGet:
               path: /api/health/live
@@ -182,6 +231,41 @@ spec:
             # Must equal the render-output emptyDir sizeLimit below (2Gi).
             - name: RENDER_VOLUME_LIMIT_BYTES
               value: "2147483648"
+            # ── Render artifact storage ────────────────────────────
+            # Must match the backend container above, value for value. The
+            # worker publishes artifacts here and the API reads them back;
+            # if the two disagree the render lands where nobody looks.
+            # Under `s3` the render-output volume below becomes scratch:
+            # the worker uploads and then removes its local copy.
+            - name: RENDER_ARTIFACT_STORE
+              value: "fs"
+            - name: RENDER_ARTIFACT_S3_BUCKET
+              value: "yantra4d-render-artifacts"
+            - name: RENDER_ARTIFACT_S3_REGION
+              value: "us-east-1"
+            - name: RENDER_ARTIFACT_S3_PREFIX
+              value: "renders/v1"
+            - name: RENDER_ARTIFACT_S3_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: RENDER_ARTIFACT_S3_ENDPOINT
+                  optional: true
+            # botocore reads the standard AWS names from the environment; the
+            # Secret keys are namespaced so they cannot collide with any other
+            # AWS credential this deployment might later carry.
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: RENDER_ARTIFACT_S3_ACCESS_KEY_ID
+                  optional: true
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: yantra4d-secrets
+                  key: RENDER_ARTIFACT_S3_SECRET_ACCESS_KEY
+                  optional: true
           readinessProbe:
             exec:
               command:

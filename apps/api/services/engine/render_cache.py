@@ -4,6 +4,19 @@ Two-level LRU cache for render results, keyed by parameter hash.
 L1: In-memory OrderedDict (per-process, instant)
 L2: Redis (shared across workers, survives restarts)
 Avoids redundant compilations when the same parameters are requested again.
+
+An entry records the artifact's **store key** — the artifact-relative name that
+appears in `/static/<key>` — not an absolute path. The two are the same string
+under the filesystem store, but a path is only meaningful to a process that can
+see that filesystem, and the whole point of the artifact store is that the API
+and the render worker eventually will not. A key is meaningful to both.
+
+Validation follows from that: an entry is a hit only if the artifact is still
+*in the store*, which is `ArtifactStore.exists`, not `os.path.isfile`. An entry
+whose key has since been collected — swept by the GC, expired by a bucket
+lifecycle rule, or written before a store switch — is treated as a miss and the
+part is rendered again. Nothing is ever served on the strength of a cache entry
+alone.
 """
 import hashlib
 import json
@@ -68,14 +81,67 @@ def _redis_fail(operation: str, error: Exception):
         logger.error("Render cache Redis circuit breaker OPEN for %ds", int(_CIRCUIT_COOLDOWN))
 
 
-class RenderCache:
-    """Thread-safe two-level LRU cache for render output file paths."""
+def entry_key(entry: dict | None) -> str | None:
+    """The store key an entry points at, tolerating pre-artifact-store entries.
 
-    def __init__(self, ttl: int = DEFAULT_TTL, max_entries: int = DEFAULT_MAX_ENTRIES):
+    Redis L2 survives deploys, so the rollout of the artifact store meets
+    entries whose only locator is the old absolute ``path``. Their basename is
+    exactly the key the flat static directory used, so they keep working
+    instead of turning the first minutes after a deploy into a cold cache.
+    Removing this fallback is safe once RENDER_CACHE_REDIS_TTL (24h) has
+    elapsed past the rollout.
+    """
+    if not isinstance(entry, dict):
+        return None
+    key = entry.get("key")
+    if isinstance(key, str) and key:
+        return key
+    legacy_path = entry.get("path")
+    if isinstance(legacy_path, str) and legacy_path:
+        return os.path.basename(legacy_path)
+    return None
+
+
+class RenderCache:
+    """Thread-safe two-level LRU cache for render artifact store keys."""
+
+    def __init__(
+        self,
+        ttl: int = DEFAULT_TTL,
+        max_entries: int = DEFAULT_MAX_ENTRIES,
+        store=None,
+    ):
         self._cache: OrderedDict[str, dict] = OrderedDict()
         self._lock = threading.Lock()
         self._ttl = ttl
         self._max_entries = max_entries
+        self._store = store
+
+    @property
+    def store(self):
+        """The artifact store entries are validated against.
+
+        Resolved on every access rather than captured in ``__init__`` so the
+        module-level singleton follows a store installed later in startup, and
+        so a test can point one cache at a temporary directory.
+        """
+        if self._store is not None:
+            return self._store
+        from services.storage import get_artifact_store
+        return get_artifact_store()
+
+    def _stored(self, entry: dict | None) -> bool:
+        """Whether the artifact an entry names is still in the store."""
+        key = entry_key(entry)
+        if not key:
+            return False
+        try:
+            return self.store.exists(key)
+        except Exception:
+            # A store that cannot answer must not fail the render: degrade to a
+            # miss and re-render, which is correct, just slower.
+            logger.warning("Artifact store existence check failed for %r", key, exc_info=True)
+            return False
 
     @staticmethod
     def _engine_signature() -> str:
@@ -139,7 +205,11 @@ class RenderCache:
             _redis_client.setex(
                 f"render:{key}",
                 REDIS_TTL,
-                json.dumps({"path": entry["path"], "size_bytes": entry["size_bytes"], "ts": entry["ts"]})
+                json.dumps({
+                    "key": entry["key"],
+                    "size_bytes": entry["size_bytes"],
+                    "ts": entry["ts"],
+                })
             )
             _redis_ok()
         except Exception as e:
@@ -152,17 +222,24 @@ class RenderCache:
         # L1: in-memory
         with self._lock:
             entry = self._cache.get(key)
-            if entry is not None:
-                if time.time() - entry["ts"] > self._ttl or not os.path.isfile(entry["path"]):
+            expired = entry is not None and time.time() - entry["ts"] > self._ttl
+        if entry is not None:
+            # The store check is deliberately outside the lock: against an
+            # object store it is a network round trip, and holding the cache
+            # mutex across it would serialize every render in the process.
+            if expired or not self._stored(entry):
+                with self._lock:
                     self._cache.pop(key, None)
-                else:
-                    self._cache.move_to_end(key)
-                    CACHE_HITS.inc()
-                    return entry
+            else:
+                with self._lock:
+                    if key in self._cache:
+                        self._cache.move_to_end(key)
+                CACHE_HITS.inc()
+                return entry
 
         # L2: Redis
         redis_entry = self._redis_get(key)
-        if redis_entry and os.path.isfile(redis_entry.get("path", "")):
+        if redis_entry and self._stored(redis_entry):
             # Promote to L1
             with self._lock:
                 self._cache[key] = redis_entry
@@ -175,9 +252,16 @@ class RenderCache:
         CACHE_MISSES.inc()
         return None
 
-    def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, path: str, size_bytes: int | None, scad_content_hash: str | None = None):
+    def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, artifact_key: str, size_bytes: int | None, scad_content_hash: str | None = None):
+        """Record that *artifact_key* satisfies this render.
+
+        ``artifact_key`` is a store key (``ArtifactStore``), i.e. the same
+        artifact-relative name that goes into the `/static/<key>` URL — never
+        an absolute path, which would only mean something to a process sharing
+        the producer's filesystem.
+        """
         key = self._make_key(project, scad_file, params, part, export_format, scad_content_hash)
-        entry = {"path": path, "size_bytes": size_bytes, "ts": time.time()}
+        entry = {"key": artifact_key, "size_bytes": size_bytes, "ts": time.time()}
 
         # L1
         with self._lock:

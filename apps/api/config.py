@@ -51,6 +51,33 @@ class AppConfig:
     # Graph documents transpile to CadQuery scripts, so they share its formats.
     GRAPH_ALLOWED_EXPORT_FORMATS: set = field(default_factory=lambda: {'stl', 'step', 'glb', 'gltf', 'obj', 'vrml', 'amf', '3mf'})
 
+    # ── Render artifact storage ────────────────────────────────────────
+    # Where finished render artifacts live. `fs` is today's directory
+    # (Config.STATIC_DIR) and is the default: nothing changes unless an
+    # operator opts in. `s3` is any S3-compatible endpoint (MinIO in this
+    # platform's clusters), which is what lets the API and the render worker
+    # stop sharing a filesystem. See docs/operations/render-artifact-storage.md.
+    #
+    # Credentials are deliberately absent from this dataclass. botocore reads
+    # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_SESSION_TOKEN from the
+    # environment itself, so no secret is ever held on a config object that
+    # gets logged at startup.
+    RENDER_ARTIFACT_STORE: str = field(
+        default_factory=lambda: os.getenv("RENDER_ARTIFACT_STORE", "fs").strip().lower()
+    )
+    RENDER_ARTIFACT_S3_ENDPOINT: str = field(
+        default_factory=lambda: os.getenv("RENDER_ARTIFACT_S3_ENDPOINT", "").strip()
+    )
+    RENDER_ARTIFACT_S3_BUCKET: str = field(
+        default_factory=lambda: os.getenv("RENDER_ARTIFACT_S3_BUCKET", "").strip()
+    )
+    RENDER_ARTIFACT_S3_REGION: str = field(
+        default_factory=lambda: os.getenv("RENDER_ARTIFACT_S3_REGION", "us-east-1").strip()
+    )
+    RENDER_ARTIFACT_S3_PREFIX: str = field(
+        default_factory=lambda: os.getenv("RENDER_ARTIFACT_S3_PREFIX", "").strip()
+    )
+
     # Janua Auth
     MANIFEST_STRICTNESS: str = field(default_factory=lambda: os.getenv("MANIFEST_STRICTNESS", ""))
     JANUA_ISSUER: str = field(default_factory=lambda: os.getenv("JANUA_ISSUER", "https://auth.madfam.io"))

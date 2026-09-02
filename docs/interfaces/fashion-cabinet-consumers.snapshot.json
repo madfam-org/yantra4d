@@ -5432,7 +5432,7 @@
     ]
   },
   "pin": {
-    "source_commit": "d57275176e634ac46e6700c9b516a0b7bb8f22fd",
+    "source_commit": "44b612e28fd5c5ffff5486147aa528f65b909686",
     "source_path": "docs/interfaces/yantra4d-consumers.json",
     "source_repo": "madfam-org/fashion-cabinet",
     "source_schema_version": "yantra4d_consumers_v1"

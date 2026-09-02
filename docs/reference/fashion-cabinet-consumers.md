@@ -57,7 +57,7 @@ The vendored file wraps their document unchanged in a pin:
   "pin": {
     "source_repo": "madfam-org/fashion-cabinet",
     "source_path": "docs/interfaces/yantra4d-consumers.json",
-    "source_commit": "d57275176e634ac46e6700c9b516a0b7bb8f22fd",
+    "source_commit": "44b612e28fd5c5ffff5486147aa528f65b909686",
     "source_schema_version": "yantra4d_consumers_v1"
   },
   "document": { ...their file, verbatim... }
@@ -67,10 +67,13 @@ The vendored file wraps their document unchanged in a pin:
 No timestamp is recorded: the file changes when the content or the pin changes,
 and never because it was rewritten.
 
-> **The current pin is a branch commit.** `d5727517` is the Fashion Cabinet
-> commit that first generated the back-edge; its pull request is open, not
-> merged. Once it lands, re-vendor at a `fashion-cabinet` **main** commit so the
-> pin names something that cannot be rebased away.
+The pin names a `fashion-cabinet` **main** commit — `44b612e2`, main's tip when
+this slice was vendored. The back-edge was generated on the branch of their
+PR #133 and reached main as `c606ac0`; FC #134-#138 landed after it and left
+`yantra4d-consumers.json` untouched, which is why re-vendoring at main's tip
+changed the pin and not one byte of the payload. Pinning the tip rather than
+`c606ac0` records the stronger fact: as of that commit, this *is* their
+published back-edge, not merely where the content first appeared.
 
 ## What breaks CI
 
@@ -123,6 +126,18 @@ A co-create target nobody has built yet is a real state, not a failure. Reading
 these is the cheapest demand signal this commons gets: `hammer-loop` is a solid
 a garment is already asking for.
 
+It also reads in the other direction, and one entry is already stale. Fashion
+Cabinet holds `hi-vis-vest` unlinked from `hook-loop-tape` because, at the
+yantra4d commit they resolved against (`80892074`), the solid had no
+`overlap_mm` to map the placket overlap onto. #89 added exactly that parameter —
+`overlap_mm` and `tolerance` are both in `projects/hook-loop-tape/project.json`
+now — so the reason the claim gives no longer holds, and the ball is in their
+court to re-point the garment and republish. The snapshot cannot notice this by
+itself: the `wanted` reasons are their prose, refreshed only when they
+regenerate. `frog-closure` is the same shape but not yet unblocked — their note
+names a `sew_tail` flange, and this cartridge exposes `tail_w` / `tail_t`, so a
+re-point made on the name alone would fail this lane rather than pass it.
+
 ## Refreshing the pin
 
 ```bash
@@ -136,6 +151,24 @@ python3 scripts/qa/refresh_fc_consumers.py --from-commit <sha>
 
 python3 scripts/qa/refresh_fc_consumers.py --check          # then re-run the lane
 ```
+
+`--from-path` is the offline path, and it does not need — or want — that
+checkout's working tree to be on the commit you are pinning. Read the blob out
+of the ref instead, so a colleague's in-progress branch is never disturbed and
+the bytes provably come from the commit named in `--pin-commit`:
+
+```bash
+git -C ../fashion-cabinet fetch origin main
+git -C ../fashion-cabinet rev-parse origin/main                  # the pin
+git -C ../fashion-cabinet show origin/main:docs/interfaces/yantra4d-consumers.json \
+    > /tmp/yantra4d-consumers.json
+python3 scripts/qa/refresh_fc_consumers.py \
+    --from-path /tmp/yantra4d-consumers.json --pin-commit <that sha>
+```
+
+This is how the pin was last moved. It touches no network, and the same ref
+always yields the same bytes, so a re-vendor either produces an empty diff or
+names exactly what upstream changed.
 
 The pin must be a full 40-character commit sha; a branch name is refused,
 because a pin that can move is not a pin. Vendoring is idempotent — the same

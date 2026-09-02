@@ -31,6 +31,14 @@ Usage:
         --from-path ../fashion-cabinet/docs/interfaces/yantra4d-consumers.json \
         --pin-commit <fashion-cabinet sha>
 
+    # ...and the offline, deterministic way to pin a commit that checkout is not
+    # standing on: read the blob out of the ref, leaving its working tree alone
+    #   git -C ../fashion-cabinet fetch origin main
+    #   git -C ../fashion-cabinet rev-parse origin/main
+    #   FC=docs/interfaces/yantra4d-consumers.json
+    #   git -C ../fashion-cabinet show origin/main:$FC > /tmp/fc-consumers.json
+    # then --from-path /tmp/fc-consumers.json --pin-commit <that sha>
+
     # vendor straight from a fashion-cabinet commit (network)
     python3 scripts/qa/refresh_fc_consumers.py --from-commit <sha>
 

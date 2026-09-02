@@ -28,6 +28,7 @@ from services.engine.render_contract import (
     render_channel_for_job,
     render_final_channel_for_job,
 )
+from services.engine.render_engine import RENDER_TIMEOUT_S
 
 r = redis.Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
 
@@ -47,7 +48,16 @@ CANCEL_JOB_PREFIX = "yantra_render_cancel_job:"
 # used CANCEL_ALL_KEY for, minus the blast radius.
 CANCEL_REQUEST_PREFIX = "yantra_render_cancel_request:"
 CANCEL_TTL_SECONDS = 120
-ACTIVE_JOB_META_TTL = 300
+# How long after a render's own ceiling an active-job lease may still stand.
+# The subprocess is bounded by RENDER_TIMEOUT_S, but the job is still "active"
+# through the post-render mesh conversion that follows it, so the lease has to
+# outlast both — otherwise a legitimately slow job prunes itself mid-render.
+ACTIVE_JOB_LEASE_GRACE_SECONDS = int(os.getenv("ACTIVE_JOB_LEASE_GRACE_SECONDS", "120"))
+#: TTL on `yantra_render_job_meta:<job_id>`. This key is the job's LEASE, not
+#: just its metadata: `ACTIVE_RENDER_JOBS_KEY` is a plain set with no expiry, so
+#: the lease is the only thing that can make membership end on its own when a
+#: worker dies mid-render. See `prune_active_jobs`.
+ACTIVE_JOB_META_TTL = RENDER_TIMEOUT_S + ACTIVE_JOB_LEASE_GRACE_SECONDS
 CANCEL_EVENT_TTL_SECONDS = 30
 RENDER_WORKER_HEARTBEAT_KEY = os.environ.get(
     "RENDER_WORKER_HEARTBEAT_KEY",
@@ -455,10 +465,10 @@ def get_render_worker_status() -> dict:
     except Exception:
         queue_depth = None
 
-    try:
-        active_jobs = r.scard(ACTIVE_RENDER_JOBS_KEY)
-    except Exception:
-        active_jobs = None
+    # Pruned, not `scard`: the raw cardinality counts entries whose lease has
+    # already expired, which is how "active jobs 1, queue depth 0" survived two
+    # rollouts. See prune_active_jobs.
+    active_jobs = active_job_count()
 
     return {
         "available": available,
@@ -904,6 +914,176 @@ def _active_job_meta(job_id: str) -> dict:
     return parsed if isinstance(parsed, dict) else {}
 
 
+# ──────────────────────────────────────────────
+# Active-job set: membership that ends on its own
+# ──────────────────────────────────────────────
+#
+# `ACTIVE_RENDER_JOBS_KEY` is a plain Redis SET. The worker `sadd`s a job at
+# start and `srem`s it at finish, both unconditionally — correct whenever the
+# worker reaches its `finally`. A pod roll, an OOM kill or a node eviction never
+# does, so the id stays in the set with nothing left to remove it, and
+# `/api/health` reports `active jobs 1` against `queue depth 0` forever:
+# observed in production across five samples and two rollouts on 2026-09-02.
+#
+# The fix is a LEASE, not a bigger cleanup. `yantra_render_job_meta:<job_id>`
+# already carries a TTL and is already written and deleted alongside every set
+# mutation, so it is exactly the per-job expiring key the set lacks — it just
+# was never *read* as one. A member whose lease is gone is, by definition, a job
+# no live worker is holding:
+#
+#   * the worker refreshes the lease while it holds the job
+#     (`apps/worker/render_worker.py::_refresh_active_job_leases`, on the
+#     heartbeat tick), so a legitimately long render is never pruned;
+#   * the lease outlives RENDER_TIMEOUT_S plus the post-render conversion by
+#     ACTIVE_JOB_LEASE_GRACE_SECONDS, so even a worker that stops beating has to
+#     be gone longer than any real job before its entries are dropped;
+#   * a worker that dies stops refreshing, and every entry it held falls out on
+#     its own.
+#
+# Pruning happens on the read paths (health, cancel, the admin view). It is a
+# bounded cleanup that never grows the set it walks and never raises: a Redis
+# failure degrades to "leave it alone", never to sweeping live work.
+
+
+def _decoded_job_ids(raw_members) -> list[str]:
+    """Normalise Redis set members to non-empty strings."""
+    job_ids = []
+    for raw in raw_members or []:
+        job_id = raw.decode("utf-8", errors="replace") if isinstance(raw, bytes) else str(raw)
+        if job_id:
+            job_ids.append(job_id)
+    return job_ids
+
+
+def _lease_expiry_age() -> int:
+    """Seconds after which a lease is too old to belong to a live render.
+
+    A lease that somehow outlived its TTL — a Redis restored from a snapshot, a
+    key written by an older worker with the smaller TTL — is still bounded by
+    the job's own ceiling: nothing legitimately renders for longer than
+    RENDER_TIMEOUT_S plus the conversion grace.
+    """
+    return RENDER_TIMEOUT_S + ACTIVE_JOB_LEASE_GRACE_SECONDS
+
+
+def _job_lease_expired(job_id: str, now: float) -> bool:
+    """Whether `job_id`'s lease is gone, or stamped too long ago to be live."""
+    try:
+        raw_meta = r.get(f"{ACTIVE_RENDER_META_PREFIX}{job_id}")
+    except Exception:
+        # Redis just failed. Report "not expired" so a blip never sweeps live work.
+        return False
+
+    if not raw_meta:
+        return True
+
+    meta = _active_job_meta(job_id)
+    try:
+        started_at = float(meta.get("started_at") or 0)
+    except (TypeError, ValueError):
+        started_at = 0.0
+
+    # An unreadable or unstamped lease still proves a worker wrote one recently
+    # enough for it not to have expired; leave that one to the TTL.
+    if started_at <= 0:
+        return False
+    return (now - started_at) > _lease_expiry_age()
+
+
+def prune_active_jobs() -> tuple[list[str], list[str]]:
+    """Drop expired members from the active-job set. Returns `(live, dropped)`.
+
+    Safe to call from any read path: it only removes ids whose lease is already
+    gone, and a Redis failure yields `([], [])` rather than raising into a health
+    check.
+    """
+    try:
+        members = _decoded_job_ids(r.smembers(ACTIVE_RENDER_JOBS_KEY))
+    except Exception as e:
+        logger.warning("Failed to read the active render job set: %s", e)
+        return [], []
+
+    now = time.time()
+    live: list[str] = []
+    dropped: list[str] = []
+    for job_id in members:
+        (dropped if _job_lease_expired(job_id, now) else live).append(job_id)
+
+    for job_id in dropped:
+        try:
+            r.srem(ACTIVE_RENDER_JOBS_KEY, job_id)
+            r.delete(f"{ACTIVE_RENDER_META_PREFIX}{job_id}")
+            r.delete(f"{CANCEL_JOB_PREFIX}{job_id}")
+        except Exception as e:
+            logger.warning("Failed to drop stale active render job %s: %s", job_id, e)
+
+    if dropped:
+        logger.info(
+            "Active render jobs: dropped %d expired lease(s) (%s); %d still active",
+            len(dropped), ", ".join(sorted(dropped)), len(live),
+        )
+    return live, dropped
+
+
+def active_job_ids() -> list[str]:
+    """Job ids a live worker is currently holding, pruning expired leases first."""
+    live, _dropped = prune_active_jobs()
+    return live
+
+
+def active_job_count() -> int | None:
+    """Truthful count of active render jobs, or None when Redis is unreachable.
+
+    None rather than 0 on failure, matching how `get_render_worker_status`
+    already reports an unreadable queue depth: "we could not tell" must not be
+    published as "nothing is running".
+    """
+    try:
+        r.scard(ACTIVE_RENDER_JOBS_KEY)
+    except Exception:
+        return None
+    return len(active_job_ids())
+
+
+def reconcile_active_jobs() -> list[str]:
+    """Worker-start reconciliation: drop everything no live worker can be holding.
+
+    Called once by `apps/worker/render_worker.py::run_worker` before it consumes
+    anything. At that moment this process holds no jobs, and it is the only
+    render worker (one replica), so every surviving entry belongs to the
+    instance this one replaced — a pod roll, a crash, an eviction. Those are
+    dropped outright rather than waiting out their lease, which is what makes
+    `/api/health` truthful immediately after a rollout instead of one lease
+    later.
+
+    Returns the ids dropped, so the caller can log what it inherited.
+    """
+    try:
+        members = _decoded_job_ids(r.smembers(ACTIVE_RENDER_JOBS_KEY))
+    except Exception as e:
+        logger.warning("Active render job reconciliation skipped (Redis): %s", e)
+        return []
+
+    dropped: list[str] = []
+    for job_id in members:
+        try:
+            r.srem(ACTIVE_RENDER_JOBS_KEY, job_id)
+            r.delete(f"{ACTIVE_RENDER_META_PREFIX}{job_id}")
+            r.delete(f"{CANCEL_JOB_PREFIX}{job_id}")
+        except Exception as e:
+            logger.warning("Failed to reconcile active render job %s: %s", job_id, e)
+            continue
+        dropped.append(job_id)
+
+    if dropped:
+        logger.warning(
+            "Reconciled %d orphaned active render job(s) left by a previous "
+            "worker instance: %s",
+            len(dropped), ", ".join(sorted(dropped)),
+        )
+    return dropped
+
+
 def _cancel_matching(matches) -> list[str]:
     """Cancel every queued and active job the `matches(task)` predicate accepts.
 
@@ -930,6 +1110,13 @@ def _cancel_matching(matches) -> list[str]:
         _notify_cancelled(job_id, task.get("part"), emit_final=True)
         cancelled.append(job_id)
 
+    # Deliberately the RAW set, not `active_job_ids()`. Cancelling is not a
+    # reporting path: a caller holding a job_id holds a capability, and a lease
+    # this process cannot read is not proof the render stopped — the worker
+    # polls `yantra_render_cancel_job:<job_id>` regardless of any lease. Pruning
+    # here would also delete the very cancel key being set. Truthfulness of the
+    # *count* is a health concern (see prune_active_jobs); cancelling errs
+    # toward acting on what the caller named.
     try:
         active_jobs = [jid for jid in r.smembers(ACTIVE_RENDER_JOBS_KEY) if jid]
     except Exception as e:

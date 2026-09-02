@@ -35,6 +35,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 ### Reference
 -   [Project Manifest](./reference/manifest.md): Extensible json schema, how the webapp is data-driven, and how to add new projects.
 -   [OpenAPI Specification](./reference/openapi.yaml): Endpoint architecture and schema bounds.
+-   [Fashion Cabinet consumers](./reference/fashion-cabinet-consumers.md): The bridge back-edge — which garments drive which of our parameters, the pinned snapshot, and the blocking lane that keeps a rename honest.
 
 ### LLM Context
 

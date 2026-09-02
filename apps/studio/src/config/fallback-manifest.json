@@ -1133,7 +1133,7 @@
         "enable_magnets": true,
         "fingerslide_enabled": true
       },
-      "mode": "cup_scad"
+      "mode": "cup"
     },
     {
       "id": "battery_holder_scad",
@@ -1149,7 +1149,7 @@
         "horizontal_chambers": 2,
         "label_enabled": true
       },
-      "mode": "cup_scad"
+      "mode": "cup"
     },
     {
       "id": "tool_drawer_scad",
@@ -1164,7 +1164,7 @@
         "horizontal_chambers": 4,
         "wallpattern_enabled": true
       },
-      "mode": "cup_scad"
+      "mode": "cup"
     },
     {
       "id": "baseplate_std_scad",
@@ -1207,7 +1207,7 @@
         "label_enabled": true,
         "enable_magnets": true
       },
-      "mode": "cup_scad"
+      "mode": "cup"
     },
     {
       "id": "pen_cup_scad",
@@ -1222,7 +1222,7 @@
         "fingerslide_enabled": false,
         "enable_magnets": true
       },
-      "mode": "cup_scad"
+      "mode": "cup"
     }
   ],
   "constraints": [

@@ -213,13 +213,16 @@ the active-job set is global, and the `job_id` is never published to the client
 — so the channel has no way to cancel *only* the caller's renders, and the only
 cancel it could perform is the cancel-everything one being removed.
 
-`POST /api/render-cancel` remains the supported cancel path and is unchanged.
+`POST /api/render-cancel` is the supported cancel path, and it is now **scoped**
+— see [Cancelling a render](#cancelling-a-render) below. The follow-up that
+scoped it also closed the same hole on the HTTP side: that route used to be an
+anonymous, bodyless `cancel_all_renders()`.
 
-If per-owner render tracking is added later,
-`routes/core/websocket.py::cancel_refusal_reason` is the single place to relax.
-A scoped cancel must act only on the caller's own jobs and must require
-`yantra4d:render` on machine tokens, matching `@require_render_scope` on the
-HTTP render routes.
+If a `cancel` action is ever wanted back on the socket,
+`routes/core/websocket.py::cancel_refusal_reason` is the single place to relax,
+and it must reuse the scoped helpers below rather than re-deriving ownership:
+act only on ids the caller was given, and keep `yantra4d:render` enforced on
+machine tokens, matching `@require_render_scope` on the HTTP render routes.
 
 ### Connection and message limits
 
@@ -232,6 +235,71 @@ per-connection inbound message budget (`WS_MAX_MESSAGES_PER_MINUTE`, default
 120, a fixed 60s window; exceeding it closes the socket). Both are per-replica,
 so neither is ever the only thing standing between a caller and a privileged
 action — and on these channels there is no privileged action to reach.
+
+---
+
+## Cancelling a render
+
+| Endpoint | Anonymous | Scope check | What it cancels |
+|---|---|---|---|
+| `POST /api/render-cancel` `{request_id}` | Yes, with the id | `yantra4d:render` on machine tokens | Every job of that one render request, including its not-yet-queued parts |
+| `POST /api/render-cancel` `{job_ids:[…]}` | Yes, with the ids | `yantra4d:render` on machine tokens | Exactly those jobs |
+| `POST /api/render-cancel` `{all:true}` | **No** — 401 | `@require_role("admin")` | Every render on the box, for every user |
+| `POST /api/render-cancel` with no target | — | — | Nothing: **400** `cancel_target_required` |
+
+### Why a target is required
+
+Renders carry no owner. `apps/worker/render_worker.py::_set_active_job` records
+job_id/part/engine/project/mode/request_id and nothing identifying the caller,
+and `yantra_render_active_jobs` is one global set. So the route cannot ask "is
+this render yours?" — it can only ask "do you know which render you mean?".
+
+Until this change it asked neither. `POST /api/render-cancel` took no body and
+called `cancel_all_renders()`, which prunes the shared queue and marks every
+active job. `@optional_auth` lets anonymous callers through by design and
+`@require_render_scope` only checks machine tokens (and in `log` mode allows
+even those), so an anonymous POST over plain HTTP terminated every in-flight
+render for every user — the backend runs a single replica, so "every render" is
+literal. That is the same capability that was just removed from the WebSocket
+channel, one door along.
+
+### What stands in for ownership
+
+`/api/render-stream` now publishes a `job` SSE event carrying
+`{request_id, job_ids}` — once when the stream opens, and again as each part is
+queued. Possessing one of those identifiers is the entitlement:
+
+* **`job_id`** is a server-minted UUID4, published only on the requesting
+  client's own stream. It is unguessable, so it works as a capability.
+* **`request_id`** is caller-suppliable (`extract_render_payload` generates a
+  UUID4 only when the caller omits it). A caller that picks a *predictable*
+  request_id is choosing a predictable cancel handle — that is the caller's
+  risk, not a hole in the route, but it is why `job_ids` is the stronger of the
+  two. On `/api/render` (synchronous, answers only when the render is done)
+  supplying your own `request_id` is the only way to have something to cancel
+  with, so make it unguessable.
+
+`request_id` scope exists because job ids alone cannot cover a multi-part
+render: parts are queued one at a time, so ids for parts 2..n do not exist yet
+when the user presses Cancel. `cancel_request()` sets
+`yantra_render_cancel_request:<request_id>`, which the render loop checks before
+queueing each part.
+
+### The mechanism
+
+No worker change was needed. `render_worker.py::_is_cancelled(job_id)` already
+polled two keys for every job — the global `yantra_render_cancel_all` and the
+per-job `yantra_render_cancel_job:<job_id>` — and passes
+`lambda: _is_cancelled(job_id)` into each engine as its cancellation poll.
+Scoped cancel sets that **second** key, for the jobs it is allowed to touch,
+instead of the global one. `cancel_render_jobs()`, `cancel_request()` and
+`cancel_all_renders()` are all one predicate over the same sweep
+(`_cancel_matching` in `services/engine/render_orchestrator.py`): prune matching
+queue entries, mark matching active jobs, publish `cancelled` on their channels.
+
+An active job whose metadata has expired matches nothing but its own job_id — a
+request-scoped cancel leaves it alone rather than sweeping up work it can no
+longer attribute.
 
 ---
 

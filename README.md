@@ -47,7 +47,7 @@ Honest, code-verified snapshot. **Working today:**
 - **Dual rendering paths** — browser-side OpenSCAD **WASM** worker plus server-side native rendering, with automatic backend detection and a complexity **circuit breaker** that falls back between them.
 - **STL / mesh export** — server render pipeline produces STL/GLB/3MF artifacts.
 - **Geometry verification** — dedicated verify endpoint (`apps/api/routes/engine/verify.py`) and parity QA scripts (`scripts/qa/verify_parity.py`).
-- **Cartridge project system** — `project.json` manifests, 326-cartridge CadQuery-first Commons catalog (including curated art/misc projects), admin app, Janua-authenticated admin flows.
+- **Cartridge project system** — `project.json` manifests, 500-cartridge CadQuery-first Commons catalog (including curated art/misc projects), admin app, Janua-authenticated admin flows. <!-- fact source: docs/commons-catalog.json → counts.cartridges; see the generated table under "The Commons Catalog" below -->
 - **Implicit SDF engine** — TPMS/lattice field generation, including the energy→sag "phase shift" heuristic behind the digital-twin slider.
 - **Per-mode engine resolution** — a single cartridge can mix modes across kernels; the render engine is resolved per mode (`ManifestService.mode_engine`), so the flagship hyperobjects ship **dual-engine** (exact CadQuery B-Rep modes alongside their original OpenSCAD modes).
 

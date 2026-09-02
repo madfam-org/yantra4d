@@ -72,12 +72,22 @@ beforeEach(() => {
   // the flake behind "browse projects from the error page navigates to the
   // catalog" intermittently seeing e.g. '/project/ghost/...'.
   testLocation = {}
+  // App mounts only the layout tree that is on screen, chosen by
+  // `(min-width: 1024px)` — the same width as the `lg:` classes. jsdom matches
+  // no query unless told to, so without this every test would run against the
+  // mobile bar; the controls these tests drive (Generate, Verify, Reset,
+  // Download STL, the resizable panels) live in the desktop sidebar.
+  setViewport('desktop')
 })
 
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
+  globalThis.__resetMediaQueries()
 })
+
+const LG = '(min-width: 1024px)'
+const setViewport = (kind) => globalThis.__setMediaQuery(LG, kind === 'desktop')
 
 let testLocation = {}
 function LocationObserver() {
@@ -119,7 +129,6 @@ describe('App', { timeout: 30000 }, () => {
   it('all mode tabs render as interactive tab elements', async () => {
     await renderApp()
     const tabs = screen.getAllByRole('tab')
-    // Desktop sidebar + mobile bar each render mode tabs
     const modeCount = fallbackManifest.modes.length
     expect(tabs.length).toBeGreaterThanOrEqual(modeCount)
     // Check that each mode label appears at least once
@@ -185,6 +194,31 @@ describe('App', { timeout: 30000 }, () => {
     await waitFor(() => {
       expect(screen.getByText(/estimated/i)).toBeInTheDocument()
     })
+  })
+
+  it('a plain page load does not open the long render modal', { timeout: 20000 }, async () => {
+    // The studio auto-generates on load (debounced effect in useProjectParams).
+    // When the cartridge's default estimates over its warning threshold — as
+    // gridfinity's cadquery `bin` mode does, at ~2 min — that used to open the
+    // Radix alertdialog, over a pointer-blocking overlay, on every single visit
+    // to /project/<slug>, before the visitor had asked for anything.
+    const { estimateRenderTime, renderParts } = await import('./services/engine/renderService')
+    estimateRenderTime.mockReturnValue(120) // > 60s threshold
+    // Module mocks keep their call history across this file's tests.
+    renderParts.mockClear()
+
+    await renderApp()
+
+    // The non-blocking notice stands in for the modal.
+    await waitFor(() => {
+      expect(screen.getByText(/Press Generate to render/i)).toBeInTheDocument()
+    }, { timeout: 15000 })
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    // Nothing rendered either — the estimate is the reason to wait for a click.
+    expect(renderParts).not.toHaveBeenCalled()
+    // ...and the page is still usable.
+    expect(screen.getByText('Generate')).toBeInTheDocument()
   })
 
   it('language selector switches en to es', async () => {
@@ -310,6 +344,42 @@ describe('App', { timeout: 30000 }, () => {
     expect(panelIds).toContain('main')
   })
 
+  // --- One layout tree ------------------------------------------------------
+  // App and StudioMainView each used to render a desktop tree and a mobile tree
+  // at once and hide one with CSS. Both handed the same viewer content to both
+  // halves, so a page load mounted FOUR <canvas> elements and four WebGL render
+  // loops, three of them inside display:none subtrees. Only the tree that is on
+  // screen is mounted now, so the count is one at either viewport.
+
+  it('mounts exactly one viewer canvas at a desktop viewport', async () => {
+    setViewport('desktop')
+    const { container } = await renderApp()
+    expect(container.ownerDocument.querySelectorAll('canvas')).toHaveLength(1)
+    expect(screen.getAllByTestId('studio-main-view')).toHaveLength(1)
+  })
+
+  it('mounts exactly one viewer canvas at a mobile viewport', async () => {
+    setViewport('mobile')
+    const { container } = await renderApp()
+    expect(container.ownerDocument.querySelectorAll('canvas')).toHaveLength(1)
+    expect(screen.getAllByTestId('studio-main-view')).toHaveLength(1)
+  })
+
+  it('the desktop sidebar is not mounted at a mobile viewport', async () => {
+    setViewport('mobile')
+    await renderApp()
+    // [data-testid="studio-sidebar"] stays on the desktop sidebar only — the
+    // e2e suite scopes to it — but it is no longer shipped, hidden, to phones.
+    expect(screen.queryByTestId('studio-sidebar')).not.toBeInTheDocument()
+    expect(screen.queryAllByTestId('resizable-panel-group')).toHaveLength(0)
+  })
+
+  it('the desktop sidebar is mounted at a desktop viewport', async () => {
+    setViewport('desktop')
+    await renderApp()
+    expect(screen.getByTestId('studio-sidebar')).toBeInTheDocument()
+  })
+
   // --- Manifest error pages ------------------------------------------------
   // App distinguishes a genuinely missing project from an unreachable server;
   // neither page was covered.
@@ -346,6 +416,47 @@ describe('App', { timeout: 30000 }, () => {
     failManifestWith(() => Promise.resolve({ ok: false, status: 503, json: () => Promise.resolve({}) }))
     await renderApp(['/project/gridfinity'])
     expect(await screen.findByText(/Can't Reach the Server/i)).toBeInTheDocument()
+  })
+
+  // A private project answers 403 with `error_code: "project_locked"`. It is
+  // neither missing nor a server outage, and `auth_required` decides which of
+  // the two locked bodies applies.
+  const lockedBody = (authRequired) => ({
+    status: 'error',
+    error: 'This project is private',
+    error_code: 'project_locked',
+    auth_required: authRequired,
+    request_id: 'test-request-id',
+  })
+
+  it('a 403 project_locked tells an anonymous visitor to sign in', async () => {
+    failManifestWith(() => Promise.resolve({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve(lockedBody(true)),
+    }))
+    await renderApp(['/project/secret'])
+    expect(await screen.findByText(/Private Project/i)).toBeInTheDocument()
+    expect(screen.getByText(/Sign in with an authorized account/i)).toBeInTheDocument()
+    // Neither of the other two error pages: the project exists and the server
+    // answered, so saying otherwise would be a lie.
+    expect(screen.queryByText(/doesn't exist/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Can't Reach the Server/i)).not.toBeInTheDocument()
+    // Reloading gets the same 403 while anonymous, so no Retry is offered.
+    expect(screen.queryByRole('button', { name: /^Retry$/i })).not.toBeInTheDocument()
+  })
+
+  it('a 403 project_locked tells a signed-in visitor their account lacks access', async () => {
+    failManifestWith(() => Promise.resolve({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve(lockedBody(false)),
+    }))
+    await renderApp(['/project/secret'])
+    expect(await screen.findByText(/Private Project/i)).toBeInTheDocument()
+    expect(screen.getByText(/is private and this account/i)).toBeInTheDocument()
+    // Signing in is not the fix here, so the anonymous copy must not appear.
+    expect(screen.queryByText(/Sign in with an authorized account/i)).not.toBeInTheDocument()
   })
 
   it('browse projects from the error page navigates away from the error', async () => {

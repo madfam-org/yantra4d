@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import sys
+import threading
 import time
 
 import redis
@@ -63,6 +64,11 @@ RENDER_WORKER_HEARTBEAT_TTL_SECONDS = getattr(
     "RENDER_WORKER_HEARTBEAT_TTL_SECONDS",
     60,
 )
+# Beat well inside the TTL, so a single missed tick — a Redis blip, a slow
+# scheduler — cannot expire the key on an otherwise healthy worker.
+HEARTBEAT_INTERVAL_SECONDS = max(5, RENDER_WORKER_HEARTBEAT_TTL_SECONDS // 3)
+
+_stop_beating = threading.Event()
 
 STATIC_FOLDER = str(Config.STATIC_DIR)
 
@@ -77,6 +83,23 @@ def _publish_heartbeat() -> None:
         )
     except Exception:
         logger.debug("Failed to publish render worker heartbeat", exc_info=True)
+
+
+def _heartbeat_loop() -> None:
+    """Beat on a timer, independent of the job loop.
+
+    The heartbeat used to be published only at the top of the blpop loop, so it
+    stopped for the whole duration of a render — while the worker was doing
+    exactly what it exists to do. A render legitimately runs to RENDER_TIMEOUT_S
+    (300s) against a 60s TTL, and the API treats a heartbeat older than TTL*2 as
+    a dead worker: it starts refusing renders, and with
+    RENDER_WORKER_REQUIRED=true /api/health/ready returns 503 and the kubelet
+    restarts the API pod — mid-render, because of the render.
+
+    Beating from a daemon thread decouples liveness from job duration.
+    """
+    while not _stop_beating.wait(HEARTBEAT_INTERVAL_SECONDS):
+        _publish_heartbeat()
 
 
 def _is_cancelled(job_id: str) -> bool:
@@ -407,9 +430,18 @@ def process_stream_task(task):
 
 def run_worker():
     logger.info("Render worker listening on queue '%s'", RENDER_QUEUE)
+
+    # Publish once before consuming anything, so the API sees the worker as
+    # soon as it is up rather than one interval later.
+    _publish_heartbeat()
+    threading.Thread(
+        target=_heartbeat_loop,
+        name="render-worker-heartbeat",
+        daemon=True,
+    ).start()
+
     while True:
         try:
-            _publish_heartbeat()
             _, message = r.blpop(RENDER_QUEUE, timeout=5)
             if message:
                 try:

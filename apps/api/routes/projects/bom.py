@@ -13,6 +13,7 @@ import os
 from flask import Blueprint, Response, jsonify, request
 
 from config import Config
+from services.core.project_access import require_project_access
 from utils.project_resolver import require_project
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
@@ -82,6 +83,7 @@ def _load_manifest(slug: str):
 @bom_bp.route("/api/projects/<slug>/bom", methods=["GET"])
 @require_valid_slug
 @require_project()
+@require_project_access
 def get_bom(slug: str, project_dir) -> Response | tuple[Response, int]:
     """Return BOM as JSON or CSV based on Accept header / format query param."""
     manifest_path = project_dir / "project.json"

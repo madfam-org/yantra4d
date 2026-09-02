@@ -104,14 +104,21 @@ backend (section 4, step 2).
 - For a dedicated client instance, also set `CORS_ORIGINS` and, if strictness
   is wanted, `YANTRA4D_LICENSE_REQUIRED` (section 4).
 
-Per MADFAM Enclii-first doctrine (`AGENTS.md`), set the secret through the
-**Enclii** web/API/CLI secrets flow for the `yantra4d-backend` service and
-redeploy/restart it so the env is picked up. The raw-Kubernetes shape
-(`kubectl create secret generic yantra4d-license --from-literal=YANTRA4D_LICENSE_KEY=…`
-plus `envFrom: secretRef` on the backend Deployment, as shown in
-`docs/guides/white-labeling.md`) is documented break-glass only, for when the
-Enclii secrets adapter is unavailable — record the adapter gap if you have to
-use it. Self-hosters on Docker Compose use the
+Per MADFAM Enclii-first doctrine (`AGENTS.md`), create the Secret through
+**Enclii's secrets intake** — the Enclii console, API, or CLI — on the
+`yantra4d-backend` service, then redeploy/restart it so the env is picked up.
+The names and shapes Enclii creates and projects:
+
+| | |
+| :-- | :-- |
+| Secret name | `yantra4d-license` |
+| Key | `YANTRA4D_LICENSE_KEY` |
+| Value | the raw license JWT |
+| Projection | the backend's environment (`envFrom: secretRef` alongside the `yantra4d-brand` ConfigMap; see `docs/guides/white-labeling.md`) |
+
+Do not reach past Enclii to the cluster to create or edit it. If the Enclii
+secrets intake cannot express something this needs, record the adapter gap
+rather than routing around it. Self-hosters on Docker Compose use the
 `docker-compose.override.yml` pattern from the same guide.
 
 Never commit the JWT to the repo, a manifest, or CI logs.

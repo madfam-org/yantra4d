@@ -45,6 +45,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `multi_rack_body` part (render_mode 5). 1494/1494 studio tests passing.
 
 ### Fixed
+- **Auto-Generate No Longer Opens a Blocking Modal** — The studio renders on
+  load and after every parameter change (the debounced effect in
+  `useProjectParams.ts`), and `useRender` answered an over-threshold estimate
+  the same way no matter who asked: it opened "⚠️ Long Render Warning", a Radix
+  alertdialog over a pointer-blocking overlay. gridfinity's cadquery `bin`
+  default estimates ~2 minutes against a 60s threshold, so every visit to
+  `/project/gridfinity` put up a modal the visitor never asked for and froze the
+  UI until they answered it — and cancelling left the empty viewer a skipped
+  render produces anyway. `handleGenerate` now takes a third argument,
+  `GenerateOptions.automatic`, and **only** the debounced effect passes it; the
+  Generate button, Force re-render, Ctrl+Enter, the editor's save-and-render,
+  the storefront and the optimizer follow-up keep today's behaviour, modal
+  included. An automatic render over the threshold renders nothing and opens
+  nothing: it raises a non-blocking `toast.auto_render_skipped` notice on one
+  fixed toast id (so a run of slider edits replaces the notice rather than
+  stacking it), records `pendingEstimate`, and waits for an explicit Generate.
+  Under the threshold an automatic render is untouched. New locale key across
+  all six locales (337 keys, parity OK). 11 files, 6 new tests.
 - **Download Must Match Viewport (ISSUE-R2-3 follow-up)** — `handleDownloadStl`
   always triggered a fresh backend re-render for non-GLB formats, which could
   produce geometry that didn't match the 3D viewport due to param drift (e.g.,
@@ -85,6 +103,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   selectors), `App.jsx` and `StudioMainView.jsx` (`direction` → `orientation`,
   `onLayout` → `onLayoutChanged`, panel `id` props), `usePanelLayout.js` (bounds
   clamping for corrupted localStorage from the broken layout period). 8 new tests.
+
+### Performance
+- **Studio Mounts One Layout Tree, Not Two** — `App.jsx` rendered a desktop tree
+  (`hidden lg:flex`) and a mobile tree (`lg:hidden`) at the same time, and the
+  `StudioMainView` inside each of them did the same again, handing the identical
+  viewer content to both halves. A page load therefore mounted four `<Viewer>`s
+  — four `<canvas>` elements and four WebGL render loops — and three of them sat
+  inside a `display:none` subtree, spending exactly the client GPU and memory
+  the product wants for the model the visitor is looking at. Both files now pick
+  the tree with `useIsDesktop()` (`min-width: 1024px`, Tailwind's `lg` — the
+  same width the classes already used, so the JS decision and the CSS can never
+  disagree); the classes stay, now redundant rather than load-bearing. Behaviour
+  is unchanged at every width. Three consequences worth knowing: `viewerRef`
+  used to be claimed by whichever `<Viewer>` mounted last (the hidden mobile
+  one) and now points at the visible viewer; `#main-content` is in the DOM once,
+  so the skip link no longer lands on a hidden element on a phone; and crossing
+  1024px remounts the tree, so the viewer re-creates its canvas while params,
+  parts and render results — owned by `ProjectProvider` above it — survive
+  untouched. 4 files, 8 new tests.
 
 ### Added
 - **Per-Project CI Template** — `.github/workflows/project-ci.yml` template created and distributed via `propagate_ci.sh` to give all 33 federated project repositories their own independent CI pipelines.

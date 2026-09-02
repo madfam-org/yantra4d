@@ -11,6 +11,7 @@ from services.core.tier_service import (
     get_render_limit_for_project,
     get_tier_limits,
     has_tier,
+    is_unlimited,
     load_tiers,
     resolve_tier,
 )
@@ -77,8 +78,14 @@ class TestGetRenderLimit:
     def test_pro_render_limit(self):
         assert get_render_limit("pro") == 150
 
-    def test_madfam_render_limit(self):
-        assert get_render_limit("madfam") == 500
+    def test_madfam_render_limit_is_the_unlimited_sentinel(self):
+        """The top tier has no render cap; -1 is returned verbatim, not clamped."""
+        assert get_render_limit("madfam") == -1
+        assert is_unlimited(get_render_limit("madfam")) is True
+
+    def test_capped_tiers_are_not_unlimited(self):
+        for tier in ("guest", "essentials", "pro"):
+            assert is_unlimited(get_render_limit(tier)) is False
 
 
 class TestGetRenderLimitForProject:

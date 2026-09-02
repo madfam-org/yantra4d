@@ -17,6 +17,16 @@ VERIFY = "50/hour"
 AI_SESSION = "30/hour"
 # AI chat uses dynamic per-tier limits — see ai.py:_get_ai_rate_limit()
 
+# Placeholder returned by a dynamic limit callable for a tier whose limit is the
+# unlimited sentinel (-1 in tiers.json). It is never enforced: the same
+# decorators pass an ``exempt_when`` predicate that makes flask-limiter skip the
+# bucket. It exists because flask-limiter parses the limit string before it
+# consults ``exempt_when`` (so "-1/hour" raises), and because a decorated limit
+# is what suppresses the app-wide default — returning nothing would cap an
+# unlimited tier at that default. Kept high so the fallback, if it were ever
+# reached, is a ceiling rather than a throttle.
+UNLIMITED_PLACEHOLDER = "1000000/hour"
+
 # Editor (SCAD file CRUD)
 EDITOR_READ = "120/hour"
 EDITOR_WRITE = "120/hour"

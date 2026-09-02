@@ -325,22 +325,32 @@ export async function openDropdownMenu(trigger, timeout = 15_000) {
  * @returns {import('@playwright/test').Locator} the opened dialog
  */
 export async function openMobileSheet(page, timeout = 15_000) {
-  // Scoped to :visible — the menu button exists in both layout trees, and on
-  // WebKit .first() resolved to the hidden copy and never became visible.
-  const menuBtn = page.locator('button:visible:has(.lucide-menu)').first()
+  // There is exactly one hamburger in the DOM. App.tsx mounts a single layout
+  // tree, picked by useIsDesktop() — `(min-width: 1024px)` — so StudioSidebar
+  // gets variant="mobile" below lg and variant="desktop" at or above it, and
+  // this trigger is rendered only by the mobile bar. The `:visible` filter this
+  // selector used to carry existed to skip the hidden desktop copy that WebKit
+  // kept resolving to; there is no hidden copy left to skip. With a single
+  // match the filtered and unfiltered selectors resolve to the same element at
+  // every width, so the filter is dropped and the assertion below gets to say
+  // "not visible" instead of "matched 0 elements". `.first()` stays only as a
+  // strict-mode guard.
+  const menuBtn = page.locator('button:has(.lucide-menu)').first()
   await expect(menuBtn).toBeVisible({ timeout })
   const sheet = page.locator('[role="dialog"]')
 
   // Gate on the DIALOG being open, not on the trigger's data-state.
   //
   // data-state is the right signal for the overflow DropdownMenu, whose trigger
-  // is unique. It is the wrong one here: the hamburger exists in both the
-  // desktop and mobile layout trees, `:visible` picks whichever is on screen at
-  // the current viewport, and a viewport change between the two can leave the
-  // clicked trigger and the mounted dialog belonging to different Sheet roots.
-  // Waiting for data-state on the trigger we happen to hold then fails even
-  // though the sheet is open — observed once on firefox at
-  // 12-responsive:346 while passing in isolation.
+  // is unique and never remounts. It is the wrong one here. The failure that
+  // put this poll in place — firefox, 12-responsive, passing in isolation — was
+  // the dual-tree one: two hamburgers, and the clicked trigger and the mounted
+  // dialog could belong to different Sheet roots. That cause is gone with the
+  // second tree, but the trigger is still the wrong thing to wait on, because
+  // crossing 1024px now swaps which tree is mounted: this Sheet root and its
+  // trigger are torn down and rebuilt, and the replacement trigger starts at
+  // data-state="closed". Any test that resizes across the breakpoint would race
+  // that remount. Polling the dialog asks the question the caller actually has.
   //
   // Re-clicking is convergent here for the same reason as the slider span: the
   // check is guarded on the dialog not already being visible, and a Radix
@@ -508,10 +518,13 @@ export async function cycleThemeTo(page, expected, storageKey = 'vite-ui-theme')
       async () => {
         const now = await settledTheme(page, storageKey)
         if (now === expected) return now
-        // dispatchEvent, not click(): the theme button is one of the header
-        // icon buttons firefox lays out half a pixel above the viewport, where
-        // a real pointer click cannot land. See clickHeaderButton.
-        if (now !== null) await btn.dispatchEvent('click').catch(() => { })
+        // A real click again, as of #59 — same buttons, same fixed defect as
+        // clickHeaderButton, so the same revert applies here. The explicit
+        // timeout keeps this convergent poll convergent: a click that cannot
+        // land must give the loop its turn back well inside the 30s budget
+        // rather than consuming it, and the .catch() keeps a lost click a
+        // retry rather than a failure.
+        if (now !== null) await btn.click({ timeout: 5_000 }).catch(() => { })
         return settledTheme(page, storageKey)
       },
       {
@@ -590,35 +603,35 @@ export function redoButton(page) {
 /**
  * Click one of the header's icon buttons.
  *
- * Uses dispatchEvent('click') rather than locator.click(), and ONLY because a
- * real pointer click is impossible on firefox for these particular buttons —
- * this is working around a product layout defect, not around a timing race, and
- * it should be reverted to a plain .click() once that defect is fixed.
+ * A plain `.click()` again, as of #59.
  *
- * The defect: StudioHeader is `h-12 phone-landscape:h-11` (44px at the landscape
- * height these tests run at) and its icon buttons carry `min-h-[44px]`. Firefox
- * lays the 44px button out inside the 44px header at a fractional offset, so
- * the button's own rect comes back as top:-0.5, bottom:43.5 — half a pixel
- * above the viewport. Playwright then cannot complete its scroll-into-view step
- * (the header is not scrollable, so there is nowhere to scroll it to) and the
- * click never proceeds. Measured on firefox: locator.click() times out at 5s,
- * click({force:true}) ALSO times out at 5s — force skips actionability checks
- * but not scrolling — while dispatchEvent('click') succeeds in 74ms and the
- * app responds correctly (width reverted 150 → 30).
+ * This used to be `dispatchEvent('click')`, working around a product layout
+ * defect rather than a timing race: StudioHeader set `h-12
+ * phone-landscape:h-11`, which under Tailwind's `box-sizing: border-box` is the
+ * BORDER-box height, so `border-b` ate 1px of the content box and every 44px
+ * `min-h-[44px]` icon button laid out at top:-0.5 / bottom:43.5 — half a pixel
+ * above the viewport. Playwright's scroll-into-view step had nowhere to scroll
+ * a non-scrollable header to, so on firefox both `click()` and
+ * `click({force:true})` timed out at 5s while `dispatchEvent` succeeded.
  *
- * What this gives up: dispatchEvent does not verify the button is hittable by a
- * real user. That is an acceptable trade here only because the surrounding
- * assertions still verify the app's RESPONSE to the click, and because the
- * alternative — the `if (await btn.isVisible())` guards this file used to
- * carry — verified nothing at all. Chromium and WebKit are unaffected by the
- * layout defect; they take the same path for consistency of behaviour.
+ * #59 fixed the cause: `h-12 phone-landscape:h-11` -> `min-h-12
+ * phone-landscape:min-h-11`, so the header grows to contain its children. It
+ * measured all 9 header buttons at top:0 / bottom:44 afterwards, on firefox and
+ * chromium, at seven viewport sizes — the failure mode this helper dodged no
+ * longer exists. #59 left this helper alone on purpose and named retiring it as
+ * the follow-up; this is that follow-up.
+ *
+ * Back on `.click()` the helper verifies what a real user's pointer can reach:
+ * actionability, hit-testing and stability, none of which `dispatchEvent`
+ * checks. The visibility/enabled guards stay — they give a named locator a
+ * clear failure instead of a click into nothing.
  *
  * @param {import('@playwright/test').Locator} button
  */
 export async function clickHeaderButton(button) {
   await expect(button).toBeVisible({ timeout: 15_000 })
   await expect(button).toBeEnabled({ timeout: 15_000 })
-  await button.dispatchEvent('click')
+  await button.click()
 }
 
 /**

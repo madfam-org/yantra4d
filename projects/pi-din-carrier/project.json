@@ -1,0 +1,291 @@
+{
+  "project": {
+    "name": "Pi DIN Carrier",
+    "slug": "pi-din-carrier",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A single-board computer, clipped onto TS35 top-hat rail. Industrial deployment is standard-shaped, not bespoke: a control cabinet is a length of DIN EN 60715 rail and a row of things that clip to it. The commons already had seven of those things and two cartridges built around the Raspberry Pi hole pattern, and nothing joined the two families — so a board being deployed industrially had to be zip-tied to something. This carrier is that joint: the Raspberry Pi HAT / Model B mounting pattern on one face, the TS35 rail interface on the other, with a rigid reference hook and a compliant sprung hook that grips without holding the wall in permanent strain. A vented hood and a stacking riser share the same pattern.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una computadora de placa única, sujeta a riel DIN TS35. El despliegue industrial tiene forma de norma, no de hechura a la medida: un gabinete de control es un tramo de riel DIN EN 60715 y una fila de cosas que se prenden a él. El procomún ya tenía siete de esas cosas y dos cartuchos construidos sobre el patrón de barrenos de la Raspberry Pi, y nada unía a las dos familias — así que una placa desplegada industrialmente terminaba amarrada con cincho. Este portaplacas es esa unión: el patrón de montaje HAT / Model B de Raspberry Pi en una cara, la interfaz de riel TS35 en la otra, con un gancho rígido de referencia y un gancho flexible que sujeta sin dejar la pared en deformación permanente. Una tapa ventilada y un elevador de apilado comparten el mismo patrón.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Un ordinateur monocarte, encliqueté sur rail oméga TS35. Le déploiement industriel a la forme d'une norme, pas d'un sur-mesure : une armoire de commande, c'est une longueur de rail DIN EN 60715 et une rangée d'objets qui s'y clipsent. Le commun possédait déjà sept de ces objets et deux cartouches bâties sur le perçage de la Raspberry Pi, et rien ne reliait les deux familles — une carte déployée industriellement finissait donc attachée par un collier. Ce support est ce raccord : le perçage de montage HAT / Model B de la Raspberry Pi sur une face, l'interface rail TS35 sur l'autre, avec un crochet rigide de référence et un crochet souple qui serre sans maintenir la paroi en contrainte permanente. Un capot ventilé et une entretoise d'empilage partagent le même perçage.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "Um computador de placa única, encaixado em calha DIN TS35. A implantação industrial tem forma de norma, não de encomenda: um painel de comando é um trecho de calha DIN EN 60715 e uma fileira de coisas que se prendem nela. O comum já tinha sete dessas coisas e dois cartuchos construídos sobre o padrão de furos da Raspberry Pi, e nada unia as duas famílias — então uma placa implantada industrialmente acabava amarrada com abraçadeira. Este suporte é essa junta: o padrão de montagem HAT / Model B da Raspberry Pi numa face, a interface de calha TS35 na outra, com um gancho rígido de referência e um gancho flexível que segura sem deixar a parede em deformação permanente. Uma capa ventilada e um elevador de empilhamento compartilham o mesmo padrão.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/pi-din-carrier.webp",
+    "difficulty": "intermediate",
+    "tags": ["din-rail", "ts35", "raspberry-pi", "sbc", "hat", "control-cabinet", "compliant-mechanism", "carrier", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "rail_carrier",
+      "label": { "en": "Rail Carrier", "es": "Portaplacas de Riel", "fr": "Support sur rail", "pt": "Suporte de Calha" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["rail_carrier"],
+      "estimate": { "base_time": 14, "per_unit": 4, "per_part": 18 }
+    },
+    {
+      "id": "hat_hood",
+      "label": { "en": "HAT Hood", "es": "Tapa de HAT", "fr": "Capot de HAT", "pt": "Capa de HAT" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["hat_hood"],
+      "estimate": { "base_time": 15, "per_unit": 4, "per_part": 19 }
+    },
+    {
+      "id": "riser_frame",
+      "label": { "en": "Riser Frame", "es": "Marco Elevador", "fr": "Cadre entretoise", "pt": "Moldura Elevadora" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["riser_frame"],
+      "estimate": { "base_time": 11, "per_unit": 3, "per_part": 14 }
+    }
+  ],
+  "parts": [
+    { "id": "rail_carrier", "render_mode": 0, "color": "#37474f",
+      "label": { "en": "Rail Carrier", "es": "Portaplacas", "fr": "Support", "pt": "Suporte" } },
+    { "id": "hat_hood", "render_mode": 0, "color": "#546e7a",
+      "label": { "en": "HAT Hood", "es": "Tapa", "fr": "Capot", "pt": "Capa" } },
+    { "id": "riser_frame", "render_mode": 0, "color": "#78909c",
+      "label": { "en": "Riser Frame", "es": "Marco", "fr": "Cadre", "pt": "Moldura" } }
+  ],
+  "parameter_groups": [
+    { "id": "rail", "label": { "en": "DIN Rail", "es": "Riel DIN", "fr": "Rail DIN", "pt": "Calha DIN" } },
+    { "id": "board", "label": { "en": "Board Pattern", "es": "Patrón de Placa", "fr": "Perçage de carte", "pt": "Padrão da Placa" } },
+    { "id": "build", "label": { "en": "Wall & Vent", "es": "Pared y Ventilación", "fr": "Paroi et ventilation", "pt": "Parede e Ventilação" } }
+  ],
+  "parameters": [
+    {
+      "id": "rail_depth_class", "type": "select", "default": "ts35_7v5",
+      "options": [
+        { "value": "ts35_7v5", "label": "TS35 x 7.5 (DIN EN 60715)" },
+        { "value": "ts35_15", "label": "TS35 x 15 (DIN EN 60715)" }
+      ],
+      "group": "rail", "modes": ["rail_carrier"],
+      "label": { "en": "Rail Section", "es": "Sección de Riel", "fr": "Section de rail", "pt": "Seção da Calha" },
+      "tooltip": {
+        "en": "DIN EN 60715 TS35 comes in two depths. Both share the same 35 mm span across the lips, so the hooks catch identically; only the jaw depth changes",
+        "es": "El TS35 de DIN EN 60715 viene en dos profundidades. Ambas comparten el mismo claro de 35 mm entre labios, así que los ganchos prenden igual; solo cambia la profundidad de la mordaza",
+        "fr": "Le TS35 de la DIN EN 60715 existe en deux profondeurs. Les deux partagent le même entraxe de 35 mm entre lèvres : les crochets accrochent à l'identique, seule la profondeur de la mâchoire change",
+        "pt": "O TS35 da DIN EN 60715 vem em duas profundidades. Ambas compartilham o mesmo vão de 35 mm entre lábios, então os ganchos prendem igual; só muda a profundidade da garra"
+      }
+    },
+    {
+      "id": "rail_len", "type": "slider", "default": 56.0, "min": 20.0, "max": 120.0, "step": 2.0,
+      "group": "rail", "modes": ["rail_carrier"],
+      "label": { "en": "Grip Length (mm)", "es": "Largo de Agarre (mm)", "fr": "Longueur d'accroche (mm)", "pt": "Comprimento de Pega (mm)" },
+      "tooltip": {
+        "en": "How much rail the hooks span, along the rail axis. Longer resists the twisting a stiff cable loom puts on a board hanging off a rail",
+        "es": "Cuánto riel abarcan los ganchos, a lo largo del eje. Más largo resiste el torcimiento que un mazo de cable rígido impone a una placa colgada del riel",
+        "fr": "Longueur de rail couverte par les crochets, selon l'axe du rail. Plus long, cela résiste au couple qu'un faisceau de câbles rigide impose à une carte suspendue au rail",
+        "pt": "Quanto de calha os ganchos abrangem, ao longo do eixo. Mais longo resiste à torção que um chicote de cabos rígido impõe a uma placa pendurada na calha"
+      }
+    },
+    {
+      "id": "spring_thick", "type": "slider", "default": 2.0, "min": 1.2, "max": 4.0, "step": 0.1,
+      "group": "rail", "modes": ["rail_carrier"],
+      "label": { "en": "Spring Beam (mm)", "es": "Viga de Resorte (mm)", "fr": "Lame ressort (mm)", "pt": "Viga de Mola (mm)" },
+      "tooltip": {
+        "en": "Thickness of the compliant cantilever that grips the far lip. Thinner clips on more easily and holds less; thicker holds more and eventually stops flexing at all",
+        "es": "Espesor del voladizo flexible que prende el labio opuesto. Más delgado entra más fácil y sujeta menos; más grueso sujeta más y a la larga deja de flexionar",
+        "fr": "Épaisseur du porte-à-faux souple qui accroche la lèvre opposée. Plus fin, il se clipse plus facilement et tient moins ; plus épais, il tient plus et finit par ne plus fléchir",
+        "pt": "Espessura do balanço flexível que prende o lábio oposto. Mais fino encaixa mais fácil e segura menos; mais grosso segura mais e no limite deixa de flexionar"
+      }
+    },
+    {
+      "id": "hole_dx", "type": "slider", "default": 58.0, "min": 20.0, "max": 90.0, "step": 0.5,
+      "group": "board", "modes": ["rail_carrier", "hat_hood", "riser_frame"],
+      "label": { "en": "Hole Pitch X (mm)", "es": "Paso de Barrenos X (mm)", "fr": "Entraxe X (mm)", "pt": "Passo de Furos X (mm)" },
+      "tooltip": {
+        "en": "58 mm is the Raspberry Pi HAT / Model B pattern and the default. The slider exists because the same carrier serves any board whose holes you can measure",
+        "es": "58 mm es el patrón HAT / Model B de Raspberry Pi y el valor por defecto. El deslizador existe porque el mismo portaplacas sirve para cualquier placa cuyos barrenos puedas medir",
+        "fr": "58 mm est le perçage HAT / Model B de la Raspberry Pi, valeur par défaut. Le curseur existe parce que le même support convient à toute carte dont vous pouvez mesurer les trous",
+        "pt": "58 mm é o padrão HAT / Model B da Raspberry Pi e o valor padrão. O controle existe porque o mesmo suporte serve para qualquer placa cujos furos você consiga medir"
+      }
+    },
+    {
+      "id": "hole_dy", "type": "slider", "default": 49.0, "min": 15.0, "max": 80.0, "step": 0.5,
+      "group": "board", "modes": ["rail_carrier", "hat_hood", "riser_frame"],
+      "label": { "en": "Hole Pitch Y (mm)", "es": "Paso de Barrenos Y (mm)", "fr": "Entraxe Y (mm)", "pt": "Passo de Furos Y (mm)" },
+      "tooltip": {
+        "en": "49 mm is the Model B / HAT pattern; a Pi Zero is 23 mm on the same 58 mm X. Presets set both together",
+        "es": "49 mm es el patrón Model B / HAT; una Pi Zero es de 23 mm sobre los mismos 58 mm en X. Los preajustes fijan ambos a la vez",
+        "fr": "49 mm est le perçage Model B / HAT ; une Pi Zero fait 23 mm sur le même X de 58 mm. Les préréglages fixent les deux ensemble",
+        "pt": "49 mm é o padrão Model B / HAT; uma Pi Zero tem 23 mm no mesmo X de 58 mm. As predefinições ajustam ambos juntos"
+      }
+    },
+    {
+      "id": "hole_dia", "type": "slider", "default": 2.75, "min": 2.2, "max": 4.5, "step": 0.05,
+      "group": "board", "modes": ["rail_carrier", "hat_hood", "riser_frame"],
+      "label": { "en": "Board Hole (mm)", "es": "Barreno de Placa (mm)", "fr": "Trou de carte (mm)", "pt": "Furo da Placa (mm)" },
+      "tooltip": {
+        "en": "The hole diameter on the board itself — 2.75 mm on the Raspberry Pi spec, an M2.5 clearance. The carrier's own bore is sized under this for a self-tapping screw",
+        "es": "El diámetro del barreno en la placa misma — 2.75 mm en la especificación Raspberry Pi, holgura para M2.5. El barreno del portaplacas se dimensiona por debajo, para tornillo autorroscante",
+        "fr": "Le diamètre du trou sur la carte elle-même — 2,75 mm dans la spécification Raspberry Pi, un passage M2,5. Le perçage du support est dimensionné en dessous, pour une vis autotaraudeuse",
+        "pt": "O diâmetro do furo na própria placa — 2,75 mm na especificação Raspberry Pi, folga para M2,5. O furo do suporte é dimensionado abaixo, para parafuso autoatarraxante"
+      }
+    },
+    {
+      "id": "standoff_h", "type": "slider", "default": 6.0, "min": 3.0, "max": 20.0, "step": 0.5,
+      "group": "board", "modes": ["rail_carrier", "riser_frame"],
+      "label": { "en": "Standoff Height (mm)", "es": "Altura de Separador (mm)", "fr": "Hauteur d'entretoise (mm)", "pt": "Altura do Espaçador (mm)" },
+      "tooltip": {
+        "en": "Clearance under the board. Leave room for the solder tails on the underside — a board pulled down onto its own header pins cracks at the pad, not at the standoff",
+        "es": "Espacio libre bajo la placa. Deja lugar para las colas de soldadura del reverso — una placa apretada contra sus propias espigas se agrieta en la almohadilla, no en el separador",
+        "fr": "Dégagement sous la carte. Laissez la place aux queues de soudure du dessous — une carte plaquée sur ses propres broches casse à la pastille, pas à l'entretoise",
+        "pt": "Folga sob a placa. Deixe espaço para os rabichos de solda do verso — uma placa apertada contra os próprios pinos trinca na ilha, não no espaçador"
+      }
+    },
+    {
+      "id": "board_margin", "type": "slider", "default": 4.0, "min": 2.0, "max": 15.0, "step": 0.5,
+      "group": "board", "modes": ["rail_carrier", "hat_hood", "riser_frame"],
+      "label": { "en": "Plate Margin (mm)", "es": "Margen de Placa (mm)", "fr": "Marge de platine (mm)", "pt": "Margem da Base (mm)" },
+      "tooltip": {
+        "en": "Material outside the outermost boss. The plate size is derived from the board pattern and the rail span together, so this widens whichever of the two is currently governing",
+        "es": "Material por fuera del buje más externo. El tamaño de la placa se deriva del patrón de la tarjeta y del claro del riel a la vez, así que esto ensancha al que esté gobernando",
+        "fr": "Matière au-delà du bossage le plus extérieur. La taille de la platine dérive à la fois du perçage de la carte et de l'entraxe du rail : ceci élargit celui des deux qui gouverne",
+        "pt": "Material além da bossa mais externa. O tamanho da base deriva do padrão da placa e do vão da calha juntos, então isto alarga o que estiver governando"
+      }
+    },
+    {
+      "id": "plate_th", "type": "slider", "default": 3.2, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "build", "modes": ["rail_carrier", "hat_hood", "riser_frame"],
+      "label": { "en": "Plate Thickness (mm)", "es": "Espesor de Placa (mm)", "fr": "Épaisseur de platine (mm)", "pt": "Espessura da Base (mm)" },
+      "tooltip": {
+        "en": "The carrier plate, and the wall the hood is derived from. Thin plates bow under a heavy cable loom long before they break",
+        "es": "La placa portadora, y la pared de la que se deriva la tapa. Las placas delgadas se pandean bajo un mazo de cable pesado mucho antes de romperse",
+        "fr": "La platine du support, et la paroi dont dérive le capot. Une platine mince se voile sous un faisceau lourd bien avant de casser",
+        "pt": "A base do suporte, e a parede da qual a capa deriva. Bases finas empenam sob um chicote pesado muito antes de quebrar"
+      }
+    },
+    {
+      "id": "hood_h", "type": "slider", "default": 26.0, "min": 10.0, "max": 60.0, "step": 1.0,
+      "group": "build", "modes": ["hat_hood"],
+      "label": { "en": "Hood Height (mm)", "es": "Altura de Tapa (mm)", "fr": "Hauteur du capot (mm)", "pt": "Altura da Capa (mm)" },
+      "tooltip": {
+        "en": "Internal clearance over the board. Measure the tallest thing on it — an RJ45 jack, a stacked HAT, an electrolytic — not the board's nominal height",
+        "es": "Espacio interior sobre la placa. Mide lo más alto que traiga — un jack RJ45, un HAT apilado, un electrolítico — no la altura nominal de la placa",
+        "fr": "Dégagement intérieur au-dessus de la carte. Mesurez l'élément le plus haut — une prise RJ45, un HAT empilé, un électrolytique — et non la hauteur nominale de la carte",
+        "pt": "Folga interna sobre a placa. Meça a coisa mais alta que houver — um conector RJ45, um HAT empilhado, um eletrolítico — não a altura nominal da placa"
+      }
+    },
+    {
+      "id": "vent_style", "type": "select", "default": "slots",
+      "options": [
+        { "value": "slots", "label": "Slots" },
+        { "value": "holes", "label": "Hole grid" },
+        { "value": "none", "label": "None (sealed face)" }
+      ],
+      "group": "build", "modes": ["rail_carrier", "hat_hood"],
+      "label": { "en": "Ventilation", "es": "Ventilación", "fr": "Ventilation", "pt": "Ventilação" },
+      "tooltip": {
+        "en": "Vents are counted from the space that survives the standoff keepout, and skipped entirely when there is none — a slot count picked first and trimmed afterwards is how a vent ends up crossing the boss it was meant to avoid",
+        "es": "Las ventilas se cuentan a partir del espacio que sobrevive a la zona de exclusión de los bujes, y se omiten cuando no queda ninguno — elegir el número de ranuras primero y recortarlo después es como una ventila acaba cruzando el buje que debía evitar",
+        "fr": "Les ouïes sont comptées à partir de l'espace qui subsiste après la zone d'exclusion des bossages, et supprimées s'il n'en reste aucun — choisir le nombre de fentes d'abord et le rogner ensuite, c'est ainsi qu'une ouïe finit par traverser le bossage qu'elle devait éviter",
+        "pt": "As aberturas são contadas a partir do espaço que sobra depois da zona de exclusão das bossas, e omitidas quando não sobra nenhum — escolher o número de rasgos primeiro e aparar depois é como uma abertura acaba cruzando a bossa que deveria evitar"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "pi_model_b", "mode": "rail_carrier",
+      "label": { "en": "Pi Model B / HAT (58 x 49)", "es": "Pi Model B / HAT (58 x 49)", "fr": "Pi Model B / HAT (58 x 49)", "pt": "Pi Model B / HAT (58 x 49)" },
+      "values": { "hole_dx": 58.0, "hole_dy": 49.0, "standoff_h": 6.0, "rail_len": 56.0, "vent_style": "slots" }
+    },
+    {
+      "id": "pi_zero", "mode": "rail_carrier",
+      "label": { "en": "Pi Zero (58 x 23)", "es": "Pi Zero (58 x 23)", "fr": "Pi Zero (58 x 23)", "pt": "Pi Zero (58 x 23)" },
+      "values": { "hole_dx": 58.0, "hole_dy": 23.0, "standoff_h": 5.0, "rail_len": 40.0, "board_margin": 3.0 }
+    },
+    {
+      "id": "deep_rail", "mode": "rail_carrier",
+      "label": { "en": "TS35 x 15 Deep Rail", "es": "Riel Profundo TS35 x 15", "fr": "Rail profond TS35 x 15", "pt": "Calha Profunda TS35 x 15" },
+      "values": { "rail_depth_class": "ts35_15", "rail_len": 70.0, "spring_thick": 2.4, "plate_th": 4.0 }
+    },
+    {
+      "id": "rj45_hood", "mode": "hat_hood",
+      "label": { "en": "Hood over an RJ45 Stack", "es": "Tapa sobre Pila con RJ45", "fr": "Capot sur pile avec RJ45", "pt": "Capa sobre Pilha com RJ45" },
+      "values": { "hood_h": 34.0, "vent_style": "holes", "plate_th": 3.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_th >= 2.5",
+      "severity": "error",
+      "message": {
+        "en": "Plate must be at least 2.5 mm: the sprung hook's root is in this plate, and a thin root creeps out of the rail over months in a warm cabinet",
+        "es": "La placa debe ser de al menos 2.5 mm: la raíz del gancho de resorte está en ella, y una raíz delgada se sale del riel por fluencia tras meses en un gabinete caliente",
+        "fr": "La platine doit faire au moins 2,5 mm : la racine du crochet ressort s'y trouve, et une racine mince flue hors du rail après des mois en armoire chaude",
+        "pt": "A base deve ter pelo menos 2,5 mm: a raiz do gancho de mola está nela, e uma raiz fina escorre para fora da calha após meses num painel quente"
+      }
+    },
+    {
+      "expression": "standoff_h >= 4.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below 4 mm the standoffs may not clear the solder tails on the board's underside; a board pulled down onto its own header pins cracks at the pad",
+        "es": "Por debajo de 4 mm los separadores pueden no librar las colas de soldadura del reverso; una placa apretada contra sus propias espigas se agrieta en la almohadilla",
+        "fr": "En dessous de 4 mm, les entretoises risquent de ne pas dégager les queues de soudure du dessous ; une carte plaquée sur ses propres broches casse à la pastille",
+        "pt": "Abaixo de 4 mm os espaçadores podem não livrar os rabichos de solda do verso; uma placa apertada contra os próprios pinos trinca na ilha"
+      }
+    },
+    {
+      "expression": "spring_thick <= 3.0",
+      "severity": "warning",
+      "message": {
+        "en": "Above 3 mm the cantilever stops being compliant and the clip must be forced onto the rail, which puts the load into the plate instead of the beam",
+        "es": "Por encima de 3 mm el voladizo deja de ser flexible y el clip hay que forzarlo al riel, lo que manda la carga a la placa en vez de a la viga",
+        "fr": "Au-delà de 3 mm, le porte-à-faux cesse d'être souple et le clip doit être forcé sur le rail, ce qui reporte l'effort sur la platine au lieu de la lame",
+        "pt": "Acima de 3 mm o balanço deixa de ser flexível e o clipe precisa ser forçado na calha, o que joga a carga na base em vez da viga"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [120, 95, 80] },
+    { "id": "rail", "label": { "en": "Rail End", "es": "Extremo de Riel", "fr": "Bout de rail", "pt": "Topo da Calha" }, "position": [0, -160, 10] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 13, "per_unit": 4, "per_part": 17,
+    "fn_factor": 48, "wasm_multiplier": 3, "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "din_ts35_rail",
+        "label": { "en": "DIN TS35 Rail", "es": "Riel DIN TS35", "fr": "Rail DIN TS35", "pt": "Calha DIN TS35" },
+        "geometry_type": "rail",
+        "standard": "DIN EN 60715 TS35",
+        "parameters": ["rail_depth_class", "rail_len", "spring_thick", "plate_th"],
+        "compatible_with": ["din-module", "din-relay", "din-rail-clip", "din-terminal-comb", "terminal-cover", "busbar-support", "devboard-tray"]
+      },
+      {
+        "id": "rpi_hat_pattern",
+        "label": { "en": "Raspberry Pi HAT Pattern", "es": "Patrón HAT de Raspberry Pi", "fr": "Perçage HAT Raspberry Pi", "pt": "Padrão HAT da Raspberry Pi" },
+        "geometry_type": "bolt_pattern",
+        "standard": "Raspberry Pi HAT 58 x 49 mm hole pattern",
+        "parameters": ["hole_dx", "hole_dy", "hole_dia", "standoff_h"],
+        "compatible_with": ["pi-hat-case", "sbc-case"]
+      },
+      {
+        "id": "compliant_spring_hook",
+        "label": { "en": "Compliant Spring Hook", "es": "Gancho Flexible", "fr": "Crochet souple", "pt": "Gancho Flexível" },
+        "geometry_type": "snap",
+        "standard": "internal — folded cantilever, stiffness set by spring_thick",
+        "parameters": ["spring_thick", "plate_th"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Small computers now run irrigation controllers, clinic refrigerator loggers, village mesh nodes, machine monitors and school lab benches, and almost all of that hardware ends up mounted the same way: cable-tied to a board, taped inside a box, or resting on the floor of a cabinet where the next person to open it will put a screwdriver through it. DIN rail is the answer the electrical trades settled on a lifetime ago — a numbered, universal, mechanically boring standard that every enclosure, every panel shop and every electrician on earth already stocks. Putting the commons' single-board computers on that rail costs one printed plate and makes a hobby installation into one a trained electrician can service, document and hand over. That is the difference between a demonstration and infrastructure. Recycled filament is deliberately not offered: the sprung hook relies on layer adhesion holding its spring over years in a warm cabinet, and reground feedstock has unpredictable interlayer strength.",
+      "es": "Las computadoras pequeñas hoy controlan riego, registran temperaturas de refrigeradores de clínica, sostienen nodos de malla comunitaria, monitorean máquinas y equipan laboratorios escolares, y casi todo ese equipo termina montado igual: amarrado con cincho a una tabla, pegado con cinta dentro de una caja, o tirado en el piso de un gabinete donde el siguiente que lo abra le meterá un desarmador. El riel DIN es la respuesta que los oficios eléctricos acordaron hace generaciones — una norma numerada, universal y mecánicamente aburrida que todo gabinete, todo taller de tableros y todo electricista ya maneja. Poner las placas del procomún sobre ese riel cuesta una placa impresa y convierte una instalación de aficionado en una que un electricista puede dar servicio, documentar y entregar. Esa es la diferencia entre una demostración y una infraestructura. No se ofrece filamento reciclado a propósito: el gancho de resorte depende de que la adhesión entre capas conserve su elasticidad por años en un gabinete caliente, y el material regranulado tiene resistencia intercapa impredecible.",
+      "fr": "Les petits ordinateurs pilotent aujourd'hui des régulations d'irrigation, des enregistreurs de réfrigérateurs de dispensaire, des nœuds de réseau maillé villageois, des surveillances de machines et des paillasses de lycée, et presque tout ce matériel finit monté de la même façon : ligaturé sur une planche, scotché dans une boîte, ou posé au fond d'une armoire où le prochain qui l'ouvrira y passera un tournevis. Le rail DIN est la réponse que les métiers de l'électricité ont arrêtée il y a des générations — une norme numérotée, universelle et mécaniquement ennuyeuse que toute armoire, tout tableautier et tout électricien possède déjà. Mettre les cartes du commun sur ce rail coûte une platine imprimée et transforme une installation d'amateur en une installation qu'un électricien peut entretenir, documenter et livrer. C'est la différence entre une démonstration et une infrastructure. Le filament recyclé n'est délibérément pas proposé : le crochet ressort repose sur une adhésion inter-couches qui doit garder son élasticité pendant des années en armoire chaude, et la matière régénérée a une tenue inter-couches imprévisible.",
+      "pt": "Computadores pequenos hoje controlam irrigação, registram temperatura de geladeiras de posto de saúde, sustentam nós de rede mesh comunitária, monitoram máquinas e equipam bancadas de laboratório escolar, e quase todo esse equipamento acaba montado do mesmo jeito: amarrado com abraçadeira numa tábua, colado com fita dentro de uma caixa, ou largado no fundo de um painel onde o próximo que abrir vai enfiar uma chave de fenda. A calha DIN é a resposta que os ofícios elétricos fecharam há gerações — uma norma numerada, universal e mecanicamente entediante que todo painel, toda montadora de quadros e todo eletricista já tem. Colocar as placas do comum nessa calha custa uma base impressa e transforma uma instalação de hobby numa que um eletricista pode manter, documentar e entregar. Essa é a diferença entre uma demonstração e uma infraestrutura. Filamento reciclado não é oferecido de propósito: o gancho de mola depende de a adesão entre camadas manter sua elasticidade por anos num painel quente, e material regranulado tem resistência entre camadas imprevisível."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["din-rail", "ts35", "raspberry-pi", "sbc", "hat", "control-cabinet", "compliant-mechanism", "carrier", "industrial", "hyperobject", "commons"]
+}

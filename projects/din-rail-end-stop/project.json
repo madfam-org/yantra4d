@@ -1,0 +1,278 @@
+{
+  "project": {
+    "name": "DIN Rail End Stop",
+    "slug": "din-rail-end-stop",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "The parts that terminate a rail, rather than ride on it. The commons has seven cartridges that clip TO DIN EN 60715 TS35 rail — modules, relays, terminal combs, covers, busbar supports, dev-board trays, clips — and not one of them addresses the rail itself. Nothing stops a row of modules sliding along it, nothing spaces two groups apart, and nothing fills an empty way so fingers and dust stay out. A rail with no end stop is a rail whose contents migrate every time the cabinet is moved. Three modes share one compliant clip back: a terminating bracket with a marker recess, a low spacer combed for cable routing, and a blank on the modular device pitch.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Las piezas que terminan un riel, en vez de viajar sobre él. El procomún tiene siete cartuchos que se prenden AL riel DIN EN 60715 TS35 — módulos, relevadores, peines de bornes, tapas, soportes de barra, charolas de placas, clips — y ninguno atiende al riel mismo. Nada impide que una fila de módulos se corra, nada separa dos grupos, y nada llena una vía vacía para que no entren dedos ni polvo. Un riel sin tope es un riel cuyo contenido migra cada vez que se mueve el gabinete. Tres modos comparten un mismo dorso de clip flexible: un tope terminal con rebaje para etiqueta, un separador bajo peinado para conducir cable, y un ciego en el paso modular.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Les pièces qui terminent un rail, au lieu d'y circuler. Le commun compte sept cartouches qui se clipsent SUR le rail DIN EN 60715 TS35 — modules, relais, peignes de bornes, capots, supports de barres, plateaux de cartes, clips — et aucune ne s'occupe du rail lui-même. Rien n'empêche une rangée de modules de coulisser, rien n'écarte deux groupes, et rien ne comble un emplacement vide pour tenir les doigts et la poussière dehors. Un rail sans butée est un rail dont le contenu migre à chaque déplacement de l'armoire. Trois modes partagent un même dos à clip souple : une butée terminale avec logement d'étiquette, une entretoise basse peignée pour le cheminement des câbles, et un obturateur au pas modulaire.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "As peças que terminam uma calha, em vez de andar sobre ela. O comum tem sete cartuchos que se prendem NA calha DIN EN 60715 TS35 — módulos, relés, pentes de bornes, tampas, suportes de barramento, bandejas de placas, clipes — e nenhum trata da calha em si. Nada impede uma fileira de módulos de deslizar, nada separa dois grupos, e nada preenche uma via vazia para que dedos e poeira fiquem de fora. Uma calha sem trava é uma calha cujo conteúdo migra a cada vez que o painel é movido. Três modos compartilham um mesmo dorso de clipe flexível: uma trava terminal com rebaixo para etiqueta, um espaçador baixo penteado para passagem de cabos, e um cego no passo modular.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/din-rail-end-stop.webp",
+    "difficulty": "beginner",
+    "tags": ["din-rail", "ts35", "end-stop", "spacer", "blanking", "control-cabinet", "consumer-unit", "compliant-mechanism", "industrial", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "end_stop",
+      "label": { "en": "End Stop", "es": "Tope de Riel", "fr": "Butée d'arrêt", "pt": "Trava de Fim" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["end_stop"],
+      "estimate": { "base_time": 8, "per_unit": 3, "per_part": 10 }
+    },
+    {
+      "id": "rail_spacer",
+      "label": { "en": "Rail Spacer", "es": "Separador de Riel", "fr": "Entretoise de rail", "pt": "Espaçador de Calha" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["rail_spacer"],
+      "estimate": { "base_time": 7, "per_unit": 3, "per_part": 9 }
+    },
+    {
+      "id": "blank_module",
+      "label": { "en": "Blanking Module", "es": "Módulo Ciego", "fr": "Obturateur modulaire", "pt": "Módulo Cego" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["blank_module"],
+      "estimate": { "base_time": 9, "per_unit": 3, "per_part": 12 }
+    }
+  ],
+  "parts": [
+    { "id": "end_stop", "render_mode": 0, "color": "#455a64",
+      "label": { "en": "End Stop", "es": "Tope", "fr": "Butée", "pt": "Trava" } },
+    { "id": "rail_spacer", "render_mode": 0, "color": "#607d8b",
+      "label": { "en": "Spacer", "es": "Separador", "fr": "Entretoise", "pt": "Espaçador" } },
+    { "id": "blank_module", "render_mode": 0, "color": "#90a4ae",
+      "label": { "en": "Blank", "es": "Ciego", "fr": "Obturateur", "pt": "Cego" } }
+  ],
+  "parameter_groups": [
+    { "id": "rail", "label": { "en": "DIN Rail", "es": "Riel DIN", "fr": "Rail DIN", "pt": "Calha DIN" } },
+    { "id": "form", "label": { "en": "Form", "es": "Forma", "fr": "Forme", "pt": "Forma" } },
+    { "id": "detail", "label": { "en": "Details", "es": "Detalles", "fr": "Détails", "pt": "Detalhes" } }
+  ],
+  "parameters": [
+    {
+      "id": "rail_depth_class", "type": "select", "default": "ts35_7v5",
+      "options": [
+        { "value": "ts35_7v5", "label": "TS35 x 7.5 (DIN EN 60715)" },
+        { "value": "ts35_15", "label": "TS35 x 15 (DIN EN 60715)" }
+      ],
+      "group": "rail", "modes": ["end_stop", "rail_spacer", "blank_module"],
+      "label": { "en": "Rail Section", "es": "Sección de Riel", "fr": "Section de rail", "pt": "Seção da Calha" },
+      "tooltip": {
+        "en": "Both TS35 sections share the same 35 mm span across the lips, so the hooks catch identically; only the jaw depth changes",
+        "es": "Ambas secciones TS35 comparten el mismo claro de 35 mm entre labios, así que los ganchos prenden igual; solo cambia la profundidad de la mordaza",
+        "fr": "Les deux sections TS35 partagent le même entraxe de 35 mm entre lèvres : les crochets accrochent à l'identique, seule la profondeur de la mâchoire change",
+        "pt": "As duas seções TS35 compartilham o mesmo vão de 35 mm entre lábios, então os ganchos prendem igual; só muda a profundidade da garra"
+      }
+    },
+    {
+      "id": "spring_thick", "type": "slider", "default": 2.0, "min": 1.2, "max": 4.0, "step": 0.1,
+      "group": "rail", "modes": ["end_stop", "rail_spacer", "blank_module"],
+      "label": { "en": "Spring Beam (mm)", "es": "Viga de Resorte (mm)", "fr": "Lame ressort (mm)", "pt": "Viga de Mola (mm)" },
+      "tooltip": {
+        "en": "Thickness of the compliant cantilever. The bend energy lives in the beam, so the wall is never held in permanent strain and the stop does not creep off the rail over years in a warm cabinet",
+        "es": "Espesor del voladizo flexible. La energía de flexión vive en la viga, así que la pared nunca queda en deformación permanente y el tope no se sale del riel tras años en un gabinete caliente",
+        "fr": "Épaisseur du porte-à-faux souple. L'énergie de flexion vit dans la lame : la paroi n'est jamais maintenue en contrainte permanente et la butée ne flue pas hors du rail après des années en armoire chaude",
+        "pt": "Espessura do balanço flexível. A energia de flexão vive na viga, então a parede nunca fica em deformação permanente e a trava não escorre para fora da calha após anos num painel quente"
+      }
+    },
+    {
+      "id": "plate_th", "type": "slider", "default": 3.0, "min": 2.5, "max": 8.0, "step": 0.1,
+      "group": "rail", "modes": ["end_stop", "rail_spacer", "blank_module"],
+      "label": { "en": "Back Plate (mm)", "es": "Placa Trasera (mm)", "fr": "Platine arrière (mm)", "pt": "Placa Traseira (mm)" },
+      "tooltip": {
+        "en": "The plate the hooks root into. The whole holding force passes through it, so it is the last thing to make thin",
+        "es": "La placa donde se arraigan los ganchos. Toda la fuerza de sujeción pasa por ella, así que es lo último que conviene adelgazar",
+        "fr": "La platine dans laquelle les crochets s'enracinent. Tout l'effort de maintien y passe : c'est la dernière chose à amincir",
+        "pt": "A placa em que os ganchos se enraízam. Toda a força de retenção passa por ela, então é a última coisa a afinar"
+      }
+    },
+    {
+      "id": "width", "type": "slider", "default": 10.0, "min": 4.0, "max": 40.0, "step": 0.5,
+      "group": "form", "modes": ["end_stop", "rail_spacer"],
+      "label": { "en": "Width Along Rail (mm)", "es": "Ancho sobre el Riel (mm)", "fr": "Largeur le long du rail (mm)", "pt": "Largura ao Longo da Calha (mm)" },
+      "tooltip": {
+        "en": "How much rail the part occupies. A commercial end stop is around 8-10 mm; a spacer is whatever gap you are filling",
+        "es": "Cuánto riel ocupa la pieza. Un tope comercial ronda 8-10 mm; un separador es el hueco que estés llenando",
+        "fr": "Longueur de rail occupée par la pièce. Une butée du commerce fait environ 8 à 10 mm ; une entretoise fait la taille du vide à combler",
+        "pt": "Quanto de calha a peça ocupa. Uma trava comercial fica em torno de 8-10 mm; um espaçador é o vão que você estiver preenchendo"
+      }
+    },
+    {
+      "id": "stop_h", "type": "slider", "default": 40.0, "min": 12.0, "max": 70.0, "step": 1.0,
+      "group": "form", "modes": ["end_stop"],
+      "label": { "en": "Stop Face Height (mm)", "es": "Altura de Cara de Tope (mm)", "fr": "Hauteur de la butée (mm)", "pt": "Altura da Face de Trava (mm)" },
+      "tooltip": {
+        "en": "How far the stop face stands off the rail. It must reach past the body of whatever it is stopping, or the module simply rides over it",
+        "es": "Cuánto sobresale la cara de tope respecto al riel. Debe rebasar el cuerpo de lo que detiene, o el módulo simplemente se le monta encima",
+        "fr": "Hauteur de la face de butée au-dessus du rail. Elle doit dépasser le corps de ce qu'elle arrête, sinon le module lui passe simplement dessus",
+        "pt": "O quanto a face de trava se ergue acima da calha. Precisa ultrapassar o corpo do que ela trava, ou o módulo simplesmente sobe por cima"
+      }
+    },
+    {
+      "id": "module_units", "type": "slider", "default": 1.0, "min": 1.0, "max": 8.0, "step": 1.0,
+      "group": "form", "modes": ["blank_module"],
+      "label": { "en": "Module Units", "es": "Unidades de Módulo", "fr": "Unités de module", "pt": "Unidades de Módulo" },
+      "tooltip": {
+        "en": "Each unit is 17.5 mm along the rail — the modular device pitch, and the one figure of DIN 43880 this cartridge asserts as law",
+        "es": "Cada unidad son 17.5 mm a lo largo del riel — el paso modular, y la única cifra de DIN 43880 que este cartucho afirma como ley",
+        "fr": "Chaque unité vaut 17,5 mm le long du rail — le pas modulaire, et le seul chiffre de la DIN 43880 que cette cartouche affirme comme une loi",
+        "pt": "Cada unidade são 17,5 mm ao longo da calha — o passo modular, e o único número da DIN 43880 que este cartucho afirma como lei"
+      }
+    },
+    {
+      "id": "module_h", "type": "slider", "default": 45.0, "min": 25.0, "max": 70.0, "step": 0.5,
+      "group": "form", "modes": ["blank_module"],
+      "label": { "en": "Module Height (mm)", "es": "Altura de Módulo (mm)", "fr": "Hauteur de module (mm)", "pt": "Altura do Módulo (mm)" },
+      "tooltip": {
+        "en": "Across the rail, from bottom edge to top. 45 mm is the common value and it is exposed as a slider, not asserted — measure the breaker beside the gap you are filling. The geometry raises it if it would ever be narrower than the rail hooks",
+        "es": "A través del riel, de borde inferior a superior. 45 mm es el valor común y se expone como deslizador, no se afirma — mide el interruptor junto al hueco que llenas. La geometría lo sube si alguna vez quedara más angosto que los ganchos del riel",
+        "fr": "En travers du rail, du bord inférieur au bord supérieur. 45 mm est la valeur courante, exposée en curseur et non affirmée — mesurez le disjoncteur voisin du vide à combler. La géométrie la relève si elle devenait plus étroite que les crochets du rail",
+        "pt": "Através da calha, da borda inferior à superior. 45 mm é o valor comum e é exposto como controle, não afirmado — meça o disjuntor ao lado do vão que você preenche. A geometria o eleva se ficasse mais estreito que os ganchos da calha"
+      }
+    },
+    {
+      "id": "module_depth", "type": "slider", "default": 45.0, "min": 20.0, "max": 80.0, "step": 1.0,
+      "group": "form", "modes": ["blank_module"],
+      "label": { "en": "Module Depth (mm)", "es": "Profundidad de Módulo (mm)", "fr": "Profondeur de module (mm)", "pt": "Profundidade do Módulo (mm)" },
+      "tooltip": {
+        "en": "Out from the rail mounting plane to the front face. Depth classes vary; this is a slider so the blank finishes flush with the devices beside it rather than proud or sunk",
+        "es": "Desde el plano de montaje del riel hasta la cara frontal. Las clases de profundidad varían; es un deslizador para que el ciego quede al ras de los aparatos vecinos y no salido ni hundido",
+        "fr": "Depuis le plan de montage du rail jusqu'à la face avant. Les classes de profondeur varient ; c'est un curseur pour que l'obturateur affleure les appareils voisins plutôt que de saillir ou de s'enfoncer",
+        "pt": "Do plano de montagem da calha até a face frontal. As classes de profundidade variam; é um controle para que o cego fique rente aos aparelhos vizinhos, nem saliente nem afundado"
+      }
+    },
+    {
+      "id": "cable_slots", "type": "slider", "default": 3.0, "min": 0.0, "max": 8.0, "step": 1.0,
+      "group": "detail", "modes": ["rail_spacer"],
+      "label": { "en": "Cable Slots", "es": "Ranuras de Cable", "fr": "Fentes de câble", "pt": "Rasgos de Cabo" },
+      "tooltip": {
+        "en": "A comb across the spacer's top. The count is derived from the space that survives the end margins — a count picked first and trimmed later is how a slot ends up cutting through the wall it was meant to sit inside",
+        "es": "Un peine sobre el separador. El número se deriva del espacio que sobrevive a los márgenes — elegir el número primero y recortarlo después es como una ranura acaba cortando la pared donde debía caber",
+        "fr": "Un peigne sur le dessus de l'entretoise. Le nombre découle de l'espace qui subsiste après les marges — choisir le nombre d'abord et le rogner ensuite, c'est ainsi qu'une fente finit par traverser la paroi où elle devait tenir",
+        "pt": "Um pente no topo do espaçador. A quantidade deriva do espaço que sobra depois das margens — escolher a quantidade primeiro e aparar depois é como um rasgo acaba cortando a parede onde deveria caber"
+      }
+    },
+    {
+      "id": "label_slot", "type": "select", "default": "slot",
+      "options": [
+        { "value": "slot", "label": "Marker card recess" },
+        { "value": "none", "label": "Plain face" }
+      ],
+      "group": "detail", "modes": ["end_stop", "blank_module"],
+      "label": { "en": "Marker Recess", "es": "Rebaje de Etiqueta", "fr": "Logement d'étiquette", "pt": "Rebaixo de Etiqueta" },
+      "tooltip": {
+        "en": "A recess for a marker card. A rail whose ways are not labelled is a rail nobody will touch, and a label taped to a printed part falls off in a warm cabinet",
+        "es": "Un rebaje para tarjeta de identificación. Un riel sin vías etiquetadas es un riel que nadie va a tocar, y una etiqueta pegada con cinta a una pieza impresa se cae en un gabinete caliente",
+        "fr": "Un logement pour une étiquette de repérage. Un rail dont les emplacements ne sont pas repérés est un rail auquel personne ne touchera, et une étiquette scotchée sur une pièce imprimée tombe en armoire chaude",
+        "pt": "Um rebaixo para etiqueta de identificação. Uma calha cujas vias não estão identificadas é uma calha em que ninguém vai mexer, e uma etiqueta colada com fita numa peça impressa cai num painel quente"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "standard_stop", "mode": "end_stop",
+      "label": { "en": "Standard End Stop (10 mm)", "es": "Tope Estándar (10 mm)", "fr": "Butée standard (10 mm)", "pt": "Trava Padrão (10 mm)" },
+      "values": { "width": 10.0, "stop_h": 40.0, "label_slot": "slot" }
+    },
+    {
+      "id": "tall_stop", "mode": "end_stop",
+      "label": { "en": "Tall Stop for Deep Modules", "es": "Tope Alto para Módulos Profundos", "fr": "Butée haute pour modules profonds", "pt": "Trava Alta para Módulos Fundos" },
+      "values": { "width": 12.0, "stop_h": 60.0, "plate_th": 4.0, "rail_depth_class": "ts35_15" }
+    },
+    {
+      "id": "cable_comb", "mode": "rail_spacer",
+      "label": { "en": "Cable Comb Spacer (25 mm)", "es": "Separador Peine (25 mm)", "fr": "Entretoise peigne (25 mm)", "pt": "Espaçador Pente (25 mm)" },
+      "values": { "width": 25.0, "cable_slots": 5.0, "plate_th": 3.0 }
+    },
+    {
+      "id": "two_way_blank", "mode": "blank_module",
+      "label": { "en": "Two-Way Blank (35 mm)", "es": "Ciego de Dos Vías (35 mm)", "fr": "Obturateur deux modules (35 mm)", "pt": "Cego de Duas Vias (35 mm)" },
+      "values": { "module_units": 2.0, "module_h": 45.0, "module_depth": 45.0 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "plate_th >= 2.5",
+      "severity": "error",
+      "message": {
+        "en": "Back plate must be at least 2.5 mm: the sprung hook roots in it and the whole holding force passes through it",
+        "es": "La placa trasera debe ser de al menos 2.5 mm: en ella se arraiga el gancho de resorte y por ella pasa toda la fuerza de sujeción",
+        "fr": "La platine arrière doit faire au moins 2,5 mm : le crochet ressort s'y enracine et tout l'effort de maintien y transite",
+        "pt": "A placa traseira deve ter pelo menos 2,5 mm: o gancho de mola se enraíza nela e toda a força de retenção passa por ela"
+      }
+    },
+    {
+      "expression": "width >= 6.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below 6 mm along the rail the hooks are shorter than a commercial end stop and the part will rock; a stop that rocks lets the row it stops walk",
+        "es": "Por debajo de 6 mm a lo largo del riel los ganchos son más cortos que los de un tope comercial y la pieza cabecea; un tope que cabecea deja caminar a la fila que detiene",
+        "fr": "En dessous de 6 mm le long du rail, les crochets sont plus courts que ceux d'une butée du commerce et la pièce bascule ; une butée qui bascule laisse migrer la rangée qu'elle arrête",
+        "pt": "Abaixo de 6 mm ao longo da calha os ganchos ficam mais curtos que os de uma trava comercial e a peça balança; uma trava que balança deixa a fileira que ela trava caminhar"
+      }
+    },
+    {
+      "expression": "spring_thick <= 3.0",
+      "severity": "warning",
+      "message": {
+        "en": "Above 3 mm the cantilever stops being compliant and the stop must be forced onto the rail, which puts the load into the back plate instead of the beam",
+        "es": "Por encima de 3 mm el voladizo deja de ser flexible y el tope hay que forzarlo al riel, lo que manda la carga a la placa trasera en vez de a la viga",
+        "fr": "Au-delà de 3 mm, le porte-à-faux cesse d'être souple et la butée doit être forcée sur le rail, ce qui reporte l'effort sur la platine arrière au lieu de la lame",
+        "pt": "Acima de 3 mm o balanço deixa de ser flexível e a trava precisa ser forçada na calha, o que joga a carga na placa traseira em vez da viga"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [95, 80, 70] },
+    { "id": "rail", "label": { "en": "Rail End", "es": "Extremo de Riel", "fr": "Bout de rail", "pt": "Topo da Calha" }, "position": [0, -140, 15] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 8, "per_unit": 3, "per_part": 11,
+    "fn_factor": 32, "wasm_multiplier": 3, "warning_threshold_seconds": 60
+  },
+  "hyperobject": {
+    "domain": "industrial",
+    "cdg_interfaces": [
+      {
+        "id": "din_ts35_rail",
+        "label": { "en": "DIN TS35 Rail", "es": "Riel DIN TS35", "fr": "Rail DIN TS35", "pt": "Calha DIN TS35" },
+        "geometry_type": "rail",
+        "standard": "DIN EN 60715 TS35",
+        "parameters": ["rail_depth_class", "width", "plate_th", "spring_thick"],
+        "compatible_with": ["din-module", "din-relay", "din-rail-clip", "din-terminal-comb", "terminal-cover", "busbar-support", "devboard-tray"]
+      },
+      {
+        "id": "module_pitch",
+        "label": { "en": "Modular Device Pitch", "es": "Paso Modular", "fr": "Pas modulaire", "pt": "Passo Modular" },
+        "geometry_type": "profile",
+        "standard": "DIN 43880 modular device pitch, 17.5 mm per unit",
+        "parameters": ["module_units", "module_h", "module_depth"]
+      },
+      {
+        "id": "compliant_spring_hook",
+        "label": { "en": "Compliant Spring Hook", "es": "Gancho Flexible", "fr": "Crochet souple", "pt": "Gancho Flexível" },
+        "geometry_type": "snap",
+        "standard": "internal — folded cantilever, stiffness set by spring_thick",
+        "parameters": ["spring_thick", "plate_th"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "The end stop is the part nobody orders and every panel needs. It costs almost nothing new, which is exactly why it is never in the box when a board is being rebuilt in a school, a clinic, a workshop or a village mini-grid — and a row of breakers that migrates along its rail is not a cosmetic problem: it loads the terminals sideways, opens gaps at the busbar, and eventually leaves a live way exposed. The blanking module is the same argument at higher stakes. An empty way in a consumer unit is an opening straight to the busbar, and the honest field repair for it today is tape or a piece of card. A printed blank on the modular pitch is a physical barrier that fits flush, stays put, and can be made on the spot. None of this is clever and all of it is the difference between a board that passes an inspection and one that does not. Recycled filament is not offered: the sprung hook must keep its spring for years in a warm cabinet, and reground feedstock has unpredictable interlayer strength.",
+      "es": "El tope de riel es la pieza que nadie pide y que todo tablero necesita. Cuesta casi nada nueva, y justo por eso nunca está en la caja cuando se rearma un tablero en una escuela, una clínica, un taller o una microrred comunitaria — y una fila de interruptores que se corre por su riel no es un problema estético: carga los bornes de lado, abre huecos en la barra y termina por dejar una vía viva expuesta. El módulo ciego es el mismo argumento con más en juego. Una vía vacía en un centro de carga es una abertura directa a la barra, y la reparación honesta de campo hoy es cinta o un pedazo de cartón. Un ciego impreso en el paso modular es una barrera física que queda al ras, se queda puesta y se puede hacer ahí mismo. Nada de esto es ingenioso y todo ello es la diferencia entre un tablero que pasa una inspección y uno que no. No se ofrece filamento reciclado: el gancho de resorte debe conservar su elasticidad durante años en un gabinete caliente, y el material regranulado tiene resistencia entre capas impredecible.",
+      "fr": "La butée d'arrêt est la pièce que personne ne commande et dont tout tableau a besoin. Elle ne coûte presque rien neuve, et c'est précisément pour cela qu'elle n'est jamais dans la boîte quand on refait un tableau dans une école, un dispensaire, un atelier ou un mini-réseau villageois — et une rangée de disjoncteurs qui migre le long de son rail n'est pas un problème esthétique : elle charge les bornes de travers, ouvre des jours au niveau du peigne, et finit par laisser un emplacement sous tension à découvert. L'obturateur est le même argument avec un enjeu plus lourd. Un emplacement vide dans un tableau est une ouverture directe sur le peigne, et la réparation de terrain honnête aujourd'hui, c'est du ruban adhésif ou un morceau de carton. Un obturateur imprimé au pas modulaire est une barrière physique qui affleure, qui reste en place et que l'on peut faire sur-le-champ. Rien de tout cela n'est astucieux, et c'est tout entier la différence entre un tableau qui passe une visite et un tableau qui échoue. Le filament recyclé n'est pas proposé : le crochet ressort doit garder son élasticité des années en armoire chaude, et la matière régénérée a une tenue inter-couches imprévisible.",
+      "pt": "A trava de fim de calha é a peça que ninguém pede e que todo quadro precisa. Custa quase nada nova, e é exatamente por isso que nunca está na caixa quando se refaz um quadro numa escola, num posto de saúde, numa oficina ou numa minirrede comunitária — e uma fileira de disjuntores que caminha pela calha não é um problema estético: carrega os bornes de lado, abre vãos no barramento e acaba deixando uma via energizada exposta. O módulo cego é o mesmo argumento com mais em jogo. Uma via vazia num quadro de distribuição é uma abertura direta para o barramento, e o reparo honesto de campo hoje é fita ou um pedaço de papelão. Um cego impresso no passo modular é uma barreira física que fica rente, permanece no lugar e pode ser feito na hora. Nada disso é engenhoso e tudo isso é a diferença entre um quadro que passa numa inspeção e um que não passa. Filamento reciclado não é oferecido: o gancho de mola precisa manter a elasticidade por anos num painel quente, e material regranulado tem resistência entre camadas imprevisível."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["din-rail", "ts35", "end-stop", "spacer", "blanking", "control-cabinet", "consumer-unit", "compliant-mechanism", "industrial", "hyperobject", "commons"]
+}

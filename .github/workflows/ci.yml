@@ -538,6 +538,23 @@ jobs:
       # the whole point of the check that a partial checkout cannot pass.
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
+      # `apps/landing/src/data/projects.ts` is generated from these same
+      # manifests and committed, and nothing used to check it: it sat 138
+      # entries short of the commons and still listed a client-private
+      # cartridge. This is the only job with a checkout complete enough to
+      # judge it — the `landing` job checks out no submodules at all, so a
+      # --check there would compare against a list missing 36 cartridges.
+      #
+      # The `update = none` cartridges are absent here by design (the recursive
+      # checkout skips them even with the PAT); the generator expects that and
+      # does not call it an incomplete checkout. It exits 2 if a *public*
+      # cartridge submodule failed to come in, so a bad checkout fails the job
+      # instead of quietly redefining what "complete" means.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Landing project list matches the manifests
+        run: node scripts/dev/generate-landing-projects.mjs --check
       # docs/strategy/VALUE-EXTRACTION-AUDIT.md reasons in ratios over the
       # commons, so every cartridge added or edited can silently falsify it.
       # --check recomputes the ratios from the manifests and the catalog and

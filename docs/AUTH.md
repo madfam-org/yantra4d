@@ -172,6 +172,69 @@ modes. This is pinned by a test using FC's exact token shape.
 
 ---
 
+## WebSocket channels
+
+`apps/api/routes/core/websocket.py` registers three flask-sock routes. They are
+not covered by the decorators above — see "Why the decorators do not apply".
+
+| Channel | Anonymous | Auth required for | Mutates server state |
+|---------|-----------|-------------------|----------------------|
+| `/api/ws/render/<session_id>` | Readable: connect, `ping`/`pong` | n/a — no action is permitted to any caller | No |
+| `/api/ws/printer/<printer_id>` | Readable: heartbeat + printer status broadcast, `ping`/`pong` | n/a — read-only broadcast | No |
+| `/api/ws/telemetry/<slug>` | Readable: MQTT telemetry broadcast for the slug, `ping`/`pong` | n/a — read-only broadcast | No |
+
+### Why the decorators do not apply
+
+`@require_auth` returns a 401 *response*, which is meaningless once a connection
+has been upgraded, and neither it nor `@optional_auth` reads the `?token=` query
+parameter — the only place a browser can put a JWT, since browsers cannot set
+headers on a WebSocket handshake. `middleware/auth.py::resolve_ws_claims()` is
+the WS-shaped equivalent: it accepts a bearer from the `Authorization` header
+(preferred; query strings end up in proxy logs) or from `?token=` /
+`?access_token=`, populates `request.auth_claims` and `request.current_user`
+exactly as `@optional_auth` does, and returns `None` for an anonymous or invalid
+caller instead of a response.
+
+### Why `cancel` was removed from the render channel
+
+The render channel's `cancel` action used to call
+`render_orchestrator.cancel_active_render()`, a "backward-compatible alias" for
+`cancel_all_renders()`. The route carried no auth decorator, no scope check and
+no rate limit, so any anonymous client could cancel every in-flight render for
+every user — the backend runs a single replica, so "every render" is literal.
+
+`cancel` is now refused for every caller, with the reason stated in the reply
+(`authentication_required` for anonymous, `render_owner_unknown` otherwise), and
+the alias has been deleted so the path cannot be reopened by accident. Refusing
+even authenticated callers is not conservatism for its own sake: renders carry
+no owner. `apps/worker/render_worker.py::_set_active_job` records
+job_id/part/engine/project/mode/request_id and nothing identifying the caller,
+the active-job set is global, and the `job_id` is never published to the client
+— so the channel has no way to cancel *only* the caller's renders, and the only
+cancel it could perform is the cancel-everything one being removed.
+
+`POST /api/render-cancel` remains the supported cancel path and is unchanged.
+
+If per-owner render tracking is added later,
+`routes/core/websocket.py::cancel_refusal_reason` is the single place to relax.
+A scoped cancel must act only on the caller's own jobs and must require
+`yantra4d:render` on machine tokens, matching `@require_render_scope` on the
+HTTP render routes.
+
+### Connection and message limits
+
+Flask-Limiter cannot guard these routes: it counts one hit per request, and a
+flask-sock handler is one "request" that lives for the whole life of the socket,
+so a decorator would see the connect and nothing after it. Two in-process guards
+cover that gap instead — a per-IP concurrent connection cap
+(`WS_MAX_CONNECTIONS_PER_IP`, default 8, counted per channel) and a
+per-connection inbound message budget (`WS_MAX_MESSAGES_PER_MINUTE`, default
+120, a fixed 60s window; exceeding it closes the socket). Both are per-replica,
+so neither is ever the only thing standing between a caller and a privileged
+action — and on these channels there is no privileged action to reach.
+
+---
+
 ## Configuration
 
 Auth settings are defined in `apps/api/config.py`.
@@ -182,6 +245,8 @@ Auth settings are defined in `apps/api/config.py`.
 | `JANUA_AUDIENCE` | `yantra4d-api` | The expected JWT `aud` claim. Must match the audience registered in the Janua seed script. |
 | `AUTH_ENABLED` | `true` | Set to `false` to disable all auth checks for local development. |
 | `RENDER_SCOPE_ENFORCEMENT` | `log` | `log` warns and allows machine tokens missing `yantra4d:render`; `enforce` returns 403. Read from the environment at call time, not via `Config`. See [Machine tokens and render scope](#machine-tokens-and-render-scope). |
+| `WS_MAX_CONNECTIONS_PER_IP` | `8` | Concurrent WebSocket connections allowed per IP per channel. In-process, per-replica. See [WebSocket channels](#websocket-channels). |
+| `WS_MAX_MESSAGES_PER_MINUTE` | `120` | Inbound frames allowed per WebSocket connection per 60s window; the socket closes when it is exceeded. |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
 

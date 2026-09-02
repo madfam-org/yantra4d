@@ -178,6 +178,67 @@ def optional_auth(f):
 
 
 # ──────────────────────────────────────────────
+# WebSocket identity resolution
+# ──────────────────────────────────────────────
+
+WS_TOKEN_QUERY_PARAMS = ("token", "access_token")
+
+
+def _extract_ws_token() -> str | None:
+    """Bearer token from a WebSocket upgrade request.
+
+    Prefers the Authorization header (non-browser clients can set it, and a
+    header is not written to proxy access logs). Browsers cannot set headers on
+    a WebSocket handshake at all, so a `?token=` / `?access_token=` query
+    parameter is accepted as the only mechanism available to a browser client.
+    """
+    token = _extract_bearer_token()
+    if token:
+        return token
+    for param in WS_TOKEN_QUERY_PARAMS:
+        value = request.args.get(param)
+        if value:
+            return value
+    return None
+
+
+def resolve_ws_claims() -> dict | None:
+    """Resolve the caller identity for a WebSocket upgrade. Never raises.
+
+    Returns the decoded claims, or None for an anonymous caller, a caller whose
+    token failed validation, or when AUTH_ENABLED is off. Also populates
+    `request.auth_claims` / `request.current_user` so downstream helpers
+    (`resolve_tier`, `is_machine_token`, ...) behave as they do on HTTP routes.
+
+    This exists because `@require_auth` and `@optional_auth` cannot decorate a
+    flask-sock handler: `require_auth` returns a 401 *response*, which is
+    meaningless once the connection has been upgraded, and neither reads the
+    query parameter a browser must use. Handlers call this and then decide, per
+    action, what an anonymous identity is allowed to do — see
+    `routes/core/websocket.py`.
+    """
+    request.auth_claims = None
+    request.current_user = None
+
+    if not Config.AUTH_ENABLED:
+        return None
+
+    token = _extract_ws_token()
+    if not token:
+        return None
+
+    try:
+        claims = decode_token(token)
+    except Exception as e:
+        logger.debug("WebSocket token invalid: %s", e)
+        return None
+
+    request.auth_claims = claims
+    _sync_user_from_claims(claims)
+    return claims
+
+
+# ──────────────────────────────────────────────
 # Machine-token (client_credentials) scope enforcement
 # ──────────────────────────────────────────────
 #

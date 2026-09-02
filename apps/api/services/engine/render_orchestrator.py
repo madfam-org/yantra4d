@@ -885,9 +885,11 @@ def cancel_cadquery_render() -> bool:
     return _cancel_by_engine("cadquery")
 
 
-def cancel_active_render() -> bool:
-    """Backward-compatible alias used by websocket cancel path."""
-    return cancel_all_renders()
+# `cancel_active_render()` used to live here as a "backward-compatible alias"
+# for cancel_all_renders(). Its only caller was the unauthenticated WebSocket
+# render channel, which gave any anonymous client a cancel-everything button.
+# The alias is removed so that path cannot be reopened by accident; cancelling
+# from a request goes through routes/engine/render.py::cancel_render_endpoint.
 
 
 def _cancel_by_engine(engine: str) -> bool:

@@ -43,11 +43,6 @@ test.describe('Export Panel', () => {
     await expect(page.locator('button', { hasText: 'Download STL' })).toBeVisible()
   })
 
-  test('download STL button is disabled when no parts', async ({ page }) => {
-    const btn = page.locator('button', { hasText: 'Download STL' })
-    expect(await btn.isDisabled()).toBe(true)
-  })
-
   test('download SCAD button is visible', async ({ page }) => {
     await expect(page.locator('button', { hasText: 'Download SCAD' })).toBeVisible()
   })
@@ -121,5 +116,28 @@ test.describe('Export Panel', () => {
     // Grid mode has 2 parts (body, rod), so should show ZIP
     await sidebar.selectMode('grid')
     await expect(page.locator('text=Download STL (ZIP)')).toBeVisible()
+  })
+})
+
+// "No parts" has to be arranged, not assumed. The Studio auto-generates on
+// load, and with browser-first placement that on-load render falls back from
+// the browser (the mocked "test" project has no wasm-bundle) to the server
+// mock and SUCCEEDS — so by the time the shared beforeEach above has finished,
+// there ARE parts and Download STL is enabled. On main the test only passed
+// because the WASM path died on the unserved /scad/<file> fetch before any
+// render completed. The failing route must be installed before the FIRST
+// navigation: useRender's IndexedDB cache survives a reload, so breaking the
+// route and reloading would still serve the earlier successful render.
+test.describe('Export Panel — no geometry', () => {
+  test.beforeEach(async ({ page, sidebar }) => {
+    await page.route('**/api/render', (route) => route.abort('connectionrefused'))
+    await page.route('**/api/render-stream', (route) => route.abort('connectionrefused'))
+    await setLanguage(page, 'en')
+    await goToStudio(page)
+    await sidebar.selectSection('export')
+  })
+
+  test('download STL button is disabled when no parts', async ({ page }) => {
+    await expect(page.locator('button', { hasText: 'Download STL' })).toBeDisabled()
   })
 })

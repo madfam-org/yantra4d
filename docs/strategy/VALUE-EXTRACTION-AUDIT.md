@@ -74,8 +74,8 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Cartridges exposing a `flange` interface | 49 | 500 | 9.8% | — | new in 2026-09 |
 | Cartridges filed `domain: wearable` | 72 | 500 | 14.4% | — | new in 2026-09 |
 | Cartridges whose README declares a Fashion Cabinet bridge | 53 | 500 | 10.6% | — | new in 2026-09 |
-| Cartridges reachable from the public landing gallery | 326 | 500 | 65.2% | — | new in 2026-09 |
-| Landing-gallery entries the Commons catalog does not publish | 2 | 328 | 0.6% | — | new in 2026-09 |
+| Cartridges reachable from the public landing gallery | 500 | 500 | 100.0% | — | new in 2026-09 |
+| Landing-gallery entries the Commons catalog does not publish | 1 | 501 | 0.2% | — | new in 2026-09 |
 | Cartridges offering STEP (B-Rep) export | 490 | 500 | 98.0% | — | new in 2026-09 |
 | Cartridges carrying an explicit licence | 500 | 500 | 100.0% | — | new in 2026-09 |
 | Cartridges carrying a `verification` block | 9 | 500 | 1.8% | — | new in 2026-09 |

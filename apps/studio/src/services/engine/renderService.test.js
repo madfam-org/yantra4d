@@ -236,6 +236,200 @@ describe('cancelRender', () => {
   })
 })
 
+describe('cancelRenderOnUnload', () => {
+  // Nightly run #171: ~95 navigations in 40 minutes, ZERO render-cancel calls.
+  // `pagehide` gives a page no chance to await a fetch, so an abandoned render
+  // kept running — and against a single render worker it ran in front of the
+  // render a live user was waiting for.
+
+  /** jsdom's Blob does not interop with the global Response; FileReader does. */
+  const readBlob = blob => new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsText(blob)
+  })
+
+  it('sends nothing when no backend render is in flight', () => {
+    const beacon = vi.fn(() => true)
+    vi.stubGlobal('navigator', { sendBeacon: beacon, hardwareConcurrency: 2, deviceMemory: 2 })
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+
+    expect(renderService.cancelRenderOnUnload()).toBe(false)
+    expect(beacon).not.toHaveBeenCalled()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('falls back to text/plain when the JSON beacon is refused', async () => {
+    const types = []
+    vi.stubGlobal('navigator', {
+      sendBeacon: (_url, blob) => { types.push(blob.type); return false },
+      hardwareConcurrency: 2, deviceMemory: 2,
+    })
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true })
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream(['data: {"event":"job","request_id":"req-7","job_ids":["job-7"]}', ''])
+    })
+
+    let sentDuringStream = null
+    await renderService.renderParts('unit', {}, manifest, {
+      onJob: () => {
+        // Unload arriving mid-render is the case this exists for.
+        sentDuringStream = renderService.cancelRenderOnUnload()
+      },
+    }).catch(() => {})
+
+    expect(sentDuringStream).toBe(true)
+    // application/json is tried first (the honest type), then text/plain, which
+    // is CORS-safelisted and needs no preflight a beacon may not get.
+    expect(types).toEqual(['application/json', 'text/plain;charset=utf-8'])
+    // Both beacons refused, so the keepalive fetch carried it.
+    const cancelCall = fetchMock.mock.calls.find(([url]) => String(url).includes('/api/render-cancel'))
+    expect(cancelCall).toBeDefined()
+    expect(cancelCall[1].keepalive).toBe(true)
+    expect(JSON.parse(cancelCall[1].body)).toEqual({
+      request_id: 'req-7',
+      job_ids: ['job-7'],
+    })
+  })
+
+  it('uses the beacon and skips the fetch when the browser accepts it', async () => {
+    const calls = []
+    vi.stubGlobal('navigator', {
+      sendBeacon: (url, blob) => { calls.push({ url, type: blob.type, blob }); return true },
+      hardwareConcurrency: 2, deviceMemory: 2,
+    })
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true })
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream(['data: {"event":"job","request_id":"req-8","job_ids":["job-8"]}', ''])
+    })
+
+    await renderService.renderParts('unit', {}, manifest, {
+      onJob: () => { renderService.cancelRenderOnUnload() },
+    }).catch(() => {})
+
+    expect(calls).toHaveLength(1)
+    expect(calls[0].url).toContain('/api/render-cancel')
+    expect(calls[0].type).toBe('application/json')
+    expect(await readBlob(calls[0].blob)).toBe(
+      JSON.stringify({ request_id: 'req-8', job_ids: ['job-8'] })
+    )
+    // No keepalive fetch: the beacon already took it.
+    expect(fetchMock.mock.calls.filter(([u]) => String(u).includes('/api/render-cancel')))
+      .toHaveLength(0)
+  })
+
+  it('falls back to a keepalive fetch where sendBeacon does not exist', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 2, deviceMemory: 2 })
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true })
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream(['data: {"event":"job","request_id":"req-9","job_ids":["job-9"]}', ''])
+    })
+
+    let sent = null
+    await renderService.renderParts('unit', {}, manifest, {
+      onJob: () => { sent = renderService.cancelRenderOnUnload() },
+    }).catch(() => {})
+
+    expect(sent).toBe(true)
+    const cancelCall = fetchMock.mock.calls.find(([url]) => String(url).includes('/api/render-cancel'))
+    expect(cancelCall[1].keepalive).toBe(true)
+  })
+
+  it('cancels only once — the target is taken, not merely read', async () => {
+    let beacons = 0
+    vi.stubGlobal('navigator', {
+      sendBeacon: () => { beacons += 1; return true },
+      hardwareConcurrency: 2, deviceMemory: 2,
+    })
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true })
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream(['data: {"event":"job","request_id":"req-10","job_ids":["job-10"]}', ''])
+    })
+
+    const results = []
+    await renderService.renderParts('unit', {}, manifest, {
+      onJob: () => {
+        results.push(renderService.cancelRenderOnUnload())
+        results.push(renderService.cancelRenderOnUnload())
+      },
+    }).catch(() => {})
+
+    expect(results).toEqual([true, false])
+    expect(beacons).toBe(1)
+  })
+})
+
+describe('cancelSupersededRender', () => {
+  it('reports nothing to cancel when no render is in flight', () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+
+    expect(renderService.cancelSupersededRender()).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('cancels the in-flight render with the ids it announced', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true })
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream(['data: {"event":"job","request_id":"req-11","job_ids":["job-11"]}', ''])
+    })
+
+    let cancelCall = null
+    let superseded = null
+    await renderService.renderParts('unit', {}, manifest, {
+      onJob: () => {
+        fetchMock.mockImplementationOnce(async (url, init) => {
+          cancelCall = { url, init }
+          return { ok: true }
+        })
+        superseded = renderService.cancelSupersededRender()
+      },
+    }).catch(() => {})
+
+    expect(superseded).toBe(true)
+    expect(cancelCall.url).toContain('/api/render-cancel')
+    expect(JSON.parse(cancelCall.init.body)).toEqual({
+      request_id: 'req-11',
+      job_ids: ['job-11'],
+    })
+  })
+
+  it('cannot cancel the render that replaced it — the slot is emptied first', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true })
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream(['data: {"event":"job","request_id":"req-12","job_ids":["job-12"]}', ''])
+    })
+
+    const bodies = []
+    await renderService.renderParts('unit', {}, manifest, {
+      onJob: () => {
+        fetchMock.mockImplementation(async (_url, init) => {
+          if (init?.body) bodies.push(JSON.parse(init.body))
+          return { ok: true }
+        })
+        renderService.cancelSupersededRender()
+        // A second supersede before any new stream has published anything must
+        // send nothing at all.
+        renderService.cancelSupersededRender()
+      },
+    }).catch(() => {})
+
+    expect(bodies).toEqual([{ request_id: 'req-12', job_ids: ['job-12'] }])
+  })
+})
+
 describe('renderParts (backend mode)', () => {
   it('throws on non-ok HTTP response', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')

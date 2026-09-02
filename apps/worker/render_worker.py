@@ -52,7 +52,12 @@ ACTIVE_RENDER_JOBS_KEY = getattr(render_orchestrator, "ACTIVE_RENDER_JOBS_KEY", 
 ACTIVE_RENDER_META_PREFIX = getattr(render_orchestrator, "ACTIVE_RENDER_META_PREFIX", "yantra_render_job_meta:")
 CANCEL_ALL_KEY = getattr(render_orchestrator, "CANCEL_ALL_KEY", "yantra_render_cancel_all")
 CANCEL_JOB_PREFIX = getattr(render_orchestrator, "CANCEL_JOB_PREFIX", "yantra_render_cancel_job:")
-ACTIVE_JOB_META_TTL = getattr(render_orchestrator, "ACTIVE_JOB_META_TTL", 300)
+# The active-job LEASE, not just metadata: `ACTIVE_RENDER_JOBS_KEY` is a plain
+# set with no expiry, so this key's TTL is the only thing that can end a job's
+# membership when this process dies without reaching its `finally`. It is
+# refreshed on every heartbeat tick for as long as the job is held, so a
+# legitimately long render never expires out from under itself.
+ACTIVE_JOB_META_TTL = getattr(render_orchestrator, "ACTIVE_JOB_META_TTL", 420)
 CANCEL_TTL_SECONDS = getattr(render_orchestrator, "CANCEL_TTL_SECONDS", 120)
 RENDER_WORKER_HEARTBEAT_KEY = getattr(
     render_orchestrator,
@@ -69,6 +74,12 @@ RENDER_WORKER_HEARTBEAT_TTL_SECONDS = getattr(
 HEARTBEAT_INTERVAL_SECONDS = max(5, RENDER_WORKER_HEARTBEAT_TTL_SECONDS // 3)
 
 _stop_beating = threading.Event()
+
+# Job ids this worker is currently executing. The heartbeat thread renews their
+# leases; nothing else may hold a lease open. Guarded because the heartbeat
+# thread reads it while the job loop writes it.
+_held_jobs: set[str] = set()
+_held_jobs_lock = threading.Lock()
 
 STATIC_FOLDER = str(Config.STATIC_DIR)
 
@@ -100,6 +111,29 @@ def _heartbeat_loop() -> None:
     """
     while not _stop_beating.wait(HEARTBEAT_INTERVAL_SECONDS):
         _publish_heartbeat()
+        _refresh_active_job_leases()
+
+
+def _refresh_active_job_leases() -> None:
+    """Renew the lease on every job this worker is still executing.
+
+    The lease already outlasts RENDER_TIMEOUT_S plus the post-render conversion,
+    so this is not what keeps a normal render alive — it is what makes the
+    expiry MEAN something. Without it the ceiling would be a guess about the
+    slowest possible job; with it, a lease survives exactly as long as a worker
+    is alive and holding the job, and not one tick longer. That is the property
+    `render_orchestrator.prune_active_jobs` relies on.
+
+    Never raises: a failed renew is at worst one job pruned early from the
+    *count*, and the worker keeps rendering it either way.
+    """
+    with _held_jobs_lock:
+        held = list(_held_jobs)
+    for job_id in held:
+        try:
+            r.expire(f"{ACTIVE_RENDER_META_PREFIX}{job_id}", ACTIVE_JOB_META_TTL)
+        except Exception:
+            logger.debug("Failed to renew lease for job %s", job_id, exc_info=True)
 
 
 def _is_cancelled(job_id: str) -> bool:
@@ -124,6 +158,8 @@ def _set_active_job(job_id: str, part: str, engine: str, payload: dict) -> None:
         "request_id": payload.get("request_id", ""),
         "started_at": int(time.time()),
     }
+    with _held_jobs_lock:
+        _held_jobs.add(job_id)
     r.sadd(ACTIVE_RENDER_JOBS_KEY, job_id)
     r.set(
         f"{ACTIVE_RENDER_META_PREFIX}{job_id}",
@@ -133,7 +169,15 @@ def _set_active_job(job_id: str, part: str, engine: str, payload: dict) -> None:
 
 
 def _clear_active_job(job_id: str) -> None:
-    """Remove active job tracking."""
+    """Remove active job tracking.
+
+    Stop renewing the lease FIRST. If the Redis calls below fail, the entry then
+    expires on its own instead of being pinned open by a heartbeat thread that
+    still thinks the job is running — the failure mode this whole lease exists
+    to end.
+    """
+    with _held_jobs_lock:
+        _held_jobs.discard(job_id)
     r.srem(ACTIVE_RENDER_JOBS_KEY, job_id)
     r.delete(f"{ACTIVE_RENDER_META_PREFIX}{job_id}")
     r.delete(f"{CANCEL_JOB_PREFIX}{job_id}")
@@ -428,8 +472,36 @@ def process_stream_task(task):
     finally:
         _clear_active_job(job_id)
 
+def _reconcile_active_jobs_on_start() -> list[str]:
+    """Drop active-job entries orphaned by a previous worker instance.
+
+    Delegates to `render_orchestrator.reconcile_active_jobs` so the API and the
+    worker agree on what "active" means — a second implementation here is how
+    the two answers drift. Never raises: a worker that cannot reach Redis at
+    startup must still come up and start beating.
+    """
+    try:
+        dropped = render_orchestrator.reconcile_active_jobs()
+    except Exception:
+        logger.warning("Active render job reconciliation failed", exc_info=True)
+        return []
+    if dropped:
+        logger.warning(
+            "Startup reconciliation dropped %d orphaned active render job(s)",
+            len(dropped),
+        )
+    return dropped
+
+
 def run_worker():
     logger.info("Render worker listening on queue '%s'", RENDER_QUEUE)
+
+    # Anything still in the active-job set belongs to the instance this one
+    # replaced: this process holds nothing yet, and there is one render worker
+    # replica. Clearing it here is what makes /api/health truthful immediately
+    # after a rollout rather than one lease later — the production symptom was
+    # "active jobs 1, queue depth 0" persisting across two rollouts.
+    _reconcile_active_jobs_on_start()
 
     # Publish once before consuming anything, so the API sees the worker as
     # soon as it is up rather than one interval later.

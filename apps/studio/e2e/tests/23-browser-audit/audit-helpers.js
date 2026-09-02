@@ -133,18 +133,21 @@ async function drainViaRedisCli() {
  * Called per spec file in afterAll, and in afterEach after a test that failed,
  * so one bad group cannot starve the next.
  *
- * POST /api/render-cancel with an empty body cancels everything today
- * (`cancel_all_renders()`), and `require_render_scope` is a no-op for an
- * anonymous caller with AUTH_ENABLED off. Should a later change scope the
- * blanket form to a role the harness does not hold, the 401/403 falls through to
- * redis-cli rather than silently leaving the queue full.
+ * Since #83 `POST /api/render-cancel` cancels only what it is handed: a body
+ * of `{ all: true }` is the one form that still reaches `cancel_all_renders()`,
+ * behind `require_role("admin")` — which passes every caller through while
+ * AUTH_ENABLED is off, the state this harness runs in. An empty body is a 400
+ * (`cancel_target_required`) and drains nothing, which is how run #96's drain
+ * silently stopped working. Should the harness ever run with auth on, the
+ * 401/403 falls through to redis-cli rather than leaving the queue full; any
+ * other status is logged as-is so a wrong body shape is visible in the run log.
  */
 export async function drainRenderQueue(ctx, reason = '') {
   const before = await renderWorkerDetail(ctx)
   let how = 'POST /api/render-cancel'
   let outcome
   try {
-    const res = await ctx.post(`${BACKEND_URL}/api/render-cancel`, { data: {}, timeout: 10_000 })
+    const res = await ctx.post(`${BACKEND_URL}/api/render-cancel`, { data: { all: true }, timeout: 10_000 })
     if (res.ok()) {
       outcome = JSON.stringify(await res.json().catch(() => ({})))
     } else if (res.status() === 401 || res.status() === 403) {
@@ -157,7 +160,7 @@ export async function drainRenderQueue(ctx, reason = '') {
     outcome = `failed (${err.message})`
   }
   const after = await renderWorkerDetail(ctx)
-  // eslint-disable-next-line no-console
+   
   console.log(
     `[audit] render queue drained${reason ? ` after ${reason}` : ''} via ${how}: ${outcome}\n` +
     `        worker before: ${before}\n` +

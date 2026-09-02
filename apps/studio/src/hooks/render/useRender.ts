@@ -1,6 +1,13 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
-import { renderParts, cancelRender, estimateRenderTime } from '../../services/engine/renderService'
+import {
+  renderParts,
+  cancelRender,
+  cancelRenderOnUnload,
+  cancelSupersededRender,
+  estimateRenderTime,
+} from '../../services/engine/renderService'
+import type { RenderCancelTarget } from '../../services/engine/renderService'
 import { useUpgradePrompt } from '../system/useUpgradePrompt'
 import * as idbCache from '../../services/cache/renderCache'
 
@@ -92,6 +99,18 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
 
   const abortControllerRef = useRef<AbortController | null>(null)
 
+  /**
+   * The cancellable identity of the backend render this hook has in flight,
+   * as `/api/render-stream` published it on its `job` event. Null whenever
+   * nothing is running, or when the render is a browser (WASM) one — those have
+   * nothing server-side to cancel.
+   *
+   * A ref, not state: it is read from an unload handler and from the effect
+   * cleanup, neither of which may depend on a re-render having happened, and
+   * nothing in the UI displays it.
+   */
+  const activeTargetRef = useRef<RenderCancelTarget | null>(null)
+
   /** Evict a specific key from the L1 in-memory cache. Called externally when blobs are revoked. */
   const evictCache = useCallback((key: string) => {
     delete partsCacheRef.current[key]
@@ -169,6 +188,16 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
     setProgressPhase(t("phase.compiling"))
     setLogs(prev => prev + `\n${t("log.generating")} (${mode})...`)
 
+    // A new render supersedes whatever is still running. Aborting the fetch
+    // only stops THIS page reading the stream — the server keeps rendering,
+    // and against a single worker that abandoned job sits in front of the one
+    // the user is now waiting for. Both halves are needed: abort the read, and
+    // tell the server to stop. Taken synchronously, before the new stream can
+    // publish its own identity into the same slot.
+    abortControllerRef.current?.abort()
+    cancelSupersededRender()
+    activeTargetRef.current = null
+
     const controller = new AbortController()
     abortControllerRef.current = controller
 
@@ -186,7 +215,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
         abortSignal: controller.signal,
         project,
         ignoreCache: forceRender,
-        exportFormat
+        exportFormat,
+        onJob: target => { activeTargetRef.current = target },
       })
 
       setParts(result as unknown as RenderPart[])
@@ -214,6 +244,9 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
       }
     } finally {
       abortControllerRef.current = null
+      // The stream is over either way, so the target is spent: holding it would
+      // let a later unload fire a cancel at a render that already finished.
+      activeTargetRef.current = null
       setProgressPhase('')
       setTimeout(() => {
         setLoading(false)
@@ -226,7 +259,40 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
     }
+    activeTargetRef.current = null
     await cancelRender()
+  }, [])
+
+  /**
+   * Tell the server when this page abandons a render.
+   *
+   * Nightly run #171 made ~95 navigations in 40 minutes and produced ZERO
+   * `render-cancel` calls: nothing here ever cancelled on the way out, so every
+   * abandoned render ran to completion against the single render worker while a
+   * live user's render waited behind it. Starvation, not waste.
+   *
+   * `pagehide` rather than `beforeunload`: `beforeunload` is not fired for a
+   * page entering the back/forward cache and is unreliable on mobile Safari,
+   * where a backgrounded tab is simply discarded. `pagehide` fires in both
+   * cases. The cleanup covers the other way a render is abandoned — the hook
+   * unmounting on an in-app route change, where no page event fires at all.
+   *
+   * `cancelRenderOnUnload` is synchronous and returns false when nothing is in
+   * flight, so this sends nothing on an ordinary navigation away from an idle
+   * page. The target check keeps that decision readable at the call site.
+   */
+  useEffect(() => {
+    const cancelIfRendering = () => {
+      if (!activeTargetRef.current) return
+      activeTargetRef.current = null
+      cancelRenderOnUnload()
+    }
+
+    window.addEventListener('pagehide', cancelIfRendering)
+    return () => {
+      window.removeEventListener('pagehide', cancelIfRendering)
+      cancelIfRendering()
+    }
   }, [])
 
   const handleConfirmRender = useCallback(() => {

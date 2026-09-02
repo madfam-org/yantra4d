@@ -184,19 +184,30 @@ def test_render_worker_available_with_recent_heartbeat(monkeypatch):
 
 def test_render_worker_status_includes_queue_and_active_jobs(monkeypatch):
     """Render worker status includes operational queue depth and active job count."""
+    import json
     import time
 
     from services.engine import render_orchestrator
 
+    now = int(time.time())
+
     class _FakeRedis:
-        def get(self, _key):
-            return str(int(time.time()) - 3)
+        """Two active jobs, both holding a fresh lease."""
+
+        def get(self, key):
+            if key.startswith(render_orchestrator.ACTIVE_RENDER_META_PREFIX):
+                job_id = key[len(render_orchestrator.ACTIVE_RENDER_META_PREFIX):]
+                return json.dumps({"job_id": job_id, "started_at": now - 3})
+            return str(now - 3)
 
         def llen(self, _key):
             return 7
 
         def scard(self, _key):
             return 2
+
+        def smembers(self, _key):
+            return {"job-a", "job-b"}
 
     monkeypatch.setattr(render_orchestrator, "r", _FakeRedis())
     monkeypatch.setattr(render_orchestrator, "RENDER_WORKER_HEARTBEAT_TTL_SECONDS", 10)

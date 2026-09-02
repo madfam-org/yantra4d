@@ -1,0 +1,639 @@
+{
+  "project": {
+    "name": "Bucket Lid Adapter",
+    "slug": "bucket-lid-adapter",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "A bored pail or carboy lid, given a bottle finish. Food-grade buckets and carboys are the cheapest large vessel anywhere; what they lack is a port — a way to fill, dose, vent, decant or plumb them without taking the lid off. This adapter seats into a hole cut in the lid with a hole saw and presents a PCO 1881 neck on its face, so any carbonated-drink bottle cap, or the commons' pco-cap, jar-adapter, bottle-coupler and filter cartridges, screws straight on. The inverse mode receives a cut-down bottle neck-first as a reservoir; the third mode blanks the bore. Every vessel dimension is a slider you measure, not a figure this cartridge asserts.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una tapa de cubeta o garrafón barrenada, dotada de un pico de botella. Las cubetas y garrafones de grado alimenticio son el recipiente grande más barato que existe; lo que les falta es un puerto — una forma de llenar, dosificar, ventear, trasegar o entubar sin quitar la tapa. Este adaptador se asienta en un barreno hecho con broca de copa y presenta un cuello PCO 1881 en su cara, de modo que cualquier tapa de refresco, o los cartuchos pco-cap, jar-adapter, bottle-coupler y de filtrado del procomún, se enroscan directamente. El modo inverso recibe una botella recortada de cuello, como depósito; el tercer modo ciega el barreno. Toda cota del recipiente es un deslizador que tú mides, no una cifra que este cartucho afirme.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Un couvercle de seau ou de bonbonne percé, doté d'une bague de bouteille. Les seaux et bonbonnes de qualité alimentaire sont le plus grand récipient bon marché qui soit ; ce qui leur manque, c'est un piquage — de quoi remplir, doser, mettre à l'air, soutirer ou raccorder sans ôter le couvercle. Cet adaptateur se loge dans un trou percé à la scie-cloche et présente une bague PCO 1881 sur sa face : n'importe quel bouchon de bouteille de soda, ou les cartouches pco-cap, jar-adapter, bottle-coupler et de filtration du commun, s'y vissent directement. Le mode inverse reçoit une bouteille recoupée par le goulot, en guise de réservoir ; le troisième mode obture le perçage. Toute cote du récipient est un curseur que vous mesurez, non un chiffre affirmé par cette cartouche.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "Uma tampa de balde ou garrafão furada, dotada de um bocal de garrafa. Baldes e garrafões de grau alimentício são o maior recipiente barato que existe; o que lhes falta é um ponto de tomada — um jeito de encher, dosar, respirar, trasfegar ou encanar sem tirar a tampa. Este adaptador assenta num furo feito com serra-copo e apresenta um gargalo PCO 1881 na face, de modo que qualquer tampa de garrafa de refrigerante, ou os cartuchos pco-cap, jar-adapter, bottle-coupler e de filtragem do comum, se enroscam direto. O modo inverso recebe uma garrafa cortada pelo gargalo, como reservatório; o terceiro modo veda o furo. Toda medida do recipiente é um controle deslizante que você mede, não um número que este cartucho afirme.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/bucket-lid-adapter.webp",
+    "difficulty": "intermediate",
+    "tags": [
+      "bucket",
+      "pail",
+      "carboy",
+      "lid",
+      "pco-1881",
+      "bottle-finish",
+      "bulkhead",
+      "fermentation",
+      "water-storage",
+      "household",
+      "hyperobject",
+      "commons"
+    ],
+    "hyperobject": {
+      "is_hyperobject": true
+    },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "lid_port",
+      "label": {
+        "en": "Lid Port (male PCO 1881)",
+        "es": "Puerto de Tapa (PCO 1881 macho)",
+        "fr": "Piquage de couvercle (PCO 1881 mâle)",
+        "pt": "Tomada de Tampa (PCO 1881 macho)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "lid_port"
+      ],
+      "estimate": {
+        "base_time": 14,
+        "per_unit": 4,
+        "per_part": 18
+      }
+    },
+    {
+      "id": "bottle_receiver",
+      "label": {
+        "en": "Bottle Receiver (female PCO 1881)",
+        "es": "Receptor de Botella (PCO 1881 hembra)",
+        "fr": "Réceptacle de bouteille (PCO 1881 femelle)",
+        "pt": "Receptor de Garrafa (PCO 1881 fêmea)"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bottle_receiver"
+      ],
+      "estimate": {
+        "base_time": 15,
+        "per_unit": 4,
+        "per_part": 19
+      }
+    },
+    {
+      "id": "bore_plug",
+      "label": {
+        "en": "Bore Plug",
+        "es": "Tapón de Barreno",
+        "fr": "Bouchon de perçage",
+        "pt": "Bujão de Furo"
+      },
+      "scad_file": "main.py",
+      "cq_file": "main.py",
+      "parts": [
+        "bore_plug"
+      ],
+      "estimate": {
+        "base_time": 8,
+        "per_unit": 3,
+        "per_part": 10
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "lid_port",
+      "render_mode": 0,
+      "color": "#2f6f8f",
+      "label": {
+        "en": "Lid Port",
+        "es": "Puerto de Tapa",
+        "fr": "Piquage",
+        "pt": "Tomada"
+      }
+    },
+    {
+      "id": "bottle_receiver",
+      "render_mode": 0,
+      "color": "#3f8fa8",
+      "label": {
+        "en": "Bottle Receiver",
+        "es": "Receptor de Botella",
+        "fr": "Réceptacle",
+        "pt": "Receptor"
+      }
+    },
+    {
+      "id": "bore_plug",
+      "render_mode": 0,
+      "color": "#6aa5b8",
+      "label": {
+        "en": "Bore Plug",
+        "es": "Tapón",
+        "fr": "Bouchon",
+        "pt": "Bujão"
+      }
+    }
+  ],
+  "parameter_groups": [
+    {
+      "id": "vessel",
+      "label": {
+        "en": "Vessel & Bore",
+        "es": "Recipiente y Barreno",
+        "fr": "Récipient et perçage",
+        "pt": "Recipiente e Furo"
+      }
+    },
+    {
+      "id": "port",
+      "label": {
+        "en": "Port",
+        "es": "Puerto",
+        "fr": "Piquage",
+        "pt": "Tomada"
+      }
+    },
+    {
+      "id": "build",
+      "label": {
+        "en": "Wall & Fit",
+        "es": "Pared y Ajuste",
+        "fr": "Paroi et ajustement",
+        "pt": "Parede e Ajuste"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "bore_dia",
+      "type": "slider",
+      "default": 25.0,
+      "min": 8.0,
+      "max": 60.0,
+      "step": 0.5,
+      "group": "vessel",
+      "modes": [
+        "lid_port",
+        "bottle_receiver",
+        "bore_plug"
+      ],
+      "label": {
+        "en": "Lid Bore (mm)",
+        "es": "Barreno de Tapa (mm)",
+        "fr": "Perçage du couvercle (mm)",
+        "pt": "Furo da Tampa (mm)"
+      },
+      "tooltip": {
+        "en": "Diameter of the hole you cut in the lid. This is the commons' shared carboy/bucket bore series — the same one airlock-grommet and sharps-lid seat into. Measure the hole saw, not the pail",
+        "es": "Diámetro del barreno que haces en la tapa. Es la serie compartida de barreno de garrafón/cubeta del procomún — la misma en la que asientan airlock-grommet y sharps-lid. Mide la broca de copa, no la cubeta",
+        "fr": "Diamètre du trou percé dans le couvercle. C'est la série de perçage bonbonne/seau partagée du commun — celle où se logent airlock-grommet et sharps-lid. Mesurez la scie-cloche, pas le seau",
+        "pt": "Diâmetro do furo feito na tampa. É a série compartilhada de furo de garrafão/balde do comum — a mesma em que assentam airlock-grommet e sharps-lid. Meça a serra-copo, não o balde"
+      }
+    },
+    {
+      "id": "lid_thick",
+      "type": "slider",
+      "default": 3.0,
+      "min": 1.0,
+      "max": 10.0,
+      "step": 0.5,
+      "group": "vessel",
+      "modes": [
+        "lid_port",
+        "bottle_receiver",
+        "bore_plug"
+      ],
+      "label": {
+        "en": "Lid Thickness (mm)",
+        "es": "Espesor de Tapa (mm)",
+        "fr": "Épaisseur du couvercle (mm)",
+        "pt": "Espessura da Tampa (mm)"
+      },
+      "tooltip": {
+        "en": "Material the flange clamps through. A moulded HDPE pail lid is typically 2-4 mm; a plywood or barrel lid is far more",
+        "es": "Material que la brida atraviesa. Una tapa de cubeta de HDPE moldeada suele medir 2-4 mm; una de contrachapado o de barril, mucho más",
+        "fr": "Matière que la bride traverse. Un couvercle de seau en PEHD moulé fait typiquement 2 à 4 mm ; un couvercle en contreplaqué ou de fût, bien davantage",
+        "pt": "Material que o flange atravessa. Uma tampa de balde de PEAD moldada costuma ter 2-4 mm; uma de compensado ou de tambor, muito mais"
+      }
+    },
+    {
+      "id": "retention",
+      "type": "select",
+      "default": "bead",
+      "options": [
+        {
+          "value": "bead",
+          "label": "Snap bead"
+        },
+        {
+          "value": "ribs",
+          "label": "Anti-rotation ribs"
+        },
+        {
+          "value": "plain",
+          "label": "Plain (gasket only)"
+        }
+      ],
+      "group": "vessel",
+      "modes": [
+        "lid_port",
+        "bottle_receiver",
+        "bore_plug"
+      ],
+      "label": {
+        "en": "Retention",
+        "es": "Retención",
+        "fr": "Retenue",
+        "pt": "Retenção"
+      },
+      "tooltip": {
+        "en": "How the stem holds under the lid. The snap bead is chamfered on both flanks so it prints without support and pulls back out; ribs resist twisting when a cap is turned on hard",
+        "es": "Cómo se sujeta el vástago bajo la tapa. La ceja de encaje está achaflanada en ambos flancos, así se imprime sin soporte y se puede retirar; las costillas resisten el giro al apretar una tapa",
+        "fr": "Comment la tige tient sous le couvercle. Le bourrelet d'encliquetage est chanfreiné des deux côtés : il s'imprime sans support et ressort ; les nervures s'opposent à la rotation quand on serre un bouchon",
+        "pt": "Como a haste se prende sob a tampa. O ressalto de encaixe é chanfrado nos dois flancos, então imprime sem suporte e sai de volta; as nervuras resistem à torção ao apertar uma tampa"
+      }
+    },
+    {
+      "id": "retain_bead",
+      "type": "slider",
+      "default": 1.2,
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.1,
+      "group": "vessel",
+      "modes": [
+        "lid_port",
+        "bottle_receiver",
+        "bore_plug"
+      ],
+      "label": {
+        "en": "Bead Height (mm)",
+        "es": "Altura de Ceja (mm)",
+        "fr": "Saillie du bourrelet (mm)",
+        "pt": "Altura do Ressalto (mm)"
+      },
+      "tooltip": {
+        "en": "How far the snap bead stands proud of the stem. It is capped so it can never exceed the flange, which would make the part impossible to push through its own bore",
+        "es": "Cuánto sobresale la ceja del vástago. Está limitada para no exceder nunca la brida, lo que haría imposible pasar la pieza por su propio barreno",
+        "fr": "Saillie du bourrelet par rapport à la tige. Elle est bridée pour ne jamais dépasser la bride, ce qui rendrait la pièce impossible à engager dans son propre perçage",
+        "pt": "O quanto o ressalto se projeta da haste. É limitado para nunca exceder o flange, o que tornaria impossível passar a peça pelo próprio furo"
+      }
+    },
+    {
+      "id": "thread_turns",
+      "type": "slider",
+      "default": 3.5,
+      "min": 1.5,
+      "max": 3.5,
+      "step": 0.5,
+      "group": "port",
+      "modes": [
+        "lid_port",
+        "bottle_receiver"
+      ],
+      "label": {
+        "en": "Thread Turns",
+        "es": "Vueltas de Rosca",
+        "fr": "Tours de filetage",
+        "pt": "Voltas de Rosca"
+      },
+      "tooltip": {
+        "en": "Engagement length on the PCO 1881 neck, in turns. Forced to a half-integer by the geometry — a whole-turn helix closes on itself and leaves a zero-thickness seam that meshes open — and capped at 3.5, which is where the extremes sweep measured the female-thread union starting to fail. PCO 1881 is a three-start short-neck finish whose real closures engage barely over one turn, so 3.5 is already generous",
+        "es": "Longitud de engrane en el cuello PCO 1881, en vueltas. La geometría la fuerza a un medio entero — una hélice de vuelta entera se cierra sobre sí misma y deja una costura de espesor nulo que malla abierta — y la limita a 3.5, donde el barrido de extremos midió que la unión de la rosca hembra empieza a fallar. PCO 1881 es un pico corto de tres entradas cuyos cierres reales engranan apenas más de una vuelta, así que 3.5 ya es generoso",
+        "fr": "Longueur d'engagement sur la bague PCO 1881, en tours. La géométrie la force à un demi-entier — une hélice à tour entier se referme sur elle-même et laisse une couture d'épaisseur nulle qui maille ouverte — et la plafonne à 3,5, valeur à laquelle le balayage des extrêmes a mesuré la défaillance de l'union du filet femelle. PCO 1881 est une bague courte à trois filets dont les bouchons réels n'engagent guère plus d'un tour : 3,5 est déjà généreux",
+        "pt": "Comprimento de engate no gargalo PCO 1881, em voltas. A geometria força a um meio-inteiro — uma hélice de volta inteira se fecha sobre si mesma e deixa uma costura de espessura nula que malha aberta — e limita em 3,5, onde a varredura de extremos mediu a união da rosca fêmea começando a falhar. PCO 1881 é um bocal curto de três entradas cujas tampas reais engatam pouco mais de uma volta, então 3,5 já é generoso"
+      }
+    },
+    {
+      "id": "vent_bore",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 12.0,
+      "step": 0.5,
+      "group": "port",
+      "modes": [
+        "bore_plug"
+      ],
+      "label": {
+        "en": "Vent Bore (mm)",
+        "es": "Barreno de Venteo (mm)",
+        "fr": "Perçage d'évent (mm)",
+        "pt": "Furo de Respiro (mm)"
+      },
+      "tooltip": {
+        "en": "Zero gives a solid blanking plug. Above zero it becomes a vent or a pass-through for a tube, a thermometer or an airlock stem",
+        "es": "Cero da un tapón ciego macizo. Por encima de cero se vuelve un venteo o un paso para manguera, termómetro o vástago de airlock",
+        "fr": "Zéro donne un bouchon plein. Au-dessus de zéro, il devient un évent ou un passage pour un tube, un thermomètre ou une tige de barboteur",
+        "pt": "Zero dá um bujão maciço. Acima de zero vira um respiro ou uma passagem para mangueira, termômetro ou haste de airlock"
+      }
+    },
+    {
+      "id": "flange_over",
+      "type": "slider",
+      "default": 6.0,
+      "min": 3.0,
+      "max": 20.0,
+      "step": 0.5,
+      "group": "build",
+      "modes": [
+        "lid_port",
+        "bottle_receiver",
+        "bore_plug"
+      ],
+      "label": {
+        "en": "Flange Overhang (mm)",
+        "es": "Vuelo de Brida (mm)",
+        "fr": "Débord de bride (mm)",
+        "pt": "Balanço do Flange (mm)"
+      },
+      "tooltip": {
+        "en": "How far the flange stands past the bore. The geometry raises this floor so the rim always clears the thread crest — two coincident cylinders fuse tangentially and render an open shell",
+        "es": "Cuánto sobresale la brida del barreno. La geometría sube ese piso para que el borde libre siempre la cresta de la rosca — dos cilindros coincidentes se fusionan tangencialmente y rinden una cáscara abierta",
+        "fr": "Débord de la bride au-delà du perçage. La géométrie relève ce plancher pour que le bord dégage toujours la crête du filet — deux cylindres coïncidents fusionnent tangentiellement et donnent une coque ouverte",
+        "pt": "O quanto o flange ultrapassa o furo. A geometria eleva esse piso para que a borda sempre livre a crista da rosca — dois cilindros coincidentes se fundem tangencialmente e geram uma casca aberta"
+      }
+    },
+    {
+      "id": "wall",
+      "type": "slider",
+      "default": 2.6,
+      "min": 1.6,
+      "max": 6.0,
+      "step": 0.1,
+      "group": "build",
+      "modes": [
+        "lid_port",
+        "bottle_receiver",
+        "bore_plug"
+      ],
+      "label": {
+        "en": "Wall (mm)",
+        "es": "Pared (mm)",
+        "fr": "Paroi (mm)",
+        "pt": "Parede (mm)"
+      },
+      "tooltip": {
+        "en": "Material around the passage. A printed wall is porous at the layer lines, so thicker is a leak argument long before it is a strength argument",
+        "es": "Material alrededor del paso. Una pared impresa es porosa en las líneas de capa, así que más grueso es un argumento de fuga mucho antes que de resistencia",
+        "fr": "Matière autour du passage. Une paroi imprimée est poreuse aux lignes de couche : épaissir est un argument d'étanchéité bien avant d'être un argument de résistance",
+        "pt": "Material em volta da passagem. Uma parede impressa é porosa nas linhas de camada, então mais grossa é um argumento de vazamento muito antes de ser de resistência"
+      }
+    },
+    {
+      "id": "clearance",
+      "type": "slider",
+      "default": 0.35,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05,
+      "group": "build",
+      "modes": [
+        "lid_port",
+        "bottle_receiver",
+        "bore_plug"
+      ],
+      "label": {
+        "en": "Fit Clearance (mm)",
+        "es": "Holgura de Ajuste (mm)",
+        "fr": "Jeu d'ajustement (mm)",
+        "pt": "Folga de Ajuste (mm)"
+      },
+      "tooltip": {
+        "en": "Per-side slop on both the bore fit and the printed thread. Raise it for a coarse nozzle or a shrink-prone material; lower it for a tighter seal against a gasket",
+        "es": "Holgura por lado, tanto en el ajuste del barreno como en la rosca impresa. Súbela con boquilla gruesa o material que contrae; bájala para sellar más apretado contra un empaque",
+        "fr": "Jeu par côté, à la fois sur l'ajustement du perçage et sur le filetage imprimé. Augmentez-le pour une buse grossière ou un matériau qui retreint ; réduisez-le pour serrer davantage sur un joint",
+        "pt": "Folga por lado, tanto no ajuste do furo quanto na rosca impressa. Aumente para bico grosso ou material que contrai; diminua para vedar mais apertado contra uma junta"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "airlock_bore",
+      "mode": "lid_port",
+      "label": {
+        "en": "Airlock Bore (25 mm hole saw)",
+        "es": "Barreno de Airlock (copa de 25 mm)",
+        "fr": "Perçage de barboteur (scie-cloche 25 mm)",
+        "pt": "Furo de Airlock (serra-copo 25 mm)"
+      },
+      "values": {
+        "bore_dia": 25.0,
+        "lid_thick": 3.0,
+        "retention": "bead",
+        "wall": 2.6
+      }
+    },
+    {
+      "id": "thin_pail_lid",
+      "mode": "lid_port",
+      "label": {
+        "en": "Thin Pail Lid (2 mm HDPE)",
+        "es": "Tapa Delgada de Cubeta (HDPE 2 mm)",
+        "fr": "Couvercle de seau fin (PEHD 2 mm)",
+        "pt": "Tampa Fina de Balde (PEAD 2 mm)"
+      },
+      "values": {
+        "bore_dia": 32.0,
+        "lid_thick": 2.0,
+        "retention": "ribs",
+        "flange_over": 8.0
+      }
+    },
+    {
+      "id": "bottle_reservoir",
+      "mode": "bottle_receiver",
+      "label": {
+        "en": "Bottle Reservoir (2 L PET)",
+        "es": "Depósito de Botella (PET 2 L)",
+        "fr": "Réservoir bouteille (PET 2 L)",
+        "pt": "Reservatório de Garrafa (PET 2 L)"
+      },
+      "values": {
+        "bore_dia": 38.0,
+        "lid_thick": 3.0,
+        "thread_turns": 3.5,
+        "wall": 3.0
+      }
+    },
+    {
+      "id": "vented_blank",
+      "mode": "bore_plug",
+      "label": {
+        "en": "Vented Blank (6 mm tube pass)",
+        "es": "Tapón Venteado (paso de manguera 6 mm)",
+        "fr": "Obturateur ventilé (passage tube 6 mm)",
+        "pt": "Bujão Ventilado (passagem de tubo 6 mm)"
+      },
+      "values": {
+        "bore_dia": 25.0,
+        "vent_bore": 6.0,
+        "retention": "bead"
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.6",
+      "severity": "error",
+      "message": {
+        "en": "Wall must be at least 1.6 mm. Below that a printed wall is not a wall on a vessel that holds liquid — it is a filter",
+        "es": "La pared debe ser de al menos 1.6 mm. Por debajo, una pared impresa no es pared en un recipiente con líquido — es un filtro",
+        "fr": "La paroi doit faire au moins 1,6 mm. En dessous, une paroi imprimée n'est pas une paroi sur un récipient qui contient du liquide — c'est un filtre",
+        "pt": "A parede deve ter pelo menos 1,6 mm. Abaixo disso, uma parede impressa não é parede num recipiente com líquido — é um filtro"
+      }
+    },
+    {
+      "expression": "bore_dia >= 14.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below a 14 mm bore the passage narrows to little more than the wall on either side; a port this small pours very slowly and clogs",
+        "es": "Por debajo de 14 mm de barreno el paso se reduce a poco más que la pared de cada lado; un puerto tan chico vierte muy lento y se tapa",
+        "fr": "En dessous d'un perçage de 14 mm, le passage se réduit à peine plus que la paroi de chaque côté ; un piquage aussi petit s'écoule très lentement et se bouche",
+        "pt": "Abaixo de 14 mm de furo a passagem se reduz a pouco mais que a parede de cada lado; uma tomada tão pequena escoa muito devagar e entope"
+      }
+    },
+    {
+      "expression": "clearance <= 0.6",
+      "severity": "warning",
+      "message": {
+        "en": "Above 0.6 mm of clearance the printed PCO 1881 thread loses enough flank to strip under a firmly turned cap",
+        "es": "Por encima de 0.6 mm de holgura la rosca PCO 1881 impresa pierde suficiente flanco para barrerse al apretar una tapa",
+        "fr": "Au-delà de 0,6 mm de jeu, le filetage PCO 1881 imprimé perd assez de flanc pour se cisailler sous un bouchon serré fermement",
+        "pt": "Acima de 0,6 mm de folga a rosca PCO 1881 impressa perde flanco suficiente para espanar sob uma tampa bem apertada"
+      }
+    }
+  ],
+  "camera_views": [
+    {
+      "id": "iso",
+      "label": {
+        "en": "Isometric",
+        "es": "Isométrico",
+        "fr": "Isométrique",
+        "pt": "Isométrico"
+      },
+      "position": [
+        90,
+        70,
+        65
+      ]
+    },
+    {
+      "id": "section",
+      "label": {
+        "en": "Front",
+        "es": "Frontal",
+        "fr": "De face",
+        "pt": "Frontal"
+      },
+      "position": [
+        0,
+        -120,
+        20
+      ]
+    }
+  ],
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ],
+  "estimate_constants": {
+    "base_time": 13,
+    "per_unit": 4,
+    "per_part": 17,
+    "fn_factor": 64,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 90
+  },
+  "hyperobject": {
+    "domain": "household",
+    "cdg_interfaces": [
+      {
+        "id": "pail_mouth_bore",
+        "label": {
+          "en": "Carboy / Bucket Bore",
+          "es": "Barreno de Garrafón / Cubeta",
+          "fr": "Perçage bonbonne / seau",
+          "pt": "Furo de Garrafão / Balde"
+        },
+        "geometry_type": "socket",
+        "standard": "carboy/bucket bore",
+        "parameters": [
+          "bore_dia",
+          "lid_thick",
+          "clearance",
+          "retain_bead"
+        ],
+        "compatible_with": [
+          "airlock-grommet",
+          "sharps-lid"
+        ]
+      },
+      {
+        "id": "pco1881_port_thread",
+        "label": {
+          "en": "PCO 1881 Bottle Finish",
+          "es": "Pico de Botella PCO 1881",
+          "fr": "Bague de bouteille PCO 1881",
+          "pt": "Bocal de Garrafa PCO 1881"
+        },
+        "geometry_type": "thread",
+        "standard": "PCO 1881",
+        "parameters": [
+          "thread_turns",
+          "clearance",
+          "wall"
+        ],
+        "compatible_with": [
+          "pco-cap",
+          "jar-adapter",
+          "bottle-coupler",
+          "bottle-thread",
+          "faircap-filter",
+          "filter-straw",
+          "bird-feeder",
+          "pet-dispenser",
+          "rain-gauge-funnel"
+        ]
+      },
+      {
+        "id": "grommet_boss",
+        "label": {
+          "en": "Grommet / Stem Boss",
+          "es": "Buje de Ojal / Vástago",
+          "fr": "Bossage de passe-fil / tige",
+          "pt": "Bossa de Ilhó / Haste"
+        },
+        "geometry_type": "socket",
+        "standard": "internal — through passage sized from the bore series, for an airlock stem or a tube",
+        "parameters": [
+          "bore_dia",
+          "wall",
+          "vent_bore"
+        ]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": false,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "A food-grade bucket is the cheapest large vessel in the world and the one most widely already owned: it stores grain, ferments, carries water, holds a rainwater catch, doses a drip line. What it cannot do is anything a port would let it do, and the ports that are sold are proprietary, regional, and priced as though the bucket were not free. The PCO 1881 neck is the opposite of proprietary — it is the finish on every carbonated-drink bottle manufactured anywhere, which means the mating half is already in the waste stream of every settlement on earth. Joining those two, on a bore a hole saw makes, turns a bucket into a plumbed vessel with one printed disc and a bottle someone threw away. Recycled filament is deliberately NOT offered here: this cartridge is used against food, drinking water and ferments, and reground feedstock has unknown provenance.",
+      "es": "Una cubeta de grado alimenticio es el recipiente grande más barato del mundo y el que más gente ya tiene: guarda grano, fermenta, acarrea agua, recoge lluvia, dosifica una línea de goteo. Lo que no puede hacer es todo aquello que permitiría un puerto, y los puertos que se venden son propietarios, regionales y con precio de que la cubeta no fuera gratis. El cuello PCO 1881 es lo contrario de propietario — es el pico de toda botella de refresco fabricada en cualquier parte, lo que significa que la mitad que embona ya está en el flujo de residuos de cualquier asentamiento del planeta. Unir ambos, sobre un barreno que hace una broca de copa, convierte una cubeta en recipiente entubado con un disco impreso y una botella que alguien tiró. Aquí NO se ofrece filamento reciclado a propósito: este cartucho se usa contra alimento, agua de beber y fermentos, y el material regranulado tiene procedencia desconocida.",
+      "fr": "Un seau de qualité alimentaire est le plus grand récipient bon marché du monde et celui que l'on possède déjà le plus souvent : il stocke du grain, fait fermenter, transporte l'eau, recueille la pluie, alimente un goutte-à-goutte. Ce qu'il ne peut pas faire, c'est tout ce qu'un piquage permettrait, et les piquages vendus sont propriétaires, régionaux et tarifés comme si le seau n'était pas gratuit. La bague PCO 1881 est l'inverse du propriétaire — c'est la bague de toute bouteille de soda fabriquée où que ce soit, donc la moitié complémentaire est déjà dans le flux de déchets de chaque agglomération de la planète. Réunir les deux, sur un perçage fait à la scie-cloche, transforme un seau en récipient raccordé avec un disque imprimé et une bouteille jetée. Le filament recyclé n'est délibérément PAS proposé ici : cette cartouche sert au contact d'aliments, d'eau de boisson et de ferments, et la matière régénérée est de provenance inconnue.",
+      "pt": "Um balde de grau alimentício é o maior recipiente barato do mundo e o que mais gente já tem: guarda grão, fermenta, carrega água, recolhe chuva, dosa uma linha de gotejamento. O que ele não faz é tudo aquilo que uma tomada permitiria, e as tomadas vendidas são proprietárias, regionais e precificadas como se o balde não fosse de graça. O gargalo PCO 1881 é o oposto de proprietário — é o bocal de toda garrafa de refrigerante fabricada em qualquer lugar, o que significa que a metade que casa já está no fluxo de resíduos de qualquer povoado do planeta. Unir os dois, num furo que uma serra-copo faz, transforma um balde em recipiente encanado com um disco impresso e uma garrafa que alguém descartou. Filamento reciclado NÃO é oferecido aqui de propósito: este cartucho é usado contra alimento, água de beber e fermentos, e material regranulado tem procedência desconhecida."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": [
+    "bucket",
+    "pail",
+    "carboy",
+    "lid",
+    "pco-1881",
+    "bottle-finish",
+    "bulkhead",
+    "fermentation",
+    "water-storage",
+    "household",
+    "hyperobject",
+    "commons"
+  ]
+}

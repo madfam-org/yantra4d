@@ -14,6 +14,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Value-Extraction Audit re-measured against the 500-cartridge commons** —
+  `docs/strategy/VALUE-EXTRACTION-AUDIT.md` was the last document reasoning in
+  `x/326` ratios, a denominator that stopped existing when the commons reached
+  500. The 2026-08 findings are preserved verbatim as a dated point-in-time
+  record; a new dated 2026-09 section re-measures every one of them. New
+  `scripts/qa/value_extraction_audit.py` recomputes each ratio from
+  `projects/*/project.json`, `docs/commons-catalog.json`, the studio locale
+  files and the CDG family taxonomy in `apps/api` (stdlib only), prints a
+  metric/numerator/denominator/ratio/delta table, and offers `--json`,
+  `--write` (regenerate the table the document embeds) and `--cohorts` (split
+  the commons into the 324 cartridges present at the audit commit and the 176
+  added since). Recomputing the 2026-08 rows over that first cohort returns the
+  published figures exactly — 300 `engine: cadquery`, 287 with constraints, 310
+  with `material_awareness`, 294/30/16 material flags — which is what makes the
+  delta column a comparison rather than two unrelated measurements. Figures the
+  audit stated that are judgement, frontend import-graph reachability, or
+  another QA lane's output are listed as not-recomputable rather than
+  approximated with a proxy. Before measuring anything the script asserts the
+  on-disk cartridge count against the catalog's `counts.cartridges`: 34
+  cartridges are submodules and *every* dual-engine cartridge is one of them, so
+  an uninitialised checkout would under-count silently and still print a
+  plausible table. `--check` runs as one self-contained step in the existing
+  `manifest-validation` CI job, and `scripts/tests/test_value_extraction_audit.py`
+  adds 30 tests. What the re-measurement found: constraint coverage down 8.0 pp
+  (64.2% on new cartridges vs 88.6% on audit-era ones), quadrilingual
+  (de/fr/pt/zh) coverage down 6.6 pp as new keys landed untranslated, the public
+  landing gallery stalled at 326 of 500 cartridges, `recycled_material_toggle`
+  up from 16 to 98, and the Fashion Cabinet bridge surfaced as 72 wearables /
+  49 flange interfaces / 53 bridge READMEs, none of which existed in 2026-08.
 - **Fashion Cabinet consumers back-edge (blocking)** — The hardware bridge now
   pins in both directions. Fashion Cabinet vendors a slice of our commons
   catalog and resolves its `hardware_ref` notions against it, so its CI has

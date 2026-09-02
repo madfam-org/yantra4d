@@ -61,7 +61,7 @@ describe('RateLimitBanner', () => {
   it('hidden when the tier is unlimited', () => {
     // `X-RateLimit-Limit: unlimited` is stored as the -1 sentinel and clears
     // Remaining; even a stale 0 must not warn against a ceiling that is gone.
-    mockRateLimit = { remaining: 0, limit: -1, tier: 'madfam' }
+    mockRateLimit = { remaining: 0, limit: -1, tier: 'premium' }
     const { container } = render(<RateLimitBanner />)
     expect(container.firstChild).toBeNull()
   })

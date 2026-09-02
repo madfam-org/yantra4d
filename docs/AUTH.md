@@ -65,6 +65,49 @@ def export_step_file():
     # ...
 ```
 
+#### Tier names, and the one that was renamed
+
+| Tier | Rank | Who | Deprecated names still accepted |
+|---|:--:|---|---|
+| `guest` | 0 | anonymous visitors | — |
+| `essentials` | 1 | signed in, no subscription | `basic` |
+| `pro` | 2 | paid | — |
+| `premium` | 3 | ecosystem bundle / staff | **`madfam`** |
+
+Per [ADR-006](https://github.com/madfam-org/internal-devops/blob/main/decisions/adr-006-entitlement-claim-and-tier-naming.md)
+Decision 4 the top tier is `premium`; `madfam` was a company name doing duty as
+a tier name on a MADFAM product.
+
+**The alias is permanent, not a migration window.** Janua still synthesises the
+literal `yantra4d_tier: "madfam"` for machine clients holding a `yantra4d:`
+scope, and an operator's `TIER_OVERRIDES` Secret may still say `madfam`.
+Every *input* accepts either name — the JWT claim, `TIER_OVERRIDES` values, and
+both arguments of `has_tier` — and `_normalize_tier`
+(`apps/api/services/core/tier_service.py`) maps it forward at the single funnel
+`resolve_tier` goes through. A deprecation note is logged **once per process
+per alias**, not once per request.
+
+Every *output* is canonical: `/api/me` (`tier` and `entitlement.resolved_tier`),
+`X-RateLimit-Tier`, `/api/tiers`, and the 403 upsell copy all say `premium`.
+The one deliberate exception is the **checkout plan id**: the SKU dhanam
+registered is still `yantra4d_madfam`, it lives in tulana's catalog rather than
+in this repo, and `apps/studio/src/lib/billing.ts` maps tier to plan id through
+an explicit table rather than deriving one from the other (ADR-006 Decision 5 —
+never pass the plan id as the tier).
+
+The local-dev unlock names the top tier by constant for the same reason.
+`effective_tier()` (`apps/api/middleware/auth.py`), shared by the render-time
+and download-time export-format gates, returns `TOP_TIER` — not a spelled-out
+name — when `AUTH_ENABLED` is false **and** Flask debug is on. A literal there
+is the one place a rename can half-land in silence: the gates would keep
+passing, because `get_tier_limits`/`check_feature` normalise their argument,
+while the same string went out verbatim as `X-RateLimit-Tier` and ranked `0`
+(guest) in any hierarchy comparison.
+
+> **Cross-product hazard.** `essentials` is a *free* tier here and a *paid* tier
+> on dhanam. Any dhanam→Janua mapping must be an explicit table, never a
+> pass-through of the tier string.
+
 ### `@optional_auth`
 
 Decodes and validates the token if present, but does not reject the request if no token is provided. Useful for endpoints that behave differently for authenticated and anonymous users.
@@ -109,13 +152,15 @@ Janua mints two token shapes against the `yantra4d-api` audience:
 | `actor_type` | *(absent)* | `service_account` |
 | `client_id` | *(absent)* | the OAuth client id |
 | `scope` | *(absent)* | space-delimited, e.g. `yantra4d:render` |
-| `yantra4d_tier` | from the user's entitlements | **derived from the `yantra4d:` scope namespace** (`madfam`) |
+| `yantra4d_tier` | from the user's entitlements | **derived from the `yantra4d:` scope namespace** (`madfam`, an alias of `premium`) |
 
 Source of truth: janua `apps/api/app/routers/v1/oauth_provider.py`
 (`_get_client_credentials_claims`, `_handle_client_credentials_grant`).
 
 The last row is why this check exists. Janua synthesises `yantra4d_tier: "madfam"`
-for any machine client holding a `yantra4d:`-namespaced scope, but the *specific*
+for any machine client holding a `yantra4d:`-namespaced scope — the deprecated
+name for `premium`, which this API normalises on the way in and never emits back
+— but the *specific*
 scope was never checked here — so a machine client provisioned for a different
 `yantra4d:` capability could render, and the `yantra4d:render` scope Janua mints
 for Fashion Cabinet was decorative server-side. Ruled 2026-08-25.
@@ -385,16 +430,19 @@ each call site.
 tier name:
 
 ```json
-{"someone@example.com": "madfam"}
+{"someone@example.com": "premium"}
 ```
 
 - Read from the environment at call time (like `RENDER_SCOPE_ENFORCEMENT`), and
   parsed at most once per distinct value — rolling the secret needs no restart.
 - Unset, empty, non-JSON, or a non-object value all mean *no overrides*, with a
   warning. A broken map never takes the API down and never grants anything.
-- Entries naming an unknown tier are dropped with a warning.
+- Entries naming an unknown tier are dropped with a warning. A **deprecated**
+  name is not unknown: a Secret still saying `{"…": "madfam"}` is normalised to
+  `premium` and keeps working. That is exactly what the alias is for, so
+  renaming the tier needed no Secret rotation.
 - An override is **authoritative**: it applies whether it raises a tier (a staff
-  identity to `madfam`) or lowers one, and it beats the token's `yantra4d_tier`.
+  identity to `premium`) or lowers one, and it beats the token's `yantra4d_tier`.
 - Email addresses are identities: they are counted in logs, never printed above
   `DEBUG`.
 
@@ -443,8 +491,9 @@ index, privacy withholds the project itself.
 Checked in order by `can_view_project()`
 (`apps/api/services/core/project_access.py`):
 
-1. the top tier — `resolve_tier(claims) == "madfam"`, which includes anyone
-   seated there by `TIER_OVERRIDES`;
+1. the top tier — `resolve_tier(claims) == "premium"` (`TOP_TIER`, derived from
+   the hierarchy rather than spelled out), which includes anyone seated there by
+   `TIER_OVERRIDES` and anyone whose token still says `madfam`;
 2. the `admin` role on the token;
 3. `PROJECT_ACCESS_GRANTS`, a JSON object mapping slug to allowed emails:
    `{"acme-bracket": ["someone@example.com"]}`.
@@ -494,10 +543,10 @@ Auth settings are defined in `apps/api/config.py`.
 | `JWKS_CACHE_LIFESPAN` | `3600` | Seconds a fetched JWKS is served before a refresh is attempted. See [JWKS Caching](#jwks-caching). |
 | `JWKS_STALE_MAX_AGE` | `86400` | Seconds past the lifespan that a last-known-good JWKS may still be served while the endpoint is unreachable. Past this, token validation fails closed. |
 | `JWKS_REFRESH_BACKOFF` | `30` | Seconds a failed JWKS refresh waits before another attempt, so a flapping Janua is not re-dialled once per request. |
-| `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "madfam"}`. Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
+| `TIER_OVERRIDES` | *(unset)* | JSON object mapping lower-cased email to tier name, e.g. `{"someone@example.com": "premium"}` (the deprecated `"madfam"` is still accepted). Authoritative — raises or lowers the tier the token claims. Read at call time, not via `Config`. See [Identity tier overrides](#identity-tier-overrides). |
 | `PRIVATE_PROJECTS` | *(unset)* | Comma-separated slugs forced private regardless of their manifest. Read at call time. See [Private projects](#private-projects). |
 | `PROJECT_ACCESS_GRANTS` | *(unset)* | JSON object mapping slug to a list of emails granted access to that private project, e.g. `{"acme-bracket": ["someone@example.com"]}`. Read at call time. |
-| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `madfam`. Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. Distinct from `TIER_OVERRIDES`, which keys off a signed identity and therefore needs auth ON. See [Harness tier](#harness-tier). |
+| `HARNESS_TIER` | *(empty)* | Tier an **auth-disabled harness** is gated as, e.g. `premium` (the deprecated `madfam` is still accepted). Honoured only while `AUTH_ENABLED` is `false`; ignored (with a warning) when auth is on or when the value is not a known tier. Distinct from `TIER_OVERRIDES`, which keys off a signed identity and therefore needs auth ON. See [Harness tier](#harness-tier). |
 
 When `AUTH_ENABLED` is `false`, all decorators become no-ops. The request context will not contain auth payload data.
 
@@ -518,7 +567,7 @@ refused and the studio answered with its upgrade prompt.
 `HARNESS_TIER` is the explicit way to say so:
 
 ```bash
-AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
+AUTH_ENABLED=false HARNESS_TIER=premium python app.py
 ```
 
 - **Empty by default** — no deployment or test changes behaviour unless it is
@@ -526,10 +575,16 @@ AUTH_ENABLED=false HARNESS_TIER=madfam python app.py
 - **Ignored whenever `AUTH_ENABLED` is `true`**, so it cannot widen
   entitlements in a real deployment even if the variable leaks into one.
 - **Ignored unless it names a tier in `tiers.json`**; a bad value logs a
-  warning and leaves the request gated rather than failing to boot.
+  warning and leaves the request gated rather than failing to boot. Note what
+  "gated" costs a harness: the run does not fail, it quietly proceeds as
+  `guest` and every CadQuery render 403s, which shows up only as the studio's
+  upgrade prompt in a screenshot. Deprecated tier names are *not* bad values —
+  the override normalises through `_normalize_tier`, so `HARNESS_TIER=madfam`
+  still seats `premium`
+  ([Tier names](#tier-names-and-the-one-that-was-renamed)).
 - It affects the render gating path only. `/api/me` and `require_tier()`
-  already report `madfam` whenever auth is off, so setting
-  `HARNESS_TIER=madfam` makes the server agree with what the client was
+  already report `premium` whenever auth is off, so setting
+  `HARNESS_TIER=premium` makes the server agree with what the client was
   already being told.
 - It does **not** overlap [Identity tier overrides](#identity-tier-overrides).
   `TIER_OVERRIDES` maps a signed identity's email to a tier and so applies only
@@ -591,10 +646,11 @@ A mismatch in any of these causes token validation to fail with a 401 error.
 
 1. Put the identities in the `yantra4d-secrets` Secret via Enclii (never in a
    manifest):
-   - `TIER_OVERRIDES` — e.g. `{"person@example.com":"madfam"}`
+   - `TIER_OVERRIDES` — e.g. `{"person@example.com":"premium"}` (an existing
+     Secret saying `"madfam"` keeps working — no rotation is required)
    - `PROJECT_ACCESS_GRANTS` — e.g. `{"tablaco":["client@example.com"]}` (only
      needed for identities that must see a private project **without** the
-     `madfam` tier)
+     `premium` tier)
 2. Confirm `PRIVATE_PROJECTS` in `k8s/production/yantra4d-backend-deployment.yaml`
    lists every client cartridge the backend image carries (the image build
    initialises them explicitly in `deploy.yml › build-backend`).

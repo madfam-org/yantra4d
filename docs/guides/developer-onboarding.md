@@ -93,7 +93,7 @@ yantra4d/
 
 ## Auth Setup (Janua)
 
-Authentication is **disabled by default** for local development (`AUTH_ENABLED=false`). All users get the `madfam` tier, which unlocks every feature.
+Authentication is **disabled by default** for local development (`AUTH_ENABLED=false`). All users get the `premium` tier, which unlocks every feature.
 
 To test with real authentication:
 

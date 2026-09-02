@@ -110,7 +110,7 @@ describe('useRateLimit', () => {
     // An unlimited tier answers `unlimited` and sends no Remaining/Reset.
     const headers = new Map([
       ['X-RateLimit-Limit', 'unlimited'],
-      ['X-RateLimit-Tier', 'madfam'],
+      ['X-RateLimit-Tier', 'premium'],
     ])
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
@@ -135,7 +135,7 @@ describe('useRateLimit', () => {
     const headers = new Map([
       ['X-RateLimit-Limit', '200'],
       ['X-RateLimit-Remaining', '180'],
-      ['X-RateLimit-Tier', 'madfam'],
+      ['X-RateLimit-Tier', 'premium'],
     ])
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
@@ -148,6 +148,6 @@ describe('useRateLimit', () => {
 
     expect(result.current.limit).toBe(200)
     expect(result.current.remaining).toBe(180)
-    expect(result.current.tier).toBe('madfam')
+    expect(result.current.tier).toBe('premium')
   })
 })

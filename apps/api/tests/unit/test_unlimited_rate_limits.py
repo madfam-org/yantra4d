@@ -23,7 +23,9 @@ from routes.engine.render import (
 )
 from routes.integrations.ai import _ai_limit_exempt, _get_ai_rate_limit
 
-MADFAM = {"sub": "u1", "yantra4d_tier": "madfam"}
+PREMIUM = {"sub": "u1", "yantra4d_tier": "premium"}
+# Janua still mints the deprecated top-tier name; it must reach the same seat.
+LEGACY_TOP = {"sub": "u3", "yantra4d_tier": "madfam"}
 ESSENTIALS = {"sub": "u2", "yantra4d_tier": "essentials"}
 
 
@@ -45,14 +47,14 @@ def _request(app, claims, body=None):
 
 class TestRateLimitHeaders:
     def test_unlimited_tier_reports_the_word(self):
-        headers = _make_rate_limit_headers("madfam")
+        headers = _make_rate_limit_headers("premium")
         assert headers["X-RateLimit-Limit"] == "unlimited"
-        assert headers["X-RateLimit-Tier"] == "madfam"
+        assert headers["X-RateLimit-Tier"] == "premium"
         assert headers["X-RateLimit-Type"] == "backend"
 
     def test_unlimited_tier_omits_remaining_and_reset(self):
         """There is nothing to remain out of, and no window to reset."""
-        headers = _make_rate_limit_headers("madfam")
+        headers = _make_rate_limit_headers("premium")
         assert "X-RateLimit-Remaining" not in headers
         assert "X-RateLimit-Reset" not in headers
 
@@ -65,7 +67,7 @@ class TestRateLimitHeaders:
 
 class TestRenderLimitProvider:
     def test_unlimited_tier_gets_the_placeholder_not_a_negative_limit(self, app):
-        ctx = _request(app, MADFAM, {"project": "nope"})
+        ctx = _request(app, PREMIUM, {"project": "nope"})
         try:
             assert _get_tiered_limit() == rate_limits.UNLIMITED_PLACEHOLDER
             assert "-1" not in _get_tiered_limit()
@@ -73,7 +75,7 @@ class TestRenderLimitProvider:
             ctx.pop()
 
     def test_unlimited_tier_is_exempt(self, app):
-        ctx = _request(app, MADFAM, {"project": "nope"})
+        ctx = _request(app, PREMIUM, {"project": "nope"})
         try:
             assert _render_limit_exempt() is True
         finally:
@@ -113,7 +115,7 @@ class TestRenderLimitProvider:
 
 class TestAiLimitProvider:
     def test_unlimited_tier_gets_the_placeholder(self, app):
-        ctx = _request(app, MADFAM)
+        ctx = _request(app, PREMIUM)
         try:
             assert _get_ai_rate_limit() == rate_limits.UNLIMITED_PLACEHOLDER
             assert _ai_limit_exempt() is True
@@ -192,7 +194,14 @@ class TestLimiterIntegration:
         return application
 
     def test_unlimited_tier_is_never_throttled(self, limited_app):
-        limited_app.config["CLAIMS"] = MADFAM
+        limited_app.config["CLAIMS"] = PREMIUM
+        client = limited_app.test_client()
+        codes = [client.post("/render", json={}).status_code for _ in range(30)]
+        assert set(codes) == {200}
+
+    def test_deprecated_top_tier_name_is_never_throttled_either(self, limited_app):
+        """A token still carrying `madfam` gets the unlimited seat, not the default."""
+        limited_app.config["CLAIMS"] = LEGACY_TOP
         client = limited_app.test_client()
         codes = [client.post("/render", json={}).status_code for _ in range(30)]
         assert set(codes) == {200}

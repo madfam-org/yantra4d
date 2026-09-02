@@ -42,18 +42,19 @@ class TestGetTiers:
         data = res.get_json()
         assert "guest" in data
         assert "pro" in data
-        assert "madfam" in data
+        assert "premium" in data
+        assert "madfam" not in data
         assert "backend_renders_per_hour" in data["guest"]
 
 
 class TestGetMe:
-    def test_auth_disabled_returns_madfam(self, client, monkeypatch):
+    def test_auth_disabled_returns_the_top_tier(self, client, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "AUTH_ENABLED", False)
         res = client.get("/api/me")
         assert res.status_code == 200
         data = res.get_json()
-        assert data["tier"] == "madfam"
+        assert data["tier"] == "premium"
         assert data["user"] is None
 
     def test_anonymous_returns_guest(self, client, monkeypatch):

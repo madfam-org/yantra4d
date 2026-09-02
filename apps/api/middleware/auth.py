@@ -324,14 +324,14 @@ def require_role(role: str):
 
 def require_tier(min_tier: str):
     """Decorator factory: optional_auth + check tier hierarchy."""
-    from services.core.tier_service import has_tier, resolve_tier
+    from services.core.tier_service import TOP_TIER, has_tier, resolve_tier
 
     def decorator(f):
         @functools.wraps(f)
         @optional_auth
         def decorated(*args, **kwargs):
             if not Config.AUTH_ENABLED:
-                request.user_tier = "madfam"
+                request.user_tier = TOP_TIER
                 return f(*args, **kwargs)
             user_tier = resolve_tier(getattr(request, "auth_claims", None))
             if not has_tier(user_tier, min_tier):
@@ -350,7 +350,7 @@ def effective_tier(resolve=None) -> str:
     /api/me. The debug condition is load-bearing: auth-off with debug off is the
     exact state app startup flags as must-never-run (CI and tests use it), and an
     auth-off-only unlock silently disabled every tier gate there — guests became
-    madfam and the tier-enforcement suite could never see a 403 again.
+    the top tier and the tier-enforcement suite could never see a 403 again.
 
     Shared by the tier gates that need a tier *value* rather than a minimum, so
     the generation-time and retrieval-time export-format gates cannot seat the
@@ -366,7 +366,14 @@ def effective_tier(resolve=None) -> str:
     `resolve` lets a caller hand in its own `resolve_tier` binding; the render
     routes pass their module-level one so the tier they gate on and the tier
     they report in `X-RateLimit-Tier` stay the same object.
+
+    The unlock returns ``TOP_TIER``, not a spelled-out name: a literal here is
+    exactly what survives a tier rename unnoticed, and it would then be looked
+    up against a hierarchy that no longer holds it and silently seat the local
+    dev caller at ``0`` — the guest gate this branch exists to keep working.
     """
+    from services.core.tier_service import TOP_TIER
+
     if resolve is None:
         from services.core.tier_service import resolve_tier
 
@@ -374,7 +381,7 @@ def effective_tier(resolve=None) -> str:
 
     if not Config.AUTH_ENABLED:
         if current_app.debug:
-            return "madfam"
+            return TOP_TIER
         from services.core.tier_service import harness_tier_override
 
         harness_tier = harness_tier_override()
@@ -383,7 +390,10 @@ def effective_tier(resolve=None) -> str:
     return resolve(getattr(request, "auth_claims", None))
 
 
-_TIER_LABELS = {"essentials": "Essentials", "pro": "Pro", "madfam": "MADFAM"}
+# Human-readable tier names for upsell copy. Canonical names only — an input
+# still spelling a deprecated one is normalised long before it reaches here
+# (services.core.tier_service.LEGACY_TIER_MAP).
+_TIER_LABELS = {"essentials": "Essentials", "pro": "Pro", "premium": "Premium"}
 
 
 def export_format_denied_response(export_format: str):
@@ -405,6 +415,8 @@ def export_format_denied_response(export_format: str):
     return error_response(
         f"Export format '{export_format}' requires {label} tier or above.", 403
     )
+
+
 def apply_optional_auth() -> dict | None:
     """Populate ``request.auth_claims``/``current_user`` from an optional bearer.
 
@@ -529,7 +541,8 @@ def resolve_ws_claims() -> dict | None:
 # See janua apps/api/app/routers/v1/oauth_provider.py::_get_client_credentials_claims
 # and ::_handle_client_credentials_grant for the authoritative shapes.
 #
-# Because the `yantra4d_tier: "madfam"` claim is DERIVED from the `yantra4d:`
+# Because the `yantra4d_tier` claim Janua mints for a machine client (still the
+# literal `"madfam"`, normalised here to `premium`) is DERIVED from the `yantra4d:`
 # scope namespace, a machine client that never asks for `yantra4d:render` can
 # still present a token this API happily accepts — the scope Janua mints is
 # decorative unless the resource server checks it. That is what this enforces.

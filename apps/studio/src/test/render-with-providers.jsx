@@ -7,8 +7,7 @@ import { ManifestProvider } from '../contexts/project/ManifestProvider'
 import { ProjectProvider } from '../contexts/project/ProjectProvider'
 import { TierContext } from '../contexts/auth/TierProvider'
 import { MemoryRouter } from 'react-router-dom'
-
-const TIER_HIERARCHY = { guest: 0, essentials: 1, pro: 2, madfam: 3 }
+import { tierAtLeast } from '../lib/tiers'
 
 /**
  * Render a component wrapped in all application providers.
@@ -28,7 +27,7 @@ export function renderWithProviders(ui, { language = 'en', theme = 'light', tier
     limits: null,
     allTiers: null,
     loading: false,
-    canAccess: (required) => (TIER_HIERARCHY[tier] ?? 0) >= (TIER_HIERARCHY[required] ?? 0),
+    canAccess: (required) => tierAtLeast(tier, required),
   }
 
   return render(

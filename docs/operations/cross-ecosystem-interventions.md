@@ -30,7 +30,8 @@ grounded in `file:line` and the dhanam/Janua sides marked UNKNOWN, is
 
 **What is owed.** Dhanam must notify Janua on subscription change, and Janua
 must mint `yantra4d_tier` into the JWT it issues. One claim, four values:
-`guest` / `essentials` / `pro` / `madfam`.
+`guest` / `essentials` / `pro` / `premium` (the top tier was renamed from
+`madfam` per ADR-006 Decision 4; the old name stays accepted as an alias).
 
 **Verify (no credentials needed — proves the gate is live and closed):**
 
@@ -63,9 +64,11 @@ willingness-to-pay data: `docs/strategy/tulana-pricing-research-brief.md`.
 `yantra4d__pro`, `yantra4d__madfam`, `yantra4d__whitelabel`,
 `yantra4d__fulfillment_take`, `yantra4d__compute_credits`.
 
-**Also unresolved:** the `madfam` tier exists in `apps/api/tiers.json` and is
-absent from the public pricing page. Whether it is a sellable tier or an
-internal one is a product decision, not a code defect.
+**Also unresolved:** the top tier (`premium`, renamed from `madfam`) exists in
+`apps/api/tiers.json` and is absent from the public pricing page. Whether it is
+a sellable tier or an internal one is a product decision, not a code defect.
+Its SKU slug is still `yantra4d__madfam` — the rename covered the tier name,
+not tulana's catalog.
 
 **Verify (shows the anchor still in place):**
 

@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-ADMIN_CLAIMS = {"sub": "admin-1", "roles": ["admin"], "yantra4d_tier": "madfam"}
+ADMIN_CLAIMS = {"sub": "admin-1", "roles": ["admin"], "yantra4d_tier": "premium"}
 USER_CLAIMS = {"sub": "user-1", "roles": ["user"], "yantra4d_tier": "pro"}
 
 

@@ -44,7 +44,6 @@ logger = logging.getLogger(__name__)
 
 render_bp = Blueprint('render', __name__)
 
-
 def _make_rate_limit_headers(tier: str) -> dict:
     """Build X-RateLimit-* headers for the response.
 

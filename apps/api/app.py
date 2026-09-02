@@ -367,12 +367,12 @@ def create_app():
             logger.warning("Startup capability warning in %s: %s", area, status)
 
     # AUTH_ENABLED=false is a development convenience: require_tier grants every
-    # request the top 'madfam' tier (middleware/auth.py). Outside debug mode that
+    # request the top 'premium' tier (middleware/auth.py). Outside debug mode that
     # is a misconfiguration, so shout at startup where it cannot be missed.
     if not Config.AUTH_ENABLED and not Config.DEBUG:
         logger.error(
             "AUTH_ENABLED=false while not in debug mode: authentication is DISABLED "
-            "and ALL requests are granted the top 'madfam' tier. This configuration "
+            "and ALL requests are granted the top 'premium' tier. This configuration "
             "must NEVER run in production — set AUTH_ENABLED=true."
         )
 

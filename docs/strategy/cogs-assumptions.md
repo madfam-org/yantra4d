@@ -67,7 +67,7 @@ Two consequences:
 
 The infrastructure floor above is a **floor**, not a COGS. These are unmeasured:
 
-- **AI inference.** Pro grants 100 AI requests/hour, madfam 300. Every request
+- **AI inference.** Pro grants 100 AI requests/hour, premium is uncapped. Every request
   is real LLM spend through the Selva gateway. At any realistic token count and
   provider rate this is **orders of magnitude larger than the render cost** and
   is very likely the true dominant variable cost. It needs the actual model and

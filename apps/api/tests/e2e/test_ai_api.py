@@ -44,7 +44,7 @@ class TestAiSessionEndpoint:
         assert "session_id" in data
 
     def test_create_code_editor_session(self, client):
-        """Code editor also works when auth is disabled (conftest sets AUTH_ENABLED=False → madfam)."""
+        """Code editor also works when auth is disabled (conftest sets AUTH_ENABLED=False → top tier)."""
         res = client.post("/api/ai/session", json={"project": "test-project", "mode": "code-editor"})
         assert res.status_code == 200
 

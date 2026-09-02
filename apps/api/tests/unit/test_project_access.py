@@ -30,7 +30,7 @@ AUTHENTICATED_MANIFEST = {"access_control": {"view": "authenticated"}}
 ANON = None
 ESSENTIALS = {"sub": "u1", "email": "someone@example.com"}
 PRO = {"sub": "u2", "email": "pro@example.com", "yantra4d_tier": "pro"}
-TOP = {"sub": "u3", "email": "staff@example.com", "yantra4d_tier": "madfam"}
+TOP = {"sub": "u3", "email": "staff@example.com", "yantra4d_tier": "premium"}
 ADMIN = {"sub": "u4", "email": "admin@example.com", "roles": ["admin"]}
 ADMIN_SINGULAR = {"sub": "u5", "email": "admin2@example.com", "role": "admin"}
 GRANTED = {"sub": "u6", "email": "guest-of-honour@example.com"}
@@ -184,7 +184,7 @@ class TestCanViewPrivateProject:
 
     def test_tier_override_reaches_a_private_project(self, monkeypatch):
         """The staff identity path: TIER_OVERRIDES seats them at the top tier."""
-        monkeypatch.setenv(TIER_OVERRIDES_ENV, json.dumps({"staff@example.com": "madfam"}))
+        monkeypatch.setenv(TIER_OVERRIDES_ENV, json.dumps({"staff@example.com": "premium"}))
         claims = {"sub": "u9", "email": "staff@example.com"}
         assert can_view_project("widget", PRIVATE_MANIFEST, claims) is True
 

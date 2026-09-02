@@ -37,7 +37,7 @@ describe('TierProvider tests', () => {
         guest: { backend_renders_per_hour: 10 },
         essentials: { backend_renders_per_hour: 30 },
         pro: { backend_renders_per_hour: 150 },
-        madfam: { backend_renders_per_hour: 500 },
+        premium: { backend_renders_per_hour: 500 },
       }),
     })
   })
@@ -69,7 +69,7 @@ describe('TierProvider tests', () => {
 
       const { result } = renderHook(() => useTier(), { wrapper })
       await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.canAccess('madfam')).toBe(true)
+      expect(result.current.canAccess('premium')).toBe(true)
     })
   })
 
@@ -89,14 +89,29 @@ describe('TierProvider tests', () => {
       const { result } = renderHook(() => useTier(), { wrapper })
       await waitFor(() => expect(result.current.loading).toBe(false))
 
-      // essentials tier: can access guest + essentials, NOT pro/madfam
+      // essentials tier: can access guest + essentials, NOT pro/premium
       expect(result.current.canAccess('guest')).toBe(true)
       expect(result.current.canAccess('essentials')).toBe(true)
       expect(result.current.canAccess('pro')).toBe(false)
-      expect(result.current.canAccess('madfam')).toBe(false)
+      expect(result.current.canAccess('premium')).toBe(false)
     })
 
-    it('madfam tier can access everything', async () => {
+    it('premium tier can access everything', async () => {
+      const { apiFetch } = await import('../../services/core/apiClient')
+      apiFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ tier: 'premium', limits: { backend_renders_per_hour: 500 } }),
+      })
+
+      const { result } = renderHook(() => useTier(), { wrapper })
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.canAccess('pro')).toBe(true)
+      expect(result.current.canAccess('premium')).toBe(true)
+    })
+
+    it('a backend still reporting the deprecated top-tier name grants the same access', async () => {
+      // A cached /api/me or an older self-hosted backend can still say `madfam`.
+      // Gating that user out of paid features is the failure this pins.
       const { apiFetch } = await import('../../services/core/apiClient')
       apiFetch.mockResolvedValue({
         ok: true,
@@ -106,7 +121,7 @@ describe('TierProvider tests', () => {
       const { result } = renderHook(() => useTier(), { wrapper })
       await waitFor(() => expect(result.current.loading).toBe(false))
       expect(result.current.canAccess('pro')).toBe(true)
-      expect(result.current.canAccess('madfam')).toBe(true)
+      expect(result.current.canAccess('premium')).toBe(true)
     })
 
     it('falls back to guest if /api/me fails', async () => {

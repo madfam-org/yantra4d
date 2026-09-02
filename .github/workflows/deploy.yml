@@ -307,8 +307,57 @@ jobs:
     outputs:
       image_digest: ${{ steps.build.outputs.digest }}
     steps:
+      # Submodules were NOT checked out here until now, which is precisely why
+      # the gallery could ship a stale list: 36 of the cartridges live in
+      # submodules, so this job never had the data to notice. `recursive` +
+      # the PAT brings the public ones in; the client-private cartridges are
+      # `update = none` and git skips them even recursively, so they stay out
+      # of the landing image (`--checkout`, the documented override, is
+      # deliberately NOT used here — unlike build-backend, whose private image
+      # is meant to serve them).
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.MADFAM_BOT_PAT }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Regenerate rather than only --check.
+      #
+      # `apps/landing/src/data/projects.ts` is generated from projects/*/project.json
+      # and committed. Checking it here would make a stale commit fail the deploy;
+      # regenerating makes the deployed gallery correct by construction and demotes
+      # the committed file to a fallback for local dev and for the `landing` CI job
+      # (which has no submodules). The drift gate still exists — ci.yml's
+      # manifest-validation job runs `--check` on every PR — so a stale commit is
+      # caught before merge, and this step means a stale commit can never *ship*.
+      #
+      # The landing Dockerfile copies only `apps/landing/` and `packages/`, so this
+      # has to run on the runner, before the build context is sent: `projects/` is
+      # never inside the image.
+      #
+      # Fail-closed: no --allow-partial. If a public cartridge submodule failed to
+      # check out, the generator exits 2 and the deploy stops rather than publishing
+      # a gallery that silently under-reports the commons.
+      - name: Regenerate landing project list from the manifests
+        run: |
+          set -euo pipefail
+          node scripts/dev/generate-landing-projects.mjs
+          if git diff --quiet -- apps/landing/src/data/projects.ts; then
+            echo "committed projects.ts already matched the manifests" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::committed projects.ts was stale — regenerated for this build" \
+              "(run \`npm run gen:projects\` from apps/landing and commit the result)"
+            {
+              echo "### Landing project list was stale"
+              echo '```'
+              git diff --stat -- apps/landing/src/data/projects.ts
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

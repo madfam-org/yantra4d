@@ -20,19 +20,71 @@
  *     them (top-level preferred).
  *   - `name` may be a plain string or an { en, es } i18n object.
  *
+ * ── Two invariants this script is responsible for ──────────────────────────────
+ *
+ * 1. PRIVATE CARTRIDGES NEVER REACH THE PUBLIC GALLERY.
+ *    The API already hides them from `/api/projects`
+ *    (`apps/api/services/core/project_access.py::filter_visible_projects`). The
+ *    landing gallery is a *second*, statically generated surface over the same
+ *    manifests, so it needs the same rule or it re-publishes the name, the
+ *    description and a Studio link for a cartridge the API refuses to serve.
+ *    Privacy is read from the same two signals the backend uses:
+ *      - `access_control.view == "private"` in the manifest (the cartridge's own
+ *        statement — travels with the project), and
+ *      - the `PRIVATE_PROJECTS` env var (comma-separated slugs), the same shape
+ *        `k8s/production/yantra4d-backend-deployment.yaml` sets.
+ *    `BUILTIN_PRIVATE_SLUGS` below is a *floor*, not a default an empty env var
+ *    can clear: `PRIVATE_PROJECTS` only ever adds. Making a client cartridge
+ *    public has to be a reviewed edit here, not an unset variable in whatever
+ *    shell happens to run the generator.
+ *
+ *    `project.unlisted` is deliberately NOT consulted — unlisted means "hidden
+ *    from *API* listings but reachable by direct URL", which is a different
+ *    thing from private, and the gallery's treatment of it is unchanged.
+ *
+ * 2. AN INCOMPLETE CHECKOUT NEVER PRODUCES A "COMPLETE" FILE.
+ *    36 of the cartridges live in git submodules. Run in a checkout without
+ *    them, this script used to silently emit a shorter list and overwrite the
+ *    good one — the failure mode that left the committed file 138 entries
+ *    short. Now every `projects/*` submodule declared in `.gitmodules` must
+ *    have a `project.json` on disk before anything is written, and the run
+ *    fails otherwise unless `--allow-partial` says the caller means it.
+ *    Submodules marked `update = none` (the client-private cartridges) are
+ *    EXPECTED to be absent: a recursive checkout skips them by design, so their
+ *    absence is never an incomplete checkout.
+ *
  * Usage:
  *   node scripts/dev/generate-landing-projects.mjs
- *   node scripts/dev/generate-landing-projects.mjs --check   # fail if output is stale
+ *   node scripts/dev/generate-landing-projects.mjs --check           # fail if stale
+ *   node scripts/dev/generate-landing-projects.mjs --allow-partial   # write anyway
+ *
+ * Exit codes:
+ *   0  success / up to date
+ *   1  drift: the committed file differs from a freshly generated one (--check)
+ *   2  incomplete checkout: a public cartridge submodule is missing
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPO = path.resolve(__dirname, '..', '..');
-const PROJECTS_DIR = path.join(REPO, 'projects');
-const PUBLIC_DIR = path.join(REPO, 'apps', 'landing', 'public');
-const OUT_FILE = path.join(REPO, 'apps', 'landing', 'src', 'data', 'projects.ts');
+export const DEFAULT_REPO = path.resolve(__dirname, '..', '..');
+
+/** Exit codes, named so the workflows and the tests agree on them. */
+export const EXIT_OK = 0;
+export const EXIT_DRIFT = 1;
+export const EXIT_INCOMPLETE = 2;
+
+/**
+ * Slugs that are private regardless of manifest or environment.
+ *
+ * Mirrors the `PRIVATE_PROJECTS` value in
+ * `k8s/production/yantra4d-backend-deployment.yaml`. Kept as a floor rather
+ * than a default so that a generator run with `PRIVATE_PROJECTS=""` — an empty
+ * CI env, a developer shell, a container that forgot the variable — still
+ * excludes them. Fail closed.
+ */
+export const BUILTIN_PRIVATE_SLUGS = ['tablaco', 'tablaco-v2'];
 
 /**
  * Map a manifest `hyperobject.domain` onto the landing `HyperobjectDomain` enum.
@@ -73,6 +125,99 @@ const ELECTRONICS_TAGS = new Set([
 const EDUCATION_TAGS = new Set([
   'education', 'educational', 'stem', 'teaching', 'lab', 'laboratory', 'science', 'classroom',
 ]);
+
+/** Paths a run reads and writes, all derived from one repo root (tests point it at a fixture). */
+export function makeContext(repo = DEFAULT_REPO) {
+  return {
+    repo,
+    projectsDir: path.join(repo, 'projects'),
+    publicDir: path.join(repo, 'apps', 'landing', 'public'),
+    outFile: path.join(repo, 'apps', 'landing', 'src', 'data', 'projects.ts'),
+  };
+}
+
+// ──────────────────────────────────────────────
+// Privacy
+// ──────────────────────────────────────────────
+
+/**
+ * Every slug this run must treat as private: the built-in floor plus whatever
+ * `PRIVATE_PROJECTS` adds. Same comma-separated shape as the backend env var.
+ */
+export function privateSlugs(env = process.env) {
+  const slugs = new Set(BUILTIN_PRIVATE_SLUGS.map((s) => s.toLowerCase()));
+  for (const chunk of String(env.PRIVATE_PROJECTS ?? '').split(',')) {
+    const slug = chunk.trim().toLowerCase();
+    if (slug) slugs.add(slug);
+  }
+  return slugs;
+}
+
+/**
+ * True when the manifest itself declares `access_control.view == "private"`.
+ * The block is top-level in the schema; `project.access_control` is also read
+ * because reading one extra place can only ever hide more, never less.
+ */
+export function isPrivateManifest(data) {
+  if (!data || typeof data !== 'object') return false;
+  const blocks = [data.access_control, data.project && data.project.access_control];
+  return blocks.some((b) => b && typeof b === 'object' && b.view === 'private');
+}
+
+// ──────────────────────────────────────────────
+// Checkout completeness
+// ──────────────────────────────────────────────
+
+/** Minimal `.gitmodules` reader: `[{ path, update }]` in declaration order. */
+export function parseGitmodules(text) {
+  const entries = [];
+  let current = null;
+  for (const rawLine of String(text ?? '').split('\n')) {
+    const line = rawLine.trim();
+    if (/^\[submodule\b/.test(line)) {
+      current = { path: '', update: '' };
+      entries.push(current);
+      continue;
+    }
+    if (!current) continue;
+    const match = /^([A-Za-z0-9_.-]+)\s*=\s*(.*)$/.exec(line);
+    if (!match) continue;
+    if (match[1] === 'path') current.path = match[2].trim();
+    else if (match[1] === 'update') current.update = match[2].trim();
+  }
+  return entries.filter((e) => e.path);
+}
+
+/**
+ * Cartridge submodules split by whether this checkout is supposed to contain them.
+ *
+ * `required` — public cartridges; a recursive checkout brings them in, so a
+ *              missing one means the checkout is incomplete.
+ * `expectedAbsent` — `update = none`; git skips these even recursively, which
+ *              is exactly how the client-private cartridges stay out of public
+ *              build contexts. Their absence is normal and must never be
+ *              reported as an incomplete checkout.
+ */
+export function cartridgeSubmodules(repo = DEFAULT_REPO) {
+  const file = path.join(repo, '.gitmodules');
+  if (!fs.existsSync(file)) return { required: [], expectedAbsent: [] };
+  const entries = parseGitmodules(fs.readFileSync(file, 'utf8'))
+    .filter((e) => e.path.startsWith('projects/'));
+  return {
+    required: entries.filter((e) => e.update !== 'none').map((e) => e.path),
+    expectedAbsent: entries.filter((e) => e.update === 'none').map((e) => e.path),
+  };
+}
+
+/** Public cartridge submodules with no `project.json` on disk. Empty = complete. */
+export function missingCartridges(repo = DEFAULT_REPO) {
+  return cartridgeSubmodules(repo).required
+    .filter((rel) => !fs.existsSync(path.join(repo, rel, 'project.json')));
+}
+
+// ──────────────────────────────────────────────
+// Manifest extraction
+// ──────────────────────────────────────────────
 
 /** Read `name` which may be a string or an { en, es } i18n object. */
 function i18nName(proj, slug) {
@@ -182,25 +327,32 @@ function deriveCategory(domain, geometryType, tags) {
  * the referenced asset actually exists under apps/landing/public, and otherwise fall
  * back to the guaranteed-present `/projects/<slug>.svg` placeholder.
  */
-function resolveThumbnail(proj, slug) {
+function resolveThumbnail(ctx, proj, slug) {
   const declared = proj.thumbnail;
   if (declared && declared.startsWith('/')) {
-    const abs = path.join(PUBLIC_DIR, declared.replace(/^\//, ''));
+    const abs = path.join(ctx.publicDir, declared.replace(/^\//, ''));
     if (fs.existsSync(abs)) return declared;
   }
   return `/projects/${slug}.svg`;
 }
 
-function collectProjects() {
-  const entries = fs.readdirSync(PROJECTS_DIR, { withFileTypes: true });
-  const projects = [];
+/**
+ * Walk `projects/`, yielding `{ dirName, slug, data, proj }` for every readable
+ * manifest. Private cartridges are dropped here, once, so neither the gallery
+ * list nor the commons figures below can accidentally include one.
+ */
+function readManifests(ctx, priv) {
+  const entries = fs.existsSync(ctx.projectsDir)
+    ? fs.readdirSync(ctx.projectsDir, { withFileTypes: true })
+    : [];
+  const manifests = [];
   let skippedNoManifest = 0;
   let skippedBad = 0;
+  const skippedPrivate = [];
 
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
-    const dir = path.join(PROJECTS_DIR, entry.name);
-    const manifestPath = path.join(dir, 'project.json');
+    const manifestPath = path.join(ctx.projectsDir, entry.name, 'project.json');
     if (!fs.existsSync(manifestPath)) {
       skippedNoManifest += 1;
       continue;
@@ -216,30 +368,43 @@ function collectProjects() {
 
     const proj = data.project || {};
     const slug = proj.slug || entry.name;
-    const ho = resolveHyperobject(data, proj);
 
-    const name = i18nName(proj, slug);
-    const { en: description, es: descriptionEs } = descriptions(proj);
-    const thumbnail = resolveThumbnail(proj, slug);
-    const isHyperobject = isHyperobjectFlag(data, proj);
-    const geometryType = firstGeometryType(ho);
-    const rawDomain = ho.domain || '';
-    const domain = DOMAIN_MAP[rawDomain];
-    const category = deriveCategory(domain, geometryType, proj.tags);
+    // Either identifier being on the private list is enough: a manifest whose
+    // slug disagrees with its directory must not slip through on the mismatch.
+    if (
+      priv.has(String(slug).toLowerCase()) ||
+      priv.has(entry.name.toLowerCase()) ||
+      isPrivateManifest(data)
+    ) {
+      skippedPrivate.push(slug);
+      continue;
+    }
 
-    projects.push({
-      slug,
-      name,
-      description,
-      descriptionEs,
-      category,
-      thumbnail,
-      isHyperobject,
-      domain,
-    });
+    manifests.push({ dirName: entry.name, slug, data, proj });
   }
 
-  return { projects, skippedNoManifest, skippedBad };
+  return { manifests, skippedNoManifest, skippedBad, skippedPrivate: skippedPrivate.sort() };
+}
+
+function collectProjects(ctx, priv) {
+  const read = readManifests(ctx, priv);
+  const projects = read.manifests.map(({ slug, data, proj }) => {
+    const ho = resolveHyperobject(data, proj);
+    const { en: description, es: descriptionEs } = descriptions(proj);
+    const geometryType = firstGeometryType(ho);
+    const domain = DOMAIN_MAP[ho.domain || ''];
+    return {
+      slug,
+      name: i18nName(proj, slug),
+      description,
+      descriptionEs,
+      category: deriveCategory(domain, geometryType, proj.tags),
+      thumbnail: resolveThumbnail(ctx, proj, slug),
+      isHyperobject: isHyperobjectFlag(data, proj),
+      domain,
+    };
+  });
+  return { ...read, projects };
 }
 
 /** hyperobjects first, then alphabetical by name (locale-aware, stable). */
@@ -274,9 +439,12 @@ function renderProject(p) {
  * project list. Hardcoded copy went stale by more than fifteenfold ("21
  * Projects" against a commons of 326) — numbers the page states about itself
  * are generated so they cannot drift again.
+ *
+ * Reads the same already-filtered manifests as the gallery, so a private
+ * cartridge cannot leak here either: an interface count or a standards list is
+ * a smaller disclosure than a card, but it is still a disclosure.
  */
-function computeStats(projects) {
-  const dirs = fs.readdirSync(PROJECTS_DIR, { withFileTypes: true }).filter((d) => d.isDirectory());
+function computeStats(ctx, manifests, projects) {
   const engines = new Set();
   const standards = new Set();
   const interfaceIds = new Set();
@@ -285,15 +453,7 @@ function computeStats(projects) {
   let stepCapable = 0;
   let cernLicensed = 0;
 
-  for (const dir of dirs) {
-    const manifestPath = path.join(PROJECTS_DIR, dir.name, 'project.json');
-    if (!fs.existsSync(manifestPath)) continue;
-    let manifest;
-    try {
-      manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    } catch {
-      continue;
-    }
+  for (const { data: manifest } of manifests) {
     const project = manifest.project ?? {};
     const ho = manifest.hyperobject ?? project.hyperobject ?? {};
 
@@ -318,7 +478,7 @@ function computeStats(projects) {
   // The commons catalog is canonical for the headline count: it applies the
   // same exclusions as COMMONS.md (engine test fixtures are not commons
   // objects), so quoting it keeps the landing and the catalog telling one story.
-  const catalogPath = path.join(REPO, 'docs', 'commons-catalog.json');
+  const catalogPath = path.join(ctx.repo, 'docs', 'commons-catalog.json');
   let cartridges = projects.length;
   if (fs.existsSync(catalogPath)) {
     try {
@@ -356,7 +516,7 @@ function renderStats(stats) {
   ];
 }
 
-function renderFile(projects) {
+function renderFile(projects, stats) {
   const lines = [
     '// AUTO-GENERATED by scripts/dev/generate-landing-projects.mjs — do not edit by hand.',
     '// Run `npm run gen:projects` (from apps/landing) to regenerate from projects/*/project.json.',
@@ -381,12 +541,34 @@ function renderFile(projects) {
     '',
     "export const CATEGORIES = ['all', 'commons', 'storage', 'mechanical', 'art', 'tabletop', 'education', 'electronics'] as const;",
     '',
-    ...renderStats(computeStats(projects)),
+    ...renderStats(stats),
   ];
   return lines.join('\n');
 }
 
-function summarize(projects, meta) {
+/**
+ * Everything a run needs, computed without writing anything.
+ * Returns `{ ctx, output, projects, stats, missing, meta }`; callers decide what
+ * to do about `missing`.
+ */
+export function generate({ repo = DEFAULT_REPO, env = process.env } = {}) {
+  const ctx = makeContext(repo);
+  const priv = privateSlugs(env);
+  const { manifests, projects, skippedNoManifest, skippedBad, skippedPrivate } =
+    collectProjects(ctx, priv);
+  const sorted = sortProjects(projects);
+  const stats = computeStats(ctx, manifests, sorted);
+  return {
+    ctx,
+    output: renderFile(sorted, stats),
+    projects: sorted,
+    stats,
+    missing: missingCartridges(repo),
+    meta: { skippedNoManifest, skippedBad, skippedPrivate },
+  };
+}
+
+function summarize(projects, meta, log) {
   const byDomain = {};
   const byCategory = {};
   let hyperCount = 0;
@@ -402,35 +584,87 @@ function summarize(projects, meta) {
       .map(([k, v]) => `    ${k}: ${v}`)
       .join('\n');
 
-  console.log(`Landing projects generated: ${projects.length}`);
-  console.log(`  hyperobjects: ${hyperCount}`);
-  console.log(`  non-hyperobjects: ${projects.length - hyperCount}`);
-  if (meta.skippedNoManifest) console.log(`  skipped dirs (no project.json): ${meta.skippedNoManifest}`);
-  if (meta.skippedBad) console.log(`  skipped dirs (invalid JSON): ${meta.skippedBad}`);
-  console.log('  per-domain:');
-  console.log(fmt(byDomain));
-  console.log('  per-category:');
-  console.log(fmt(byCategory));
+  log(`Landing projects generated: ${projects.length}`);
+  log(`  hyperobjects: ${hyperCount}`);
+  log(`  non-hyperobjects: ${projects.length - hyperCount}`);
+  if (meta.skippedNoManifest) log(`  skipped dirs (no project.json): ${meta.skippedNoManifest}`);
+  if (meta.skippedBad) log(`  skipped dirs (invalid JSON): ${meta.skippedBad}`);
+  log(
+    `  skipped (private): ${meta.skippedPrivate.length}` +
+      (meta.skippedPrivate.length ? ` — ${meta.skippedPrivate.join(', ')}` : ''),
+  );
+  log('  per-domain:');
+  log(fmt(byDomain));
+  log('  per-category:');
+  log(fmt(byCategory));
 }
 
-function main() {
-  const checkOnly = process.argv.includes('--check');
-  const { projects, skippedNoManifest, skippedBad } = collectProjects();
-  const sorted = sortProjects(projects);
-  const output = renderFile(sorted);
+export function incompleteMessage(missing) {
+  return [
+    `INCOMPLETE CHECKOUT — ${missing.length} public cartridge submodule(s) have no project.json:`,
+    ...missing.map((p) => `  ${p}`),
+    'Their entries would be silently dropped from the gallery. Run',
+    '  git submodule update --init -- projects/<slug> …',
+    'for the paths above (never for `update = none` paths), or pass --allow-partial',
+    'if a deliberately partial file is what you want.',
+  ].join('\n');
+}
 
-  if (checkOnly) {
-    const existing = fs.existsSync(OUT_FILE) ? fs.readFileSync(OUT_FILE, 'utf8') : '';
-    if (existing !== output) {
-      console.error('projects.ts is stale — run `npm run gen:projects` and commit the result.');
-      process.exit(1);
+/**
+ * CLI body. Returns an exit code instead of calling process.exit, so the test
+ * suite can drive it directly.
+ */
+export function run({
+  argv = process.argv.slice(2),
+  repo = DEFAULT_REPO,
+  env = process.env,
+  log = console.log,
+  logError = console.error,
+  write = true,
+} = {}) {
+  const checkOnly = argv.includes('--check');
+  const allowPartial = argv.includes('--allow-partial');
+
+  const { ctx, output, projects, missing, meta } = generate({ repo, env });
+
+  if (missing.length) {
+    // --check compares against a file that claims to be complete, so a partial
+    // regeneration would report drift indistinguishable from real drift. The
+    // completeness gate therefore stands in --check even with --allow-partial:
+    // this lane only ever gets stricter.
+    if (checkOnly) {
+      logError(incompleteMessage(missing));
+      logError('--check cannot run against a partial checkout (--allow-partial does not apply here).');
+      return EXIT_INCOMPLETE;
     }
-    console.log('projects.ts is up to date.');
-    return;
+    if (!allowPartial) {
+      logError(incompleteMessage(missing));
+      logError('Refusing to write apps/landing/src/data/projects.ts.');
+      return EXIT_INCOMPLETE;
+    }
+    logError(
+      `WARNING: --allow-partial — writing a file that omits ${missing.length} submodule cartridge(s).`,
+    );
   }
 
-  fs.writeFileSync(OUT_FILE, output, 'utf8');
-  summarize(sorted, { skippedNoManifest, skippedBad });
+  if (checkOnly) {
+    const existing = fs.existsSync(ctx.outFile) ? fs.readFileSync(ctx.outFile, 'utf8') : '';
+    if (existing !== output) {
+      logError('DRIFT — apps/landing/src/data/projects.ts does not match the manifests.');
+      logError('Run `npm run gen:projects` (from apps/landing, in a checkout with the public');
+      logError('cartridge submodules initialised) and commit the result.');
+      return EXIT_DRIFT;
+    }
+    log(`projects.ts is up to date (${projects.length} entries).`);
+    return EXIT_OK;
+  }
+
+  if (write) fs.writeFileSync(ctx.outFile, output, 'utf8');
+  summarize(projects, meta, log);
+  return EXIT_OK;
 }
 
-main();
+// Only self-execute as a CLI, so the test suite can import the functions above.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  process.exit(run());
+}

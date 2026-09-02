@@ -18,10 +18,12 @@ from __future__ import annotations
 import logging
 import os
 import shutil
+import stat as stat_module
 from pathlib import Path
 from typing import BinaryIO
 
 from services.storage.base import (
+    ArtifactInfo,
     ArtifactNotFound,
     ArtifactStore,
     ArtifactStoreError,
@@ -30,6 +32,41 @@ from services.storage.base import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _log_walk_error(exc: OSError) -> None:
+    """os.walk swallows errors by default; this store would rather say so."""
+    logger.warning("Artifact listing could not read %s: %s", getattr(exc, "filename", "?"), exc)
+
+
+class _BoundedReader:
+    """A file handle that stops after *limit* bytes.
+
+    Used for a ``Range`` request: the underlying file is already seeked to the
+    start, and the response must not run past the end of the requested range.
+    """
+
+    def __init__(self, handle: BinaryIO, limit: int):
+        self._handle = handle
+        self._remaining = limit
+
+    def read(self, size: int = -1) -> bytes:
+        if self._remaining <= 0:
+            return b""
+        want = self._remaining if size is None or size < 0 else min(size, self._remaining)
+        chunk = self._handle.read(want)
+        self._remaining -= len(chunk)
+        return chunk
+
+    def close(self) -> None:
+        self._handle.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc):
+        self.close()
+        return False
 
 
 class FilesystemArtifactStore(ArtifactStore):
@@ -101,24 +138,77 @@ class FilesystemArtifactStore(ArtifactStore):
         return safe_key
 
     # ── reading ────────────────────────────────────────────────────────
-    def open(self, key: str) -> BinaryIO:
+    def open(self, key: str, *, start: int | None = None, end: int | None = None) -> BinaryIO:
         path = self.path_for(key)
         try:
-            return path.open("rb")
+            handle = path.open("rb")
         except (FileNotFoundError, IsADirectoryError) as exc:
             raise ArtifactNotFound(key) from exc
-
-    def exists(self, key: str) -> bool:
+        if start is None and end is None:
+            return handle
         try:
-            return self.path_for(key).is_file()
-        except InvalidArtifactKey:
-            return False
+            handle.seek(start or 0)
+        except OSError:
+            handle.close()
+            raise
+        if end is None:
+            return handle
+        return _BoundedReader(handle, max(0, end - (start or 0)))
 
-    def size(self, key: str) -> int | None:
+    def stat(self, key: str) -> ArtifactInfo | None:
         try:
-            return self.path_for(key).stat().st_size
+            path = self.path_for(key)
+            st = path.stat()
         except (InvalidArtifactKey, OSError):
             return None
+        if not stat_module.S_ISREG(st.st_mode):
+            return None
+        return ArtifactInfo(
+            key=normalize_key(key),
+            size=st.st_size,
+            modified_at=st.st_mtime,
+            # No ETag: the read path derives one from size and mtime, which is
+            # what Werkzeug already does for a file it sends.
+            etag=None,
+        )
+
+    def list(self, prefix: str = "") -> list[ArtifactInfo]:
+        """Every regular file under the root, as keys relative to it.
+
+        Walks, rather than listing one level, because a key may legally contain
+        ``/`` and the object backend has no way to hide a nested object from
+        its own listing. Symlinked directories are not followed — the root is a
+        volume the render engines write into, and a link out of it is not part
+        of the store (``path_for`` refuses to resolve through one anyway).
+        """
+        root = self.root
+        found: list[ArtifactInfo] = []
+        try:
+            walker = os.walk(root, followlinks=False, onerror=_log_walk_error)
+            for dirpath, _dirnames, filenames in walker:
+                for name in filenames:
+                    full = Path(dirpath) / name
+                    try:
+                        relative = full.relative_to(root).as_posix()
+                    except ValueError:
+                        continue
+                    if not relative.startswith(prefix):
+                        continue
+                    try:
+                        st = full.lstat()
+                    except OSError:
+                        continue
+                    if not stat_module.S_ISREG(st.st_mode):
+                        continue
+                    found.append(
+                        ArtifactInfo(
+                            key=relative, size=st.st_size, modified_at=st.st_mtime
+                        )
+                    )
+        except OSError as exc:
+            logger.error("Artifact listing failed under %s: %s", root, exc)
+        found.sort(key=lambda info: info.key)
+        return found
 
     def delete(self, key: str) -> bool:
         try:
@@ -126,6 +216,15 @@ class FilesystemArtifactStore(ArtifactStore):
             return True
         except (InvalidArtifactKey, FileNotFoundError, IsADirectoryError):
             return False
+
+    # ── materialising ──────────────────────────────────────────────────
+    def local_path(self, key: str) -> Path | None:
+        """The artifact's real path. There is nothing to copy for this backend."""
+        try:
+            path = self.path_for(key)
+        except InvalidArtifactKey:
+            return None
+        return path if path.is_file() else None
 
     # ── lifecycle ──────────────────────────────────────────────────────
     def check_ready(self) -> None:

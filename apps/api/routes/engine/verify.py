@@ -15,13 +15,13 @@ from extensions import limiter
 from manifest import get_manifest, resolve_part_config
 from middleware.auth import require_tier
 from services.core.project_access import check_project_access
-from utils.route_helpers import handle_exceptions, safe_join_path
+from services.storage import InvalidArtifactKey, local_artifact, normalize_key
+from utils.route_helpers import handle_exceptions
 
 logger = logging.getLogger(__name__)
 
 verify_bp = Blueprint('verify', __name__)
 
-STATIC_FOLDER = str(Config.STATIC_DIR)
 VERIFY_SCRIPT = str(Config.VERIFY_SCRIPT)
 
 
@@ -53,55 +53,61 @@ def verify_design():
 
     for part in parts:
         stl_filename = f"{stl_prefix}{part}.stl"
-        resolved = safe_join_path(STATIC_FOLDER, stl_filename)
-
-        if resolved is None:
+        # The verifier is a subprocess handed a path, so the artifact has to be
+        # a real file. `local_artifact` hands over the artifact itself on the
+        # filesystem store and a temporary copy from an object store, and the
+        # key rule refuses traversal in both — which is what `safe_join_path`
+        # used to be here for.
+        try:
+            artifact_key = normalize_key(stl_filename)
+        except InvalidArtifactKey:
             results.append(f"--- {part} ---\n[ERROR] Invalid path\n")
             all_passed = False
             continue
 
-        if not resolved.exists():
-            return jsonify({
-                "status": "error",
-                "error": "not_rendered",
-                "message": f"Part '{part}' has not been rendered yet. Render before verifying."
-            }), 409
+        with local_artifact(artifact_key) as resolved:
+            if resolved is None:
+                return jsonify({
+                    "status": "error",
+                    "error": "not_rendered",
+                    "message": f"Part '{part}' has not been rendered yet. Render before verifying."
+                }), 409
 
-        # Build part-specific config
-        if verify_cfg is not None:
-            part_cfg = resolve_part_config(verify_cfg, part)
-            cmd = [sys.executable, VERIFY_SCRIPT, str(resolved), json.dumps(part_cfg)]
-        else:
-            cmd = [sys.executable, VERIFY_SCRIPT, str(resolved)]
-
-        logger.info(f"Verifying {part}: {' '.join(cmd[:3])}...")
-
-        try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120, check=False)
-            output = result.stdout + result.stderr
-
-            # Parse structured output (look for ===JSON=== marker)
-            if "===JSON===" in output:
-                text_output, json_str = output.split("===JSON===", 1)
-                try:
-                    structured = json.loads(json_str.strip())
-                except json.JSONDecodeError:
-                    structured = {"passed": result.returncode == 0}
+            # Build part-specific config
+            if verify_cfg is not None:
+                part_cfg = resolve_part_config(verify_cfg, part)
+                cmd = [sys.executable, VERIFY_SCRIPT, str(resolved), json.dumps(part_cfg)]
             else:
-                text_output = output
-                structured = {"passed": result.returncode == 0}
+                cmd = [sys.executable, VERIFY_SCRIPT, str(resolved)]
 
-            results.append(f"--- {part} ---\n{text_output.strip()}")
-            if not structured.get("passed", False):
+            logger.info(f"Verifying {part}: {' '.join(cmd[:3])}...")
+
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=120, check=False)
+                output = result.stdout + result.stderr
+
+                # Parse structured output (look for ===JSON=== marker)
+                if "===JSON===" in output:
+                    text_output, json_str = output.split("===JSON===", 1)
+                    try:
+                        structured = json.loads(json_str.strip())
+                    except json.JSONDecodeError:
+                        structured = {"passed": result.returncode == 0}
+                else:
+                    text_output = output
+                    structured = {"passed": result.returncode == 0}
+
+                results.append(f"--- {part} ---\n{text_output.strip()}")
+                if not structured.get("passed", False):
+                    all_passed = False
+            except subprocess.TimeoutExpired:
+                logger.error(f"Verification timed out for {part}")
+                results.append(f"--- {part} ---\n[ERROR] Verification timed out\n")
                 all_passed = False
-        except subprocess.TimeoutExpired:
-            logger.error(f"Verification timed out for {part}")
-            results.append(f"--- {part} ---\n[ERROR] Verification timed out\n")
-            all_passed = False
-        except Exception as e:
-            logger.error(f"Verification failed for {part}: {e}")
-            results.append(f"--- {part} ---\n[ERROR] {e!s}\n")
-            all_passed = False
+            except Exception as e:
+                logger.error(f"Verification failed for {part}: {e}")
+                results.append(f"--- {part} ---\n[ERROR] {e!s}\n")
+                all_passed = False
 
     combined = "\n".join(results)
     return jsonify({

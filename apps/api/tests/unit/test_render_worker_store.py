@@ -19,7 +19,8 @@ WORKER_DIR = Path(__file__).resolve().parents[3] / "worker"
 if str(WORKER_DIR) not in sys.path:
     sys.path.insert(0, str(WORKER_DIR))
 
-import render_worker  # noqa: E402  — needs the sys.path line above
+# Imported after the sys.path line above, which is what makes it importable.
+import render_worker
 
 PART = "body"
 SLUG = "gridfinity"

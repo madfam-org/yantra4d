@@ -13,11 +13,16 @@ Why this exists at all: `docs/operations/render-artifact-storage.md`.
 """
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
+import tempfile
 import threading
+from collections.abc import Iterator
+from pathlib import Path
 
 from services.storage.base import (
+    ArtifactInfo,
     ArtifactNotFound,
     ArtifactStore,
     ArtifactStoreError,
@@ -32,6 +37,7 @@ from services.storage.s3 import S3ArtifactStore
 logger = logging.getLogger(__name__)
 
 __all__ = [
+    "ArtifactInfo",
     "ArtifactNotFound",
     "ArtifactStore",
     "ArtifactStoreError",
@@ -43,6 +49,7 @@ __all__ = [
     "get_artifact_store",
     "guess_content_type",
     "key_for_path",
+    "local_artifact",
     "normalize_key",
     "publish_artifact",
     "publish_artifact_best_effort",
@@ -148,6 +155,61 @@ def publish_artifact_best_effort(path: str | os.PathLike, *, store: ArtifactStor
         return key
     store.put_file(key, path)
     return key
+
+
+@contextlib.contextmanager
+def local_artifact(key: str, *, store: ArtifactStore | None = None) -> Iterator[Path | None]:
+    """A real filesystem path for *key* while the block runs, or ``None``.
+
+    Some consumers of a render artifact cannot take a byte stream: trimesh
+    loads a file, the design verifier is a subprocess handed ``argv``, and a
+    printer client uploads a path. They used to build that path by joining the
+    static directory, which is exactly the assumption that breaks when the
+    artifact is an object in a bucket.
+
+    Under the filesystem store the artifact's own path is yielded and nothing
+    is copied or removed — those call sites behave as they always did, down to
+    the file they touch. Under any other store the object is downloaded to a
+    temporary file for the duration of the block and deleted afterwards, so a
+    long-lived API pod does not accumulate meshes.
+
+    Yields ``None`` when the artifact is not stored, which every caller already
+    has to handle: it is the same "no render yet" case as a missing file.
+    """
+    store = store or get_artifact_store()
+    try:
+        safe_key = normalize_key(key)
+    except InvalidArtifactKey:
+        yield None
+        return
+
+    existing = store.local_path(safe_key)
+    if existing is not None:
+        yield existing
+        return
+
+    if not store.exists(safe_key):
+        yield None
+        return
+
+    suffix = Path(safe_key).suffix
+    handle, staged = tempfile.mkstemp(prefix="artifact-", suffix=suffix)
+    os.close(handle)
+    try:
+        try:
+            store.fetch_to_path(safe_key, staged)
+        except ArtifactNotFound:
+            # Collected between the existence check and the read. Same answer
+            # as a file that vanished under the old code: nothing to work with.
+            fetched = False
+        else:
+            fetched = True
+        yield Path(staged) if fetched else None
+    finally:
+        try:
+            os.unlink(staged)
+        except OSError:
+            logger.debug("Could not remove staged artifact copy %s", staged, exc_info=True)
 
 
 def check_artifact_store_ready(store: ArtifactStore | None = None) -> ArtifactStore:

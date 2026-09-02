@@ -40,7 +40,9 @@ from __future__ import annotations
 
 import mimetypes
 import os
+import shutil
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from pathlib import Path
 from typing import BinaryIO
 
@@ -123,6 +125,29 @@ def guess_content_type(key: str) -> str:
     return content_type or "application/octet-stream"
 
 
+@dataclass(frozen=True)
+class ArtifactInfo:
+    """What a store knows about one artifact without reading its bytes.
+
+    Everything that used to be learned from ``os.stat`` on a file in the static
+    directory — is it there, how big, how old, and (for revalidation) has it
+    changed — comes from here instead, so the same question has an answer when
+    the artifact is an object in a bucket.
+
+    ``modified_at`` is epoch seconds so the two backends are directly
+    comparable: the GC sorts on it and the read path renders it as
+    ``Last-Modified``. ``etag`` is whatever the backend can supply cheaply
+    (S3 hands one back on every ``HEAD``); when it is ``None`` the read path
+    derives one from size and mtime, which is what Werkzeug does for a file.
+    """
+
+    key: str
+    size: int
+    modified_at: float
+    etag: str | None = None
+    content_type: str | None = None
+
+
 class ArtifactStore(ABC):
     """Where render artifacts live, addressed by key."""
 
@@ -145,20 +170,82 @@ class ArtifactStore(ABC):
 
     # ── reading ────────────────────────────────────────────────────────
     @abstractmethod
-    def open(self, key: str) -> BinaryIO:
-        """Open the artifact for binary reading. Raises :class:`ArtifactNotFound`."""
+    def open(self, key: str, *, start: int | None = None, end: int | None = None) -> BinaryIO:
+        """Open the artifact for binary reading. Raises :class:`ArtifactNotFound`.
+
+        *start* and *end* select a half-open byte range ``[start, end)``. A
+        backend that can ask its storage for exactly those bytes should — the
+        point of the range arguments is that a ``Range`` request for the last
+        kilobyte of a 200 MB mesh does not drag the whole object through the
+        API pod.
+        """
 
     @abstractmethod
-    def exists(self, key: str) -> bool:
-        """Whether an artifact is stored under *key*."""
+    def stat(self, key: str) -> ArtifactInfo | None:
+        """Metadata for *key*, or ``None`` when nothing is stored under it.
+
+        The one primitive behind ``exists``, ``size``, the GC's age and size
+        passes, and the read path's ``ETag`` / ``Last-Modified``. A backend
+        implements this and gets those for free.
+        """
 
     @abstractmethod
-    def size(self, key: str) -> int | None:
-        """Size in bytes, or ``None`` when the artifact is absent."""
+    def list(self, prefix: str = "") -> list[ArtifactInfo]:
+        """Every artifact whose key starts with *prefix*, in key order.
+
+        This is what replaced ``os.scandir``/``glob.glob`` over the static
+        directory. Both backends list the whole store, nested keys included:
+        nothing produces a nested layout today, but a backend that quietly
+        skipped one would make the two behave differently for a reason no
+        caller could see.
+
+        *prefix* is matched literally against the key, not as a path segment,
+        so ``list("gridfinity_preview_")`` finds one project's renders.
+        """
 
     @abstractmethod
     def delete(self, key: str) -> bool:
         """Remove the artifact. ``True`` if something was removed."""
+
+    def exists(self, key: str) -> bool:
+        """Whether an artifact is stored under *key*."""
+        return self.stat(key) is not None
+
+    def size(self, key: str) -> int | None:
+        """Size in bytes, or ``None`` when the artifact is absent."""
+        info = self.stat(key)
+        return info.size if info is not None else None
+
+    # ── materialising ──────────────────────────────────────────────────
+    def local_path(self, key: str) -> Path | None:
+        """A real file already holding this artifact, or ``None``.
+
+        Only a filesystem-backed store has one. Callers that need a path — the
+        verifier subprocess, trimesh, a printer upload — use
+        :func:`services.storage.local_artifact`, which falls back to
+        :meth:`fetch_to_path` when this returns ``None``.
+        """
+        return None
+
+    def fetch_to_path(self, key: str, destination: str | os.PathLike) -> Path:
+        """Copy the artifact to *destination* and return it.
+
+        The generic implementation streams through :meth:`open`, which is
+        correct for every backend; one that can download faster may override.
+        """
+        target = Path(destination)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        body = self.open(key)
+        try:
+            with target.open("wb") as out:
+                shutil.copyfileobj(body, out)
+        finally:
+            # botocore's StreamingBody is only a context manager on recent
+            # versions; closing it by hand works on every one.
+            close = getattr(body, "close", None)
+            if callable(close):
+                close()
+        return target
 
     # ── capability hooks ───────────────────────────────────────────────
     def local_root(self) -> Path | None:
@@ -174,7 +261,6 @@ class ArtifactStore(ABC):
 
     def check_ready(self) -> None:
         """Fail loudly if this store cannot be used. Called once at startup."""
-        return None
 
     def describe(self) -> dict:
         """Operator-facing summary for ``/api/health``. Never includes credentials."""

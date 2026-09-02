@@ -26,11 +26,13 @@ around both.
 """
 from __future__ import annotations
 
+import datetime as dt
 import logging
 import os
 from typing import BinaryIO
 
 from services.storage.base import (
+    ArtifactInfo,
     ArtifactNotFound,
     ArtifactStore,
     ArtifactStoreError,
@@ -68,6 +70,34 @@ def _error_code(exc: Exception) -> str:
 
 def _is_missing(exc: Exception) -> bool:
     return _error_code(exc) in _MISSING_CODES
+
+
+def _epoch(value) -> float:
+    """Epoch seconds from whatever S3 handed back for ``LastModified``.
+
+    botocore parses it to an aware ``datetime``; a fake or an odd gateway may
+    send a number or nothing at all. An unknown timestamp is 0.0 rather than
+    "now", so the GC never mistakes an artifact of unknown age for a fresh one
+    and keep it forever.
+    """
+    if value is None:
+        return 0.0
+    if isinstance(value, dt.datetime):
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=dt.UTC)
+        return value.timestamp()
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _clean_etag(value) -> str | None:
+    """S3 quotes its ETags; HTTP layers below add their own quoting."""
+    if not isinstance(value, str):
+        return None
+    cleaned = value.strip().strip('"')
+    return cleaned or None
 
 
 class S3ArtifactStore(ArtifactStore):
@@ -171,10 +201,17 @@ class S3ArtifactStore(ArtifactStore):
         return safe_key
 
     # ── reading ────────────────────────────────────────────────────────
-    def open(self, key: str) -> BinaryIO:
+    def open(self, key: str, *, start: int | None = None, end: int | None = None) -> BinaryIO:
         safe_key = normalize_key(key)
+        params = {"Bucket": self.bucket, "Key": self.object_key(safe_key)}
+        if start is not None or end is not None:
+            # HTTP byte ranges are inclusive on both sides; the store's are
+            # half-open, so the last byte is `end - 1`. An open-ended range is
+            # `bytes=start-`, which S3 answers to the end of the object.
+            first = start or 0
+            params["Range"] = f"bytes={first}-" if end is None else f"bytes={first}-{end - 1}"
         try:
-            response = self.client.get_object(Bucket=self.bucket, Key=self.object_key(safe_key))
+            response = self.client.get_object(**params)
         except Exception as exc:
             if _is_missing(exc):
                 raise ArtifactNotFound(safe_key) from exc
@@ -183,44 +220,103 @@ class S3ArtifactStore(ArtifactStore):
             ) from exc
         return response["Body"]
 
-    def exists(self, key: str) -> bool:
-        try:
-            safe_key = normalize_key(key)
-        except InvalidArtifactKey:
-            return False
-        try:
-            self.client.head_object(Bucket=self.bucket, Key=self.object_key(safe_key))
-            return True
-        except Exception as exc:
-            if _is_missing(exc):
-                return False
-            # Anything else — a permission fault, a wrong bucket, a network
-            # blip — is reported as absent so the caller degrades to "render it
-            # again" rather than failing the request, but it is never silent:
-            # a store that answers this way for every key would otherwise look
-            # exactly like a permanently cold cache.
-            logger.warning(
-                "Artifact store existence check failed for %r in bucket %r: %s",
-                safe_key, self.bucket, exc,
-            )
-            return False
+    def _head(self, key: str, purpose: str) -> dict | None:
+        """``head_object`` for *key*, or ``None`` when it is absent or unanswerable.
 
-    def size(self, key: str) -> int | None:
+        A fault that is not a miss — a permission problem, a wrong bucket, a
+        network blip — is reported as absent so the caller degrades to "render
+        it again" rather than failing the request. Never silently, though: a
+        store answering this way for every key looks exactly like a permanently
+        cold cache, and *purpose* is what tells the operator which read gave up.
+        """
         try:
             safe_key = normalize_key(key)
         except InvalidArtifactKey:
             return None
         try:
-            head = self.client.head_object(Bucket=self.bucket, Key=self.object_key(safe_key))
+            return self.client.head_object(Bucket=self.bucket, Key=self.object_key(safe_key))
         except Exception as exc:
             if not _is_missing(exc):
                 logger.warning(
-                    "Artifact store size lookup failed for %r in bucket %r: %s",
-                    safe_key, self.bucket, exc,
+                    "Artifact store %s failed for %r in bucket %r: %s",
+                    purpose, safe_key, self.bucket, exc,
                 )
+            return None
+
+    def exists(self, key: str) -> bool:
+        return self._head(key, "existence check") is not None
+
+    def size(self, key: str) -> int | None:
+        head = self._head(key, "size lookup")
+        if head is None:
             return None
         content_length = head.get("ContentLength")
         return int(content_length) if content_length is not None else None
+
+    def stat(self, key: str) -> ArtifactInfo | None:
+        head = self._head(key, "stat")
+        if head is None:
+            return None
+        try:
+            safe_key = normalize_key(key)
+        except InvalidArtifactKey:  # pragma: no cover - _head already refused it
+            return None
+        return ArtifactInfo(
+            key=safe_key,
+            size=int(head.get("ContentLength") or 0),
+            modified_at=_epoch(head.get("LastModified")),
+            etag=_clean_etag(head.get("ETag")),
+            content_type=head.get("ContentType") or None,
+        )
+
+    def list(self, prefix: str = "") -> list[ArtifactInfo]:
+        """Every object under the store prefix, as artifact keys.
+
+        Paginated by hand rather than with a paginator, so the fake client the
+        tests run against only has to implement ``list_objects_v2`` — and so a
+        bucket holding more than one page of renders is listed completely,
+        which is exactly the case the GC has to get right.
+        """
+        namespace = f"{self.prefix}/" if self.prefix else ""
+        found: list[ArtifactInfo] = []
+        token: str | None = None
+        while True:
+            params = {"Bucket": self.bucket, "Prefix": f"{namespace}{prefix}"}
+            if token:
+                params["ContinuationToken"] = token
+            try:
+                page = self.client.list_objects_v2(**params)
+            except Exception as exc:
+                logger.warning(
+                    "Artifact listing failed for prefix %r in bucket %r: %s",
+                    prefix, self.bucket, exc,
+                )
+                break
+            for entry in page.get("Contents") or []:
+                object_name = entry.get("Key") or ""
+                if namespace:
+                    if not object_name.startswith(namespace):
+                        continue
+                    object_name = object_name[len(namespace):]
+                if not object_name or object_name.endswith("/"):
+                    # A directory placeholder some consoles create. Not an
+                    # artifact, and normalize_key would reject its empty tail.
+                    continue
+                found.append(
+                    ArtifactInfo(
+                        key=object_name,
+                        size=int(entry.get("Size") or 0),
+                        modified_at=_epoch(entry.get("LastModified")),
+                        etag=_clean_etag(entry.get("ETag")),
+                    )
+                )
+            if not page.get("IsTruncated"):
+                break
+            token = page.get("NextContinuationToken")
+            if not token:
+                break
+        found.sort(key=lambda info: info.key)
+        return found
 
     def delete(self, key: str) -> bool:
         try:

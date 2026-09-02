@@ -1,4 +1,6 @@
 """Shared test fixtures for backend API tests."""
+import datetime
+import hashlib
 import io
 import sys
 from pathlib import Path
@@ -68,7 +70,22 @@ class FakeClientError(Exception):
 
 
 class FakeS3Client:
-    """In-memory S3, one bucket deep."""
+    """In-memory S3, one bucket deep.
+
+    Reproduces the response *shapes* the store reads, not just the happy path:
+    `LastModified` as an aware datetime and a quoted `ETag` (both of which the
+    read path renders into HTTP headers), `Range` on `get_object`, and
+    `list_objects_v2` with continuation tokens — paging is where a hand-rolled
+    listing usually goes wrong, and the GC depends on seeing every object.
+
+    `tests/unit/test_artifact_store_moto.py` runs the same assertions against
+    real botocore via moto, so this double cannot drift into agreeing with the
+    store about something S3 does not actually do.
+    """
+
+    #: Objects returned per `list_objects_v2` page. Small on purpose: the
+    #: paging loop is exercised by an ordinary two-object listing.
+    page_size = 2
 
     def __init__(self, buckets=("renders",)):
         self.objects: dict[tuple[str, str], dict] = {}
@@ -87,34 +104,77 @@ class FakeS3Client:
         return self.objects[(bucket, key)]
 
     # ── the surface S3ArtifactStore uses ───────────────────────────────
-    def head_bucket(self, Bucket):  # noqa: N803 — boto3's parameter name
+    def head_bucket(self, Bucket):  # boto3 spells its parameters this way
         self._require_bucket(Bucket)
         return {}
 
-    def upload_file(self, Filename, Bucket, Key, ExtraArgs=None):  # noqa: N803
+    def upload_file(self, Filename, Bucket, Key, ExtraArgs=None):  # boto3 spells its parameters this way
         self._require_bucket(Bucket)
         self.calls.append(("upload_file", Bucket, Key, dict(ExtraArgs or {})))
         with open(Filename, "rb") as fh:
             body = fh.read()
-        self.objects[(Bucket, Key)] = {
-            "body": body,
-            "content_type": (ExtraArgs or {}).get("ContentType", ""),
-        }
+        self._store(Bucket, Key, body, (ExtraArgs or {}).get("ContentType", ""))
 
-    def put_object(self, Bucket, Key, Body, ContentType=None):  # noqa: N803
+    def put_object(self, Bucket, Key, Body, ContentType=None):  # boto3 spells its parameters this way
         self._require_bucket(Bucket)
         self.calls.append(("put_object", Bucket, Key, ContentType))
-        self.objects[(Bucket, Key)] = {"body": Body, "content_type": ContentType or ""}
+        self._store(Bucket, Key, Body, ContentType or "")
 
-    def get_object(self, Bucket, Key):  # noqa: N803
+    def _store(self, bucket, key, body, content_type):
+        self.objects[(bucket, key)] = {
+            "body": body,
+            "content_type": content_type,
+            "last_modified": datetime.datetime.now(datetime.UTC),
+            "etag": f'"{hashlib.md5(body).hexdigest()}"',
+        }
+
+    def get_object(self, Bucket, Key, Range=None):  # boto3 spells its parameters this way
         entry = self._require_object(Bucket, Key, "NoSuchKey", 404)
-        return {"Body": io.BytesIO(entry["body"]), "ContentLength": len(entry["body"])}
+        body = entry["body"]
+        if Range:
+            # `bytes=first-last` (inclusive) or `bytes=first-`.
+            spec = Range.split("=", 1)[1]
+            first_s, _, last_s = spec.partition("-")
+            first = int(first_s)
+            body = body[first:int(last_s) + 1] if last_s else body[first:]
+        return {
+            "Body": io.BytesIO(body),
+            "ContentLength": len(body),
+            "LastModified": entry["last_modified"],
+            "ETag": entry["etag"],
+        }
 
-    def head_object(self, Bucket, Key):  # noqa: N803
+    def head_object(self, Bucket, Key):  # boto3 spells its parameters this way
         entry = self._require_object(Bucket, Key, "404", 404)
-        return {"ContentLength": len(entry["body"]), "ContentType": entry["content_type"]}
+        return {
+            "ContentLength": len(entry["body"]),
+            "ContentType": entry["content_type"],
+            "LastModified": entry["last_modified"],
+            "ETag": entry["etag"],
+        }
 
-    def delete_object(self, Bucket, Key):  # noqa: N803
+    def list_objects_v2(self, Bucket, Prefix="", ContinuationToken=None):  # boto3 spells its parameters this way
+        self._require_bucket(Bucket)
+        self.calls.append(("list_objects_v2", Bucket, Prefix, ContinuationToken))
+        keys = sorted(k for b, k in self.objects if b == Bucket and k.startswith(Prefix))
+        start = keys.index(ContinuationToken) if ContinuationToken in keys else 0
+        page = keys[start:start + self.page_size]
+        rest = keys[start + self.page_size:]
+        return {
+            "Contents": [
+                {
+                    "Key": key,
+                    "Size": len(self.objects[(Bucket, key)]["body"]),
+                    "LastModified": self.objects[(Bucket, key)]["last_modified"],
+                    "ETag": self.objects[(Bucket, key)]["etag"],
+                }
+                for key in page
+            ],
+            "IsTruncated": bool(rest),
+            **({"NextContinuationToken": rest[0]} if rest else {}),
+        }
+
+    def delete_object(self, Bucket, Key):  # boto3 spells its parameters this way
         self._require_bucket(Bucket)
         self.objects.pop((Bucket, Key), None)
         return {}

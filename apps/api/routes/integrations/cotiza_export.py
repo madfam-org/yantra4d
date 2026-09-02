@@ -25,6 +25,8 @@ from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
 from services.core.project_access import require_project_access
+from services.engine.render_artifacts import MESH_EXTENSIONS, find_latest_render_key
+from services.storage import local_artifact
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
@@ -39,8 +41,9 @@ COTIZA_API_URL = os.getenv("COTIZA_API_URL", "http://localhost:4000")
 COTIZA_API_KEY = os.getenv("COTIZA_API_KEY", "")
 COTIZA_TIMEOUT_SECONDS = int(os.getenv("COTIZA_TIMEOUT_SECONDS", "30"))
 
-# Supported mesh extensions in preference order (same as analysis.py)
-_MESH_EXTENSIONS = (".glb", ".stl", ".3mf")
+# Supported mesh extensions in preference order — one definition, in
+# services.engine.render_artifacts, now that the lookup is shared.
+_MESH_EXTENSIONS = MESH_EXTENSIONS
 _RESERVED_OPTION_KEYS = {
     "material",
     "quantity",
@@ -81,30 +84,6 @@ def _load_manifest(slug: str) -> dict | None:
     if not p.is_file():
         return None
     return json.loads(p.read_text())
-
-
-def _find_latest_render(slug: str) -> str | None:
-    """Locate the most recently modified render output for a project.
-
-    Render files follow the naming convention:
-        {slug}_preview_{hash}_{part}.{ext}
-    stored in Config.STATIC_DIR.
-    """
-    import glob as glob_mod
-
-    prefix = f"{slug}_{Config.STL_PREFIX}"
-    static_folder = str(Config.STATIC_DIR)
-    candidates: list[str] = []
-
-    for ext in _MESH_EXTENSIONS:
-        pattern = os.path.join(static_folder, f"{prefix}*{ext}")
-        candidates.extend(glob_mod.glob(pattern))
-
-    if not candidates:
-        return None
-
-    candidates.sort(key=os.path.getmtime, reverse=True)
-    return candidates[0]
 
 
 def _extract_geometry_metrics(mesh_path: str) -> dict:
@@ -396,8 +375,11 @@ def create_cotiza_quote_request(slug: str):
     body = request.get_json(silent=True) or {}
 
     # -- Locate latest render mesh --
-    mesh_path = _find_latest_render(slug)
-    if mesh_path is None:
+    # Through the artifact store: the mesh this quote is priced from may be an
+    # object in a bucket rather than a file on this pod, and a glob over the
+    # static directory would report "never rendered" for a project that was.
+    mesh_key = find_latest_render_key(slug, _MESH_EXTENSIONS)
+    if mesh_key is None:
         return error_response(
             f"No rendered mesh found for project '{slug}'. "
             "Please render the model first via POST /api/render.",
@@ -405,7 +387,14 @@ def create_cotiza_quote_request(slug: str):
         )
 
     # -- Extract geometry metrics --
-    geometry = _extract_geometry_metrics(mesh_path)
+    with local_artifact(mesh_key) as mesh_path:
+        if mesh_path is None:
+            return error_response(
+                f"No rendered mesh found for project '{slug}'. "
+                "Please render the model first via POST /api/render.",
+                409,
+            )
+        geometry = _extract_geometry_metrics(str(mesh_path))
 
     if geometry["volume_cm3"] <= 0 and geometry["surface_area_cm2"] <= 0:
         logger.warning(

@@ -54,11 +54,13 @@ class TestVerifyAPI:
         """Verify with actual STL file runs verification script."""
         from unittest.mock import MagicMock, patch
 
-        import routes.engine.verify as verify_mod
+        from config import Config
 
         static_dir = tmp_path / "static"
         static_dir.mkdir(exist_ok=True)
-        monkeypatch.setattr(verify_mod, "STATIC_FOLDER", str(static_dir))
+        # The route resolves the part's STL through the artifact store, which
+        # reads Config.STATIC_DIR at call time — no import-time string to patch.
+        monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
 
         stl_path = static_dir / "test-project_preview_main.stl"
         stl_path.write_bytes(b"solid\nendsolid\n")
@@ -79,11 +81,13 @@ class TestVerifyAPI:
         """Verify with failing script returns failure status."""
         from unittest.mock import MagicMock, patch
 
-        import routes.engine.verify as verify_mod
+        from config import Config
 
         static_dir = tmp_path / "static"
         static_dir.mkdir(exist_ok=True)
-        monkeypatch.setattr(verify_mod, "STATIC_FOLDER", str(static_dir))
+        # The route resolves the part's STL through the artifact store, which
+        # reads Config.STATIC_DIR at call time — no import-time string to patch.
+        monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
 
         stl_path = static_dir / "test-project_preview_main.stl"
         stl_path.write_bytes(b"solid\nendsolid\n")
@@ -104,11 +108,13 @@ class TestVerifyAPI:
         import subprocess
         from unittest.mock import patch
 
-        import routes.engine.verify as verify_mod
+        from config import Config
 
         static_dir = tmp_path / "static"
         static_dir.mkdir(exist_ok=True)
-        monkeypatch.setattr(verify_mod, "STATIC_FOLDER", str(static_dir))
+        # The route resolves the part's STL through the artifact store, which
+        # reads Config.STATIC_DIR at call time — no import-time string to patch.
+        monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
 
         stl_path = static_dir / "test-project_preview_main.stl"
         stl_path.write_bytes(b"solid\nendsolid\n")
@@ -124,11 +130,13 @@ class TestVerifyAPI:
         """Verify with malformed JSON output falls back gracefully."""
         from unittest.mock import MagicMock, patch
 
-        import routes.engine.verify as verify_mod
+        from config import Config
 
         static_dir = tmp_path / "static"
         static_dir.mkdir(exist_ok=True)
-        monkeypatch.setattr(verify_mod, "STATIC_FOLDER", str(static_dir))
+        # The route resolves the part's STL through the artifact store, which
+        # reads Config.STATIC_DIR at call time — no import-time string to patch.
+        monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
 
         stl_path = static_dir / "test-project_preview_main.stl"
         stl_path.write_bytes(b"solid\nendsolid\n")

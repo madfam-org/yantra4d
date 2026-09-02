@@ -352,7 +352,7 @@ interface StudioSidebarProps {
 
 export default function StudioSidebar({ compareMode, onToggleCompare, variant, onCollapse }: StudioSidebarProps) {
   const [open, setOpen] = useState(false)
-  const { manifest, mode, setMode, getLabel } = useProject()
+  const { manifest, mode, setMode, getLabel, loading } = useProject()
   const { language, t } = useLanguage()
 
   return (
@@ -379,7 +379,21 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
               <PanelLeftClose className="h-4 w-4" />
             </button>
           )}
-          <div data-testid="studio-sidebar" className="w-full h-full min-w-0 flex flex-col relative">
+          {/*
+            The render state the ActionDock swaps its controls on, published as an
+            attribute so a test can wait for the app to REPORT itself idle instead
+            of inferring it from whichever button happens to be mounted. "Generate
+            is visible" is that same fact read through a control that is absent for
+            the whole of a render, so a wait on it can only ever report "element(s)
+            not found" when a cancel does not settle — never whether the render is
+            still running. Derived from the `loading` flag that already renders
+            Processing.../Cancel; it introduces no state of its own.
+          */}
+          <div
+            data-testid="studio-sidebar"
+            data-render-state={loading ? 'rendering' : 'idle'}
+            className="w-full h-full min-w-0 flex flex-col relative"
+          >
             <SidebarContent compareMode={compareMode} onToggleCompare={onToggleCompare} />
           </div>
         </div>

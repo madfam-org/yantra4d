@@ -4,9 +4,9 @@ import {
   setLanguage,
   isMac,
   forceBackendRender,
-  waitForRenderSettled,
   waitForModesReady,
   pressModeShortcut,
+  pressUntilSettled,
 } from '../../helpers/test-utils.js'
 
 /**
@@ -54,24 +54,48 @@ test.describe('Keyboard Shortcuts', () => {
   })
 
   test('Cmd/Ctrl+Enter triggers render', async ({ page, sidebar }) => {
-    // Slow down the render mock so we can observe loading state
+    // Settle the load-time render before the mock goes in, so the state
+    // observed below belongs to the param change this test makes.
+    await sidebar.waitForRenderOutput()
+
+    // Hold the render open rather than sleeping 5s in the route handler: the
+    // window a fixed sleep leaves open moves with runner load at both ends, and
+    // this assertion missing it is how a healthy render reported that
+    // Processing never appeared. Held, the app cannot leave the rendering state.
+    let releaseRender = () => { }
+    const renderHeld = new Promise((resolve) => { releaseRender = resolve })
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
-      await new Promise(r => setTimeout(r, 5000))
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100,"phase":"Done"}\n\n' })
+      await renderHeld
+      await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100,"phase":"Done"}\n\n' })
     })
     await page.unroute('**/api/render')
     await page.route('**/api/render', async (route) => {
-      await new Promise(r => setTimeout(r, 5000))
-      route.abort()
+      await renderHeld
+      await route.abort()
     })
-    // Change a param to bust the render cache, then wait for debounce to clear
-    await sidebar.editSliderValue('width', 77)
-    // The debounced auto-render fires with the slow mock, showing Processing...
-    await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 10000 })
+
+    try {
+      // Change a param to bust the render cache, then wait for debounce to clear
+      await sidebar.editSliderValue('width', 77)
+      // The debounced auto-render fires with the held mock: the app's own state
+      // first, then the control it swaps in to say so.
+      await sidebar.waitForRenderState('rendering')
+      await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 10000 })
+    } finally {
+      releaseRender()
+    }
   })
 
   test('Escape cancels active render', async ({ page, sidebar }) => {
+    // The initial auto-render must be OVER before the held mock goes in, or it
+    // lands on the held route itself and Escape then cancels the load-time
+    // render rather than this test's. The settle used to run AFTER the swap and
+    // could only report "nothing in flight" — equally true in the 500ms
+    // debounce window before the load-time render has started. Waiting for that
+    // render's output says it both happened and finished.
+    await sidebar.waitForRenderOutput()
+
     // Hold the render open until this test releases it, so the window in which
     // Escape has something to cancel is set by the test rather than by how fast
     // the runner happens to render. The previous version raced twice over: the
@@ -87,16 +111,25 @@ test.describe('Keyboard Shortcuts', () => {
     })
 
     try {
-      // The initial auto-render must be finished before we can attribute the
-      // next Cancel button to our own slow mock.
-      await waitForRenderSettled(page)
-
       // Change a param to bust render cache — debounced auto-render uses the held mock
       await sidebar.editSliderValue('width', 63)
-      // Wait for render to actually start (Cancel button appears)
+      // Wait for render to actually start — the app's own state, then the
+      // Cancel button, which is what Escape is the keyboard equivalent of.
+      await sidebar.waitForRenderState('rendering')
       await expect(sidebar.cancelButton).toBeVisible({ timeout: 15_000 })
 
-      await page.keyboard.press('Escape')
+      // Press until the app reports itself idle rather than once and hope. The
+      // handler is `Escape && loading` on a window listener, so a keystroke
+      // that lands a frame before React re-runs the effect with loading=true is
+      // dropped silently — indistinguishable, from the outside, from a cancel
+      // that is merely slow. Re-pressing cannot overshoot: with nothing
+      // loading, Escape does nothing here at all.
+      await pressUntilSettled(
+        page,
+        'Escape',
+        async () => (await sidebar.renderState()) === 'idle',
+        20_000,
+      )
       // Generate button should re-appear — the app aborts the in-flight fetch,
       // so this must not depend on the route ever being released.
       await expect(sidebar.generateButton).toBeVisible({ timeout: 10_000 })
@@ -173,11 +206,19 @@ test.describe('Keyboard Shortcuts', () => {
   })
 
   test('keyboard shortcuts do not interfere with text inputs', async ({ sidebar }) => {
+    // Settle the load-time render first: its completion re-renders the sidebar,
+    // and a controlled input re-rendered on top of a change event React never
+    // received snaps straight back to the value in state. That is the whole
+    // failure — "Received: A" for a successful-looking fill of Z — and it is
+    // about a lost change event, not about a shortcut interfering.
+    await sidebar.waitForRenderOutput()
+
     const letterInput = sidebar.textInput('letter')
     if (await letterInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-      // Use fill() — atomically focuses, clears, types, and dispatches change events
+      // fill() atomically focuses, clears, types and dispatches change events —
+      // repeated until React acknowledges it, for the reason above.
       // This validates the core concern: keyboard shortcut handler returns early for INPUT elements
-      await letterInput.fill('Z')
+      await sidebar.fillTextInput('letter', 'Z')
       await expect(letterInput).toHaveValue('Z', { timeout: 10000 })
     }
   })

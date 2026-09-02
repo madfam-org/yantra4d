@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage, forceBackendRender, waitForRenderSettled } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, forceBackendRender } from '../../helpers/test-utils.js'
 
 test.describe('Rendering Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -15,34 +15,79 @@ test.describe('Rendering Flow', () => {
   })
 
   test('clicking Generate starts render', async ({ page, sidebar }) => {
-    // Slow down mock to observe loading state
+    // Let the initial auto-render COMPLETE before the mock is swapped, so the
+    // render observed below is unambiguously the one this test triggers. The
+    // load-time render is debounced 500ms behind the last params change, so
+    // "nothing is running right now" is also true before it has started —
+    // waiting for output is the difference between the two.
+    await sidebar.waitForRenderOutput()
+
+    // Hold the render open instead of sleeping 5s inside the route handler. A
+    // fixed sleep makes the assertion a bet that it looks inside a window whose
+    // start (debounce + React commit) and end (5s later) both move with runner
+    // load; losing that bet is exactly this line reporting that Processing never
+    // appeared, for a render that had already come and gone. While the route is
+    // held the app CANNOT leave the rendering state, so a fast render cannot
+    // slip past the assertion.
+    let releaseRender = () => { }
+    const renderHeld = new Promise((resolve) => { releaseRender = resolve })
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
-      await new Promise(r => setTimeout(r, 5000))
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
+      await renderHeld
+      await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
-    // Change param to bust the render cache (auto-render cached the initial result)
-    await sidebar.editSliderValue('width', 66)
-    // The debounced auto-render fires with the slow mock, showing Processing...
-    await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 10000 })
+
+    try {
+      // Change param to bust the render cache (auto-render cached the initial result)
+      await sidebar.editSliderValue('width', 66)
+      // The debounced auto-render fires with the held mock: first the app's own
+      // statement that a render is in flight...
+      await sidebar.waitForRenderState('rendering')
+      // ...then the control it swaps in to say so, which is what a user sees.
+      await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 10000 })
+    } finally {
+      releaseRender()
+    }
   })
 
   test('cancel button appears during render', async ({ page, sidebar }) => {
-    // Setup slow mock FIRST to catch the auto-render
+    // Same two changes as the test above: settle the load-time render first so
+    // the one below is ours, and hold it open rather than sleeping 5s, so the
+    // window in which Cancel exists is bounded by this test and not by how fast
+    // the runner happens to render.
+    await sidebar.waitForRenderOutput()
+
+    let releaseRender = () => { }
+    const renderHeld = new Promise((resolve) => { releaseRender = resolve })
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render-stream', async (route) => {
-      await new Promise(r => setTimeout(r, 5000))
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
+      await renderHeld
+      await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100}\n\n' })
     })
 
-    // Change param to trigger auto-render (debounce 500ms)
-    await sidebar.editSliderValue('width', 123)
+    try {
+      // Change param to trigger auto-render (debounce 500ms)
+      await sidebar.editSliderValue('width', 123)
 
-    // Wait for cancel button (implies render started)
-    await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
+      // The render is in flight — and stays in flight — so Cancel being absent
+      // here is the app failing to offer it, never the assertion arriving late.
+      await sidebar.waitForRenderState('rendering')
+      await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
+    } finally {
+      releaseRender()
+    }
   })
 
-  test('cancel aborts render', async ({ page, sidebar }) => {
+  test('cancel aborts render', async ({ page, sidebar, viewer }) => {
+    // The initial auto-render has to be OVER before the held mock goes in, or
+    // it lands on the held route itself and the render this test cancels is
+    // then the second of two overlapping ones. `waitForRenderSettled` could not
+    // establish that from here: it reports "no render in flight", which is also
+    // true in the 500ms debounce window before the load-time render starts —
+    // and it ran after the route swap, so on a loaded runner it was one
+    // scheduling slip away from freezing the load-time render instead.
+    await sidebar.waitForRenderOutput()
+
     // Hold the render open until the test releases it, instead of betting that
     // a fixed 10s sleep outlasts however long the runner takes to get here.
     let releaseRender = () => { }
@@ -54,18 +99,30 @@ test.describe('Rendering Flow', () => {
     })
 
     try {
-      // The initial auto-render has to finish first, or the Cancel button we
-      // wait for below may belong to it rather than to the held render.
-      await waitForRenderSettled(page)
-
       // Trigger auto-render
       await sidebar.editSliderValue('width', 124)
 
-      // Wait for render to start
+      // Wait for render to start — on the app's own state, then on the control.
+      await sidebar.waitForRenderState('rendering')
       await expect(sidebar.cancelButton).toBeVisible({ timeout: 15_000 })
 
-      // Cancel
-      await sidebar.clickCancel()
+      // Cancel, and wait for the END STATE of a cancel rather than for one
+      // button to reappear: the dock stays in its rendering shape until the
+      // abort has propagated through the fetch and useRender's 500ms
+      // LOADING_RESET_DELAY_MS, so "Generate is not there yet" and "the cancel
+      // was dropped" looked identical — both reported as element(s) not found.
+      // A dropped click is now retried and a stuck render is now named.
+      await sidebar.cancelRenderAndWaitForIdle()
+
+      // Idle for the right reason: the app logs the cancellation only from the
+      // AbortError path, so this distinguishes an aborted render from one that
+      // was allowed to finish. The route is still held, so it cannot have.
+      await expect
+        .poll(() => viewer.getConsoleLogs(), {
+          timeout: 10_000,
+          message: 'the render console never reported the cancellation',
+        })
+        .toMatch(/CANCEL/i)
 
       // Verify loading cleared. The app aborts the in-flight fetch, so this
       // holds while the route is still held open.
@@ -90,9 +147,14 @@ test.describe('Rendering Flow', () => {
     await page.waitForTimeout(2000)
   })
 
-  test('generate button re-enables after render completes', async ({ page, sidebar }) => {
+  test('generate button re-enables after render completes', async ({ sidebar }) => {
     await sidebar.clickGenerate()
-    await page.waitForTimeout(2000)
+    // Wait for the render to be OVER — output produced, state back to idle —
+    // rather than for 2s and a hope. `isGenerateDisabled()` is a single
+    // non-retrying read, so on a runner where the render outlives the sleep it
+    // read `disabled` off a render that was still perfectly healthy.
+    await sidebar.waitForRenderOutput()
+    await sidebar.waitForRenderState('idle')
     expect(await sidebar.isGenerateDisabled()).toBe(false)
   })
 
@@ -107,28 +169,39 @@ test.describe('Rendering Flow', () => {
     // May contain "Loaded from cache" depending on impl
   })
 
-  test('changing parameter triggers auto-render after debounce', async ({ page, sidebar, viewer }) => {
-    // Wait for the initial auto-render to fully complete (Generate button re-enabled)
-    const generateBtn = page.locator('button', { hasText: /Generate|Generar/i }).first()
-    await expect(generateBtn).toBeEnabled({ timeout: 15000 })
+  test('changing parameter triggers auto-render after debounce', async ({ sidebar, viewer }) => {
+    // Wait for the initial auto-render to fully complete. An enabled Generate
+    // button is also what the page looks like before that render has started,
+    // and counting its log lines from there counts one render as two.
+    await sidebar.waitForRenderOutput()
 
     // Get current console log text before the change
     const logsBefore = await viewer.getConsoleLogs()
+    const countGenerating = (logs) => (logs.match(/Generating/g) || []).length
+    const countBefore = countGenerating(logsBefore)
 
     // Trigger a parameter change — auto-render should fire after debounce
     await sidebar.editSliderValue('width', 75)
 
-    // Wait for the auto-render to produce new log entries (debounce + render)
-    await page.waitForTimeout(3000)
-    const logsAfter = await viewer.getConsoleLogs()
-
-    // The log should contain more "Generating" entries than before
-    const countBefore = (logsBefore.match(/Generating/g) || []).length
-    const countAfter = (logsAfter.match(/Generating/g) || []).length
-    expect(countAfter).toBeGreaterThan(countBefore)
+    // Poll for the extra log entry instead of sleeping for 3s: the debounce is
+    // 500ms but the render behind it is not, and the assertion is on the app
+    // having logged a second "Generating", not on when it got round to it.
+    await expect
+      .poll(async () => countGenerating(await viewer.getConsoleLogs()), {
+        timeout: 20_000,
+        message: 'the parameter change never started a second render',
+      })
+      .toBeGreaterThan(countBefore)
   })
 
   test('render error shows message in console', async ({ page, sidebar, viewer }) => {
+    // Let the initial (successful) auto-render finish first, so the failure
+    // below is unambiguously the one produced by the error mock. BEFORE the
+    // mock goes in, and on the render's output rather than on an idle sidebar:
+    // an idle sidebar is also the 500ms window before the load-time render
+    // starts, and that render would then hit the error mock itself.
+    await sidebar.waitForRenderOutput()
+
     await page.unroute('**/api/render')
     await page.unroute('**/api/render-stream')
     await page.route('**/api/render', (route) => {
@@ -137,9 +210,6 @@ test.describe('Rendering Flow', () => {
     await page.route('**/api/render-stream', (route) => {
       route.fulfill({ status: 500, json: { error: 'OpenSCAD crashed' } })
     })
-    // Let the initial (successful) auto-render finish first, so the failure
-    // below is unambiguously the one produced by the error mock.
-    await waitForRenderSettled(page)
     // Change param to bust cache, triggering a fresh render with the error mock
     await sidebar.editSliderValue('width', 55)
     // Poll the console rather than sleeping for a fixed 2s. In run 32565668502

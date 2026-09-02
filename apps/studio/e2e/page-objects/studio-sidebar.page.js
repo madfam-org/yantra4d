@@ -253,18 +253,92 @@ export class StudioSidebarPage extends BasePage {
     // an input event, but the input's value comes from React state, so a fill that
     // lands during a re-render can be discarded and commitEdit would then write
     // the OLD value back.
-    await expect
-      .poll(
-        async () => {
-          if ((await input.inputValue().catch(() => null)) === String(value)) return true
-          await input.fill(String(value))
-          return (await input.inputValue().catch(() => null)) === String(value)
-        },
-        { timeout, message: `Slider input for "${paramId}" never held ${value} — React discarded the fill.` },
+    //
+    // The row can also leave edit mode UNDER the poll: the input carries
+    // `onBlur={commitEdit}`, and a re-render triggered by something else on the
+    // page — the auto-render this very edit is about to start, a manifest or
+    // preset update landing late on a contended runner — can take the focus and
+    // unmount it. Polling `inputValue()` against an input that is no longer there
+    // can then never succeed, which is precisely the "React discarded the fill"
+    // failure 10-rendering:131 reports. Re-open the row and fill again instead of
+    // spending the whole budget on a locator that has nothing behind it.
+    let fillReason = 'no fill was ever attempted'
+    const whyFill = (err) => {
+      fillReason = String(err && err.message ? err.message : err).split('\n')[0].slice(0, 300)
+      return null
+    }
+    try {
+      await expect
+        .poll(
+          async () => {
+            if ((await input.inputValue().catch(whyFill)) === String(value)) return true
+            if (!(await input.isVisible().catch(whyFill))) {
+              // Back in display mode — the fill has nowhere to land until the
+              // row is reopened. Same convergent click as the phase above.
+              if (await valSpan.isVisible().catch(whyFill)) {
+                await valSpan.click({ timeout: 5_000 }).catch(whyFill)
+              }
+              return false
+            }
+            await input.fill(String(value)).catch(whyFill)
+            return (await input.inputValue().catch(whyFill)) === String(value)
+          },
+          { timeout },
+        )
+        .toBe(true)
+    } catch {
+      throw new Error(
+        `Slider input for "${paramId}" never held ${value} — React discarded the ` +
+        `fill. Last failure seen while polling: ${fillReason}`,
       )
-      .toBe(true)
+    }
 
-    await input.press('Enter')
+    // Commit, and converge on the app DISPLAYING the committed value.
+    //
+    // `press('Enter')` is a one-shot into commitEdit, and the input is unmounted
+    // by the same handler that reads it: a keypress lost the way the opening
+    // click can be lost leaves the row in edit mode, and a commit that ran
+    // against a discarded editValue leaves it showing the OLD number. Both used
+    // to be reported one layer away from where they happened — as an unhidden
+    // input, or as the caller waiting out its own budget on a value the app
+    // never took. The span carrying `value` proves both halves at once: the span
+    // only renders while `editing === false`, so its text IS the committed state.
+    let commitReason = 'no commit was ever attempted'
+    const whyCommit = (err) => {
+      commitReason = String(err && err.message ? err.message : err).split('\n')[0].slice(0, 300)
+      return null
+    }
+    const shownValue = () => valSpan.textContent().then((txt) => txt?.trim()).catch(whyCommit)
+    await input.press('Enter').catch(whyCommit)
+    try {
+      await expect
+        .poll(
+          async () => {
+            if ((await shownValue()) === String(value)) return String(value)
+            if (await input.isVisible().catch(whyCommit)) {
+              // Still editing: either Enter never arrived, or the fill was
+              // discarded before it did. Restore the value, then re-commit.
+              if ((await input.inputValue().catch(whyCommit)) !== String(value)) {
+                await input.fill(String(value)).catch(whyCommit)
+              }
+              await input.press('Enter').catch(whyCommit)
+            } else if (await valSpan.isVisible().catch(whyCommit)) {
+              // Committed the wrong number — reopen and let the branch above
+              // put the asked-for one in.
+              await valSpan.click({ timeout: 5_000 }).catch(whyCommit)
+            }
+            return shownValue()
+          },
+          { timeout },
+        )
+        .toBe(String(value))
+    } catch {
+      throw new Error(
+        `Slider "${paramId}" never committed ${value} — the row is showing ` +
+        `${JSON.stringify(await shownValue())} and Enter did not take. ` +
+        `Last failure seen while polling: ${commitReason}`,
+      )
+    }
     // The input unmounting is `editing === false`, i.e. commitEdit ran.
     await expect(input).toBeHidden({ timeout })
   }
@@ -272,6 +346,46 @@ export class StudioSidebarPage extends BasePage {
   /** Get text input by param id. */
   textInput(paramId) {
     return this.sidebar.locator(`#text-${paramId}`)
+  }
+
+  /**
+   * Type a value into a text param and wait until the input actually holds it.
+   *
+   * The same convergence editSliderValue's fill phase needs, for the same
+   * reason: Controls renders these as `value={params[id]}` + onChange, so a
+   * fill whose change event is lost — the handler not yet attached, or a
+   * re-render landing on top of it — is silently reverted to the value in React
+   * state on the next commit. `fill()` replaces the whole value, so repeating
+   * it cannot append or double up.
+   *
+   * @param {string} paramId
+   * @param {string} value
+   * @param {number} [timeout]
+   */
+  async fillTextInput(paramId, value, timeout = 15_000) {
+    const input = this.textInput(paramId)
+    let lastReason = 'no fill was ever attempted'
+    const why = (err) => {
+      lastReason = String(err && err.message ? err.message : err).split('\n')[0].slice(0, 300)
+      return null
+    }
+    try {
+      await expect
+        .poll(
+          async () => {
+            if ((await input.inputValue().catch(why)) === value) return true
+            await input.fill(value).catch(why)
+            return (await input.inputValue().catch(why)) === value
+          },
+          { timeout },
+        )
+        .toBe(true)
+    } catch {
+      throw new Error(
+        `Text input "${paramId}" never held ${JSON.stringify(value)} — React ` +
+        `discarded the fill. Last failure seen while polling: ${lastReason}`,
+      )
+    }
   }
 
   /** Get checkbox by param id. */
@@ -302,6 +416,110 @@ export class StudioSidebarPage extends BasePage {
   /** Click cancel. */
   async clickCancel() {
     await this.cancelButton.click()
+  }
+
+  /**
+   * Wait until a render has actually FINISHED and produced parts.
+   *
+   * Not the same as "no render is in flight": the load-time auto-render is
+   * debounced 500ms behind the last params change, so an idle sidebar is also
+   * what a page looks like in the window BEFORE that render starts. Tests that
+   * settle on idle and then install a mock can hand that mock the load-time
+   * render and end up cancelling, or asserting on, the second of two
+   * overlapping renders.
+   *
+   * Verify is `disabled={loading || parts.length === 0}` — the one control that
+   * is enabled only once a render has come back with output — so waiting for it
+   * says a render happened AND is over, without reading any log text.
+   *
+   * @param {number} [timeout]
+   */
+  async waitForRenderOutput(timeout = 30_000) {
+    await expect(this.verifyButton).toBeEnabled({ timeout })
+  }
+
+  /**
+   * The app's own render state, as StudioSidebar publishes it:
+   * `"rendering"` while a render is in flight, `"idle"` otherwise.
+   *
+   * Read this rather than inferring the state from the buttons. The dock swaps
+   * Generate ⇄ Processing... and Force Regenerate ⇄ Cancel off one `loading`
+   * flag, so "Generate is visible" and "the render is over" are the same fact —
+   * but the button is ABSENT for the whole of a render, and an absent element
+   * can only ever report "element(s) not found". The attribute is present
+   * throughout and says which of the two states the app believes it is in.
+   *
+   * @returns {Promise<string|null>} null if the sidebar is not mounted.
+   */
+  async renderState() {
+    return this.sidebar.getAttribute('data-render-state', { timeout: 5_000 }).catch(() => null)
+  }
+
+  /**
+   * Wait until the sidebar reports `state`.
+   *
+   * @param {'idle'|'rendering'} state
+   * @param {number} [timeout]
+   */
+  async waitForRenderState(state, timeout = 20_000) {
+    await expect
+      .poll(() => this.renderState(), {
+        timeout,
+        message:
+          `the sidebar never reported data-render-state="${state}" within ${timeout}ms. ` +
+          'A null reading means the sidebar is not mounted at all; the other state ' +
+          'means the app is still where it was, not that a control went missing.',
+      })
+      .toBe(state)
+  }
+
+  /**
+   * Cancel the render in flight and wait for the app to report itself idle.
+   *
+   * Convergent, for the same reason editSliderValue's opening click is: a click
+   * on a control React has only just mounted can be lost, and a lost cancel is
+   * indistinguishable from a slow one — the render simply stays in flight and
+   * every later assertion waits out its budget on a Generate button that is
+   * never coming back. Re-clicking is safe and cannot overshoot: Cancel is
+   * rendered only while `loading` is true, so once the app is idle there is
+   * nothing left to click, and handleCancelGenerate aborts an already-aborted
+   * controller as a no-op.
+   *
+   * It does NOT make a render finish: the abort has to propagate through the
+   * fetch and the 500ms LOADING_RESET_DELAY_MS in useRender before the dock
+   * comes back. The budget covers that on a contended runner; what it buys over
+   * a flat wait is that a timeout here reports the state the app is stuck in.
+   *
+   * @param {number} [timeout]
+   */
+  async cancelRenderAndWaitForIdle(timeout = 20_000) {
+    let lastReason = 'cancel was never clicked'
+    const why = (err) => {
+      lastReason = String(err && err.message ? err.message : err).split('\n')[0].slice(0, 300)
+      return false
+    }
+    try {
+      await expect
+        .poll(
+          async () => {
+            const state = await this.renderState()
+            if (state === 'idle') return 'idle'
+            if (await this.cancelButton.isVisible().catch(why)) {
+              await this.cancelButton.click({ timeout: 5_000 }).catch(why)
+            }
+            return this.renderState()
+          },
+          { timeout },
+        )
+        .toBe('idle')
+    } catch {
+      throw new Error(
+        `The render never returned to idle within ${timeout}ms of cancelling — the ` +
+        `sidebar still reports data-render-state="${await this.renderState()}", so the ` +
+        'abort has not settled (or the cancel click is being dropped). Last failure ' +
+        `seen while polling: ${lastReason}`,
+      )
+    }
   }
 
   /** Click verify. */

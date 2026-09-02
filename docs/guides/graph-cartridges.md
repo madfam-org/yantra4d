@@ -111,7 +111,7 @@ bring-up, and the render worker must not host an operation that can hang a job.
 
 ```json
 {
-  "project": { "slug": "my-part", "engine": "graph", "force_backend": true },
+  "project": { "slug": "my-part", "engine": "graph" },
   "modes": [
     { "id": "main", "scad_file": "part.graph.json", "engine": "graph",
       "parts": ["flange"], "label": { "en": "Flange", "es": "Brida" },
@@ -126,8 +126,14 @@ is optional but worth stating. `export_formats` at the **top level** is
 required by the metadata gate — omit it and `compliance_audit.py --strict`
 fails and the studio format selector stays hidden.
 
-Graph cartridges are backend-only: there is no browser path, so set
-`force_backend: true`.
+Graph cartridges are server-only, and the **engine already says so**: a mode
+whose engine resolves to `graph` hits rule 1 of the placement table
+(`engine_unsupported:graph`, hard), so no manifest flag is needed and none can
+change it. `project.force_backend` in particular is now only a SOFT hint that
+applies on a `limited` device -- adding it to a graph cartridge buys nothing.
+An author who wants an explicit, readable pin should write the HARD key
+`render.server_only: true` instead; see
+[Render placement](../reference/manifest.md#render-placement-renderserver_only-vs-projectforce_backend).
 
 ## Checking your work
 

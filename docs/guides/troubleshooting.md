@@ -12,7 +12,7 @@ Common issues and their solutions when working with the Yantra4D platform.
 
 - **Complex geometry**: High `grid_cols × grid_rows` values produce exponentially complex models. Reduce count or simplify.
 - **Docker timeout**: The default OpenSCAD timeout in Docker is 300s (`OPENSCAD_TIMEOUT` in `docker-compose.yml`). For local dev, the default is 120s.
-- **WASM mode**: Client-side rendering is ~4x slower than server-side. Reduce parameter complexity.
+- **Browser placement**: a browser render is roughly 3-5x slower than the native server one, and the browser is the **default** placement. Reduce parameter complexity, give the cartridge a `render.browser_max_estimate_seconds` budget so the Studio hands big jobs to the server on its own, or pick **Server** in the sidebar's placement control.
 
 ### Render performance
 
@@ -62,7 +62,7 @@ the historical per-render spawn. A pool problem never fails a render.
 
 ### "OpenSCAD not found"
 
-**Symptom**: Health check returns `"status": "degraded"` with `"checks": { "openscad": { "ok": false } }`. The API still serves requests (200) but server-side rendering is unavailable — clients fall back to WASM.
+**Symptom**: Health check returns `"status": "degraded"` with `"checks": { "openscad": { "ok": false } }`. The API still serves requests (200) but server-side rendering is unavailable. OpenSCAD cartridges are largely unaffected — the browser is where they render by default — but anything hard-pinned to the server (a `cadquery`, `graph` or `implicit` mode, `render.server_only`) has nowhere left to run.
 
 **Fix**: Set `OPENSCAD_PATH` env var to your OpenSCAD binary:
 ```bash
@@ -99,17 +99,48 @@ export CORS_ORIGINS="http://localhost:5173,https://app.yantra4d.com"
 
 Multiple origins are comma-separated. The backend reads this in `app.py` to configure Flask-CORS.
 
-### WASM Mode Activating Unexpectedly
+### A Render Ran in the Browser When You Expected the Server
 
-**Symptom**: Studio falls back to WASM mode even though the backend is running.
+**This is the default, not a fault.** The browser is where a render runs unless
+something concrete says it cannot: rendering there is free for us and unmetered
+for the visitor. A healthy backend is no longer a reason to leave it -- the old
+`if (API_BASE) return 'backend'` line is gone, and `/api/health` now answers
+only "is a *server* placement possible?".
 
-**Causes**:
-- Backend health check times out (2s timeout is aggressive)
-- `VITE_API_BASE` not set or points to wrong URL
-- CORS not configured for the studio origin
-- Backend hasn't finished starting when studio loads
+**Find out which placement was chosen, and why:**
 
-**Fix**: Ensure `VITE_API_BASE` matches your backend URL and CORS includes your studio origin. Refresh the page after the backend is fully started.
+- The sidebar's placement control (`data-testid="render-placement"`) names the
+  placement in its badge and the deciding rule in the line beneath it.
+- From the console, `getPlacementDecision('<slug>')` in
+  `services/engine/renderService.ts` returns `{ placement, reasons, hard }`.
+  Reason keys are stable: `default_browser`, `capability_incapable`,
+  `browser_failed:oom`, `estimate_over_threshold:62s>45s`,
+  `engine_unsupported:cadquery`, `manifest_server_only`, `bundle_unavailable`.
+- To pin one placement for a session: `?render=backend` or `?render=wasm`
+  (whole build: `VITE_RENDER_MODE`). `?render=backend` is deliberately exempt
+  from the outage guard below -- support hands it out when the browser is what
+  broke.
+
+**When the server IS expected** -- the hard rules, which nothing overrides and
+which disable the Auto/Browser/Server control:
+
+| Cause | Reason key |
+|-------|------------|
+| the MODE's engine is `cadquery`, `graph` or `implicit` | `engine_unsupported:<engine>` |
+| manifest `render.server_only: true` | `manifest_server_only` |
+| the wasm bundle is unavailable or names `unsupported` / `unresolved` | `bundle_unavailable`, `bundle_unsupported:…`, `bundle_unresolved:…` |
+
+Everything else that picks the server -- an `incapable` device, a browser render
+that already failed for this slug this session, an estimate over the budget, a
+legacy `force_backend` on a `limited` device -- is **soft**, and flips back to
+the browser when the backend is unreachable. `project.force_backend` alone never
+pins anything.
+
+**If it is the SERVER you cannot reach**: a 2 s health-check timeout, a
+`VITE_API_BASE` pointing at the wrong URL, `CORS_ORIGINS` missing your studio
+origin, or a backend that had not finished starting all make `isBackendAvailable()`
+answer "no". That does not change the default, but it does strand every
+hard-pinned cartridge. Fix the URL and the CORS origin, then reload.
 
 ## Git Submodules
 
@@ -251,8 +282,35 @@ Content-Security-Policy: script-src 'self' 'wasm-unsafe-eval';
 
 WASM rendering uses ~200MB peak. On mobile devices or memory-constrained environments, complex models may fail. Reduce parameter complexity or use server-side rendering.
 
-### SCAD Files Not Found in WASM Mode
+### Browser Render Cannot Find Its Sources
 
-**Symptom**: Worker reports "Module not found" errors.
+**Symptom**: the console logs `[FALLBACK] Browser render failed (init-error), rendering on our server...`, or the placement badge shows the server with a `bundle_*` reason.
 
-**Fix**: SCAD files must be served from the `/scad/` public path in the studio build. Verify they exist in `apps/studio/public/scad/` or are copied during the build step.
+**Where the sources come from**: the worker mounts a **wasm bundle** --
+`GET /api/projects/<slug>/wasm-bundle` -- into its virtual filesystem at
+`/projects/<slug>/…`, `/libs/…` and `/fonts/…`, and runs the entry file by that
+path. There is no `/scad/` fetch and nothing is served from
+`apps/studio/public/scad/`. See [wasm-mode.md](./wasm-mode.md).
+
+**Fix by refusal:**
+
+| Status | `error_code` | What it means |
+|--------|--------------|---------------|
+| 400 | `engine_not_wasm` | No OpenSCAD mode -- a cadquery, graph or implicit cartridge. Server rendering is correct; nothing to fix. |
+| 403 | `project_locked` | Private project, caller not entitled. This must surface as a locked project, not as "your browser cannot render this" -- sign in. |
+| 404 | `project_not_found` | Unknown slug. |
+| 413 | `bundle_too_large` | The include closure crosses 24 MiB or 600 files; the body reports `files`, `bytes`, `max_files`, `max_bytes`. |
+
+A bundle that arrives with a non-empty `unsupported` or `unresolved` list is a
+**hard** server pin, not a warning: a missing include does not render a slightly
+different model, it renders a different one or none at all.
+
+**The `/scad/` trap.** A fallback to `${BASE_URL}/scad/<file>` survives behind
+the same interface for a local backend predating the bundle endpoint, and it is
+**disabled in production builds**. It fetches only each mode's entry file -- no
+libraries, no fonts -- so a cartridge that includes BOSL2 or calls `text()` will
+not render correctly under it, and it logs a `[wasm-bundle] DEV FALLBACK`
+warning saying so. In production the same path is the bug the bundle exists to
+fix: nginx's `try_files … /index.html` answers `/scad/anything` with the SPA's
+own HTML at **200 OK**, so the fallback explicitly refuses a body beginning with
+`<!doctype` rather than writing a page of HTML into the virtual FS as SCAD.

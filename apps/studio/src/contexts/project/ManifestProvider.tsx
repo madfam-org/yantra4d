@@ -64,6 +64,19 @@ export interface Manifest {
   camera_views?: CameraView[]
   parameter_groups?: ParameterGroup[]
   viewer?: Record<string, unknown>
+  /**
+   * Render policy. `server_only: true` is the HARD "this cartridge cannot run
+   * in a browser" flag — nothing (no override, no user preference) moves a
+   * render off the server once it is set.
+   *
+   * It exists because `project.force_backend` was carrying two unrelated
+   * meanings at once: 490 of the 501 cartridges set it, and among the OpenSCAD
+   * ones it almost always meant "WASM cannot load our BOSL2 include or our
+   * font" — a gap the wasm-bundle contract closes — rather than any real
+   * property of the model. `force_backend` is therefore now a SOFT hint (see
+   * renderPlacement.ts, rule 10) and this is the flag that actually pins.
+   */
+  render?: { server_only?: boolean }
   estimate_constants?: Record<string, unknown>
   // Constraints declare parameter interdependencies. Authored manifests use `expression`
   // (e.g. "grid_x * grid_y <= 24"); a legacy shape used `rule`. Both are optional so the

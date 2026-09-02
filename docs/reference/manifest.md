@@ -23,7 +23,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "thumbnail": "/docs/images/gridfinity_thumb.png", // Path to gallery image
     "tags": ["storage", "modular", "organization"],
     "difficulty": "beginner",
-    "force_backend": true,                        // Optional: prefer backend rendering (overridden by WASM fallback when backend is unreachable)
+    "force_backend": true,                        // Optional, SOFT hint only — see "Render placement" below
     "hard_reload": true,                          // Optional: prevents preset persistence across reloads
     "unlisted": true,                              // Optional: hidden from public listings, accessible via direct URL
     "guest_render_limit": 50,                      // Optional: per-project guest render limit override (renders/hour)
@@ -155,6 +155,11 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "default": "rendering"                   // Which preset to apply by default
   },
 
+  "render": {                              // Optional, HARD: where a render is allowed to happen
+    "server_only": true,                   // Never render in the browser
+    "browser_max_estimate_seconds": 20     // Optional: prefer the server above this estimate
+  },
+
   "export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"],  // Optional: supported export formats (default: ["stl"])
 
   "print_estimation": {                     // Optional: print estimation defaults
@@ -199,12 +204,78 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "per_unit": 1.5,      // Added per unit (grid cell or fixed count)
     "fn_factor": 64,      // OpenSCAD $fn resolution factor
     "per_part": 8,        // Added per part in the mode
-    "wasm_multiplier": 3, // Multiplier applied to estimates in WASM mode
-    "warning_threshold_seconds": 60  // Above this estimate: confirm a user-initiated
+    "wasm_multiplier": 3, // Multiplier applied to browser (WASM) estimates
+    "warning_threshold_seconds": 60, // Above this estimate: confirm a user-initiated
                                      // render, skip an automatic one with a notice
+    "wasm_timeout_seconds": 120      // Optional: ceiling on one browser render (default 120)
   }
 }
 ```
+
+## Render placement: `render.server_only` vs `project.force_backend`
+
+Four manifest keys influence where a render runs, and they are deliberately
+**not** the same strength.
+
+| Key | Location | Strength | Meaning |
+|-----|----------|----------|---------|
+| `render.server_only` | top-level `render` object (boolean) | **HARD** | This cartridge cannot be rendered client-side. Nothing overrides it -- not `?render=wasm`, not the visitor's placement preference. |
+| `modes[*].engine` | per mode | **HARD, per mode** | The kernel this one mode renders with. A mode whose engine is `cadquery`, `graph` or `implicit` is server-only; its siblings are unaffected. |
+| `render.browser_max_estimate_seconds` | top-level `render` object (number) | budget | Above this *estimated browser* render time the Studio prefers the server even on a capable device. Replaces the Studio's per-tier default (45 s capable / 15 s limited). A budget, not a prohibition. |
+| `project.force_backend` | `project` object (boolean) | **SOFT hint** | "Prefer the server." Honoured only when the visitor's device measures as `limited`. |
+
+Engine is resolved **per mode**, not per project: an explicit `modes[*].engine`
+wins, else the mode's `scad_file` extension decides (`.graph.json` -> graph,
+`.py` / `.cq` -> cadquery), else `project.engine` (default `openscad`). A project
+whose engine is `implicit` renders every mode with the implicit engine and
+ignores per-mode overrides. `gridfinity` is the canonical dual-engine cartridge:
+`project.engine: "cadquery"` with three modes declaring `engine: "openscad"`,
+and those three render in the browser while `bin` and `baseplate` stay on the
+server.
+
+```json
+{
+  "render": {
+    "server_only": false,
+    "browser_max_estimate_seconds": 30
+  }
+}
+```
+
+The [WASM bundle](../guides/wasm-mode.md#wasm-bundle-endpoint) carries its own
+veto: a non-empty `unsupported` or `unresolved` list means the server is
+required for a faithful render regardless of what any of these keys says.
+
+### Why `force_backend` was demoted
+
+490 of the 501 cartridges in the commons set `project.force_backend: true`. Among
+the OpenSCAD ones it almost always encoded a **client limitation, not a property
+of the model**: the cartridge opens with `include <../../libs/BOSL2/std.scad>`
+(nearly all of them) or calls `text()` (8 of them), and the old browser path
+fetched neither library files nor fonts, so it could not have rendered them.
+
+The `wasm-bundle` contract closes that gap -- the browser now receives the whole
+transitively-resolved include graph plus the cartridge's fonts. Continuing to
+treat the flag as a pin would keep essentially the entire commons on the metered
+server path for a reason that no longer exists, and demoting it to a preference
+is what lets those cartridges become browser-first without editing 490 manifests.
+
+So the flag is now a hint, and cartridges that genuinely must run server-side --
+a model that reaches for something the WASM build cannot do, or output that must
+come from the same binary the shop runs -- declare `render.server_only: true`
+instead. Use `browser_max_estimate_seconds` for merely *expensive*. Engines
+`cadquery`, `graph` and `implicit` are server-only by nature and need no flag at
+all.
+
+One thing that pins the server is not a manifest key at all: the **requested
+export format**. The browser kernel only ever writes STL, so an explicit
+`export_format` of anything else is a hard server placement regardless of what
+the manifest says — see
+[`docs/guides/wasm-mode.md`](../guides/wasm-mode.md#export-formats-are-a-server-capability).
+
+The full precedence table lives in
+[`docs/guides/wasm-mode.md`](../guides/wasm-mode.md).
+
 
 ### Hyperobject Metadata (optional)
 
@@ -432,7 +503,7 @@ The total estimated time is:
 estimated_seconds = base_time + (num_units × per_unit) + (num_parts × per_part)
 ```
 
-In WASM mode, this estimate is multiplied by `wasm_multiplier` (default: 3).
+When the render will run in the **browser** — the default placement — the estimate is multiplied by `wasm_multiplier` (default: 3), because the WASM kernel is slower than the native one. A server placement uses the unmultiplied value. The multiplied number is also what rule 9 compares against `render.browser_max_estimate_seconds`.
 
 If the estimate exceeds `warning_threshold_seconds` (default: 60), what happens next depends on **who asked for the render**:
 

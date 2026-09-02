@@ -43,10 +43,10 @@ The studio reads this manifest and generates the entire UI automatically. Adding
 
 Yantra4D renders models through two paths:
 
-1. **Client-side WASM.** OpenSCAD compiled to WebAssembly runs in a Web Worker inside the browser. This provides instant feedback as you move sliders, with no server required.
-2. **Backend rendering.** A Flask API runs OpenSCAD (or CadQuery for B-Rep models) on the server. This handles complex models that exceed browser memory and produces formats like STEP that require a native CAD kernel.
+1. **In your browser.** OpenSCAD compiled to WebAssembly runs in a Web Worker on your own machine. **This is the default**: it is instant feedback as you move sliders, it needs no server, and it never counts against your render quota.
+2. **On our server.** A Flask API runs native OpenSCAD (or CadQuery for B-Rep models). This handles models that exceed a browser tab's memory, the engines that have no browser build, and formats like STEP that need a native CAD kernel.
 
-If the backend is unreachable, the studio falls back to WASM automatically.
+A render leaves your browser only when something concrete says it cannot run there -- the model's engine, a project that declares itself server-only, or a device too slow for the job -- or when you pick **Server** in the studio's placement control. If the server is unreachable, renders that were merely *preferring* it come straight back to the browser.
 
 ### Tiered access
 

@@ -17,6 +17,12 @@ vi.mock('./services/engine/renderService', () => ({
   cancelSupersededRender: vi.fn(() => false),
   estimateRenderTime: vi.fn(() => 10),
   getRenderMode: vi.fn(() => 'detecting'),
+  // The sidebar's placement indicator reads these. `ensureCapabilityProbe` must
+  // stay a no-op here: the real one spins up a Web Worker that instantiates a
+  // 13 MB OpenSCAD WASM module, which jsdom has no business doing.
+  previewPlacement: vi.fn(() => ({ placement: 'browser', reasons: ['default_browser'], hard: false })),
+  ensureCapabilityProbe: vi.fn(() => Promise.resolve()),
+  canRunWasm: vi.fn(() => true),
 }))
 
 vi.mock('./services/engine/verifyService', () => ({

@@ -184,6 +184,56 @@ default `beforeAll` skips the entire audit for everyone.
   `[role="tablist"][aria-label="Mode selection"]` — the sidebar's
   Design/View/BOM/Export tablist comes first in the DOM.
 
+## Which side of the wire a render actually runs on
+
+This suite provisions Redis, the API and the render worker, but since
+browser-first placement landed it does **not** follow that every render it
+triggers reaches them. `decideRenderPlacement()` picks a side per render, and
+the audit sets no pin, so what it exercises depends on the cartridge:
+
+| Cartridge | Mode | Placement | Why |
+|---|---|---|---|
+| gridfinity | `bin`, `baseplate` (the default) | **server**, hard | they inherit `project.engine: "cadquery"` — rule 1 |
+| gridfinity | any download of `step` / `3mf` | **server**, hard | the browser kernel writes only STL — rule 4 |
+| gridfinity | `cup`, `baseplate_scad`, `lid` | depends on the runner | OpenSCAD, no `render.server_only` |
+| custom-msh | all six modes | depends on the runner | OpenSCAD, no `render.server_only` |
+| tablaco | all modes | depends on the runner | OpenSCAD, no `render.server_only` |
+
+**The server-render coverage is real and it rests on gridfinity.** Its default
+mode is CadQuery, which has no browser kernel, so every gridfinity render,
+model-info, camera-view and download test drives the worker — and that is
+precisely the coverage `HARNESS_TIER=madfam` exists to unblock, since `guest`
+may not use the CadQuery engine at all.
+
+**"Depends on the runner" is not a figure of speech.** Both cartridges set the
+legacy `project.force_backend`, which is now a SOFT hint (rule 10) honoured
+only on a device the capability probe rates `limited`.
+`staticCapabilityCeiling()` rates a machine `limited` when
+`hardwareConcurrency < 4` or `deviceMemory < 4`, and the measured probe can
+demote it further. So on a small ARC pod those renders go to the **server**
+(rule 10), and on a larger one they go to the **browser** (rule 11, the
+default) — same commit, same suite, different answer. The assertions pass
+either way: they check that Generate re-enables, that a canvas is on screen and
+that no upgrade prompt appeared, none of which can tell the two apart, and
+`triggerAndWaitRender()`'s evidence is UI evidence for the same reason.
+
+That is a gap in what this suite can *say*, not a failure. If you want a
+deterministic answer, pin it the way the mocked suites do — the `?render=`
+override is rule 5, above the capability tier and the visitor preference:
+
+```bash
+# every render on the server, for the whole run
+VITE_RENDER_MODE=backend npm run build
+```
+
+or add `?render=backend` to the URL in `goToRealProject()`. Do not reach for
+`hardwareConcurrency` spoofing: under `staticCapabilityCeiling()` it only moves
+the tier, and a `limited` device still renders in the browser by default.
+
+Nothing here is pinned today, deliberately: auditing the placement a real
+visitor gets is also worth something. Just do not read a green run as proof the
+worker rendered anything except gridfinity.
+
 ## When a cartridge changes its modes or presets
 
 Update the expectation to the new fact and **name the fact in-line** (a comment

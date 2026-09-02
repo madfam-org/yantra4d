@@ -113,6 +113,108 @@ components:
           type: string
       required: [status, error, error_code, auth_required]
 
+    WasmBundle:
+      type: object
+      description: |
+        Everything a browser render of one OpenSCAD cartridge needs, in a single
+        response: the full `include`/`use` closure of every OpenSCAD mode's
+        entry file, the fonts it needs, and an honest account of what the WASM
+        build cannot do.
+
+        Every key of `files` and `fonts` is a POSIX path relative to a virtual
+        root that mirrors the server's own layout — `projects/<slug>/…`,
+        `libs/…`, `fonts/…` — so a cartridge's own
+        `include <../../libs/BOSL2/std.scad>` resolves inside the worker without
+        anyone rewriting the source. For includes that resolve through the
+        search path rather than relatively, the worker sets OPENSCADPATH to
+        `/libs:/libs/dotSCAD/src:/projects`.
+      properties:
+        slug:
+          type: string
+          example: rugged-box
+        engine:
+          type: string
+          enum: [openscad]
+          description: |
+            The engine this bundle renders with. Always `openscad`: a dual-engine
+            cartridge gets a bundle covering only the modes it renders with
+            OpenSCAD, and a cartridge with no OpenSCAD modes is refused with 400.
+        entry_files:
+          type: array
+          description: |
+            `scad_file` of every mode the browser can render, as the manifest
+            writes it (a bare name, relative to the cartridge root).
+          items:
+            type: string
+          example: [rugged_complete.scad, rugged_bottom.scad]
+        files:
+          type: object
+          description: Virtual path to UTF-8 source text, for every resolved SCAD file.
+          additionalProperties:
+            type: string
+        fonts:
+          type: object
+          description: |
+            Virtual path to base64-encoded font file, plus a `fonts.conf` entry
+            holding the fontconfig XML the worker writes alongside them. The
+            cartridge's own `fonts/` always travels; the shared font directory
+            travels only when some resolved source calls `text(`.
+          additionalProperties:
+            type: string
+        unsupported:
+          type: array
+          description: |
+            Features this WASM build cannot honour. A non-empty list means the
+            server is required for a faithful render.
+          items:
+            type: string
+            enum: [import, surface, unresolved_includes]
+        unresolved:
+          type: array
+          description: |
+            `include`/`use` targets that could not be resolved, or that resolved
+            outside the cartridge and the shared library tree. Reported as
+            `"<including virtual path>: <target>"`.
+          items:
+            type: string
+        bytes:
+          type: integer
+          description: Total bytes the worker writes into its filesystem — sources, fonts (pre-base64) and fonts.conf.
+        etag:
+          type: string
+          description: SHA-256 over exactly this content; also returned as the ETag header for public projects.
+      required: [slug, engine, entry_files, files, fonts, unsupported, unresolved, bytes, etag]
+
+    BundleTooLarge:
+      type: object
+      description: |
+        Refusal returned with HTTP 413 when a cartridge's source closure exceeds
+        the bundle limits. The totals are included so the caller can see how far
+        over it went rather than guessing.
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: string
+          example: Project sources exceed the browser bundle limit
+        error_code:
+          type: string
+          enum: [bundle_too_large]
+        files:
+          type: integer
+        bytes:
+          type: integer
+        max_files:
+          type: integer
+          example: 600
+        max_bytes:
+          type: integer
+          example: 25165824
+        request_id:
+          type: string
+      required: [status, error, error_code, files, bytes, max_files, max_bytes]
+
     ProjectSummary:
       type: object
       properties:
@@ -173,10 +275,29 @@ components:
               type: string
             force_backend:
               type: boolean
-              description: If true, forces rendering fallback to backend servers instead of local compilation.
+              description: |
+                SOFT hint that the server is preferred; the Studio may still
+                render in the browser when the device is capable and the
+                cartridge's wasm-bundle is complete. For a hard prohibition use
+                the top-level `render.server_only`.
             hard_reload:
               type: boolean
               description: If true, studio clears configuration storage and ignores preset persistence on load.
+        render:
+          type: object
+          description: |
+            Where a render is allowed to happen — the hard rules, as opposed to
+            project.force_backend's preference. These are cartridge-level facts;
+            the requested `export_format` is a per-request one that pins the
+            server just as hard.
+
+          properties:
+            server_only:
+              type: boolean
+              description: HARD - never render in the browser.
+            browser_max_estimate_seconds:
+              type: number
+              description: Above this estimated render time the Studio prefers the server even on a capable device.
         modes:
           type: array
           items:
@@ -283,6 +404,17 @@ components:
           type: string
           enum: [stl, 3mf, off, step, glb, gltf, obj]
           default: stl
+          description: |
+            Anything but `stl` is necessarily a SERVER render. The Studio's
+            browser kernel writes one file, `/output.stl`, and has no converter;
+            `3mf` and `off` come from the native binary and `step`/`glb`/`gltf`/
+            `obj` from trimesh or CadQuery. The Studio therefore treats a
+            non-`stl` format as a hard server placement (rule 4 of
+            `renderPlacement.ts`) rather than rendering in the browser and
+            returning STL bytes under the requested extension. Whichever route
+            produces it, the format is gated on the caller's tier here at
+            generation and again at retrieval on
+            `/api/projects/{slug}/download/...`.
         ignore_cache:
           type: boolean
           description: Bypass L1 and L2 caches to force a fresh render
@@ -508,6 +640,72 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /api/projects/{slug}/wasm-bundle:
+    get:
+      tags: [projects, render]
+      summary: Get the browser-render bundle for an OpenSCAD cartridge
+      operationId: getProjectWasmBundle
+      description: |
+        Returns every source file, library and font the Studio's OpenSCAD WASM
+        worker needs to render this cartridge in the browser, in one response.
+
+        Resolution follows OpenSCAD's own rules: each `include`/`use` target is
+        looked for relative to the including file's directory first, then along
+        the server's OPENSCADPATH (LIBS_DIR, dotSCAD/src, PROJECTS_DIR), and the
+        closure is walked recursively. A resolved file is only admitted when it
+        lands inside the cartridge's own directory or the shared library tree;
+        anything else is dropped and named in `unresolved`.
+
+        Not rate-limited beyond the app-wide default: this is the free browser
+        path, and throttling it by tier would only push traffic onto the render
+        endpoints.
+
+        Cached with `public, max-age=300` and a strong ETag; a private project
+        is served `private, no-store` with no ETag and never 304s, exactly as
+        its manifest is.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The bundle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WasmBundle"
+        "304":
+          description: Not modified (ETag match). Public projects only.
+        "400":
+          description: |
+            The project has no mode this build can render in the browser —
+            `error_code: engine_not_wasm` for a cadquery, graph or implicit
+            cartridge, or an invalid slug.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Project is private and the caller is not entitled to it
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectLocked"
+        "404":
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "413":
+          description: Source closure exceeds the bundle limits
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BundleTooLarge"
 
   /api/projects/{slug}/meta:
     get:

@@ -28,9 +28,33 @@ Defined in `apps/api/extensions.py` via `tiered_rate_key()`.
 
 Response headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`) are always included when limiting is active.
 
+## Browser renders are never rate limited
+
+Rate limits exist to protect **our** CPU. A render that runs in the visitor's own
+browser costs us nothing, so it is never counted, never limited, and never shows
+a quota anywhere in the UI.
+
+The studio renders in the browser **by default** (see
+[`docs/guides/wasm-mode.md`](wasm-mode.md) for the full precedence table), which
+means the common case consumes no quota at all. A render reaches
+`/api/render-stream` — and therefore the limiter — only when the placement
+decision says the browser cannot do the job, or when the visitor chooses
+`Server` in the sidebar's placement control.
+
+Two consequences worth stating plainly:
+
+- The `X-RateLimit-*` headers, the `RateLimitBanner`, and the "N left this hour"
+  half of the placement badge all describe **server** renders only. The browser
+  badge deliberately carries no number: showing one would teach the visitor that
+  everything they do is metered, which is the opposite of the truth.
+- When a server render is refused with HTTP 429, the studio falls back to the
+  browser automatically (unless the cartridge is hard-pinned to the server by its
+  engine or `render.server_only`). Hitting the limit degrades the experience; it
+  does not stop the work.
+
 ## Per-Tier Render Limits
 
-Backend (server-side) render limits are defined per tier in `apps/api/tiers.json`. Client-side WASM rendering is always unlimited.
+Backend (server-side) render limits are defined per tier in `apps/api/tiers.json`. Browser (WASM) rendering is always unlimited.
 
 | Tier | Backend Renders/Hour | AI Requests/Hour |
 |------|:---:|:---:|
@@ -79,12 +103,24 @@ All endpoint limits are centralized in `apps/api/rate_limits.py`:
 
 Health endpoints are exempt from rate limiting (K8s probes).
 
-## Client-Side Behavior (WASM Fallback)
+## Client-Side Behavior (429 -> browser)
 
-When the frontend receives an HTTP 429 (rate limited) response:
+A 429 can only reach a render the placement decision had already sent to the
+server (see "Browser renders are never rate limited" above). When one comes
+back:
 
-1. **Standard projects**: `renderService.ts` catches the 429 and retries the render using client-side WASM (OpenSCAD compiled to WebAssembly). The user sees a seamless fallback with no error.
-2. **`force_backend` projects**: WASM fallback is disabled. The user sees an upgrade/wait message explaining the rate limit. These projects require server-side rendering (e.g., CadQuery engine, complex geometry).
+1. **Soft server placements**: `renderService.ts` catches the 429 and re-runs the
+   render in the browser. The user sees a log line naming the rate limit, not an
+   error.
+2. **Hard server pins**: there is no browser path to fall back to, so the user
+   sees the upgrade/wait message instead. A pin is hard only when the MODE's
+   engine is `cadquery`, `graph` or `implicit`, when the manifest sets
+   `render.server_only: true`, or when the wasm bundle is unavailable or names
+   `unsupported` / `unresolved` entries.
+
+`project.force_backend` is **not** one of them. It was demoted to a SOFT hint
+that applies only on a `limited` device, so it neither pins a project to the
+server nor disables the 429 fallback.
 
 This behavior is implemented in `apps/studio/src/services/engine/renderService.ts`.
 
@@ -114,4 +150,4 @@ Without Redis, each Gunicorn worker maintains independent counters — a user co
 | `apps/api/rate_limits.py` | Centralized limit constants for all endpoints |
 | `apps/api/tiers.json` | Per-tier feature flags and render limits |
 | `apps/api/services/core/tier_service.py` | Tier resolution from JWT claims |
-| `apps/studio/src/services/engine/renderService.ts` | Client-side 429 handling and WASM fallback |
+| `apps/studio/src/services/engine/renderService.ts` | Client-side 429 handling and the fallback to browser rendering |

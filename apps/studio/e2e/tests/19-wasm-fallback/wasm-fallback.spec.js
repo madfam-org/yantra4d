@@ -1,14 +1,21 @@
 /**
- * E2E tests for WASM fallback rendering mode.
+ * E2E tests for a studio whose backend is unreachable.
  *
- * The studio auto-detects the render backend by calling GET /api/health.
- * When the backend is unreachable (or returns a non-ok status), the service
- * falls back to client-side WASM rendering via openscad-worker.js.
+ * Since the browser became the DEFAULT placement, a backend outage is no longer
+ * what *causes* browser rendering — the browser was already going to do the
+ * work. What the outage still governs is whether a SERVER placement is possible
+ * at all: a soft server decision flips back to the browser when `/api/health`
+ * does not answer, and a hard one (engine, `render.server_only`, an unsupported
+ * bundle) does not.
  *
  * These tests simulate backend unavailability and verify that:
  * 1. The studio loads and initialises without errors.
- * 2. The render pipeline falls back to WASM mode gracefully.
+ * 2. The placement indicator reports the browser.
  * 3. The user sees appropriate feedback (no crash, no blank screen).
+ *
+ * The placement precedence table itself is covered by
+ * src/services/engine/renderPlacement.test.js, and the indicator/control by
+ * e2e/tests/25-render-placement/.
  *
  * NOTE: TTL-based re-check (backend recovery after 30s negative TTL expires)
  * is covered by unit tests in backendDetection.test.js, not here — 30s
@@ -27,7 +34,10 @@ import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
  */
 async function simulateBackendDown(page) {
     // Abort the health check — isBackendAvailable() catches the error and
-    // sets _backendAvailable = false, which causes detectMode() → 'wasm'.
+    // reports false, which is what `decideRenderPlacement`'s outage guard reads:
+    // any SOFT server decision flips back to the browser. It does not *cause*
+    // browser rendering (rule 11 already does); it removes the server as an
+    // escape hatch.
     await page.route('**/api/health', (route) => route.abort('failed'))
 
     // Also abort render-stream so any accidental backend call fails fast.
@@ -43,6 +53,30 @@ test.describe('WASM Fallback Mode', () => {
     test.beforeEach(async ({ page }) => {
         await setLanguage(page, 'en')
         await simulateBackendDown(page)
+        // Seed a measured capability record so the tier is a property of the
+        // test rather than of the runner, and so the probe does not have to
+        // instantiate a 13 MB WASM module to answer.
+        await page.addInitScript(() => {
+            try {
+                localStorage.setItem('y4d.render_capability.v1', JSON.stringify({
+                    version: 1, tier: 'capable', benchmarkMs: 120, at: Date.now(),
+                    signals: {
+                        wasm: true, simd: true, cores: 8, memoryGb: 8, mobile: false,
+                        crossOriginIsolated: false, saveData: false, reducedData: false,
+                    },
+                }))
+            } catch { /* storage disabled — the app copes, and so does this test */ }
+        })
+    })
+
+    test('the placement indicator reports the browser while the backend is down', async ({ page }) => {
+        await goToStudio(page)
+
+        const placement = page.getByTestId('render-placement')
+        await expect(placement).toBeVisible()
+        await expect(placement).toHaveAttribute('data-placement', 'browser')
+        await expect(page.getByTestId('render-placement-badge'))
+            .toHaveText('Rendering in your browser (free)')
     })
 
     test('studio loads without crashing when backend is unreachable', async ({ page }) => {

@@ -19,10 +19,19 @@ test.describe('Error Handling', () => {
     await expect(page.locator('header')).toBeVisible()
   })
 
+  // The failing routes are installed BEFORE navigation in the three tests
+  // below. The Studio auto-generates on load; with browser-first placement
+  // that first render (browser attempt, then the server fallback against the
+  // still-healthy mock) succeeded and populated the in-memory render cache,
+  // so a later Generate with the same params answered "Loaded from cache" and
+  // never touched the route the test had just broken. Installing the failure
+  // first means the on-load render fails, nothing is cached, and the Generate
+  // click reaches the broken route — which is what each test's name claims.
+  // (On main these passed only because the WASM path died before any API call.)
   test('network error on render shows error in console', async ({ page, sidebar, viewer }) => {
-    await goToStudio(page)
     await page.route('**/api/render', (route) => route.abort('connectionrefused'))
     await page.route('**/api/render-stream', (route) => route.abort('connectionrefused'))
+    await goToStudio(page)
     await sidebar.clickGenerate()
     // Poll rather than sleeping 2s and reading once. Under serial load the
     // error had not reached the console yet and the single read saw the
@@ -31,13 +40,13 @@ test.describe('Error Handling', () => {
   })
 
   test('API 500 on render surfaces error to user', async ({ page, sidebar, viewer }) => {
-    await goToStudio(page)
     await page.route('**/api/render', (route) => {
       route.fulfill({ status: 500, json: { error: 'Internal server error' } })
     })
     await page.route('**/api/render-stream', (route) => {
       route.fulfill({ status: 500, json: { error: 'Internal server error' } })
     })
+    await goToStudio(page)
     await sidebar.clickGenerate()
     // Poll rather than sleeping 2s and reading once. Under serial load the
     // error had not reached the console yet and the single read saw the
@@ -46,13 +55,13 @@ test.describe('Error Handling', () => {
   })
 
   test('API 400 on render shows error', async ({ page, sidebar, viewer }) => {
-    await goToStudio(page)
     await page.route('**/api/render', (route) => {
       route.fulfill({ status: 400, json: { error: 'Bad request: missing mode' } })
     })
     await page.route('**/api/render-stream', (route) => {
       route.fulfill({ status: 400, json: { error: 'Bad request: missing mode' } })
     })
+    await goToStudio(page)
     await sidebar.clickGenerate()
     // This test ended here, on a bare 2s wait with no assertion — it passed
     // whether or not a 400 surfaced anything. Its name is a claim; make it one.

@@ -110,8 +110,12 @@ def _extract_modules(text: str) -> list[dict]:
 
 # --- Include / Use extraction ---
 
-_INCLUDE_PATTERN = re.compile(r"^include\s*<(.+?)>", re.MULTILINE)
-_USE_PATTERN = re.compile(r"^use\s*<(.+?)>", re.MULTILINE)
+# Leading whitespace is allowed because indented includes are common inside
+# vendored libraries; the line anchor still keeps a `// include <x>` comment or
+# a mention inside a string from being read as a dependency.
+_INCLUDE_PATTERN = re.compile(r"^[ \t]*include\s*<(.+?)>", re.MULTILINE)
+_USE_PATTERN = re.compile(r"^[ \t]*use\s*<(.+?)>", re.MULTILINE)
+_DEPENDENCY_PATTERN = re.compile(r"^[ \t]*(?:include|use)\s*<(.+?)>", re.MULTILINE)
 
 
 def _extract_includes(text: str) -> list[str]:
@@ -120,6 +124,23 @@ def _extract_includes(text: str) -> list[str]:
 
 def _extract_uses(text: str) -> list[str]:
     return _USE_PATTERN.findall(text)
+
+
+def extract_dependencies(text: str) -> list[str]:
+    """Every ``include``/``use`` target in source order, deduplicated.
+
+    ``include`` and ``use`` differ in what they import into scope but not in how
+    OpenSCAD *finds* the file, so anything walking a dependency graph — the WASM
+    bundle resolver — wants them as one ordered list rather than two.
+    """
+    seen: set[str] = set()
+    targets: list[str] = []
+    for target in _DEPENDENCY_PATTERN.findall(text):
+        target = target.strip()
+        if target and target not in seen:
+            seen.add(target)
+            targets.append(target)
+    return targets
 
 
 # --- render_mode extraction ---

@@ -656,7 +656,7 @@ A mismatch in any of these causes token validation to fail with a 401 error.
 2. Confirm `PRIVATE_PROJECTS` in `k8s/production/yantra4d-backend-deployment.yaml`
    lists every client cartridge the backend image carries (the image build
    initialises them explicitly in `deploy.yml › build-backend`).
-3. Roll the backend (a new digest pin or `kubectl rollout restart` through
+3. Roll the backend (a new digest pin, or a rollout restart issued through
    Enclii) so the pod reads the new keys — they are read at call time, but the
    Secret is mounted at pod start.
 4. Verify without touching a secret: `curl -s -o /dev/null -w '%{http_code}'

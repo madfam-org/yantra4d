@@ -19,9 +19,8 @@ const MOCK_MODE_IDS = ['cup', 'single', 'grid']
 test.describe('Keyboard Shortcuts', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
-    // Pin the render path to the mocked backend. Without this, detectMode()
-    // reads navigator.hardwareConcurrency and picks WASM on any runner with
-    // >= 4 cores, so the per-test render mocks below never load.
+    // Pin the render path to the mocked server. Without this the browser is the
+    // default placement, so the per-test render mocks below are never fetched.
     await forceBackendRender(page)
     await goToStudio(page)
   })
@@ -77,8 +76,8 @@ test.describe('Keyboard Shortcuts', () => {
     // Escape has something to cancel is set by the test rather than by how fast
     // the runner happens to render. The previous version raced twice over: the
     // initial auto-render might still be running when it pressed Escape (so the
-    // Cancel it saw belonged to the *un*mocked render), and on hardware where
-    // detectMode() picked WASM the 10s mock below was never consulted at all.
+    // Cancel it saw belonged to the *un*mocked render), and on a browser
+    // placement — the default — the 10s mock below was never consulted at all.
     let releaseRender = () => { }
     const renderHeld = new Promise((resolve) => { releaseRender = resolve })
     await page.unroute('**/api/render-stream')

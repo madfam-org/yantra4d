@@ -66,7 +66,7 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Cartridges declaring an `animations` block | 1 | 500 | 0.2% | 1 / 326 = 0.3% | -0.1 pp |
 | CDG family keys with ≥1 member in the commons | 113 | 116 | 97.4% | 55 / 61 = 90.2% | +7.2 pp |
 | Cartridges resolving to ≥1 CDG standard family | 210 | 500 | 42.0% | ~98 / 326 = 30.1% | +11.9 pp |
-| Studio strings translated across de/fr/pt/zh | 944 | 1384 | 68.2% | ~992 / 1308 = 75.8% | -7.6 pp |
+| Studio strings translated across de/fr/pt/zh | 1040 | 1480 | 70.3% | ~992 / 1308 = 75.8% | -5.6 pp |
 | Studio locale files carrying the full key set | 6 | 6 | 100.0% | 6 / 6 = 100.0% | +0.0 pp |
 | Dual-engine cartridges (CadQuery B-Rep + OpenSCAD CSG) | 22 | 500 | 4.4% | — | new in 2026-09 |
 | Cartridges declaring ≥1 CDG interface | 486 | 500 | 97.2% | — | new in 2026-09 |

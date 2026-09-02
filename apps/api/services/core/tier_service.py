@@ -242,6 +242,50 @@ def resolve_tier(auth_claims: dict | None) -> str:
     return tier
 
 
+def harness_tier_override() -> str | None:
+    """The tier an auth-disabled harness asked to be gated as, or None.
+
+    Opt-in and narrow on purpose. The nightly browser audit exists to drive real
+    renders, and gridfinity's default `bin` mode is CadQuery, which `guest` may
+    not use (tiers.json) — so with AUTH_ENABLED=false and no override the render
+    is refused with a 403 and the studio answers with its upgrade prompt instead
+    of a model. Granting the harness a tier fixes that without touching what an
+    anonymous visitor is allowed to do.
+
+    Three rules keep it from becoming a hole:
+
+    - Empty by default. Nothing changes for any deployment that does not set it,
+      including the tier-enforcement suite, which runs auth-off (conftest) and
+      must keep seeing guest refusals.
+    - Ignored outright whenever AUTH_ENABLED is true, so it cannot widen a real
+      deployment even if the variable leaks into one.
+    - Ignored unless it names a tier this build knows.
+
+    Refusals are logged, never raised: a harness with a typo should run gated,
+    not fail to boot.
+    """
+    from config import Config
+
+    requested = (Config.HARNESS_TIER or "").strip().lower()
+    if not requested:
+        return None
+    if Config.AUTH_ENABLED:
+        logger.warning(
+            "HARNESS_TIER=%r ignored: it is only honoured while AUTH_ENABLED is false",
+            requested,
+        )
+        return None
+    tier = _normalize_tier(requested)
+    if tier not in TIER_HIERARCHY:
+        logger.warning(
+            "HARNESS_TIER=%r is not a known tier (%s); ignoring",
+            requested,
+            ", ".join(sorted(TIER_HIERARCHY)),
+        )
+        return None
+    return tier
+
+
 def describe_entitlement(auth_claims: dict | None) -> dict:
     """Explain how the tier was arrived at, so a bad claim is visible.
 

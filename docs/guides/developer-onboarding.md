@@ -193,7 +193,17 @@ cd apps/api
 pytest                # all tests
 pytest --cov          # with coverage
 
-# E2E (browser audit — requires Docker stack)
+# E2E — mocked suites (chromium/firefox/webkit; the audit suite is excluded)
+cd apps/studio
+npx playwright test --project=chromium
+
+# E2E — nightly browser audit (23-browser-audit): a REAL backend, real OpenSCAD
+# renders, and no Docker. Needs OpenSCAD, Redis on :6379, the API on :5000 and
+# apps/worker/render_worker.py running — the API enqueues every render to the
+# worker over Redis and answers 503 without its heartbeat, and ./scripts/dev/dev.sh
+# starts neither Redis nor the worker. Playwright's own webServer serves the built
+# Studio (`vite preview` on :5173, /api proxied to :5000).
+# Exact commands + suite conventions: apps/studio/e2e/tests/23-browser-audit/README.md
 cd apps/studio
 npx playwright test --project=audit
 ```

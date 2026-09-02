@@ -270,9 +270,19 @@ class TestRenderRoutes:
         res = client.post("/api/render-cancel", json={"project": PRIVATE_SLUG})
         assert res.status_code == 403
 
-    def test_render_cancel_without_a_slug_is_unchanged(self, client):
+    def test_render_cancel_without_a_slug_is_not_gated(self, client):
+        """No slug, no project gate: the scoped-cancel contract decides the answer.
+
+        A bodyless cancel is a 400 `cancel_target_required` (a target is
+        mandatory since the scoped rewrite), never a 403 `project_locked`; a
+        targeted cancel with no slug goes through untouched by the gate.
+        """
         res = client.post("/api/render-cancel", json={})
-        assert res.status_code == 200
+        assert res.status_code == 400
+        assert res.get_json()["error_code"] == "cancel_target_required"
+
+        res = client.post("/api/render-cancel", json={"request_id": "req-without-slug"})
+        assert res.status_code != 403
 
     def test_public_render_is_not_blocked_by_the_gate(self, client):
         """The public path must not acquire a 403 — whatever else it returns."""

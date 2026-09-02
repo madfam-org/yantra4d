@@ -4,8 +4,14 @@
  * Usage:
  *   const ws = createWebSocket('/api/ws/render/session-123')
  *   ws.onMessage((data) => console.log(data))
- *   ws.send({ action: 'cancel' })
+ *   ws.send({ action: 'ping' })
  *   ws.close()
+ *
+ * The backend WebSocket channels are read-only: they answer `ping` and stream
+ * broadcasts, and nothing sent over them mutates server state. In particular
+ * `{ action: 'cancel' }` on the render channel is refused for every caller --
+ * cancel a render with `POST /api/render-cancel` instead (see docs/AUTH.md,
+ * "WebSocket channels").
  */
 
 interface WebSocketMessage {

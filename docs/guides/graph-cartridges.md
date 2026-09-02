@@ -166,6 +166,21 @@ python3 scripts/qa/generate_commons_catalog.py
 python3 scripts/qa/check_licenses.py
 ```
 
+`validate_manifests.py` treats a `projects/<slug>/` directory that is registered
+in `.gitmodules` but has no `project.json` as a FAILURE — on CI that means the
+submodule fetch broke, and the run would otherwise "pass" by validating only the
+cartridges it could see. Submodules marked `update = none` (the client-private
+cartridges) are reported as skipped instead. On a local partial checkout, where
+leaving submodules uninitialised is normal, pass
+`--allow-uninitialised-submodules` (or set
+`VALIDATE_MANIFESTS_ALLOW_UNINITIALISED=1`) to downgrade that failure to a skip:
+
+```bash
+python3 scripts/qa/validate_manifests.py --allow-uninitialised-submodules
+```
+
+Never set it in CI.
+
 ## Tier gating
 
 The graph engine is gated by the `graph_engine` key in

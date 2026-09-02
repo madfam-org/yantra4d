@@ -136,6 +136,12 @@ let _initPromise: Promise<void> | null = null
 //: checked against the outcome instead of being taken on faith. Read it with
 //: `getLastObservedRenderSeconds()`; null until a render has completed.
 let _lastObservedRenderSeconds: number | null = null
+//: Cancellation identity of the backend render currently in flight, learned from
+//: the stream's `job` events. `POST /api/render-cancel` acts only on the ids it
+//: is given, so without this a cancel has no target — and the endpoint no longer
+//: has a cancel-everything default to fall back on. Null whenever no backend
+//: render is running (a browser/WASM render never sets it).
+let _activeRender: { requestId: string | null, jobIds: string[] } | null = null
 
 /**
  * Whether this device could run a browser render at all.
@@ -509,6 +515,8 @@ interface SSEData {
   error?: string
   reason?: string
   parts?: RenderPart[]
+  request_id?: string
+  job_ids?: string[]
 }
 
 /**
@@ -728,13 +736,24 @@ async function renderBackend(
   let finalParts: RenderPart[] = []
   let streamFailure: string | null = null
   let sseBuffer = ''
+  // This stream's own identity object, so the cleanup below can tell whether
+  // `_activeRender` is still ours before clearing it.
+  let myIdentity: { requestId: string | null, jobIds: string[] } | null = null
 
   const processEvent = (data: SSEData) => {
     if (data.progress !== undefined) {
       onProgress?.({ percent: data.progress })
     }
 
-    if (data.event === 'part_start') {
+    if (data.event === 'job') {
+      // The server re-sends this as each part is queued, carrying every id
+      // issued so far, so the last one wins rather than accumulating here.
+      myIdentity = {
+        requestId: data.request_id ?? null,
+        jobIds: data.job_ids ?? []
+      }
+      _activeRender = myIdentity
+    } else if (data.event === 'part_start') {
       onProgress?.({
         part: data.part,
         log: `[${data.part}] Starting... (${data.index! + 1}/${data.total})`
@@ -774,21 +793,28 @@ async function renderBackend(
     }
   }
 
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
 
-    sseBuffer += decoder.decode(value, { stream: true })
-    const parsed = parseSSEBuffer(sseBuffer)
-    sseBuffer = parsed.remainder
+      sseBuffer += decoder.decode(value, { stream: true })
+      const parsed = parseSSEBuffer(sseBuffer)
+      sseBuffer = parsed.remainder
 
-    for (const data of parsed.events) processEvent(data)
-  }
+      for (const data of parsed.events) processEvent(data)
+    }
 
-  sseBuffer += decoder.decode()
-  if (sseBuffer.trim()) {
-    const parsed = parseSSEBuffer(`${sseBuffer}\n\n`)
-    for (const data of parsed.events) processEvent(data)
+    sseBuffer += decoder.decode()
+    if (sseBuffer.trim()) {
+      const parsed = parseSSEBuffer(`${sseBuffer}\n\n`)
+      for (const data of parsed.events) processEvent(data)
+    }
+  } finally {
+    // The stream is over either way: these jobs are done, and holding their ids
+    // would let a later cancel fire at a finished render. Clear only our own —
+    // a render that started while this one was finishing owns the slot now.
+    if (_activeRender === myIdentity) _activeRender = null
   }
 
   if (finalParts.length === 0) {
@@ -945,11 +971,28 @@ export function resetBrowserFailures(slug?: string): void {
 
 /**
  * Cancel the current render.
+ *
+ * The server cancels only the jobs it is handed, so this sends the identity the
+ * stream published for the render in flight. With nothing in flight — a browser
+ * (WASM) render, or a backend render that has already finished — there is no
+ * target and the request is skipped: `POST /api/render-cancel` with no target is
+ * a 400, and the cancel-everything behaviour it used to have was the bug.
  */
 export async function cancelRender(): Promise<void> {
-  try {
-    await apiFetch(`${API_BASE}/api/render-cancel`, { method: 'POST' })
-  } catch { /* best-effort cancel */ }
+  const active = _activeRender
+  const target: Record<string, unknown> = {}
+  if (active?.requestId) target.request_id = active.requestId
+  if (active?.jobIds.length) target.job_ids = active.jobIds
+
+  if (Object.keys(target).length > 0) {
+    try {
+      await apiFetch(`${API_BASE}/api/render-cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(target)
+      })
+    } catch { /* best-effort cancel */ }
+  }
 
   disposeWorker()
 }

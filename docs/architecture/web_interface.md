@@ -111,7 +111,7 @@ backend/
 | `/api/estimate` | POST | 200/hr | Estimate render time. Accepts `mode` or `scad_file`. Optional `project` slug. |
 | `/api/render` | POST | 100/hr | Synchronous render. Optional `project` slug. |
 | `/api/render-stream` | POST | 100/hr | SSE progress streaming. Optional `project` slug. |
-| `/api/render-cancel` | POST | 500/hr | Cancel active render |
+| `/api/render-cancel` | POST | 500/hr | Cancel a render by `request_id` or `job_ids`. A target is required; `{all:true}` needs the admin role. |
 | `/api/verify` | POST | 50/hr | Run verification suite for a mode. Optional `project` slug. |
 | `/api/health` | GET | 500/hr | Health check |
 | `/api/config` | GET | 500/hr | Legacy config endpoint (delegates to manifest) |
@@ -165,9 +165,12 @@ All styles are supported. When `mode` is present, `scad_file` is resolved automa
 { "mode": "unit", "project": "my-project" }
 ```
 
-**Render Cancel** (no body required):
+**Render Cancel** (a target is required — ids come from the stream's `job` event):
+```json
+{ "request_id": "5f1c…" }
 ```
-POST /api/render-cancel
+```json
+{ "job_ids": ["8ab2…"] }
 ```
 
 #### Response Examples

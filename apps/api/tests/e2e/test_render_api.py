@@ -203,17 +203,20 @@ class TestTierEnforcementRender:
 
 
 class TestCancelAPI:
-    def test_cancel_no_active_render(self, client):
+    def test_cancel_without_a_target_is_rejected(self, client):
+        """An empty POST used to cancel every render on the box. Now it is a 400."""
         res = client.post("/api/render-cancel")
+        assert res.status_code == 400
+        assert res.get_json()["error_code"] == "cancel_target_required"
+
+    def test_cancel_with_a_job_id_reports_what_it_cancelled(self, client):
+        """Cancel response carries the status field and the jobs it marked."""
+        res = client.post("/api/render-cancel", json={"job_ids": ["no-such-job"]})
         assert res.status_code == 200
         data = res.get_json()
-        assert data["cancelled"] is False
-
-    def test_cancel_returns_status_field(self, client):
-        """Cancel response includes a status field indicating no_active_render."""
-        res = client.post("/api/render-cancel")
-        data = res.get_json()
         assert data["status"] == "no_active_render"
+        assert data["cancelled"] is False
+        assert data["cancelled_jobs"] == []
 
 
 class TestEstimateEdgeCases:

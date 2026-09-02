@@ -249,15 +249,92 @@ describe('getRenderMode', () => {
 })
 
 describe('cancelRender', () => {
-  it('calls /api/render-cancel proactively without a mode health check', async () => {
+  // Scoped cancel is a SERVER-render concern, and the server is no longer where
+  // a render lands by default, so the suite pins it. Without the pin these
+  // tests reached the SSE path only because this fixture's browser estimate
+  // happens to sit above a `limited` device's budget — true today, and nothing
+  // an assertion about cancel identity should be resting on.
+  beforeEach(pinServer)
+
+  // The server cancels only the jobs it is handed. It used to cancel every
+  // render on the box for any caller, with no body at all — so a cancel with no
+  // known target is now skipped rather than sent.
+  const renderStreamWithJobIds = () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockResolvedValueOnce({ ok: true }) // cancel call
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"job","request_id":"req-42","job_ids":[]}',
+        'data: {"event":"job","request_id":"req-42","job_ids":["job-a"]}',
+        'data: {"event":"output","part":"main","line":"Compiling..."}',
+        ''
+      ])
+    })
+    return fetchMock
+  }
+
+  it('skips the server call when no backend render has announced a job', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
 
     await renderService.cancelRender()
 
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-    expect(fetchMock.mock.calls[0][0]).toContain('/api/render-cancel')
-    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'POST' })
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('sends the request_id and job_ids the stream announced', async () => {
+    const fetchMock = renderStreamWithJobIds()
+
+    // The stream ends without parts, which throws — the ids are still learned.
+    await expect(
+      renderService.renderParts('unit', {}, manifest, {})
+    ).rejects.toThrow()
+
+    fetchMock.mockResolvedValueOnce({ ok: true }) // the cancel call
+    await renderService.cancelRender()
+
+    // A finished stream clears the identity, so nothing is sent afterwards.
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('cancels the in-flight render with the ids from its job event', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"job","request_id":"req-42","job_ids":["job-a"]}',
+        'data: {"event":"output","part":"main","line":"Compiling...","progress":50}',
+        'data: {"event":"cancelled","part":"main","message":"Render cancelled by user request"}',
+        ''
+      ])
+    })
+
+    // Press Cancel from inside the stream, after the job event has been seen —
+    // the state the Cancel button actually fires in.
+    let cancelCall = null
+    const cancels = []
+    const onProgress = (e) => {
+      if (e.percent !== 50) return
+      fetchMock.mockImplementationOnce(async (url, init) => {
+        cancelCall = { url, init }
+        return { ok: true }
+      })
+      cancels.push(renderService.cancelRender())
+    }
+
+    await expect(
+      renderService.renderParts('unit', {}, manifest, { onProgress })
+    ).rejects.toThrow('Render cancelled by user request')
+    await Promise.all(cancels)
+
+    expect(cancelCall).not.toBeNull()
+    expect(cancelCall.url).toContain('/api/render-cancel')
+    expect(cancelCall.init.method).toBe('POST')
+    expect(JSON.parse(cancelCall.init.body)).toEqual({
+      request_id: 'req-42',
+      job_ids: ['job-a']
+    })
   })
 })
 
@@ -722,7 +799,7 @@ describe('render.browser_max_estimate_seconds reaches the decision', () => {
 })
 
 describe('cancelRender with active worker', () => {
-  it('terminates worker and resets state when worker is active', async () => {
+  it('tears down the WASM worker without calling the server', async () => {
     const mockTerminate = vi.fn()
     class MockWorker {
       constructor() { this.onmessage = null }
@@ -737,15 +814,26 @@ describe('cancelRender with active worker', () => {
     fetchMock.mockResolvedValue({ ok: true })
 
     await renderService.cancelRender()
-    // cancelRender should not throw even with no active worker
-    expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/api/render-cancel'),
-      expect.objectContaining({ method: 'POST' })
-    )
+
+    // A browser render has no server-side job, so there is nothing to cancel
+    // there — and no target to send.
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('does not throw if cancel fetch fails', async () => {
-    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('offline'))
+  it('does not throw if the cancel fetch fails', async () => {
+    pinServer() // the failing cancel is the SERVER one; ask for a server render
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"job","request_id":"req-42","job_ids":["job-a"]}',
+        ''
+      ])
+    })
+    await expect(renderService.renderParts('unit', {}, manifest, {})).rejects.toThrow()
+
+    fetchMock.mockRejectedValueOnce(new Error('offline'))
     await expect(renderService.cancelRender()).resolves.toBeUndefined()
   })
 })

@@ -187,6 +187,10 @@ npm run test:watch    # Watch mode
 npm run test:coverage # With coverage thresholds
 npm run lint          # ESLint + jsx-a11y accessibility rules
 npm run analyze       # Bundle size visualization (opens stats.html)
+
+# i18n gate (CI job `i18n-audit`): locale key parity fails hard; the hardcoded-string
+# count is a ratchet against scripts/qa/i18n_baseline.json (`--update-baseline` to lower it).
+python3 ../../scripts/qa/i18n_audit.py
 ```
 
 ### Coverage Thresholds

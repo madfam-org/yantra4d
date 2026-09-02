@@ -316,6 +316,105 @@ describe('Controls', () => {
     expect(screen.queryByText('Base Only')).not.toBeInTheDocument()
   })
 
+  // Regression: an out-of-mode preset must not steal the highlight.
+  //
+  // Values and ids copied verbatim from projects/custom-msh/project.json
+  // (`default_holder` and `assembly_rack_slides`) and from the params the
+  // studio actually holds after applying the latter in assembly mode. The two
+  // preset value sets overlap: everything `default_holder` declares is still
+  // satisfied afterwards, and `holder_thickness`/`chamfer_pocket` are simply
+  // untouched defaults. Because `default_holder` is declared first, matching
+  // over the whole preset list picked it — a preset assembly mode does not even
+  // render — and the button the user had just clicked stayed grey. The nightly
+  // browser audit caught this as "assembly presets control assembly_level".
+  const MSH_PRESETS = [
+    {
+      id: 'default_holder', label: { en: 'Default Holder' }, visible_in_modes: ['holder'],
+      values: {
+        substrate_length: 25.4, substrate_width: 25.4, holder_thickness: 2.0,
+        tolerance_xy: 0.4, tolerance_z: 0.2, wall_thickness: 2.0,
+        label_area: 1, chamfer_pocket: 1,
+      },
+    },
+    {
+      id: 'default_box', label: { en: 'Default Racks Box' }, visible_in_modes: ['base', 'lid'],
+      values: {
+        substrate_length: 25.4, substrate_width: 25.4, num_racks: 3,
+        tolerance_xy: 0.4, tolerance_z: 0.2, wall_thickness: 2.0,
+        label_area: 1, stack_along_y: 1,
+      },
+    },
+    {
+      id: 'assembly_rack_slides', label: { en: 'Staining rack WITH corresponding slides' },
+      visible_in_modes: ['assembly'],
+      values: {
+        assembly_level: 1, substrate_length: 25.4, substrate_width: 25.4,
+        num_slots: 10, num_racks: 3, tolerance_xy: 0.4, tolerance_z: 0.2,
+        wall_thickness: 2.0, handle: 1, open_bottom: 1, stack_along_y: 1,
+        divider_style: 1, frame_base_grid: 1, side_guards: 1,
+      },
+    },
+    {
+      id: 'assembly_box_lid', label: { en: 'Racks box WITH lid' },
+      visible_in_modes: ['assembly'],
+      values: {
+        assembly_level: 3, substrate_length: 25.4, substrate_width: 25.4,
+        num_slots: 10, num_racks: 3, tolerance_xy: 0.4, tolerance_z: 0.2,
+        wall_thickness: 2.0, handle: 1, open_bottom: 1, stack_along_y: 1,
+        frame_base_grid: 1, side_guards: 1,
+      },
+    },
+  ]
+
+  // Exactly what the studio holds after applying assembly_rack_slides: manifest
+  // defaults, plus that preset's values.
+  const MSH_PARAMS_AFTER_ASSEMBLY_PRESET = {
+    assembly_level: 1, substrate_length: 25.4, substrate_width: 25.4,
+    num_slots: 10, num_racks: 3, tolerance_xy: 0.4, tolerance_z: 0.2,
+    wall_thickness: 2.0, handle: 1, open_bottom: 1, stack_along_y: 1,
+    divider_style: 1, frame_base_grid: 1, side_guards: 1,
+    holder_thickness: 2.0, label_area: 1, chamfer_pocket: 1,
+  }
+
+  it('highlights the applied preset even when an out-of-mode preset also matches', () => {
+    renderControls({
+      mode: 'assembly',
+      params: MSH_PARAMS_AFTER_ASSEMBLY_PRESET,
+      presets: MSH_PRESETS,
+      onApplyPreset: vi.fn(),
+    })
+    const applied = screen.getByText('Staining rack WITH corresponding slides')
+    expect(applied.className).toContain('bg-primary')
+  })
+
+  it('does not highlight a preset that is not offered in this mode', () => {
+    renderControls({
+      mode: 'assembly',
+      params: MSH_PARAMS_AFTER_ASSEMBLY_PRESET,
+      presets: MSH_PRESETS,
+      onApplyPreset: vi.fn(),
+    })
+    // default_holder's values all still match, but assembly mode does not offer
+    // it, so it must neither render nor claim the active slot.
+    expect(screen.queryByText('Default Holder')).not.toBeInTheDocument()
+    expect(screen.queryByText('Default Racks Box')).not.toBeInTheDocument()
+    // The sibling assembly preset differs only by assembly_level, so it stays grey.
+    const sibling = screen.getByText('Racks box WITH lid')
+    expect(sibling.className).not.toContain('bg-primary')
+  })
+
+  it('drops the highlight once a value no longer matches the preset', () => {
+    renderControls({
+      mode: 'assembly',
+      params: { ...MSH_PARAMS_AFTER_ASSEMBLY_PRESET, num_slots: 12 },
+      presets: MSH_PRESETS,
+      onApplyPreset: vi.fn(),
+    })
+    for (const label of ['Staining rack WITH corresponding slides', 'Racks box WITH lid']) {
+      expect(screen.getByText(label).className).not.toContain('bg-primary')
+    }
+  })
+
   it('multiple constraint violations render per param', () => {
     renderControls({
       constraintsByParam: {

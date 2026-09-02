@@ -196,6 +196,31 @@ describe('App', { timeout: 30000 }, () => {
     })
   })
 
+  it('a plain page load does not open the long render modal', { timeout: 20000 }, async () => {
+    // The studio auto-generates on load (debounced effect in useProjectParams).
+    // When the cartridge's default estimates over its warning threshold — as
+    // gridfinity's cadquery `bin` mode does, at ~2 min — that used to open the
+    // Radix alertdialog, over a pointer-blocking overlay, on every single visit
+    // to /project/<slug>, before the visitor had asked for anything.
+    const { estimateRenderTime, renderParts } = await import('./services/engine/renderService')
+    estimateRenderTime.mockReturnValue(120) // > 60s threshold
+    // Module mocks keep their call history across this file's tests.
+    renderParts.mockClear()
+
+    await renderApp()
+
+    // The non-blocking notice stands in for the modal.
+    await waitFor(() => {
+      expect(screen.getByText(/Press Generate to render/i)).toBeInTheDocument()
+    }, { timeout: 15000 })
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    // Nothing rendered either — the estimate is the reason to wait for a click.
+    expect(renderParts).not.toHaveBeenCalled()
+    // ...and the page is still usable.
+    expect(screen.getByText('Generate')).toBeInTheDocument()
+  })
+
   it('language selector switches en to es', async () => {
     await renderApp()
     // Click Globe button to open language dropdown

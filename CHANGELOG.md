@@ -27,6 +27,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `multi_rack_body` part (render_mode 5). 1494/1494 studio tests passing.
 
 ### Fixed
+- **Auto-Generate No Longer Opens a Blocking Modal** — The studio renders on
+  load and after every parameter change (the debounced effect in
+  `useProjectParams.ts`), and `useRender` answered an over-threshold estimate
+  the same way no matter who asked: it opened "⚠️ Long Render Warning", a Radix
+  alertdialog over a pointer-blocking overlay. gridfinity's cadquery `bin`
+  default estimates ~2 minutes against a 60s threshold, so every visit to
+  `/project/gridfinity` put up a modal the visitor never asked for and froze the
+  UI until they answered it — and cancelling left the empty viewer a skipped
+  render produces anyway. `handleGenerate` now takes a third argument,
+  `GenerateOptions.automatic`, and **only** the debounced effect passes it; the
+  Generate button, Force re-render, Ctrl+Enter, the editor's save-and-render,
+  the storefront and the optimizer follow-up keep today's behaviour, modal
+  included. An automatic render over the threshold renders nothing and opens
+  nothing: it raises a non-blocking `toast.auto_render_skipped` notice on one
+  fixed toast id (so a run of slider edits replaces the notice rather than
+  stacking it), records `pendingEstimate`, and waits for an explicit Generate.
+  Under the threshold an automatic render is untouched. New locale key across
+  all six locales (337 keys, parity OK). 11 files, 6 new tests.
 - **Download Must Match Viewport (ISSUE-R2-3 follow-up)** — `handleDownloadStl`
   always triggered a fresh backend re-render for non-GLB formats, which could
   produce geometry that didn't match the 3D viewport due to param drift (e.g.,

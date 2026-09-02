@@ -5,8 +5,10 @@
     "version": "1.0.0",
     "engine": "cadquery",
     "description": {
-      "en": "A printable analogue of hook-and-loop tape: two mating strips that peel apart and re-close. The hook strip carries a field of mushroom-headed pins; the loop strip carries a waffle grid of thin walls whose cells those heads snag on. This is the rigid hard good the Fashion Cabinet `hook-loop-tape` hardware reference bridges to — a garment's finished closure overlap drives the strip, and the garment keeps the placement math.\n\nOfficial Visualizer and Configurator: Yantra4D",
-      "es": "Un análogo imprimible de la cinta de gancho y bucle (velcro): dos tiras que se despegan y vuelven a cerrar. La tira de ganchos lleva un campo de pines con cabeza de hongo; la tira de bucles lleva una retícula de paredes delgadas en cuyas celdas se enganchan esas cabezas. Este es el herraje rígido al que se puentea el avío `hook-loop-tape` de Fashion Cabinet — el traslape terminado de la prenda determina la tira, y la prenda conserva el cálculo de colocación.\n\nVisualizador y configurador oficial: Yantra4D"
+      "en": "A printable analogue of hook-and-loop tape: two mating strips that peel apart and re-close. The hook strip carries a field of mushroom-headed pins; the loop strip carries a waffle grid of thin walls whose cells those heads snag on. This is the rigid hard good the Fashion Cabinet `hook-loop-tape` hardware reference bridges to — a garment hands over its finished closure overlap (`overlap_mm`) and gets back a tape that spans it, while the garment keeps the placement math. `tolerance` is the real print clearance between a mushroom head and the cell it drops into, so the same strip can be tuned from squashy TPU to rigid PLA.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Un análogo imprimible de la cinta de gancho y bucle (velcro): dos tiras que se despegan y vuelven a cerrar. La tira de ganchos lleva un campo de pines con cabeza de hongo; la tira de bucles lleva una retícula de paredes delgadas en cuyas celdas se enganchan esas cabezas. Este es el herraje rígido al que se puentea el avío `hook-loop-tape` de Fashion Cabinet — la prenda entrega su traslape terminado (`overlap_mm`) y recibe una cinta que lo abarca, mientras la prenda conserva el cálculo de colocación. `tolerance` es la holgura real de impresión entre la cabeza de hongo y la celda en la que entra, así que la misma tira se ajusta desde TPU blando hasta PLA rígido.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Un analogue imprimable de la bande auto-agrippante (velcro) : deux bandes complémentaires qui se décollent et se referment. La bande à crochets porte un champ de picots à tête de champignon ; la bande à boucles porte une grille alvéolaire de parois fines dont les cellules retiennent ces têtes. C'est la quincaillerie rigide vers laquelle pointe la référence matérielle `hook-loop-tape` de Fashion Cabinet — le vêtement transmet sa croisure finie (`overlap_mm`) et reçoit une bande qui la couvre, tandis que le vêtement garde le calcul de placement. `tolerance` est le jeu d'impression réel entre une tête de champignon et la cellule où elle s'engage, de sorte que la même bande se règle du TPU souple au PLA rigide.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "Um análogo imprimível da fita de gancho e argola (velcro): duas fitas que se descolam e voltam a fechar. A fita de ganchos leva um campo de pinos com cabeça de cogumelo; a fita de argolas leva uma grade alveolar de paredes finas em cujas células essas cabeças prendem. Este é o ferragem rígido ao qual a referência de hardware `hook-loop-tape` do Fashion Cabinet se conecta — a peça de roupa entrega o seu transpasse acabado (`overlap_mm`) e recebe uma fita que o cobre, enquanto a peça mantém o cálculo de posicionamento. `tolerance` é a folga real de impressão entre a cabeça de cogumelo e a célula onde ela encaixa, de modo que a mesma fita se ajusta do TPU macio ao PLA rígido.\n\nVisualizador e configurador oficial: Yantra4D"
     },
     "thumbnail": "/projects/hook-loop-tape.webp",
     "difficulty": "intermediate",
@@ -32,8 +34,10 @@
     {
       "id": "set",
       "label": {
-        "en": "Both Strips",
-        "es": "Ambas tiras"
+        "en": "Pair (both strips)",
+        "es": "Par (ambas tiras)",
+        "fr": "Paire (les deux bandes)",
+        "pt": "Par (ambas as fitas)"
       },
       "scad_file": "main.py",
       "cq_file": "main.py",
@@ -50,7 +54,9 @@
       "id": "hook_strip",
       "label": {
         "en": "Hook Strip",
-        "es": "Tira de ganchos"
+        "es": "Tira de ganchos",
+        "fr": "Bande à crochets",
+        "pt": "Fita de ganchos"
       },
       "scad_file": "main.py",
       "cq_file": "main.py",
@@ -67,7 +73,9 @@
       "id": "loop_strip",
       "label": {
         "en": "Loop Strip",
-        "es": "Tira de bucles"
+        "es": "Tira de bucles",
+        "fr": "Bande à boucles",
+        "pt": "Fita de argolas"
       },
       "scad_file": "main.py",
       "cq_file": "main.py",
@@ -85,8 +93,10 @@
     {
       "id": "set",
       "label": {
-        "en": "Both Strips",
-        "es": "Ambas tiras"
+        "en": "Pair (both strips, sprued)",
+        "es": "Par (ambas tiras, unidas)",
+        "fr": "Paire (les deux bandes, reliées)",
+        "pt": "Par (ambas as fitas, unidas)"
       },
       "render_mode": 0,
       "color": "#b0a890"
@@ -95,7 +105,9 @@
       "id": "hook_strip",
       "label": {
         "en": "Hook Strip",
-        "es": "Tira de ganchos"
+        "es": "Tira de ganchos",
+        "fr": "Bande à crochets",
+        "pt": "Fita de ganchos"
       },
       "render_mode": 0,
       "color": "#a89880"
@@ -104,7 +116,9 @@
       "id": "loop_strip",
       "label": {
         "en": "Loop Strip",
-        "es": "Tira de bucles"
+        "es": "Tira de bucles",
+        "fr": "Bande à boucles",
+        "pt": "Fita de argolas"
       },
       "render_mode": 0,
       "color": "#c0b8a4"
@@ -115,14 +129,18 @@
       "id": "strip",
       "label": {
         "en": "Strip",
-        "es": "Tira"
+        "es": "Tira",
+        "fr": "Bande",
+        "pt": "Fita"
       }
     },
     {
       "id": "engagement",
       "label": {
         "en": "Engagement",
-        "es": "Enganche"
+        "es": "Enganche",
+        "fr": "Engagement",
+        "pt": "Engate"
       }
     }
   ],
@@ -142,11 +160,15 @@
       ],
       "label": {
         "en": "Strip length (mm)",
-        "es": "Largo de la tira (mm)"
+        "es": "Largo de la tira (mm)",
+        "fr": "Longueur de la bande (mm)",
+        "pt": "Comprimento da fita (mm)"
       },
       "tooltip": {
         "en": "Length of the tape strip along the closure run (mm).",
-        "es": "Largo de la tira de cinta a lo largo del cierre (mm)."
+        "es": "Largo de la tira de cinta a lo largo del cierre (mm).",
+        "fr": "Longueur de la bande le long de la fermeture (mm).",
+        "pt": "Comprimento da fita ao longo do fecho (mm)."
       }
     },
     {
@@ -154,7 +176,7 @@
       "type": "slider",
       "default": 20.0,
       "min": 10.0,
-      "max": 50.0,
+      "max": 120.0,
       "step": 1.0,
       "group": "strip",
       "modes": [
@@ -164,11 +186,41 @@
       ],
       "label": {
         "en": "Strip width (mm)",
-        "es": "Ancho de la tira (mm)"
+        "es": "Ancho de la tira (mm)",
+        "fr": "Largeur de la bande (mm)",
+        "pt": "Largura da fita (mm)"
       },
       "tooltip": {
-        "en": "Width of the tape strip across the closure — usually the garment's finished overlap (mm).",
-        "es": "Ancho de la tira a través del cierre — normalmente el traslape terminado de la prenda (mm)."
+        "en": "Width of the tape strip across the closure (mm). Overridden by the closure overlap below whenever that is set above zero.",
+        "es": "Ancho de la tira a través del cierre (mm). El traslape de abajo lo sustituye siempre que sea mayor que cero.",
+        "fr": "Largeur de la bande en travers de la fermeture (mm). La croisure ci-dessous la remplace dès qu'elle est supérieure à zéro.",
+        "pt": "Largura da fita através do fecho (mm). O transpasse abaixo a substitui sempre que for maior que zero."
+      }
+    },
+    {
+      "id": "overlap_mm",
+      "type": "slider",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 120.0,
+      "step": 1.0,
+      "group": "strip",
+      "modes": [
+        "set",
+        "hook_strip",
+        "loop_strip"
+      ],
+      "label": {
+        "en": "Closure overlap the tape spans (mm)",
+        "es": "Traslape del cierre que abarca la cinta (mm)",
+        "fr": "Croisure couverte par la bande (mm)",
+        "pt": "Transpasse do fecho coberto pela fita (mm)"
+      },
+      "tooltip": {
+        "en": "The garment's FINISHED closure overlap — the Fashion Cabinet handshake. Set it and the strip width is driven to span the overlap; leave it at 0 and the strip width above is used exactly as given.",
+        "es": "El traslape TERMINADO de la prenda — el enlace con Fashion Cabinet. Al fijarlo, el ancho de la tira se ajusta para abarcarlo; en 0 se usa el ancho de arriba tal cual.",
+        "fr": "La croisure FINIE du vêtement — la poignée de main avec Fashion Cabinet. Réglée, elle pilote la largeur de la bande ; laissée à 0, la largeur ci-dessus est utilisée telle quelle.",
+        "pt": "O transpasse ACABADO da peça — o acordo dimensional com o Fashion Cabinet. Definido, ele comanda a largura da fita; em 0, usa-se a largura acima tal como está."
       }
     },
     {
@@ -186,11 +238,15 @@
       ],
       "label": {
         "en": "Base thickness (mm)",
-        "es": "Espesor de la base (mm)"
+        "es": "Espesor de la base (mm)",
+        "fr": "Épaisseur de la base (mm)",
+        "pt": "Espessura da base (mm)"
       },
       "tooltip": {
         "en": "Thickness of the flat sewable base plate under the engaging field (mm).",
-        "es": "Espesor de la placa base plana y cosible bajo el campo de enganche (mm)."
+        "es": "Espesor de la placa base plana y cosible bajo el campo de enganche (mm).",
+        "fr": "Épaisseur de la plaque de base plate et cousable sous le champ d'engagement (mm).",
+        "pt": "Espessura da placa base plana e costurável sob o campo de engate (mm)."
       }
     },
     {
@@ -208,11 +264,15 @@
       ],
       "label": {
         "en": "Sew margin (mm)",
-        "es": "Margen de costura (mm)"
+        "es": "Margen de costura (mm)",
+        "fr": "Marge de couture (mm)",
+        "pt": "Margem de costura (mm)"
       },
       "tooltip": {
         "en": "Plain border left free of pins or walls so the strip can be stitched down (mm).",
-        "es": "Borde liso sin pines ni paredes para poder pespuntear la tira (mm)."
+        "es": "Borde liso sin pines ni paredes para poder pespuntear la tira (mm).",
+        "fr": "Bordure lisse sans picots ni parois pour pouvoir piquer la bande (mm).",
+        "pt": "Borda lisa sem pinos nem paredes para poder pespontar a fita (mm)."
       }
     },
     {
@@ -230,11 +290,15 @@
       ],
       "label": {
         "en": "Pin pitch (mm)",
-        "es": "Paso entre pines (mm)"
+        "es": "Paso entre pines (mm)",
+        "fr": "Pas des picots (mm)",
+        "pt": "Passo entre pinos (mm)"
       },
       "tooltip": {
-        "en": "Centre-to-centre spacing of the mushroom pins and of the matching waffle cells (mm).",
-        "es": "Separación centro a centro de los pines de hongo y de las celdas de la retícula (mm)."
+        "en": "Centre-to-centre spacing of the mushroom pins and of the matching waffle cells (mm). Opened automatically if the head plus its clearance would not fit the cell.",
+        "es": "Separación centro a centro de los pines de hongo y de las celdas de la retícula (mm). Se abre automáticamente si la cabeza más su holgura no cabe en la celda.",
+        "fr": "Entraxe des picots à tête de champignon et des cellules correspondantes (mm). Ouvert automatiquement si la tête et son jeu n'entrent pas dans la cellule.",
+        "pt": "Distância entre centros dos pinos de cogumelo e das células correspondentes (mm). Abre-se automaticamente se a cabeça mais a folga não couber na célula."
       }
     },
     {
@@ -251,11 +315,15 @@
       ],
       "label": {
         "en": "Pin stem diameter (mm)",
-        "es": "Diámetro del vástago del pin (mm)"
+        "es": "Diámetro del vástago del pin (mm)",
+        "fr": "Diamètre de la tige du picot (mm)",
+        "pt": "Diâmetro da haste do pino (mm)"
       },
       "tooltip": {
         "en": "Diameter of the mushroom pin stem — thinner peels more easily (mm).",
-        "es": "Diámetro del vástago del pin de hongo — más delgado se despega más fácil (mm)."
+        "es": "Diámetro del vástago del pin de hongo — más delgado se despega más fácil (mm).",
+        "fr": "Diamètre de la tige du picot — plus fine, elle se décolle plus facilement (mm).",
+        "pt": "Diâmetro da haste do pino de cogumelo — mais fina, descola com mais facilidade (mm)."
       }
     },
     {
@@ -268,15 +336,20 @@
       "group": "engagement",
       "modes": [
         "set",
-        "hook_strip"
+        "hook_strip",
+        "loop_strip"
       ],
       "label": {
         "en": "Pin head diameter (mm)",
-        "es": "Diámetro de la cabeza del pin (mm)"
+        "es": "Diámetro de la cabeza del pin (mm)",
+        "fr": "Diamètre de la tête du picot (mm)",
+        "pt": "Diâmetro da cabeça do pino (mm)"
       },
       "tooltip": {
-        "en": "Diameter of the mushroom cap — its overhang past the stem is what grips (mm).",
-        "es": "Diámetro de la cabeza de hongo — su voladizo sobre el vástago es lo que agarra (mm)."
+        "en": "Diameter of the mushroom cap — its overhang past the stem is what grips (mm). The loop strip needs it too: its cell opening is sized to admit this head plus the clearance below.",
+        "es": "Diámetro de la cabeza de hongo — su voladizo sobre el vástago es lo que agarra (mm).",
+        "fr": "Diamètre de la tête de champignon — c'est son débord au-delà de la tige qui accroche (mm).",
+        "pt": "Diâmetro da cabeça de cogumelo — é o seu ressalto além da haste que prende (mm)."
       }
     },
     {
@@ -294,12 +367,43 @@
       ],
       "label": {
         "en": "Pin / wall height (mm)",
-        "es": "Altura de pin y pared (mm)"
+        "es": "Altura de pin y pared (mm)",
+        "fr": "Hauteur des picots et des parois (mm)",
+        "pt": "Altura dos pinos e das paredes (mm)"
       },
       "tooltip": {
         "en": "Height of the mushroom pins above the base, and of the matching waffle walls (mm).",
-        "es": "Altura de los pines de hongo sobre la base, y de las paredes de la retícula (mm)."
+        "es": "Altura de los pines de hongo sobre la base, y de las paredes de la retícula (mm).",
+        "fr": "Hauteur des picots au-dessus de la base, et des parois alvéolaires correspondantes (mm).",
+        "pt": "Altura dos pinos acima da base, e das paredes alveolares correspondentes (mm)."
       }
+    },
+    {
+      "id": "tolerance",
+      "type": "slider",
+      "default": 0.15,
+      "min": 0.05,
+      "max": 0.6,
+      "step": 0.05,
+      "group": "engagement",
+      "modes": [
+        "set",
+        "hook_strip",
+        "loop_strip"
+      ],
+      "label": {
+        "en": "Engagement clearance (mm)",
+        "es": "Holgura de enganche (mm)",
+        "fr": "Jeu d'engagement (mm)",
+        "pt": "Folga de engate (mm)"
+      },
+      "tooltip": {
+        "en": "Print clearance between a mushroom head and the cell it drops into. The waffle wall is thinned — and the pitch opened if need be — to keep it. Raise it for squashy TPU, lower it for rigid PLA.",
+        "es": "Holgura de impresión entre la cabeza de hongo y la celda donde entra. La pared de la retícula se adelgaza — y el paso se abre si hace falta — para respetarla. Súbela para TPU blando, bájala para PLA rígido.",
+        "fr": "Jeu d'impression entre une tête de champignon et la cellule où elle s'engage. La paroi alvéolaire est amincie — et le pas ouvert si nécessaire — pour le conserver. À augmenter pour un TPU souple, à réduire pour un PLA rigide.",
+        "pt": "Folga de impressão entre a cabeça de cogumelo e a célula onde ela encaixa. A parede alveolar é afinada — e o passo aberto se preciso — para mantê-la. Aumente para TPU macio, reduza para PLA rígido."
+      },
+      "advanced": true
     }
   ],
   "presets": [
@@ -308,12 +412,33 @@
       "mode": "set",
       "label": {
         "en": "Default",
-        "es": "Predeterminado"
+        "es": "Predeterminado",
+        "fr": "Par défaut",
+        "pt": "Padrão"
       },
       "values": {
         "strip_length": 50.0,
         "strip_width": 20.0,
-        "pin_pitch": 3.5
+        "pin_pitch": 3.5,
+        "tolerance": 0.15
+      }
+    },
+    {
+      "id": "hivis_vest_front",
+      "mode": "set",
+      "label": {
+        "en": "Hi-vis vest front (FC overlap)",
+        "es": "Delantero de chaleco alta visibilidad (traslape FC)",
+        "fr": "Devant de gilet haute visibilité (croisure FC)",
+        "pt": "Frente de colete de alta visibilidade (transpasse FC)"
+      },
+      "values": {
+        "overlap_mm": 60.0,
+        "strip_length": 60.0,
+        "pin_pitch": 4.0,
+        "pin_h": 2.5,
+        "sew_margin": 4.0,
+        "tolerance": 0.2
       }
     },
     {
@@ -321,7 +446,9 @@
       "mode": "set",
       "label": {
         "en": "Vest Front Overlap",
-        "es": "Traslape delantero de chaleco"
+        "es": "Traslape delantero de chaleco",
+        "fr": "Croisure devant de gilet",
+        "pt": "Transpasse frontal de colete"
       },
       "values": {
         "strip_length": 60.0,
@@ -336,7 +463,9 @@
       "mode": "hook_strip",
       "label": {
         "en": "Cuff Tab",
-        "es": "Lengüeta de puño"
+        "es": "Lengüeta de puño",
+        "fr": "Patte de poignet",
+        "pt": "Lingueta de punho"
       },
       "values": {
         "strip_length": 25.0,
@@ -345,20 +474,83 @@
         "pin_h": 1.6,
         "sew_margin": 2.0
       }
+    },
+    {
+      "id": "tpu_soft",
+      "mode": "set",
+      "label": {
+        "en": "TPU (flexible)",
+        "es": "TPU (flexible)",
+        "fr": "TPU (souple)",
+        "pt": "TPU (flexível)"
+      },
+      "values": {
+        "tolerance": 0.35,
+        "pin_pitch": 4.0,
+        "pin_h": 2.5,
+        "base_t": 1.0
+      }
     }
   ],
-  "constraints": [],
+  "constraints": [
+    {
+      "expression": "pin_pitch >= head_dia + 2 * tolerance + 0.4",
+      "severity": "warning",
+      "message": {
+        "en": "A cell narrower than the head plus its clearance cannot admit it — the pitch is opened to fit.",
+        "es": "Una celda más angosta que la cabeza más su holgura no puede recibirla — el paso se abre para ajustar.",
+        "fr": "Une cellule plus étroite que la tête et son jeu ne peut pas l'accueillir — le pas est ouvert pour ajuster.",
+        "pt": "Uma célula mais estreita que a cabeça mais a sua folga não a pode receber — o passo é aberto para caber."
+      }
+    },
+    {
+      "expression": "head_dia >= pin_dia + 0.4",
+      "severity": "warning",
+      "message": {
+        "en": "The head must overhang the stem — that overhang IS the hook.",
+        "es": "La cabeza debe sobresalir del vástago — ese voladizo ES el gancho.",
+        "fr": "La tête doit déborder de la tige — ce débord EST le crochet.",
+        "pt": "A cabeça deve ressaltar da haste — esse ressalto É o gancho."
+      }
+    },
+    {
+      "expression": "(overlap_mm > 0 ? overlap_mm : strip_width) >= 2 * sew_margin + 2 * pin_pitch",
+      "severity": "warning",
+      "message": {
+        "en": "The sew margins leave no engaging field across the strip — the margin is trimmed to keep at least two rows of pins.",
+        "es": "Los márgenes de costura no dejan campo de enganche a lo ancho — el margen se recorta para conservar al menos dos filas de pines.",
+        "fr": "Les marges de couture ne laissent aucun champ d'engagement en largeur — la marge est rognée pour garder au moins deux rangées de picots.",
+        "pt": "As margens de costura não deixam campo de engate na largura — a margem é reduzida para manter ao menos duas fileiras de pinos."
+      }
+    }
+  ],
   "camera_views": [
     {
       "id": "iso",
       "label": {
         "en": "Isometric",
-        "es": "Isométrico"
+        "es": "Isométrico",
+        "fr": "Isométrique",
+        "pt": "Isométrico"
       },
       "position": [
         60,
         60,
         60
+      ]
+    },
+    {
+      "id": "top",
+      "label": {
+        "en": "Top",
+        "es": "Superior",
+        "fr": "Dessus",
+        "pt": "Superior"
+      },
+      "position": [
+        0,
+        0,
+        140
       ]
     }
   ],
@@ -385,13 +577,16 @@
         "id": "sew_face",
         "label": {
           "en": "Sew Face (plain margin)",
-          "es": "Cara de costura (margen liso)"
+          "es": "Cara de costura (margen liso)",
+          "fr": "Face de couture (marge lisse)",
+          "pt": "Face de costura (margem lisa)"
         },
         "geometry_type": "flange",
         "standard": "internal",
         "parameters": [
           "strip_length",
           "strip_width",
+          "overlap_mm",
           "sew_margin"
         ]
       },
@@ -399,7 +594,9 @@
         "id": "engage_field",
         "label": {
           "en": "Engagement Field (pins / waffle)",
-          "es": "Campo de enganche (pines / retícula)"
+          "es": "Campo de enganche (pines / retícula)",
+          "fr": "Champ d'engagement (picots / alvéoles)",
+          "pt": "Campo de engate (pinos / alvéolos)"
         },
         "geometry_type": "surface",
         "standard": "internal",
@@ -407,18 +604,27 @@
           "pin_pitch",
           "pin_dia",
           "head_dia",
-          "pin_h"
+          "pin_h",
+          "tolerance"
         ]
       }
     ],
     "material_awareness": {
       "shrinkage_compensation": false,
       "recycled_material_toggle": true,
-      "tolerance_by_material": true
+      "tolerance_by_material": true,
+      "notes": {
+        "en": "Print both strips flat on the bed, base down: the mushroom caps are a short self-supporting overhang and the waffle walls bridge nothing. TPU (Shore 95A) or a flexible PETG gives the peel-and-re-close behaviour — a flexible filament lets the stems bend out of the cell instead of snapping, which is what makes the closure reusable; set `tolerance` around 0.3-0.4 mm for TPU, which squashes under the nozzle and prints its walls fat. Rigid PLA works as a one-shot latch at `tolerance` 0.1-0.15 mm but the pins break rather than flex. Fine layers (0.12 mm) keep the cap overhang crisp; print the flexible strips slowly (< 25 mm/s) with retraction near zero. Recycled and offcut flexible filament prints this part well — there are no fine tolerances outside the engagement pair.",
+        "es": "Imprime ambas tiras planas sobre la cama, con la base abajo: las cabezas de hongo son un voladizo corto autosoportado y las paredes de la retícula no puentean nada. El TPU (95A Shore) o un PETG flexible da el comportamiento de despegar y volver a cerrar — un filamento flexible deja que los vástagos se doblen fuera de la celda en vez de romperse, que es lo que hace reutilizable el cierre; usa `tolerance` de 0.3-0.4 mm para TPU, que se aplasta bajo la boquilla e imprime paredes gruesas. El PLA rígido sirve como pestillo de un solo uso con `tolerance` de 0.1-0.15 mm, pero los pines se rompen en vez de flexionar. Capas finas (0.12 mm) mantienen nítido el voladizo de la cabeza; imprime las tiras flexibles despacio (< 25 mm/s) y con retracción casi nula. El filamento flexible reciclado o de sobrantes funciona bien aquí — no hay tolerancias finas fuera del par de enganche.",
+        "fr": "Imprimez les deux bandes à plat sur le plateau, base en bas : les têtes de champignon forment un court porte-à-faux autoporté et les parois alvéolaires ne pontent rien. Le TPU (95A Shore) ou un PETG souple donne le comportement décoller-refermer — un filament souple laisse les tiges fléchir hors de la cellule au lieu de casser, ce qui rend la fermeture réutilisable ; réglez `tolerance` vers 0,3-0,4 mm pour le TPU, qui s'écrase sous la buse et imprime des parois épaisses. Le PLA rigide fait un loquet à usage unique à `tolerance` 0,1-0,15 mm, mais les picots cassent au lieu de fléchir. Des couches fines (0,12 mm) gardent le débord de tête net ; imprimez les bandes souples lentement (< 25 mm/s) avec une rétraction quasi nulle. Le filament souple recyclé ou de chutes convient bien — il n'y a pas de tolérance fine en dehors de la paire d'engagement.",
+        "pt": "Imprima ambas as fitas planas na mesa, com a base para baixo: as cabeças de cogumelo são um ressalto curto autossustentado e as paredes alveolares não fazem ponte. O TPU (95A Shore) ou um PETG flexível dá o comportamento de descolar e voltar a fechar — um filamento flexível deixa as hastes dobrarem para fora da célula em vez de partirem, o que torna o fecho reutilizável; use `tolerance` de 0,3-0,4 mm para TPU, que se achata sob o bico e imprime paredes grossas. O PLA rígido serve como trinco de uso único com `tolerance` de 0,1-0,15 mm, mas os pinos quebram em vez de flexionar. Camadas finas (0,12 mm) mantêm nítido o ressalto da cabeça; imprima as fitas flexíveis devagar (< 25 mm/s) e com retração quase nula. Filamento flexível reciclado ou de sobras funciona bem aqui — não há tolerâncias finas fora do par de engate."
+      }
     },
     "societal_benefit": {
-      "en": "Hook-and-loop tape is bought by the roll and cut to waste; printing it to length lets a repair or a made-to-measure garment carry only the closure it needs, in any material a maker already has.",
-      "es": "La cinta de gancho y bucle se compra por rollo y se corta con desperdicio; imprimirla a la medida permite que una reparación o una prenda a medida lleve solo el cierre que necesita, en el material que el fabricante ya tenga."
+      "en": "Hook-and-loop tape is bought by the roll and cut to waste, and it is the one closure that hands and eyes that cannot manage a button or a zip can still work — which is why it fastens adaptive clothing, medical garments, children's wear and every high-visibility vest worn near traffic. Printing it to length lets a repair or a made-to-measure garment carry only the closure it needs, in whatever flexible material a maker already has, anywhere a roll of branded tape does not reach. Because the garment hands over its own finished overlap, the tape is sized by the closure instead of the closure being redesigned around whatever width was in stock.",
+      "es": "La cinta de gancho y bucle se compra por rollo y se corta con desperdicio, y es el único cierre que pueden manejar manos y ojos que no dan con un botón o una cremallera — por eso abrocha ropa adaptada, prendas médicas, ropa infantil y todo chaleco de alta visibilidad que se usa junto al tráfico. Imprimirla a la medida permite que una reparación o una prenda a medida lleve solo el cierre que necesita, en el material flexible que el fabricante ya tenga, donde no llega un rollo de marca. Como la prenda entrega su propio traslape terminado, la cinta se dimensiona por el cierre en vez de rediseñar el cierre alrededor del ancho que hubiera en almacén.",
+      "fr": "La bande auto-agrippante s'achète au rouleau et se coupe avec des chutes, et c'est la seule fermeture que des mains et des yeux incapables de gérer un bouton ou une fermeture à glissière peuvent encore manœuvrer — d'où son usage dans les vêtements adaptés, les tenues médicales, les vêtements d'enfant et tous les gilets haute visibilité portés près de la circulation. L'imprimer à la longueur voulue permet à une réparation ou à un vêtement sur mesure de ne porter que la fermeture nécessaire, dans le matériau souple dont dispose déjà l'atelier, là où un rouleau de marque n'arrive pas. Puisque le vêtement transmet sa propre croisure finie, la bande est dimensionnée par la fermeture au lieu que la fermeture soit redessinée autour de la largeur disponible en stock.",
+      "pt": "A fita de gancho e argola compra-se ao rolo e corta-se com desperdício, e é o único fecho que mãos e olhos incapazes de lidar com um botão ou um fecho de correr ainda conseguem operar — por isso fecha roupa adaptada, vestuário médico, roupa infantil e todo colete de alta visibilidade usado junto ao trânsito. Imprimi-la à medida permite que um conserto ou uma peça sob medida leve apenas o fecho de que precisa, no material flexível que o fabricante já tem, onde um rolo de marca não chega. Como a peça entrega o seu próprio transpasse acabado, a fita é dimensionada pelo fecho em vez de o fecho ser redesenhado em torno da largura que havia em estoque."
     },
     "commons_license": "CERN-OHL-W-2.0"
   },

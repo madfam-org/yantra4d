@@ -5,7 +5,7 @@
     "cartridges": 500,
     "with_cdg_interfaces": 486,
     "with_commons_license": 500,
-    "dual_engine": 22
+    "dual_engine": 21
   },
   "domains": {
     "household": 125,
@@ -16471,10 +16471,9 @@
       "domain": "industrial",
       "engines": [
         "cadquery",
-        "implicit",
-        "openscad"
+        "implicit"
       ],
-      "dual_engine": true,
+      "dual_engine": false,
       "modes": 1,
       "parts": 1,
       "parameters": 3,
@@ -16518,7 +16517,7 @@
       "source": {
         "manifest": "projects/implicit-lattice-hyperobject/project.json",
         "has_cadquery": true,
-        "has_openscad": true
+        "has_openscad": false
       },
       "clone": {
         "kind": "submodule",

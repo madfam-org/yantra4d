@@ -68,7 +68,7 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Cartridges resolving to ≥1 CDG standard family | 210 | 500 | 42.0% | ~98 / 326 = 30.1% | +11.9 pp |
 | Studio strings translated across de/fr/pt/zh | 1040 | 1480 | 70.3% | ~992 / 1308 = 75.8% | -5.6 pp |
 | Studio locale files carrying the full key set | 6 | 6 | 100.0% | 6 / 6 = 100.0% | +0.0 pp |
-| Dual-engine cartridges (CadQuery B-Rep + OpenSCAD CSG) | 22 | 500 | 4.4% | — | new in 2026-09 |
+| Dual-engine cartridges (CadQuery B-Rep + OpenSCAD CSG) | 21 | 500 | 4.2% | — | new in 2026-09 |
 | Cartridges declaring ≥1 CDG interface | 486 | 500 | 97.2% | — | new in 2026-09 |
 | Declared CDG interfaces per cartridge | 942 | 500 | 1.88 | — | new in 2026-09 |
 | Cartridges exposing a `flange` interface | 49 | 500 | 9.8% | — | new in 2026-09 |

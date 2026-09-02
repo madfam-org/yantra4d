@@ -6,6 +6,7 @@ import AppearancePanel from '../controls/AppearancePanel'
 import AssemblyView from '../bom/AssemblyView'
 import AssemblyEditorPanel from '../assembly-editor/AssemblyEditorPanel'
 import WorksWithPanel from './WorksWithPanel'
+import RenderPlacementControl from './RenderPlacementControl'
 import PrintPanel from './PrintPanel'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -37,6 +38,7 @@ function ActionDock({ compareMode, onToggleCompare }: ActionDockProps) {
           {compareMode ? t('btn.exit_compare') : t('btn.compare')}
         </Button>
       )}
+      <RenderPlacementControl />
       <Button
         type="button"
         onClick={() => handleGenerate()}

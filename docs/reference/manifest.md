@@ -23,7 +23,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "thumbnail": "/docs/images/gridfinity_thumb.png", // Path to gallery image
     "tags": ["storage", "modular", "organization"],
     "difficulty": "beginner",
-    "force_backend": true,                        // Optional, SOFT: prefer server rendering — see "Where a render happens" below
+    "force_backend": true,                        // Optional, SOFT hint only — see "Render placement" below
     "hard_reload": true,                          // Optional: prevents preset persistence across reloads
     "unlisted": true,                              // Optional: hidden from public listings, accessible via direct URL
     "guest_render_limit": 50,                      // Optional: per-project guest render limit override (renders/hour)
@@ -204,39 +204,75 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
     "per_unit": 1.5,      // Added per unit (grid cell or fixed count)
     "fn_factor": 64,      // OpenSCAD $fn resolution factor
     "per_part": 8,        // Added per part in the mode
-    "wasm_multiplier": 3, // Multiplier applied to estimates in WASM mode
-    "warning_threshold_seconds": 60  // Show confirmation dialog above this estimate
+    "wasm_multiplier": 3, // Multiplier applied to browser (WASM) estimates
+    "warning_threshold_seconds": 60, // Show confirmation dialog above this estimate
+    "wasm_timeout_seconds": 120      // Optional: ceiling on one browser render (default 120)
+  },
+
+  "render": {             // Optional: render placement policy
+    "server_only": true   // HARD pin -- this cartridge never renders client-side
   }
 }
 ```
 
-### Where a render happens
+## Render placement: `render.server_only` vs `project.force_backend`
 
-Two keys decide it, and they are deliberately **not** the same strength.
+Three manifest keys influence where a render runs, and they are deliberately
+**not** the same strength.
 
 | Key | Location | Strength | Meaning |
-| :--- | :--- | :--- | :--- |
-| `force_backend` | `project.force_backend` (boolean) | **SOFT** | The server is *preferred*. The Studio may still render in the browser when the device is capable and the cartridge's [WASM bundle](../guides/wasm-mode.md#wasm-bundle-endpoint) is complete. |
-| `render.server_only` | top-level `render` object (boolean) | **HARD** | Never render in the browser, full stop. |
-| `render.browser_max_estimate_seconds` | top-level `render` object (number) | budget | Above this estimated render time the Studio prefers the server even on a capable device. |
+|-----|----------|----------|---------|
+| `render.server_only` | top-level `render` object (boolean) | **HARD** | This cartridge cannot be rendered client-side. Nothing overrides it -- not `?render=wasm`, not the visitor's placement preference. |
+| `modes[*].engine` | per mode | **HARD, per mode** | The kernel this one mode renders with. A mode whose engine is `cadquery`, `graph` or `implicit` is server-only; its siblings are unaffected. |
+| `render.browser_max_estimate_seconds` | top-level `render` object (number) | budget | Above this *estimated browser* render time the Studio prefers the server even on a capable device. Replaces the Studio's per-tier default (45 s capable / 15 s limited). A budget, not a prohibition. |
+| `project.force_backend` | `project` object (boolean) | **SOFT hint** | "Prefer the server." Honoured only when the visitor's device measures as `limited`. |
 
-The split exists because `force_backend` was never really a policy. It was set on
-~490 cartridges to work around a browser renderer that could not load libraries or
-fonts, so the flag says "this failed in the browser once", not "this must not run
-in the browser". Now that `/api/projects/<slug>/wasm-bundle` hands the worker the
-whole filesystem, that historical hint should not keep a capable device on the
-server, and demoting it to a preference is what lets ~490 cartridges become
-browser-first without editing 490 manifests.
+Engine is resolved **per mode**, not per project: an explicit `modes[*].engine`
+wins, else the mode's `scad_file` extension decides (`.graph.json` -> graph,
+`.py` / `.cq` -> cadquery), else `project.engine` (default `openscad`). A project
+whose engine is `implicit` renders every mode with the implicit engine and
+ignores per-mode overrides. `gridfinity` is the canonical dual-engine cartridge:
+`project.engine: "cadquery"` with three modes declaring `engine: "openscad"`,
+and those three render in the browser while `bin` and `baseplate` stay on the
+server.
 
-`render.server_only` is the key to reach for when browser rendering would be
-genuinely *wrong* — a cartridge whose output must be produced by the same binary
-the shop runs, or one whose geometry the browser cannot express. Use
-`browser_max_estimate_seconds` for merely *expensive*, and leave `force_backend`
-for a nudge.
+```json
+{
+  "render": {
+    "server_only": false,
+    "browser_max_estimate_seconds": 30
+  }
+}
+```
 
-Note that the WASM bundle carries its own veto: a non-empty `unsupported` list
-means the server is required for a faithful render regardless of what any of
-these three keys says.
+The [WASM bundle](../guides/wasm-mode.md#wasm-bundle-endpoint) carries its own
+veto: a non-empty `unsupported` or `unresolved` list means the server is
+required for a faithful render regardless of what any of these keys says.
+
+### Why `force_backend` was demoted
+
+490 of the 501 cartridges in the commons set `project.force_backend: true`. Among
+the OpenSCAD ones it almost always encoded a **client limitation, not a property
+of the model**: the cartridge opens with `include <../../libs/BOSL2/std.scad>`
+(nearly all of them) or calls `text()` (8 of them), and the old browser path
+fetched neither library files nor fonts, so it could not have rendered them.
+
+The `wasm-bundle` contract closes that gap -- the browser now receives the whole
+transitively-resolved include graph plus the cartridge's fonts. Continuing to
+treat the flag as a pin would keep essentially the entire commons on the metered
+server path for a reason that no longer exists, and demoting it to a preference
+is what lets those cartridges become browser-first without editing 490 manifests.
+
+So the flag is now a hint, and cartridges that genuinely must run server-side --
+a model that reaches for something the WASM build cannot do, or output that must
+come from the same binary the shop runs -- declare `render.server_only: true`
+instead. Use `browser_max_estimate_seconds` for merely *expensive*. Engines
+`cadquery`, `graph` and `implicit` are server-only by nature and need no flag at
+all.
+
+The full precedence table lives in
+[`docs/guides/wasm-mode.md`](../guides/wasm-mode.md).
+
 
 ### Hyperobject Metadata (optional)
 

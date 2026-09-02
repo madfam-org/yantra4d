@@ -44,18 +44,50 @@ ThemeProvider → ManifestProvider → LanguageProvider → App
 | `VITE_API_BASE` | `http://localhost:5000` | Backend API base URL |
 | `VITE_RENDER_MODE` | _(unset)_ | Pins the render path to `backend` or `wasm` for the whole build. Any other value is ignored. |
 
-### Render Mode Override
+### Render Placement
 
-The studio renders either in the browser (`wasm`) or on the server (`backend`).
-By default it picks for you from the device's core count and memory
-(`hardwareConcurrency >= 4 && deviceMemory >= 4` → WASM). The override forces
-one path instead.
+A render runs in one of two **placements**:
+
+- **browser** — `openscad-wasm` in a Web Worker. Free for us, unmetered for the
+  visitor. **This is the default.**
+- **server** — the API's native OpenSCAD/CadQuery. Costs us CPU and costs the
+  visitor one of their hourly render units.
+
+The choice is made by the pure function `decideRenderPlacement()` in
+`src/services/engine/renderPlacement.ts`. Its precedence table, highest first:
+
+| # | Rule | Result |
+|---|------|--------|
+| 1 | the MODE's engine is `cadquery`, `graph` or `implicit` | server, **hard** |
+| 2 | manifest `render.server_only === true` | server, **hard** |
+| 3 | the wasm bundle is unavailable, or names `unsupported` / `unresolved` | server, **hard** |
+| 4 | `?render=backend` / `?render=wasm` (or `VITE_RENDER_MODE`) | server / browser |
+| 5 | the visitor's `Auto / Browser / Server` preference | server / browser |
+| 6 | capability tier is `incapable` | server |
+| 7 | a browser render already failed for this cartridge this session | server |
+| 8 | browser estimate over the tier threshold (capable 45 s, limited 15 s) | server |
+| 9 | legacy `project.force_backend`, **only** on a `limited` device | server |
+| 10 | **default** | **browser** |
+
+After the table, one guard: a **soft** server decision flips back to the browser
+when `/api/health` says the server is unreachable. A **hard** one never does —
+the browser genuinely cannot produce that model, so the failure should name the
+real problem.
+
+`?render=backend` is deliberately exempt from that guard: support hands it out
+precisely when the browser is what broke.
+
+There is **no API-base rule**. `detectMode()` used to contain
+`if (API_BASE) return 'backend'`, and production always sets `VITE_API_BASE`, so
+every heuristic below that line was dead code and every visitor's render was
+billed to us and metered to them. That line is gone.
+
+#### The override
 
 | Precedence | Mechanism | Values | Scope |
 |-----------|-----------|--------|-------|
 | 1 (highest) | `?render=` query param | `backend`, `wasm` | One browser session |
 | 2 | `VITE_RENDER_MODE` env | `backend`, `wasm` | Whole build |
-| 3 | hardware heuristic | — | Per device |
 
 ```
 https://studio.yantra4d.com/project/gridfinity?render=backend
@@ -68,17 +100,74 @@ rather than silently pinning the wrong path.
 
 **When support should use it:**
 
-- `?render=backend` — the user's browser can't run WASM: renders hang at
-  "Compilando...", die with an OpenSCAD/WASM error, or the tab runs out of
-  memory on a large grid. This also stops the app from falling back to WASM if a
-  backend render later fails, so the user stays on the working path.
-- `?render=wasm` — the server render queue is rate-limited or degraded and the
-  user's machine is capable, or you need to reproduce a WASM-only bug on a
-  machine the heuristic would route to the backend.
+- `?render=backend` — the user's browser can't render: it hangs at
+  "Compilando...", dies with an OpenSCAD/WASM error, or the tab runs out of
+  memory on a large grid. This also stops the app from falling back to the
+  browser if a server render later fails, so the user stays on the working path.
+- `?render=wasm` — the server render queue is rate-limited or degraded, or you
+  need to reproduce a browser-only bug on a machine the probe would route to the
+  server.
 
-Two cases the override cannot change: projects whose engine is `cadquery` or
-`graph` always render on the backend (no browser kernel exists), and a project
-manifest's `force_backend` still applies where the override is absent.
+Rules 1-3 override it: a CadQuery mode has no browser kernel, and `?render=wasm`
+on one would trade a working render for a certain failure.
+
+#### Engine is a MODE property
+
+`effectiveModeEngine(manifest, modeId)` mirrors `ProjectManifest.mode_engine()`
+in `apps/api/manifest.py`: an explicit `engine` on the mode wins, else the
+`scad_file` extension decides (`.graph.json` → graph, `.py`/`.cq` → cadquery),
+else the project engine (default `openscad`); an `implicit` project makes every
+mode implicit.
+
+This matters commercially. `gridfinity` declares `project.engine: "cadquery"`
+and then three modes with `engine: "openscad"`; 8 of the 31 OpenSCAD-capable
+cartridges are dual-engine like that. Reading the project engine alone would
+keep every one of those modes on the metered path forever.
+
+#### The capability probe
+
+`src/services/engine/renderCapability.ts` classifies the device as
+`capable | limited | incapable` from static signals plus a one-shot
+micro-benchmark (instantiate a WASM module + render `$fn=64; cube(10);`) run in
+the worker on first need. The result is cached in `localStorage` under a
+versioned key and re-probed after 7 days.
+
+Signals the browser does not expose (`deviceMemory` on Firefox and Safari, for
+example) read as **unknown** — they neither promote nor demote. The old
+heuristic's `navigator.deviceMemory || 4` invented a value for roughly a third
+of the web.
+
+Benchmark thresholds — `capable ≤ 600 ms`, `limited ≤ 2500 ms`, above that
+`incapable` — are calibrated against the shipped `openscad-wasm@0.0.4` build,
+measured at a 45 ms median (42 ms instantiate + 3 ms render) on a warm
+server-class host.
+
+#### The placement control
+
+The sidebar's action dock shows where the render will run and why, with an
+`Auto | Browser | Server` select bound to `render_placement_preference` in
+`localStorage`. The **browser badge never shows a quota**, because a browser
+render does not consume one.
+
+#### Fallback, both directions
+
+- **server → browser** on a network failure, HTTP 429, or an unhealthy render
+  worker. Capacity the visitor already owns beats an error page.
+- **browser → server** on `init-error`, `oom` or `timeout` (default 120 s,
+  overridable with `estimate_constants.wasm_timeout_seconds`). **Not** on a SCAD
+  error: the server compiles the identical source and fails identically, for the
+  price of one rate-limit unit.
+
+#### One gotcha worth knowing
+
+The worker mounts the bundle **inside Emscripten's `preRun`**, not after
+`createOpenSCAD()` resolves. `OPENSCADPATH` is read through `getenv()` and the
+environment is materialised during startup, so a late assignment is ignored:
+measured against `openscad-wasm@0.0.4`, `include <BOSL2/std.scad>` (the
+search-path form) failed with "Can't open include file" when `ENV` was set
+afterwards and rendered a 19,073-byte STL when the same assignment happened in
+`preRun`. `FONTCONFIG_FILE` happens to survive the late assignment;
+`OPENSCADPATH` does not.
 
 ### Updating the Fallback Manifest
 

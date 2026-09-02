@@ -7,16 +7,93 @@ let renderService
 beforeEach(async () => {
   vi.restoreAllMocks()
 
-  // Default to weak device to pass backend-specific tests
+  // Both the capability record and the placement preference live in
+  // localStorage, and both survive vi.resetModules(). Clearing them is what
+  // makes each test start from "nothing measured, nothing chosen".
+  localStorage.clear()
+
+  // A modest device: 2 cores / 2 GB classifies as `limited`, which is no longer
+  // the same as "cannot render in a browser". Suites that need a SERVER render
+  // pin one explicitly with pinServer().
   vi.stubGlobal('navigator', {
     hardwareConcurrency: 2,
     deviceMemory: 2
   })
 
-  // Re-import fresh module to reset cached _mode
+  // Re-import fresh module to reset per-slug placement state
   vi.resetModules()
   renderService = await import('./renderService')
 })
+
+const PREFERENCE_KEY = 'y4d.render_placement_preference.v1'
+
+/**
+ * Pin this test to the server the way a visitor would: the stored placement
+ * preference. Nothing in the app pins the server implicitly any more — the
+ * `if (API_BASE) return 'backend'` line that used to do it in production is
+ * gone — so a test that wants the SSE path has to ask for it.
+ */
+function pinServer() { localStorage.setItem(PREFERENCE_KEY, 'server') }
+
+/** Pin this test to the browser, whatever the device measures. */
+function pinBrowser() { localStorage.setItem(PREFERENCE_KEY, 'browser') }
+
+/**
+ * A minimal, valid response for GET /api/projects/<slug>/wasm-bundle.
+ *
+ * Every browser render now begins by fetching this, because the bundle — not
+ * `/scad/<file>` — is what carries the cartridge's sources, its transitively
+ * included library files and its fonts.
+ */
+function bundleResponse(slug = '__default__', overrides = {}) {
+  return {
+    ok: true,
+    status: 200,
+    headers: { get: () => null },
+    json: async () => ({
+      slug,
+      engine: 'openscad',
+      entry_files: ['main.scad'],
+      files: { [`projects/${slug}/main.scad`]: 'cube(1);' },
+      unsupported: [],
+      ...overrides,
+    }),
+  }
+}
+
+/** Serve the bundle endpoint; treat any other unqueued fetch as a test bug. */
+function serveBundle(url) {
+  if (String(url).includes('/wasm-bundle')) return Promise.resolve(bundleResponse())
+  return Promise.reject(new Error(`unexpected fetch: ${url}`))
+}
+
+/** Serve the bundle endpoint; fail everything else with `err`. */
+function failExceptBundle(err) {
+  return (url) => String(url).includes('/wasm-bundle')
+    ? Promise.resolve(bundleResponse())
+    : Promise.reject(err)
+}
+
+/** A worker that inits and renders successfully. */
+function installMockWorker() {
+  class MockWorker {
+    constructor() { this.listeners = {} }
+    postMessage(msg) {
+      if (msg.type === 'init') {
+        setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done', fileCount: 1, fontCount: 0 } }), 0)
+      } else if (msg.type === 'render') {
+        setTimeout(() => this.listeners['message']?.({
+          data: { type: 'result', stl: new Uint8Array([1, 2, 3]).buffer },
+        }), 0)
+      }
+    }
+    addEventListener(evt, cb) { this.listeners[evt] = cb }
+    removeEventListener(evt, cb) { if (this.listeners[evt] === cb) delete this.listeners[evt] }
+    terminate() {}
+  }
+  vi.stubGlobal('Worker', MockWorker)
+  return MockWorker
+}
 
 const manifest = {
   parts: [
@@ -35,16 +112,23 @@ const manifest = {
 }
 
 describe('estimateRenderTime', () => {
+  // The fourth argument names which side the estimate is FOR. It exists because
+  // the placement decision has to ask "how long would this take in the browser?"
+  // BEFORE a placement is chosen; the previous code answered that by mutating a
+  // module-global to 'backend', calling itself, and putting the global back.
+  //
+  // These arithmetic cases pass 'server' so they measure the raw formula. The
+  // browser multiplier gets its own case at the end of the block.
   it('unit mode: base_time + 1*per_unit + 1*per_part', () => {
-    expect(renderService.estimateRenderTime('unit', {}, manifest)).toBe(14.5)
+    expect(renderService.estimateRenderTime('unit', {}, manifest, 'server')).toBe(14.5)
   })
 
   it('assembly mode: base_time + 2*per_unit + 2*per_part', () => {
-    expect(renderService.estimateRenderTime('assembly', {}, manifest)).toBe(24)
+    expect(renderService.estimateRenderTime('assembly', {}, manifest, 'server')).toBe(24)
   })
 
   it('grid mode 4x4: base_time + 16*per_unit + 4*per_part', () => {
-    expect(renderService.estimateRenderTime('grid', { rows: 4, cols: 4 }, manifest)).toBe(61)
+    expect(renderService.estimateRenderTime('grid', { rows: 4, cols: 4 }, manifest, 'server')).toBe(61)
   })
 
   it('returns 0 when estimate_constants is missing', () => {
@@ -83,21 +167,21 @@ describe('estimateRenderTime', () => {
     // The manifest declared N*N while formula_vars listed ["N"], so the code
     // computed N. Measurement settles it: 3x3 -> 5x5 grew 3.10x, and N^2 predicts
     // 2.78x while N alone predicts only 1.67x.
-    const at = (N) => renderService.estimateRenderTime('cube', { N }, rubiks)
+    const at = (N) => renderService.estimateRenderTime('cube', { N }, rubiks, 'server')
     const growth = (at(5) - 2.0 - 7 * 0.05) / (at(3) - 2.0 - 7 * 0.05)
     expect(growth).toBeCloseTo(25 / 9, 6)   // N^2, not N
   })
 
   it('a standard 3x3 no longer estimates minutes', () => {
     // Native path (no wasm multiplier in this fixture): 2 + 9*0.006 + 7*0.05
-    expect(renderService.estimateRenderTime('cube', { N: 3 }, rubiks)).toBeCloseTo(2.404, 3)
+    expect(renderService.estimateRenderTime('cube', { N: 3 }, rubiks, 'server')).toBeCloseTo(2.404, 3)
   })
 
   it('the per-part term no longer dominates the estimate', () => {
     // This is the specific defect: parts*per_part was 70 s of an 84 s estimate,
     // so cube size barely moved the number and every size looked identical.
     const partsTerm = 7 * rubiks.estimate_constants.per_part      // 0.35
-    const total = renderService.estimateRenderTime('cube', { N: 9 }, rubiks)
+    const total = renderService.estimateRenderTime('cube', { N: 9 }, rubiks, 'server')
     expect(partsTerm / total).toBeLessThan(0.2)
   })
 
@@ -122,7 +206,7 @@ describe('estimateRenderTime', () => {
       modes: [{ ...rubiks.modes[0], id: 'cube' }],
       estimate_constants: { base_time: 2.0, per_unit: 0.006, per_part: 0.05 },
     }
-    const huge = renderService.estimateRenderTime('cube', { N: 400 }, heavy)
+    const huge = renderService.estimateRenderTime('cube', { N: 400 }, heavy, 'server')
     expect(huge).toBeGreaterThan(90)   // 90 s = warning_threshold_seconds
   })
 
@@ -134,7 +218,7 @@ describe('estimateRenderTime', () => {
       estimate_constants: { base_time: 2, per_unit: 1, per_part: 3 },
     }
     // x=3, y=5 → units=15 → 2 + 15*1 + 1*3 = 20
-    expect(renderService.estimateRenderTime('custom', { x: 3, y: 5 }, customManifest)).toBe(20)
+    expect(renderService.estimateRenderTime('custom', { x: 3, y: 5 }, customManifest, 'server')).toBe(20)
   })
 
   it('uses wasm_multiplier from estimate_constants', () => {
@@ -142,8 +226,18 @@ describe('estimateRenderTime', () => {
       modes: [{ id: 'unit', parts: ['main'], estimate: { base_units: 1, formula: 'constant' } }],
       estimate_constants: { base_time: 5, per_unit: 1.5, per_part: 8, wasm_multiplier: 5 },
     }
-    // In non-wasm mode (default _mode=null → not 'wasm'), multiplier is not applied
-    expect(renderService.estimateRenderTime('unit', {}, wasmManifest)).toBe(14.5)
+    expect(renderService.estimateRenderTime('unit', {}, wasmManifest, 'browser')).toBe(72.5)
+    expect(renderService.estimateRenderTime('unit', {}, wasmManifest, 'server')).toBe(14.5)
+  })
+
+  it('defaults to the BROWSER estimate, because the browser is where renders go', () => {
+    // This is the visible edge of the product change: with no placement chosen
+    // yet, the number the app quotes is the one for the visitor's own machine.
+    const wasmManifest = {
+      modes: [{ id: 'unit', parts: ['main'], estimate: { base_units: 1, formula: 'constant' } }],
+      estimate_constants: { base_time: 5, per_unit: 1.5, per_part: 8, wasm_multiplier: 2 },
+    }
+    expect(renderService.estimateRenderTime('unit', {}, wasmManifest)).toBe(29)
   })
 })
 
@@ -167,6 +261,10 @@ describe('cancelRender', () => {
 })
 
 describe('renderParts (backend mode)', () => {
+  // The server is no longer the default for an OpenSCAD cartridge, so these
+  // SSE-path cases pin it the way a visitor would.
+  beforeEach(pinServer)
+
   it('throws on non-ok HTTP response', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
@@ -340,6 +438,8 @@ describe('renderParts (backend mode)', () => {
 })
 
 describe('renderParts (SSE event types)', () => {
+  beforeEach(pinServer)
+
   it('calls onProgress for part_start, part_done, output, and error events', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health
@@ -482,10 +582,27 @@ describe('renderParts (SSE event types)', () => {
     expect(body.export_format).toBe('glb')
   })
 
-  it('uses backend when manifest.force_backend is true', async () => {
-    const forcedManifest = { ...manifest, force_backend: true }
+})
+
+describe('force_backend is a SOFT hint, not a server pin', () => {
+  // 490 of the 501 cartridges in the commons set `force_backend`, and among the
+  // OpenSCAD ones it almost always encoded "WASM cannot load our BOSL2 include
+  // or our font" — the exact gap the wasm-bundle contract closes. Honouring it
+  // unconditionally would keep essentially the whole commons on the metered
+  // path for a reason that no longer exists.
+  // Cheap on purpose: a 3.6 s browser estimate is under both tier thresholds,
+  // so rule 8 cannot fire and the only thing left to decide this is rule 9.
+  const forced = {
+    ...manifest,
+    project: { force_backend: true },
+    estimate_constants: { base_time: 1, per_unit: 0.1, per_part: 0.1 },
+    modes: [{ id: 'unit', parts: ['main'], scad_file: 'main.scad', estimate: { base_units: 1 } }],
+  }
+
+  it('sends a LIMITED device to the server', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 2, deviceMemory: 2 })
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockResolvedValueOnce({ ok: true }) // health check
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health
     fetchMock.mockResolvedValueOnce({
       ok: true,
       body: createSSEStream([
@@ -493,28 +610,29 @@ describe('renderParts (SSE event types)', () => {
         ''
       ])
     })
-    const result = await renderService.renderParts('unit', {}, forcedManifest, {})
+    const result = await renderService.renderParts('unit', {}, forced, {})
     expect(result).toHaveLength(1)
+    expect(renderService.getRenderMode()).toBe('backend')
   })
 
-  it('uses backend when project.force_backend is set', async () => {
-    const forcedManifest = { ...manifest, project: { force_backend: true } }
+  it('leaves a CAPABLE device in the browser, for free', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 16, deviceMemory: 16 })
+    installMockWorker()
+    URL.createObjectURL = vi.fn(() => 'blob:abc')
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockResolvedValueOnce({ ok: true }) // health check
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      body: createSSEStream([
-        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
-        ''
-      ])
-    })
-    const result = await renderService.renderParts('unit', {}, forcedManifest, {})
+    fetchMock.mockImplementation(serveBundle)
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health
+
+    const result = await renderService.renderParts('unit', {}, forced, {})
     expect(result).toHaveLength(1)
+    expect(renderService.getRenderMode()).toBe('wasm')
+    // No SSE render was attempted — that is the whole saving.
+    expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/api/render-stream'))).toBe(false)
   })
 })
 
-describe('renderService circuit breaker', () => {
-  it('routes to backend when estimated render time exceeds 15s', async () => {
+describe('renderService estimate threshold', () => {
+  it('routes to the server when the browser estimate exceeds the tier threshold', async () => {
     // High-complexity grid: estimate will exceed 15s even on backend formula
     const heavyManifest = {
       modes: [{
@@ -534,7 +652,8 @@ describe('renderService circuit breaker', () => {
       ])
     })
 
-    // rows=10, cols=10 → 100 units × 10 per_unit + 4×20 = 1080s → well above 15s threshold
+    // rows=10, cols=10 → 100 units × 10 per_unit + 4×20 = 1085 s native, ×3 in the
+    // browser — far past the 15 s a `limited` device tolerates in a tab.
     const result = await renderService.renderParts('grid', { rows: 10, cols: 10 }, heavyManifest, {})
     expect(result).toHaveLength(1)
     // Health check + render = 2 calls
@@ -572,6 +691,8 @@ describe('cancelRender with active worker', () => {
 })
 
 describe('getRenderMode after detection', () => {
+  beforeEach(pinServer)
+
   it('reflects the detected mode after a successful render', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health → backend
@@ -595,46 +716,46 @@ describe('estimateRenderTime — WASM multiplier path', () => {
       modes: [{ id: 'unit', parts: ['main'], estimate: { base_units: 1, formula: 'constant' } }],
       estimate_constants: { base_time: 5, per_unit: 1.5, per_part: 8, wasm_multiplier: 2 },
     }
-    // On high-end device, mode defaults to 'wasm' base estimate × 2
+    // A capable device defaults to the browser, so the multiplier applies.
     const est = renderService.estimateRenderTime('unit', {}, wasmManifest)
-    // 14.5 × 2 = 29 (if wasm) or 14.5 (if backend)
-    expect([14.5, 29]).toContain(est)
+    expect(est).toBe(29)   // 14.5 × 2
   })
 })
 
-describe('detectMode WASM fallback on backend unavailability', () => {
-  it('falls back to WASM when backend is down despite force_backend', async () => {
-    // High-end device (WASM-capable)
+describe('placement when the backend is unavailable', () => {
+  const scad = { ...manifest, modes: [
+    { id: 'unit', parts: ['main'], scad_file: 'main.scad', estimate: { base_units: 1 } },
+  ] }
+
+  it('renders in the browser when the backend is down, despite force_backend', async () => {
     vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-
-    const forcedManifest = { ...manifest, force_backend: true }
-    const fetchMock = vi.spyOn(globalThis, 'fetch')
-    // Health check fails → backend unavailable
-    fetchMock.mockRejectedValueOnce(new Error('net::ERR_CONNECTION_REFUSED'))
-
-    // Should detect WASM mode and render
-    class MockWorker {
-      constructor() { this.listeners = {} }
-      postMessage(msg) {
-        if (msg.type === 'init') {
-          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
-        } else if (msg.type === 'render') {
-          setTimeout(() => this.listeners['message']?.({ data: { type: 'result', stl: new Uint8Array([1,2,3]).buffer } }), 0)
-        }
-      }
-      addEventListener(evt, cb) { this.listeners[evt] = cb }
-      removeEventListener(evt, cb) { if (this.listeners[evt] === cb) delete this.listeners[evt] }
-      terminate() {}
-    }
-    vi.stubGlobal('Worker', MockWorker)
+    installMockWorker()
     URL.createObjectURL = vi.fn(() => 'blob:abc')
 
-    const result = await renderService.renderParts('unit', {}, forcedManifest, {})
-    expect(result).toHaveLength(1)
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[Fallback]'))
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockImplementation(serveBundle)
+    fetchMock.mockRejectedValueOnce(new Error('net::ERR_CONNECTION_REFUSED')) // health
 
-    warnSpy.mockRestore()
+    const result = await renderService.renderParts('unit', {}, { ...scad, force_backend: true }, {})
+    expect(result).toHaveLength(1)
+    expect(renderService.getRenderMode()).toBe('wasm')
+  })
+
+  it('sends a limited device back to the browser when the server is unreachable', async () => {
+    // On a `limited` device both the estimate threshold and the force_backend
+    // hint point at the server. A server we cannot reach is not a placement,
+    // so the outage guard sends it back.
+    vi.stubGlobal('navigator', { hardwareConcurrency: 2, deviceMemory: 2 })
+    installMockWorker()
+    URL.createObjectURL = vi.fn(() => 'blob:abc')
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockImplementation(serveBundle)
+    fetchMock.mockRejectedValueOnce(new Error('net::ERR_CONNECTION_REFUSED')) // health
+
+    const result = await renderService.renderParts('unit', {}, { ...scad, force_backend: true }, {})
+    expect(result).toHaveLength(1)
+    expect(renderService.getRenderMode()).toBe('wasm')
   })
 
   it('still uses backend for CadQuery even when backend is down', async () => {
@@ -668,7 +789,7 @@ describe('detectMode WASM fallback on backend unavailability', () => {
   })
 })
 
-describe('renderParts network error WASM fallback', () => {
+describe('renderParts server-to-browser fallback', () => {
   let originalCreateObjectURL
   beforeEach(() => {
     originalCreateObjectURL = URL.createObjectURL
@@ -678,7 +799,7 @@ describe('renderParts network error WASM fallback', () => {
     URL.createObjectURL = originalCreateObjectURL
   })
 
-  it('catches "Failed to fetch" and retries with WASM for non-force_backend projects', async () => {
+  it('catches "Failed to fetch" and retries in the browser', async () => {
     vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
@@ -714,7 +835,8 @@ describe('renderParts network error WASM fallback', () => {
     }
 
     const fetchMock = vi.spyOn(globalThis, 'fetch')
-    // Health check succeeds → backend mode (via circuit breaker, est > 15s)
+    fetchMock.mockImplementation(serveBundle)
+    // Health check succeeds → server placement (estimate over the threshold)
     fetchMock.mockResolvedValueOnce({ ok: true })
     // Render call fails with network error
     fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
@@ -726,7 +848,7 @@ describe('renderParts network error WASM fallback', () => {
 
     expect(result).toHaveLength(4)
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[Fallback] Backend render failed'),
+      expect.stringContaining('[Fallback] Server render failed'),
       'Failed to fetch'
     )
     expect(progressEvents.some(e => e.log?.includes('[FALLBACK]'))).toBe(true)
@@ -734,7 +856,7 @@ describe('renderParts network error WASM fallback', () => {
     warnSpy.mockRestore()
   })
 
-  it('falls back to WASM when backend reports render worker unavailable', async () => {
+  it('falls back to the browser when the server reports its render worker unavailable', async () => {
     vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
@@ -767,6 +889,7 @@ describe('renderParts network error WASM fallback', () => {
     }
 
     const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockImplementation(serveBundle)
     fetchMock.mockResolvedValueOnce({ ok: true }) // health succeeds
     fetchMock.mockResolvedValueOnce({
       ok: true,
@@ -787,15 +910,17 @@ describe('renderParts network error WASM fallback', () => {
       expect.stringContaining('worker unavailable'),
       'Render worker unavailable or not healthy'
     )
-    expect(progressEvents.some(e => e.log?.includes('Render worker unavailable, rendering locally'))).toBe(true)
+    expect(progressEvents.some(e => e.log?.includes('Server render worker unavailable, rendering in your browser'))).toBe(true)
 
     warnSpy.mockRestore()
   })
 
-  it('does NOT fallback to WASM on network error for force_backend projects', async () => {
+  it('does NOT fall back to the browser on a network error for a server_only project', async () => {
+    // `render.server_only` is the HARD flag. `force_backend` no longer pins,
+    // so this case is what actually guarantees "never leaves the server".
     vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
 
-    const forcedManifest = { ...manifest, force_backend: true }
+    const forcedManifest = { ...manifest, render: { server_only: true } }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health check
     fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
@@ -805,10 +930,10 @@ describe('renderParts network error WASM fallback', () => {
     ).rejects.toThrow('Failed to fetch')
   })
 
-  it('does NOT fallback to WASM on rate limit for force_backend projects', async () => {
+  it('does NOT fall back to the browser on a rate limit for a server_only project', async () => {
     vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
 
-    const forcedManifest = { ...manifest, force_backend: true }
+    const forcedManifest = { ...manifest, render: { server_only: true } }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health check
     fetchMock.mockResolvedValueOnce({
@@ -828,7 +953,8 @@ describe('renderParts network error WASM fallback', () => {
   })
 
   it('does NOT fallback on AbortError (user cancel)', async () => {
-    // Use weak device so detectMode chooses backend (not WASM)
+    // A `limited` device with a 43.5 s browser estimate is over the 15 s
+    // threshold, so this lands on the server without any pin.
     const fetchMock = vi.spyOn(globalThis, 'fetch')
     fetchMock.mockResolvedValueOnce({ ok: true }) // health
     fetchMock.mockRejectedValueOnce(new DOMException('Aborted', 'AbortError'))
@@ -879,10 +1005,13 @@ describe('renderParts network error WASM fallback', () => {
   })
 })
 
-describe('renderParts (wasm mode)', () => {
+describe('renderParts (browser mode)', () => {
   let originalCreateObjectURL
+  const scad = { ...manifest, modes: [
+    { id: 'unit', parts: ['main'], scad_file: 'main.scad', estimate: { base_units: 1 } },
+  ] }
+
   beforeEach(() => {
-    // WASM mode requires a capable device
     vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
     originalCreateObjectURL = URL.createObjectURL
     URL.createObjectURL = vi.fn(() => 'blob:abc')
@@ -891,77 +1020,158 @@ describe('renderParts (wasm mode)', () => {
     URL.createObjectURL = originalCreateObjectURL
   })
 
-  it('initializes worker and resolves parts', async () => {
+  /** A worker whose init/render behaviour the test dictates. */
+  function workerThatReplies(reply) {
     class MockWorker {
       constructor() { this.listeners = {} }
-      postMessage(msg) {
-        if (msg.type === 'init') {
-          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
-        } else if (msg.type === 'render') {
-          setTimeout(() => {
-            this.listeners['message']?.({ data: { type: 'progress', phase: 'compiling', percent: 50 } })
-            this.listeners['message']?.({ data: { type: 'result', stl: new Uint8Array([1,2,3]).buffer } })
-          }, 0)
-        }
-      }
+      postMessage(msg) { setTimeout(() => reply(msg, this.listeners['message']), 0) }
       addEventListener(evt, cb) { this.listeners[evt] = cb }
-      removeEventListener(evt, cb) { if(this.listeners[evt] === cb) delete this.listeners[evt] }
+      removeEventListener(evt, cb) { if (this.listeners[evt] === cb) delete this.listeners[evt] }
       terminate() {}
     }
     vi.stubGlobal('Worker', MockWorker)
+  }
 
-    const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockRejectedValue(new Error('no backend')) // force WASM fallback
+  it('fetches the wasm bundle, initializes the worker, and resolves parts', async () => {
+    const posted = []
+    workerThatReplies((msg, send) => {
+      posted.push(msg)
+      if (msg.type === 'init') send?.({ data: { type: 'init-done', fileCount: 1, fontCount: 0 } })
+      else if (msg.type === 'render') {
+        send?.({ data: { type: 'progress', phase: 'compiling', percent: 50 } })
+        send?.({ data: { type: 'result', stl: new Uint8Array([1, 2, 3]).buffer } })
+      }
+    })
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(serveBundle)
 
     const progressEvents = []
-    const result = await renderService.renderParts('unit', {}, manifest, { onProgress: e => progressEvents.push(e) })
+    const result = await renderService.renderParts('unit', {}, scad, { onProgress: e => progressEvents.push(e) })
 
     expect(result).toHaveLength(1)
     expect(result[0].type).toBe('main')
     expect(result[0].url).toBe('blob:abc')
     expect(progressEvents.length).toBeGreaterThan(0)
+
+    // The bundle endpoint — not /scad/<file> — is what the browser path reads.
+    expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/wasm-bundle'))).toBe(true)
+    expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/scad/'))).toBe(false)
+
+    // The worker is told an ABSOLUTE bundle path, so `include <../../libs/...>`
+    // resolves relative to the cartridge's own directory.
+    const render = posted.find(m => m.type === 'render')
+    expect(render.entryPath).toBe('/projects/__default__/main.scad')
+    expect(posted.find(m => m.type === 'init').bundle.files)
+      .toHaveProperty('projects/__default__/main.scad')
   })
 
-  it('rejects if worker initialization fails', async () => {
-    class MockWorkerError {
-      constructor() { this.listeners = {} }
-      postMessage(msg) {
-        if (msg.type === 'init') {
-          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-error', error: 'init failed' } }), 0)
-        }
+  it('falls back to the server when the worker cannot initialize', async () => {
+    workerThatReplies((msg, send) => {
+      if (msg.type === 'init') send?.({ data: { type: 'init-error', error: 'init failed', kind: 'init-error' } })
+    })
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (String(url).includes('/wasm-bundle')) return Promise.resolve(bundleResponse())
+      if (String(url).includes('/api/render-stream')) {
+        return Promise.resolve({
+          ok: true,
+          body: createSSEStream([
+            'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+            ''
+          ]),
+        })
       }
-      addEventListener(evt, cb) { this.listeners[evt] = cb }
-      removeEventListener(evt, cb) { if(this.listeners[evt] === cb) delete this.listeners[evt] }
-      terminate() {}
-    }
-    vi.stubGlobal('Worker', MockWorkerError)
+      return Promise.resolve({ ok: true })
+    })
 
-    const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockRejectedValue(new Error('no backend'))
-
-    await expect(renderService.renderParts('unit', {}, manifest, {})).rejects.toThrow('init failed')
+    const logs = []
+    const result = await renderService.renderParts('unit', {}, scad, {
+      onProgress: p => p.log && logs.push(p.log),
+    })
+    expect(result).toHaveLength(1)
+    expect(logs.some(l => l.includes('[FALLBACK] Browser render failed (init-error)'))).toBe(true)
+    expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/api/render-stream'))).toBe(true)
   })
 
-  it('rejects if worker render fails', async () => {
-    class MockWorkerRenderError {
-      constructor() { this.listeners = {} }
-      postMessage(msg) {
-        if (msg.type === 'init') {
-          setTimeout(() => this.listeners['message']?.({ data: { type: 'init-done' } }), 0)
-        } else if (msg.type === 'render') {
-          setTimeout(() => this.listeners['message']?.({ data: { type: 'error', message: 'render failed' } }), 0)
-        }
+  it('falls back to the server when the browser runs out of memory', async () => {
+    workerThatReplies((msg, send) => {
+      if (msg.type === 'init') send?.({ data: { type: 'init-done' } })
+      else if (msg.type === 'render') send?.({ data: { type: 'error', message: 'Cannot enlarge memory arrays', kind: 'oom' } })
+    })
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (String(url).includes('/wasm-bundle')) return Promise.resolve(bundleResponse())
+      if (String(url).includes('/api/render-stream')) {
+        return Promise.resolve({
+          ok: true,
+          body: createSSEStream([
+            'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+            ''
+          ]),
+        })
       }
-      addEventListener(evt, cb) { this.listeners[evt] = cb }
-      removeEventListener(evt, cb) { if(this.listeners[evt] === cb) delete this.listeners[evt] }
-      terminate() {}
-    }
-    vi.stubGlobal('Worker', MockWorkerRenderError)
+      return Promise.resolve({ ok: true })
+    })
 
-    const fetchMock = vi.spyOn(globalThis, 'fetch')
-    fetchMock.mockRejectedValue(new Error('no backend'))
+    const logs = []
+    const result = await renderService.renderParts('unit', {}, scad, {
+      onProgress: p => p.log && logs.push(p.log),
+    })
+    expect(result).toHaveLength(1)
+    expect(logs.some(l => l.includes('[FALLBACK] Browser render failed (oom)'))).toBe(true)
+  })
 
-    await expect(renderService.renderParts('unit', {}, manifest, {})).rejects.toThrow('render failed')
+  it('does NOT fall back on a SCAD error — the server would reject it identically', async () => {
+    // The point of the `kind` field. Retrying a syntax error server-side spends
+    // one of the visitor's rate-limit units to reproduce the same message.
+    workerThatReplies((msg, send) => {
+      if (msg.type === 'init') send?.({ data: { type: 'init-done' } })
+      else if (msg.type === 'render') send?.({ data: { type: 'error', message: 'OpenSCAD exited with code 1', kind: 'scad-error' } })
+    })
+
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(serveBundle)
+
+    await expect(renderService.renderParts('unit', {}, scad, {}))
+      .rejects.toThrow('OpenSCAD exited with code 1')
+    expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/api/render-stream'))).toBe(false)
+  })
+
+  it('does NOT fall back when the visitor pinned the browser', async () => {
+    pinBrowser()
+    workerThatReplies((msg, send) => {
+      if (msg.type === 'init') send?.({ data: { type: 'init-error', error: 'init failed', kind: 'init-error' } })
+    })
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(serveBundle)
+
+    await expect(renderService.renderParts('unit', {}, scad, {})).rejects.toThrow('init failed')
+    expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/api/render-stream'))).toBe(false)
+  })
+
+  it('sends the NEXT render for that slug straight to the server', async () => {
+    // Rule 7 of the placement table. Re-running a known failure is a loop, not
+    // resilience.
+    workerThatReplies((msg, send) => {
+      if (msg.type === 'init') send?.({ data: { type: 'init-done' } })
+      else if (msg.type === 'render') send?.({ data: { type: 'error', message: 'oom', kind: 'oom' } })
+    })
+    const sse = () => Promise.resolve({
+      ok: true,
+      body: createSSEStream([
+        'data: {"event":"complete","parts":[{"type":"main","url":"http://x/a.stl"}],"progress":100}',
+        ''
+      ]),
+    })
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (String(url).includes('/wasm-bundle')) return Promise.resolve(bundleResponse())
+      if (String(url).includes('/api/render-stream')) return sse()
+      return Promise.resolve({ ok: true })
+    })
+
+    await renderService.renderParts('unit', {}, scad, {})
+    expect(renderService.getRenderPlacement('__default__')).toBe('server')
+
+    await renderService.renderParts('unit', {}, scad, {})
+    expect(renderService.getRenderPlacement('__default__')).toBe('server')
   })
 })
 
@@ -990,15 +1200,21 @@ describe('canRunWasm', () => {
   })
 })
 
-describe('backend to WASM fallback', () => {
-  // A backend failure should fall back to browser rendering only when that is
+describe('server to browser fallback', () => {
+  // A server failure should fall back to browser rendering only when that is
   // both possible and appropriate. Getting this wrong either strands the user
-  // on a dead backend, or silently offers WASM to a cartridge that has no
+  // on a dead backend, or silently offers the browser a cartridge that has no
   // browser build. The backend must be *available* for this path to run at
   // all, so backendDetection is stubbed rather than inferred from fetch.
+  //
+  // The constants are heavy on purpose: 49.5 s native is 148.5 s in a browser,
+  // past the 45 s a capable device tolerates, so this cartridge starts on the
+  // server without needing a pin — and a pin would disable the very fallback
+  // under test.
   const scadManifest = {
     ...manifest,
     engine: 'openscad',
+    estimate_constants: { base_time: 40, per_unit: 1.5, per_part: 8 },
     modes: [{ id: 'unit', parts: ['main'], scad_file: 'main.scad', estimate: { base_units: 1 } }],
   }
 
@@ -1006,9 +1222,9 @@ describe('backend to WASM fallback', () => {
     vi.resetModules()
     vi.doMock('../core/backendDetection', () => ({
       isBackendAvailable: vi.fn(async () => true),
-      // Must be non-empty: detectMode only routes to the backend when an API
-      // base is configured, so an empty string sends every render to WASM and
-      // the fallback path under test is never entered.
+      // The API base no longer decides anything — `if (API_BASE) return
+      // 'backend'` is gone. It is set here only so the request URLs are
+      // absolute, the way they are in a real deployment.
       getApiBase: vi.fn(() => 'http://localhost:5000'),
       resetDetection: vi.fn(),
     }))
@@ -1037,9 +1253,10 @@ describe('backend to WASM fallback', () => {
 
   afterEach(() => { vi.doUnmock('../core/backendDetection') })
 
-  it('falls back to WASM and names rate limiting as the reason', async () => {
+  it('falls back to the browser and names rate limiting as the reason', async () => {
     const svc = await loadWithBackendUp()
-    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 429 rate limited'))
+    vi.spyOn(globalThis, 'fetch')
+      .mockImplementation(failExceptBundle(new Error('HTTP 429 rate limited')))
     const logs = []
     await svc.renderParts('unit', {}, scadManifest, {
       onProgress: (p) => p.log && logs.push(p.log),
@@ -1047,54 +1264,58 @@ describe('backend to WASM fallback', () => {
     expect(logs.some(l => l.includes('Server limit reached'))).toBe(true)
   })
 
-  it('falls back to WASM and names the unavailable worker', async () => {
+  it('falls back to the browser and names the unavailable worker', async () => {
     const svc = await loadWithBackendUp()
-    vi.spyOn(globalThis, 'fetch').mockRejectedValue(
-      new Error('Render worker unavailable or not healthy'))
+    vi.spyOn(globalThis, 'fetch')
+      .mockImplementation(failExceptBundle(new Error('Render worker unavailable or not healthy')))
     const logs = []
     await svc.renderParts('unit', {}, scadManifest, {
       onProgress: (p) => p.log && logs.push(p.log),
     })
-    expect(logs.some(l => l.includes('Render worker unavailable'))).toBe(true)
+    expect(logs.some(l => l.includes('Server render worker unavailable'))).toBe(true)
   })
 
   it('falls back on a network failure', async () => {
     const svc = await loadWithBackendUp()
-    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'))
+    vi.spyOn(globalThis, 'fetch')
+      .mockImplementation(failExceptBundle(new TypeError('Failed to fetch')))
     const logs = []
     await svc.renderParts('unit', {}, scadManifest, {
       onProgress: (p) => p.log && logs.push(p.log),
     })
-    expect(logs.some(l => l.includes('Backend unavailable'))).toBe(true)
+    expect(logs.some(l => l.includes('Server unavailable, rendering in your browser'))).toBe(true)
   })
 
-  it('does not fall back for a force_backend cartridge, and explains why', async () => {
+  it('does not fall back for a server_only cartridge, and explains why', async () => {
     const svc = await loadWithBackendUp()
-    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 429 rate limited'))
+    vi.spyOn(globalThis, 'fetch')
+      .mockImplementation(failExceptBundle(new Error('HTTP 429 rate limited')))
     const logs = []
     await expect(
-      svc.renderParts('unit', {}, { ...scadManifest, project: { force_backend: true } }, {
+      svc.renderParts('unit', {}, { ...scadManifest, render: { server_only: true } }, {
         onProgress: (p) => p.log && logs.push(p.log),
       }),
     ).rejects.toThrow(/429/)
     expect(logs.some(l => l.includes('requires server rendering'))).toBe(true)
   })
 
-  it('explains a worker outage on a force_backend cartridge', async () => {
+  it('explains a worker outage on a server_only cartridge', async () => {
     const svc = await loadWithBackendUp()
-    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('render_worker_unavailable'))
+    vi.spyOn(globalThis, 'fetch')
+      .mockImplementation(failExceptBundle(new Error('render_worker_unavailable')))
     const logs = []
     await expect(
-      svc.renderParts('unit', {}, { ...scadManifest, force_backend: true }, {
+      svc.renderParts('unit', {}, { ...scadManifest, render: { server_only: true } }, {
         onProgress: (p) => p.log && logs.push(p.log),
       }),
     ).rejects.toThrow(/render_worker_unavailable/)
     expect(logs.some(l => l.includes('render service recovers'))).toBe(true)
   })
 
-  it('re-throws a backend error that WASM could not have fixed', async () => {
+  it('re-throws a server error the browser could not have fixed', async () => {
     const svc = await loadWithBackendUp()
-    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('HTTP 500 internal error'))
+    vi.spyOn(globalThis, 'fetch')
+      .mockImplementation(failExceptBundle(new Error('HTTP 500 internal error')))
     await expect(svc.renderParts('unit', {}, scadManifest, {})).rejects.toThrow(/500/)
   })
 

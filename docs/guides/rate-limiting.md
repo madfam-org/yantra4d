@@ -28,9 +28,33 @@ Defined in `apps/api/extensions.py` via `tiered_rate_key()`.
 
 Response headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`) are always included when limiting is active.
 
+## Browser renders are never rate limited
+
+Rate limits exist to protect **our** CPU. A render that runs in the visitor's own
+browser costs us nothing, so it is never counted, never limited, and never shows
+a quota anywhere in the UI.
+
+The studio renders in the browser **by default** (see
+[`docs/guides/wasm-mode.md`](wasm-mode.md) for the full precedence table), which
+means the common case consumes no quota at all. A render reaches
+`/api/render-stream` — and therefore the limiter — only when the placement
+decision says the browser cannot do the job, or when the visitor chooses
+`Server` in the sidebar's placement control.
+
+Two consequences worth stating plainly:
+
+- The `X-RateLimit-*` headers, the `RateLimitBanner`, and the "N left this hour"
+  half of the placement badge all describe **server** renders only. The browser
+  badge deliberately carries no number: showing one would teach the visitor that
+  everything they do is metered, which is the opposite of the truth.
+- When a server render is refused with HTTP 429, the studio falls back to the
+  browser automatically (unless the cartridge is hard-pinned to the server by its
+  engine or `render.server_only`). Hitting the limit degrades the experience; it
+  does not stop the work.
+
 ## Per-Tier Render Limits
 
-Backend (server-side) render limits are defined per tier in `apps/api/tiers.json`. Client-side WASM rendering is always unlimited.
+Backend (server-side) render limits are defined per tier in `apps/api/tiers.json`. Browser (WASM) rendering is always unlimited.
 
 | Tier | Backend Renders/Hour | AI Requests/Hour |
 |------|:---:|:---:|

@@ -41,9 +41,20 @@ CANCEL_JOB_PREFIX = "yantra_render_cancel_job:"
 CANCEL_TTL_SECONDS = 120
 ACTIVE_JOB_META_TTL = 300
 CANCEL_EVENT_TTL_SECONDS = 30
+# Legacy fleet-wide heartbeat key, written by every worker. Still read so that
+# a worker running pre-split code (the in-pod sidecar, or a rollback) is still
+# seen as alive. It cannot distinguish one worker from four.
 RENDER_WORKER_HEARTBEAT_KEY = os.environ.get(
     "RENDER_WORKER_HEARTBEAT_KEY",
     "yantra_render_worker_heartbeat",
+)
+# Per-worker keys, `render_worker:heartbeat:<pod-name>`, one per replica.
+# Counting live keys is what turns "a worker answered" into "N workers are
+# up", which is the only way a scaled worker Deployment is observable at all.
+# Redis TTL expiry retires dead workers, so there is nothing to reap.
+RENDER_WORKER_HEARTBEAT_PREFIX = os.environ.get(
+    "RENDER_WORKER_HEARTBEAT_PREFIX",
+    "render_worker:heartbeat:",
 )
 RENDER_WORKER_HEARTBEAT_TTL_SECONDS = int(os.environ.get(
     "RENDER_WORKER_HEARTBEAT_TTL_SECONDS",
@@ -410,22 +421,86 @@ def _coerce_channel(value) -> str:
     return str(value)
 
 
-def _read_render_worker_last_seen() -> int | None:
-    """Return the last worker heartbeat timestamp from Redis."""
-    try:
-        raw = r.get(RENDER_WORKER_HEARTBEAT_KEY)
-        if not raw:
-            return None
+def _decode(raw):
+    """Normalize a Redis value to str regardless of client decode settings."""
+    if isinstance(raw, bytes):
+        return raw.decode("utf-8", errors="replace")
+    return raw
 
-        if isinstance(raw, bytes):
-            raw = raw.decode("utf-8", errors="replace")
-        return int(float(raw.strip()))
-    except Exception:
+
+def _parse_heartbeat(raw) -> dict | None:
+    """Parse a heartbeat value into {ts, state, job_id}.
+
+    Accepts both shapes on the wire: the JSON payload written to a per-worker
+    key, and the bare timestamp of the legacy global key. Mixed shapes are the
+    normal case during a rollout, not an error.
+    """
+    raw = _decode(raw)
+    if not raw:
+        return None
+    raw = raw.strip()
+    if raw.startswith("{"):
+        try:
+            payload = json.loads(raw)
+            return {
+                "ts": int(float(payload["ts"])),
+                "state": payload.get("state"),
+                "job_id": payload.get("job_id"),
+            }
+        except Exception:
+            return None
+    try:
+        return {"ts": int(float(raw)), "state": None, "job_id": None}
+    except (TypeError, ValueError):
         return None
 
 
+def _iter_worker_heartbeats() -> dict[str, dict]:
+    """Return {worker_id: heartbeat} for every worker beating right now.
+
+    Per-worker keys are discovered with SCAN, never KEYS — KEYS blocks the
+    whole Redis server, and this runs on the readiness path. The legacy global
+    key is folded in under the id "legacy" so a pre-split worker still counts.
+    """
+    workers: dict[str, dict] = {}
+
+    scan_iter = getattr(r, "scan_iter", None)
+    if callable(scan_iter):
+        try:
+            for key in scan_iter(match=f"{RENDER_WORKER_HEARTBEAT_PREFIX}*", count=100):
+                key = _decode(key)
+                try:
+                    beat = _parse_heartbeat(r.get(key))
+                except Exception:
+                    beat = None
+                if beat is None:
+                    continue
+                workers[key[len(RENDER_WORKER_HEARTBEAT_PREFIX):] or key] = beat
+        except Exception:
+            logger.debug("Per-worker heartbeat scan failed", exc_info=True)
+
+    if not workers:
+        try:
+            legacy = _parse_heartbeat(r.get(RENDER_WORKER_HEARTBEAT_KEY))
+        except Exception:
+            legacy = None
+        if legacy is not None:
+            workers["legacy"] = legacy
+
+    return workers
+
+
+def _read_render_worker_last_seen() -> int | None:
+    """Return the freshest worker heartbeat timestamp across the fleet."""
+    try:
+        beats = [beat["ts"] for beat in _iter_worker_heartbeats().values()]
+    except Exception:
+        return None
+    return max(beats) if beats else None
+
+
 def is_render_worker_available() -> bool:
-    """Return True when the dedicated render worker has published heartbeat."""
+    """Return True when at least one render worker has a fresh heartbeat."""
     last_seen = _read_render_worker_last_seen()
     if last_seen is None:
         return False
@@ -434,13 +509,19 @@ def is_render_worker_available() -> bool:
 
 def get_render_worker_status() -> dict:
     """Return render worker and queue status for readiness/operations surfaces."""
-    last_seen = _read_render_worker_last_seen()
     now = int(time.time())
+    staleness_window = RENDER_WORKER_HEARTBEAT_TTL_SECONDS * 2
+
+    workers = _iter_worker_heartbeats()
+    live = {
+        worker_id: beat
+        for worker_id, beat in workers.items()
+        if (now - beat["ts"]) <= staleness_window
+    }
+
+    last_seen = max((beat["ts"] for beat in workers.values()), default=None)
     age_seconds = None if last_seen is None else max(0, now - last_seen)
-    available = (
-        age_seconds is not None
-        and age_seconds <= RENDER_WORKER_HEARTBEAT_TTL_SECONDS * 2
-    )
+    available = bool(live)
 
     try:
         queue_depth = r.llen(RENDER_QUEUE)
@@ -455,11 +536,15 @@ def get_render_worker_status() -> dict:
     return {
         "available": available,
         "heartbeat_key": RENDER_WORKER_HEARTBEAT_KEY,
+        "heartbeat_prefix": RENDER_WORKER_HEARTBEAT_PREFIX,
         "heartbeat_ttl_seconds": RENDER_WORKER_HEARTBEAT_TTL_SECONDS,
         "last_seen": last_seen,
         "age_seconds": age_seconds,
         "queue_depth": queue_depth,
         "active_jobs": active_jobs,
+        "workers_total": len(live),
+        "workers_busy": sum(1 for beat in live.values() if beat.get("state") == "busy"),
+        "workers": sorted(live),
     }
 
 

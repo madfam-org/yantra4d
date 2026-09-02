@@ -1,0 +1,26 @@
+# Disruption budget for the render worker fleet.
+#
+# maxUnavailable rather than minAvailable on purpose. The HPA can take this
+# Deployment down to a single replica, and `minAvailable: 1` against one replica
+# forbids every voluntary eviction — a node drain would hang forever and block
+# cluster maintenance. maxUnavailable: 1 gives the protection that actually
+# matters at N>1 (a drain cannot take the whole fleet at once) while staying
+# safe at N=1.
+#
+# This bounds voluntary disruption only: drains, and evictions from the
+# eviction API. HPA scale-down deletes pods directly and is not covered — the
+# worker's SIGTERM drain and terminationGracePeriodSeconds handle that case.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: yantra4d-render-worker
+  labels:
+    app.kubernetes.io/name: yantra4d-render-worker
+    app.kubernetes.io/part-of: yantra4d
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yantra4d-render-worker

@@ -1,0 +1,159 @@
+# Dedicated render worker.
+#
+# Was a sidecar in the yantra4d-backend pod, which tied render capacity to API
+# capacity: the only way to get a second worker was a second API replica, and
+# the API is a singleton (Recreate strategy, ReadWriteOnce analytics PVC). As
+# its own Deployment the worker scales on its own axis, under the HPA in
+# yantra4d-render-worker-hpa.yaml.
+#
+# Same image as the backend — the worker code ships inside it
+# (apps/api/Dockerfile: `COPY apps/worker/ /app/worker/`), so the existing
+# `images:` digest pin in kustomization.yaml covers this Deployment too and
+# both pods always run the same build.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yantra4d-render-worker
+  labels:
+    app.kubernetes.io/name: yantra4d-render-worker
+    app.kubernetes.io/part-of: yantra4d
+  annotations:
+    # Wave 1: the worker must be up and rendering before wave 2 takes the
+    # sidecar out of the API pod, so render capacity is never zero.
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  # replicas is deliberately absent. The HPA owns it; declaring it here means
+  # ArgoCD reverts every scale-up back to the number in git on the next sync.
+  # Kubernetes defaults a new Deployment to 1, and the HPA takes over at once.
+  revisionHistoryLimit: 3
+  strategy:
+    # RollingUpdate, unlike the API's Recreate: the API is pinned to Recreate by
+    # its ReadWriteOnce analytics PVC, which the worker does not mount. Surging
+    # first keeps render capacity continuous across a deploy.
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yantra4d-render-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: yantra4d-render-worker
+        app.kubernetes.io/part-of: yantra4d
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      # A render can legitimately run to RENDER_TIMEOUT_S (300s). A job popped
+      # off the Redis list exists nowhere else, so SIGKILL mid-render loses it
+      # outright with no retry. The worker traps SIGTERM and drains — finishes
+      # the job in hand, takes no new one — and this window lets it.
+      terminationGracePeriodSeconds: 360
+      containers:
+        - name: render-worker
+          image: ghcr.io/madfam-org/yantra4d/backend
+          imagePullPolicy: Always
+          command: ["python", "/app/worker/render_worker.py"]
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 1001
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: FLASK_DEBUG
+              value: "false"
+            - name: PROJECTS_DIR
+              value: "/app/projects"
+            - name: PYTHONPATH
+              value: "/app/backend"
+            # Where render_worker.py adds the backend package to sys.path. It
+            # defaults to this same value in code; set explicitly so the
+            # contract between the image layout and the manifest is visible.
+            - name: YANTRA4D_BACKEND_PATH
+              value: "/app/backend"
+            - name: REDIS_URL
+              value: "redis://yantra4d-redis:6379/0"
+            - name: RATE_LIMIT_STORAGE
+              value: "redis://yantra4d-redis:6379/1"
+            # Pod name, used as this worker's heartbeat identity
+            # (render_worker:heartbeat:<pod-name>). Kubernetes also exposes it
+            # as HOSTNAME; wiring it through the downward API makes the
+            # identity explicit rather than dependent on that behaviour, and
+            # lets the probes below name the same key the worker writes.
+            - name: RENDER_WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: RENDER_WORKER_HEARTBEAT_TTL_SECONDS
+              value: "60"
+            # Must equal the yantra4d-render-output claim size (2Gi) and the
+            # same var on the API Deployment.
+            - name: RENDER_VOLUME_LIMIT_BYTES
+              value: "2147483648"
+          # Both probes read this pod's OWN heartbeat key. Under the previous
+          # fleet-wide key a wedged worker still passed, because a healthy
+          # sibling kept refreshing the shared key — the probe could not fail
+          # while any worker lived. Per-pod keys make the check mean what it
+          # says. The heartbeat is published from a daemon thread, not from the
+          # job loop, so a long render does not read as a dead worker.
+          readinessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "import json, os, time, redis; k='render_worker:heartbeat:' + (os.environ.get('RENDER_WORKER_ID') or os.environ.get('HOSTNAME', '')); r=redis.Redis.from_url(os.environ.get('REDIS_URL', 'redis://localhost:6379'), decode_responses=True); raw=r.get(k); beat=json.loads(raw) if raw else None; raise SystemExit(0 if beat and time.time() - int(beat['ts']) < int(os.environ.get('RENDER_WORKER_HEARTBEAT_TTL_SECONDS', '60')) else 1)"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "import json, os, time, redis; k='render_worker:heartbeat:' + (os.environ.get('RENDER_WORKER_ID') or os.environ.get('HOSTNAME', '')); r=redis.Redis.from_url(os.environ.get('REDIS_URL', 'redis://localhost:6379'), decode_responses=True); raw=r.get(k); beat=json.loads(raw) if raw else None; raise SystemExit(0 if beat and time.time() - int(beat['ts']) < int(os.environ.get('RENDER_WORKER_HEARTBEAT_TTL_SECONDS', '60')) else 1)"
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            # 3 x 20s of silence before a restart. The heartbeat thread ticks
+            # every TTL/3 (20s), so this tolerates two missed ticks — a Redis
+            # blip or a slow scheduler — without killing a working pod.
+            failureThreshold: 3
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: render-output-pvc
+              mountPath: /app/backend/static
+          resources:
+            requests:
+              # Raised from the sidecar's 100m/256Mi, for two reasons. The
+              # worker no longer shares a pod with the API, so its request has
+              # to cover it alone; and the HPA computes utilization against
+              # this request, so an unrealistically low one makes any render at
+              # all read as several hundred percent and pins the fleet at
+              # maxReplicas. 500m against a 1000m limit means the 70% target
+              # trips when a worker averages ~350m — busy, but not saturated.
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              # Unchanged from the sidecar. One render pegs roughly one core;
+              # CadQuery/OpenSCAD meshes are the memory driver.
+              cpu: 1000m
+              memory: 2Gi
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+        # Shared with the API pod: the worker writes artifacts here and the API
+        # serves them from /static/. See yantra4d-render-output-pvc.yaml.
+        - name: render-output-pvc
+          persistentVolumeClaim:
+            claimName: yantra4d-render-output

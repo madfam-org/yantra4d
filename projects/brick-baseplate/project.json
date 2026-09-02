@@ -1,0 +1,287 @@
+{
+  "project": {
+    "name": "Brick Baseplate",
+    "slug": "brick-baseplate",
+    "version": "1.0.0",
+    "engine": "cadquery",
+    "description": {
+      "en": "One plate, two grid ecosystems. The commons speaks two module grids and has never joined them: brick-tile publishes the construction-brick grid — an 8 mm stud pitch with Ø4.8 mm studs and hollow underside clutch tubes — and is the only member of that family, while four cartridges publish Gridfinity's 42 mm module. A brick model and a Gridfinity drawer are found in exactly the same rooms and have no relationship at all. This plate is that relationship, in both directions: a brick play surface that drops into a Gridfinity baseplate, and a Gridfinity baseplate that clutches onto a brick surface. Both grids are inlined from the cartridges that publish them, unchanged, so this is a bridge rather than a third convention.\n\nOfficial Visualizer and Configurator: Yantra4D",
+      "es": "Una placa, dos ecosistemas de retícula. El procomún habla dos retículas modulares y nunca las había unido: brick-tile publica la retícula de ladrillo de construcción — paso de 8 mm con tetones de Ø4.8 mm y tubos de agarre huecos por abajo — y es el único miembro de esa familia, mientras que cuatro cartuchos publican el módulo de 42 mm de Gridfinity. Un modelo de ladrillos y un cajón Gridfinity se encuentran exactamente en los mismos cuartos y no tienen relación alguna. Esta placa es esa relación, en ambos sentidos: una superficie de juego de ladrillo que cae dentro de una base Gridfinity, y una base Gridfinity que se agarra sobre una superficie de ladrillo. Ambas retículas están inlineadas sin cambios de los cartuchos que las publican, así que esto es un puente y no una tercera convención.\n\nVisualizador y configurador oficial: Yantra4D",
+      "fr": "Une platine, deux écosystèmes de trame. Le commun parle deux trames modulaires et ne les avait jamais reliées : brick-tile publie la trame de la brique de construction — un pas de 8 mm, des tenons de Ø4,8 mm et des tubes de serrage creux au-dessous — et en est le seul membre, tandis que quatre cartouches publient le module 42 mm de Gridfinity. Une maquette en briques et un tiroir Gridfinity se trouvent exactement dans les mêmes pièces et n'ont aucune relation. Cette platine est cette relation, dans les deux sens : une surface de jeu en briques qui se pose dans une plaque Gridfinity, et une plaque Gridfinity qui se serre sur une surface en briques. Les deux trames sont reprises telles quelles des cartouches qui les publient : c'est un pont, pas une troisième convention.\n\nVisualiseur et configurateur officiel : Yantra4D",
+      "pt": "Uma placa, dois ecossistemas de malha. O comum fala duas malhas modulares e nunca as havia unido: brick-tile publica a malha do bloco de montar — passo de 8 mm, pinos de Ø4,8 mm e tubos de garra ocos embaixo — e é o único membro dessa família, enquanto quatro cartuchos publicam o módulo de 42 mm do Gridfinity. Um modelo de blocos e uma gaveta Gridfinity estão exatamente nos mesmos cômodos e não têm relação nenhuma. Esta placa é essa relação, nos dois sentidos: uma superfície de brincar em blocos que assenta numa base Gridfinity, e uma base Gridfinity que se agarra sobre uma superfície de blocos. As duas malhas vêm inline, sem alteração, dos cartuchos que as publicam — é uma ponte, não uma terceira convenção.\n\nVisualizador e configurador oficial: Yantra4D"
+    },
+    "thumbnail": "/projects/brick-baseplate.webp",
+    "difficulty": "intermediate",
+    "tags": ["construction-brick", "baseplate", "gridfinity", "stud-grid", "clutch", "storage", "play", "consumer", "hyperobject", "commons"],
+    "hyperobject": { "is_hyperobject": true },
+    "force_backend": true
+  },
+  "modes": [
+    {
+      "id": "stud_baseplate",
+      "label": { "en": "Stud Baseplate", "es": "Placa de Tetones", "fr": "Plaque à tenons", "pt": "Placa de Pinos" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["stud_baseplate"],
+      "estimate": { "base_time": 22, "per_unit": 8, "per_part": 40 }
+    },
+    {
+      "id": "gridfinity_base",
+      "label": { "en": "Gridfinity-Footed Baseplate", "es": "Placa con Pies Gridfinity", "fr": "Plaque à pieds Gridfinity", "pt": "Placa com Pés Gridfinity" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["gridfinity_base"],
+      "estimate": { "base_time": 20, "per_unit": 7, "per_part": 34 }
+    },
+    {
+      "id": "grid_socket_plate",
+      "label": { "en": "Gridfinity Socket Plate", "es": "Placa de Alojamiento Gridfinity", "fr": "Plaque à logements Gridfinity", "pt": "Placa de Encaixe Gridfinity" },
+      "scad_file": "main.py", "cq_file": "main.py",
+      "parts": ["grid_socket_plate"],
+      "estimate": { "base_time": 20, "per_unit": 7, "per_part": 34 }
+    }
+  ],
+  "parts": [
+    { "id": "stud_baseplate", "render_mode": 0, "color": "#c62828",
+      "label": { "en": "Baseplate", "es": "Placa Base", "fr": "Plaque de base", "pt": "Placa Base" } },
+    { "id": "gridfinity_base", "render_mode": 0, "color": "#ef6c00",
+      "label": { "en": "Footed Baseplate", "es": "Placa con Pies", "fr": "Plaque à pieds", "pt": "Placa com Pés" } },
+    { "id": "grid_socket_plate", "render_mode": 0, "color": "#f9a825",
+      "label": { "en": "Socket Plate", "es": "Placa de Alojamiento", "fr": "Plaque à logements", "pt": "Placa de Encaixe" } }
+  ],
+  "parameter_groups": [
+    { "id": "brick", "label": { "en": "Brick Grid", "es": "Retícula de Ladrillo", "fr": "Trame brique", "pt": "Malha de Blocos" } },
+    { "id": "gridfinity", "label": { "en": "Gridfinity Module", "es": "Módulo Gridfinity", "fr": "Module Gridfinity", "pt": "Módulo Gridfinity" } },
+    { "id": "build", "label": { "en": "Plate & Wall", "es": "Placa y Pared", "fr": "Platine et paroi", "pt": "Placa e Parede" } }
+  ],
+  "parameters": [
+    {
+      "id": "cols", "type": "slider", "default": 16.0, "min": 2.0, "max": 32.0, "step": 1.0,
+      "group": "brick", "modes": ["stud_baseplate"],
+      "label": { "en": "Studs Across", "es": "Tetones a lo Ancho", "fr": "Tenons en largeur", "pt": "Pinos na Largura" },
+      "tooltip": {
+        "en": "Studs along X on the 8 mm pitch. 32 x 32 is the classic large baseplate at 256 mm square, which is also about the largest bed most people have",
+        "es": "Tetones a lo largo de X con paso de 8 mm. 32 x 32 es la placa grande clásica, de 256 mm por lado, que también es más o menos la cama más grande que tiene la mayoría",
+        "fr": "Tenons selon X au pas de 8 mm. 32 x 32 est la grande plaque classique, 256 mm de côté, soit à peu près le plus grand plateau dont on dispose",
+        "pt": "Pinos ao longo de X no passo de 8 mm. 32 x 32 é a placa grande clássica, de 256 mm de lado, que também é mais ou menos a maior mesa que a maioria tem"
+      }
+    },
+    {
+      "id": "rows", "type": "slider", "default": 16.0, "min": 2.0, "max": 32.0, "step": 1.0,
+      "group": "brick", "modes": ["stud_baseplate"],
+      "label": { "en": "Studs Deep", "es": "Tetones a lo Largo", "fr": "Tenons en profondeur", "pt": "Pinos na Profundidade" },
+      "tooltip": {
+        "en": "Studs along Y on the same 8 mm pitch",
+        "es": "Tetones a lo largo de Y con el mismo paso de 8 mm",
+        "fr": "Tenons selon Y au même pas de 8 mm",
+        "pt": "Pinos ao longo de Y no mesmo passo de 8 mm"
+      }
+    },
+    {
+      "id": "stud_dia", "type": "slider", "default": 4.8, "min": 2.0, "max": 6.5, "step": 0.05,
+      "group": "brick", "modes": ["stud_baseplate", "gridfinity_base"],
+      "label": { "en": "Stud Ø (mm)", "es": "Ø de Tetón (mm)", "fr": "Ø de tenon (mm)", "pt": "Ø do Pino (mm)" },
+      "tooltip": {
+        "en": "4.8 mm is brick-tile's published figure and the default. The wave plan's slot text said 3.2 mm — that number is the plate HEIGHT, not the stud, and a 3.2 mm stud would clutch nothing in this commons or out of it",
+        "es": "4.8 mm es la cifra publicada por brick-tile y el valor por defecto. El texto del plan decía 3.2 mm — esa cifra es la ALTURA de la placa, no el tetón, y un tetón de 3.2 mm no agarraría nada, ni en este procomún ni fuera de él",
+        "fr": "4,8 mm est le chiffre publié par brick-tile et la valeur par défaut. Le texte du plan disait 3,2 mm — ce chiffre est la HAUTEUR de plaque, pas le tenon, et un tenon de 3,2 mm ne serrerait rien, ni dans ce commun ni ailleurs",
+        "pt": "4,8 mm é o número publicado pelo brick-tile e o padrão. O texto do plano dizia 3,2 mm — esse número é a ALTURA da placa, não o pino, e um pino de 3,2 mm não agarraria nada, nem neste comum nem fora dele"
+      }
+    },
+    {
+      "id": "stud_h", "type": "slider", "default": 1.8, "min": 1.0, "max": 4.0, "step": 0.05,
+      "group": "brick", "modes": ["stud_baseplate", "gridfinity_base"],
+      "label": { "en": "Stud Height (mm)", "es": "Altura de Tetón (mm)", "fr": "Hauteur de tenon (mm)", "pt": "Altura do Pino (mm)" },
+      "tooltip": {
+        "en": "1.8 mm is the published figure. Taller studs grip harder and are harder for small hands to pull off, which is a real trade rather than a free improvement",
+        "es": "1.8 mm es la cifra publicada. Tetones más altos agarran más fuerte y son más difíciles de zafar para manos pequeñas, lo cual es un compromiso real y no una mejora gratis",
+        "fr": "1,8 mm est le chiffre publié. Des tenons plus hauts serrent davantage et sont plus durs à décoller pour de petites mains : c'est un vrai compromis, pas une amélioration gratuite",
+        "pt": "1,8 mm é o número publicado. Pinos mais altos agarram mais forte e são mais difíceis de soltar para mãos pequenas, o que é um compromisso real e não uma melhoria de graça"
+      }
+    },
+    {
+      "id": "tube_od", "type": "slider", "default": 6.5, "min": 3.0, "max": 7.4, "step": 0.05,
+      "group": "brick", "modes": ["stud_baseplate", "grid_socket_plate"],
+      "label": { "en": "Clutch Tube OD (mm)", "es": "Ø Ext. de Tubo de Agarre (mm)", "fr": "Ø ext. du tube de serrage (mm)", "pt": "Ø Ext. do Tubo de Garra (mm)" },
+      "tooltip": {
+        "en": "The outside of the underside tube. Together with its bore this is the entire grip of the brick interface — the studs above only locate, the tubes below clutch",
+        "es": "El exterior del tubo de abajo. Junto con su barreno, esto es todo el agarre de la interfaz de ladrillo — los tetones de arriba solo ubican, los tubos de abajo agarran",
+        "fr": "L'extérieur du tube du dessous. Avec son alésage, c'est là tout le maintien de l'interface brique — les tenons du dessus ne font que positionner, ce sont les tubes du dessous qui serrent",
+        "pt": "O exterior do tubo de baixo. Junto com o furo dele, isto é toda a garra da interface de blocos — os pinos de cima só posicionam, os tubos de baixo agarram"
+      }
+    },
+    {
+      "id": "tube_id", "type": "slider", "default": 4.9, "min": 2.1, "max": 6.6, "step": 0.05,
+      "group": "brick", "modes": ["stud_baseplate", "grid_socket_plate"],
+      "label": { "en": "Clutch Tube Bore (mm)", "es": "Barreno de Tubo de Agarre (mm)", "fr": "Alésage du tube (mm)", "pt": "Furo do Tubo de Garra (mm)" },
+      "tooltip": {
+        "en": "The bore a stud enters. Clamped just above the stud diameter and just below the tube's outside, so the tube can never be thicker than solid or thinner than nothing",
+        "es": "El barreno donde entra un tetón. Limitado justo por encima del diámetro del tetón y justo por debajo del exterior del tubo, así el tubo nunca queda más grueso que macizo ni más delgado que nada",
+        "fr": "L'alésage où entre un tenon. Bridé juste au-dessus du diamètre du tenon et juste en dessous de l'extérieur du tube : le tube ne peut jamais être plus épais que plein ni plus mince que rien",
+        "pt": "O furo em que um pino entra. Limitado logo acima do diâmetro do pino e logo abaixo do exterior do tubo, então o tubo nunca fica mais grosso que maciço nem mais fino que nada"
+      }
+    },
+    {
+      "id": "underside", "type": "select", "default": "clutch",
+      "options": [
+        { "value": "clutch", "label": "Clutch tubes (grips bricks)" },
+        { "value": "flat", "label": "Flat (no clutch)" }
+      ],
+      "group": "brick", "modes": ["stud_baseplate", "grid_socket_plate"],
+      "label": { "en": "Underside", "es": "Cara Inferior", "fr": "Dessous", "pt": "Face Inferior" },
+      "tooltip": {
+        "en": "Clutch tubes make the plate grip a brick surface below it. Flat makes it a table-top baseplate that only presents studs upward",
+        "es": "Los tubos de agarre hacen que la placa se sujete a una superficie de ladrillo debajo. Plana la convierte en una placa de mesa que solo presenta tetones hacia arriba",
+        "fr": "Les tubes de serrage font que la platine s'accroche à une surface en briques au-dessous. Plate, elle devient une plaque de table qui ne présente que des tenons vers le haut",
+        "pt": "Os tubos de garra fazem a placa se prender a uma superfície de blocos embaixo. Plana, ela vira uma placa de mesa que só apresenta pinos para cima"
+      }
+    },
+    {
+      "id": "gf_x", "type": "slider", "default": 3.0, "min": 1.0, "max": 6.0, "step": 1.0,
+      "group": "gridfinity", "modes": ["gridfinity_base", "grid_socket_plate"],
+      "label": { "en": "Gridfinity Cells X", "es": "Celdas Gridfinity en X", "fr": "Cellules Gridfinity en X", "pt": "Células Gridfinity em X" },
+      "tooltip": {
+        "en": "Cells on the 42 mm module. The plate footprint is set by THIS, not by the brick grid — a Gridfinity cell that is not 42 mm is not a Gridfinity cell, so the studs are fitted inside the module rather than the other way round",
+        "es": "Celdas sobre el módulo de 42 mm. La huella de la placa la fija ESTO, no la retícula de ladrillo — una celda Gridfinity que no mide 42 mm no es una celda Gridfinity, así que los tetones se acomodan dentro del módulo y no al revés",
+        "fr": "Cellules au module de 42 mm. L'emprise de la platine est fixée par CECI, pas par la trame brique — une cellule Gridfinity qui ne fait pas 42 mm n'est pas une cellule Gridfinity : les tenons se logent donc dans le module, et non l'inverse",
+        "pt": "Células no módulo de 42 mm. A área da placa é definida por ISTO, não pela malha de blocos — uma célula Gridfinity que não tem 42 mm não é uma célula Gridfinity, então os pinos são acomodados dentro do módulo e não o contrário"
+      }
+    },
+    {
+      "id": "gf_y", "type": "slider", "default": 3.0, "min": 1.0, "max": 6.0, "step": 1.0,
+      "group": "gridfinity", "modes": ["gridfinity_base", "grid_socket_plate"],
+      "label": { "en": "Gridfinity Cells Y", "es": "Celdas Gridfinity en Y", "fr": "Cellules Gridfinity en Y", "pt": "Células Gridfinity em Y" },
+      "tooltip": {
+        "en": "Cells along Y on the same 42 mm module",
+        "es": "Celdas a lo largo de Y con el mismo módulo de 42 mm",
+        "fr": "Cellules selon Y au même module de 42 mm",
+        "pt": "Células ao longo de Y no mesmo módulo de 42 mm"
+      }
+    },
+    {
+      "id": "plate_h", "type": "slider", "default": 3.2, "min": 2.4, "max": 12.0, "step": 0.1,
+      "group": "build", "modes": ["stud_baseplate", "gridfinity_base", "grid_socket_plate"],
+      "label": { "en": "Plate Height (mm)", "es": "Altura de Placa (mm)", "fr": "Hauteur de plaque (mm)", "pt": "Altura da Placa (mm)" },
+      "tooltip": {
+        "en": "3.2 mm is one brick plate. The underside cavity depth is derived from this, never the other way round, so the floor always survives",
+        "es": "3.2 mm es una placa de ladrillo. La profundidad de la cavidad inferior se deriva de esto, nunca al revés, así que el piso siempre sobrevive",
+        "fr": "3,2 mm, c'est une plaque de brique. La profondeur de la cavité du dessous en dérive, jamais l'inverse : le fond survit toujours",
+        "pt": "3,2 mm é uma placa de bloco. A profundidade da cavidade inferior deriva disto, nunca o contrário, então o piso sempre sobrevive"
+      }
+    },
+    {
+      "id": "wall", "type": "slider", "default": 1.2, "min": 0.8, "max": 3.0, "step": 0.1,
+      "group": "build", "modes": ["stud_baseplate", "gridfinity_base", "grid_socket_plate"],
+      "label": { "en": "Wall / Floor (mm)", "es": "Pared / Piso (mm)", "fr": "Paroi / fond (mm)", "pt": "Parede / Piso (mm)" },
+      "tooltip": {
+        "en": "The rim around the hollow underside and the floor above it. Thin floors on a large baseplate warp as they cool, long before they are weak",
+        "es": "El borde alrededor del hueco inferior y el piso encima. Los pisos delgados en una placa grande se alabean al enfriar, mucho antes de quedar débiles",
+        "fr": "Le pourtour de la cavité inférieure et le fond au-dessus. Sur une grande plaque, un fond mince se voile en refroidissant bien avant d'être faible",
+        "pt": "A borda em volta do vazio inferior e o piso acima dele. Pisos finos numa placa grande empenam ao esfriar, muito antes de ficarem fracos"
+      }
+    }
+  ],
+  "presets": [
+    {
+      "id": "classic_32", "mode": "stud_baseplate",
+      "label": { "en": "Classic 32 x 32 (256 mm)", "es": "Clásica 32 x 32 (256 mm)", "fr": "Classique 32 x 32 (256 mm)", "pt": "Clássica 32 x 32 (256 mm)" },
+      "values": { "cols": 32.0, "rows": 32.0, "plate_h": 3.2, "underside": "flat" }
+    },
+    {
+      "id": "small_tile_16", "mode": "stud_baseplate",
+      "label": { "en": "16 x 16 Clutching Tile", "es": "Loseta de Agarre 16 x 16", "fr": "Dalle à serrage 16 x 16", "pt": "Placa de Garra 16 x 16" },
+      "values": { "cols": 16.0, "rows": 16.0, "underside": "clutch", "plate_h": 3.2 }
+    },
+    {
+      "id": "drawer_3x3", "mode": "gridfinity_base",
+      "label": { "en": "3 x 3 Gridfinity Play Cell", "es": "Celda de Juego Gridfinity 3 x 3", "fr": "Cellule de jeu Gridfinity 3 x 3", "pt": "Célula de Brincar Gridfinity 3 x 3" },
+      "values": { "gf_x": 3.0, "gf_y": 3.0, "plate_h": 3.2, "stud_dia": 4.8 }
+    },
+    {
+      "id": "bins_on_bricks", "mode": "grid_socket_plate",
+      "label": { "en": "Bins on a Brick Surface (2 x 2)", "es": "Cajas sobre Superficie de Ladrillo (2 x 2)", "fr": "Bacs sur surface briques (2 x 2)", "pt": "Caixas sobre Superfície de Blocos (2 x 2)" },
+      "values": { "gf_x": 2.0, "gf_y": 2.0, "underside": "clutch", "plate_h": 3.2 }
+    }
+  ],
+  "constraints": [
+    {
+      "expression": "wall >= 1.0",
+      "severity": "warning",
+      "message": {
+        "en": "Below 1.0 mm the floor above the hollow underside is one or two perimeters, and on a large baseplate it will warp as it cools long before it is structurally weak",
+        "es": "Por debajo de 1.0 mm el piso sobre el hueco inferior son uno o dos perímetros, y en una placa grande se alabeará al enfriar mucho antes de quedar estructuralmente débil",
+        "fr": "En dessous de 1,0 mm, le fond au-dessus de la cavité fait un ou deux périmètres, et sur une grande plaque il se voilera en refroidissant bien avant d'être faible",
+        "pt": "Abaixo de 1,0 mm o piso sobre o vazio inferior tem um ou dois perímetros, e numa placa grande vai empenar ao esfriar muito antes de ficar estruturalmente fraco"
+      }
+    },
+    {
+      "expression": "stud_dia <= 5.2",
+      "severity": "warning",
+      "message": {
+        "en": "Above about 5.2 mm the stud is wide enough that its neighbours' clutch tubes have almost no wall left between them, and the plate becomes a solid slab with dimples",
+        "es": "Por encima de unos 5.2 mm el tetón es tan ancho que a los tubos de agarre vecinos casi no les queda pared entre sí, y la placa se vuelve una losa maciza con hoyuelos",
+        "fr": "Au-delà d'environ 5,2 mm, le tenon est si large qu'il ne reste presque plus de paroi entre les tubes de serrage voisins, et la plaque devient une dalle pleine à fossettes",
+        "pt": "Acima de uns 5,2 mm o pino fica tão largo que quase não sobra parede entre os tubos de garra vizinhos, e a placa vira uma laje maciça com covinhas"
+      }
+    },
+    {
+      "expression": "cols <= 32.0",
+      "severity": "warning",
+      "message": {
+        "en": "32 studs is 256 mm, which is at or past the bed of most printers. Print two 16 x 32 plates and clutch them together instead",
+        "es": "32 tetones son 256 mm, que está al límite o más allá de la cama de la mayoría de las impresoras. Mejor imprime dos placas de 16 x 32 y agárralas entre sí",
+        "fr": "32 tenons font 256 mm, soit à la limite ou au-delà du plateau de la plupart des imprimantes. Imprimez plutôt deux plaques 16 x 32 et serrez-les l'une à l'autre",
+        "pt": "32 pinos são 256 mm, o que está no limite ou além da mesa da maioria das impressoras. Imprima duas placas de 16 x 32 e prenda uma na outra"
+      }
+    }
+  ],
+  "camera_views": [
+    { "id": "iso", "label": { "en": "Isometric", "es": "Isométrico", "fr": "Isométrique", "pt": "Isométrico" }, "position": [180, 150, 120] },
+    { "id": "top", "label": { "en": "Top", "es": "Superior", "fr": "Dessus", "pt": "Superior" }, "position": [0, 0, 260] }
+  ],
+  "export_formats": ["stl", "3mf", "step", "glb", "gltf", "obj"],
+  "estimate_constants": {
+    "base_time": 20, "per_unit": 8, "per_part": 36,
+    "fn_factor": 32, "wasm_multiplier": 4, "warning_threshold_seconds": 180
+  },
+  "hyperobject": {
+    "domain": "consumer",
+    "cdg_interfaces": [
+      {
+        "id": "stud_grid",
+        "label": { "en": "Construction Brick Stud Grid", "es": "Retícula de Tetones de Ladrillo", "fr": "Trame de tenons de brique", "pt": "Malha de Pinos de Bloco" },
+        "geometry_type": "grid",
+        "standard": "construction brick 8mm",
+        "parameters": ["cols", "rows", "stud_dia", "stud_h"],
+        "compatible_with": ["brick-tile"]
+      },
+      {
+        "id": "clutch_tube",
+        "label": { "en": "Underside Clutch Tube", "es": "Tubo de Agarre Inferior", "fr": "Tube de serrage inférieur", "pt": "Tubo de Garra Inferior" },
+        "geometry_type": "socket",
+        "standard": "construction brick 8mm",
+        "parameters": ["tube_od", "tube_id", "underside"],
+        "compatible_with": ["brick-tile"]
+      },
+      {
+        "id": "gridfinity_dock",
+        "label": { "en": "Gridfinity 42 mm Module", "es": "Módulo Gridfinity de 42 mm", "fr": "Module Gridfinity 42 mm", "pt": "Módulo Gridfinity de 42 mm" },
+        "geometry_type": "socket",
+        "standard": "Gridfinity 42 mm",
+        "parameters": ["gf_x", "gf_y", "plate_h"],
+        "compatible_with": ["gridfinity", "gridfinity-baseplate", "gridfinity-tool", "grid-hub", "din-rail-clip"]
+      }
+    ],
+    "material_awareness": {
+      "shrinkage_compensation": true,
+      "recycled_material_toggle": true,
+      "tolerance_by_material": true
+    },
+    "societal_benefit": {
+      "en": "Construction bricks are the most widely distributed precision plastic object on earth, and the most widely inherited: a bucket of them passes between families, schools and clinics for decades and outlives every toy bought alongside it. What runs out first is never the bricks — it is the baseplates, which are large, expensive relative to their weight, and the first thing lost or cracked. A printable baseplate on the published grid restores a whole bucket to usefulness for a few hours of filament. Bridging it to Gridfinity does something else again: it turns a shelf of storage bins into a modular play and work surface, so a therapy room, a classroom or a repair bench can reconfigure the same square metre between sorting, building and putting away. Recycled filament is entirely appropriate here — this part is loaded gently, at room temperature, with no seal and no spring — and saying so matters more than a blanket rule, because a baseplate is exactly the kind of large, low-stress object that reground material should be used for.",
+      "es": "Los ladrillos de construcción son el objeto de plástico de precisión más distribuido del planeta, y el más heredado: una cubeta de ellos pasa entre familias, escuelas y clínicas durante décadas y sobrevive a todos los juguetes comprados junto a ella. Lo que se acaba primero nunca son los ladrillos — son las placas base, que son grandes, caras en relación con su peso y lo primero que se pierde o se rompe. Una placa base imprimible sobre la retícula publicada devuelve una cubeta entera a la utilidad por unas horas de filamento. Puentearla con Gridfinity hace algo más: convierte un estante de cajas de almacenamiento en una superficie modular de juego y trabajo, para que un consultorio de terapia, un salón de clases o un banco de reparación reconfiguren el mismo metro cuadrado entre clasificar, construir y guardar. El filamento reciclado es del todo apropiado aquí — esta pieza trabaja con suavidad, a temperatura ambiente, sin sello ni resorte — y decirlo importa más que una regla general, porque una placa base es exactamente el tipo de objeto grande y de bajo esfuerzo para el que debería usarse material regranulado.",
+      "fr": "Les briques de construction sont l'objet en plastique de précision le plus largement diffusé de la planète, et le plus largement hérité : un seau de briques passe entre familles, écoles et dispensaires pendant des décennies et survit à tous les jouets achetés en même temps. Ce qui manque en premier, ce ne sont jamais les briques — ce sont les plaques de base, grandes, chères au regard de leur poids, et les premières à être perdues ou fendues. Une plaque imprimable sur la trame publiée rend tout un seau à nouveau utile pour quelques heures de filament. La relier à Gridfinity fait autre chose encore : elle transforme une étagère de bacs de rangement en surface modulaire de jeu et de travail, si bien qu'une salle de rééducation, une classe ou un établi de réparation peuvent reconfigurer le même mètre carré entre trier, construire et ranger. Le filament recyclé convient tout à fait ici — cette pièce travaille doucement, à température ambiante, sans joint ni ressort — et le dire importe plus qu'une règle générale, car une plaque de base est exactement le genre de grand objet peu sollicité auquel la matière régénérée devrait servir.",
+      "pt": "Blocos de montar são o objeto de plástico de precisão mais distribuído do planeta, e o mais herdado: um balde deles passa entre famílias, escolas e postos de saúde por décadas e sobrevive a todo brinquedo comprado junto. O que acaba primeiro nunca são os blocos — são as placas base, que são grandes, caras em relação ao peso e a primeira coisa a se perder ou trincar. Uma placa base imprimível sobre a malha publicada devolve um balde inteiro à utilidade por algumas horas de filamento. Fazer a ponte com o Gridfinity faz ainda outra coisa: transforma uma prateleira de caixas de organização numa superfície modular de brincar e trabalhar, de modo que uma sala de terapia, uma sala de aula ou uma bancada de reparo reconfigurem o mesmo metro quadrado entre separar, construir e guardar. Filamento reciclado é inteiramente apropriado aqui — esta peça trabalha com suavidade, à temperatura ambiente, sem vedação e sem mola — e dizer isso importa mais que uma regra geral, porque uma placa base é exatamente o tipo de objeto grande e de baixo esforço para o qual material regranulado deveria servir."
+    },
+    "commons_license": "CERN-OHL-W-2.0"
+  },
+  "tags": ["construction-brick", "baseplate", "gridfinity", "stud-grid", "clutch", "storage", "play", "consumer", "hyperobject", "commons"]
+}

@@ -1080,6 +1080,38 @@
           "slug": "press-folding-board-cover"
         }
       ],
+      "frog-closure": [
+        {
+          "band": "FC-300",
+          "drives": [
+            "knots",
+            "span"
+          ],
+          "manifest_url": "https://fashioncabi.net/api/v1/garments/changpao",
+          "name": "Changpao (長袍)",
+          "params_map": {
+            "knots": "frog_count",
+            "span": "frog_width"
+          },
+          "rank": 299,
+          "slug": "changpao"
+        },
+        {
+          "band": "FC-400",
+          "drives": [
+            "knots",
+            "span"
+          ],
+          "manifest_url": "https://fashioncabi.net/api/v1/garments/jeogori-jacket",
+          "name": "Hanbok jeogori jacket (maedeup)",
+          "params_map": {
+            "knots": "knot_count",
+            "span": "closure_span"
+          },
+          "rank": 394,
+          "slug": "jeogori-jacket"
+        }
+      ],
       "garment-clip": [
         {
           "band": "FC-500",
@@ -1751,6 +1783,21 @@
           },
           "rank": 242,
           "slug": "dog-coat"
+        },
+        {
+          "band": "FC-100",
+          "drives": [
+            "overlap_mm",
+            "strip_length"
+          ],
+          "manifest_url": "https://fashioncabi.net/api/v1/garments/hi-vis-vest",
+          "name": "Hi-Vis Safety Vest",
+          "params_map": {
+            "overlap_mm": "overlap",
+            "strip_length": "body_length - 92"
+          },
+          "rank": 89,
+          "slug": "hi-vis-vest"
         },
         {
           "band": null,
@@ -5388,9 +5435,9 @@
       ]
     },
     "counts": {
-      "consumers": 299,
-      "targets": 87,
-      "unlinked_claims": 3
+      "consumers": 302,
+      "targets": 88,
+      "unlinked_claims": 1
     },
     "producer": {
       "commons": "fashion-cabinet",
@@ -5400,19 +5447,10 @@
     },
     "resolved_against": {
       "file": "yantra4d-hardware.snapshot.json",
-      "upstream_commit": "80892074af0c17a9a6258a98d80d9b947df0756d"
+      "upstream_commit": "335443c901dc4a736a309f98dd67447c68569091"
     },
     "schema_version": "yantra4d_consumers_v1",
     "wanted": [
-      {
-        "exists_upstream": true,
-        "reason": "Co-create target, now BUILT upstream (span/knots resolve against the pinned snapshot) — but changpao and jeogori-jacket still carry linked:false. Flipping them is a cartridge change, not an index change: each needs its params_map re-checked against the solid's sew_tail flange and the dimensional handshake satisfied. Tracked as the first re-point candidate.",
-        "requesting": [
-          "changpao",
-          "jeogori-jacket"
-        ],
-        "target_slug": "frog-closure"
-      },
       {
         "exists_upstream": false,
         "reason": "No Yantra4D solid models a hammer loop's stiffening insert yet; the FC-400 index carries it as `yantra4d/hammer-loop (co-create)`. painters-pant keeps an honest placeholder until the solid is built upstream. This is the one claim in the repo that does not resolve against the upstream catalog at all.",
@@ -5420,19 +5458,11 @@
           "painters-pant"
         ],
         "target_slug": "hammer-loop"
-      },
-      {
-        "exists_upstream": true,
-        "reason": "The Yantra4D solid exists and is vendored, but hi-vis-vest's placeholder predates it and maps a parameter the solid does not have ('overlap_mm'; the solid exposes strip_length / strip_width / sew_margin). Honest linked:false until the placket math is re-expressed against the real parameter set — a false link would resolve by name and lie about the geometry.",
-        "requesting": [
-          "hi-vis-vest"
-        ],
-        "target_slug": "hook-loop-tape"
       }
     ]
   },
   "pin": {
-    "source_commit": "44b612e28fd5c5ffff5486147aa528f65b909686",
+    "source_commit": "4feb3ec509cfe6ba6eae0a79b1135680a1bedc7f",
     "source_path": "docs/interfaces/yantra4d-consumers.json",
     "source_repo": "madfam-org/fashion-cabinet",
     "source_schema_version": "yantra4d_consumers_v1"

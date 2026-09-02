@@ -20,6 +20,7 @@ from services.core.assembly_generator import (
     generate_assembly_steps,
     merge_assembly_steps,
 )
+from services.core.project_access import require_project_access
 from services.core.scad_analyzer import analyze_directory
 from utils.project_resolver import require_project
 from utils.route_helpers import error_response
@@ -39,6 +40,7 @@ def _load_manifest(project_dir: Path) -> dict | None:
 @assembly_bp.route("/api/projects/<slug>/assembly-steps", methods=["GET"])
 @require_valid_slug
 @require_project()
+@require_project_access
 def get_assembly_steps(slug: str, project_dir):
     """
     Auto-generate assembly steps from BOSL2 attach() calls in the project's SCAD files.
@@ -76,6 +78,7 @@ def get_assembly_steps(slug: str, project_dir):
 @require_valid_slug
 @require_tier("pro")
 @require_project()
+@require_project_access
 def write_assembly_steps(slug: str, project_dir):
     """
     Write auto-generated assembly steps back into project.json.

@@ -212,21 +212,33 @@ class TestRenderStreamEndpoint:
 
 
 class TestCancelEndpoint:
+    """`{"all": true}` reaches cancel_all_renders(); the role gate that guards it
+    when AUTH_ENABLED is on lives in tests/unit/test_render_cancel_scoped.py
+    (conftest disables auth here, which makes @require_role a no-op)."""
+
     @patch("routes.engine.render.cancel_all_renders", return_value=True)
     def test_cancel_active(self, mock_cancel, client):
-        res = client.post("/api/render-cancel")
+        res = client.post("/api/render-cancel", json={"all": True})
         assert res.status_code == 200
         data = res.get_json()
         assert data["cancelled"] is True
         assert data["status"] == "cancelled"
+        assert data["scope"] == "all"
+        mock_cancel.assert_called_once_with()
 
     @patch("routes.engine.render.cancel_all_renders", return_value=False)
     def test_cancel_no_active(self, mock_cancel, client):
-        res = client.post("/api/render-cancel")
+        res = client.post("/api/render-cancel", json={"all": True})
         assert res.status_code == 200
         data = res.get_json()
         assert data["cancelled"] is False
         assert data["status"] == "no_active_render"
+
+    @patch("routes.engine.render.cancel_all_renders")
+    def test_scoped_cancel_never_reaches_cancel_all(self, mock_cancel, client):
+        res = client.post("/api/render-cancel", json={"request_id": "req-1"})
+        assert res.status_code == 200
+        mock_cancel.assert_not_called()
 
 
 class TestEstimateEdgeCases:

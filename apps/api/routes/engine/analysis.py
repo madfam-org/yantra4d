@@ -12,6 +12,7 @@ import rate_limits
 from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
+from services.core.project_access import require_project_access
 from services.geometry.overhang_analyzer import compute_overhang_angles
 from services.geometry.thickness_analyzer import compute_wall_thickness
 from utils.route_helpers import error_response, handle_exceptions
@@ -56,6 +57,7 @@ def _find_latest_render(slug: str) -> str | None:
 @require_tier("pro")
 @limiter.limit(rate_limits.ANALYSIS_THICKNESS)
 @handle_exceptions
+@require_project_access
 def analyze_thickness(slug: str):
     """Run wall-thickness analysis on the latest render output for a project.
 
@@ -102,6 +104,7 @@ def analyze_thickness(slug: str):
 @require_tier("pro")
 @limiter.limit(rate_limits.ANALYSIS_OVERHANG)
 @handle_exceptions
+@require_project_access
 def analyze_overhang(slug: str):
     """Run overhang angle analysis on the latest render output for a project.
 

@@ -9,7 +9,8 @@ This is the rigid hard good the Fashion Cabinet `hook-loop-tape` hardware refere
 to — the garment owns the closure placement and overlap math, this owns the hardware solid.
 
 Modes (dispatched via `target_part`):
-  * "set"        — hook strip and loop strip side by side.
+  * "set"        — the assembled PAIR: hook strip and loop strip side by side, joined by
+                   two snip-off sprue rails so the pair prints as ONE body.
   * "hook_strip" — base plate + mushroom-pin field.
   * "loop_strip" — base plate + waffle wall grid.
 
@@ -18,6 +19,23 @@ engaging field. The pin field is built as exactly TWO array operations — one p
 circle extrude for all the stems, one pushPoints circle extrude for all the cap discs —
 never a per-pin union. The waffle is likewise two pushPoints rect extrudes (one per
 direction). Small boolean count, no spheres, no swept arcs → fast and watertight.
+
+The Fashion Cabinet handshake: `overlap_mm` is the garment's FINISHED CLOSURE OVERLAP —
+the quantity a placket, a vest front or a cuff tab measures — and when it is set it
+drives the strip width, which is what the `sew_face` `flange` interface is cut from. A
+garment therefore hands over one number and gets a tape that spans its own closure.
+
+`tolerance` is the print clearance between the mushroom heads and the cells they drop
+into. It is load-bearing, not decorative: the waffle wall is thinned (and, if needed, the
+pitch opened) so that `cell opening = pitch - wall_t >= head_dia + 2 * tolerance` always
+holds. That is what makes `material_awareness.tolerance_by_material` a real claim — TPU
+squashes and needs more, rigid PLA needs less.
+
+The `set` mode is joined by two thin sprue rails at the base, the way a printed findings
+card holds its pieces until they are cut apart: the part is ONE watertight solid (the
+platform's mesh bar reads one body per part) and snips into a working two-strip closure.
+Without them the pair exported as two disjoint solids — the RFC 0038 §7 body-count
+failure this cartridge shipped with.
 
 Sandbox contract (apps/api/services/engine/cq_runner.py):
   - `cq` and `math` are pre-injected globals.
@@ -43,37 +61,56 @@ def PARAM(getter, default):
 # ── Parameters ───────────────────────────────────────────────────────────────
 strip_length = float(PARAM(lambda: strip_length, 50.0))  # strip length along X (mm)
 strip_width  = float(PARAM(lambda: strip_width,  20.0))  # strip width across Y (mm)
+overlap_mm   = float(PARAM(lambda: overlap_mm,   0.0))   # garment closure overlap (mm), 0 = off
 base_t       = float(PARAM(lambda: base_t,       1.2))   # base plate thickness (mm)
 pin_pitch    = float(PARAM(lambda: pin_pitch,    3.5))   # pin / waffle cell pitch (mm)
 pin_dia      = float(PARAM(lambda: pin_dia,      1.2))   # mushroom stem diameter (mm)
 head_dia     = float(PARAM(lambda: head_dia,     2.0))   # mushroom head diameter (mm)
 pin_h        = float(PARAM(lambda: pin_h,        2.0))   # pin / waffle wall height (mm)
 sew_margin   = float(PARAM(lambda: sew_margin,   3.0))   # plain sewing margin (mm)
+tolerance    = float(PARAM(lambda: tolerance,    0.15))  # hook/cell print clearance (mm)
 
 target_part = str(PARAM(lambda: target_part, "set"))  # set|hook_strip|loop_strip
 
 # ── Safe clamps ──────────────────────────────────────────────────────────────
 strip_length = max(20.0, min(strip_length, 120.0))
-strip_width  = max(10.0, min(strip_width, 50.0))
+strip_width  = max(10.0, min(strip_width, 120.0))
 base_t       = max(0.8, min(base_t, 2.0))
 pin_pitch    = max(2.5, min(pin_pitch, 6.0))
 pin_dia      = max(0.8, min(pin_dia, 2.0))
 pin_h        = max(1.0, min(pin_h, 4.0))
+tolerance    = max(0.05, min(tolerance, 0.6))
+
+MIN_WALL = 0.4  # thinnest printable waffle wall (mm) — one 0.4 nozzle trace
+WALL_T = 0.8    # nominal waffle wall thickness (mm)
+HEAD_T = 0.5    # mushroom cap disc thickness (mm)
+MAX_PINS = 400  # hard cap on array features (sandbox / meshing budget)
+
+# The Fashion Cabinet dimensional handshake. `overlap_mm` is the garment's FINISHED
+# closure overlap — the number a vest front, a placket or a cuff tab actually measures —
+# and the tape spans it, so it drives the strip width rather than sitting beside it as a
+# second, contradictory width. 0 means "not garment-driven": the strip width above is
+# used exactly as given, which is how every FC notion that maps `strip_width` directly
+# (boot-shaper-sleeve, dog-coat, side-opening-trousers…) keeps behaving as before.
+overlap_mm   = max(0.0, min(overlap_mm, 120.0))
+if overlap_mm > 0.0:
+    strip_width = max(10.0, min(overlap_mm, 120.0))
+
 # Sew margin must leave a usable engaging field on the narrow axis.
 sew_margin   = max(2.0, min(sew_margin, 6.0))
 sew_margin   = min(sew_margin, (strip_width - pin_pitch * 2.0) / 2.0)
 sew_margin   = max(1.0, sew_margin)
 # Head must overhang the stem (that overhang IS the hook) but stay clear of the
-# neighbouring pin so heads never merge into a solid slab.
+# neighbouring pin so heads never merge into a solid slab — AND it has to drop into the
+# mating strip's cell, whose opening is `pitch - wall_t`. So the pitch must carry the
+# head, `tolerance` of clearance on BOTH sides, and a wall at least one trace thick.
 head_dia     = max(pin_dia + 0.4, min(head_dia, 3.0))
-head_dia     = min(head_dia, pin_pitch - 0.6)
+head_dia     = min(head_dia, pin_pitch - 2.0 * tolerance - MIN_WALL)
 head_dia     = max(head_dia, pin_dia + 0.4)
-# If the pitch is too tight for that rule, open the pitch instead of merging heads.
-pin_pitch    = max(pin_pitch, head_dia + 0.6)
-
-WALL_T = 0.8   # waffle wall thickness (mm)
-HEAD_T = 0.5   # mushroom cap disc thickness (mm)
-MAX_PINS = 400  # hard cap on array features (sandbox / meshing budget)
+# If the pitch is too tight for that rule, open the pitch instead of merging heads or
+# eating the clearance — the head diameter is the visible feature, so it is the one
+# that is honoured.
+pin_pitch    = max(pin_pitch, head_dia + 2.0 * tolerance + MIN_WALL)
 
 
 def field_extent():
@@ -172,7 +209,13 @@ def build_loop_strip():
     rib_len_x = max(rib_len_x, pitch)
     rib_len_y = max(rib_len_y, pitch)
 
-    wall_t = min(WALL_T, max(0.4, pitch * 0.3))
+    # The cell has to admit the mating head with `tolerance` clearance all round:
+    # cell opening = pitch - wall_t >= head_dia + 2 * tolerance. `pitch` here is the
+    # EFFECTIVE pitch (grid_points may have opened it to respect MAX_PINS), which is
+    # never smaller than pin_pitch, so this can only ever leave more room than the
+    # clamp block already guaranteed.
+    wall_t = min(WALL_T, pitch * 0.3, pitch - head_dia - 2.0 * tolerance)
+    wall_t = max(MIN_WALL, wall_t)
     half = pitch / 2.0
 
     # Wall lines sit between pin columns/rows → the pins drop into cell centres.
@@ -204,13 +247,43 @@ def build_loop_strip():
     return plate.union(ribs_y).union(ribs_x)
 
 
+def build_set():
+    """The PAIR: both strips side by side, joined into ONE body by snip-off sprues.
+
+    Two thin rails bridge the gap between the base plates, the way a printed findings
+    card holds its pieces until they are cut apart. Each rail buries `ov` millimetres
+    INTO both plates so the fuse is volumetric, never a coincident-face kiss, and each
+    rail is deliberately thinner than the base plate — both so it snips cleanly with
+    flush cutters and so its top face can never land coplanar with the plate's top face
+    (the tangential-union trap that opens an OCC fuse into a shell).
+    """
+    gap = max(4.0, strip_width * 0.25)
+    offset = (strip_width + gap) / 2.0
+    hook = build_hook_strip().translate((0, -offset, 0))
+    loop = build_loop_strip().translate((0, offset, 0))
+
+    ov = min(1.0, base_t * 0.8)                 # bite into each plate
+    rail_len = gap + 2.0 * ov
+    rail_w = max(1.2, min(3.0, strip_length * 0.06))
+    # Strictly LESS than base_t at every base_t in range (0.8 → 0.48, 2.0 → 0.8), so the
+    # rail top never becomes coplanar with the plate top.
+    sprue_t = max(0.4, min(0.8, base_t * 0.6))
+    # Held well inside the plate ends so a rail always meets straight plate edge rather
+    # than the filleted corner.
+    xs = [(-strip_length * 0.32, 0.0), (strip_length * 0.32, 0.0)]
+    rails = (
+        cq.Workplane("XY")
+        .pushPoints(xs)
+        .rect(rail_w, rail_len)
+        .extrude(sprue_t)
+    )
+    return hook.union(loop).union(rails)
+
+
 # ── Dispatch ─────────────────────────────────────────────────────────────────
 if target_part == "hook_strip":
     result = build_hook_strip()
 elif target_part == "loop_strip":
     result = build_loop_strip()
 else:
-    gap = max(4.0, strip_width * 0.25)
-    offset = (strip_width + gap) / 2.0
-    result = build_hook_strip().translate((0, -offset, 0)).union(
-        build_loop_strip().translate((0, offset, 0)))
+    result = build_set()

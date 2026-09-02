@@ -14,6 +14,7 @@ from config import Config
 from extensions import limiter
 from manifest import get_manifest, resolve_part_config
 from middleware.auth import require_tier
+from services.core.project_access import check_project_access
 from utils.route_helpers import handle_exceptions, safe_join_path
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,9 @@ def verify_design():
     """Run verification on rendered STL parts for the current mode."""
     data = request.json or {}
     project_slug = data.get('project')
+    denied = check_project_access(project_slug)
+    if denied is not None:
+        return denied
     manifest = get_manifest(project_slug)
     mode = data.get('mode', manifest.modes[0]["id"])
 

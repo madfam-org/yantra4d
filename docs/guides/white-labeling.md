@@ -95,14 +95,25 @@ The Studio at `http://localhost:3000` will reflect your brand immediately.
 
 ---
 
-## Kubernetes Production Deployment
+## Production Deployment (Enclii)
 
-### 1. Create a Secret for the license key
+### 1. Create the Secret holding the license key
 
-```bash
-kubectl create secret generic yantra4d-license \
-  --from-literal=YANTRA4D_LICENSE_KEY="eyJhbGciO..."
-```
+Create it through **Enclii's secrets intake** — the Enclii console, API, or CLI
+— on the `yantra4d-backend` service. Do not reach past Enclii to the cluster to
+create it by hand; if the secrets intake cannot express something this needs,
+record the Enclii adapter gap instead of routing around it.
+
+The shape Enclii creates and projects:
+
+| | |
+| :-- | :-- |
+| Secret name | `yantra4d-license` |
+| Key | `YANTRA4D_LICENSE_KEY` |
+| Value | the raw license JWT (`eyJhbGciO…`) |
+| Consumed by | the `yantra4d-backend` service only — the Studio never sees it |
+
+Redeploy or restart the backend afterwards so the new environment is picked up.
 
 ### 2. Create a ConfigMap for brand settings
 
@@ -117,7 +128,10 @@ data:
   PLATFORM_LOGO: "https://cdn.acme.com/logo.png"
 ```
 
-### 3. Reference in your backend Deployment
+### 3. Reference both from the backend
+
+The backend reads its environment from the brand ConfigMap and the license
+Secret together:
 
 ```yaml
 envFrom:
@@ -126,6 +140,10 @@ envFrom:
   - secretRef:
       name: yantra4d-license
 ```
+
+Enclii wires this projection for the `yantra4d-backend` service; the manifest
+above is shown so you can recognise the resulting shape, not as a step to apply
+by hand.
 
 ---
 

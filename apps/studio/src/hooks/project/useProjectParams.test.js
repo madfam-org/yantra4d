@@ -869,6 +869,17 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
     expect(mockHandleGenerate).not.toHaveBeenCalled()
   })
 
+  it('the debounced auto-render declares itself automatic', () => {
+    vi.useFakeTimers()
+    renderHook(() => useProjectParams({ viewerRef: {} }))
+    act(() => { vi.advanceTimersByTime(2000) })
+    // useRender reads this flag to decide between the blocking confirm modal
+    // (a render the user asked for) and a non-blocking notice (this one, which
+    // nobody asked for). Losing the flag would put the modal back on load.
+    expect(mockHandleGenerate).toHaveBeenCalledWith(false, null, { automatic: true })
+    vi.useRealTimers()
+  })
+
   it('a constraint error suppresses the auto-render', () => {
     vi.useFakeTimers()
     constraintState.hasErrors = true

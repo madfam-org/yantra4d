@@ -8,7 +8,13 @@ from flask import Blueprint, Response, request, send_file
 
 from config import Config
 from manifest import get_manifest
-from middleware.auth import optional_auth
+from middleware.auth import (
+    effective_tier,
+    export_format_denied_response,
+    optional_auth,
+)
+from services.core.project_access import check_project_access
+from services.core.tier_service import export_format_allowed
 from services.engine.render_orchestrator import ALLOWED_EXPORT_FORMATS
 from utils.route_helpers import error_response, handle_exceptions, safe_join_path
 from utils.validators import require_valid_slug
@@ -33,6 +39,12 @@ def _check_access(manifest_data, action: str, claims) -> tuple | None:
 
 def _download_render_file(slug: str, filename: str, file_format: str, claims) -> Response | tuple[Response, int]:
     """Download a render artifact by file format and filename."""
+    # Privacy outranks the per-action access_control below: a private project
+    # is not downloadable at all, whatever its download_* levels say.
+    denied = check_project_access(slug)
+    if denied is not None:
+        return denied
+
     normalized_format = file_format.lower().lstrip(".")
     if normalized_format == "scad":
         return download_scad(slug, filename)
@@ -63,6 +75,16 @@ def _download_render_file(slug: str, filename: str, file_format: str, claims) ->
         denied = _check_access(m._data, "download_stl", claims)
     if denied:
         return denied
+
+    # Export-format tier gate, at RETRIEVAL as well as at generation.
+    # Generation is gated in routes/engine/render.py, but rendered artifacts are
+    # named `{prefix}{part}.{format}` / by a 10-character param hash and live for
+    # the 24 h render-GC window, so a caller who learns (or guesses) a filename
+    # could fetch a `step`/`glb` export their tier may not produce. `stl` stays
+    # open because tiers.json lists it for guest. `scad` never reaches here — it
+    # is source, not an export, and is gated by the manifest allowlist above.
+    if not export_format_allowed(effective_tier(), normalized_format):
+        return export_format_denied_response(normalized_format)
 
     # Try static dir first (rendered previews), then exports dir
     project_dir = Config.PROJECTS_DIR / slug
@@ -98,6 +120,10 @@ def download_by_format(slug: str, file_format: str, filename: str) -> Response |
 @handle_exceptions
 def download_scad(slug: str, filename: str) -> Response | tuple[Response, int]:
     """Download a SCAD source file for a project."""
+    denied = check_project_access(slug)
+    if denied is not None:
+        return denied
+
     # Early path-traversal check using safe_join_path against project dir
     if not safe_join_path(str(Config.PROJECTS_DIR / slug), filename):
         return error_response("Invalid filename", 400)

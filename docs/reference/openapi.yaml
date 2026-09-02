@@ -81,6 +81,38 @@ components:
           type: string
       required: [status, error]
 
+    ProjectLocked:
+      type: object
+      description: |
+        Refusal returned with HTTP 403 by every project endpoint when the
+        project is private and the caller is not entitled to it: the listing,
+        manifest, meta, parts, storefront and share, downloads and exports,
+        render / render-stream / render-cancel, verify, bom, datasheet,
+        assembly, animations, cart, fork, the editor and git routes, analysis,
+        simulation, the Cotiza export, the analytics summary, and
+        `/static/<slug>_preview_*` render artifacts.
+
+        Branch on `error_code`, not on the message. `auth_required` says which
+        call to action to show: true when nobody is signed in (offer sign-in),
+        false when the caller is signed in and still not entitled (offer
+        request-access).
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: string
+          example: This project is private
+        error_code:
+          type: string
+          enum: [project_locked]
+        auth_required:
+          type: boolean
+          description: True when the request carried no identity at all.
+        request_id:
+          type: string
+      required: [status, error, error_code, auth_required]
+
     ProjectSummary:
       type: object
       properties:
@@ -255,6 +287,16 @@ components:
           type: boolean
           description: Bypass L1 and L2 caches to force a fresh render
           default: false
+        request_id:
+          type: string
+          description: |
+            Correlation handle for this render, and the target
+            `POST /api/render-cancel` cancels it by. Server-generated (UUID4)
+            when omitted; `/api/render-stream` publishes it on the `job` event.
+            On `/api/render` the response arrives only when the render is done,
+            so a caller that wants to be able to cancel must supply its own —
+            and should make it unguessable, since anyone holding it can cancel
+            the render.
       required: [mode]
 
     RenderResponse:
@@ -277,6 +319,9 @@ components:
                 type: integer
         log:
           type: string
+        request_id:
+          type: string
+          description: The request_id this render ran under (echoed for correlation)
 
     EstimateRequest:
       type: object
@@ -426,6 +471,12 @@ paths:
                 $ref: "#/components/schemas/Manifest"
         "304":
           description: Not modified (ETag match)
+        "403":
+          description: Project is private and the caller is not entitled to it
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectLocked"
         "404":
           description: Project not found
           content:
@@ -643,6 +694,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "403":
+          description: Project is private and the caller is not entitled to it
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectLocked"
 
   /api/render-stream:
     post:
@@ -665,14 +722,58 @@ paths:
               schema:
                 type: string
                 description: |
-                  SSE events: progress, part_done, complete.
-                  Each `data:` line is a JSON object with an `event` field.
+                  SSE events: job, part_start, output, part_done, cancelled,
+                  error, complete. Each `data:` line is a JSON object with an
+                  `event` field and a `stream_protocol` version (1.1.0).
+
+                  `job` carries `{request_id, job_ids}` — the render's
+                  cancellation identity. It is sent once when the stream opens
+                  (with an empty `job_ids`) and again as each part is queued,
+                  carrying every job id issued so far. Pass either field to
+                  `POST /api/render-cancel` to cancel this render and no other.
 
   /api/render-cancel:
     post:
       tags: [render]
-      summary: Cancel active render
+      summary: Cancel a render by request_id or job_ids
+      description: |
+        Cancels only the jobs named in the body. Both identifiers are published
+        on the caller's own `/api/render-stream` `job` event; holding one stands
+        in for the ownership the render pipeline does not record, which is why
+        this endpoint stays open to anonymous callers.
+
+        `job_ids` are server-minted UUID4s and unguessable. `request_id` is
+        caller-suppliable, so a caller that chooses a predictable one is
+        choosing a predictable cancel handle. A `request_id` cancel also stops
+        the parts of a multi-part render that have not been queued yet — job ids
+        alone cannot, because parts are queued one at a time.
+
+        `{"all": true}` cancels every render on the box and requires the `admin`
+        role.
       operationId: cancelRender
+      security:
+        - bearerAuth: []
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request_id:
+                  type: string
+                  description: Cancel every job of this render request
+                job_ids:
+                  type: array
+                  maxItems: 64
+                  items:
+                    type: string
+                  description: Cancel exactly these jobs
+                all:
+                  type: boolean
+                  description: Cancel every render on the box. Requires the admin role.
+              minProperties: 1
       responses:
         "200":
           description: Cancel result
@@ -686,12 +787,50 @@ paths:
                     enum: [cancelled, no_active_render]
                   cancelled:
                     type: boolean
+                  cancelled_jobs:
+                    type: array
+                    items:
+                      type: string
+                    description: The job ids actually marked cancelled
+                  request_id:
+                    type: string
+                    nullable: true
+                  scope:
+                    type: string
+                    enum: [all]
+                    description: 'Present only on an admin `{"all": true}` cancel'
+        "400":
+          description: |
+            No cancel target (`cancel_target_required`), or a malformed one
+            (`cancel_target_invalid`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: '`{"all": true}` from an anonymous caller'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: '`{"all": true}` without the admin role'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   # ── Download ────────────────────────────────────────────
   /api/projects/{slug}/download/{file_format}/{filename}:
     get:
       tags: [download]
       summary: Download rendered or source artifact
+      description: >
+        Serves a rendered artifact (or, for `scad`, project source). Rendered
+        formats are gated on the caller's tier `export_formats` list — the same
+        check `/api/render` applies at generation time — so an artifact filename
+        alone does not grant access to a format the tier may not export. `stl`
+        is available to every tier, including anonymous callers.
       operationId: downloadArtifact
       security:
         - bearerAuth: []
@@ -733,7 +872,9 @@ paths:
         "401":
           description: Authentication required
         "403":
-          description: File not in manifest allowlist
+          description: >
+            File not in the manifest allowlist, or the export format requires a
+            higher tier.
         "404":
           description: File not found
 

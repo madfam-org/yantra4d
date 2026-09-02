@@ -728,54 +728,61 @@
     },
     "access_control": {
       "type": "object",
-      "description": "Per-project access control. Missing = fully public.",
+      "description": "Per-project access control. Missing = fully public. public = anyone; authenticated = any signed-in identity; private = only identities with access: top tier, admin role, or an explicit grant.",
       "properties": {
         "view": {
           "enum": [
             "public",
-            "authenticated"
+            "authenticated",
+            "private"
           ],
           "default": "public"
         },
         "configure": {
           "enum": [
             "public",
-            "authenticated"
+            "authenticated",
+            "private"
           ],
           "default": "public"
         },
         "download_stl": {
           "enum": [
             "public",
-            "authenticated"
+            "authenticated",
+            "private"
           ],
           "default": "public"
         },
         "download_scad": {
           "enum": [
             "public",
-            "authenticated"
+            "authenticated",
+            "private"
           ],
           "default": "public"
         },
         "render": {
           "enum": [
             "public",
-            "authenticated"
+            "authenticated",
+            "private"
           ],
           "default": "public"
         },
         "download": {
           "enum": [
             "public",
-            "authenticated"
+            "authenticated",
+            "private"
           ],
           "default": "public"
         },
         "export": {
           "enum": [
             "public",
-            "authenticated"
+            "authenticated",
+            "private"
           ],
           "default": "public"
         }

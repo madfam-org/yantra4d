@@ -13,6 +13,7 @@ Deprecation timeline:
 from flask import Blueprint, jsonify, make_response, request
 
 from manifest import get_manifest
+from services.core.project_access import check_project_access, is_private_project
 
 config_bp = Blueprint('config', __name__)
 
@@ -24,16 +25,24 @@ def get_config():
         from config import Config
         if Config.MULTI_PROJECT:
             return jsonify({"error": "project query param required"}), 400
+
+    # Deprecated or not, this is manifest content: same gate as /api/manifest.
+    denied = check_project_access(slug)
+    if denied is not None:
+        return denied
+
     try:
         manifest = get_manifest(slug)
     except RuntimeError as e:
         return jsonify({"error": str(e)}), 404
-        
+
     resp = make_response(jsonify({
         "parts_map": manifest.get_parts_map(),
         "mode_map": manifest.get_mode_map(),
         "estimate_constants": manifest.estimate_constants,
     }))
+    if is_private_project(slug, manifest):
+        resp.headers["Cache-Control"] = "private, no-store"
     resp.headers["Deprecation"] = "true"
     resp.headers["Sunset"] = "2026-06-01"
     resp.headers["Link"] = '</api/manifest>; rel="successor-version"'

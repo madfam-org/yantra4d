@@ -125,6 +125,20 @@ describe('StudioSidebar', () => {
     expect(screen.getAllByText('btn.cancel').length).toBeGreaterThan(0)
   })
 
+  // The e2e suite waits on this attribute to tell "the render is still running"
+  // apart from "the control I was looking for is missing", so it is a contract,
+  // not decoration: e2e/page-objects/studio-sidebar.page.js#renderState.
+  it('publishes the render state as data-render-state', () => {
+    render(<StudioSidebar variant="desktop" />)
+    expect(screen.getByTestId('studio-sidebar')).toHaveAttribute('data-render-state', 'idle')
+  })
+
+  it('reports data-render-state="rendering" while loading', () => {
+    useProject.mockReturnValue({ ...baseContext, loading: true })
+    render(<StudioSidebar variant="desktop" />)
+    expect(screen.getByTestId('studio-sidebar')).toHaveAttribute('data-render-state', 'rendering')
+  })
+
   it('disables generate button when loading', () => {
     useProject.mockReturnValue({ ...baseContext, loading: true })
     render(<StudioSidebar />)

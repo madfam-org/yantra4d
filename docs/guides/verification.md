@@ -4,7 +4,7 @@ The project maintains a rigorous quality assurance process using the config-driv
 
 The verification engine uses `trimesh` to analyze exported STL geometry. Checks are organized into **manufacturing stages** (`geometry`, `printability`, `assembly_fit`), configurable per **mode** and per **part** from `project.json`.
 
-For Hyperobjects, an additional **Geometric Parity** check compares output across the OpenSCAD and CadQuery engines. The check CI enforces is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a separate, local-only tool for the same comparison; no workflow runs it, and as of 2026-09-02 it reports 10 of 29 comparable mode pairs passing — see [dual-engine.md](../architecture/dual-engine.md#the-geometric-parity-guarantee).
+For Hyperobjects, an additional **Geometric Parity** check compares output across the OpenSCAD and CadQuery engines. The check CI enforces is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a separate, local-only tool for the same comparison; no workflow runs it, and as of 2026-09-02 (after #115) it reports 18 of 28 comparable mode pairs passing — see [dual-engine.md](../architecture/dual-engine.md#the-geometric-parity-guarantee).
 
 ## Script: `tests/verify_design.py`
 

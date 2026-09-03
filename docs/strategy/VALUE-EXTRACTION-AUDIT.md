@@ -26,9 +26,11 @@ locale files, and the CDG family taxonomy in `apps/api`. The table below is gene
 recomputation, and `--json` emits the same data machine-readably. Two guards make the
 numbers trustworthy rather than merely printable. First, the on-disk cartridge count is
 asserted against `counts.cartridges` in the committed catalog before anything is
-measured: 35 of the 500 cartridges live in public submodules and **every** dual-engine cartridge
-is one of them, so an uninitialised checkout silently under-counts and still prints a
-plausible-looking table. Second, the cartridges the Commons catalog does not publish are
+measured: 34 of the 500 cartridges live in public submodules and **every** dual-engine
+cartridge is one of them (`.gitmodules` declares 37 under `projects/`; two are the
+client-private `tablaco*` entries, and the 35th, `cq-hyperobject-test`, is the engine
+fixture the catalog excludes). With an uninitialised checkout each metric silently
+under-counts and the table still prints. Second, the cartridges the Commons catalog does not publish are
 excluded by importing the generator's own exclusion set rather than restating it, so this
 audit and `COMMONS.md` can never describe different commons.
 
@@ -123,11 +125,13 @@ cannot produce is how many FC links actually resolve — that lives on the Fashi
 side of the contract, and inventing a proxy for it here would be exactly the kind of
 number this re-measurement exists to remove.
 
-**Dual-engine cartridges.** 22 of 500, and the absolute number has not moved at all: every
-dual-engine cartridge is a submodule-backed standalone repo that predates the audit, and
-not one of the 176 new cartridges ships an OpenSCAD mode alongside its CadQuery one. As a
-share it fell from 6.8% of the audit-era cohort to 4.4% purely by dilution. Read together
-with 474 of 500 declaring `engine: cadquery` and 490 offering STEP export, the commons has
+**Dual-engine cartridges.** 21 of 500. Every one is a submodule-backed standalone repo
+that predates the audit, and not one of the 176 new cartridges ships an OpenSCAD mode
+alongside its CadQuery one — so the number only ever moves downward. It stood at 22 until
+#115 found that `implicit-lattice-hyperobject` declared an OpenSCAD kernel it never
+implemented and dropped the claim. As a share it is 4.2%, down from 6.8% of the audit-era
+cohort — dilution, plus that one correction. Read together with 474 of 500 declaring
+`engine: cadquery` and 490 offering STEP export, the commons has
 settled on one kernel; all ten OpenSCAD-only cartridges are inherited standalone repos. This row
 is also the one most exposed to the submodule-empty trap — measured with `projects/*`
 uninitialised it reads 0 while every other row still looks reasonable, which is why the

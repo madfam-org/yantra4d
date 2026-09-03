@@ -318,10 +318,10 @@ rows sum past 500):
 | :-- | --: |
 | Cartridges | 500 |
 | Declaring CadQuery | 488 |
-| Declaring OpenSCAD | 32 (22 of them alongside CadQuery) |
+| Declaring OpenSCAD | 31 (21 of them alongside CadQuery) |
 | Declaring Graph | 2 |
 | Declaring Implicit | 1 |
-| Flagged `dual_engine` | 22 |
+| Flagged `dual_engine` | 21 |
 | With declared CDG interfaces | 486 |
 | Carrying an explicit `commons_license` | 500 |
 

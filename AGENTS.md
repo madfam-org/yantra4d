@@ -259,7 +259,7 @@ python3 scripts/qa/value_extraction_audit.py --check # VALUE-EXTRACTION-AUDIT.md
 python3 scripts/qa/refresh_fc_consumers.py --check  # Fashion Cabinet back-edge resolves against our manifests (blocking in CI: manifest-validation)
 python3 scripts/qa/derive_mating_candidates.py --check    # docs/interfaces/mating-candidates.json still derives from the declared interfaces (blocking in CI: manifest-sync)
 python3 scripts/qa/i18n_audit.py                    # locale key parity (hard) + hardcoded-string ratchet (blocking in CI: i18n-audit)
-python3 -m pytest scripts/tests -q                  # tests for the scripts/qa lanes (blocking in CI: manifest-validation)
+python3 -m pytest scripts/tests -q                  # tests for the scripts/qa lanes (blocking in CI: manifest-validation -- but two modules SKIP there for want of deps and are run again where the deps exist: test_check_openapi.py in openapi-validation, test_verify_parity.py in backend)
 ./scripts/ci/tests/test_last_successful_deploy_sha.sh     # the deploy change-detection base resolver (blocking in CI: ci-scripts)
 ./scripts/ci/tests/test_registry_login.sh                # the deploy registry-login retry loop (blocking in CI: ci-scripts)
 ```
@@ -432,13 +432,13 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | OpenSCAD | `snake_case`, `render_mode` variable selects part |
 | CSS | Tailwind utility classes, shared tokens from `packages/tokens/` |
 | Tests | Co-located (`*.test.js`/`*.test.jsx`), Vitest + RTL |
-| Linting | ESLint + jsx-a11y (studio), ruff (backend) |
+| Linting | ESLint + jsx-a11y (studio), ruff (backend) -- **pinned to `0.16.5` in two places**, `ci.yml`'s `backend` job and `apps/api/requirements-dev.txt`, so a developer's ruff is the one CI runs; `scripts/tests/test_ruff_pin.py` fails when the two disagree, so bump both together (#111). `apps/api/pyproject.toml` pins the RULES, the version pins the ENGINE that reads them |
 | Naming | `camelCase` JS, `snake_case` Python/SCAD |
 
 ## Testing Standards
 
 - **Studio unit**: Vitest + RTL, coverage thresholds (80% statements/lines, 80% branches, 80% functions), jest-axe accessibility audits
-- **Studio E2E**: Playwright -- 23 test suites in `apps/studio/e2e/tests/`, page object pattern, mock API via `api-mocker.js`. Suite `23-browser-audit/` is the exception -- 95 tests, no mocks, against a REAL backend (OpenSCAD + Redis + `apps/api` on :5000 + the render worker, started directly on the machine; **no Docker** since PR #76) -- run with `--project=audit`; conventions and local setup in `apps/studio/e2e/tests/23-browser-audit/README.md`
+- **Studio E2E**: Playwright -- 23 test suites in `apps/studio/e2e/tests/`, page object pattern, mock API via `api-mocker.js`. Suite `23-browser-audit/` is the exception -- 95 tests, no mocks, against a REAL backend (OpenSCAD + Redis + `apps/api` on :5000 + the render worker, started directly on the machine; **no Docker** since PR #76) -- run with `--project=audit`; conventions and local setup in `apps/studio/e2e/tests/23-browser-audit/README.md`. **The sidebar root publishes `data-render-state="rendering|idle"`** (`StudioSidebar.tsx`, derived from the `useProject()` `loading` flag that already renders Processing.../Cancel -- it adds no state of its own). It is a TEST CONTRACT in shipping markup: the page object's `waitForRenderOutput`, `waitForRenderState` and `cancelRenderAndWaitForIdle` wait on the app REPORTING itself idle rather than inferring it from whichever ActionDock button happens to be mounted, and `editSliderValue` converges on the value the app actually commits (clamped, step-rounded, display-rounded, inches path mirrored). Deleting the attribute re-flakes the webkit shards it was added to fix (#114)
 - **Landing**: `npm run build` (Astro static build)
 - **Backend**: pytest + pytest-cov, coverage threshold 80%, tests in `apps/api/tests/` directory
 - **Pre-commit**: Husky runs `lint-staged` -> ESLint fix + Vitest on changed files

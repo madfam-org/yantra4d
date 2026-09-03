@@ -110,10 +110,12 @@ See `docs/reference/manifest.md` for the full manifest schema.
 ### What CI runs on your PR
 
 `.github/workflows/ci.yml` classifies your PR before it schedules anything. The
-`changes` job asks one question: is every changed file documentation?
+`changes` job asks one question: is every changed file no-code?
 
-- **Documentation** means any `*.md`, plus `docs/**`, `apps/docs/**`,
-  `runbooks/**` and `.github/*.md`.
+- **No-code** means any `*.md`, plus `docs/**`, `apps/docs/**`,
+  `runbooks/**`, `.github/*.md` and `k8s/production/kustomization.yaml` — the
+  file `deploy.yml` rewrites when it pins the digests it just built, which no
+  job in `ci.yml` reads.
 - **Docs-only PR** — the ten-shard Playwright browser matrix, the studio,
   landing and admin builds, the backend test suite and the geometric parity
   check are all skipped. The manifest, spec-conformance, metadata/licence,
@@ -123,7 +125,12 @@ See `docs/reference/manifest.md` for the full manifest schema.
 - **Anything else is a code PR** and runs the full matrix. A PR that touches
   documentation *and* code is a code PR — there is no way to opt a code change
   out of the matrix, and that is deliberate.
-- **Pushes to `main`** always run everything, whatever they touch.
+- **Pushes to `main`** are classified the same way (since #113). A merge commit
+  is code and runs everything; the `deploy(yantra4d): update digests` push that
+  follows it touches only `k8s/production/kustomization.yaml`, so it now runs
+  only the light lanes instead of a second full matrix. Classification fails
+  **closed**: a push whose `before` SHA is all-zero (a new branch) or no longer
+  reachable (a force push) is treated as code.
 
 `ci-success` is the single required check. It runs even when jobs ahead of it
 were skipped or failed (`if: ${{ !cancelled() }}`), and it fails if any job it

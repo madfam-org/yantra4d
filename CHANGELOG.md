@@ -305,6 +305,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and nothing else; the path is still logged at ERROR, which is the useful half.
 
 ### Changed
+- **Pushes Are Classified Too — the Deploy's Digest Bump No Longer Reruns the
+  Full Matrix** — the `changes` job classified pull requests only, so merging a
+  PR ran the whole matrix for the merge commit and then ran it *again* for the
+  `deploy(yantra4d): update digests` push that `deploy.yml` makes straight
+  afterwards — a push that writes only `k8s/production/kustomization.yaml`, a
+  file no job in `ci.yml` reads. That path is now negated in the filter and the
+  job classifies `push` events as well: a pull request is diffed through the
+  REST API against its base, a push with git against `github.event.before`,
+  which is why the job gained a push-only `fetch-depth: 0` checkout and a
+  "Resolve the push base" guard. It still fails **closed** — an all-zero
+  `before` (new branch, first push), a `before` no longer reachable after a
+  force push, an empty filter output, or any other event classifies as code —
+  and `scripts/tests/test_ci_changes_classification.py` executes the job's own
+  shell to pin exactly that. `deploy.yml` already excluded the kustomization
+  from its own triggers for the same reason; this is the other half of the rule.
+- **The Registry Login Is a Script, Pinned by Its Own Test** — the retry loop
+  #107 introduced was inline YAML duplicated across eight steps in `deploy.yml`'s
+  four build jobs, so nothing could run it outside a deploy and its backoff was
+  only ever exercised by a real GHCR outage. It is now
+  `scripts/ci/registry_login.sh`, called from a `run:` step, and
+  `scripts/ci/tests/test_registry_login.sh` covers it in the `ci-scripts` job:
+  the suite stubs `docker` and `sleep` on `PATH`, so no registry is contacted and
+  the 10/20/30/40 s backoff is asserted as recorded data rather than waited out.
+  The script also exits 2 immediately when a credential arrives empty — an unset
+  `secrets.*` reaches a step as an empty string, which `set -u` cannot catch.
+- **Unit Tests for the QA Lanes That Had None, and a Pinned `ruff`** — eight of
+  the `scripts/qa` gates were enforcing the commons in CI while being covered by
+  nothing themselves, which is the same "green for the wrong reason" failure
+  they exist to catch; `scripts/tests/` now carries suites for the licence,
+  OpenAPI, sandbox-sync, compliance, catalog-generation, graph-catalog, i18n and
+  fallback-manifest checks. Two of them cannot live only in
+  `manifest-validation`, because that job installs neither PyYAML and
+  openapi-spec-validator nor trimesh and numpy and the modules would silently
+  skip: `test_check_openapi.py` runs again in `openapi-validation` and
+  `test_verify_parity.py` in `backend`, where the dependencies already exist.
+  `ruff` was installed unpinned, so the rule set CI enforced was whatever ruff
+  had released by the time the job started; it is now `0.16.5` in both `ci.yml`
+  and `apps/api/requirements-dev.txt`, with `scripts/tests/test_ruff_pin.py`
+  failing if the two ever disagree. `apps/api/pyproject.toml` pins the rules; the
+  version pins the engine that reads them.
+- **`verify_parity` Compares Real Dual-Engine Pairs and Survives a Sandbox
+  Rejection** — it resolved a mode's OpenSCAD source from `scad_file` and handed
+  that path to OpenSCAD, but CadQuery-only cartridges point `scad_file` at their
+  own `.py` as a placeholder, so OpenSCAD was being asked to parse Python and
+  every pair "failed". Candidate selection now mirrors
+  `generate_commons_catalog::_engine_support`: a real `.scad` plus a real `.py`,
+  a placeholder `scad_file` is skipped rather than rendered, a declared-but-absent
+  file fails and an inferred-absent sibling skips. A CadQuery sandbox rejection
+  (`SystemExit`) no longer kills the whole audit. Measured on the real
+  dual-engine set it went from "everything fails" to 10 of 29 pairs passing —
+  which is why the docs now call the Geometric Parity Guarantee an **intent**
+  rather than an enforced invariant. It is still not a CI lane and wiring it in
+  would fail the build on day one.
+- **Ten Parity-Fixed Cartridges Pinned; `dual_engine` 22 → 21** — the parity
+  triage fixed real geometry defects on both kernels across ten cartridges
+  (blind holes, a rail channel cut outside its body, a hollowed housing, doubled
+  hook widths, unfilleted pockets, inverted miters, wrong manifest defaults);
+  each fix merged in its own cartridge repository and is pinned here at that
+  repository's `main`. `implicit-lattice-hyperobject` stopped claiming an
+  OpenSCAD kernel it never implemented, so `counts.dual_engine` goes 22 → 21 and
+  `counts` OpenSCAD-declaring goes 32 → 31 in `docs/commons-catalog.json`,
+  `COMMONS.md`, `README.md` and the value-extraction audit. The studio's offline
+  fallback manifest was resynced from the pinned gridfinity manifest (five
+  presets `cup_scad` → `cup`). Re-measured, `verify_parity` reports **18 of 28**
+  comparable pairs passing, up from 10 of 29.
+- **State-Aware E2E Waits Instead of Absent-Button Waits** — webkit shard timing
+  flakes on the shared pool came from specs waiting on buttons that are unmounted
+  for the whole of a render, or sleeping on mocks. The studio sidebar root now
+  publishes `data-render-state="rendering|idle"`, derived from the `loading` flag
+  that already renders Processing.../Cancel, so it introduces no state of its
+  own; the page object waits on that reported state (`waitForRenderOutput`,
+  `waitForRenderState`, `cancelRenderAndWaitForIdle`, held routes) and
+  `editSliderValue` converges on the value the app actually commits — clamped,
+  step-rounded, display-rounded, with the inches path mirrored — under a shared
+  phase budget inside the 60 s test timeout. No test was skipped, disabled or
+  weakened.
 - **Registry Logins Retry With Backoff Instead of Dying On One Timeout** —
   `docker/login-action@v3` has no retry of its own, so a single transient network
   failure at login killed a whole build job, and because *Commit Image Digests*
@@ -373,7 +449,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the browser matrix and its report, the studio, landing and admin builds, the
   backend suite and the geometric parity check; **anything else is code** and
   runs exactly what it ran before. A pull request touching documentation *and*
-  code is code, and a push to `main` always runs everything. The classification
+  code is code, and (until #113 below) a push to `main` always ran everything.
+  The classification
   uses `dorny/paths-filter` pinned to a commit, with
   `predicate-quantifier: every` so a file counts as code unless every
   documentation pattern excludes it, and the decision step fails closed: only a

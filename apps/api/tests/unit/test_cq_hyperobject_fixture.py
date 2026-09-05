@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from utils.project_resolver import find_project_dir  # noqa: E402
+from utils.project_resolver import find_project_dir
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "cartridges"
 FIXTURE = FIXTURES / "cq-hyperobject-test"

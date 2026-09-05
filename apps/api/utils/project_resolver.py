@@ -34,7 +34,7 @@ def project_roots() -> list[Path]:
     deployment (or a test that monkeypatches only ``PROJECTS_DIR``) does not
     search the same directory twice.
     """
-    roots = [Config.PROJECTS_DIR]
+    roots = [Path(Config.PROJECTS_DIR)]
     private = getattr(Config, "PRIVATE_PROJECTS_DIR", None)
     if private is not None and Path(private) != Path(Config.PROJECTS_DIR):
         roots.append(Path(private))
@@ -42,8 +42,12 @@ def project_roots() -> list[Path]:
 
 
 def project_write_root() -> Path:
-    """The root new cartridges are written into. Always the public commons."""
-    return Config.PROJECTS_DIR
+    """The root new cartridges are written into. Always the public commons.
+
+    Coerced to ``Path``: ``Config.PROJECTS_DIR`` is a ``Path`` in production but
+    tests monkeypatch it with a plain string, and callers do ``root / slug``.
+    """
+    return Path(Config.PROJECTS_DIR)
 
 
 def find_project_dir(slug: str) -> Path | None:

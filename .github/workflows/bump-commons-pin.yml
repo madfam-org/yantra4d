@@ -74,8 +74,12 @@ jobs:
           python3 scripts/qa/sync_fallback_manifest.py
           python3 scripts/qa/generate_commons_catalog.py
           python3 scripts/qa/derive_mating_candidates.py
-          python3 scripts/qa/value_extraction_audit.py --write
+          # The landing gallery BEFORE the value-extraction audit: the audit reads
+          # apps/landing/src/data/projects.ts for its gallery-coverage metrics, so
+          # in the old order a bump that changed the cartridge set committed a
+          # table built from the previous gallery and failed its own check.
           node scripts/dev/generate-landing-projects.mjs
+          python3 scripts/qa/value_extraction_audit.py --write
 
       - name: Create PR
         id: create-pr

@@ -417,12 +417,31 @@ def test_an_aabb_delta_inside_the_band_with_agreeing_surfaces_warns(tmp_path):
     assert "Bounding boxes differ by 0.030000mm" in reason
 
 
+def _dented_box(extents, depth=2.0, half=2.0):
+    """A box whose top face carries a dent: vertex displacement, not a boolean.
+
+    CI has no trimesh boolean backend (no manifold3d, no blender), so the notch
+    is made by subdividing the box and pushing the interior top-face vertices
+    down. The corners stay put, so the AABB is untouched; the surface moves by
+    `depth` mm, which is what the Hausdorff gate must see.
+    """
+    import numpy as np
+
+    mesh = trimesh.creation.box(extents=extents)
+    for _ in range(3):
+        mesh = mesh.subdivide()
+    verts = mesh.vertices.copy()
+    top = np.isclose(verts[:, 2], verts[:, 2].max())
+    dent = top & (np.abs(verts[:, 0]) < half) & (np.abs(verts[:, 1]) < half)
+    assert dent.any()
+    verts[dent, 2] -= depth
+    mesh.vertices = verts
+    return mesh
+
+
 def test_the_same_delta_with_diverging_surfaces_still_fails(tmp_path):
-    """The band is necessary, not sufficient. A notch moves a surface 2mm."""
-    notched = trimesh.boolean.difference([
-        trimesh.creation.box(extents=(10, 10, 10.03)),
-        trimesh.creation.box(extents=(4, 4, 4), transform=trimesh.transformations
-                             .translation_matrix((0, 0, 5)))])
+    """The band is necessary, not sufficient. A dent moves a surface 2mm."""
+    notched = _dented_box((10, 10, 10.03))
     ok, reason, report = lane.check_mesh_parity_report(
         stl(tmp_path, "a.stl", trimesh.creation.box(extents=(10, 10, 10))),
         stl(tmp_path, "b.stl", notched))

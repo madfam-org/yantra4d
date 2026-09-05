@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 499,
-    "with_cdg_interfaces": 489,
-    "with_commons_license": 499,
+    "cartridges": 500,
+    "with_cdg_interfaces": 490,
+    "with_commons_license": 500,
     "dual_engine": 20
   },
   "domains": {
@@ -21,7 +21,8 @@
     "consumer": 2,
     "construction": 1,
     "electronics": 1,
-    "energy": 1
+    "energy": 1,
+    "play": 1
   },
   "standards": [
     "#1–#60 wire-gauge drill set",
@@ -322,8 +323,10 @@
     "moulded aerosol-mask strap staple",
     "moulded zipper slider casting, #3-#10 series",
     "none",
+    "opposite-faces-sum-n-plus-1",
     "optics dovetail (60°, Thorlabs RC/XT class)",
     "plain round shaft (metric nominal)",
+    "platonic-solids",
     "playing card 63x88mm",
     "ppf-contact-solver (SIGGRAPH Asia 2024)",
     "rectangular male spigot / female rim socket, 0.35 mm printed clearance per side",
@@ -25821,6 +25824,79 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set point-turner"
+      }
+    },
+    {
+      "slug": "polydice",
+      "name": "Polyhedral Dice Set",
+      "domain": "play",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 5,
+      "parts": 5,
+      "parameters": 7,
+      "parameter_ids": [
+        "die_size",
+        "font_depth",
+        "font_size",
+        "rounding_corner",
+        "rounding_edge",
+        "fn",
+        "dice_gradient"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "off",
+        "glb",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "es": "Dados justos por construccion geometrica, no por control de calidad: cualquiera puede imprimir un juego completo y verificar la equidad con una regla y la regla de suma de caras opuestas.",
+        "en": "Dice that are fair by geometric construction rather than by quality control: anyone can print a full set and check fairness with a ruler and the opposite-face sum rule."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "fair_die_geometry",
+          "label": "Fair Die Geometry",
+          "geometry_type": "polyhedron",
+          "standard": "platonic-solids",
+          "parameters": [
+            "die_size"
+          ]
+        },
+        {
+          "id": "face_numbering",
+          "label": "Face Numbering",
+          "geometry_type": "engraving",
+          "standard": "opposite-faces-sum-n-plus-1",
+          "parameters": [
+            "font_size",
+            "font_depth"
+          ]
+        }
+      ],
+      "standards": [
+        "opposite-faces-sum-n-plus-1",
+        "platonic-solids"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "polydice/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set polydice"
       }
     },
     {

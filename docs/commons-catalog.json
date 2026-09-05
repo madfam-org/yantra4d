@@ -28544,7 +28544,7 @@
         "target_material",
         "num_teeth",
         "harmonic_ratio",
-        "module",
+        "gear_module",
         "bore_diameter",
         "link1_length",
         "link2_length",

@@ -15,8 +15,13 @@
 # ── Stage 1: extract OpenSCAD AppImage ────────────────────────────────────
 FROM python:3.12-slim AS openscad-builder
 
-ARG OPENSCAD_VERSION=2026.02.01
-ARG OPENSCAD_SHA256=dad3a8d19e63c543129eabef314676ac9348ffcab727544f4283b2ae9000277c
+# Must equal apps/api/Dockerfile (and hyperobjects-spec
+# y4d_spec.render_environment). A dev image on a different snapshot renders
+# different geometry than production, which is the whole failure mode this pin
+# exists to prevent. 2026.02.13 since ruling G31: 2026.02.01 cannot render our
+# pinned BOSL2 v2.0.753 — see the comment in apps/api/Dockerfile.
+ARG OPENSCAD_VERSION=2026.02.13
+ARG OPENSCAD_SHA256=01e4bdeb00518b20ba00d5acc1d3df9c62813d9f64bb68a1fd0a546c7e46ab28
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends wget && \

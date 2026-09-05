@@ -12,7 +12,45 @@ interface RenderPart {
   download_url?: string
   isGlb?: boolean
   blob?: Blob
+  /**
+   * The geometry format this part's `url`/`blob` hold, when the URL cannot say
+   * so itself. Set by the browser (WASM) kernel and by the L2 cache restore,
+   * whose `blob:` URLs carry no extension. Absent on server renders.
+   */
+  format?: string
+  /** The format `download_url` holds, when that URL cannot say so either. */
+  download_format?: string
   [key: string]: unknown
+}
+
+/**
+ * Whether *part* already holds geometry in `ext`, without re-rendering.
+ *
+ * Three ways a part can say what it is, in order of authority:
+ *
+ *   1. `format` — the renderer stated it outright. The only signal a browser
+ *      (WASM) render has, since a `blob:` URL never carries an extension.
+ *   2. the extension on `download_url` or `url` — how a server render says it.
+ *      Both may carry a `?t=` cache-buster, so compare the path only.
+ *   3. `isGlb` — the viewer's own flag, meaningful for exactly one format.
+ *
+ * Getting this wrong is not merely a slow path: a false negative here re-renders
+ * geometry the page is already displaying, and because `canBrowserEmitFormat`
+ * lets an `stl` re-render be placed anywhere, that redundant render can land on
+ * the server queue. See the note in `renderService`'s `renderWasm`.
+ */
+function partHasFormat(part: RenderPart, ext: string): boolean {
+  if (declaredFormat(part.download_format) === ext && part.download_url) return true
+  if (declaredFormat(part.format) === ext && part.url) return true
+  const bare = (u?: string) => (u || '').split('?')[0].toLowerCase()
+  if (bare(part.download_url).endsWith(`.${ext}`)) return true
+  if (bare(part.url).endsWith(`.${ext}`)) return true
+  return ext === 'glb' && !!part.isGlb
+}
+
+/** A declared format, normalised, or null when the part declares none. */
+function declaredFormat(value: unknown): string | null {
+  return typeof value === 'string' && value ? value.toLowerCase() : null
 }
 
 interface Manifest {
@@ -96,12 +134,7 @@ export function useProjectActions({
     const ext = exportFormat || 'stl'
 
     // Check if the viewer already has files in the requested format.
-    const viewerHasFormat = parts.length > 0 && parts.every(p => {
-      const dlUrl = (p.download_url || '').split('?')[0]
-      const viewUrl = (p.url || '').split('?')[0]
-      return dlUrl.endsWith(`.${ext}`) || viewUrl.endsWith(`.${ext}`) ||
-        (ext === 'glb' && p.isGlb)
-    })
+    const viewerHasFormat = parts.length > 0 && parts.every(p => partHasFormat(p, ext))
 
     let downloadParts = parts
     if (!viewerHasFormat) {
@@ -124,6 +157,11 @@ export function useProjectActions({
       if (dlUrl.split('?')[0].endsWith(`.${ext}`)) return dlUrl
       if (viewUrl.split('?')[0].endsWith(`.${ext}`)) return viewUrl
       if (ext === 'glb' && part.isGlb) return viewUrl
+      // A blob-backed part states its format on the part, not in the URL: a
+      // browser render (`format`, bytes in `url`) or an L2 cache restore, which
+      // may also carry a separate download blob (`download_format`).
+      if (declaredFormat(part.download_format) === ext && dlUrl) return dlUrl
+      if (declaredFormat(part.format) === ext && viewUrl) return viewUrl
       return dlUrl || viewUrl
     }
 

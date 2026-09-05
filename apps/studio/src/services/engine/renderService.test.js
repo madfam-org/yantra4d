@@ -903,6 +903,34 @@ describe('force_backend is a SOFT hint, not a server pin', () => {
     // No SSE render was attempted — that is the whole saving.
     expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/api/render-stream'))).toBe(false)
   })
+
+  // A browser part must SAY it is STL, because its URL cannot.
+  //
+  // `blob:<origin>/<uuid>` carries no extension, and `handleDownloadStl` decides
+  // whether a re-render is needed by sniffing one. Without `format` a Download
+  // STL on a browser-rendered part re-rendered geometry already in memory, and
+  // since `canBrowserEmitFormat('stl')` is true that re-render is not pinned to
+  // the browser — it can queue on the server. That is issue #79: the nightly
+  // audit's `downloads STL for holder mode` timed out three nights running.
+  //
+  // The marker is a FIELD, not a `#.stl` fragment on the URL:
+  // `URL.revokeObjectURL` does not resolve past a fragment (measured in Chromium
+  // 1169 — revoking `blob:…#.stl` leaves the base URL alive and fetchable), so a
+  // fragmented URL leaks its blob past every cleanup effect that revokes it.
+  it('stamps a browser-rendered part with format "stl" and an unfragmented URL', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 16, deviceMemory: 16 })
+    installMockWorker()
+    URL.createObjectURL = vi.fn(() => 'blob:abc')
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockImplementation(serveBundle)
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health
+
+    const [part] = await renderService.renderParts('unit', {}, forced, {})
+    expect(renderService.getRenderMode()).toBe('wasm')
+    expect(part.format).toBe('stl')
+    expect(part.url).toBe('blob:abc')
+    expect(part.url).not.toContain('#')
+  })
 })
 
 describe('renderService estimate threshold', () => {

@@ -37,6 +37,10 @@ interface RenderPart {
   blob?: Blob
   download_url?: string
   isGlb?: boolean
+  /** The format `url` holds, when the URL cannot say so (a `blob:` URL). */
+  format?: string
+  /** The format `download_url` holds, when the URL cannot say so. */
+  download_format?: string
   [key: string]: unknown
 }
 
@@ -134,16 +138,34 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
         const cached = await idbCache.get(idbKey)
         if (cached) {
           const restoredParts: RenderPart[] = cached.map(p => {
+            const isGlb = p.blob.type === 'model/gltf-binary'
             const part: RenderPart = {
               type: p.type,
               url: URL.createObjectURL(p.blob),
-              isGlb: p.blob.type === 'model/gltf-binary',
+              isGlb,
+              // What these bytes ARE, stated on the part.
+              //
+              // Everything a cache round-trip returns is behind a `blob:` URL,
+              // which carries no extension, so `handleDownloadStl` cannot read
+              // the format off the URL the way it can for a server render. It
+              // used to be told via a `#.stl` fragment appended below; that is
+              // wrong twice over. `URL.revokeObjectURL` does not resolve past a
+              // fragment (measured in Chromium 1169: revoking `blob:…#.stl`
+              // leaves the base URL alive and fetchable), so the cleanup effect
+              // in useProjectParams silently leaked every restored download
+              // blob; and a part cached from a BROWSER render has no
+              // `downloadBlob` at all, so it never got the marker and pressing
+              // Download STL re-rendered geometry the page was displaying.
+              //
+              // `downloadBlob` is only ever written for the download format, and
+              // the viewer blob is GLB or STL — the two the cache serialises.
+              format: (p as { downloadBlob?: Blob }).downloadBlob
+                ? undefined
+                : (isGlb ? 'glb' : 'stl'),
             }
             if ((p as { downloadBlob?: Blob }).downloadBlob) {
-              // Append #.stl so URL extension checks in handleDownloadStl work
-              // for blob URLs. Browsers strip fragments before fetch, so the
-              // blob URL still resolves correctly.
-              part.download_url = URL.createObjectURL((p as { downloadBlob: Blob }).downloadBlob) + '#.stl'
+              part.download_url = URL.createObjectURL((p as { downloadBlob: Blob }).downloadBlob)
+              part.download_format = 'stl'
             }
             return part
           })

@@ -154,8 +154,9 @@ Decentralizing the Yantra4D Commons so every hyperobject project is a sovereign,
 > _Estate re-baseline (2026-09-02):_ "all 33 projects" describes this phase as it landed, not
 > the estate today, and federation turned out to be the flagship pattern rather than the
 > default — and then RFC 0038 P2 ended it entirely. The Commons publishes
-> **500 cartridges**
-> (fact source: `docs/commons-catalog.json` → `counts.cartridges`), and every one of them now
+> **495 cartridges**
+> (fact source: `docs/commons-catalog.json` → `counts.cartridges`; five slugs are reserved for
+> clean-room re-creation under ADR-021), and every one of them now
 > lives in ONE repo, `madfam-org/solid-hyperobjects`, which this platform consumes as a single
 > pinned submodule at `projects/`
 > (fact source: the `[submodule "projects"]` entry in `.gitmodules`). The 34 satellite cartridge
@@ -313,22 +314,22 @@ cartridges. Expansion then continued past the sprint: the catalog reached **500*
 target the catalog passed two and a half times over, so it survives only as the record of
 what this sprint itself delivered.
 
-Catalog shape at 500 (fact source: `docs/commons-catalog.json` → `counts`, and the
+Catalog shape at 495 (fact source: `docs/commons-catalog.json` → `counts`, and the
 per-cartridge `engines` sets — a cartridge may declare more than one engine, so the engine
-rows sum past 500):
+rows sum past 495):
 
 | | |
 | :-- | --: |
-| Cartridges | 500 |
-| Declaring CadQuery | 488 |
-| Declaring OpenSCAD | 31 (21 of them alongside CadQuery) |
+| Cartridges | 495 |
+| Declaring CadQuery | 487 |
+| Declaring OpenSCAD | 25 (19 of them alongside CadQuery) |
 | Declaring Graph | 2 |
 | Declaring Implicit | 1 |
-| Flagged `dual_engine` | 21 |
-| With declared CDG interfaces | 486 |
-| Carrying an explicit `commons_license` | 500 |
+| Flagged `dual_engine` | 19 |
+| With declared CDG interfaces | 485 |
+| Carrying an explicit `commons_license` | 495 |
 
-The API serves 500 projects — the published cartridges, and only those. Since
+The API serves 495 projects — the published cartridges, and only those. Since
 RFC 0038 P2 the `cq-hyperobject-test` engine fixture is vendored under
 `apps/api/tests/fixtures/cartridges/` instead of sitting in `projects/`, and the
 client-private `tablaco` cartridges mount at `private-projects/` (served only to
@@ -355,8 +356,8 @@ authorized identities, and excluded from the catalog).
   negative-volume / severed-body defects that watertightness alone misses.
 
 **Next waves are RFC scale, not sprint scale.** 501–600 and anything past it is deliberately
-not committed here. At 500 cartridges the binding constraints are domain selection,
+not committed here. At 495 cartridges the binding constraints are domain selection,
 CDG-interface leverage, licensing provenance, and the per-wave verification budget (real-sandbox
 watertightness plus the body-count check on every mode) — each of which needs an RFC that names
 the wave's domains and its verification cost before authoring starts. Until such an RFC lands,
-the roadmap commitment stops at the 500 already in `docs/commons-catalog.json`.
+the roadmap commitment stops at the 495 already in `docs/commons-catalog.json`.

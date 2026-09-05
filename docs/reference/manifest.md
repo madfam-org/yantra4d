@@ -248,7 +248,7 @@ required for a faithful render regardless of what any of these keys says.
 
 ### Why `force_backend` was demoted
 
-490 of the 501 cartridges in the commons set `project.force_backend: true`. Among
+485 of the 495 cartridges in the commons set `project.force_backend: true`. Among
 the OpenSCAD ones it almost always encoded a **client limitation, not a property
 of the model**: the cartridge opens with `include <../../libs/BOSL2/std.scad>`
 (nearly all of them) or calls `text()` (8 of them), and the old browser path

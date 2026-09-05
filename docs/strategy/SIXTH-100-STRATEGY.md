@@ -6,6 +6,13 @@
 > evidence pass a Fashion Cabinet band gets before its ranks are claimed. No slug here is
 > reserved until the operator rules (§5).
 
+> _Note (2026-09-04):_ every figure in this document is a point-in-time measurement over
+> the 500-cartridge commons and is left as written. The commons is **495** today: `keyv2`,
+> `stemfie`, `multiboard`, `polydice` and `rugged-box` were removed whole under ADR-021 with
+> their slugs reserved for clean-room re-creation. Two proposals below (#502
+> `multiboard-hook-set`, #593 `stemfie-beam`) name a reserved slug as their mating target,
+> so they depend on that re-creation landing first.
+
 The fifth hundred closed at **500 cartridges** on `feat(commons): the closing six — 500`.
 The sixth is the first wave planned against a *measured* interoperability graph rather
 than an impression of one: `normalize_family()` and the geometry rules in

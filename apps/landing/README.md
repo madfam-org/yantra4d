@@ -28,7 +28,7 @@ Two things follow from it being generated rather than maintained:
 - **It needs a complete checkout.** The generator refuses to write (exit 2) when
   any public `projects/*` submodule in `.gitmodules` has no `project.json` on
   disk, because a partial checkout is exactly how the committed list went 328
-  entries against a 501-cartridge commons. Run
+  entries against a 495-cartridge commons. Run
   `git submodule update --init projects/` first. The two `update = none`
   submodules (the client-private `tablaco` pair) are *expected* to be absent and
   never count as an incomplete checkout.

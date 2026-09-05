@@ -46,10 +46,12 @@ Tulana SKU keys use the double-underscore convention.
 
 ## Constraints the research must respect
 
-1. **Compliance**: the NC-restricted cartridges (`multiboard`, and
-   `rugged-box` via vendored upstream — `license_exposure` field in
-   `docs/commons-catalog.json`) are excluded from every paid surface; pricing
-   scenarios must not assume revenue from them. CERN-OHL-W obligations
+1. **Compliance**: as of 2026-09-04 there are **no NC-restricted cartridges left**
+   — `multiboard` and `rugged-box`, the two this constraint was written for, were
+   removed from the commons under ADR-021 and their slugs reserved for clean-room
+   re-creation, so all 495 cartridges are CERN-OHL-W-2.0. The constraint stands for
+   when either slug returns: check `license_exposure` in
+   `docs/commons-catalog.json` rather than this list. CERN-OHL-W obligations
    (notice preservation, modified-design source availability) ride along on
    fulfillment.
 2. **Honest labeling**: FEA stress and topology optimization are self-declared

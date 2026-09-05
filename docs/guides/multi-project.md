@@ -9,10 +9,10 @@ projects/
   gridfinity/           # Flagship project (modular storage bins)
     project.json
     *.scad
-  polydice/             # Parametric dice set
+  julia-vase/           # Fractal-surface vase
     project.json
     *.scad
-  ...                   # 22 built-in projects total
+  ...                   # 495 commons cartridges total
   my-custom-project/    # Onboarded project
     project.json
     *.scad

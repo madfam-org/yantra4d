@@ -21,6 +21,7 @@ absorb into `solid-hyperobjects` and nothing left to track it from.
 Its `.github/workflows/ci.yml` was dropped in the move: it is no longer a repo
 of its own, and this tree is covered by the platform's own CI.
 
-Before P2 it sat in `projects/`, which is why the API served 501 projects while
-the commons counted 500. It no longer does: **the API now serves 500, and 500
-is also the commons count.**
+Before P2 it sat in `projects/`, which is why the API served one project more
+than the commons held (501 over 500 at the time). It no longer does: **the API
+serves exactly the commons count, 495 today**, plus whatever the operator mounts
+under `private-projects/`.

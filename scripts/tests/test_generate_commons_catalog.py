@@ -40,6 +40,15 @@ sys.path.insert(0, str(REPO / "scripts" / "qa"))
 
 import generate_commons_catalog as lane  # noqa: E402
 
+#: The NC-exposure tests need a cartridge that IS acknowledged, and the map is
+#: legitimately empty whenever every acknowledged slug has been re-created
+#: clean-room (true since 2026-09-05). Skip rather than delete: the behaviour
+#: must stay covered for the next time a cartridge vendors NC files.
+needs_nc_exposure = pytest.mark.skipif(
+    not lane.KNOWN_NC_EXPOSURE,
+    reason="KNOWN_NC_EXPOSURE is empty — no acknowledged exposure to exercise",
+)
+
 
 def cartridge(projects: Path, slug: str, manifest: dict, files=()) -> Path:
     directory = projects / slug
@@ -109,6 +118,7 @@ def test_the_exclusion_set_matches_the_licence_auditor():
 
 # --- NonCommercial exposure is surfaced, never hidden ----------------------
 
+@needs_nc_exposure
 def test_a_known_nc_cartridge_carries_license_exposure(commons):
     slug = min(lane.KNOWN_NC_EXPOSURE)
     cartridge(commons, slug, {"project": {"name": slug},
@@ -123,6 +133,7 @@ def test_an_ordinary_cartridge_carries_no_exposure_field(commons):
     assert "license_exposure" not in lane.build_catalog()["cartridges"][0]
 
 
+@needs_nc_exposure
 def test_the_markdown_daggers_an_exposed_licence_and_explains_the_dagger(commons):
     slug = min(lane.KNOWN_NC_EXPOSURE)
     cartridge(commons, slug, {"project": {"name": slug},

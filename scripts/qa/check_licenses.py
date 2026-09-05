@@ -22,9 +22,11 @@ case it is reported as a clearly-labeled WARNING (never blocking). Other
 nested licenses are reported informationally.
 
 An acknowledgement in KNOWN_NC_EXPOSURE whose cartridge is no longer on disk is
-reported as STALE every run rather than dropped: five slugs are reserved under
+reported as STALE every run rather than dropped: slugs are reserved under
 ADR-021 pending clean-room re-creation, and a silently-deleted entry is how an
-acknowledged exposure becomes an unacknowledged one when the slug returns.
+acknowledged exposure becomes an unacknowledged one when the slug returns. The
+map is empty today — every reserved slug that has returned came back clean-room
+with nothing vendored, so no exposure survives the re-creation.
 
 Findings are grouped by severity. `--strict` fails on CONFLICT only, so the
 metadata backlog can be worked down without blocking every build; use
@@ -71,24 +73,18 @@ CLIENT_PRIVATE = set(NOT_COMMONS)
 # (and as `license_exposure` in the public catalogue) instead of passing
 # silently. A nested NC license in any cartridge NOT listed here is a CONFLICT.
 # Kept in step with KNOWN_NC_EXPOSURE in scripts/qa/generate_commons_catalog.py.
-KNOWN_NC_EXPOSURE = {
-    # rugged-box declares CERN-OHL-W-2.0 for its own wrappers, but vendors the
-    # upstream "Super Customizable Rugged Box in OpenSCAD" source by Iceman
-    # (RuggedBoxV1.scad and the RuggedBoxV1.txt parameter sets, from
-    # Printables model 1073708), which is CC BY-NC-SA 4.0. Selling prints of
-    # those vendored files is forbidden by the upstream terms. Documented in
-    # projects/rugged-box/README.md ("License & attribution") and
-    # projects/rugged-box/NOTICE.
+KNOWN_NC_EXPOSURE: dict[str, str] = {
+    # Empty since 2026-09-05: the last acknowledgement (rugged-box, which
+    # vendored the CC BY-NC-SA 4.0 "Super Customizable Rugged Box in OpenSCAD"
+    # source) was removed when the slug returned as a clean-room re-creation
+    # under ADR-021 — the new cartridge is an original MADFAM work licensed
+    # CERN-OHL-W-2.0 and vendors nothing, so the exposure no longer exists and
+    # keeping the row would have mislabelled a clean cartridge in the
+    # catalogue. See projects/rugged-box/NOTICE.
     #
-    # RETIRED 2026-09-04: rugged-box was removed from the commons whole under
-    # ADR-021 (non-CERN origin leaves, comes back clean-room) and its slug is
-    # reserved. The entry is KEPT deliberately, not deleted: it is the record
-    # of why that slug is absent, and it must come back the moment a
-    # clean-room rugged-box lands carrying any vendored NC file. Its absence
-    # is reported by the stale-entry check in audit() rather than passing
-    # unnoticed — dropping the entry silently is how an acknowledged exposure
-    # becomes an unacknowledged one.
-    "rugged-box": "CC-BY-NC-SA-4.0 (vendored upstream files; see NOTICE)",
+    # Add a row here the moment any cartridge vendors NC-licensed upstream
+    # files again; entries whose cartridge is absent are reported as STALE by
+    # check_licenses.py rather than dropped silently.
 }
 
 # Slugs that KNOWN_NC_EXPOSURE may legitimately name while they are absent from

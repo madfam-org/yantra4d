@@ -4,33 +4,33 @@
   "generated_by": "scripts/qa/derive_mating_candidates.py",
   "status": "proposed",
   "inputs": {
-    "cartridges_scanned": 495,
-    "cartridges_public_total": 495,
+    "cartridges_scanned": 499,
+    "cartridges_public_total": 499,
     "cartridges_out_of_scope": 0,
     "scope_note": "every projects/*/project.json is read; only the client-private slugs named in PRIVATE_EXCLUDED are skipped, and since RFC 0038 P2 those are not under projects/ at all (they mount at private-projects/). The commons is one submodule, so projects/ is either fully checked out or empty; validate_manifests.py's ratchet is what refuses the empty case",
-    "interfaces_declared": 939,
-    "interfaces_with_resolved_family": 273,
-    "objects_with_resolved_family": 209,
-    "author_declared_pairs_in_scope": 285,
-    "author_declared_links_out_of_scope": 1,
+    "interfaces_declared": 952,
+    "interfaces_with_resolved_family": 278,
+    "objects_with_resolved_family": 211,
+    "author_declared_pairs_in_scope": 291,
+    "author_declared_links_out_of_scope": 0,
     "bridge_snapshot_available": true,
     "bridge_targets": 89
   },
   "graph_baseline": {
     "note": "the live graph's own rule replayed over the in-scope manifests; see baseline_graph_pairs() for why get_graph() is not called directly",
-    "graph_nodes": 209,
+    "graph_nodes": 211,
     "edges": 262,
-    "isolated_graph_nodes": 69,
-    "density_pct_over_graph_nodes": 1.2054,
-    "density_pct_over_catalog": 0.2143,
+    "isolated_graph_nodes": 71,
+    "density_pct_over_graph_nodes": 1.1826,
+    "density_pct_over_catalog": 0.2109,
     "author_declared_pairs_reproduced": 167,
-    "author_declared_pairs_missing": 118,
-    "author_declared_pairs_without_shared_family": 95
+    "author_declared_pairs_missing": 124,
+    "author_declared_pairs_without_shared_family": 101
   },
   "tier_summary": {
     "corroborated": 26,
     "plausible": 48,
-    "speculative": 26
+    "speculative": 29
   },
   "projection": [
     {
@@ -39,11 +39,11 @@
       "new_edges_in_tranche": 64,
       "edges_after": 326,
       "author_declared_pairs_explained": 180,
-      "author_declared_pairs_explained_pct": 63.16,
-      "graph_nodes": 209,
-      "isolated_graph_nodes_after": 64,
-      "density_pct_over_graph_nodes": 1.4998,
-      "density_pct_over_catalog": 0.2666
+      "author_declared_pairs_explained_pct": 61.86,
+      "graph_nodes": 211,
+      "isolated_graph_nodes_after": 66,
+      "density_pct_over_graph_nodes": 1.4715,
+      "density_pct_over_catalog": 0.2624
     },
     {
       "tranche": "plausible",
@@ -51,30 +51,30 @@
       "new_edges_in_tranche": 15,
       "edges_after": 341,
       "author_declared_pairs_explained": 190,
-      "author_declared_pairs_explained_pct": 66.67,
-      "graph_nodes": 209,
-      "isolated_graph_nodes_after": 53,
-      "density_pct_over_graph_nodes": 1.5688,
-      "density_pct_over_catalog": 0.2789
+      "author_declared_pairs_explained_pct": 65.29,
+      "graph_nodes": 211,
+      "isolated_graph_nodes_after": 55,
+      "density_pct_over_graph_nodes": 1.5392,
+      "density_pct_over_catalog": 0.2744
     },
     {
       "tranche": "speculative",
-      "rules": 26,
-      "new_edges_in_tranche": 84,
-      "edges_after": 425,
+      "rules": 29,
+      "new_edges_in_tranche": 87,
+      "edges_after": 428,
       "author_declared_pairs_explained": 190,
-      "author_declared_pairs_explained_pct": 66.67,
-      "graph_nodes": 209,
-      "isolated_graph_nodes_after": 40,
-      "density_pct_over_graph_nodes": 1.9553,
-      "density_pct_over_catalog": 0.3476
+      "author_declared_pairs_explained_pct": 65.29,
+      "graph_nodes": 211,
+      "isolated_graph_nodes_after": 41,
+      "density_pct_over_graph_nodes": 1.9318,
+      "density_pct_over_catalog": 0.3445
     }
   ],
   "rejected_interfaces": {
     "counts": {
       "standard_absent": 2,
-      "standard_internal": 542,
-      "standard_unrecognized": 122
+      "standard_internal": 548,
+      "standard_unrecognized": 124
     },
     "unrecognized_standards": [
       {
@@ -115,6 +115,10 @@
       },
       {
         "standard": "12.7 mm (1/2 in) feeler blade",
+        "interfaces": 1
+      },
+      {
+        "standard": "19.05 mm key pitch",
         "interfaces": 1
       },
       {
@@ -182,23 +186,19 @@
         "interfaces": 1
       },
       {
+        "standard": "Cherry MX / Alps / Box Cherry stem dimensions",
+        "interfaces": 1
+      },
+      {
         "standard": "Custom mounting pattern",
         "interfaces": 1
       },
       {
         "standard": "DIN terminal",
         "interfaces": 1
-      },
-      {
-        "standard": "EHS galvanised guy strand (3/16, 1/4, 5/16, 3/8, 1/2 in)",
-        "interfaces": 1
-      },
-      {
-        "standard": "Erlenmeyer/beaker body Ø70-108 mm",
-        "interfaces": 1
       }
     ],
-    "unrecognized_standards_distinct": 91
+    "unrecognized_standards_distinct": 93
   },
   "rules": [
     {
@@ -2215,18 +2215,23 @@
       "falsification_handles": {
         "role_a_parameters": [
           "base_th",
+          "depth_units",
           "grid_x",
           "grid_y",
           "grid_z",
           "gx",
           "gy",
+          "height_units",
           "nx",
-          "ny"
+          "ny",
+          "width_units"
         ],
         "role_b_parameters": [
           "bp_thickness",
           "cdg_mount_type",
-          "lip_enabled"
+          "headroom",
+          "lip_enabled",
+          "lip_style_id"
         ]
       },
       "examples": [
@@ -2447,23 +2452,29 @@
       "falsification_handles": {
         "role_a_parameters": [
           "base_th",
+          "depth_units",
           "grid_x",
           "grid_y",
           "grid_z",
           "gx",
           "gy",
+          "height_units",
           "nx",
-          "ny"
+          "ny",
+          "width_units"
         ],
         "role_b_parameters": [
           "base_th",
+          "depth_units",
           "grid_x",
           "grid_y",
           "grid_z",
           "gx",
           "gy",
+          "height_units",
           "nx",
-          "ny"
+          "ny",
+          "width_units"
         ]
       },
       "examples": [
@@ -3251,13 +3262,16 @@
       "falsification_handles": {
         "role_a_parameters": [
           "base_th",
+          "depth_units",
           "grid_x",
           "grid_y",
           "grid_z",
           "gx",
           "gy",
+          "height_units",
           "nx",
-          "ny"
+          "ny",
+          "width_units"
         ],
         "role_b_parameters": [
           "plate_thickness"
@@ -4219,18 +4233,24 @@
       "falsification_handles": {
         "role_a_parameters": [
           "base_th",
+          "depth_units",
           "grid_x",
           "grid_y",
           "grid_z",
           "gx",
           "gy",
+          "height_units",
           "nx",
-          "ny"
+          "ny",
+          "width_units"
         ],
         "role_b_parameters": [
+          "bp_corner_radius",
           "bp_thickness",
+          "depth_units",
           "grid_x",
-          "grid_y"
+          "grid_y",
+          "width_units"
         ]
       },
       "examples": [
@@ -4662,7 +4682,9 @@
         "role_a_parameters": [
           "bp_thickness",
           "cdg_mount_type",
-          "lip_enabled"
+          "headroom",
+          "lip_enabled",
+          "lip_style_id"
         ],
         "role_b_parameters": [
           "plate_thickness"
@@ -5178,9 +5200,12 @@
       },
       "falsification_handles": {
         "role_a_parameters": [
+          "bp_corner_radius",
           "bp_thickness",
+          "depth_units",
           "grid_x",
-          "grid_y"
+          "grid_y",
+          "width_units"
         ],
         "role_b_parameters": [
           "plate_thickness"
@@ -7616,6 +7641,77 @@
       ]
     },
     {
+      "rule_id": "optical-breadboard:grid+threaded_socket",
+      "claim": "objects declaring standard family 'optical-breadboard' in role 'grid' mate with objects declaring it in role 'threaded_socket'",
+      "family": "optical-breadboard",
+      "role_a": "grid",
+      "role_b": "threaded_socket",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles grid<->threaded_socket, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 2,
+        "objects_role_b": 1,
+        "objects_total": 3,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 2,
+      "pairs_already_in_graph": 0,
+      "new_edges": 2,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+          "25 mm threaded wall-grid interface (6.95/4.48 mm trapezoidal, 29°, 3 mm pitch)",
+          "830-pt breadboard",
+          "breadboard 2.54mm"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bb_size",
+          "board_th",
+          "clearance",
+          "hole_dia",
+          "pitch",
+          "scale"
+        ],
+        "role_b_parameters": [
+          "height",
+          "x_cells",
+          "y_cells"
+        ]
+      },
+      "examples": [
+        {
+          "a": "breadboard-holder",
+          "a_interface": "breadboard_footprint",
+          "a_standard": "830-pt breadboard",
+          "b": "multiboard",
+          "b_interface": "grid_25mm_primary",
+          "b_standard": "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "circuit-trainer",
+          "a_interface": "breadboard_grid",
+          "a_standard": "breadboard 2.54mm",
+          "b": "multiboard",
+          "b_interface": "grid_25mm_primary",
+          "b_standard": "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
       "rule_id": "optical-breadboard:grid+rail",
       "claim": "objects declaring standard family 'optical-breadboard' in role 'grid' mate with objects declaring it in role 'rail'",
       "family": "optical-breadboard",
@@ -8042,6 +8138,119 @@
       ]
     },
     {
+      "rule_id": "optical-breadboard:profile+threaded_socket",
+      "claim": "objects declaring standard family 'optical-breadboard' in role 'profile' mate with objects declaring it in role 'threaded_socket'",
+      "family": "optical-breadboard",
+      "role_a": "profile",
+      "role_b": "threaded_socket",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles profile<->threaded_socket, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 1,
+        "objects_role_b": 1,
+        "objects_total": 2,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 0,
+      "new_edges": 1,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+          "25 mm threaded wall-grid interface (6.95/4.48 mm trapezoidal, 29°, 3 mm pitch)",
+          "breadboard 2.54mm"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "comp_pitches",
+          "pitch"
+        ],
+        "role_b_parameters": [
+          "height",
+          "x_cells",
+          "y_cells"
+        ]
+      },
+      "examples": [
+        {
+          "a": "circuit-trainer",
+          "a_interface": "component_footprint",
+          "a_standard": "breadboard 2.54mm",
+          "b": "multiboard",
+          "b_interface": "grid_25mm_primary",
+          "b_standard": "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
+      "rule_id": "optical-breadboard:rail+threaded_socket",
+      "claim": "objects declaring standard family 'optical-breadboard' in role 'rail' mate with objects declaring it in role 'threaded_socket'",
+      "family": "optical-breadboard",
+      "role_a": "rail",
+      "role_b": "threaded_socket",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles rail<->threaded_socket, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 1,
+        "objects_role_b": 1,
+        "objects_total": 2,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 0,
+      "new_edges": 1,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+          "25 mm threaded wall-grid interface (6.95/4.48 mm trapezoidal, 29°, 3 mm pitch)",
+          "optics dovetail (60°, Thorlabs RC/XT class)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "dovetail_ang",
+          "dovetail_w",
+          "rail_h"
+        ],
+        "role_b_parameters": [
+          "height",
+          "x_cells",
+          "y_cells"
+        ]
+      },
+      "examples": [
+        {
+          "a": "dovetail-slide",
+          "a_interface": "optics_dovetail_60",
+          "a_standard": "optics dovetail (60°, Thorlabs RC/XT class)",
+          "b": "multiboard",
+          "b_interface": "grid_25mm_primary",
+          "b_standard": "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
       "rule_id": "pegboard-1in:grid+snap",
       "claim": "objects declaring standard family 'pegboard-1in' in role 'grid' mate with objects declaring it in role 'snap'",
       "family": "pegboard-1in",
@@ -8292,12 +8501,16 @@
         "role_a_parameters": [
           "bp_thickness",
           "cdg_mount_type",
-          "lip_enabled"
+          "headroom",
+          "lip_enabled",
+          "lip_style_id"
         ],
         "role_b_parameters": [
           "bp_thickness",
           "cdg_mount_type",
-          "lip_enabled"
+          "headroom",
+          "lip_enabled",
+          "lip_style_id"
         ]
       },
       "examples": [
@@ -8349,12 +8562,17 @@
         "role_a_parameters": [
           "bp_thickness",
           "cdg_mount_type",
-          "lip_enabled"
+          "headroom",
+          "lip_enabled",
+          "lip_style_id"
         ],
         "role_b_parameters": [
+          "bp_corner_radius",
           "bp_thickness",
+          "depth_units",
           "grid_x",
-          "grid_y"
+          "grid_y",
+          "width_units"
         ]
       },
       "examples": [

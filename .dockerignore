@@ -7,6 +7,18 @@ docs/
 .DS_Store
 *.stl
 !projects/*/exports/models/*.stl
+
+# The commons repo carries its own gitlinks for the six third-party OpenSCAD
+# libraries (projects/libs/*), pinned at the SAME commits as the platform's
+# top-level libs/ — they exist so `y4d-spec check --render` resolves OpenSCAD
+# cartridges inside the commons repo standalone. A `submodules: recursive`
+# checkout materialises them, and `COPY projects/` would then put a second
+# ~330 MB copy of BOSL2/NopSCADlib/dotSCAD/MCAD/Round-Anything/threads-scad
+# into the image beside `COPY libs/`. Nothing resolves `projects/libs`: the
+# OpenSCAD search path is `/libs` (config.py, and VIRTUAL_OPENSCADPATH in the
+# Studio worker), so excluding it keeps the image identical to before the
+# commons gained these gitlinks.
+projects/libs/
 coverage/
 .pytest_cache/
 .ruff_cache/

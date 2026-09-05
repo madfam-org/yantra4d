@@ -350,23 +350,36 @@ def test_cohort_split_is_optional_and_never_gates_the_check(commons):
     # away from the one that produced them.
     #
     # These are "the audit-era cartridges STILL IN THE COMMONS", so a removal
-    # moves them legitimately — the cohort is not immutable. On 2026-09-04
-    # ADR-021 removed five audit-era cartridges (keyv2, stemfie, multiboard,
-    # polydice, rugged-box) with their slugs reserved for clean-room
-    # re-creation. Measured against the pre-removal manifests, exactly two of
-    # the fields below were carried by any of the five:
-    #   - `multiboard` declared 1 constraint      -> constraint_coverage 287 -> 286
+    # moves them legitimately — and so does a RETURN. The cohort is not
+    # immutable, but every move has to be explained by a named cartridge or the
+    # extraction logic has drifted.
+    #
+    # 2026-09-04, ADR-021: five audit-era cartridges (keyv2, stemfie,
+    # multiboard, polydice, rugged-box) left the commons, slugs reserved for
+    # clean-room re-creation. Two fields moved:
+    #   - `multiboard` declared 1 constraint       -> constraint_coverage 287 -> 286
     #   - `stemfie`    declared material_awareness -> material_awareness 310 -> 309
-    # None of the five declared `project.engine: cadquery`, tolerance_by_material,
-    # shrinkage_compensation or recycled_material_toggle, so those four are
-    # unchanged — which is the evidence that the extraction logic did not drift.
-    # A logic change would have moved figures no removal can explain.
-    # If a clean-room cartridge lands on one of those slugs declaring these
-    # fields, these numbers move again and this comment must say so.
+    #
+    # 2026-09-05, ADR-021 clean-room re-creations: four of those five returned
+    # (keyv2 #5, stemfie #3, multiboard #7, rugged-box #4; polydice still
+    # reserved). They are audit-era slugs, so they re-enter this cohort, and
+    # the re-created manifests declare MORE than the ones that left. Measured
+    # from the returned manifests, slug by slug:
+    #   - cadquery_first        300 -> 303  (keyv2, stemfie, rugged-box; multiboard is openscad)
+    #   - constraint_coverage   286 -> 288  (keyv2, multiboard carry a constraints block)
+    #   - material_awareness    309 -> 313  (all four declare it)
+    #   - tolerance_by_material 294 -> 297  (keyv2, multiboard, rugged-box)
+    #   - shrinkage_compensation / recycled_material_toggle unchanged: none of
+    #     the four declares either flag — which is the evidence that the
+    #     extraction logic did not drift. A logic change would have moved
+    #     figures no return can explain.
+    #
+    # If polydice lands, or a clean-room cartridge changes what it declares,
+    # these numbers move again and this comment must say so.
     era = cohorts["audit_era"]["metrics"]
-    assert era["cadquery_first"]["numerator"] == 300
-    assert era["constraint_coverage"]["numerator"] == 286
-    assert era["material_awareness"]["numerator"] == 309
-    assert era["tolerance_by_material"]["numerator"] == 294
+    assert era["cadquery_first"]["numerator"] == 303
+    assert era["constraint_coverage"]["numerator"] == 288
+    assert era["material_awareness"]["numerator"] == 313
+    assert era["tolerance_by_material"]["numerator"] == 297
     assert era["shrinkage_compensation"]["numerator"] == 30
     assert era["recycled_material_toggle"]["numerator"] == 16

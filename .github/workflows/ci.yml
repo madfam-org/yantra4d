@@ -825,6 +825,24 @@ jobs:
           echo "### y4d-spec renders (changed)" >> "$GITHUB_STEP_SUMMARY"
           tail -1 render-report.txt >> "$GITHUB_STEP_SUMMARY"
           exit $status
+      # Render-environment parity (G33, ruled 2026-09-05). The image and the
+      # spec each describe the environment a cartridge renders in, and nothing
+      # kept them honest: a drift is silent, because the image keeps working
+      # while child repos render against a different OpenSCAD. Not even the
+      # dual-engine parity lane can catch it — both sides of that comparison
+      # run in the SAME image.
+      #
+      # This is the job that already installs the spec, which is why the step
+      # lands here rather than in a job of its own.
+      #
+      # INACTIVE TODAY, deliberately: `y4d_spec.render_environment` arrives
+      # with lane L-G31 and is not in the pinned v0.1.1 above, so the script
+      # exits 0 with a one-line "spec too old — check inactive". It starts
+      # comparing by itself the day the pin bumps, with no change here. A spec
+      # that is present but BROKEN still fails — only a MISSING module stands
+      # the check down.
+      - name: Render environment matches the spec
+        run: python3 scripts/qa/check_render_env.py
 
   metadata-consistency:
     runs-on: madfam-runners-blue

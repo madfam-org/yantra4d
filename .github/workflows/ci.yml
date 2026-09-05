@@ -25,6 +25,27 @@ concurrency:
 env:
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: "2"
 
+# Submodule depth: `submodules: true`, never `recursive` (G29, ruled 2026-09-05)
+#
+# Every checkout in this repo's workflows takes ONE level of submodules. That
+# is `projects` (the public commons), `libs/*` (the six third-party OpenSCAD
+# libraries) and `private-projects/*` (`update = none`, so git skips them
+# unless a job overrides with `--checkout`) — everything any job here reads.
+#
+# `recursive` additionally descends into the commons, which since RFC 0038 P2
+# carries its OWN gitlinks for the same six libraries under projects/libs/,
+# pinned at the SAME commits as the top-level libs/ (verified identical at the
+# pinned SHA). They exist so `y4d-spec check --render` resolves OpenSCAD
+# cartridges inside the commons repo standalone; nothing in THIS repo resolves
+# them. The OpenSCAD search path is the top-level libs/ — Config.LIBS_DIR in
+# apps/api/config.py, and VIRTUAL_OPENSCADPATH in the Studio worker — and
+# apps/api/Dockerfile's `COPY projects/` excludes projects/libs/ through
+# .dockerignore, so the image never carried them either.
+#
+# So `recursive` cloned roughly 330 MB of duplicate library per job and no
+# consumer read a byte of it. Restore `recursive` for a job only when that job
+# provably needs a NESTED submodule, and name the submodule when you do.
+
 jobs:
   # Round two of the CI economics work #84 started. #84 stopped a *superseded*
   # run from burning the pool; this stops a run that never needed to exist.
@@ -314,7 +335,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           fetch-depth: 1
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
@@ -588,7 +611,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
@@ -611,7 +636,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
@@ -662,7 +689,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
@@ -681,7 +710,7 @@ jobs:
       # judge it — the `landing` job checks out no submodules at all, so a
       # --check there would compare against a list missing 36 cartridges.
       #
-      # The `update = none` cartridges are absent here by design (the recursive
+      # The `update = none` cartridges are absent here by design (the submodule
       # checkout skips them even with the PAT); the generator expects that and
       # does not call it an incomplete checkout. It exits 2 if a *public*
       # cartridge submodule failed to come in, so a bad checkout fails the job
@@ -696,7 +725,7 @@ jobs:
       # --check recomputes the ratios from the manifests and the catalog and
       # fails when the committed table no longer describes what is on disk.
       # It lands here rather than in a job of its own because this job already
-      # has Python 3.12 and the recursive checkout the recomputation needs — 35
+      # has Python 3.12 and the submodule checkout the recomputation needs — 35
       # cartridges are public submodules and every dual-engine one is among
       # them, so a partial checkout would under-count. Stdlib only: no install
       # step.
@@ -716,7 +745,7 @@ jobs:
       # test_validate_manifests.py passed only on developer machines, which is
       # the same "green for the wrong reason" failure the suites themselves
       # exist to catch. It lands here rather than in a job of its own because
-      # this job already has Python 3.12, a recursive checkout and the
+      # this job already has Python 3.12, a submodule checkout and the
       # jsonschema the manifest tests import, and it is already in
       # ci-success's needs. pytest is the only dependency the suite adds.
       - name: scripts/ test suite
@@ -752,7 +781,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
           fetch-depth: 0
       - uses: actions/setup-python@v5
@@ -801,7 +832,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
@@ -848,7 +881,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:

@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # NOT `submodules: recursive`: it clones the private client submodules
+          # NOT `submodules: true`: it clones the private client submodules
           # (tablaco, tablaco-v2) at checkout, which the default GITHUB_TOKEN cannot
           # read → 404 → job aborts before anything else runs. Init only the
           # non-private submodules below (`update = none` marks the private ones).
@@ -84,7 +84,7 @@ jobs:
             exit 1
           fi
           # The same PAT ci.yml's parity and manifest-sync jobs use for
-          # `submodules: recursive`. `--checkout` is git's documented override
+          # `submodules: true`. `--checkout` is git's documented override
           # for a submodule whose update mode is `none`.
           git config --global url."https://x-access-token:${MADFAM_BOT_PAT}@github.com/".insteadOf "https://github.com/"
           git config --file .gitmodules --list \

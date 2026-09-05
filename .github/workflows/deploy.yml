@@ -281,11 +281,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
 
       # The client-private cartridges are `update = none` submodules, which the
-      # recursive checkout above skips even with the PAT, so until now the
+      # checkout above skips even with the PAT, so until now the
       # backend image never contained them and /api/projects/tablaco was a 404
       # in production. They are served only to authorized identities
       # (PRIVATE_PROJECTS / access_control.view = private, see docs/AUTH.md),
@@ -523,16 +525,18 @@ jobs:
     steps:
       # Submodules were NOT checked out here until now, which is precisely why
       # the gallery could ship a stale list: 36 of the cartridges live in
-      # submodules, so this job never had the data to notice. `recursive` +
-      # the PAT brings the public ones in; the client-private cartridges are
-      # `update = none` and git skips them even recursively, so they stay out
+      # submodules, so this job never had the data to notice. One level of
+      # submodules + the PAT brings the public ones in; the client-private
+      # cartridges are `update = none` and git skips them, so they stay out
       # of the landing image (`--checkout`, the documented override, is
       # deliberately NOT used here — unlike build-backend, whose private image
       # is meant to serve them).
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
 
       - uses: actions/setup-node@v4

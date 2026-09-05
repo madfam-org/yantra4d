@@ -17,7 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:

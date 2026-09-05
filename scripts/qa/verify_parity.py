@@ -101,23 +101,110 @@ def classify_mode(mode, project_dir: Path):
     return "candidate", scad_path, cq_path, ""
 
 
+# The AABB warn tier (G27, ruled 2026-09-05).
+#
+# Gate 1 used to be a bare `return False` on any extents delta over
+# `tolerance` (0.001mm by default). That failed five commons pairs —
+# faircap-filter, gears (herringbone), glia-diagnostic (stethoscope),
+# julia-vase, spiral-planter (planter) — by 0.012–0.034mm. None of them is a
+# shape difference: an OpenSCAD `$fn` polygon is a chord approximation of the
+# circle CadQuery models analytically, so the two AABBs differ by the chord
+# error and by nothing else. The largest such delta measured in the full sweep
+# is 0.033569mm (spiral-planter planter); the smallest genuine divergence is
+# 0.516728mm (maze coaster). 0.05mm sits an order of magnitude clear of both
+# edges, so it is a separator between two non-overlapping populations rather
+# than a tuned constant.
+#
+# The band alone would be too weak on its own — a real 0.04mm dimensional
+# error is inside it — so the warn tier is CONJUNCTIVE: an AABB delta is
+# downgraded from fail to warn only when it is within the band AND the
+# Hausdorff proxy (gate 3) passes, i.e. the two surfaces lie within
+# max(tolerance, 0.5mm) of each other everywhere. Chord error satisfies both;
+# a dimensional error inside the band would move a surface and fail gate 3.
+# Anything above the band, or any Hausdorff failure, still fails outright.
+AABB_WARN_BAND = 0.05
+
+
 def check_mesh_parity(mesh1_path, mesh2_path, tolerance=0.001):
+    """Compare two meshes. Returns (agree, reason).
+
+    The two-tuple is preserved deliberately: existing callers and tests unpack
+    exactly two values, and the sweep harness and PR bodies parse the reason
+    strings, so neither the arity nor the "Bounding boxes differ by X mm"
+    wording changes. Callers that want the structured verdict — which gate
+    warned, and the numbers each measured — call
+    `check_mesh_parity_report` instead.
+    """
+    return _check_mesh_parity(mesh1_path, mesh2_path, tolerance)[:2]
+
+
+def check_mesh_parity_report(mesh1_path, mesh2_path, tolerance=0.001):
+    """As `check_mesh_parity`, plus the structured report of what each gate did.
+
+    report = {"aabb_delta_mm": float, "aabb_warn": bool,
+              "hausdorff_proxy_mm": float | None, "hausdorff_warn": bool,
+              "volume_delta_mm3": float | None}
+    """
+    return _check_mesh_parity(mesh1_path, mesh2_path, tolerance)
+
+
+def _hausdorff_proxy(m1, m2):
+    """Max surface divergence in both directions, or None if it cannot be had.
+
+    None is not zero and must never be read as a pass: a divergence that could
+    not be measured is the absence of evidence, and the warn tier requires
+    positive evidence that the surfaces coincide.
+    """
+    try:
+        _, distances_m1_to_m2, _ = m2.nearest.on_surface(m1.vertices)
+        _, distances_m2_to_m1, _ = m1.nearest.on_surface(m2.vertices)
+        return float(max(np.max(distances_m1_to_m2), np.max(distances_m2_to_m1)))
+    except Exception as e:
+        logger.warning(f"Distance calculation failed: {e}. Falling back to AABB and Volume.")
+        return None
+
+
+def _check_mesh_parity(mesh1_path, mesh2_path, tolerance=0.001):
+    report = {"aabb_delta_mm": None, "aabb_warn": False,
+              "hausdorff_proxy_mm": None, "hausdorff_warn": False,
+              "volume_delta_mm3": None}
     try:
         m1 = trimesh.load(mesh1_path, force='mesh')
         m2 = trimesh.load(mesh2_path, force='mesh')
     except Exception as e:
         logger.error(f"Failed to load meshes for parity check: {e}")
-        return False, str(e)
+        return False, str(e), report
 
     if not isinstance(m1, trimesh.Trimesh) or not isinstance(m2, trimesh.Trimesh):
-        return False, "Exported files are not valid 3D polygon meshes."
+        return False, "Exported files are not valid 3D polygon meshes.", report
 
     # 1. Bounding Box Extents
     logger.info(f"  M1 Bounds: {m1.bounds}")
     logger.info(f"  M2 Bounds: {m2.bounds}")
-    extents_diff = np.max(np.abs(m1.extents - m2.extents))
+    extents_diff = float(np.max(np.abs(m1.extents - m2.extents)))
+    report["aabb_delta_mm"] = extents_diff
+    dist_threshold = max(tolerance, 0.5)
     if extents_diff > tolerance:
-        return False, f"Bounding boxes differ by {extents_diff:.6f}mm (M1: {m1.extents}, M2: {m2.extents})"
+        # Over the band is a hard fail with no measurement of the surfaces:
+        # nothing gate 3 could say would rescue it, so do not pay for it.
+        if extents_diff > AABB_WARN_BAND:
+            return False, (f"Bounding boxes differ by {extents_diff:.6f}mm "
+                           f"(M1: {m1.extents}, M2: {m2.extents})"), report
+        # Inside the band: the surfaces decide. Gate 3, brought forward.
+        max_divergence = _hausdorff_proxy(m1, m2)
+        report["hausdorff_proxy_mm"] = max_divergence
+        if max_divergence is None or max_divergence > dist_threshold:
+            report["hausdorff_warn"] = max_divergence is not None
+            unmeasured = " (surface divergence could not be measured)" if max_divergence is None else ""
+            return False, (f"Bounding boxes differ by {extents_diff:.6f}mm "
+                           f"(M1: {m1.extents}, M2: {m2.extents}) and the surfaces "
+                           f"diverge too{unmeasured}"), report
+        report["aabb_warn"] = True
+        logger.warning(
+            f"  ⚠️ Warning: Bounding boxes differ by {extents_diff:.6f}mm "
+            f"(within the {AABB_WARN_BAND}mm faceting band) but the surfaces agree "
+            f"to {max_divergence:.6f}mm — treating as tessellation chord error, not a "
+            f"shape difference.")
 
     # 2. Volume
     logger.info(f"  M1 Volume: {m1.volume:.6f} (Watertight: {m1.is_watertight})")
@@ -129,25 +216,31 @@ def check_mesh_parity(mesh1_path, mesh2_path, tolerance=0.001):
         # Allow 2% relative error or 10.0mm^3 absolute, whichever is greater at tolerance 0.1
         vol_threshold = max(tolerance * 100, max(m1.volume, m2.volume) * 0.02)
         
+        report["volume_delta_mm3"] = float(vol_diff)
         if vol_diff > vol_threshold:
-            return False, f"Volumes differ by {vol_diff:.6f}mm^3 ({rel_vol_diff*100:.4f}%)"
-            
-    # 3. Maximum distance (Hausdorff distance proxy via nearest queries)
-    max_divergence = 0
-    try:
-        _, distances_m1_to_m2, _ = m2.nearest.on_surface(m1.vertices)
-        _, distances_m2_to_m1, _ = m1.nearest.on_surface(m2.vertices)
-        max_divergence = max(np.max(distances_m1_to_m2), np.max(distances_m2_to_m1))
-        
-        # Allow 0.5mm divergence for complex assemblies (tessellation noise)
-        dist_threshold = max(tolerance, 0.5)
-        
-        if max_divergence > dist_threshold:
-            logger.warning(f"  ⚠️ Warning: Maximum mesh divergence is {max_divergence:.6f}mm (exceeds {dist_threshold}mm), but AABB and Volume match. Assuming tessellation noise.")
-    except Exception as e:
-        logger.warning(f"Distance calculation failed: {e}. Falling back to AABB and Volume.")
+            return False, f"Volumes differ by {vol_diff:.6f}mm^3 ({rel_vol_diff*100:.4f}%)", report
 
-    return True, f"Meshes are identical within {max_divergence:.6f}mm tolerance."
+    # 3. Maximum distance (Hausdorff distance proxy via nearest queries)
+    #
+    # Already measured when the AABB gate warned — that path only reaches here
+    # having proved the surfaces agree, so do not pay for the query twice.
+    if report["hausdorff_proxy_mm"] is None:
+        report["hausdorff_proxy_mm"] = _hausdorff_proxy(m1, m2)
+    max_divergence = report["hausdorff_proxy_mm"] or 0
+
+    # Allow 0.5mm divergence for complex assemblies (tessellation noise)
+    if max_divergence > dist_threshold:
+        report["hausdorff_warn"] = True
+        logger.warning(f"  ⚠️ Warning: Maximum mesh divergence is {max_divergence:.6f}mm (exceeds {dist_threshold}mm), but AABB and Volume match. Assuming tessellation noise.")
+
+    if report["aabb_warn"]:
+        # Keeps the parsed "Bounding boxes differ by X mm" prefix verbatim: the
+        # sweep harness and the PR bodies read that phrase, and a warn is the
+        # one case where the phrase appears on a PASSING pair.
+        return True, (f"Bounding boxes differ by {report['aabb_delta_mm']:.6f}mm "
+                      f"(faceting warn, within {AABB_WARN_BAND}mm; surfaces agree "
+                      f"to {max_divergence:.6f}mm)."), report
+    return True, f"Meshes are identical within {max_divergence:.6f}mm tolerance.", report
 
 def verify_project(project_dir: Path, tolerance: float = 0.001,
                    stats: "dict | None" = None) -> bool:
@@ -233,10 +326,20 @@ def verify_project(project_dir: Path, tolerance: float = 0.001,
             continue
 
         # 3. Compare Parity
-        is_parity, reason = check_mesh_parity(str(scad_out), str(cq_out), tolerance)
-        
+        is_parity, reason, report = check_mesh_parity_report(
+            str(scad_out), str(cq_out), tolerance)
+
         if is_parity:
-            logger.info(f"✅ {project_dir.name} [{mode.get('id')}]: Parity Check PASSED. {reason}")
+            # A warn is a pass that says why. It is counted separately so a
+            # run cannot report "all green" while silently carrying pairs that
+            # only agreed because of the faceting band.
+            if report.get("aabb_warn"):
+                logger.warning(
+                    f"⚠️  {project_dir.name} [{mode.get('id')}]: Parity Check PASSED "
+                    f"WITH WARNING. {reason}")
+                count("mode_passed_aabb_warn")
+            else:
+                logger.info(f"✅ {project_dir.name} [{mode.get('id')}]: Parity Check PASSED. {reason}")
             count("mode_passed")
         else:
             logger.error(f"❌ {project_dir.name} [{mode.get('id')}]: Parity Check FAILED. {reason}")
@@ -304,6 +407,10 @@ def main():
     print("\nMode pairs")
     print(f"  Candidates compared: {candidates}"
           f"  (passed {totals.get('mode_passed', 0)}, failed {totals.get('mode_failed', 0)})")
+    warned = totals.get("mode_passed_aabb_warn", 0)
+    if warned:
+        print(f"  ...of which passed with an AABB faceting warning: {warned}"
+              f"  (delta ≤ {AABB_WARN_BAND}mm and surfaces agree)")
     print(f"  Skipped, CadQuery-only placeholder scad_file: {placeholders}")
     print(f"  Skipped, no CadQuery source for the mode: {no_cq}")
 

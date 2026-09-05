@@ -2,24 +2,25 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 495,
-    "with_cdg_interfaces": 485,
-    "with_commons_license": 495,
-    "dual_engine": 19
+    "cartridges": 499,
+    "with_cdg_interfaces": 489,
+    "with_commons_license": 499,
+    "dual_engine": 20
   },
   "domains": {
-    "household": 124,
-    "industrial": 108,
-    "commercial": 75,
+    "household": 126,
+    "industrial": 109,
+    "commercial": 76,
     "wearable": 72,
     "medical": 44,
     "infrastructure": 33,
     "hybrid": 14,
-    "uncategorized": 9,
+    "uncategorized": 8,
     "soft-robotics": 7,
     "agriculture": 5,
     "consumer": 2,
     "construction": 1,
+    "electronics": 1,
     "energy": 1
   },
   "standards": [
@@ -53,6 +54,7 @@
     "18/20/22mm lug",
     "18650 Ø18.4x65 / 21700 Ø21.2x70 mm",
     "18650/21700/AA",
+    "19.05 mm key pitch",
     "19mm/20mm dog hole",
     "2\" (Ø50 mm) and 3\" (Ø76 mm) net-cup rim seat",
     "2/3in net cup",
@@ -64,6 +66,8 @@
     "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
     "20mm T-slot (2020)",
     "24T Futaba / 25T Spektrum",
+    "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+    "25 mm threaded wall-grid interface (6.95/4.48 mm trapezoidal, 29°, 3 mm pitch)",
     "25mm webbing",
     "26mm crown cap",
     "28-410 / 24-410",
@@ -115,6 +119,7 @@
     "Arca-Swiss 38 mm quick-release dovetail, ~45° flanks",
     "Arca-Swiss 38mm",
     "Arduino form factors",
+    "Cherry MX / Alps / Box Cherry stem dimensions",
     "Citadel/Vallejo/dropper",
     "Class 15 / L-style bobbin (6.1 mm bore, 20.3 mm OD)",
     "Copper / PEX OD 1/2-1 in",
@@ -234,6 +239,9 @@
     "SG90/MG996R",
     "SMA / U.FL",
     "SPI 20-410 / 24-410 / 28-410 (8 TPI)",
+    "STEMFIE 10mm block unit",
+    "STEMFIE 4mm hole on 10mm pitch",
+    "STEMFIE fastener spec",
     "T-slot / 3/4in miter",
     "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
     "T8 leadscrew (8 mm major, 2 mm pitch, 8 mm lead)",
@@ -301,6 +309,12 @@
     "internal — one-way catch ring; opens only by destruction",
     "internal — pitch floored at slot width plus a 2 mm bar",
     "internal/aocl",
+    "internal: 3 mm foot pads registering base floor to lid crown",
+    "internal: base knuckle r = hingeRadiusMm, lid knuckle r = that minus 0.5 mm running clearance; lid knuckle 1 mm narrower axially",
+    "internal: catch latchSupportTotalWidth wide, 5 mm engagement, 4 mm strap thickness",
+    "internal: rim enters the base rimHeightMm deep with 0.5 mm assembly clearance",
+    "internal: ring outer face inset 1.75 mm per side from the shell face; ring width = rimWidthMm; ring height = gasketSlotDepth (1-5 mm)",
+    "internal: the cavity is exactly the declared internal dimensions",
     "iso_8559",
     "kinematic (Maxwell / Kelvin) 3-ball coupling",
     "low / high shank (19 / 32 mm bar-to-plate)",
@@ -14808,12 +14822,13 @@
       "name": "Gridfinity",
       "domain": "household",
       "engines": [
-        "cadquery"
+        "cadquery",
+        "openscad"
       ],
-      "dual_engine": false,
-      "modes": 2,
-      "parts": 2,
-      "parameters": 10,
+      "dual_engine": true,
+      "modes": 5,
+      "parts": 5,
+      "parameters": 37,
       "parameter_ids": [
         "target_part",
         "grid_x",
@@ -14824,7 +14839,34 @@
         "lip_enabled",
         "enable_magnets",
         "finger_scoop",
-        "bp_thickness"
+        "bp_thickness",
+        "width_units",
+        "depth_units",
+        "height_units",
+        "cup_wall_thickness",
+        "cup_floor_thickness",
+        "vertical_chambers",
+        "horizontal_chambers",
+        "lip_style_id",
+        "headroom",
+        "efficient_floor_id",
+        "fingerslide_enabled",
+        "label_enabled",
+        "sliding_lid_enabled",
+        "wallpattern_enabled",
+        "wallpattern_style_id",
+        "tapered_corner_id",
+        "tapered_corner_size",
+        "enable_screws",
+        "bp_enable_magnets",
+        "bp_enable_screws",
+        "bp_corner_radius",
+        "bp_reduced_wall",
+        "bp_reduced_wall_taper",
+        "lid_include_magnets",
+        "lid_efficient_floor",
+        "lid_type_id",
+        "fn"
       ],
       "export_formats": [
         "stl",
@@ -14853,7 +14895,10 @@
           "parameters": [
             "grid_x",
             "grid_y",
-            "grid_z"
+            "grid_z",
+            "width_units",
+            "depth_units",
+            "height_units"
           ]
         },
         {
@@ -14863,7 +14908,9 @@
           "standard": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
           "parameters": [
             "lip_enabled",
-            "bp_thickness"
+            "bp_thickness",
+            "lip_style_id",
+            "headroom"
           ]
         },
         {
@@ -14874,7 +14921,10 @@
           "parameters": [
             "grid_x",
             "grid_y",
-            "bp_thickness"
+            "bp_thickness",
+            "width_units",
+            "depth_units",
+            "bp_corner_radius"
           ]
         },
         {
@@ -14883,7 +14933,9 @@
           "geometry_type": "socket",
           "standard": "6mm dia × 2mm N52 neodymium",
           "parameters": [
-            "enable_magnets"
+            "enable_magnets",
+            "bp_enable_magnets",
+            "lid_include_magnets"
           ]
         }
       ],
@@ -14897,7 +14949,7 @@
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
         "manifest": "gridfinity/project.json",
         "has_cadquery": true,
-        "has_openscad": false
+        "has_openscad": true
       },
       "clone": {
         "kind": "sparse",
@@ -17542,7 +17594,7 @@
     {
       "slug": "julia-vase",
       "name": "Julia Vase",
-      "domain": null,
+      "domain": "household",
       "engines": [
         "cadquery",
         "openscad"
@@ -17728,6 +17780,86 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set keytag"
+      }
+    },
+    {
+      "slug": "keyv2",
+      "name": "Keycap",
+      "domain": "electronics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "parts": 1,
+      "parameters": 12,
+      "parameter_ids": [
+        "profile_id",
+        "row_id",
+        "key_size_id",
+        "stem_type_id",
+        "legend_enabled",
+        "legend_text",
+        "font_size",
+        "dish_depth",
+        "wall_thickness",
+        "keytop_thickness",
+        "stem_slop",
+        "fn"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "off",
+        "glb",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A worn or missing keycap is a common reason a working keyboard is discarded. A cap printed to the same key pitch and stem socket keeps the board in service, and lets a user shape a key to their own hand or mark it for their own sight.",
+        "es": "Una tecla gastada o perdida es una razón común para desechar un teclado que funciona. Una tecla impresa con el mismo paso y alojamiento mantiene el teclado en servicio, y permite adaptar una tecla a la propia mano o marcarla para la propia vista."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "keyboard_key_pitch",
+          "label": "Keyboard Key Pitch",
+          "geometry_type": "grid",
+          "standard": "19.05 mm key pitch",
+          "parameters": [
+            "key_size_id"
+          ]
+        },
+        {
+          "id": "switch_stem_socket",
+          "label": "Switch Stem Socket",
+          "geometry_type": "socket",
+          "standard": "Cherry MX / Alps / Box Cherry stem dimensions",
+          "parameters": [
+            "stem_type_id",
+            "stem_slop",
+            "keytop_thickness"
+          ]
+        }
+      ],
+      "standards": [
+        "19.05 mm key pitch",
+        "Cherry MX / Alps / Box Cherry stem dimensions"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "keyv2/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set keyv2"
       }
     },
     {
@@ -21509,6 +21641,80 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set movement-holder"
+      }
+    },
+    {
+      "slug": "multiboard",
+      "name": "Modular Wall Tile (25 mm Threaded Grid)",
+      "domain": "commercial",
+      "engines": [
+        "openscad"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "parts": 1,
+      "parameters": 5,
+      "parameter_ids": [
+        "x_cells",
+        "y_cells",
+        "cell_size",
+        "height",
+        "fn"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "off",
+        "glb",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A wall grid whose fastening is the grid itself needs no proprietary hardware: a hook is a printed part and a screw thread, not a purchased bracket. Publishing the interface dimensions openly means any workshop can print accessories that mate with panels it did not make, and a damaged panel is replaced one tile at a time rather than by re-fitting a wall.",
+        "es": "Una cuadrícula de pared cuya fijación es la propia cuadrícula no necesita herraje propietario: un gancho es una pieza impresa y una rosca, no un soporte comprado. Publicar las dimensiones de la interfaz abiertamente permite que cualquier taller imprima accesorios que encajen con paneles que no fabricó, y que un panel dañado se reemplace baldosa por baldosa en vez de rehacer una pared."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "grid_25mm_primary",
+          "label": "25 mm Grid — Cell-Centre Thread",
+          "geometry_type": "threaded_socket",
+          "standard": "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+          "parameters": [
+            "x_cells",
+            "y_cells",
+            "height"
+          ]
+        },
+        {
+          "id": "grid_25mm_seam",
+          "label": "25 mm Grid — Interior-Node Seam Thread",
+          "geometry_type": "threaded_socket",
+          "standard": "25 mm threaded wall-grid interface (6.95/4.48 mm trapezoidal, 29°, 3 mm pitch)",
+          "parameters": [
+            "x_cells",
+            "y_cells",
+            "height"
+          ]
+        }
+      ],
+      "standards": [
+        "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
+        "25 mm threaded wall-grid interface (6.95/4.48 mm trapezoidal, 29°, 3 mm pitch)"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "multiboard/project.json",
+        "has_cadquery": false,
+        "has_openscad": true
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set multiboard"
       }
     },
     {
@@ -27853,6 +28059,159 @@
       }
     },
     {
+      "slug": "rugged-box",
+      "name": "Rugged Box",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 7,
+      "parts": 5,
+      "parameters": 32,
+      "parameter_ids": [
+        "internalBoxWidthXMm",
+        "internalboxLengthYMm",
+        "internalBoxTopHeightZMm",
+        "internalboxBottomHeightZMm",
+        "boxWallWidthMm",
+        "boxChamferRadiusMm",
+        "boxSealType",
+        "gasketSlotWidth",
+        "gasketSlotDepth",
+        "rimWidthMm",
+        "rimHeightMm",
+        "numSideSupportRibs",
+        "supportRibThickness",
+        "supportRibWidth",
+        "countainerWidthXSections",
+        "boxLengthYSections",
+        "numCountainerWidthXSectionsToSkip",
+        "numBoxLengthYSectionsToSkip",
+        "numberOfHinges",
+        "hingeTotalWidthMm",
+        "hingeRadiusMm",
+        "hingeCenterOffsetMm",
+        "numberOfLatches",
+        "latchSupportTotalWidth",
+        "latchCenterOffsetMm",
+        "latchClipCutoutAngle",
+        "latchOpenerLengthMultiplier",
+        "isFeetAdded",
+        "feetwidthMm",
+        "feetLengthMm",
+        "boxGapMm",
+        "BoxPolygonStyle"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "off",
+        "glb",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A sealed case printed to the size of the thing it protects keeps instruments, medication and field electronics dry and intact without buying a proprietary flight case. The seal, hinge and latch dimensions are published, so a lid, a gasket or a replacement latch printed anywhere fits a case printed anywhere else.",
+        "es": "Un estuche sellado impreso a la medida de lo que protege mantiene instrumentos, medicamentos y electrónica de campo secos e intactos sin comprar un estuche propietario. Las medidas del sello, la bisagra y el pestillo están publicadas, así que una tapa, una junta o un pestillo impreso en cualquier lugar encaja en un estuche impreso en otro."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "rugged_seal_ring",
+          "label": "Sealed Rim (gasket ring)",
+          "geometry_type": "seal",
+          "standard": "internal: ring outer face inset 1.75 mm per side from the shell face; ring width = rimWidthMm; ring height = gasketSlotDepth (1-5 mm)",
+          "parameters": [
+            "rimWidthMm",
+            "gasketSlotWidth",
+            "gasketSlotDepth",
+            "boxSealType"
+          ]
+        },
+        {
+          "id": "rugged_lid_engagement",
+          "label": "Lid Engagement Rim",
+          "geometry_type": "snap",
+          "standard": "internal: rim enters the base rimHeightMm deep with 0.5 mm assembly clearance",
+          "parameters": [
+            "rimHeightMm",
+            "rimWidthMm"
+          ]
+        },
+        {
+          "id": "rugged_knuckle_hinge",
+          "label": "Print-in-Place Knuckle Hinge",
+          "geometry_type": "hinge",
+          "standard": "internal: base knuckle r = hingeRadiusMm, lid knuckle r = that minus 0.5 mm running clearance; lid knuckle 1 mm narrower axially",
+          "parameters": [
+            "numberOfHinges",
+            "hingeTotalWidthMm",
+            "hingeRadiusMm",
+            "hingeCenterOffsetMm"
+          ]
+        },
+        {
+          "id": "rugged_latch_catch",
+          "label": "Over-Centre Latch Catch",
+          "geometry_type": "snap",
+          "standard": "internal: catch latchSupportTotalWidth wide, 5 mm engagement, 4 mm strap thickness",
+          "parameters": [
+            "numberOfLatches",
+            "latchSupportTotalWidth",
+            "latchCenterOffsetMm",
+            "latchClipCutoutAngle"
+          ]
+        },
+        {
+          "id": "rugged_payload_envelope",
+          "label": "Payload Envelope",
+          "geometry_type": "pocket",
+          "standard": "internal: the cavity is exactly the declared internal dimensions",
+          "parameters": [
+            "internalBoxWidthXMm",
+            "internalboxLengthYMm",
+            "internalBoxTopHeightZMm",
+            "internalboxBottomHeightZMm"
+          ]
+        },
+        {
+          "id": "rugged_stacking_feet",
+          "label": "Stacking Foot Pocket",
+          "geometry_type": "pocket",
+          "standard": "internal: 3 mm foot pads registering base floor to lid crown",
+          "parameters": [
+            "isFeetAdded",
+            "feetwidthMm",
+            "feetLengthMm",
+            "boxGapMm"
+          ]
+        }
+      ],
+      "standards": [
+        "internal: 3 mm foot pads registering base floor to lid crown",
+        "internal: base knuckle r = hingeRadiusMm, lid knuckle r = that minus 0.5 mm running clearance; lid knuckle 1 mm narrower axially",
+        "internal: catch latchSupportTotalWidth wide, 5 mm engagement, 4 mm strap thickness",
+        "internal: rim enters the base rimHeightMm deep with 0.5 mm assembly clearance",
+        "internal: ring outer face inset 1.75 mm per side from the shell face; ring width = rimWidthMm; ring height = gasketSlotDepth (1-5 mm)",
+        "internal: the cavity is exactly the declared internal dimensions"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "rugged-box/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set rugged-box"
+      }
+    },
+    {
       "slug": "sanding-block",
       "name": "Sanding Block",
       "domain": "industrial",
@@ -31869,6 +32228,99 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set stacking-drawer"
+      }
+    },
+    {
+      "slug": "stemfie",
+      "name": "STEMFIE-Compatible Construction Set",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 3,
+      "parts": 3,
+      "parameters": 12,
+      "parameter_ids": [
+        "length_units",
+        "width_units",
+        "height_units",
+        "holes_x",
+        "holes_y",
+        "holes_z",
+        "arm_a_units",
+        "arm_b_units",
+        "thickness_units",
+        "holes_enabled",
+        "fastener_type_id",
+        "fn"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "off",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Open-source construction kit for STEM education — enables schools to fabricate their own learning tools",
+        "es": "Kit de construcción de código abierto para educación STEM — permite a escuelas fabricar sus propias herramientas de aprendizaje"
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": false
+      },
+      "cdg_interfaces": [
+        {
+          "id": "stemfie_beam_profile",
+          "label": "STEMFIE Beam Profile",
+          "geometry_type": "profile",
+          "standard": "STEMFIE 10mm block unit",
+          "parameters": [
+            "length_units",
+            "width_units",
+            "height_units"
+          ]
+        },
+        {
+          "id": "stemfie_through_hole",
+          "label": "STEMFIE 4mm Through-Hole",
+          "geometry_type": "bolt_pattern",
+          "standard": "STEMFIE 4mm hole on 10mm pitch",
+          "parameters": [
+            "holes_x",
+            "holes_y",
+            "holes_z"
+          ]
+        },
+        {
+          "id": "stemfie_fastener_interface",
+          "label": "STEMFIE Pin/Screw Fastener",
+          "geometry_type": "thread",
+          "standard": "STEMFIE fastener spec",
+          "parameters": [
+            "fastener_type_id"
+          ]
+        }
+      ],
+      "standards": [
+        "STEMFIE 10mm block unit",
+        "STEMFIE 4mm hole on 10mm pitch",
+        "STEMFIE fastener spec"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "stemfie/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set stemfie"
       }
     },
     {

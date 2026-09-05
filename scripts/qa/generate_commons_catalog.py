@@ -64,19 +64,18 @@ CLIENT_PRIVATE = set(NOT_COMMONS)
 # cartridge. The catalogue must not present such a cartridge as cleanly
 # commercial, so its entry carries a `license_exposure` field with this text.
 # Kept in step with KNOWN_NC_EXPOSURE in scripts/qa/check_licenses.py.
-KNOWN_NC_EXPOSURE = {
-    # rugged-box declares CERN-OHL-W-2.0 for its own wrappers, but vendors the
-    # upstream "Super Customizable Rugged Box in OpenSCAD" source by Iceman
-    # (RuggedBoxV1.scad + parameter sets), which is CC BY-NC-SA 4.0 — see
-    # projects/rugged-box/NOTICE and README.md ("License & attribution").
+KNOWN_NC_EXPOSURE: dict[str, str] = {
+    # Empty since 2026-09-05: the last acknowledgement (rugged-box, which
+    # vendored the CC BY-NC-SA 4.0 "Super Customizable Rugged Box in OpenSCAD"
+    # source) was removed when the slug returned as a clean-room re-creation
+    # under ADR-021 — the new cartridge is an original MADFAM work licensed
+    # CERN-OHL-W-2.0 and vendors nothing, so the exposure no longer exists and
+    # keeping the row would have mislabelled a clean cartridge in the
+    # catalogue. See projects/rugged-box/NOTICE.
     #
-    # RETIRED 2026-09-04: removed from the commons whole under ADR-021, slug
-    # reserved for clean-room re-creation. The entry is kept, not deleted, so
-    # the exposure is re-applied automatically if the slug returns carrying
-    # vendored NC files; while the cartridge is absent no catalogue entry is
-    # emitted for it, and check_licenses.py reports the stale acknowledgement
-    # as STALE on every run.
-    "rugged-box": "CC-BY-NC-SA-4.0 (vendored upstream files; see NOTICE)",
+    # Add a row here the moment any cartridge vendors NC-licensed upstream
+    # files again; entries whose cartridge is absent are reported as STALE by
+    # check_licenses.py rather than dropped silently.
 }
 
 

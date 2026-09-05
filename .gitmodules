@@ -16,116 +16,15 @@
 [submodule "libs/dotSCAD"]
 	path = libs/dotSCAD
 	url = https://github.com/JustinSDK/dotSCAD.git
-[submodule "projects/custom-msh"]
-	path = projects/custom-msh
-	url = https://github.com/madfam-org/custom-msh.git
-[submodule "projects/microscope-slide-holder"]
-	path = projects/microscope-slide-holder
-	url = https://github.com/madfam-org/microscope-slide-holder.git
-[submodule "projects/extrusion-hyperobject"]
-	path = projects/extrusion-hyperobject
-	url = https://github.com/madfam-org/extrusion-hyperobject.git
-[submodule "projects/microscope-slide-hyperobject"]
-	path = projects/microscope-slide-hyperobject
-	url = https://github.com/madfam-org/microscope-slide-hyperobject.git
-[submodule "projects/cq-hyperobject-test"]
-	path = projects/cq-hyperobject-test
-	url = https://github.com/madfam-org/cq-hyperobject-test.git
-[submodule "projects/din-rail-clip"]
-	path = projects/din-rail-clip
-	url = https://github.com/madfam-org/din-rail-clip.git
-[submodule "projects/faircap-filter"]
-	path = projects/faircap-filter
-	url = https://github.com/madfam-org/faircap-filter.git
-[submodule "projects/fasteners"]
-	path = projects/fasteners
-	url = https://github.com/madfam-org/fasteners.git
-[submodule "projects/framing-hyperobject"]
-	path = projects/framing-hyperobject
-	url = https://github.com/madfam-org/framing-hyperobject.git
-[submodule "projects/gear-reducer"]
-	path = projects/gear-reducer
-	url = https://github.com/madfam-org/gear-reducer.git
-[submodule "projects/gears"]
-	path = projects/gears
-	url = https://github.com/madfam-org/gears.git
-[submodule "projects/glia-diagnostic"]
-	path = projects/glia-diagnostic
-	url = https://github.com/madfam-org/glia-diagnostic.git
-[submodule "projects/implicit-lattice-hyperobject"]
-	path = projects/implicit-lattice-hyperobject
-	url = https://github.com/madfam-org/implicit-lattice-hyperobject.git
-[submodule "projects/julia-vase"]
-	path = projects/julia-vase
-	url = https://github.com/madfam-org/julia-vase.git
-[submodule "projects/maze"]
-	path = projects/maze
-	url = https://github.com/madfam-org/maze.git
-[submodule "projects/motor-mount"]
-	path = projects/motor-mount
-	url = https://github.com/madfam-org/motor-mount.git
-[submodule "projects/parametric-connector"]
-	path = projects/parametric-connector
-	url = https://github.com/madfam-org/parametric-connector.git
-[submodule "projects/portacosas"]
-	path = projects/portacosas
-	url = https://github.com/madfam-org/portacosas.git
-[submodule "projects/prosthetic-socket"]
-	path = projects/prosthetic-socket
-	url = https://github.com/madfam-org/prosthetic-socket.git
-[submodule "projects/relief"]
-	path = projects/relief
-	url = https://github.com/madfam-org/relief.git
-[submodule "projects/scara-robotics"]
-	path = projects/scara-robotics
-	url = https://github.com/madfam-org/scara-robotics.git
-[submodule "projects/soft-jaw"]
-	path = projects/soft-jaw
-	url = https://github.com/madfam-org/soft-jaw.git
-[submodule "projects/spiral-planter"]
-	path = projects/spiral-planter
-	url = https://github.com/madfam-org/spiral-planter.git
-[submodule "projects/superformula"]
-	path = projects/superformula
-	url = https://github.com/madfam-org/superformula.git
-[submodule "projects/torus-knot"]
-	path = projects/torus-knot
-	url = https://github.com/madfam-org/torus-knot.git
-[submodule "projects/voronoi"]
-	path = projects/voronoi
-	url = https://github.com/madfam-org/voronoi.git
-[submodule "projects/gridfinity"]
-	path = projects/gridfinity
-	url = https://github.com/madfam-org/gridfinity.git
-[submodule "projects/keyv2"]
-	path = projects/keyv2
-	url = https://github.com/madfam-org/keyv2.git
-[submodule "projects/multiboard"]
-	path = projects/multiboard
-	url = https://github.com/madfam-org/multiboard.git
-[submodule "projects/polydice"]
-	path = projects/polydice
-	url = https://github.com/madfam-org/polydice.git
-[submodule "projects/rugged-box"]
-	path = projects/rugged-box
-	url = https://github.com/madfam-org/rugged-box.git
-[submodule "projects/stemfie"]
-	path = projects/stemfie
-	url = https://github.com/madfam-org/stemfie.git
-[submodule "projects/tablaco"]
-	path = projects/tablaco
+[submodule "projects"]
+	path = projects
+	url = https://github.com/madfam-org/solid-hyperobjects.git
+	branch = main
+[submodule "private-projects/tablaco"]
+	path = private-projects/tablaco
 	url = https://github.com/madfam-org/tablaco.git
 	update = none
-[submodule "projects/hinge-hyperobject"]
-	path = projects/hinge-hyperobject
-	url = https://github.com/madfam-org/hinge-hyperobject.git
-[submodule "projects/locking-mechanism-hyperobject"]
-	path = projects/locking-mechanism-hyperobject
-	url = https://github.com/madfam-org/locking-mechanism-hyperobject.git
-[submodule "projects/rubiks-hyperobject"]
-	path = projects/rubiks-hyperobject
-	url = https://github.com/madfam-org/rubiks-hyperobject.git
-[submodule "projects/tablaco-v2"]
-	path = projects/tablaco-v2
+[submodule "private-projects/tablaco-v2"]
+	path = private-projects/tablaco-v2
 	url = https://github.com/madfam-org/tablaco-v2.git
 	update = none

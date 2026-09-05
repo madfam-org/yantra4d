@@ -45,6 +45,12 @@ RUN pip install --no-cache-dir /app/packages/commons-sandbox
 
 # Copy application code
 COPY projects/ ./projects/
+# The client-private cartridges mount at their own root since RFC 0038 P2 (the
+# public commons submodule must not contain them). This image is private and
+# already serves them to authorized identities only, so they belong here — the
+# `Init client-private cartridges` step in deploy.yml is what puts them on
+# disk. An empty directory is fine: a build without them simply serves none.
+COPY private-projects/ ./private-projects/
 COPY libs/ ./libs/
 COPY apps/api/tests/ ./tests/
 COPY apps/api/ ./backend/
@@ -53,8 +59,8 @@ COPY apps/api/ ./backend/
 # the runtime FONTCONFIG_FILE env var also handles this, but having fonts
 # system-installed in Docker is more robust).
 RUN mkdir -p /usr/local/share/fonts/yantra4d && \
-    find /app/projects -path '*/fonts/*.ttf' -exec cp {} /usr/local/share/fonts/yantra4d/ \; && \
-    find /app/projects -path '*/fonts/*.otf' -exec cp {} /usr/local/share/fonts/yantra4d/ \; && \
+    find /app/projects /app/private-projects -path '*/fonts/*.ttf' -exec cp {} /usr/local/share/fonts/yantra4d/ \; && \
+    find /app/projects /app/private-projects -path '*/fonts/*.otf' -exec cp {} /usr/local/share/fonts/yantra4d/ \; && \
     fc-cache -f /usr/local/share/fonts/yantra4d 2>/dev/null || true
 
 # Environment configuration
@@ -65,6 +71,7 @@ ENV OPENSCAD_PATH=/usr/local/bin/openscad
 ENV PORT=5000
 ENV HOST=0.0.0.0
 ENV PROJECTS_DIR=/app/projects
+ENV PRIVATE_PROJECTS_DIR=/app/private-projects
 ENV OPENSCADPATH=/app/libs:/app/libs/dotSCAD/src
 ENV VERIFY_SCRIPT=/app/tests/verify_design.py
 

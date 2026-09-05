@@ -248,7 +248,7 @@ required for a faithful render regardless of what any of these keys says.
 
 ### Why `force_backend` was demoted
 
-490 of the 501 cartridges in the commons set `project.force_backend: true`. Among
+485 of the 495 cartridges in the commons set `project.force_backend: true`. Among
 the OpenSCAD ones it almost always encoded a **client limitation, not a property
 of the model**: the cartridge opens with `include <../../libs/BOSL2/std.scad>`
 (nearly all of them) or calls `text()` (8 of them), and the old browser path
@@ -426,7 +426,7 @@ Except for graph modes, which produce STEP natively, to advertise STEP support i
 - `projects/gridfinity/project.json` — all three modes declare `cq_file` alongside `scad_file`, with `"export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"]`.
 - `projects/scara-robotics/project.json` — benchmark dual-engine parity implementation.
 - `projects/spacer-block/project.json`, `projects/flange-plate/project.json` — graph-engine cartridges (see [authoring guide](../guides/graph-cartridges.md)).
-- `projects/cq-hyperobject-test/project.json` — CadQuery-only test project.
+- `apps/api/tests/fixtures/cartridges/cq-hyperobject-test/project.json` — CadQuery-only test fixture (not a cartridge; see RFC 0038 P2).
 
 ---
 

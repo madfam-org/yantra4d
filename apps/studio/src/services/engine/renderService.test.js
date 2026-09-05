@@ -859,7 +859,7 @@ describe('renderParts (SSE event types)', () => {
 })
 
 describe('force_backend is a SOFT hint, not a server pin', () => {
-  // 490 of the 501 cartridges in the commons set `force_backend`, and among the
+  // 485 of the 495 cartridges in the commons set `force_backend`, and among the
   // OpenSCAD ones it almost always encoded "WASM cannot load our BOSL2 include
   // or our font" — the exact gap the wasm-bundle contract closes. Honouring it
   // unconditionally would keep essentially the whole commons on the metered

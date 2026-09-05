@@ -38,10 +38,6 @@
       "size": 447736
     },
     {
-      "slug": "keyv2",
-      "size": 18416
-    },
-    {
       "slug": "maze",
       "size": 12748
     },
@@ -54,16 +50,8 @@
       "size": 18324
     },
     {
-      "slug": "multiboard",
-      "size": 415236
-    },
-    {
       "slug": "parametric-connector",
       "size": 90704
-    },
-    {
-      "slug": "polydice",
-      "size": 718736
     },
     {
       "slug": "portacosas",
@@ -78,20 +66,12 @@
       "size": 13148
     },
     {
-      "slug": "rugged-box",
-      "size": 48084
-    },
-    {
       "slug": "soft-jaw",
       "size": 5948
     },
     {
       "slug": "spiral-planter",
       "size": 2353108
-    },
-    {
-      "slug": "stemfie",
-      "size": 36364
     },
     {
       "slug": "superformula",

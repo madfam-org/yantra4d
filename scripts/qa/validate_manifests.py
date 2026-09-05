@@ -4,25 +4,33 @@
     python3 scripts/qa/validate_manifests.py
     python3 scripts/qa/validate_manifests.py --allow-uninitialised-submodules
 
-A `projects/<slug>/` directory that is a REGISTERED SUBMODULE (it appears in
-`.gitmodules`) but carries no `project.json` is a FAILURE, not a skip. That
-directory only looks empty because the submodule was never initialised, and a
-checkout that silently validates 400 cartridges instead of 437 is a checkout
-that proves nothing about the 37 it never opened. CI checks out with
-`submodules: recursive`, so on CI this failure means the submodule fetch broke.
+Since RFC 0038 P2 the whole public commons is ONE submodule at `projects/`
+(madfam-org/solid-hyperobjects), with each cartridge a directory at its root.
+The read-proof this script exists for therefore moves up a level: instead of
+asking "is each of the 37 registered projects/<slug> submodules checked out?",
+it asks
 
-Two exceptions:
+    is the `projects` submodule initialised and non-empty?
 
-  * A submodule marked `update = none` in `.gitmodules` (the client-private
-    cartridges) is never fetched by `git submodule update`, on CI or anywhere
-    else. Those are reported as SKIPPED with the reason, not failed.
-  * Locally, submodules are usually left uninitialised on purpose. Pass
-    `--allow-uninitialised-submodules` (or set
-    `VALIDATE_MANIFESTS_ALLOW_UNINITIALISED=1`) to downgrade that failure to a
-    skip. Never set it in CI — it is the read-proof this script exists for.
+An UNINITIALISED `projects` submodule is a FAILURE, not a skip. An empty
+`projects/` only looks like a commons with no cartridges, and a checkout that
+silently validates 0 cartridges instead of 495 is a checkout that proves
+nothing. CI checks the submodule out explicitly, so on CI this failure means
+the submodule fetch broke.
 
-A directory that is NOT a registered submodule and has no `project.json` is
-still just skipped: those are ordinary non-project directories.
+The client-private cartridges are NOT under `projects/` any more — they mount
+at `private-projects/` and stay `update = none`, so they are never fetched by
+`git submodule update` and this script never looks at them. That is why the
+ratchet cannot fail on them: they are out of its scope by construction, not by
+an exception.
+
+Locally the commons is often left uninitialised on purpose. Pass
+`--allow-uninitialised-submodules` (or set
+`VALIDATE_MANIFESTS_ALLOW_UNINITIALISED=1`) to downgrade that failure to a
+skip. Never set it in CI — it is the read-proof this script exists for.
+
+A directory under `projects/` with no `project.json` is skipped as an ordinary
+non-project directory, as before.
 
 The run also fails when zero manifests were validated, so a bad path, an empty
 checkout, or a future refactor that stops finding manifests cannot report
@@ -46,10 +54,14 @@ PROJECTS_DIR = ROOT_DIR / "projects"
 SCHEMA_PATH = ROOT_DIR / "packages" / "schemas" / "project-manifest.schema.json"
 GITMODULES_PATH = ROOT_DIR / ".gitmodules"
 
-# Projects whose manifests live in upstream submodules and cannot be modified
-# from this repo. Validation issues for these are tracked upstream.
+#: The single submodule that carries the public commons. Its initialisation is
+#: what this script ratchets on (RFC 0038 P2).
+COMMONS_SUBMODULE_PATH = "projects"
+
+# Cartridges whose manifests track an upstream project and are not ours to
+# correct here. Validation issues for these are tracked upstream.
 SKIP_VALIDATION = {
-    "rubiks-hyperobject",  # submodule: madfam-org/rubiks-hyperobject (preset/preview_hint schema drift)
+    "rubiks-hyperobject",  # upstream-tracked (preset/preview_hint schema drift)
 }
 
 # Classification results. VALID and the FAILED_* values are the only ones that
@@ -103,8 +115,35 @@ def parse_gitmodules(path=GITMODULES_PATH):
     return submodules
 
 
+def commons_submodule_state(submodules, projects_dir=None):
+    """Classify the `projects` submodule: (registered, initialised).
+
+    `initialised` means the checkout actually has cartridges in it — a
+    registered-but-unfetched submodule leaves an empty directory, and an empty
+    directory is exactly what this must not accept as "a commons with nothing
+    in it". Pure enough to unit-test: the .gitmodules half arrives parsed.
+    """
+    registered = COMMONS_SUBMODULE_PATH in submodules
+    if projects_dir is None:
+        projects_dir = PROJECTS_DIR
+    try:
+        initialised = any(
+            child.is_dir() and (child / "project.json").exists()
+            for child in Path(projects_dir).iterdir()
+        )
+    except (FileNotFoundError, NotADirectoryError):
+        initialised = False
+    return registered, initialised
+
+
 def submodule_paths_under_projects(submodules):
-    """Slugs of the submodules registered under projects/, mapped to their config."""
+    """Slugs of submodules registered directly under projects/.
+
+    Empty since RFC 0038 P2 — the commons is one submodule AT `projects/`, not
+    a submodule per cartridge under it. Kept because `classify_project` still
+    takes the mapping, so a deployment that re-introduces per-cartridge
+    gitlinks keeps its old behaviour rather than silently losing the check.
+    """
     registered = {}
     for sub_path, config in submodules.items():
         parts = Path(sub_path).parts
@@ -220,7 +259,26 @@ def main(argv=None):
         )
         return 1
 
-    registered_submodules = submodule_paths_under_projects(parse_gitmodules(GITMODULES_PATH))
+    gitmodules = parse_gitmodules(GITMODULES_PATH)
+    registered_submodules = submodule_paths_under_projects(gitmodules)
+
+    # The #86 ratchet, re-targeted for RFC 0038 P2: the commons is one
+    # submodule, so what must be proven is that IT came in.
+    registered, initialised = commons_submodule_state(gitmodules)
+    if registered and not initialised:
+        if args.allow_uninitialised_submodules:
+            logger.warning(
+                f"⏭️  `{COMMONS_SUBMODULE_PATH}` submodule is not initialised — allowed "
+                f"by --allow-uninitialised-submodules; NOTHING below was checked."
+            )
+        else:
+            logger.error(
+                f"`{COMMONS_SUBMODULE_PATH}` submodule is not initialised: it is registered "
+                f"in .gitmodules but {PROJECTS_DIR} contains no cartridge, so no manifest "
+                f"was checked. Run `git submodule update --init {COMMONS_SUBMODULE_PATH}`, "
+                f"or pass --allow-uninitialised-submodules for a local partial checkout."
+            )
+            return 1
 
     project_dirs = [d for d in PROJECTS_DIR.iterdir() if d.is_dir()]
     project_dirs.sort()

@@ -32,7 +32,12 @@ interface ManifestParameter {
 
 interface ManifestPart {
   id: string
-  default_color: string
+  // Two conventions are in use across the commons for the same field: 419
+  // cartridges write `color`, 66 write `default_color` and 6 write both
+  // (measured 2026-09-04). Both are optional here because either may be the
+  // one a given cartridge ships — see getDefaultColors.
+  color?: string
+  default_color?: string
   render_mode: number
   [key: string]: unknown
 }
@@ -70,7 +75,7 @@ export interface Manifest {
    * render off the server once it is set.
    *
    * It exists because `project.force_backend` was carrying two unrelated
-   * meanings at once: 490 of the 501 cartridges set it, and among the OpenSCAD
+   * meanings at once: 485 of the 495 cartridges set it, and among the OpenSCAD
    * ones it almost always meant "WASM cannot load our BOSL2 include or our
    * font" — a gap the wasm-bundle contract closes — rather than any real
    * property of the model. `force_backend` is therefore now a SOFT hint (see
@@ -293,9 +298,17 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
   }, [manifest])
 
   const getDefaultColors = useCallback(() => {
+    // Read BOTH spellings. Cartridges are split between `color` (419) and
+    // `default_color` (66), and reading only `default_color` returned
+    // undefined for the large majority — invisible until gridfinity's
+    // OpenSCAD parts (the `default_color` ones) left on 2026-09-04 and the
+    // fallback manifest was left with `color`-only parts, blanking every
+    // part colour in offline/WASM mode. `default_color` wins where a
+    // cartridge declares both, preserving what those six render today.
     const result: Record<string, string> = {}
     for (const p of manifest.parts) {
-      result[p.id] = p.default_color
+      const colour = p.default_color ?? p.color
+      if (colour) result[p.id] = colour
     }
     return result
   }, [manifest])

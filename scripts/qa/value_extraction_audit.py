@@ -22,14 +22,21 @@ computed is worse than an honest gap.
 
 The submodule-empty trap
 ------------------------
-35 of the 500 cartridges live in public submodules, and every dual-engine
-cartridge is one of them (`.gitmodules` declares 37 under `projects/`; the two
-client-private `tablaco*` entries are `update = none` and are excluded from
-every count here). With `projects/*` uninitialised the manifests simply are not
-there, each metric silently loses those cartridges, and the table still prints.
-So the on-disk cartridge count is asserted against `counts.cartridges` in the
+The whole commons is ONE submodule at `projects/` since RFC 0038 P2
+(madfam-org/solid-hyperobjects). Uninitialised, the manifests simply are not
+there, every metric silently loses ALL of them, and the table still prints. So
+the on-disk cartridge count is asserted against `counts.cartridges` in the
 committed catalog before any number is trusted; a mismatch is a hard failure
 with the `git submodule update` line needed to fix it.
+
+The trap used to be partial rather than total: 34 of the cartridges were
+separate satellite repos, so an incomplete init lost exactly those and every
+dual-engine cartridge with them. (This docstring said 35 and the audit doc said
+34; the true figure was 34 — `.gitmodules` declared 37 paths under `projects/`,
+of which two were the client-private `tablaco*` entries and one the
+`cq-hyperobject-test` fixture the catalog excludes. That count is now 0: the
+satellites are absorbed into the one commons repo, and the private cartridges
+mount at `private-projects/`.)
 
 Usage:
     python3 scripts/qa/value_extraction_audit.py            # print the table
@@ -232,10 +239,10 @@ def assert_commons_complete(commons: Commons) -> None:
             f"ERROR: found {commons.total} cartridge manifest(s) on disk but "
             f"docs/commons-catalog.json declares {expected}.\n"
             "Every metric below would silently under-count. Initialise the "
-            "project submodules first:\n"
-            "  git submodule update --init projects/\n"
-            "(no --checkout: `update = none` keeps the two private submodules empty, "
-            "and --checkout would override it)."
+            "commons submodule first:\n"
+            "  git submodule update --init projects\n"
+            "(the client-private cartridges mount separately at private-projects/ "
+            "and are `update = none`, so they stay out of every count here)."
         )
 
 
@@ -476,7 +483,7 @@ def compute(commons: Commons) -> tuple[list[Metric], dict]:
         # ── measures the 2026-08 audit did not state; added 2026-09 ───────────
         Metric("dual_engine", "Dual-engine cartridges (CadQuery B-Rep + OpenSCAD CSG)",
                dual_engine, total,
-               note="catalog `counts.dual_engine`; all of them are submodule-backed"),
+               note="catalog `counts.dual_engine`"),
         Metric("cdg_interface_coverage", "Cartridges declaring ≥1 CDG interface",
                interface_manifests, total, note="the interoperability surface"),
         Metric("cdg_interfaces_per_cartridge", "Declared CDG interfaces per cartridge",

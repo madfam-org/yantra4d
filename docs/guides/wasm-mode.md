@@ -360,9 +360,9 @@ That, far more than geometry cost, is why ~490 manifests carry
 This endpoint hands the worker the whole filesystem in one response, so it can
 populate its virtual FS in a single write pass and then render offline.
 
-Scope, measured against the checked-out commons (501 cartridges): 31 have at
+Scope, measured against the checked-out commons (495 cartridges): 25 have at
 least one OpenSCAD mode and get a bundle; the other 470 are CadQuery, graph or
-implicit and are refused with `engine_not_wasm`. Eight of the 31 are dual-engine
+implicit and are refused with `engine_not_wasm`. 19 of the 25 are dual-engine
 cartridges whose *project* engine is CadQuery but which declare OpenSCAD on
 individual modes — those get a bundle covering exactly those modes.
 
@@ -370,21 +370,20 @@ individual modes — those get a bundle covering exactly those modes.
 
 ```json
 {
-  "slug": "rugged-box",
+  "slug": "custom-msh",
   "engine": "openscad",
-  "entry_files": ["rugged_complete.scad", "rugged_bottom.scad"],
+  "entry_files": ["holder.scad", "rack.scad", "multi_rack.scad"],
   "files": {
-    "projects/rugged-box/rugged_core.scad": "include <../../libs/BOSL2/std.scad>…",
+    "projects/custom-msh/holder.scad": "include <../../libs/BOSL2/std.scad>…",
     "libs/BOSL2/std.scad": "…"
   },
   "fonts": {
-    "projects/rugged-box/fonts/Label.ttf": "<base64>",
     "fonts/AllertaStencil-Regular.ttf": "<base64>",
     "fonts.conf": "<?xml version=\"1.0\"?>…"
   },
   "unsupported": [],
   "unresolved": [],
-  "bytes": 2837697,
+  "bytes": 2897390,
   "etag": "<sha256>"
 }
 ```
@@ -413,7 +412,7 @@ directory shape**:
 ```
 
 Mirroring is the whole point: `include <../../libs/BOSL2/std.scad>` written in
-`/projects/rugged-box/rugged_core.scad` resolves to `/libs/BOSL2/std.scad` inside
+`/projects/custom-msh/holder.scad` resolves to `/libs/BOSL2/std.scad` inside
 the worker exactly as it does on disk, and nobody has to rewrite anyone's source.
 
 For includes that resolve through the search path rather than relatively, the
@@ -483,8 +482,11 @@ the browser is not listed here — that belongs in the manifest's
 
 Crossing either returns **413 `bundle_too_large`** with `files`, `bytes`,
 `max_files` and `max_bytes`, so the caller sees how far over it went. For scale:
-`rugged-box` pulls the whole of BOSL2 and lands at 40 files / ~2.7 MiB;
-`relief` is 3 files / ~24 KB plus one 20 KB typeface.
+`custom-msh` pulls the whole of BOSL2 and lands at 38 files / ~2.8 MiB;
+`relief` is 3 files / ~24 KB plus one typeface.
+
+(Measured 2026-09-04. The worked example used to be `rugged-box`, which left the
+commons under ADR-021.)
 
 ### Caching
 

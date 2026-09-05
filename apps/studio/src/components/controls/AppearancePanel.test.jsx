@@ -5,8 +5,8 @@ import { renderWithProviders } from '../../test/render-with-providers'
 
 function renderAppearancePanel(props = {}) {
     const defaultProps = {
-        mode: 'cup',
-        colors: { cup: '#4a90d9' },
+        mode: 'bin',
+        colors: { bin: '#4a90d9' },
         setColors: vi.fn(),
         wireframe: false,
         setWireframe: vi.fn(),
@@ -20,7 +20,7 @@ function renderAppearancePanel(props = {}) {
 }
 
 describe('AppearancePanel', () => {
-    it('renders color picker for cup mode (cup part)', () => {
+    it('renders color picker for bin mode (bin part)', () => {
         renderAppearancePanel()
         const colorInput = screen.getByDisplayValue('#4a90d9')
         expect(colorInput).toBeInTheDocument()
@@ -134,7 +134,7 @@ describe('AppearancePanel', () => {
         renderAppearancePanel({ setColors })
         fireEvent.change(screen.getByDisplayValue('#4a90d9'), { target: { value: '#ff0000' } })
         const updater = setColors.mock.calls[0][0]
-        expect(updater({ cup: '#4a90d9' })).toMatchObject({ cup: '#ff0000' })
+        expect(updater({ bin: '#4a90d9' })).toMatchObject({ bin: '#ff0000' })
     })
 })
 

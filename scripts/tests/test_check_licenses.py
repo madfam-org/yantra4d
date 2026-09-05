@@ -312,12 +312,17 @@ def test_the_nested_walk_is_depth_bounded(commons):
 
 # --- the softer severities -------------------------------------------------
 
-def test_a_standalone_cartridge_shipping_no_licence_is_metadata(commons, tmp_path):
+def test_a_declared_cartridge_needs_no_licence_file_of_its_own(commons, tmp_path):
+    """Since RFC 0038 P2 no cartridge is published as its own repo.
+
+    They all live in madfam-org/solid-hyperobjects and are covered by its root
+    LICENSE plus their own declared commons_license, so a missing LICENSE file
+    is not a finding when a licence IS declared. A stale .gitmodules entry must
+    not resurrect the old severity — this script no longer reads it.
+    """
     gitmodules(tmp_path, "gears")
     cartridge(commons, "gears", declared="CERN-OHL-W-2.0")
-    metadata = findings("gears", "METADATA")
-    assert len(metadata) == 1
-    assert "published as its own repo but ships no LICENSE" in metadata[0]["message"]
+    assert findings("gears") == []
 
 
 def test_an_in_repo_cartridge_needs_no_licence_file_of_its_own(commons, tmp_path):

@@ -446,28 +446,30 @@ describe('placementToLegacyMode', () => {
 
 describe('effectiveModeEngine — engine is a MODE property', () => {
   // Mirrors ProjectManifest.mode_engine() in apps/api/manifest.py. Getting this
-  // wrong is expensive in one specific way: `gridfinity` declares
-  // `project.engine: "cadquery"` and then three modes with `engine: "openscad"`.
-  // Reading the project engine alone would send those three to the metered path
-  // forever — and 8 of the 31 OpenSCAD-capable cartridges are dual-engine.
-  const gridfinity = {
+  // wrong is expensive in one specific way: `soft-jaw` declares
+  // `project.engine: "cadquery"` and then a mode with `engine: "openscad"`.
+  // Reading the project engine alone would send that mode to the metered path
+  // forever — and 19 cartridges in the commons are dual-engine.
+  //
+  // The fixture named gridfinity until 2026-09-04; gridfinity is CadQuery-only
+  // now (its OpenSCAD side left the commons), so it can no longer illustrate
+  // the mixed case. Shape follows projects/soft-jaw/project.json.
+  const softJaw = {
     engine: 'cadquery',
     modes: [
-      { id: 'bin', scad_file: 'main.py' },
-      { id: 'baseplate', scad_file: 'main.py' },
-      { id: 'cup', engine: 'openscad', scad_file: 'cup.scad' },
-      { id: 'baseplate_scad', engine: 'openscad', scad_file: 'baseplate.scad' },
-      { id: 'lid', engine: 'openscad', scad_file: 'lid.scad' },
+      { id: 'jaw', scad_file: 'main.py' },
+      { id: 'jaw_pair', scad_file: 'main.py' },
+      { id: 'vee_jaw', scad_file: 'main.py' },
+      { id: 'jaw_body', engine: 'openscad', scad_file: 'soft_jaw.scad' },
     ],
   }
 
   it("an explicit mode engine wins over the project's", () => {
-    expect(effectiveModeEngine(gridfinity, 'cup')).toBe('openscad')
-    expect(effectiveModeEngine(gridfinity, 'lid')).toBe('openscad')
+    expect(effectiveModeEngine(softJaw, 'jaw_body')).toBe('openscad')
   })
 
   it('infers cadquery from a .py or .cq scad_file', () => {
-    expect(effectiveModeEngine(gridfinity, 'bin')).toBe('cadquery')
+    expect(effectiveModeEngine(softJaw, 'jaw')).toBe('cadquery')
     expect(effectiveModeEngine({ engine: 'openscad', modes: [{ id: 'm', scad_file: 'part.cq' }] }, 'm'))
       .toBe('cadquery')
   })
@@ -503,8 +505,8 @@ describe('effectiveModeEngine — engine is a MODE property', () => {
   })
 
   it('falls back to the project engine for a mode id that does not exist', () => {
-    expect(effectiveModeEngine(gridfinity, 'ghost')).toBe('cadquery')
-    expect(effectiveModeEngine(gridfinity, null)).toBe('cadquery')
+    expect(effectiveModeEngine(softJaw, 'ghost')).toBe('cadquery')
+    expect(effectiveModeEngine(softJaw, null)).toBe('cadquery')
   })
 })
 
@@ -512,14 +514,14 @@ describe('canRenderAnyModeInBrowser', () => {
   it('is true for a dual-engine cartridge with at least one OpenSCAD mode', () => {
     expect(canRenderAnyModeInBrowser({
       engine: 'cadquery',
-      modes: [{ id: 'bin', scad_file: 'main.py' }, { id: 'cup', engine: 'openscad', scad_file: 'cup.scad' }],
+      modes: [{ id: 'jaw', scad_file: 'main.py' }, { id: 'jaw_body', engine: 'openscad', scad_file: 'soft_jaw.scad' }],
     })).toBe(true)
   })
 
   it('is false when every mode runs a server-side kernel', () => {
     expect(canRenderAnyModeInBrowser({
       engine: 'cadquery',
-      modes: [{ id: 'bin', scad_file: 'main.py' }, { id: 'lid', scad_file: 'lid.py' }],
+      modes: [{ id: 'jaw', scad_file: 'main.py' }, { id: 'vee_jaw', scad_file: 'main.py' }],
     })).toBe(false)
   })
 
@@ -532,20 +534,20 @@ describe('canRenderAnyModeInBrowser', () => {
 
 describe('decideRenderPlacement — per-mode engine in practice', () => {
   // The end-to-end consequence of effectiveModeEngine, expressed as placements.
-  const gridfinity = {
+  const softJaw = {
     engine: 'cadquery',
     modes: [
-      { id: 'bin', scad_file: 'main.py' },
-      { id: 'cup', engine: 'openscad', scad_file: 'cup.scad' },
+      { id: 'jaw', scad_file: 'main.py' },
+      { id: 'jaw_body', engine: 'openscad', scad_file: 'soft_jaw.scad' },
     ],
   }
 
-  it("gridfinity's OpenSCAD mode renders in the browser, for free", () => {
-    expect(decide({ engine: effectiveModeEngine(gridfinity, 'cup') }).placement).toBe('browser')
+  it("soft-jaw's OpenSCAD mode renders in the browser, for free", () => {
+    expect(decide({ engine: effectiveModeEngine(softJaw, 'jaw_body') }).placement).toBe('browser')
   })
 
-  it("gridfinity's CadQuery mode stays hard-pinned to the server", () => {
-    const d = decide({ engine: effectiveModeEngine(gridfinity, 'bin') })
+  it("soft-jaw's CadQuery mode stays hard-pinned to the server", () => {
+    const d = decide({ engine: effectiveModeEngine(softJaw, 'jaw') })
     expect(d).toMatchObject({ placement: 'server', hard: true })
   })
 })

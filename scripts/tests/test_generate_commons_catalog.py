@@ -253,22 +253,38 @@ def test_parameter_ids_are_published_alongside_the_count(commons):
 
 # --- clone instructions ----------------------------------------------------
 
-def test_a_submodule_cartridge_clones_from_its_own_repo(commons, monkeypatch):
+def test_every_cartridge_clones_from_the_commons_repo(commons):
+    """One clone shape for all of them since RFC 0038 P2.
+
+    Before P2 a cartridge published as its own satellite repo got
+    `kind: "submodule"` and that repo's URL; those satellites are absorbed into
+    madfam-org/solid-hyperobjects and archived, so there is nothing left to
+    clone individually and the distinction is gone.
+    """
+    cartridge(commons, "gears", {"project": {"name": "Gears"}})
+    clone = lane.build_catalog()["cartridges"][0]["clone"]
+    assert clone["kind"] == "sparse"
+    assert lane.COMMONS_REPO in clone["command"]
+    assert "sparse-checkout set gears" in clone["command"]
+
+
+def test_a_stale_gitmodules_entry_does_not_change_the_clone_command(commons):
+    """The catalogue no longer reads .gitmodules at all."""
     (commons.parent / ".gitmodules").write_text(
         '[submodule "projects/gears"]\n'
         "\tpath = projects/gears\n"
         "\turl = https://github.com/madfam-org/gears.git\n", encoding="utf-8")
     cartridge(commons, "gears", {"project": {"name": "Gears"}})
     clone = lane.build_catalog()["cartridges"][0]["clone"]
-    assert clone["kind"] == "submodule"
-    assert clone["command"] == "git clone https://github.com/madfam-org/gears.git"
-
-
-def test_an_in_repo_cartridge_gets_a_sparse_checkout_command(commons):
-    cartridge(commons, "inline", {"project": {"name": "Inline"}})
-    clone = lane.build_catalog()["cartridges"][0]["clone"]
     assert clone["kind"] == "sparse"
-    assert "sparse-checkout set projects/inline" in clone["command"]
+    assert "madfam-org/gears.git" not in clone["command"]
+
+
+def test_source_points_into_the_commons_repo(commons):
+    cartridge(commons, "gears", {"project": {"name": "Gears"}})
+    source = lane.build_catalog()["cartridges"][0]["source"]
+    assert source["repo"] == lane.COMMONS_REPO
+    assert source["manifest"] == "gears/project.json"
 
 
 # --- the drift gate --------------------------------------------------------

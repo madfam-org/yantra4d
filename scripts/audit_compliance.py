@@ -25,7 +25,14 @@ logger = logging.getLogger("audit")
 
 PROJECTS_DIR = Path(os.path.join(os.path.dirname(__file__), '../projects')).resolve()
 
-# Projects that MUST have an attribution block
+# Projects that MUST have an attribution block: cartridges implementing an
+# externally-authored standard, which have to name it.
+#
+# `stemfie` and `multiboard` were removed from the commons whole on 2026-09-04
+# under ADR-021 (non-CERN origin leaves, returns clean-room) and their slugs
+# are reserved. They are kept here so the requirement re-arms automatically if
+# a clean-room cartridge lands on either slug; the check below skips a slug
+# that is not on disk rather than reporting a missing directory as a failure.
 ATTRIBUTION_REQUIRED = {
     "gridfinity",
     "stemfie",

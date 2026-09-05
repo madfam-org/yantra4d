@@ -6,7 +6,6 @@ import logging
 
 from flask import Blueprint, Response, request, send_file
 
-from config import Config
 from manifest import get_manifest
 from middleware.auth import (
     effective_tier,
@@ -17,6 +16,7 @@ from services.core.project_access import check_project_access
 from services.core.tier_service import export_format_allowed
 from services.engine.render_orchestrator import ALLOWED_EXPORT_FORMATS
 from services.storage.serving import send_artifact_download
+from utils.project_resolver import find_project_dir
 from utils.route_helpers import error_response, handle_exceptions, safe_join_path
 from utils.validators import require_valid_slug
 
@@ -57,7 +57,10 @@ def _download_render_file(slug: str, filename: str, file_format: str, claims) ->
         return error_response(f"Filename must end with .{normalized_format}", 400)
 
     # Early path-traversal check using safe_join_path against project dir
-    if not safe_join_path(str(Config.PROJECTS_DIR / slug), filename):
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        return error_response(f"Project '{slug}' not found", 404)
+    if not safe_join_path(str(project_dir), filename):
         return error_response("Invalid filename", 400)
 
     try:
@@ -106,7 +109,7 @@ def _download_render_file(slug: str, filename: str, file_format: str, claims) ->
 
     # Exports are authored files committed alongside the cartridge, not render
     # output, so they stay on the project directory where they live.
-    exports_dir = Config.PROJECTS_DIR / slug / "exports"
+    exports_dir = project_dir / "exports"
     safe_path = safe_join_path(str(exports_dir), filename)
     if safe_path and safe_path.exists() and safe_path.suffix.lower() == f".{normalized_format}":
         return send_file(safe_path, as_attachment=True, download_name=filename)
@@ -143,7 +146,10 @@ def download_scad(slug: str, filename: str) -> Response | tuple[Response, int]:
         return denied
 
     # Early path-traversal check using safe_join_path against project dir
-    if not safe_join_path(str(Config.PROJECTS_DIR / slug), filename):
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        return error_response(f"Project '{slug}' not found", 404)
+    if not safe_join_path(str(project_dir), filename):
         return error_response("Invalid filename", 400)
 
     try:
@@ -160,7 +166,6 @@ def download_scad(slug: str, filename: str) -> Response | tuple[Response, int]:
     if filename not in allowed_files:
         return error_response("File not available for download", 403)
 
-    project_dir = Config.PROJECTS_DIR / slug
     safe_path = safe_join_path(str(project_dir), filename)
     if safe_path and safe_path.exists() and safe_path.suffix.lower() == '.scad':
         return send_file(safe_path, as_attachment=True, download_name=filename)

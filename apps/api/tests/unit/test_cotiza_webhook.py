@@ -18,7 +18,7 @@ def _sign(body: bytes, secret: str = WEBHOOK_SECRET) -> str:
     return hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
 
 
-def _sample_payload(event_type="quote.completed", project_slug="rugged-box"):
+def _sample_payload(event_type="quote.completed", project_slug="soft-jaw"):
     return {
         "event_type": event_type,
         "quote_id": "cuid_abc123",

@@ -15,6 +15,10 @@ def _isolate_config(tmp_path, monkeypatch):
     """Ensure Config paths point to tmp_path and manifest cache is cleared for every test."""
     from config import Config
     monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
+    # The private cartridge root defaults to <repo>/private-projects. Pin it
+    # inside tmp_path too, or a test would resolve slugs out of the developer's
+    # real private mount and pass or fail depending on who is running it.
+    monkeypatch.setattr(Config, "PRIVATE_PROJECTS_DIR", tmp_path / "private-projects")
     monkeypatch.setattr(Config, "CARTRIDGES_DIRS", [tmp_path])
     monkeypatch.setattr(Config, "SCAD_DIR", tmp_path)
     monkeypatch.setattr(Config, "MULTI_PROJECT", True)

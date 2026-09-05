@@ -12,12 +12,11 @@ Endpoints:
 
 import json
 import logging
-from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
-from config import Config
 from services.core.project_access import require_project_access
+from utils.project_resolver import find_project_dir
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
@@ -34,7 +33,10 @@ _STRIP_ROOT_FIELDS = {
 
 
 def _load_manifest(slug: str) -> dict | None:
-    p = Path(Config.PROJECTS_DIR) / slug / "project.json"
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        return None
+    p = project_dir / "project.json"
     if not p.is_file():
         return None
     return json.loads(p.read_text())

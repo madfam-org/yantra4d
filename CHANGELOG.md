@@ -14,6 +14,115 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Changed
+- **The Commons Pin Lands At `solid-hyperobjects@b0fa7147` — 500 → 495 Cartridges**
+  — the `projects` submodule, verified against a stand-in until now, is pinned at
+  the real commons. The content differs from the stand-in in two ruled ways, and
+  every generated artifact moved with it rather than being edited by hand.
+
+  **Five cartridges left whole, slugs reserved** (ADR-021: a hyperobject whose
+  *origin* licence is not CERN-OHL-W-2.0 leaves the commons and comes back
+  clean-room). `keyv2` (GPL-3.0), `stemfie` (GPL-3.0-or-later), `multiboard`
+  (CC-BY-NC-SA-4.0), `polydice` (BSD-2-Clause) and `rugged-box` (CC-BY-NC-SA-4.0
+  on vendored upstream files). **All 495 remaining cartridges are
+  CERN-OHL-W-2.0** — the licence-exception table in `README.md` is gone, replaced
+  by the reserved-slug table.
+
+  **`gridfinity` is CadQuery-only.** Its OpenSCAD side (modes `cup`,
+  `baseplate_scad`, `lid`, 17 of its 27 parameters, 4 of its 7 presets and the
+  `gridfinity_extended` GPL gitlink) left with ADR-021's dead-gitlink cleanup:
+  2 modes, 10 parameters, 3 presets remain. `glia-diagnostic` also dropped an
+  unreferenced vendored BOSL2 copy (no behaviour change).
+
+  **Counts, all generator-sourced**: cartridges 500 → **495**; with declared CDG
+  interfaces 486 → **485**; carrying a licence 500 → **495** (now 495 of 495
+  CERN-OHL-W-2.0, was 496 of 500); **dual-engine 21 → 19** — `gridfinity` and
+  `stemfie` both left the set, so the drop is two, not one. Distinct external
+  standards 317 → 314. Regenerated: `COMMONS.md`, `docs/commons-catalog.json`,
+  `docs/interfaces/mating-candidates.json`,
+  `docs/strategy/VALUE-EXTRACTION-AUDIT.md`, `apps/landing/src/data/projects.ts`,
+  `apps/studio/src/config/fallback-manifest.json`, and the `README.md` counts
+  block.
+
+  **Two latent defects surfaced by the swap, both fixed.**
+  `ManifestProvider.getDefaultColors()` read only `parts[].default_color`, while
+  419 of 495 cartridges spell the field `color` (66 use `default_color`, 6 both).
+  It returned undefined for the large majority and nobody noticed, because the
+  only test covering it asserted on a `default_color` part that has now left —
+  offline/WASM part colours were blank. It reads both spellings now.
+  `VERIFIED_PARITY_PROJECTS` in `apps/api/tests/scripts/geometric_regression.py`
+  was `{stemfie, gridfinity}` — the two cartridges that just stopped being
+  dual-engine — so the geometric-parity gate's blocking half could no longer fire
+  on anything. The allowlist is **empty and says so loudly** in the run summary;
+  it is deliberately NOT refilled from the 19 surviving dual-engine cartridges,
+  because membership asserts *measured* parity and no such measurement exists for
+  them.
+
+  **`check_licenses.py` reports a stale acknowledgement instead of dropping it.**
+  `KNOWN_NC_EXPOSURE` names `rugged-box`, which no longer exists; the entry is
+  kept, and a new non-blocking `STALE` severity prints it every run. Deleting it
+  silently is how an acknowledged NC exposure becomes an unacknowledged one when
+  the slug returns.
+
+  **Known cross-lane item:** `gridfinity`'s manifest still declares
+  `compatible_with: ["multiboard"]`, a reserved slug —
+  `mating-candidates.json` now reports `author_declared_links_out_of_scope: 1`.
+  That data lives in the commons repo, not here.
+
+- **The Commons Is Consumed At A Pin — `projects/` Is One Submodule** — RFC 0038
+  §9 "Topology P2". The 35 public satellite cartridge repos are absorbed into
+  `madfam-org/solid-hyperobjects` with full history and archived, so `.gitmodules`
+  goes from 43 entries to 9: six `libs/*`, one `projects` (the commons), and the
+  two client-private cartridges, which move to their own root at
+  `private-projects/` and keep `update = none`. The commons repo holds each
+  cartridge at `<slug>/`, so `projects/<slug>` still resolves and no cartridge
+  path in the platform changes.
+
+  **Two cartridge roots.** `Config.PRIVATE_PROJECTS_DIR` (env-overridable) joins
+  `CARTRIDGES_DIRS`, and `utils/project_resolver` gains the single ordered search
+  every read path now goes through — `project_roots()`, `find_project_dir()`,
+  `project_write_root()`. The public commons wins a slug collision; writes
+  (onboarding, forking, GitHub import) always target the public root but check
+  existence across both, so nothing can shadow a private slug. The
+  path-traversal guard is written once and applies per root. Access control is
+  unchanged and stays slug-based (`PROJECT_ACCESS_GRANTS`, docs/AUTH.md).
+
+  **The engine fixture leaves the commons.** `cq-hyperobject-test` was never a
+  Commons object — the catalog and licence audit always excluded it — but it sat
+  in `projects/`, which is why the API served one project more than the commons
+  held (501 over 500 at the time). It is vendored at
+  `apps/api/tests/fixtures/cartridges/` from
+  `madfam-org/cq-hyperobject-test@c970dbc`. **The API now serves exactly the
+  commons count** — 495 today, plus whatever mounts under `private-projects/`.
+  (Verified: `ManifestService.discover_projects()` returns 496 = 495 commons +
+  `tablaco`.)
+
+  **Every submodule-aware gate re-based.** The "submodule-backed vs vendored"
+  distinction (34 cartridges) no longer exists, and four gates would have gone
+  silently green rather than failing: the #86 ratchet in `validate_manifests.py`
+  is re-targeted to "the `projects` submodule is initialised and non-empty" (and
+  cannot fail on the private mounts, which are out of its scope by
+  construction); `generate-landing-projects.mjs` gates on the commons carrying at
+  least one cartridge; `generate_commons_catalog.py` gives every cartridge one
+  `clone` shape pointing at the commons repo, plus `source.repo`;
+  `check_licenses.py` drops the "published as its own repo" severity;
+  `derive_mating_candidates.py` now reads every cartridge instead of skipping
+  the 34 satellites for determinism (495 scanned / 0 out of scope, was 466).
+  `value_extraction_audit.py`'s docstring claimed 35 submodule-backed cartridges
+  where the truth was 34 and is now 0 — corrected (open item F5).
+
+### Removed
+- **The Satellite-Era Bump Machinery** — `update-submodules.yml` (weekly, bumped
+  all 43 submodules), `bump-submodule.yml` (a `repository_dispatch` receiver
+  that pushed straight to `main`, one per cartridge repo), `project-ci-reusable.yml`
+  and `project-ci.yml` (which each cartridge repo called to fire that dispatch),
+  and `scripts/propagate_ci.sh` / `scripts/ci/propagate_project_ci.{sh,py}`
+  (which pushed a CI template into the `madfam-org/<slug>` repos). One commons
+  repo means one pin, so all of it is replaced by a single scheduled
+  `bump-commons-pin.yml` that opens a PR when `solid-hyperobjects` main moves.
+  Issue #69's dormant 33-repo bump loop is retired by construction rather than
+  fixed; its `DISPATCH_TOKEN` / org-toggle guard is carried over verbatim so the
+  replacement fails loud, not silent.
+
 - **Top Tier Renamed `madfam` → `premium`, With a Permanent Alias** — ADR-006
   Decision 4: a company name was doing duty as a tier name on a MADFAM product,
   and `premium` is already dhanam's top tier. The ladder is now

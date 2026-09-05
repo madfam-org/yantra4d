@@ -131,7 +131,7 @@ components:
       properties:
         slug:
           type: string
-          example: rugged-box
+          example: din-rail-clip
         engine:
           type: string
           enum: [openscad]

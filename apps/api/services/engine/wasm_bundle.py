@@ -18,12 +18,12 @@ Virtual filesystem layout
 Every path in a bundle is POSIX and relative to a virtual root that mirrors the
 server's own directory shape::
 
-    /projects/<slug>/…      Config.PROJECTS_DIR/<slug>  (the cartridge)
+    /projects/<slug>/…      <cartridge root>/<slug>     (the cartridge)
     /libs/…                 Config.LIBS_DIR             (BOSL2, dotSCAD, …)
     /fonts/…                Config.FONTS_DIR            (shared typefaces)
 
 Mirroring the server is the whole point: a cartridge that says
-``include <../../libs/BOSL2/std.scad>`` from ``/projects/rugged-box/rugged_core.scad``
+``include <../../libs/BOSL2/std.scad>`` from ``/projects/din-rail-clip/din_clip.scad``
 resolves to ``/libs/BOSL2/std.scad`` in the worker exactly as it does on disk,
 with no rewriting of anyone's source. For includes that resolve through
 OPENSCADPATH rather than relatively, the worker sets the search path to the

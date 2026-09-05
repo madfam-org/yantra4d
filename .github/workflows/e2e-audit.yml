@@ -19,7 +19,7 @@ on:
       include_private_projects:
         description: >-
           Also check out the client-private cartridges (the `update = none`
-          submodules: projects/tablaco, projects/tablaco-v2) with MADFAM_BOT_PAT
+          submodules: private-projects/tablaco, private-projects/tablaco-v2) with MADFAM_BOT_PAT
           so their audit specs run instead of skipping. Off by default — those
           projects are client-private (#48, #52) and this workflow's logs and
           report artifact are readable on a public repo.
@@ -45,11 +45,20 @@ jobs:
 
       - name: Init submodules (skip those marked update = none)
         run: |
-          # Init every submodule except the private ones opted out with
-          # `update = none` in .gitmodules. Opted-out paths collected once.
+          # The public commons (`projects`, one submodule since RFC 0038 P2)
+          # and the shared OpenSCAD libraries. The client-private cartridges
+          # under private-projects/ are `update = none` and are initialised
+          # only by the opt-in step below.
+          #
+          # Opted-out paths are resolved NAME -> path rather than compared
+          # directly: `submodule.<name>.update` is keyed by the section NAME,
+          # which is only incidentally equal to the path.
           set -euo pipefail
           skip=$(git config --file .gitmodules --list \
-            | sed -n 's/^submodule\.\(.*\)\.update=none$/\1/p')
+            | sed -n 's/^submodule\.\(.*\)\.update=none$/\1/p' \
+            | while read -r name; do
+                git config --file .gitmodules --get "submodule.$name.path"
+              done)
           echo "Opted out (update = none):" ${skip:-<none>}
           git config --file .gitmodules --get-regexp '^submodule\..*\.path$' \
             | while read -r _ path; do
@@ -59,6 +68,10 @@ jobs:
                 fi
                 git submodule update --init --depth 1 "$path"
               done
+          test -n "$(ls -A projects 2>/dev/null)" || {
+            echo "::error title=Audit setup failed::the \`projects\` commons submodule is empty after init"
+            exit 1
+          }
 
       - name: Init client-private cartridges (opt-in, workflow_dispatch only)
         if: github.event_name == 'workflow_dispatch' && inputs.include_private_projects

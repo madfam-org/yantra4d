@@ -16,8 +16,9 @@ import {
 test.use({ mockAPIs: false })
 test.describe.configure({ mode: 'serial' })
 
-// projects/gridfinity/project.json declares project.name "Gridfinity"; the
-// "Extended" name now belongs only to its three OpenSCAD modes.
+// projects/gridfinity/project.json declares project.name "Gridfinity". Its
+// OpenSCAD modes (and the "Extended" name) left the cartridge on 2026-09-04;
+// it is CadQuery-only, modes `bin` and `baseplate`.
 const GRIDFINITY = 'Gridfinity'
 
 // The mode tabs, and only those: the sidebar's section tabs
@@ -99,9 +100,9 @@ test.describe('Cross-Cutting — Browser Audit', () => {
     await goToRealProject(page, 'gridfinity', GRIDFINITY)
     await enableClipboard(page)
 
-    // Change a parameter to create a non-default state. grid_x, not
-    // width_units: the default `bin` mode is cadquery and width_units is
-    // declared visible_in_modes ["cup", "baseplate_scad", "lid"].
+    // Change a parameter to create a non-default state. grid_x dimensions the
+    // `bin` mode; width_units was the OpenSCAD equivalent and left the
+    // cartridge with the OpenSCAD side on 2026-09-04.
     await sidebar.editSliderValue('grid_x', 4)
     await page.waitForTimeout(500)
 
@@ -139,10 +140,11 @@ test.describe('Cross-Cutting — Browser Audit', () => {
     await page.waitForSelector('header', { timeout: 15_000 })
 
     // Search for each one rather than expecting it on the landing page. The
-    // commons is 501 cartridges and ProjectsView pages at PAGE_SIZE = 60 sorted
-    // by name, so the first page ends around "Bag Reseal & Pour Clip" — run #170
-    // failed here 3/3 looking for a gridfinity card that was ~440 cards further
-    // down. Scrolling 500 cards in would test the pager, not the catalogue; the
+    // catalogue is 496 cartridges served (495 commons + the private tablaco
+    // mount) and ProjectsView pages at PAGE_SIZE = 60 sorted by name, so the
+    // first page ends around "Bag Reseal & Pour Clip" — run #170 failed here
+    // 3/3 looking for a gridfinity card that was ~440 cards further down.
+    // Scrolling 495 cards in would test the pager, not the catalogue; the
     // search box is how a user finds a known project, and the slug is in the
     // server-side haystack (services/core/catalog_index.py).
     const search = page.getByRole('searchbox', { name: /Search projects|Buscar proyectos/i })

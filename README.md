@@ -47,7 +47,7 @@ Honest, code-verified snapshot. **Working today:**
 - **Browser-first rendering** — the visitor's browser is the **default** placement: the OpenSCAD **WASM** worker renders there, free for us and unmetered for them, and the server's native OpenSCAD/CadQuery is the only metered path. Which one runs is decided by `decideRenderPlacement()`, a pure 11-rule precedence function: four HARD server rules first (a `cadquery`/`graph`/`implicit` mode, manifest `render.server_only`, an unusable wasm bundle, and **any `export_format` but `stl`** — the browser kernel writes one `/output.stl` and has no converter), then the `?render=` override, the visitor's preference, the measured device tier, this session's browser failures, the estimate budget, the legacy `force_backend` **soft hint**, and finally the browser. A *soft* server decision flips back to the browser when the API is unreachable; a hard one does not. Full table: [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md).
 - **STL / mesh export** — server render pipeline produces STL/GLB/3MF artifacts.
 - **Geometry verification** — dedicated verify endpoint (`apps/api/routes/engine/verify.py`); the parity check CI runs is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a local dual-engine comparison tool, not a CI lane: it reports 18 of 28 comparable mode pairs passing after #115 pinned the ten parity-fixed cartridges, so the dual-engine parity claim is an intent rather than an enforced invariant — see [`docs/architecture/dual-engine.md`](docs/architecture/dual-engine.md#the-geometric-parity-guarantee).
-- **Cartridge project system** — `project.json` manifests, 500-cartridge CadQuery-first Commons catalog (including curated art/misc projects), admin app, Janua-authenticated admin flows. <!-- fact source: docs/commons-catalog.json → counts.cartridges; see the generated table under "The Commons Catalog" below -->
+- **Cartridge project system** — `project.json` manifests, 495-cartridge CadQuery-first Commons catalog (including curated art/misc projects), admin app, Janua-authenticated admin flows. <!-- fact source: docs/commons-catalog.json → counts.cartridges; see the generated table under "The Commons Catalog" below -->
 - **Implicit SDF engine** — TPMS/lattice field generation, including the energy→sag "phase shift" heuristic behind the digital-twin slider.
 - **Per-mode engine resolution** — a single cartridge can mix modes across kernels; the render engine is resolved per mode (`ManifestService.mode_engine`), so the flagship hyperobjects ship **dual-engine** (exact CadQuery B-Rep modes alongside their original OpenSCAD modes).
 
@@ -73,12 +73,12 @@ Counts below are generated from the manifests, not maintained by hand — see
 
 | | |
 | :-- | --: |
-| Cartridges | 500 |
-| With declared CDG interfaces | 486 |
-| Carrying an explicit license | 500 |
-| Dual-engine (CadQuery B-Rep + OpenSCAD CSG) | 21 |
-| Distinct external standards referenced | 317 |
-| Licensed CERN-OHL-W-2.0 | 496 of 500 |
+| Cartridges | 495 |
+| With declared CDG interfaces | 485 |
+| Carrying an explicit license | 495 |
+| Dual-engine (CadQuery B-Rep + OpenSCAD CSG) | 19 |
+| Distinct external standards referenced | 314 |
+| Licensed CERN-OHL-W-2.0 | 495 of 495 |
 
 <!-- END COMMONS_COUNTS -->
 
@@ -91,20 +91,26 @@ Two licenses apply to this repository and they cover different things:
   **CERN-OHL-W-2.0** (see the table above). Weakly reciprocal: modifications to a design
   must be shared, but a larger product incorporating one need not be.
 
-A few cartridges differ because they derive from upstream work whose license
-travels with it and cannot be relicensed:
+**Every one of the 495 cartridges is CERN-OHL-W-2.0.** There are no licence
+exceptions left in the commons.
 
-| Cartridge | License | Upstream |
-| :-- | :-- | :-- |
-| `stemfie` | GPL-3.0-or-later | [stemfie.org](https://stemfie.org) |
-| `keyv2` | GPL-3.0 | [rsheldiii/KeyV2](https://github.com/rsheldiii/KeyV2) |
-| `multiboard` | **CC-BY-NC-SA-4.0** | Multiboard — **NonCommercial: you may not sell prints of this design** |
-| `polydice` | BSD-2-Clause | PolyDiceGenerator, © 2020 charmaur |
+Five cartridges that carried a non-CERN origin licence were **removed whole on
+2026-09-04** under
+[ADR-021](https://github.com/madfam-org/internal-devops/blob/main/decisions/adr-021-non-cern-origin-hyperobjects-cleanroom.md),
+and their slugs are **reserved** pending clean-room re-creation:
 
-If you build on those four you inherit their terms, not CERN-OHL-W-2.0 — and
-`multiboard` in particular forbids commercial use, which CERN-OHL-W permits.
-`rugged-box` is CERN-OHL-W-2.0 for its own wrappers but vendors upstream files
-under CC BY-NC-SA 4.0; see its `NOTICE`.
+| Reserved slug | Origin licence that caused the removal |
+| :-- | :-- |
+| `stemfie` | GPL-3.0-or-later ([stemfie.org](https://stemfie.org)) |
+| `keyv2` | GPL-3.0 ([rsheldiii/KeyV2](https://github.com/rsheldiii/KeyV2)) |
+| `multiboard` | CC-BY-NC-SA-4.0 (Multiboard — NonCommercial) |
+| `polydice` | BSD-2-Clause (PolyDiceGenerator, © 2020 charmaur) |
+| `rugged-box` | CC-BY-NC-SA-4.0 on vendored upstream files (Iceman) |
+
+Each will return only as a CERN-OHL-W-2.0 cartridge written from a recorded
+baseline by an implementer who has not read the removed source. For the two
+whose upstream licence covers the *design* rather than code (`multiboard`,
+`rugged-box`), the re-creation targets the interface standard, not the shape.
 
 Every cartridge's license is machine-readable in the catalog, and CI fails if a
 declared license ever diverges from the one a cartridge actually ships, if a
@@ -112,8 +118,11 @@ manifest declares two conflicting licenses, or if an excluded cartridge appears
 in the published catalog (`scripts/qa/check_licenses.py --strict-all`).
 
 Two cartridges are deliberately **excluded** from the published Commons:
-`tablaco` is a client engagement whose client retains all private rights, and
-`cq-hyperobject-test` is an engine test fixture rather than a hyperobject.
+`tablaco` and `tablaco-v2` are client engagements whose client retains all
+private rights, so they live outside the commons repo entirely and mount at
+`private-projects/`. (`cq-hyperobject-test` used to be a third exclusion; since
+RFC 0038 P2 it is an engine test fixture vendored under
+`apps/api/tests/fixtures/cartridges/` and is not a cartridge at all.)
 
 **What is verified, precisely.** Every manifest is schema-validated in CI, and every
 mode is geometrically distinct (each mode's `parts[]` id drives `target_part` dispatch).

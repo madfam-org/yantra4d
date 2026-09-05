@@ -43,15 +43,19 @@
  *    thing from private, and the gallery's treatment of it is unchanged.
  *
  * 2. AN INCOMPLETE CHECKOUT NEVER PRODUCES A "COMPLETE" FILE.
- *    36 of the cartridges live in git submodules. Run in a checkout without
- *    them, this script used to silently emit a shorter list and overwrite the
- *    good one — the failure mode that left the committed file 138 entries
- *    short. Now every `projects/*` submodule declared in `.gitmodules` must
- *    have a `project.json` on disk before anything is written, and the run
- *    fails otherwise unless `--allow-partial` says the caller means it.
- *    Submodules marked `update = none` (the client-private cartridges) are
- *    EXPECTED to be absent: a recursive checkout skips them by design, so their
- *    absence is never an incomplete checkout.
+ *    Every cartridge lives in ONE submodule at `projects/` since RFC 0038 P2
+ *    (madfam-org/solid-hyperobjects). Run in a checkout without it, this script
+ *    used to silently emit a shorter list and overwrite the good one — the
+ *    failure mode that left the committed file 138 entries short. So the
+ *    `projects` submodule must be initialised and carry cartridges before
+ *    anything is written, and the run fails otherwise unless `--allow-partial`
+ *    says the caller means it. The failure is now all-or-nothing rather than
+ *    per-cartridge, which is strictly easier to detect.
+ *
+ *    Submodules marked `update = none` (the client-private cartridges, which
+ *    mount at `private-projects/`) are EXPECTED to be absent: git skips them
+ *    even recursively, so their absence is never an incomplete checkout — and
+ *    they are not under `projects/`, so this gate never looks at them.
  *
  * Usage:
  *   node scripts/dev/generate-landing-projects.mjs
@@ -188,31 +192,51 @@ export function parseGitmodules(text) {
   return entries.filter((e) => e.path);
 }
 
+/** The submodule path carrying the public commons (RFC 0038 P2). */
+export const COMMONS_SUBMODULE = 'projects';
+
 /**
  * Cartridge submodules split by whether this checkout is supposed to contain them.
  *
- * `required` — public cartridges; a recursive checkout brings them in, so a
- *              missing one means the checkout is incomplete.
+ * `required` — the commons submodule; a checkout brings it in, and without it
+ *              the gallery would be built from nothing.
  * `expectedAbsent` — `update = none`; git skips these even recursively, which
  *              is exactly how the client-private cartridges stay out of public
  *              build contexts. Their absence is normal and must never be
- *              reported as an incomplete checkout.
+ *              reported as an incomplete checkout. Since P2 they are not under
+ *              `projects/` either, so they cannot reach `required` by accident.
  */
 export function cartridgeSubmodules(repo = DEFAULT_REPO) {
   const file = path.join(repo, '.gitmodules');
   if (!fs.existsSync(file)) return { required: [], expectedAbsent: [] };
-  const entries = parseGitmodules(fs.readFileSync(file, 'utf8'))
-    .filter((e) => e.path.startsWith('projects/'));
+  const entries = parseGitmodules(fs.readFileSync(file, 'utf8'));
+  const commons = entries.filter(
+    (e) => e.path === COMMONS_SUBMODULE && e.update !== 'none',
+  );
   return {
-    required: entries.filter((e) => e.update !== 'none').map((e) => e.path),
-    expectedAbsent: entries.filter((e) => e.update === 'none').map((e) => e.path),
+    required: commons.map((e) => e.path),
+    expectedAbsent: entries
+      .filter((e) => e.update === 'none')
+      .map((e) => e.path),
   };
 }
 
-/** Public cartridge submodules with no `project.json` on disk. Empty = complete. */
+/**
+ * The commons submodule if it is registered but carries no cartridge.
+ * Empty = complete.
+ *
+ * "Carries no cartridge" rather than "has no project.json": the commons repo
+ * holds each cartridge at `<slug>/`, so completeness is about the directory
+ * having contents, not about a manifest at its root.
+ */
 export function missingCartridges(repo = DEFAULT_REPO) {
-  return cartridgeSubmodules(repo).required
-    .filter((rel) => !fs.existsSync(path.join(repo, rel, 'project.json')));
+  return cartridgeSubmodules(repo).required.filter((rel) => {
+    const dir = path.join(repo, rel);
+    if (!fs.existsSync(dir)) return true;
+    return !fs
+      .readdirSync(dir, { withFileTypes: true })
+      .some((e) => e.isDirectory() && fs.existsSync(path.join(dir, e.name, 'project.json')));
+  });
 }
 
 // ──────────────────────────────────────────────
@@ -601,12 +625,13 @@ function summarize(projects, meta, log) {
 
 export function incompleteMessage(missing) {
   return [
-    `INCOMPLETE CHECKOUT — ${missing.length} public cartridge submodule(s) have no project.json:`,
+    `INCOMPLETE CHECKOUT — the commons submodule carries no cartridge:`,
     ...missing.map((p) => `  ${p}`),
-    'Their entries would be silently dropped from the gallery. Run',
-    '  git submodule update --init -- projects/<slug> …',
-    'for the paths above (never for `update = none` paths), or pass --allow-partial',
-    'if a deliberately partial file is what you want.',
+    'The whole gallery would be silently emptied. Run',
+    '  git submodule update --init projects',
+    '(never for `update = none` paths — the client-private cartridges under',
+    'private-projects/ are meant to be absent), or pass --allow-partial if a',
+    'deliberately partial file is what you want.',
   ].join('\n');
 }
 

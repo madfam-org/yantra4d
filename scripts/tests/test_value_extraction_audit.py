@@ -348,10 +348,25 @@ def test_cohort_split_is_optional_and_never_gates_the_check(commons):
     # The audit-era cohort recomputed today must still reproduce the published
     # 2026-08 figures; if it stops doing so, the extraction logic has drifted
     # away from the one that produced them.
+    #
+    # These are "the audit-era cartridges STILL IN THE COMMONS", so a removal
+    # moves them legitimately — the cohort is not immutable. On 2026-09-04
+    # ADR-021 removed five audit-era cartridges (keyv2, stemfie, multiboard,
+    # polydice, rugged-box) with their slugs reserved for clean-room
+    # re-creation. Measured against the pre-removal manifests, exactly two of
+    # the fields below were carried by any of the five:
+    #   - `multiboard` declared 1 constraint      -> constraint_coverage 287 -> 286
+    #   - `stemfie`    declared material_awareness -> material_awareness 310 -> 309
+    # None of the five declared `project.engine: cadquery`, tolerance_by_material,
+    # shrinkage_compensation or recycled_material_toggle, so those four are
+    # unchanged — which is the evidence that the extraction logic did not drift.
+    # A logic change would have moved figures no removal can explain.
+    # If a clean-room cartridge lands on one of those slugs declaring these
+    # fields, these numbers move again and this comment must say so.
     era = cohorts["audit_era"]["metrics"]
     assert era["cadquery_first"]["numerator"] == 300
-    assert era["constraint_coverage"]["numerator"] == 287
-    assert era["material_awareness"]["numerator"] == 310
+    assert era["constraint_coverage"]["numerator"] == 286
+    assert era["material_awareness"]["numerator"] == 309
     assert era["tolerance_by_material"]["numerator"] == 294
     assert era["shrinkage_compensation"]["numerator"] == 30
     assert era["recycled_material_toggle"]["numerator"] == 16

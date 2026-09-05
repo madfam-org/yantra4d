@@ -60,15 +60,18 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 
 ### Per-Project Docs
 
-Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 500
-commons cartridges (the API serves 501 projects — the extra one is the `cq-hyperobject-test`
-engine fixture, deliberately excluded from the published Commons along with the
-client-private `tablaco`): <!-- fact source: docs/commons-catalog.json → counts.cartridges = 500; the exclusions are listed under "Licensing" in README.md -->
+Each project carries its own docs in `projects/{slug}/docs/`. The platform ships with 495
+cartridges (five slugs reserved for clean-room re-creation under ADR-021), and the
+API serves exactly those 495 — since RFC 0038 P2 the
+`cq-hyperobject-test` engine fixture is vendored under
+`apps/api/tests/fixtures/cartridges/` rather than sitting in `projects/`, and the
+client-private `tablaco` cartridges mount at `private-projects/` and are served
+only to authorized identities: <!-- fact source: docs/commons-catalog.json → counts.cartridges = 495; the exclusions are listed under "Licensing" in README.md -->
 
 -   [Sentinel Gripper](../projects/sentinel-gripper-hyperobject/README.md) 🤖 — Crown demo: soft-robotics compliant gripper with PPF physics optimization
 -   [Gridfinity](../projects/gridfinity/) — Modular storage bins (flagship)
 -   [Microscope Slide Holder](../projects/microscope-slide-holder/) 🔷 — Microscope slide retention (first hyperobject)
--   [Polydice](../projects/polydice/) — Parametric dice set
+-   [Julia Vase](../projects/julia-vase/) — Fractal-surface vase (dual-engine)
 -   Browse all projects under [`projects/`](../projects/)
 
 ## Quick Start

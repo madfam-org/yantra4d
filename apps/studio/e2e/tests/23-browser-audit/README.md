@@ -158,7 +158,7 @@ default `beforeAll` skips the entire audit for everyone.
   `assertStudioLoaded(page, slug)` (the manifest error screen, which replaces
   the whole app — run #170 reported it only as "wanted 5 mode tabs, found 0").
   Neither dismisses anything.
-- **Find a project by searching for it.** The commons is 500+ cartridges and
+- **Find a project by searching for it.** The commons is ~500 cartridges and
   `ProjectsView` pages at 60 sorted by name, so a card for a specific slug is
   almost never on the first page. Fill the searchbox with the slug — the slug is
   in the server-side haystack — rather than scrolling the pager.

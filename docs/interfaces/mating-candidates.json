@@ -4,77 +4,77 @@
   "generated_by": "scripts/qa/derive_mating_candidates.py",
   "status": "proposed",
   "inputs": {
-    "cartridges_scanned": 466,
-    "cartridges_public_total": 500,
-    "cartridges_out_of_scope_submodules": 34,
-    "scope_note": "in-tree projects/*/project.json only; every projects/* submodule path declared in .gitmodules is skipped whether or not it is checked out, so the artifact is identical with and without `--recurse-submodules` and no client-private cartridge is ever read",
-    "interfaces_declared": 888,
-    "interfaces_with_resolved_family": 251,
-    "objects_with_resolved_family": 196,
-    "author_declared_pairs_in_scope": 249,
-    "author_declared_links_out_of_scope": 38,
+    "cartridges_scanned": 495,
+    "cartridges_public_total": 495,
+    "cartridges_out_of_scope": 0,
+    "scope_note": "every projects/*/project.json is read; only the client-private slugs named in PRIVATE_EXCLUDED are skipped, and since RFC 0038 P2 those are not under projects/ at all (they mount at private-projects/). The commons is one submodule, so projects/ is either fully checked out or empty; validate_manifests.py's ratchet is what refuses the empty case",
+    "interfaces_declared": 939,
+    "interfaces_with_resolved_family": 273,
+    "objects_with_resolved_family": 209,
+    "author_declared_pairs_in_scope": 285,
+    "author_declared_links_out_of_scope": 1,
     "bridge_snapshot_available": true,
     "bridge_targets": 89
   },
   "graph_baseline": {
     "note": "the live graph's own rule replayed over the in-scope manifests; see baseline_graph_pairs() for why get_graph() is not called directly",
-    "graph_nodes": 196,
-    "edges": 225,
-    "isolated_graph_nodes": 65,
-    "density_pct_over_graph_nodes": 1.1774,
-    "density_pct_over_catalog": 0.2077,
-    "author_declared_pairs_reproduced": 136,
-    "author_declared_pairs_missing": 113,
-    "author_declared_pairs_without_shared_family": 90
+    "graph_nodes": 209,
+    "edges": 262,
+    "isolated_graph_nodes": 69,
+    "density_pct_over_graph_nodes": 1.2054,
+    "density_pct_over_catalog": 0.2143,
+    "author_declared_pairs_reproduced": 167,
+    "author_declared_pairs_missing": 118,
+    "author_declared_pairs_without_shared_family": 95
   },
   "tier_summary": {
-    "corroborated": 24,
-    "plausible": 43,
-    "speculative": 22
+    "corroborated": 26,
+    "plausible": 48,
+    "speculative": 26
   },
   "projection": [
     {
       "tranche": "corroborated",
-      "rules": 24,
+      "rules": 26,
       "new_edges_in_tranche": 64,
-      "edges_after": 289,
-      "author_declared_pairs_explained": 149,
-      "author_declared_pairs_explained_pct": 59.84,
-      "graph_nodes": 196,
-      "isolated_graph_nodes_after": 60,
-      "density_pct_over_graph_nodes": 1.5123,
-      "density_pct_over_catalog": 0.2667
+      "edges_after": 326,
+      "author_declared_pairs_explained": 180,
+      "author_declared_pairs_explained_pct": 63.16,
+      "graph_nodes": 209,
+      "isolated_graph_nodes_after": 64,
+      "density_pct_over_graph_nodes": 1.4998,
+      "density_pct_over_catalog": 0.2666
     },
     {
       "tranche": "plausible",
-      "rules": 43,
-      "new_edges_in_tranche": 12,
-      "edges_after": 301,
-      "author_declared_pairs_explained": 159,
-      "author_declared_pairs_explained_pct": 63.86,
-      "graph_nodes": 196,
-      "isolated_graph_nodes_after": 49,
-      "density_pct_over_graph_nodes": 1.5751,
-      "density_pct_over_catalog": 0.2778
+      "rules": 48,
+      "new_edges_in_tranche": 15,
+      "edges_after": 341,
+      "author_declared_pairs_explained": 190,
+      "author_declared_pairs_explained_pct": 66.67,
+      "graph_nodes": 209,
+      "isolated_graph_nodes_after": 53,
+      "density_pct_over_graph_nodes": 1.5688,
+      "density_pct_over_catalog": 0.2789
     },
     {
       "tranche": "speculative",
-      "rules": 22,
-      "new_edges_in_tranche": 74,
-      "edges_after": 375,
-      "author_declared_pairs_explained": 159,
-      "author_declared_pairs_explained_pct": 63.86,
-      "graph_nodes": 196,
+      "rules": 26,
+      "new_edges_in_tranche": 84,
+      "edges_after": 425,
+      "author_declared_pairs_explained": 190,
+      "author_declared_pairs_explained_pct": 66.67,
+      "graph_nodes": 209,
       "isolated_graph_nodes_after": 40,
-      "density_pct_over_graph_nodes": 1.9623,
-      "density_pct_over_catalog": 0.3461
+      "density_pct_over_graph_nodes": 1.9553,
+      "density_pct_over_catalog": 0.3476
     }
   ],
   "rejected_interfaces": {
     "counts": {
       "standard_absent": 2,
-      "standard_internal": 516,
-      "standard_unrecognized": 119
+      "standard_internal": 542,
+      "standard_unrecognized": 122
     },
     "unrecognized_standards": [
       {
@@ -174,7 +174,15 @@
         "interfaces": 1
       },
       {
+        "standard": "6mm dia × 2mm N52 neodymium",
+        "interfaces": 1
+      },
+      {
         "standard": "70-450 / 86-450 mason CT finish",
+        "interfaces": 1
+      },
+      {
+        "standard": "Custom mounting pattern",
         "interfaces": 1
       },
       {
@@ -188,17 +196,9 @@
       {
         "standard": "Erlenmeyer/beaker body Ø70-108 mm",
         "interfaces": 1
-      },
-      {
-        "standard": "H1Z2Z2-K 4-6 mm2 solar lead OD series",
-        "interfaces": 1
-      },
-      {
-        "standard": "ISO 273 medium clearance",
-        "interfaces": 1
       }
     ],
-    "unrecognized_standards_distinct": 88
+    "unrecognized_standards_distinct": 91
   },
   "rules": [
     {
@@ -1136,19 +1136,19 @@
       "role_b": "thread",
       "symmetric": true,
       "confidence": "corroborated",
-      "reason": "16 author-declared compatible_with links already assert thread<->thread within this family, and both roles have 2+ objects",
+      "reason": "23 author-declared compatible_with links already assert thread<->thread within this family, and both roles have 2+ objects",
       "one_sided": false,
       "members": {
-        "objects_role_a": 8,
-        "objects_role_b": 8,
-        "objects_total": 8,
-        "objects_both_roles": 8
+        "objects_role_a": 9,
+        "objects_role_b": 9,
+        "objects_total": 9,
+        "objects_both_roles": 9
       },
-      "claimed_pairs": 28,
-      "pairs_already_in_graph": 28,
+      "claimed_pairs": 36,
+      "pairs_already_in_graph": 36,
       "new_edges": 0,
       "evidence": {
-        "author_declared_pairs": 16,
+        "author_declared_pairs": 23,
         "author_declared_examples": [
           [
             "bird-feeder",
@@ -1160,15 +1160,15 @@
           ],
           [
             "bird-feeder",
+            "faircap-filter"
+          ],
+          [
+            "bird-feeder",
             "jar-adapter"
           ],
           [
             "bird-feeder",
             "pco-cap"
-          ],
-          [
-            "bird-feeder",
-            "pet-dispenser"
           ]
         ],
         "graph_rule_admits": "mates_with",
@@ -1237,6 +1237,16 @@
           "a": "bird-feeder",
           "a_interface": "pet_bottle_neck",
           "a_standard": "PCO 1881",
+          "b": "faircap-filter",
+          "b_interface": "pet_bottle_neck_thread",
+          "b_standard": "PCO 1881",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "bird-feeder",
+          "a_interface": "pet_bottle_neck",
+          "a_standard": "PCO 1881",
           "b": "jar-adapter",
           "b_interface": "pco1881_neck_thread",
           "b_standard": "PCO 1881",
@@ -1252,14 +1262,131 @@
           "b_standard": "PCO 1881",
           "author_declared": true,
           "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "din-rail-35:rail+rail",
+      "claim": "objects declaring standard family 'din-rail-35' in role 'rail' mate with objects declaring it in role 'rail'",
+      "family": "din-rail-35",
+      "role_a": "rail",
+      "role_b": "rail",
+      "symmetric": true,
+      "confidence": "corroborated",
+      "reason": "18 author-declared compatible_with links already assert rail<->rail within this family, and both roles have 2+ objects",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 7,
+        "objects_role_b": 7,
+        "objects_total": 7,
+        "objects_both_roles": 7
+      },
+      "claimed_pairs": 21,
+      "pairs_already_in_graph": 21,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 18,
+        "author_declared_examples": [
+          [
+            "busbar-support",
+            "devboard-tray"
+          ],
+          [
+            "busbar-support",
+            "din-module"
+          ],
+          [
+            "busbar-support",
+            "din-rail-clip"
+          ],
+          [
+            "busbar-support",
+            "din-relay"
+          ],
+          [
+            "busbar-support",
+            "din-terminal-comb"
+          ]
+        ],
+        "graph_rule_admits": "same_family",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "DIN EN 60715",
+          "DIN EN 60715 TS35"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bar_size",
+          "clearance",
+          "mount_width",
+          "plate_t",
+          "plate_th",
+          "rail_standard",
+          "stand_h",
+          "wall"
+        ],
+        "role_b_parameters": [
+          "bar_size",
+          "clearance",
+          "mount_width",
+          "plate_t",
+          "plate_th",
+          "rail_standard",
+          "stand_h",
+          "wall"
+        ]
+      },
+      "examples": [
+        {
+          "a": "busbar-support",
+          "a_interface": "busbar_profile",
+          "a_standard": "DIN EN 60715",
+          "b": "devboard-tray",
+          "b_interface": "din_rail_foot",
+          "b_standard": "DIN EN 60715",
+          "author_declared": true,
+          "already_in_graph": true
         },
         {
-          "a": "bird-feeder",
-          "a_interface": "pet_bottle_neck",
-          "a_standard": "PCO 1881",
-          "b": "pet-dispenser",
-          "b_interface": "pet_bottle_neck",
-          "b_standard": "PCO 1881",
+          "a": "busbar-support",
+          "a_interface": "busbar_profile",
+          "a_standard": "DIN EN 60715",
+          "b": "din-module",
+          "b_interface": "din_ts35_rail",
+          "b_standard": "DIN EN 60715",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "busbar-support",
+          "a_interface": "busbar_profile",
+          "a_standard": "DIN EN 60715",
+          "b": "din-rail-clip",
+          "b_interface": "din_ts35_rail",
+          "b_standard": "DIN EN 60715 TS35",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "busbar-support",
+          "a_interface": "busbar_profile",
+          "a_standard": "DIN EN 60715",
+          "b": "din-relay",
+          "b_interface": "din_ts35_rail",
+          "b_standard": "DIN EN 60715",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "busbar-support",
+          "a_interface": "busbar_profile",
+          "a_standard": "DIN EN 60715",
+          "b": "din-terminal-comb",
+          "b_interface": "din_ts35_rail",
+          "b_standard": "DIN EN 60715",
           "author_declared": true,
           "already_in_graph": true
         }
@@ -1404,122 +1531,123 @@
       ]
     },
     {
-      "rule_id": "din-rail-35:rail+rail",
-      "claim": "objects declaring standard family 'din-rail-35' in role 'rail' mate with objects declaring it in role 'rail'",
-      "family": "din-rail-35",
-      "role_a": "rail",
-      "role_b": "rail",
+      "rule_id": "iso-m3:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 'iso-m3' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "iso-m3",
+      "role_a": "bolt_pattern",
+      "role_b": "bolt_pattern",
       "symmetric": true,
       "confidence": "corroborated",
-      "reason": "12 author-declared compatible_with links already assert rail<->rail within this family, and both roles have 2+ objects",
+      "reason": "8 author-declared compatible_with links already assert bolt_pattern<->bolt_pattern within this family, and both roles have 2+ objects",
       "one_sided": false,
       "members": {
-        "objects_role_a": 6,
-        "objects_role_b": 6,
-        "objects_total": 6,
-        "objects_both_roles": 6
+        "objects_role_a": 5,
+        "objects_role_b": 5,
+        "objects_total": 5,
+        "objects_both_roles": 5
       },
-      "claimed_pairs": 15,
-      "pairs_already_in_graph": 15,
+      "claimed_pairs": 10,
+      "pairs_already_in_graph": 10,
       "new_edges": 0,
       "evidence": {
-        "author_declared_pairs": 12,
+        "author_declared_pairs": 8,
         "author_declared_examples": [
           [
-            "busbar-support",
-            "devboard-tray"
+            "din-rail-clip",
+            "enclosure-vent"
           ],
           [
-            "busbar-support",
-            "din-module"
+            "din-rail-clip",
+            "ferro-handle"
           ],
           [
-            "busbar-support",
-            "din-relay"
+            "din-rail-clip",
+            "flexure-mount"
           ],
           [
-            "busbar-support",
-            "din-terminal-comb"
+            "din-rail-clip",
+            "matrix-frame"
           ],
           [
-            "busbar-support",
-            "terminal-cover"
+            "enclosure-vent",
+            "ferro-handle"
           ]
         ],
-        "graph_rule_admits": "same_family",
+        "graph_rule_admits": "mates_with",
         "graph_agrees": true,
         "bridge_objects": 0,
         "bridge_consumers": 0,
         "standards_observed": [
-          "DIN EN 60715"
+          "ISO 261 M3",
+          "ISO 261 M3/M4/M5",
+          "ISO 4026 M3 set screw",
+          "ISO 7045 M3"
         ]
       },
       "falsification_handles": {
         "role_a_parameters": [
-          "bar_size",
-          "clearance",
-          "plate_t",
-          "plate_th",
-          "stand_h",
-          "wall"
+          "bolt_size",
+          "bolt_spacing",
+          "grub_d",
+          "m3_d",
+          "screw_d"
         ],
         "role_b_parameters": [
-          "bar_size",
-          "clearance",
-          "plate_t",
-          "plate_th",
-          "stand_h",
-          "wall"
+          "bolt_size",
+          "bolt_spacing",
+          "grub_d",
+          "m3_d",
+          "screw_d"
         ]
       },
       "examples": [
         {
-          "a": "busbar-support",
-          "a_interface": "busbar_profile",
-          "a_standard": "DIN EN 60715",
-          "b": "devboard-tray",
-          "b_interface": "din_rail_foot",
-          "b_standard": "DIN EN 60715",
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "enclosure-vent",
+          "b_interface": "corner_screw_mount",
+          "b_standard": "ISO 7045 M3",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "busbar-support",
-          "a_interface": "busbar_profile",
-          "a_standard": "DIN EN 60715",
-          "b": "din-module",
-          "b_interface": "din_ts35_rail",
-          "b_standard": "DIN EN 60715",
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "ferro-handle",
+          "b_interface": "grub_lock",
+          "b_standard": "ISO 4026 M3 set screw",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "busbar-support",
-          "a_interface": "busbar_profile",
-          "a_standard": "DIN EN 60715",
-          "b": "din-relay",
-          "b_interface": "din_ts35_rail",
-          "b_standard": "DIN EN 60715",
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "flexure-mount",
+          "b_interface": "m3_mount",
+          "b_standard": "ISO 261 M3",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "busbar-support",
-          "a_interface": "busbar_profile",
-          "a_standard": "DIN EN 60715",
-          "b": "din-terminal-comb",
-          "b_interface": "din_ts35_rail",
-          "b_standard": "DIN EN 60715",
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "matrix-frame",
+          "b_interface": "corner_screw_mount",
+          "b_standard": "ISO 7045 M3",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "busbar-support",
-          "a_interface": "busbar_profile",
-          "a_standard": "DIN EN 60715",
-          "b": "terminal-cover",
-          "b_interface": "din_rail_seat",
-          "b_standard": "DIN EN 60715",
+          "a": "enclosure-vent",
+          "a_interface": "corner_screw_mount",
+          "a_standard": "ISO 7045 M3",
+          "b": "ferro-handle",
+          "b_interface": "grub_lock",
+          "b_standard": "ISO 4026 M3 set screw",
           "author_declared": true,
           "already_in_graph": true
         }
@@ -1779,6 +1907,142 @@
       ]
     },
     {
+      "rule_id": "vesa:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 'vesa' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "vesa",
+      "role_a": "bolt_pattern",
+      "role_b": "bolt_pattern",
+      "symmetric": true,
+      "confidence": "corroborated",
+      "reason": "9 author-declared compatible_with links already assert bolt_pattern<->bolt_pattern within this family, and both roles have 2+ objects",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 5,
+        "objects_role_b": 5,
+        "objects_total": 5,
+        "objects_both_roles": 5
+      },
+      "claimed_pairs": 10,
+      "pairs_already_in_graph": 10,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 9,
+        "author_declared_examples": [
+          [
+            "framing-hyperobject",
+            "vesa-arm-extender"
+          ],
+          [
+            "framing-hyperobject",
+            "vesa-mount"
+          ],
+          [
+            "framing-hyperobject",
+            "vesa-plate-adapter"
+          ],
+          [
+            "framing-hyperobject",
+            "vesa-thinclient"
+          ],
+          [
+            "vesa-arm-extender",
+            "vesa-mount"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "VESA 75/100",
+          "VESA MIS-D",
+          "VESA MIS-D/E/F (FDMI)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bolt_d",
+          "countersink",
+          "cs_depth",
+          "cs_diameter",
+          "dest_vesa",
+          "dest_vesa_size",
+          "mounting_style",
+          "offset",
+          "plate_margin",
+          "plate_thick",
+          "vesa",
+          "vesa_large"
+        ],
+        "role_b_parameters": [
+          "bolt_d",
+          "countersink",
+          "cs_depth",
+          "cs_diameter",
+          "dest_vesa",
+          "dest_vesa_size",
+          "mounting_style",
+          "offset",
+          "plate_margin",
+          "plate_thick",
+          "vesa",
+          "vesa_large"
+        ]
+      },
+      "examples": [
+        {
+          "a": "framing-hyperobject",
+          "a_interface": "vesa_pattern",
+          "a_standard": "VESA 75/100",
+          "b": "vesa-arm-extender",
+          "b_interface": "vesa_display_face",
+          "b_standard": "VESA MIS-D",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "framing-hyperobject",
+          "a_interface": "vesa_pattern",
+          "a_standard": "VESA 75/100",
+          "b": "vesa-mount",
+          "b_interface": "vesa_fdmi_destination",
+          "b_standard": "VESA MIS-D/E/F (FDMI)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "framing-hyperobject",
+          "a_interface": "vesa_pattern",
+          "a_standard": "VESA 75/100",
+          "b": "vesa-plate-adapter",
+          "b_interface": "vesa_mis_d_large",
+          "b_standard": "VESA MIS-D",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "framing-hyperobject",
+          "a_interface": "vesa_pattern",
+          "a_standard": "VESA 75/100",
+          "b": "vesa-thinclient",
+          "b_interface": "vesa_mis_d_mount",
+          "b_standard": "VESA MIS-D",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "vesa-arm-extender",
+          "a_interface": "vesa_display_face",
+          "a_standard": "VESA MIS-D",
+          "b": "vesa-mount",
+          "b_interface": "vesa_fdmi_destination",
+          "b_standard": "VESA MIS-D/E/F (FDMI)",
+          "author_declared": true,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "webbing-strap:profile+rail",
       "claim": "objects declaring standard family 'webbing-strap' in role 'profile' mate with objects declaring it in role 'rail'",
       "family": "webbing-strap",
@@ -1899,6 +2163,126 @@
       ]
     },
     {
+      "rule_id": "gridfinity:grid+profile",
+      "claim": "objects declaring standard family 'gridfinity' in role 'grid' mate with objects declaring it in role 'profile'",
+      "family": "gridfinity",
+      "role_a": "grid",
+      "role_b": "profile",
+      "symmetric": false,
+      "confidence": "corroborated",
+      "reason": "4 author-declared compatible_with links already assert grid<->profile within this family, and both roles have 2+ objects",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 4,
+        "objects_role_b": 2,
+        "objects_total": 5,
+        "objects_both_roles": 1
+      },
+      "claimed_pairs": 7,
+      "pairs_already_in_graph": 7,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 4,
+        "author_declared_examples": [
+          [
+            "grid-hub",
+            "gridfinity"
+          ],
+          [
+            "grid-hub",
+            "locking-mechanism-hyperobject"
+          ],
+          [
+            "gridfinity",
+            "gridfinity-baseplate"
+          ],
+          [
+            "gridfinity",
+            "gridfinity-tool"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "Gridfinity (42mm module, 7mm Z-unit)",
+          "Gridfinity 42 mm",
+          "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "Voidstar Gridfinity"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "base_th",
+          "grid_x",
+          "grid_y",
+          "grid_z",
+          "gx",
+          "gy",
+          "nx",
+          "ny"
+        ],
+        "role_b_parameters": [
+          "bp_thickness",
+          "cdg_mount_type",
+          "lip_enabled"
+        ]
+      },
+      "examples": [
+        {
+          "a": "grid-hub",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity",
+          "b_interface": "gridfinity_base_profile",
+          "b_standard": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "grid-hub",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "locking-mechanism-hyperobject",
+          "b_interface": "gridfinity_base",
+          "b_standard": "Voidstar Gridfinity",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "gridfinity-baseplate",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity",
+          "b_interface": "gridfinity_base_profile",
+          "b_standard": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "gridfinity-tool",
+          "a_interface": "gridfinity_foot",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity",
+          "b_interface": "gridfinity_base_profile",
+          "b_standard": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "gridfinity",
+          "a_interface": "gridfinity_grid",
+          "a_standard": "Gridfinity (42mm module, 7mm Z-unit)",
+          "b": "locking-mechanism-hyperobject",
+          "b_interface": "gridfinity_base",
+          "b_standard": "Voidstar Gridfinity",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "gopro-mount:snap+snap",
       "claim": "objects declaring standard family 'gopro-mount' in role 'snap' mate with objects declaring it in role 'snap'",
       "family": "gopro-mount",
@@ -2009,14 +2393,14 @@
       ]
     },
     {
-      "rule_id": "iso-m3:bolt_pattern+bolt_pattern",
-      "claim": "objects declaring standard family 'iso-m3' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
-      "family": "iso-m3",
-      "role_a": "bolt_pattern",
-      "role_b": "bolt_pattern",
+      "rule_id": "gridfinity:grid+grid",
+      "claim": "objects declaring standard family 'gridfinity' in role 'grid' mate with objects declaring it in role 'grid'",
+      "family": "gridfinity",
+      "role_a": "grid",
+      "role_b": "grid",
       "symmetric": true,
       "confidence": "corroborated",
-      "reason": "4 author-declared compatible_with links already assert bolt_pattern<->bolt_pattern within this family, and both roles have 2+ objects",
+      "reason": "6 author-declared compatible_with links already assert grid<->grid within this family, and both roles have 2+ objects",
       "one_sided": false,
       "members": {
         "objects_role_a": 4,
@@ -2028,104 +2412,117 @@
       "pairs_already_in_graph": 6,
       "new_edges": 0,
       "evidence": {
-        "author_declared_pairs": 4,
+        "author_declared_pairs": 6,
         "author_declared_examples": [
           [
-            "enclosure-vent",
-            "ferro-handle"
+            "grid-hub",
+            "gridfinity"
           ],
           [
-            "enclosure-vent",
-            "flexure-mount"
+            "grid-hub",
+            "gridfinity-baseplate"
           ],
           [
-            "enclosure-vent",
-            "matrix-frame"
+            "grid-hub",
+            "gridfinity-tool"
           ],
           [
-            "ferro-handle",
-            "matrix-frame"
+            "gridfinity",
+            "gridfinity-baseplate"
+          ],
+          [
+            "gridfinity",
+            "gridfinity-tool"
           ]
         ],
-        "graph_rule_admits": "mates_with",
+        "graph_rule_admits": "same_family",
         "graph_agrees": true,
         "bridge_objects": 0,
         "bridge_consumers": 0,
         "standards_observed": [
-          "ISO 261 M3",
-          "ISO 4026 M3 set screw",
-          "ISO 7045 M3"
+          "Gridfinity (42mm module, 7mm Z-unit)",
+          "Gridfinity 42 mm"
         ]
       },
       "falsification_handles": {
         "role_a_parameters": [
-          "grub_d",
-          "m3_d",
-          "screw_d"
+          "base_th",
+          "grid_x",
+          "grid_y",
+          "grid_z",
+          "gx",
+          "gy",
+          "nx",
+          "ny"
         ],
         "role_b_parameters": [
-          "grub_d",
-          "m3_d",
-          "screw_d"
+          "base_th",
+          "grid_x",
+          "grid_y",
+          "grid_z",
+          "gx",
+          "gy",
+          "nx",
+          "ny"
         ]
       },
       "examples": [
         {
-          "a": "enclosure-vent",
-          "a_interface": "corner_screw_mount",
-          "a_standard": "ISO 7045 M3",
-          "b": "ferro-handle",
-          "b_interface": "grub_lock",
-          "b_standard": "ISO 4026 M3 set screw",
+          "a": "grid-hub",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity",
+          "b_interface": "gridfinity_grid",
+          "b_standard": "Gridfinity (42mm module, 7mm Z-unit)",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "enclosure-vent",
-          "a_interface": "corner_screw_mount",
-          "a_standard": "ISO 7045 M3",
-          "b": "flexure-mount",
-          "b_interface": "m3_mount",
-          "b_standard": "ISO 261 M3",
+          "a": "grid-hub",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity-baseplate",
+          "b_interface": "gridfinity_baseplate",
+          "b_standard": "Gridfinity 42 mm",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "enclosure-vent",
-          "a_interface": "corner_screw_mount",
-          "a_standard": "ISO 7045 M3",
-          "b": "matrix-frame",
-          "b_interface": "corner_screw_mount",
-          "b_standard": "ISO 7045 M3",
+          "a": "grid-hub",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity-tool",
+          "b_interface": "gridfinity_foot",
+          "b_standard": "Gridfinity 42 mm",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "ferro-handle",
-          "a_interface": "grub_lock",
-          "a_standard": "ISO 4026 M3 set screw",
-          "b": "matrix-frame",
-          "b_interface": "corner_screw_mount",
-          "b_standard": "ISO 7045 M3",
+          "a": "gridfinity",
+          "a_interface": "gridfinity_grid",
+          "a_standard": "Gridfinity (42mm module, 7mm Z-unit)",
+          "b": "gridfinity-baseplate",
+          "b_interface": "gridfinity_baseplate",
+          "b_standard": "Gridfinity 42 mm",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "ferro-handle",
-          "a_interface": "grub_lock",
-          "a_standard": "ISO 4026 M3 set screw",
-          "b": "flexure-mount",
-          "b_interface": "m3_mount",
-          "b_standard": "ISO 261 M3",
-          "author_declared": false,
+          "a": "gridfinity",
+          "a_interface": "gridfinity_grid",
+          "a_standard": "Gridfinity (42mm module, 7mm Z-unit)",
+          "b": "gridfinity-tool",
+          "b_interface": "gridfinity_foot",
+          "b_standard": "Gridfinity 42 mm",
+          "author_declared": true,
           "already_in_graph": true
         }
       ]
     },
     {
-      "rule_id": "vesa:bolt_pattern+bolt_pattern",
-      "claim": "objects declaring standard family 'vesa' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
-      "family": "vesa",
+      "rule_id": "nema-stepper:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 'nema-stepper' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "nema-stepper",
       "role_a": "bolt_pattern",
       "role_b": "bolt_pattern",
       "symmetric": true,
@@ -2145,24 +2542,24 @@
         "author_declared_pairs": 5,
         "author_declared_examples": [
           [
-            "vesa-arm-extender",
-            "vesa-mount"
+            "motor-mount",
+            "nema-bracket"
           ],
           [
-            "vesa-arm-extender",
-            "vesa-plate-adapter"
+            "motor-mount",
+            "nema-damper"
           ],
           [
-            "vesa-arm-extender",
-            "vesa-thinclient"
+            "nema-bracket",
+            "nema-damper"
           ],
           [
-            "vesa-mount",
-            "vesa-plate-adapter"
+            "nema-bracket",
+            "scara-robotics"
           ],
           [
-            "vesa-mount",
-            "vesa-thinclient"
+            "nema-damper",
+            "scara-robotics"
           ]
         ],
         "graph_rule_admits": "mates_with",
@@ -2170,88 +2567,72 @@
         "bridge_objects": 0,
         "bridge_consumers": 0,
         "standards_observed": [
-          "VESA MIS-D",
-          "VESA MIS-D/E/F (FDMI)"
+          "NEMA 17/23",
+          "NEMA 17/23/34"
         ]
       },
       "falsification_handles": {
         "role_a_parameters": [
-          "bolt_d",
-          "countersink",
-          "cs_depth",
-          "cs_diameter",
-          "dest_vesa",
-          "dest_vesa_size",
-          "offset",
-          "plate_margin",
-          "plate_thick",
-          "vesa",
-          "vesa_large",
-          "vesa_size"
+          "motor_frame_size",
+          "nema",
+          "nema_size",
+          "pilot_open"
         ],
         "role_b_parameters": [
-          "bolt_d",
-          "countersink",
-          "cs_depth",
-          "cs_diameter",
-          "dest_vesa",
-          "dest_vesa_size",
-          "offset",
-          "plate_margin",
-          "plate_thick",
-          "vesa",
-          "vesa_large",
-          "vesa_size"
+          "motor_frame_size",
+          "nema",
+          "nema_size",
+          "pilot_open"
         ]
       },
       "examples": [
         {
-          "a": "vesa-arm-extender",
-          "a_interface": "vesa_display_face",
-          "a_standard": "VESA MIS-D",
-          "b": "vesa-mount",
-          "b_interface": "vesa_fdmi_destination",
-          "b_standard": "VESA MIS-D/E/F (FDMI)",
+          "a": "motor-mount",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23/34",
+          "b": "nema-bracket",
+          "b_interface": "nema_bolt_pattern",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "vesa-arm-extender",
-          "a_interface": "vesa_display_face",
-          "a_standard": "VESA MIS-D",
-          "b": "vesa-plate-adapter",
-          "b_interface": "vesa_mis_d_large",
-          "b_standard": "VESA MIS-D",
+          "a": "motor-mount",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23/34",
+          "b": "nema-damper",
+          "b_interface": "nema_bolt_pattern",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "vesa-arm-extender",
-          "a_interface": "vesa_display_face",
-          "a_standard": "VESA MIS-D",
-          "b": "vesa-thinclient",
-          "b_interface": "vesa_mis_d_mount",
-          "b_standard": "VESA MIS-D",
+          "a": "nema-bracket",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23",
+          "b": "nema-damper",
+          "b_interface": "nema_bolt_pattern",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "vesa-mount",
-          "a_interface": "vesa_fdmi_destination",
-          "a_standard": "VESA MIS-D/E/F (FDMI)",
-          "b": "vesa-plate-adapter",
-          "b_interface": "vesa_mis_d_large",
-          "b_standard": "VESA MIS-D",
+          "a": "nema-bracket",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23",
+          "b": "scara-robotics",
+          "b_interface": "nema17_mount",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "vesa-mount",
-          "a_interface": "vesa_fdmi_destination",
-          "a_standard": "VESA MIS-D/E/F (FDMI)",
-          "b": "vesa-thinclient",
-          "b_interface": "vesa_mis_d_mount",
-          "b_standard": "VESA MIS-D",
+          "a": "nema-damper",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23",
+          "b": "scara-robotics",
+          "b_interface": "nema17_mount",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         }
@@ -2653,98 +3034,6 @@
       ]
     },
     {
-      "rule_id": "gridfinity:grid+grid",
-      "claim": "objects declaring standard family 'gridfinity' in role 'grid' mate with objects declaring it in role 'grid'",
-      "family": "gridfinity",
-      "role_a": "grid",
-      "role_b": "grid",
-      "symmetric": true,
-      "confidence": "corroborated",
-      "reason": "3 author-declared compatible_with links already assert grid<->grid within this family, and both roles have 2+ objects",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 3,
-        "objects_role_b": 3,
-        "objects_total": 3,
-        "objects_both_roles": 3
-      },
-      "claimed_pairs": 3,
-      "pairs_already_in_graph": 3,
-      "new_edges": 0,
-      "evidence": {
-        "author_declared_pairs": 3,
-        "author_declared_examples": [
-          [
-            "grid-hub",
-            "gridfinity-baseplate"
-          ],
-          [
-            "grid-hub",
-            "gridfinity-tool"
-          ],
-          [
-            "gridfinity-baseplate",
-            "gridfinity-tool"
-          ]
-        ],
-        "graph_rule_admits": "same_family",
-        "graph_agrees": true,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "Gridfinity 42 mm"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "base_th",
-          "gx",
-          "gy",
-          "nx",
-          "ny"
-        ],
-        "role_b_parameters": [
-          "base_th",
-          "gx",
-          "gy",
-          "nx",
-          "ny"
-        ]
-      },
-      "examples": [
-        {
-          "a": "grid-hub",
-          "a_interface": "gridfinity_baseplate",
-          "a_standard": "Gridfinity 42 mm",
-          "b": "gridfinity-baseplate",
-          "b_interface": "gridfinity_baseplate",
-          "b_standard": "Gridfinity 42 mm",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "grid-hub",
-          "a_interface": "gridfinity_baseplate",
-          "a_standard": "Gridfinity 42 mm",
-          "b": "gridfinity-tool",
-          "b_interface": "gridfinity_foot",
-          "b_standard": "Gridfinity 42 mm",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "gridfinity-baseplate",
-          "a_interface": "gridfinity_baseplate",
-          "a_standard": "Gridfinity 42 mm",
-          "b": "gridfinity-tool",
-          "b_interface": "gridfinity_foot",
-          "b_standard": "Gridfinity 42 mm",
-          "author_declared": true,
-          "already_in_graph": true
-        }
-      ]
-    },
-    {
       "rule_id": "miter-ttrack:socket+socket",
       "claim": "objects declaring standard family 'miter-ttrack' in role 'socket' mate with objects declaring it in role 'socket'",
       "family": "miter-ttrack",
@@ -2919,6 +3208,101 @@
           "b_standard": "PC fan 40-140mm",
           "author_declared": true,
           "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "gridfinity:grid+socket",
+      "claim": "objects declaring standard family 'gridfinity' in role 'grid' mate with objects declaring it in role 'socket'",
+      "family": "gridfinity",
+      "role_a": "grid",
+      "role_b": "socket",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "1 author-declared compatible_with link(s) assert grid<->socket, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 4,
+        "objects_role_b": 1,
+        "objects_total": 5,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 4,
+      "pairs_already_in_graph": 1,
+      "new_edges": 3,
+      "evidence": {
+        "author_declared_pairs": 1,
+        "author_declared_examples": [
+          [
+            "din-rail-clip",
+            "gridfinity"
+          ]
+        ],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "Gridfinity (42 mm module)",
+          "Gridfinity (42mm module, 7mm Z-unit)",
+          "Gridfinity 42 mm"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "base_th",
+          "grid_x",
+          "grid_y",
+          "grid_z",
+          "gx",
+          "gy",
+          "nx",
+          "ny"
+        ],
+        "role_b_parameters": [
+          "plate_thickness"
+        ]
+      },
+      "examples": [
+        {
+          "a": "gridfinity",
+          "a_interface": "gridfinity_grid",
+          "a_standard": "Gridfinity (42mm module, 7mm Z-unit)",
+          "b": "din-rail-clip",
+          "b_interface": "gridfinity_dock",
+          "b_standard": "Gridfinity (42 mm module)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "grid-hub",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "din-rail-clip",
+          "b_interface": "gridfinity_dock",
+          "b_standard": "Gridfinity (42 mm module)",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "gridfinity-baseplate",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "din-rail-clip",
+          "b_interface": "gridfinity_dock",
+          "b_standard": "Gridfinity (42 mm module)",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "gridfinity-tool",
+          "a_interface": "gridfinity_foot",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "din-rail-clip",
+          "b_interface": "gridfinity_dock",
+          "b_standard": "Gridfinity (42 mm module)",
+          "author_declared": false,
+          "already_in_graph": false
         }
       ]
     },
@@ -3788,6 +4172,101 @@
       ]
     },
     {
+      "rule_id": "gridfinity:grid+snap",
+      "claim": "objects declaring standard family 'gridfinity' in role 'grid' mate with objects declaring it in role 'snap'",
+      "family": "gridfinity",
+      "role_a": "grid",
+      "role_b": "snap",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "3 author-declared compatible_with link(s) assert grid<->snap, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 4,
+        "objects_role_b": 1,
+        "objects_total": 4,
+        "objects_both_roles": 1
+      },
+      "claimed_pairs": 3,
+      "pairs_already_in_graph": 3,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 3,
+        "author_declared_examples": [
+          [
+            "grid-hub",
+            "gridfinity"
+          ],
+          [
+            "gridfinity",
+            "gridfinity-baseplate"
+          ],
+          [
+            "gridfinity",
+            "gridfinity-tool"
+          ]
+        ],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "Gridfinity (42mm module, 7mm Z-unit)",
+          "Gridfinity 42 mm",
+          "Gridfinity baseplate socket (0.25 mm clearance)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "base_th",
+          "grid_x",
+          "grid_y",
+          "grid_z",
+          "gx",
+          "gy",
+          "nx",
+          "ny"
+        ],
+        "role_b_parameters": [
+          "bp_thickness",
+          "grid_x",
+          "grid_y"
+        ]
+      },
+      "examples": [
+        {
+          "a": "grid-hub",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity",
+          "b_interface": "gridfinity_baseplate_snap",
+          "b_standard": "Gridfinity baseplate socket (0.25 mm clearance)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "gridfinity-baseplate",
+          "a_interface": "gridfinity_baseplate",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity",
+          "b_interface": "gridfinity_baseplate_snap",
+          "b_standard": "Gridfinity baseplate socket (0.25 mm clearance)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "gridfinity-tool",
+          "a_interface": "gridfinity_foot",
+          "a_standard": "Gridfinity 42 mm",
+          "b": "gridfinity",
+          "b_interface": "gridfinity_baseplate_snap",
+          "b_standard": "Gridfinity baseplate socket (0.25 mm clearance)",
+          "author_declared": true,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "ips-pipe:socket+socket",
       "claim": "objects declaring standard family 'ips-pipe' in role 'socket' mate with objects declaring it in role 'socket'",
       "family": "ips-pipe",
@@ -3871,6 +4350,91 @@
           "b": "pipe-fitting",
           "b_interface": "pipe_slip_socket",
           "b_standard": "PVC sched (nominal)",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "nema-stepper:bolt_pattern+socket",
+      "claim": "objects declaring standard family 'nema-stepper' in role 'bolt_pattern' mate with objects declaring it in role 'socket'",
+      "family": "nema-stepper",
+      "role_a": "bolt_pattern",
+      "role_b": "socket",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "2 author-declared compatible_with link(s) assert bolt_pattern<->socket, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 4,
+        "objects_role_b": 1,
+        "objects_total": 4,
+        "objects_both_roles": 1
+      },
+      "claimed_pairs": 3,
+      "pairs_already_in_graph": 3,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 2,
+        "author_declared_examples": [
+          [
+            "motor-mount",
+            "nema-bracket"
+          ],
+          [
+            "motor-mount",
+            "nema-damper"
+          ]
+        ],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "NEMA 17/23",
+          "NEMA 17/23/34",
+          "NEMA motor face spec"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "motor_frame_size",
+          "nema",
+          "nema_size",
+          "pilot_open"
+        ],
+        "role_b_parameters": [
+          "nema_size"
+        ]
+      },
+      "examples": [
+        {
+          "a": "nema-bracket",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23",
+          "b": "motor-mount",
+          "b_interface": "nema_pilot_bore",
+          "b_standard": "NEMA motor face spec",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "nema-damper",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23",
+          "b": "motor-mount",
+          "b_interface": "nema_pilot_bore",
+          "b_standard": "NEMA motor face spec",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "scara-robotics",
+          "a_interface": "nema17_mount",
+          "a_standard": "NEMA 17/23",
+          "b": "motor-mount",
+          "b_interface": "nema_pilot_bore",
+          "b_standard": "NEMA motor face spec",
           "author_declared": false,
           "already_in_graph": true
         }
@@ -4052,6 +4616,76 @@
           "b": "strap-buckle",
           "b_interface": "webbing_slot",
           "b_standard": "20/25/38mm webbing",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "gridfinity:profile+socket",
+      "claim": "objects declaring standard family 'gridfinity' in role 'profile' mate with objects declaring it in role 'socket'",
+      "family": "gridfinity",
+      "role_a": "profile",
+      "role_b": "socket",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "1 author-declared compatible_with link(s) assert profile<->socket, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 2,
+        "objects_role_b": 1,
+        "objects_total": 3,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 2,
+      "pairs_already_in_graph": 2,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 1,
+        "author_declared_examples": [
+          [
+            "din-rail-clip",
+            "gridfinity"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "Gridfinity (42 mm module)",
+          "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "Voidstar Gridfinity"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bp_thickness",
+          "cdg_mount_type",
+          "lip_enabled"
+        ],
+        "role_b_parameters": [
+          "plate_thickness"
+        ]
+      },
+      "examples": [
+        {
+          "a": "gridfinity",
+          "a_interface": "gridfinity_base_profile",
+          "a_standard": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "b": "din-rail-clip",
+          "b_interface": "gridfinity_dock",
+          "b_standard": "Gridfinity (42 mm module)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "locking-mechanism-hyperobject",
+          "a_interface": "gridfinity_base",
+          "a_standard": "Voidstar Gridfinity",
+          "b": "din-rail-clip",
+          "b_interface": "gridfinity_dock",
+          "b_standard": "Gridfinity (42 mm module)",
           "author_declared": false,
           "already_in_graph": true
         }
@@ -4378,6 +5012,70 @@
       ]
     },
     {
+      "rule_id": "enable-prosthetic:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 'enable-prosthetic' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "enable-prosthetic",
+      "role_a": "bolt_pattern",
+      "role_b": "bolt_pattern",
+      "symmetric": true,
+      "confidence": "plausible",
+      "reason": "1 author-declared compatible_with link asserts bolt_pattern<->bolt_pattern within this family; both roles have 2+ objects but a single assertion is one author",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 2,
+        "objects_role_b": 2,
+        "objects_total": 2,
+        "objects_both_roles": 2
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 1,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 1,
+        "author_declared_examples": [
+          [
+            "prosthetic-socket",
+            "prosthetic-wrist"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "e-NABLE / OSL 4-bolt"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "adapter_plate_dia",
+          "bolt_circle_dia",
+          "bolt_dia",
+          "plate_dia",
+          "pyramid"
+        ],
+        "role_b_parameters": [
+          "adapter_plate_dia",
+          "bolt_circle_dia",
+          "bolt_dia",
+          "plate_dia",
+          "pyramid"
+        ]
+      },
+      "examples": [
+        {
+          "a": "prosthetic-socket",
+          "a_interface": "distal_pyramid_adapter",
+          "a_standard": "e-NABLE / OSL 4-bolt",
+          "b": "prosthetic-wrist",
+          "b_interface": "terminal_4bolt",
+          "b_standard": "e-NABLE / OSL 4-bolt",
+          "author_declared": true,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "filter-thread:thread+thread",
       "claim": "objects declaring standard family 'filter-thread' in role 'thread' mate with objects declaring it in role 'thread'",
       "family": "filter-thread",
@@ -4437,6 +5135,65 @@
           "b": "lens-cap",
           "b_interface": "filter_thread",
           "b_standard": "M49-M82 x 0.75",
+          "author_declared": true,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "gridfinity:snap+socket",
+      "claim": "objects declaring standard family 'gridfinity' in role 'snap' mate with objects declaring it in role 'socket'",
+      "family": "gridfinity",
+      "role_a": "snap",
+      "role_b": "socket",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "1 author-declared compatible_with link(s) assert snap<->socket, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 1,
+        "objects_role_b": 1,
+        "objects_total": 2,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 1,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 1,
+        "author_declared_examples": [
+          [
+            "din-rail-clip",
+            "gridfinity"
+          ]
+        ],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "Gridfinity (42 mm module)",
+          "Gridfinity baseplate socket (0.25 mm clearance)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bp_thickness",
+          "grid_x",
+          "grid_y"
+        ],
+        "role_b_parameters": [
+          "plate_thickness"
+        ]
+      },
+      "examples": [
+        {
+          "a": "gridfinity",
+          "a_interface": "gridfinity_baseplate_snap",
+          "a_standard": "Gridfinity baseplate socket (0.25 mm clearance)",
+          "b": "din-rail-clip",
+          "b_interface": "gridfinity_dock",
+          "b_standard": "Gridfinity (42 mm module)",
           "author_declared": true,
           "already_in_graph": true
         }
@@ -5051,64 +5808,6 @@
           "b": "rail-bridge",
           "b_interface": "nato_accessory_rail",
           "b_standard": "NATO accessory rail",
-          "author_declared": true,
-          "already_in_graph": true
-        }
-      ]
-    },
-    {
-      "rule_id": "nema-stepper:bolt_pattern+bolt_pattern",
-      "claim": "objects declaring standard family 'nema-stepper' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
-      "family": "nema-stepper",
-      "role_a": "bolt_pattern",
-      "role_b": "bolt_pattern",
-      "symmetric": true,
-      "confidence": "plausible",
-      "reason": "1 author-declared compatible_with link asserts bolt_pattern<->bolt_pattern within this family; both roles have 2+ objects but a single assertion is one author",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 2,
-        "objects_role_b": 2,
-        "objects_total": 2,
-        "objects_both_roles": 2
-      },
-      "claimed_pairs": 1,
-      "pairs_already_in_graph": 1,
-      "new_edges": 0,
-      "evidence": {
-        "author_declared_pairs": 1,
-        "author_declared_examples": [
-          [
-            "nema-bracket",
-            "nema-damper"
-          ]
-        ],
-        "graph_rule_admits": "mates_with",
-        "graph_agrees": true,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "NEMA 17/23"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "nema",
-          "pilot_open"
-        ],
-        "role_b_parameters": [
-          "nema",
-          "pilot_open"
-        ]
-      },
-      "examples": [
-        {
-          "a": "nema-bracket",
-          "a_interface": "nema_bolt_pattern",
-          "a_standard": "NEMA 17/23",
-          "b": "nema-damper",
-          "b_interface": "nema_bolt_pattern",
-          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         }
@@ -5983,6 +6682,217 @@
       ]
     },
     {
+      "rule_id": "involute-gear:profile+spline",
+      "claim": "objects declaring standard family 'involute-gear' in role 'profile' mate with objects declaring it in role 'spline'",
+      "family": "involute-gear",
+      "role_a": "profile",
+      "role_b": "spline",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles profile<->spline, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 4,
+        "objects_role_b": 3,
+        "objects_total": 7,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 12,
+      "pairs_already_in_graph": 0,
+      "new_edges": 12,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "ISO 53",
+          "ISO 53 / DIN 867 (20 deg)",
+          "ISO 53 / DIN 867 (20° involute)",
+          "ISO 53 / DIN 867 involute tooth form"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "flank_pts",
+          "m",
+          "module",
+          "pressure_angle",
+          "teeth",
+          "teeth_planet",
+          "teeth_sun"
+        ],
+        "role_b_parameters": [
+          "helix",
+          "m",
+          "planet_teeth",
+          "pressure_angle",
+          "rack_teeth",
+          "rim_width",
+          "sun_teeth",
+          "teeth"
+        ]
+      },
+      "examples": [
+        {
+          "a": "bevel-pair",
+          "a_interface": "involute_tooth",
+          "a_standard": "ISO 53 / DIN 867 involute tooth form",
+          "b": "gear-rack",
+          "b_interface": "involute_rack_tooth",
+          "b_standard": "ISO 53",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "bevel-pair",
+          "a_interface": "involute_tooth",
+          "a_standard": "ISO 53 / DIN 867 involute tooth form",
+          "b": "gears",
+          "b_interface": "involute_gear_tooth",
+          "b_standard": "ISO 53 / DIN 867 (20° involute)",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "bevel-pair",
+          "a_interface": "involute_tooth",
+          "a_standard": "ISO 53 / DIN 867 involute tooth form",
+          "b": "planetary-gearset",
+          "b_interface": "planetary_involute_set",
+          "b_standard": "ISO 53",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "gear-kit",
+          "a_interface": "involute_teeth",
+          "a_standard": "ISO 53 / DIN 867 (20 deg)",
+          "b": "gear-rack",
+          "b_interface": "involute_rack_tooth",
+          "b_standard": "ISO 53",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "gear-kit",
+          "a_interface": "involute_teeth",
+          "a_standard": "ISO 53 / DIN 867 (20 deg)",
+          "b": "gears",
+          "b_interface": "involute_gear_tooth",
+          "b_standard": "ISO 53 / DIN 867 (20° involute)",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
+      "rule_id": "iso-m3:bolt_pattern+socket",
+      "claim": "objects declaring standard family 'iso-m3' in role 'bolt_pattern' mate with objects declaring it in role 'socket'",
+      "family": "iso-m3",
+      "role_a": "bolt_pattern",
+      "role_b": "socket",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->socket, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 5,
+        "objects_role_b": 2,
+        "objects_total": 7,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 10,
+      "pairs_already_in_graph": 0,
+      "new_edges": 10,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "ISO 261 M3",
+          "ISO 261 M3/M4/M5",
+          "ISO 4026 M3 set screw",
+          "ISO 7045 M3",
+          "ISO metric (M2/M2.5/M3)",
+          "M3-M8 insert"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bolt_size",
+          "bolt_spacing",
+          "grub_d",
+          "m3_d",
+          "screw_d"
+        ],
+        "role_b_parameters": [
+          "insert_size",
+          "melt_fit",
+          "screw_size",
+          "standoff_h",
+          "wall"
+        ]
+      },
+      "examples": [
+        {
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "insert-jig",
+          "b_interface": "insert_boss_socket",
+          "b_standard": "M3-M8 insert",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "pcb-standoff",
+          "b_interface": "standoff_bore",
+          "b_standard": "ISO metric (M2/M2.5/M3)",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "enclosure-vent",
+          "a_interface": "corner_screw_mount",
+          "a_standard": "ISO 7045 M3",
+          "b": "insert-jig",
+          "b_interface": "insert_boss_socket",
+          "b_standard": "M3-M8 insert",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "enclosure-vent",
+          "a_interface": "corner_screw_mount",
+          "a_standard": "ISO 7045 M3",
+          "b": "pcb-standoff",
+          "b_interface": "standoff_bore",
+          "b_standard": "ISO metric (M2/M2.5/M3)",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "ferro-handle",
+          "a_interface": "grub_lock",
+          "a_standard": "ISO 4026 M3 set screw",
+          "b": "insert-jig",
+          "b_interface": "insert_boss_socket",
+          "b_standard": "M3-M8 insert",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
       "rule_id": "unc-1/4-20:rail+thread",
       "claim": "objects declaring standard family 'unc-1/4-20' in role 'rail' mate with objects declaring it in role 'thread'",
       "family": "unc-1/4-20",
@@ -6082,211 +6992,6 @@
           "b": "spigot-adapter",
           "b_interface": "unc_screw_thread",
           "b_standard": "ASME B1.1 1/4-20 & 3/8-16 UNC",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
-      "rule_id": "involute-gear:profile+spline",
-      "claim": "objects declaring standard family 'involute-gear' in role 'profile' mate with objects declaring it in role 'spline'",
-      "family": "involute-gear",
-      "role_a": "profile",
-      "role_b": "spline",
-      "symmetric": false,
-      "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles profile<->spline, with no author-declared link and no geometry rule admitting the pairing",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 4,
-        "objects_role_b": 2,
-        "objects_total": 6,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 8,
-      "pairs_already_in_graph": 0,
-      "new_edges": 8,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "ISO 53",
-          "ISO 53 / DIN 867 (20 deg)",
-          "ISO 53 / DIN 867 involute tooth form"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "flank_pts",
-          "m",
-          "module",
-          "pressure_angle",
-          "teeth",
-          "teeth_planet",
-          "teeth_sun"
-        ],
-        "role_b_parameters": [
-          "m",
-          "planet_teeth",
-          "pressure_angle",
-          "rack_teeth",
-          "rim_width",
-          "sun_teeth"
-        ]
-      },
-      "examples": [
-        {
-          "a": "bevel-pair",
-          "a_interface": "involute_tooth",
-          "a_standard": "ISO 53 / DIN 867 involute tooth form",
-          "b": "gear-rack",
-          "b_interface": "involute_rack_tooth",
-          "b_standard": "ISO 53",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "bevel-pair",
-          "a_interface": "involute_tooth",
-          "a_standard": "ISO 53 / DIN 867 involute tooth form",
-          "b": "planetary-gearset",
-          "b_interface": "planetary_involute_set",
-          "b_standard": "ISO 53",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "gear-kit",
-          "a_interface": "involute_teeth",
-          "a_standard": "ISO 53 / DIN 867 (20 deg)",
-          "b": "gear-rack",
-          "b_interface": "involute_rack_tooth",
-          "b_standard": "ISO 53",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "gear-kit",
-          "a_interface": "involute_teeth",
-          "a_standard": "ISO 53 / DIN 867 (20 deg)",
-          "b": "planetary-gearset",
-          "b_interface": "planetary_involute_set",
-          "b_standard": "ISO 53",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "planetary-stage",
-          "a_interface": "involute_tooth",
-          "a_standard": "ISO 53 / DIN 867 involute tooth form",
-          "b": "gear-rack",
-          "b_interface": "involute_rack_tooth",
-          "b_standard": "ISO 53",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
-      "rule_id": "iso-m3:bolt_pattern+socket",
-      "claim": "objects declaring standard family 'iso-m3' in role 'bolt_pattern' mate with objects declaring it in role 'socket'",
-      "family": "iso-m3",
-      "role_a": "bolt_pattern",
-      "role_b": "socket",
-      "symmetric": false,
-      "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->socket, with no author-declared link and no geometry rule admitting the pairing",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 4,
-        "objects_role_b": 2,
-        "objects_total": 6,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 8,
-      "pairs_already_in_graph": 0,
-      "new_edges": 8,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "ISO 261 M3",
-          "ISO 4026 M3 set screw",
-          "ISO 7045 M3",
-          "ISO metric (M2/M2.5/M3)",
-          "M3-M8 insert"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "grub_d",
-          "m3_d",
-          "screw_d"
-        ],
-        "role_b_parameters": [
-          "insert_size",
-          "melt_fit",
-          "screw_size",
-          "standoff_h",
-          "wall"
-        ]
-      },
-      "examples": [
-        {
-          "a": "enclosure-vent",
-          "a_interface": "corner_screw_mount",
-          "a_standard": "ISO 7045 M3",
-          "b": "insert-jig",
-          "b_interface": "insert_boss_socket",
-          "b_standard": "M3-M8 insert",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "enclosure-vent",
-          "a_interface": "corner_screw_mount",
-          "a_standard": "ISO 7045 M3",
-          "b": "pcb-standoff",
-          "b_interface": "standoff_bore",
-          "b_standard": "ISO metric (M2/M2.5/M3)",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "ferro-handle",
-          "a_interface": "grub_lock",
-          "a_standard": "ISO 4026 M3 set screw",
-          "b": "insert-jig",
-          "b_interface": "insert_boss_socket",
-          "b_standard": "M3-M8 insert",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "ferro-handle",
-          "a_interface": "grub_lock",
-          "a_standard": "ISO 4026 M3 set screw",
-          "b": "pcb-standoff",
-          "b_interface": "standoff_bore",
-          "b_standard": "ISO metric (M2/M2.5/M3)",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "flexure-mount",
-          "a_interface": "m3_mount",
-          "a_standard": "ISO 261 M3",
-          "b": "insert-jig",
-          "b_interface": "insert_boss_socket",
-          "b_standard": "M3-M8 insert",
           "author_declared": false,
           "already_in_graph": false
         }
@@ -6671,6 +7376,92 @@
           "b": "tslot-corner",
           "b_interface": "tslot_bolt_grid",
           "b_standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
+      "rule_id": "involute-gear:spline+spline",
+      "claim": "objects declaring standard family 'involute-gear' in role 'spline' mate with objects declaring it in role 'spline'",
+      "family": "involute-gear",
+      "role_a": "spline",
+      "role_b": "spline",
+      "symmetric": true,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles spline<->spline, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 3,
+        "objects_role_b": 3,
+        "objects_total": 3,
+        "objects_both_roles": 3
+      },
+      "claimed_pairs": 3,
+      "pairs_already_in_graph": 0,
+      "new_edges": 3,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "ISO 53",
+          "ISO 53 / DIN 867 (20° involute)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "helix",
+          "m",
+          "planet_teeth",
+          "pressure_angle",
+          "rack_teeth",
+          "rim_width",
+          "sun_teeth",
+          "teeth"
+        ],
+        "role_b_parameters": [
+          "helix",
+          "m",
+          "planet_teeth",
+          "pressure_angle",
+          "rack_teeth",
+          "rim_width",
+          "sun_teeth",
+          "teeth"
+        ]
+      },
+      "examples": [
+        {
+          "a": "gear-rack",
+          "a_interface": "involute_rack_tooth",
+          "a_standard": "ISO 53",
+          "b": "gears",
+          "b_interface": "involute_gear_tooth",
+          "b_standard": "ISO 53 / DIN 867 (20° involute)",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "gear-rack",
+          "a_interface": "involute_rack_tooth",
+          "a_standard": "ISO 53",
+          "b": "planetary-gearset",
+          "b_interface": "planetary_involute_set",
+          "b_standard": "ISO 53",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "gears",
+          "a_interface": "involute_gear_tooth",
+          "a_standard": "ISO 53 / DIN 867 (20° involute)",
+          "b": "planetary-gearset",
+          "b_interface": "planetary_involute_set",
+          "b_standard": "ISO 53",
           "author_declared": false,
           "already_in_graph": false
         }
@@ -7131,14 +7922,70 @@
       ]
     },
     {
-      "rule_id": "involute-gear:spline+spline",
-      "claim": "objects declaring standard family 'involute-gear' in role 'spline' mate with objects declaring it in role 'spline'",
-      "family": "involute-gear",
-      "role_a": "spline",
-      "role_b": "spline",
+      "rule_id": "iso-hex-fastener:bolt_pattern+profile",
+      "claim": "objects declaring standard family 'iso-hex-fastener' in role 'bolt_pattern' mate with objects declaring it in role 'profile'",
+      "family": "iso-hex-fastener",
+      "role_a": "bolt_pattern",
+      "role_b": "profile",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->profile, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 1,
+        "objects_role_b": 1,
+        "objects_total": 2,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 0,
+      "new_edges": 1,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "ISO 4014 / ISO 4762 / ISO 7380",
+          "ISO 4032",
+          "ISO 4032 / ISO 4033"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "cdg_mount_type"
+        ],
+        "role_b_parameters": [
+          "clearance",
+          "diameter",
+          "head_style",
+          "nut_style"
+        ]
+      },
+      "examples": [
+        {
+          "a": "locking-mechanism-hyperobject",
+          "a_interface": "iso_m3_standard",
+          "a_standard": "ISO 4032",
+          "b": "fasteners",
+          "b_interface": "bolt_head_interface",
+          "b_standard": "ISO 4014 / ISO 4762 / ISO 7380",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
+      "rule_id": "microscope-slide:pocket+pocket",
+      "claim": "objects declaring standard family 'microscope-slide' in role 'pocket' mate with objects declaring it in role 'pocket'",
+      "family": "microscope-slide",
+      "role_a": "pocket",
+      "role_b": "pocket",
       "symmetric": true,
       "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles spline<->spline, with no author-declared link and no geometry rule admitting the pairing",
+      "reason": "co-declaration only: objects share the standard family in roles pocket<->pocket, with no author-declared link and no geometry rule admitting the pairing",
       "one_sided": false,
       "members": {
         "objects_role_a": 2,
@@ -7157,35 +8004,38 @@
         "bridge_objects": 0,
         "bridge_consumers": 0,
         "standards_observed": [
-          "ISO 53"
+          "ISO 8037-1 (25.4x76.2mm)",
+          "ISO 8037-1:2003"
         ]
       },
       "falsification_handles": {
         "role_a_parameters": [
-          "m",
-          "planet_teeth",
-          "pressure_angle",
-          "rack_teeth",
-          "rim_width",
-          "sun_teeth"
+          "custom_slide_length",
+          "custom_slide_thickness",
+          "custom_slide_width",
+          "num_slots",
+          "slide_standard",
+          "tolerance_xy",
+          "tolerance_z"
         ],
         "role_b_parameters": [
-          "m",
-          "planet_teeth",
-          "pressure_angle",
-          "rack_teeth",
-          "rim_width",
-          "sun_teeth"
+          "custom_slide_length",
+          "custom_slide_thickness",
+          "custom_slide_width",
+          "num_slots",
+          "slide_standard",
+          "tolerance_xy",
+          "tolerance_z"
         ]
       },
       "examples": [
         {
-          "a": "gear-rack",
-          "a_interface": "involute_rack_tooth",
-          "a_standard": "ISO 53",
-          "b": "planetary-gearset",
-          "b_interface": "planetary_involute_set",
-          "b_standard": "ISO 53",
+          "a": "microscope-slide-holder",
+          "a_interface": "microscope_slide_slot",
+          "a_standard": "ISO 8037-1 (25.4x76.2mm)",
+          "b": "microscope-slide-hyperobject",
+          "b_interface": "iso_8037_standard",
+          "b_standard": "ISO 8037-1:2003",
           "author_declared": false,
           "already_in_graph": false
         }
@@ -7404,6 +8254,119 @@
           "b_standard": "2020 T-slot (6 mm slot)",
           "author_declared": false,
           "already_in_graph": false
+        }
+      ]
+    },
+    {
+      "rule_id": "gridfinity:profile+profile",
+      "claim": "objects declaring standard family 'gridfinity' in role 'profile' mate with objects declaring it in role 'profile'",
+      "family": "gridfinity",
+      "role_a": "profile",
+      "role_b": "profile",
+      "symmetric": true,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles profile<->profile, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 2,
+        "objects_role_b": 2,
+        "objects_total": 2,
+        "objects_both_roles": 2
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 1,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "Voidstar Gridfinity"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bp_thickness",
+          "cdg_mount_type",
+          "lip_enabled"
+        ],
+        "role_b_parameters": [
+          "bp_thickness",
+          "cdg_mount_type",
+          "lip_enabled"
+        ]
+      },
+      "examples": [
+        {
+          "a": "gridfinity",
+          "a_interface": "gridfinity_base_profile",
+          "a_standard": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "b": "locking-mechanism-hyperobject",
+          "b_interface": "gridfinity_base",
+          "b_standard": "Voidstar Gridfinity",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "gridfinity:profile+snap",
+      "claim": "objects declaring standard family 'gridfinity' in role 'profile' mate with objects declaring it in role 'snap'",
+      "family": "gridfinity",
+      "role_a": "profile",
+      "role_b": "snap",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "the live graph's geometry table admits profile<->snap (as 'mates_with'), but one role is declared by a single object and no author declared a pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 2,
+        "objects_role_b": 1,
+        "objects_total": 2,
+        "objects_both_roles": 1
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 1,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "Gridfinity baseplate socket (0.25 mm clearance)",
+          "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+          "Voidstar Gridfinity"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bp_thickness",
+          "cdg_mount_type",
+          "lip_enabled"
+        ],
+        "role_b_parameters": [
+          "bp_thickness",
+          "grid_x",
+          "grid_y"
+        ]
+      },
+      "examples": [
+        {
+          "a": "locking-mechanism-hyperobject",
+          "a_interface": "gridfinity_base",
+          "a_standard": "Voidstar Gridfinity",
+          "b": "gridfinity",
+          "b_interface": "gridfinity_baseplate_snap",
+          "b_standard": "Gridfinity baseplate socket (0.25 mm clearance)",
+          "author_declared": false,
+          "already_in_graph": true
         }
       ]
     },

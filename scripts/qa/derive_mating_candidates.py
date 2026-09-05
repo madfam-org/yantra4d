@@ -25,13 +25,21 @@ Nothing here is applied. Ratifying a rule is an operator decision; see
 ``docs/strategy/CDG-MATING-RULES-PROPOSAL.md``.
 
 Input boundary (deliberate, and load-bearing for determinism):
-  Only cartridges whose ``project.json`` lives IN THIS REPOSITORY are read — every
-  ``projects/*`` path declared as a submodule in ``.gitmodules`` is skipped, whether or
-  not it happens to be checked out. CI checks out submodules recursively and a
-  developer usually does not; keying off "is a manifest on disk" would therefore make
-  the committed artifact unreproducible, and would read private client cartridges.
-  The private slugs are additionally named in ``PRIVATE_EXCLUDED`` so the guarantee
-  does not rest on ``.gitmodules`` alone.
+  Every cartridge under ``projects/`` is read, and only the slugs named in
+  ``PRIVATE_EXCLUDED`` are skipped.
+
+  Before RFC 0038 P2 this pass ALSO skipped every ``projects/*`` submodule
+  declared in ``.gitmodules``: 34 cartridges were separate repos that a
+  developer usually had unfetched, so reading "whatever is on disk" made the
+  committed artifact depend on who ran it. P2 removes that variance at the
+  source — the commons is ONE submodule, so `projects/` is either fully
+  checked out or empty, and the read-proof for "empty" belongs to
+  ``validate_manifests.py``'s ratchet, not here. Skipping those 34 now would
+  mean deliberately under-reading a third of the commons.
+
+  The private cartridges are excluded BY NAME and are not under ``projects/``
+  at all any more (they mount at ``private-projects/``), so the guarantee that
+  no client design is read no longer rests on ``.gitmodules``.
 
 Usage:
     python3 scripts/qa/derive_mating_candidates.py            # write the artifact
@@ -41,7 +49,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import configparser
 import itertools
 import json
 import sys
@@ -51,7 +58,6 @@ from typing import Any
 
 REPO = Path(__file__).resolve().parents[2]
 PROJECTS = REPO / "projects"
-GITMODULES = REPO / ".gitmodules"
 OUTPUT = REPO / "docs" / "interfaces" / "mating-candidates.json"
 COMMONS_CATALOG = REPO / "docs" / "commons-catalog.json"
 
@@ -99,20 +105,6 @@ from services.core.compatibility_graph import (  # noqa: E402
 # ──────────────────────────────────────────────────────────────────────────────
 # manifest loading
 # ──────────────────────────────────────────────────────────────────────────────
-
-def submodule_project_paths(gitmodules: Path) -> set[str]:
-    """Slugs under projects/ that are git submodules — out of scope for this pass."""
-    if not gitmodules.exists():
-        return set()
-    cp = configparser.ConfigParser()
-    cp.read_string(gitmodules.read_text(encoding="utf-8"))
-    out = set()
-    for section in cp.sections():
-        path = cp[section].get("path", "")
-        if path.startswith("projects/"):
-            out.add(path.split("/", 1)[1])
-    return out
-
 
 def _i18n(value: Any) -> str:
     """Collapse an i18n string ({en,es} or str) to English."""
@@ -560,13 +552,11 @@ def _all_pairs_for_rule(rule: dict, declarations: list[dict]) -> set[tuple[str, 
 # artifact
 # ──────────────────────────────────────────────────────────────────────────────
 
-def build_artifact(projects_dir: Path = PROJECTS, gitmodules: Path = GITMODULES,
+def build_artifact(projects_dir: Path = PROJECTS,
                    bridge_snapshot: Path = BRIDGE_SNAPSHOT,
                    commons_catalog: Path = COMMONS_CATALOG) -> dict:
     """The whole derivation, as the dict that gets serialised to the artifact."""
-    submodules = submodule_project_paths(gitmodules)
-    excluded = submodules | set(PRIVATE_EXCLUDED)
-    manifests = load_manifests(projects_dir, excluded)
+    manifests = load_manifests(projects_dir, set(PRIVATE_EXCLUDED))
 
     collected = collect_declarations(manifests)
     declarations = collected["declarations"]
@@ -598,14 +588,15 @@ def build_artifact(projects_dir: Path = PROJECTS, gitmodules: Path = GITMODULES,
         "inputs": {
             "cartridges_scanned": len(manifests),
             "cartridges_public_total": catalog_public,
-            "cartridges_out_of_scope_submodules": (
+            "cartridges_out_of_scope": (
                 None if catalog_public is None else catalog_public - len(manifests)
             ),
             "scope_note": (
-                "in-tree projects/*/project.json only; every projects/* submodule path "
-                "declared in .gitmodules is skipped whether or not it is checked out, so "
-                "the artifact is identical with and without `--recurse-submodules` and no "
-                "client-private cartridge is ever read"
+                "every projects/*/project.json is read; only the client-private slugs "
+                "named in PRIVATE_EXCLUDED are skipped, and since RFC 0038 P2 those are "
+                "not under projects/ at all (they mount at private-projects/). The "
+                "commons is one submodule, so projects/ is either fully checked out or "
+                "empty; validate_manifests.py's ratchet is what refuses the empty case"
             ),
             "interfaces_declared": collected["interfaces_seen"],
             "interfaces_with_resolved_family": len(declarations),

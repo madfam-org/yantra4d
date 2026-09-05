@@ -1,0 +1,97 @@
+{
+  "project": {
+    "name": "CadQuery Hyperobject Test",
+    "slug": "cq-hyperobject-test",
+    "version": "1.0.0",
+    "description": {
+      "en": "CadQuery engine test project — parametric box with hyperobject metadata for integration testing",
+      "es": "Proyecto de prueba del motor CadQuery — caja paramétrica con metadatos de hiperobjeto para pruebas de integración"
+    },
+    "thumbnail": "/projects/cq-test.webp",
+    "difficulty": "beginner",
+    "tags": [
+      "test",
+      "cadquery"
+    ],
+    "engine": "cadquery",
+    "export_formats": [
+      "stl",
+      "step",
+      "glb",
+      "3mf"
+    ]
+  },
+  "modes": [
+    {
+      "id": "box",
+      "label": {
+        "en": "Basic Box",
+        "es": "Caja Básica"
+      },
+      "scad_file": "box.py",
+      "parts": [
+        "box"
+      ],
+      "estimate": {
+        "base_units": 100
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "box",
+      "label": {
+        "en": "Hyperbox",
+        "es": "Hipercaja"
+      },
+      "render_mode": 1
+    }
+  ],
+  "parameters": [
+    {
+      "id": "width",
+      "label": {
+        "en": "Width",
+        "es": "Ancho"
+      },
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 50,
+      "step": 1
+    },
+    {
+      "id": "length",
+      "label": {
+        "en": "Length",
+        "es": "Largo"
+      },
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 50,
+      "step": 1
+    },
+    {
+      "id": "height",
+      "label": {
+        "en": "Height",
+        "es": "Alto"
+      },
+      "type": "slider",
+      "default": 10,
+      "min": 5,
+      "max": 50,
+      "step": 1
+    }
+  ],
+  "estimate_constants": {},
+  "export_formats": [
+    "stl",
+    "3mf",
+    "step",
+    "glb",
+    "gltf",
+    "obj"
+  ]
+}

@@ -15,18 +15,17 @@ Environment:
 import json
 import logging
 import os
-from pathlib import Path
 
 import requests
 from flask import Blueprint, g, jsonify, request
 
 import rate_limits
-from config import Config
 from extensions import limiter
 from middleware.auth import require_tier
 from services.core.project_access import require_project_access
 from services.engine.render_artifacts import MESH_EXTENSIONS, find_latest_render_key
 from services.storage import local_artifact
+from utils.project_resolver import find_project_dir
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
@@ -79,8 +78,11 @@ class CotizaAPIError(RuntimeError):
 # ---------------------------------------------------------------------------
 
 def _load_manifest(slug: str) -> dict | None:
-    """Load project.json for the given project slug."""
-    p = Path(Config.PROJECTS_DIR) / slug / "project.json"
+    """Load project.json for the given project slug (any cartridge root)."""
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        return None
+    p = project_dir / "project.json"
     if not p.is_file():
         return None
     return json.loads(p.read_text())

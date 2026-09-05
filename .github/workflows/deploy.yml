@@ -14,7 +14,18 @@ on:
       - 'apps/studio/**'
       - 'apps/landing/**'
       - 'apps/admin/**'
+      # `projects` is ONE submodule since RFC 0038 P2, so a commons bump shows
+      # up as the bare gitlink path `projects`, not as a file under it. Both
+      # forms are listed: picomatch (which both this `paths:` filter and
+      # dorny/paths-filter use) does match the bare path with `projects/**`,
+      # but nothing about the deploy trigger should depend on that subtlety.
+      - 'projects'
       - 'projects/**'
+      # The client-private cartridges mount here and ship inside the backend
+      # image (see "Init client-private cartridges" below), so a bump to one of
+      # them is a backend image change.
+      - 'private-projects'
+      - 'private-projects/**'
       - 'libs/**'
       - 'packages/**'
       - '!k8s/production/kustomization.yaml'
@@ -178,13 +189,25 @@ jobs:
             backend:
               - 'apps/api/**'
               - 'apps/worker/**'
+              # Bare path AND glob: a commons pointer bump is a change to the
+              # gitlink `projects`, not to a file beneath it.
+              - 'projects'
               - 'projects/**'
+              - 'private-projects'
+              - 'private-projects/**'
               - 'libs/**'
               - 'packages/schemas/**'
             studio:
               - 'apps/studio/**'
               - 'packages/**'
             landing:
+              # The landing gallery is generated from the cartridge manifests
+              # (see "Regenerate the projects list" below), so a commons bump
+              # is a landing change too. Before RFC 0038 P2 this was missing
+              # and a projects-only change rebuilt the backend but shipped a
+              # stale gallery.
+              - 'projects'
+              - 'projects/**'
               - 'apps/landing/**'
               - 'packages/**'
             admin:
@@ -269,12 +292,17 @@ jobs:
       # and the GHCR image is private, so they belong in this image. Only the
       # cartridges listed here are pulled in; `--checkout` is git's documented
       # override for `update = none`.
+      #
+      # Since RFC 0038 P2 they mount at private-projects/ rather than inside
+      # the public commons submodule. The API resolves both roots
+      # (Config.PRIVATE_PROJECTS_DIR), so nothing else about serving them
+      # changes.
       - name: Init client-private cartridges
         env:
           MADFAM_BOT_PAT: ${{ secrets.MADFAM_BOT_PAT }}
         run: |
           set -euo pipefail
-          for path in projects/tablaco; do
+          for path in private-projects/tablaco; do
             git -c "url.https://x-access-token:${MADFAM_BOT_PAT}@github.com/.insteadOf=https://github.com/" \
               submodule update --init --checkout --depth 1 "$path"
             test -f "$path/project.json" || { echo "::error::$path/project.json missing after init"; exit 1; }

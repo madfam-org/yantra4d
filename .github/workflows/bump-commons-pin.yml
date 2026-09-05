@@ -1,0 +1,125 @@
+name: Bump commons pin
+
+# Opens a PR when madfam-org/solid-hyperobjects' main moves ahead of the pin
+# this repo records for the `projects` submodule.
+#
+# This one workflow replaces the whole satellite-era loop retired in RFC 0038
+# P2: update-submodules.yml (weekly, bumped all 43 submodules),
+# bump-submodule.yml (a repository_dispatch receiver that pushed straight to
+# main, once per cartridge repo) and project-ci-reusable.yml (which each of the
+# 35 cartridge repos called to fire that dispatch). There is exactly one
+# commons repo now, so there is exactly one pin to move — issue #69's dormant
+# 33-repo bump loop is retired by construction, not by being fixed.
+#
+# The pin is deliberately NOT pushed to main. A commons bump changes what the
+# platform serves and what every generated artifact below says, so it goes
+# through a PR and CI like any other change.
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Weekly, Monday 09:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: madfam-runners-blue
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Only the commons submodule is needed, and it is initialised
+          # explicitly below so this step cannot pull the client-private
+          # mounts. They are `update = none`, so a recursive checkout skips
+          # them anyway — this is belt-and-braces, and keeps the checkout cheap.
+          submodules: false
+          fetch-depth: 1
+          token: ${{ secrets.MADFAM_BOT_PAT }}
+
+      - name: Move the commons pin to solid-hyperobjects main
+        id: bump
+        run: |
+          set -euo pipefail
+          git submodule update --init --depth 1 projects
+          before=$(git -C projects rev-parse HEAD)
+          git -C projects fetch --depth 1 origin main
+          git -C projects checkout --detach FETCH_HEAD
+          after=$(git -C projects rev-parse HEAD)
+          echo "before=$before" >> "$GITHUB_OUTPUT"
+          echo "after=$after"   >> "$GITHUB_OUTPUT"
+          if [ "$before" = "$after" ]; then
+            echo "moved=false" >> "$GITHUB_OUTPUT"
+            echo "Commons pin already at $after — nothing to do."
+            exit 0
+          fi
+          echo "moved=true" >> "$GITHUB_OUTPUT"
+          echo "Commons pin $before -> $after"
+
+      - uses: actions/setup-python@v5
+        if: steps.bump.outputs.moved == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate everything derived from the cartridge manifests
+        if: steps.bump.outputs.moved == 'true'
+        run: |
+          set -euo pipefail
+          # The local pre-commit hook does this for humans, but hooks never run
+          # here — so before this, an auto-bump left the Studio's offline
+          # fallback stale and manifest-sync stayed red until someone committed
+          # by hand.
+          python3 scripts/qa/sync_fallback_manifest.py
+          python3 scripts/qa/generate_commons_catalog.py
+          python3 scripts/qa/derive_mating_candidates.py
+          python3 scripts/qa/value_extraction_audit.py --write
+          node scripts/dev/generate-landing-projects.mjs
+
+      - name: Create PR
+        id: create-pr
+        if: steps.bump.outputs.moved == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # The org setting "Allow GitHub Actions to create and approve pull
+          # requests" is OFF, so the default GITHUB_TOKEN is refused here no
+          # matter what `permissions:` grants — which is why every run of the
+          # retired update-submodules.yml died at this step. DISPATCH_TOKEN is
+          # the estate's PAT convention (issue #69 tracked provisioning it once
+          # at org level). An unprovisioned secret is the empty string, so this
+          # falls back to today's behaviour until it exists, and the step below
+          # says so loudly rather than failing silently.
+          token: ${{ secrets.DISPATCH_TOKEN || github.token }}
+          commit-message: "chore(commons): bump solid-hyperobjects pin to ${{ steps.bump.outputs.after }}"
+          title: "chore(commons): bump the solid-hyperobjects pin"
+          body: |
+            `projects` (madfam-org/solid-hyperobjects) moved:
+
+            - from `${{ steps.bump.outputs.before }}`
+            - to   `${{ steps.bump.outputs.after }}`
+
+            Everything generated from the cartridge manifests was regenerated in
+            the same commit (fallback manifest, commons catalog + COMMONS.md,
+            mating candidates, the value-extraction table, the landing gallery),
+            so the `--check` gates in `manifest-validation` should be green.
+
+            Opened by `.github/workflows/bump-commons-pin.yml`.
+          branch: chore/bump-commons-pin
+          delete-branch: true
+
+      - name: Explain PR creation failure
+        if: failure() && steps.create-pr.outcome == 'failure'
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ### Commons pin bump could not open a PR
+
+          The branch `chore/bump-commons-pin` was pushed, but the PR could not be
+          created. The org setting **"Allow GitHub Actions to create and approve
+          pull requests" is OFF**, so the default `GITHUB_TOKEN` cannot open one.
+
+          Permanent fix: provision `DISPATCH_TOKEN` (org level recommended) — the
+          same operator item issue #69 tracked for the retired satellite loop.
+          Until then, open the PR by hand from the pushed branch.
+          EOF
+          exit 1

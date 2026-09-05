@@ -14,6 +14,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Changed
+- **The Commons Is Consumed At A Pin — `projects/` Is One Submodule** — RFC 0038
+  §9 "Topology P2". The 35 public satellite cartridge repos are absorbed into
+  `madfam-org/solid-hyperobjects` with full history and archived, so `.gitmodules`
+  goes from 43 entries to 9: six `libs/*`, one `projects` (the commons), and the
+  two client-private cartridges, which move to their own root at
+  `private-projects/` and keep `update = none`. The commons repo holds each
+  cartridge at `<slug>/`, so `projects/<slug>` still resolves and no cartridge
+  path in the platform changes.
+
+  **Two cartridge roots.** `Config.PRIVATE_PROJECTS_DIR` (env-overridable) joins
+  `CARTRIDGES_DIRS`, and `utils/project_resolver` gains the single ordered search
+  every read path now goes through — `project_roots()`, `find_project_dir()`,
+  `project_write_root()`. The public commons wins a slug collision; writes
+  (onboarding, forking, GitHub import) always target the public root but check
+  existence across both, so nothing can shadow a private slug. The
+  path-traversal guard is written once and applies per root. Access control is
+  unchanged and stays slug-based (`PROJECT_ACCESS_GRANTS`, docs/AUTH.md).
+
+  **The engine fixture leaves the commons.** `cq-hyperobject-test` was never a
+  Commons object — the catalog and licence audit always excluded it — but it sat
+  in `projects/`, which is why the API served 501 projects over a 500-cartridge
+  commons. It is vendored at `apps/api/tests/fixtures/cartridges/` from
+  `madfam-org/cq-hyperobject-test@c970dbc`. **The API now serves 500, and 500 is
+  also the commons count.**
+
+  **Every submodule-aware gate re-based.** The "submodule-backed vs vendored"
+  distinction (34 cartridges) no longer exists, and four gates would have gone
+  silently green rather than failing: the #86 ratchet in `validate_manifests.py`
+  is re-targeted to "the `projects` submodule is initialised and non-empty" (and
+  cannot fail on the private mounts, which are out of its scope by
+  construction); `generate-landing-projects.mjs` gates on the commons carrying at
+  least one cartridge; `generate_commons_catalog.py` gives every cartridge one
+  `clone` shape pointing at the commons repo, plus `source.repo`;
+  `check_licenses.py` drops the "published as its own repo" severity;
+  `derive_mating_candidates.py` now reads all 500 cartridges instead of skipping
+  the 34 satellites for determinism (500 scanned / 0 out of scope, was 466).
+  `value_extraction_audit.py`'s docstring claimed 35 submodule-backed cartridges
+  where the truth was 34 and is now 0 — corrected (open item F5).
+
+### Removed
+- **The Satellite-Era Bump Machinery** — `update-submodules.yml` (weekly, bumped
+  all 43 submodules), `bump-submodule.yml` (a `repository_dispatch` receiver
+  that pushed straight to `main`, one per cartridge repo), `project-ci-reusable.yml`
+  and `project-ci.yml` (which each cartridge repo called to fire that dispatch),
+  and `scripts/propagate_ci.sh` / `scripts/ci/propagate_project_ci.{sh,py}`
+  (which pushed a CI template into the `madfam-org/<slug>` repos). One commons
+  repo means one pin, so all of it is replaced by a single scheduled
+  `bump-commons-pin.yml` that opens a PR when `solid-hyperobjects` main moves.
+  Issue #69's dormant 33-repo bump loop is retired by construction rather than
+  fixed; its `DISPATCH_TOKEN` / org-toggle guard is carried over verbatim so the
+  replacement fails loud, not silent.
+
 - **Top Tier Renamed `madfam` → `premium`, With a Permanent Alias** — ADR-006
   Decision 4: a company name was doing duty as a tier name on a MADFAM product,
   and `premium` is already dhanam's top tier. The ladder is now

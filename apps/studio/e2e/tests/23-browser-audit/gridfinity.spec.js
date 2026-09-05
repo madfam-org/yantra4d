@@ -15,10 +15,14 @@ import {
 test.use({ mockAPIs: false })
 test.describe.configure({ mode: 'serial' })
 
-// projects/gridfinity/project.json declares project.name "Gridfinity" (the
-// cartridge dropped the "Extended" suffix when its bin/baseplate modes were
-// rewritten in cadquery); the OpenSCAD family it used to be named after now
-// lives in the three "(OpenSCAD Extended)" modes.
+// projects/gridfinity/project.json declares project.name "Gridfinity".
+//
+// Rewritten 2026-09-04: the cartridge is CadQuery-only now. Its OpenSCAD side
+// (modes `cup`, `baseplate_scad`, `lid`, the "(OpenSCAD Extended)" labels, the
+// width_units/depth_units/height_units trio, bp_corner_radius,
+// bp_enable_magnets and the duplicated preset labels) left the commons with
+// the gridfinity_extended gitlink. What remains is 2 modes, 10 parameters and
+// 3 presets — every assertion below is read from that manifest.
 const PROJECT_NAME = 'Gridfinity'
 
 test.describe('Gridfinity — Browser Audit', () => {
@@ -52,20 +56,19 @@ test.describe('Gridfinity — Browser Audit', () => {
   test('loads gridfinity and shows manifest data', async ({ page }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
     await expect(page.locator('header h1')).toContainText(PROJECT_NAME)
-    // 5 modes in project.json: bin + baseplate (cadquery) and cup,
-    // baseplate_scad, lid (openscad, labelled "… (OpenSCAD Extended)").
+    // 2 modes in project.json: bin and baseplate, both cadquery.
     // Scoped to the mode tablist and to what is on screen: the sidebar's
     // section tabs (Design/View/BOM/Export) are a [role="tablist"] too.
     const tabs = page.locator('[role="tablist"][aria-label="Mode selection"] [role="tab"]')
       .filter({ visible: true })
-    await expect(tabs).toHaveCount(5)
+    await expect(tabs).toHaveCount(2)
   })
 
-  // modes[0] is `bin` (cadquery) — the OpenSCAD `cup` is now the third tab.
+  // modes[0] is `bin`.
   test('default mode is bin', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
     const active = await sidebar.getActiveMode()
-    expect(active).toMatch(/cup|bin/i)
+    expect(active).toMatch(/bin|contenedor/i)
   })
 
   test('switches to baseplate mode', async ({ page, sidebar }) => {
@@ -77,13 +80,18 @@ test.describe('Gridfinity — Browser Audit', () => {
     expect(page.url()).toContain('baseplate')
   })
 
-  test('switches to lid mode', async ({ page, sidebar }) => {
+  // Was "switches to lid mode". Mode `lid` was OpenSCAD-only and left the
+  // cartridge; `bin` and `baseplate` are the only modes now, so switching back
+  // to bin is the remaining round-trip worth asserting.
+  test('switches back to bin mode', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
-    await sidebar.selectMode('lid')
+    await sidebar.selectMode('baseplate')
+    await page.waitForTimeout(500)
+    await sidebar.selectMode('bin')
     await page.waitForTimeout(500)
     const active = await sidebar.getActiveMode()
-    expect(active).toMatch(/lid|tapa/i)
-    expect(page.url()).toContain('lid')
+    expect(active).toMatch(/bin|contenedor/i)
+    expect(page.url()).toContain('bin')
   })
 
   test('URL updates on mode switch', async ({ page, sidebar }) => {
@@ -97,9 +105,9 @@ test.describe('Gridfinity — Browser Audit', () => {
 
   // ── B. Parameter Controls ────────────────────────────────────────
 
-  // The default `bin` mode is dimensioned by grid_x/grid_y/grid_z; the
-  // width_units/depth_units/height_units trio is declared
-  // visible_in_modes ["cup", "baseplate_scad", "lid"], i.e. OpenSCAD-only.
+  // The `bin` mode is dimensioned by grid_x/grid_y/grid_z. The
+  // width_units/depth_units/height_units trio was OpenSCAD-only and is gone;
+  // no parameter declares visible_in_modes any more, so all ten show in both.
   test('bin mode shows dimension sliders', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
     await expect(sidebar.slider('grid_x')).toBeVisible()
@@ -113,8 +121,8 @@ test.describe('Gridfinity — Browser Audit', () => {
     await expect(sidebar.sliderValue('grid_x')).toHaveText('4', { timeout: 10000 })
   })
 
-  // fingerslide_enabled is a cup-mode (OpenSCAD) parameter; the cadquery bin
-  // exposes the same feature as finger_scoop.
+  // finger_scoop is the cadquery bin's scoop toggle (the OpenSCAD
+  // fingerslide_enabled it used to sit beside is gone with the cup mode).
   test('toggling finger_scoop checkbox works', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
     const cb = sidebar.checkbox('finger_scoop')
@@ -125,53 +133,46 @@ test.describe('Gridfinity — Browser Audit', () => {
     expect(isAfter).toBe(!wasBefore)
   })
 
-  // The cartridge ships the same preset LABEL twice — "Small Parts Bin (2×1×3)"
-  // for mode `bin` (grid_*) and again for the OpenSCAD family (width_units …) —
-  // so applyPreset()'s unqualified locator matches two buttons. Take the first,
-  // which is the cadquery bin preset, and assert its grid_* values.
+  // Preset labels are unique again: the OpenSCAD duplicates ("Small Parts Bin"
+  // and "Standard Baseplate" once per engine) left with their modes, so the
+  // three remaining presets each match exactly one button.
   test('applies Small Parts Bin preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
-    await sidebar.presetButton('Small Parts Bin').first().click()
+    await sidebar.applyPreset('Small Parts Bin')
     await expect(sidebar.sliderValue('grid_x')).toHaveText('2', { timeout: 10000 })
     await expect(sidebar.sliderValue('grid_y')).toHaveText('1', { timeout: 10000 })
     await expect(sidebar.sliderValue('grid_z')).toHaveText('3', { timeout: 10000 })
   })
 
-  // Was "applies Battery Holder preset". That preset declares mode "cup_scad",
-  // which is not one of the manifest's five mode ids (the OpenSCAD bin is
-  // `cup`), so applying it strands the studio on an unknown mode and no
-  // width_units row ever renders — a cartridge data bug, reported upstream.
-  // "Standard Lid (2×1)" is the same shape of assertion on a preset whose mode
-  // (`lid`) exists: it must cross-switch mode and set the OpenSCAD dimensions.
-  test('applies Standard Lid preset', async ({ page, sidebar }) => {
+  // Was "applies Standard Lid preset" (mode `lid`, width_units/depth_units) —
+  // all three left with the OpenSCAD side. "Deep Bin (2×2×6)" is the same
+  // shape of assertion on a preset that still exists: same mode, grid_* set.
+  test('applies Deep Bin preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
-    await sidebar.applyPreset('Standard Lid')
+    await sidebar.applyPreset('Deep Bin')
     await page.waitForTimeout(1000)
-    expect(await sidebar.getActiveMode()).toMatch(/lid|tapa/i)
-    await expect(sidebar.sliderValue('width_units')).toHaveText('2', { timeout: 10000 })
-    await expect(sidebar.sliderValue('depth_units')).toHaveText('1', { timeout: 10000 })
+    expect(await sidebar.getActiveMode()).toMatch(/bin|contenedor/i)
+    await expect(sidebar.sliderValue('grid_x')).toHaveText('2', { timeout: 10000 })
+    await expect(sidebar.sliderValue('grid_y')).toHaveText('2', { timeout: 10000 })
+    await expect(sidebar.sliderValue('grid_z')).toHaveText('6', { timeout: 10000 })
   })
 
   test('cross-mode preset switches to baseplate', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
-    // "Standard Baseplate (2×2)" is also a duplicated label (mode `baseplate`
-    // and mode `baseplate_scad`); the first is the cadquery one.
-    await sidebar.presetButton('Standard Baseplate').first().click()
+    await sidebar.applyPreset('Standard Baseplate')
     await page.waitForTimeout(1000)
     const active = await sidebar.getActiveMode()
     expect(active).toMatch(/baseplate|placa/i)
   })
 
-  // bp_corner_radius and bp_enable_magnets are declared
-  // visible_in_modes ["baseplate_scad"], the OpenSCAD baseplate — not the
-  // cadquery `baseplate`. Its id does not appear in its label, so it can only
-  // be reached by label.
-  test('baseplate (OpenSCAD) mode shows baseplate params', async ({ page, sidebar }) => {
+  // Was "baseplate (OpenSCAD) mode shows baseplate params" against
+  // bp_corner_radius / bp_enable_magnets, both OpenSCAD-only and now gone.
+  // bp_thickness is the baseplate parameter the cadquery cartridge still ships.
+  test('baseplate mode shows baseplate params', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
-    await sidebar.selectModeByLabel('Baseplate (OpenSCAD Extended)')
+    await sidebar.selectMode('baseplate')
     await page.waitForTimeout(500)
-    await expect(sidebar.slider('bp_corner_radius')).toBeVisible()
-    await expect(sidebar.checkbox('bp_enable_magnets')).toBeVisible()
+    await expect(sidebar.slider('bp_thickness')).toBeVisible()
   })
 
   // ── C. 3D Rendering ─────────────────────────────────────────────
@@ -248,7 +249,10 @@ test.describe('Gridfinity — Browser Audit', () => {
     expect(path).toBeTruthy()
   })
 
-  test('downloads STEP via dual-engine', async ({ page, sidebar }) => {
+  // STEP is a B-Rep format, so it comes from the CadQuery kernel. Retitled
+  // 2026-09-04: gridfinity is no longer dual-engine (it is CadQuery-only),
+  // but STEP export is exactly the capability that survived.
+  test('downloads STEP from the CadQuery kernel', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
     await clickGenerateWithWarning(sidebar, page)
     await waitForRenderDone(page, 120_000)

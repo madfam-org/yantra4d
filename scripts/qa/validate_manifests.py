@@ -14,7 +14,7 @@ it asks
 
 An UNINITIALISED `projects` submodule is a FAILURE, not a skip. An empty
 `projects/` only looks like a commons with no cartridges, and a checkout that
-silently validates 0 cartridges instead of 500 is a checkout that proves
+silently validates 0 cartridges instead of 495 is a checkout that proves
 nothing. CI checks the submodule out explicitly, so on CI this failure means
 the submodule fetch broke.
 

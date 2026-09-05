@@ -123,6 +123,11 @@ _FAMILY_PATTERNS: list[tuple[str, str]] = [
     (r"support\s*rod|optical\s*post", "support-rod-12"),        # Ø12-12.7mm lab/optical rod
     (r"(1\s*in|25(\.4)?\s*mm)[^a-z]*optic\b", "optic-25.4"),    # Ø1in/25mm round optics
     # construction-set & wall-system ecosystems
+    # STEMFIE is a published open construction standard, kept as a family even
+    # though no cartridge declares it since 2026-09-04: the `stemfie` cartridge
+    # was removed under ADR-021 and its slug reserved for clean-room
+    # re-creation from the standard. An unreferenced family is inert here, and
+    # deleting it would only have to be re-added when the slug returns.
     (r"stemfie", "stemfie"),                                    # STEMFIE 10mm-pitch construction set
     (r"construction\s*brick|\blego\b", "brick-8mm-stud"),       # 8mm-stud construction brick
     (r"1[\s-]*in(ch)?\s*pegboard|pegboard\s*1\s*in", "pegboard-1in"),  # US 1in-pitch pegboard

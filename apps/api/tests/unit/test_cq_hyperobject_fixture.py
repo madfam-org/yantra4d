@@ -1,8 +1,9 @@
 """The vendored CadQuery engine fixture (RFC 0038 P2).
 
 `cq-hyperobject-test` used to live in `projects/` and was therefore served by
-the API, which is why the platform reported 501 projects over a 500-cartridge
-commons. It was never a commons object. Since P2 it is vendored under
+the API, which is why the platform reported one project more than the commons
+held (501 over 500 at the time; the commons is 495 today). It was never a
+commons object. Since P2 it is vendored under
 `tests/fixtures/cartridges/` and is reachable only by pointing a cartridge root
 at it — these tests hold that line in both directions.
 """

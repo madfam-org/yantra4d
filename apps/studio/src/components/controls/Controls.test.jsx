@@ -46,17 +46,19 @@ vi.mock('../../contexts/project/ManifestProvider', async (importOriginal) => {
 // Wrap with required providers
 function renderControls(props = {}, fetchRoutes = {}) {
   const defaultProps = {
+    // gridfinity is CadQuery-only since 2026-09-04: the OpenSCAD modes and
+    // their width_units/depth_units/height_units trio left the cartridge. The
+    // grid_x/grid_y/grid_z params carry the same labels and defaults (2/1/3).
     params: {
-      width_units: 2, depth_units: 1, height_units: 3,
-      cup_wall_thickness: 0, cup_floor_thickness: 0.7,
-      vertical_chambers: 1, horizontal_chambers: 1,
-      fingerslide_enabled: false, label_enabled: false,
-      enable_magnets: false, enable_screws: false,
-      fn: 0,
+      grid_x: 2, grid_y: 1, grid_z: 3,
+      wall: 1.2, floor_th: 1.2,
+      lip_enabled: true, finger_scoop: false,
+      enable_magnets: false,
+      bp_thickness: 5.25,
     },
     setParams: vi.fn(),
-    mode: 'cup',
-    colors: { cup: '#4a90d9' },
+    mode: 'bin',
+    colors: { bin: '#4a90d9' },
     setColors: vi.fn(),
   }
 
@@ -86,11 +88,10 @@ afterEach(() => {
 })
 
 describe('Controls', () => {
-  it('renders slider labels for cup mode parameters', () => {
+  it('renders slider labels for bin mode parameters', () => {
     renderControls()
-    // In cup mode both the CadQuery dimension params (grid_x/grid_y/grid_z) and the
-    // OpenSCAD dimension params (width_units/depth_units/height_units) render, so each
-    // dimension label appears more than once — assert at least one of each is present.
+    // Only the CadQuery dimension params exist now, so each label appears once;
+    // the *All* variant is kept so the assertion does not depend on that.
     expect(screen.getAllByText('Width (units)').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Depth (units)').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Height (units)').length).toBeGreaterThan(0)
@@ -101,25 +102,23 @@ describe('Controls', () => {
     renderControls({
       mode: 'baseplate',
       params: {
-        width_units: 2, depth_units: 2,
-        bp_enable_magnets: false, bp_enable_screws: false,
-        bp_corner_radius: 3.75, bp_reduced_wall: -1,
-        bp_reduced_wall_taper: false,
-        fn: 0,
+        grid_x: 2, grid_y: 2,
+        enable_magnets: false,
+        bp_thickness: 5.25,
       },
     })
     expect(screen.getByText('Width (units)')).toBeInTheDocument()
     expect(screen.getByText('Depth (units)')).toBeInTheDocument()
-    // The baseplate mode's own baseplate-scoped slider is Baseplate Thickness
-    // (bp_thickness); Corner Radius (bp_corner_radius) is scoped to baseplate_scad.
+    // bp_corner_radius was scoped to the OpenSCAD baseplate_scad mode and left
+    // with it; Baseplate Thickness (bp_thickness) is what the cartridge ships.
     expect(screen.getByText('Baseplate Thickness (mm)')).toBeInTheDocument()
   })
 
 
   it('sliders are labelled via aria-labelledby pointing to the parameter label', () => {
     renderControls()
-    // cup mode renders duplicate dimension labels (CadQuery + OpenSCAD), so use the
-    // *All* variant — every matching slider must be reachable by its accessible name.
+    // Use the *All* variant — every matching slider must be reachable by its
+    // accessible name (there used to be two of each, CadQuery + OpenSCAD).
     expect(screen.getAllByLabelText('Width (units)').length).toBeGreaterThan(0)
     expect(screen.getAllByLabelText('Depth (units)').length).toBeGreaterThan(0)
     expect(screen.getAllByLabelText('Height (units)').length).toBeGreaterThan(0)
@@ -127,7 +126,7 @@ describe('Controls', () => {
 
   it('value displays have descriptive aria-label', () => {
     renderControls()
-    // Width (units) renders twice in cup mode (grid_x + width_units), both default 2.
+    // Width (units) is grid_x, default 2 (it used to render twice: grid_x + width_units).
     const valueDisplays = screen.getAllByLabelText(/Width \(units\): 2\. (Click to edit|Clic para editar)/)
     expect(valueDisplays.length).toBeGreaterThan(0)
     const valueDisplay = valueDisplays[0]
@@ -138,24 +137,23 @@ describe('Controls', () => {
 
   it('renders default star indicators on slider tracks', () => {
     renderControls()
-    expect(screen.getByTestId('default-star-width_units')).toBeInTheDocument()
-    expect(screen.getByTestId('default-star-depth_units')).toBeInTheDocument()
-    expect(screen.getByTestId('default-star-height_units')).toBeInTheDocument()
+    expect(screen.getByTestId('default-star-grid_x')).toBeInTheDocument()
+    expect(screen.getByTestId('default-star-grid_y')).toBeInTheDocument()
+    expect(screen.getByTestId('default-star-grid_z')).toBeInTheDocument()
   })
 
   it('default star remains when value differs from default', () => {
     renderControls({
       params: {
-        width_units: 4, depth_units: 1, height_units: 3,
-        cup_wall_thickness: 0, cup_floor_thickness: 0.7,
-        vertical_chambers: 1, horizontal_chambers: 1,
-        fingerslide_enabled: false, label_enabled: false,
-        enable_magnets: false, enable_screws: false,
-        fn: 0,
+        grid_x: 4, grid_y: 1, grid_z: 3,
+        wall: 1.2, floor_th: 1.2,
+        lip_enabled: true, finger_scoop: false,
+        enable_magnets: false,
+        bp_thickness: 5.25,
       }
     })
-    // Star should still be present even though width_units (4) != default (2)
-    expect(screen.getByTestId('default-star-width_units')).toBeInTheDocument()
+    // Star should still be present even though grid_x (4) != default (2)
+    expect(screen.getByTestId('default-star-grid_x')).toBeInTheDocument()
   })
 
   it('does not render color-gradient widget when manifest has no gradient params', () => {
@@ -173,15 +171,14 @@ describe('Controls', () => {
   it('renders checkbox controls for boolean parameters', () => {
     renderControls({
       params: {
-        width_units: 2, depth_units: 1, height_units: 3,
-        cup_wall_thickness: 0, cup_floor_thickness: 0.7,
-        vertical_chambers: 1, horizontal_chambers: 1,
-        fingerslide_enabled: true, label_enabled: false,
-        enable_magnets: false, enable_screws: false,
-        fn: 0,
+        grid_x: 2, grid_y: 1, grid_z: 3,
+        wall: 1.2, floor_th: 1.2,
+        lip_enabled: true, finger_scoop: true,
+        enable_magnets: false,
+        bp_thickness: 5.25,
       }
     })
-    // Gridfinity cup mode has checkbox params — check for any checkbox role
+    // Gridfinity bin mode has checkbox params — check for any checkbox role
     const checkboxes = screen.getAllByRole('checkbox')
     expect(checkboxes.length).toBeGreaterThan(0)
   })
@@ -201,7 +198,7 @@ describe('Controls', () => {
   it('shows constraint violation message for constrained params', () => {
     renderControls({
       constraintsByParam: {
-        width_units: [{ message: 'Width must be at least 2' }],
+        grid_x: [{ message: 'Width must be at least 2' }],
       }
     })
     expect(screen.getByText('Width must be at least 2')).toBeInTheDocument()
@@ -210,7 +207,7 @@ describe('Controls', () => {
   it('constraint violation with severity error gets destructive class', () => {
     renderControls({
       constraintsByParam: {
-        width_units: [{ message: 'Too small', severity: 'error' }],
+        grid_x: [{ message: 'Too small', severity: 'error' }],
       }
     })
     const alert = screen.getByText('Too small')
@@ -221,7 +218,7 @@ describe('Controls', () => {
   it('constraint violation with warning severity gets yellow class', () => {
     renderControls({
       constraintsByParam: {
-        width_units: [{ message: 'Getting close', severity: 'warning' }],
+        grid_x: [{ message: 'Getting close', severity: 'warning' }],
       }
     })
     const alert = screen.getByText('Getting close')
@@ -231,7 +228,7 @@ describe('Controls', () => {
   it('constraint violation with i18n object message uses language key', () => {
     renderControls({
       constraintsByParam: {
-        width_units: [{ message: { en: 'Must be wider', es: 'Debe ser más ancho' } }],
+        grid_x: [{ message: { en: 'Must be wider', es: 'Debe ser más ancho' } }],
       }
     })
     expect(screen.getByText('Must be wider')).toBeInTheDocument()
@@ -307,12 +304,12 @@ describe('Controls', () => {
   it('preset with visible_in_modes filters by current mode', () => {
     renderControls({
       presets: [
-        { id: 'cup-only', label: { en: 'Cup Only' }, values: { width_units: 1 }, visible_in_modes: ['cup'] },
-        { id: 'base-only', label: { en: 'Base Only' }, values: { width_units: 1 }, visible_in_modes: ['baseplate'] },
+        { id: 'bin-only', label: { en: 'Bin Only' }, values: { grid_x: 1 }, visible_in_modes: ['bin'] },
+        { id: 'base-only', label: { en: 'Base Only' }, values: { grid_x: 1 }, visible_in_modes: ['baseplate'] },
       ],
       onApplyPreset: vi.fn(),
     })
-    expect(screen.getByText('Cup Only')).toBeInTheDocument()
+    expect(screen.getByText('Bin Only')).toBeInTheDocument()
     expect(screen.queryByText('Base Only')).not.toBeInTheDocument()
   })
 
@@ -418,7 +415,7 @@ describe('Controls', () => {
   it('multiple constraint violations render per param', () => {
     renderControls({
       constraintsByParam: {
-        width_units: [
+        grid_x: [
           { message: 'Violation 1' },
           { message: 'Violation 2' },
         ],

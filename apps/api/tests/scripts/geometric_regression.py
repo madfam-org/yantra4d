@@ -27,7 +27,21 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 # Only these cartridges can fail this gate. Everything else is reported but
 # non-blocking, so a green run here does NOT mean the whole Commons is verified
 # — the run summary prints exactly how many were skipped or diverged.
-VERIFIED_PARITY_PROJECTS = {"stemfie", "gridfinity"}
+#
+# EMPTY since 2026-09-04, and that is a REPORTED GAP, not a passing state.
+# Both former entries stopped being dual-engine on the same day: `stemfie` was
+# removed from the commons whole under ADR-021 (non-CERN origin; slug reserved
+# for clean-room re-creation) and `gridfinity` lost its OpenSCAD side, leaving
+# it CadQuery-only. Neither has an OpenSCAD mode left to compare against, so
+# neither can be an allowlist entry any more.
+#
+# They are NOT replaced by picking from the 19 surviving dual-engine
+# cartridges: membership here asserts *measured* parity, and no such
+# measurement has been made for any of them. Naming one to keep the gate
+# looking armed would be the failure this allowlist exists to prevent. Add a
+# cartridge here only with a parity run behind it; main() fails loudly while
+# the set is empty so the gap cannot be mistaken for a pass.
+VERIFIED_PARITY_PROJECTS: set[str] = set()
 
 # Populated during a run so main() can print honest coverage numbers.
 DIVERGED: list[str] = []
@@ -240,8 +254,15 @@ def main():
     logger.info(f"  compared              : {compared}")
     logger.info(f"  skipped (CQ-only)     : {len(SKIPPED_CQ_ONLY)}")
     logger.info(f"  skipped (no B-Rep)    : {len(SKIPPED_NO_BREP)}")
-    logger.info(f"  enforced (allowlist)  : {len(VERIFIED_PARITY_PROJECTS)} "
-                f"({', '.join(sorted(VERIFIED_PARITY_PROJECTS))})")
+    if VERIFIED_PARITY_PROJECTS:
+        logger.info(f"  enforced (allowlist)  : {len(VERIFIED_PARITY_PROJECTS)} "
+                    f"({', '.join(sorted(VERIFIED_PARITY_PROJECTS))})")
+    else:
+        logger.warning("  enforced (allowlist)  : 0 — NOTHING IS BLOCKING. The "
+                       "allowlist emptied on 2026-09-04 (stemfie removed under "
+                       "ADR-021; gridfinity is CadQuery-only). Every comparison "
+                       "below is advisory until a measured-parity cartridge is "
+                       "added back.")
     if DIVERGED:
         logger.warning(f"  diverged (non-blocking): {len(DIVERGED)} -> {', '.join(sorted(DIVERGED))}")
     else:

@@ -69,6 +69,13 @@ KNOWN_NC_EXPOSURE = {
     # upstream "Super Customizable Rugged Box in OpenSCAD" source by Iceman
     # (RuggedBoxV1.scad + parameter sets), which is CC BY-NC-SA 4.0 — see
     # projects/rugged-box/NOTICE and README.md ("License & attribution").
+    #
+    # RETIRED 2026-09-04: removed from the commons whole under ADR-021, slug
+    # reserved for clean-room re-creation. The entry is kept, not deleted, so
+    # the exposure is re-applied automatically if the slug returns carrying
+    # vendored NC files; while the cartridge is absent no catalogue entry is
+    # emitted for it, and check_licenses.py reports the stale acknowledgement
+    # as STALE on every run.
     "rugged-box": "CC-BY-NC-SA-4.0 (vendored upstream files; see NOTICE)",
 }
 

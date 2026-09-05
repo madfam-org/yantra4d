@@ -21,6 +21,11 @@ says — unless the cartridge is acknowledged in KNOWN_NC_EXPOSURE, in which
 case it is reported as a clearly-labeled WARNING (never blocking). Other
 nested licenses are reported informationally.
 
+An acknowledgement in KNOWN_NC_EXPOSURE whose cartridge is no longer on disk is
+reported as STALE every run rather than dropped: five slugs are reserved under
+ADR-021 pending clean-room re-creation, and a silently-deleted entry is how an
+acknowledged exposure becomes an unacknowledged one when the slug returns.
+
 Findings are grouped by severity. `--strict` fails on CONFLICT only, so the
 metadata backlog can be worked down without blocking every build; use
 `--strict-all` to fail on anything actionable (WARNING and informational
@@ -74,7 +79,24 @@ KNOWN_NC_EXPOSURE = {
     # those vendored files is forbidden by the upstream terms. Documented in
     # projects/rugged-box/README.md ("License & attribution") and
     # projects/rugged-box/NOTICE.
+    #
+    # RETIRED 2026-09-04: rugged-box was removed from the commons whole under
+    # ADR-021 (non-CERN origin leaves, comes back clean-room) and its slug is
+    # reserved. The entry is KEPT deliberately, not deleted: it is the record
+    # of why that slug is absent, and it must come back the moment a
+    # clean-room rugged-box lands carrying any vendored NC file. Its absence
+    # is reported by the stale-entry check in audit() rather than passing
+    # unnoticed — dropping the entry silently is how an acknowledged exposure
+    # becomes an unacknowledged one.
     "rugged-box": "CC-BY-NC-SA-4.0 (vendored upstream files; see NOTICE)",
+}
+
+# Slugs that KNOWN_NC_EXPOSURE may legitimately name while they are absent from
+# the commons: removed under ADR-021 pending clean-room re-creation, slug
+# reserved. Listed here so the stale-entry check can say "reserved, expected"
+# instead of "unexplained", while still printing the entry every run.
+ADR021_RESERVED = {
+    "keyv2", "stemfie", "multiboard", "polydice", "rugged-box",
 }
 
 # Nested-scan bounds: how deep below projects/<slug>/ to look for third-party
@@ -199,6 +221,28 @@ def audit() -> list[dict]:
                        f"({NOT_COMMONS[slug]})",
         })
 
+    # Stale-entry requirement: KNOWN_NC_EXPOSURE names cartridges that must be
+    # ON DISK for the acknowledgement to mean anything. A slug listed there but
+    # absent is reported every run — never dropped silently, because deleting
+    # the entry is indistinguishable from forgetting the exposure, and the slug
+    # can come back (ADR-021 reserves five of them for clean-room re-creation).
+    on_disk = {p.parent.name for p in PROJECTS.glob("*/project.json")}
+    for slug in sorted(set(KNOWN_NC_EXPOSURE) - on_disk):
+        reserved = slug in ADR021_RESERVED
+        findings.append({
+            "severity": "STALE" if reserved else "METADATA",
+            "slug": slug, "declared": None, "files": {},
+            "message": (
+                "listed in KNOWN_NC_EXPOSURE but absent from the commons — "
+                + ("slug reserved under ADR-021 pending clean-room re-creation; "
+                   "the entry is retained on purpose and must be re-checked when "
+                   "the slug returns"
+                   if reserved else
+                   "neither on disk nor reserved; either the cartridge was removed "
+                   "without retiring its entry, or the entry names the wrong slug")
+            ),
+        })
+
     for manifest in sorted(PROJECTS.glob("*/project.json")):
         slug = manifest.parent.name
         data = json.loads(manifest.read_text(encoding="utf-8"))
@@ -308,7 +352,8 @@ def main() -> int:
     args = ap.parse_args()
 
     findings = audit()
-    order = {"CONFLICT": 0, "MISMATCH": 1, "METADATA": 2, "WARNING": 3, "NESTED": 4, "OK": 5}
+    order = {"CONFLICT": 0, "MISMATCH": 1, "METADATA": 2, "STALE": 3, "WARNING": 4,
+             "NESTED": 5, "OK": 6}
     findings.sort(key=lambda f: (order.get(f["severity"], 9), f["slug"]))
 
     conflicts = [f for f in findings if f["severity"] == "CONFLICT"]
@@ -316,9 +361,12 @@ def main() -> int:
     metadata = [f for f in findings if f["severity"] == "METADATA"]
     warnings = [f for f in findings if f["severity"] == "WARNING"]
     nested_info = [f for f in findings if f["severity"] == "NESTED"]
-    # WARNING (acknowledged NC exposure) and NESTED (informational) never
-    # block: acknowledging an exposure is the mechanism for keeping CI green
-    # while the catalogue surfaces it.
+    stale = [f for f in findings if f["severity"] == "STALE"]
+    # WARNING (acknowledged NC exposure), NESTED (informational) and STALE (an
+    # acknowledgement whose cartridge is absent but whose slug is reserved)
+    # never block: acknowledging an exposure is the mechanism for keeping CI
+    # green while the catalogue surfaces it. STALE is printed on its own every
+    # run so a reserved slug's exposure cannot be forgotten while it is away.
     actionable = conflicts + mismatches + metadata
 
     def show(f):
@@ -327,7 +375,13 @@ def main() -> int:
             print(f"{'':11} files: {f['files']}")
 
     for f in findings:
-        if f["severity"] not in ("WARNING", "NESTED"):
+        if f["severity"] not in ("WARNING", "NESTED", "STALE"):
+            show(f)
+
+    if stale:
+        print("\nAcknowledged exposures whose cartridge is absent "
+              "(slug reserved — ADR-021 clean-room):")
+        for f in stale:
             show(f)
 
     if warnings or nested_info:
@@ -339,7 +393,8 @@ def main() -> int:
     print(f"\n{total} cartridges — {len(conflicts)} conflict, "
           f"{len(mismatches)} mismatch, {len(metadata)} metadata-only, "
           f"{len(warnings)} acknowledged NC exposure, "
-          f"{len(nested_info)} with nested third-party licenses")
+          f"{len(nested_info)} with nested third-party licenses, "
+          f"{len(stale)} acknowledged exposure(s) awaiting a reserved slug's return")
 
     if args.strict_all and actionable:
         return 1

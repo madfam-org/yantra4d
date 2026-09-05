@@ -138,10 +138,10 @@ class TestTouchUserProject:
         )
 
         user = upsert_user_from_claims(_make_claims())
-        assoc = touch_user_project(user, "rugged-box")
+        assoc = touch_user_project(user, "soft-jaw")
 
         assert assoc is not None
-        assert assoc.project_slug == "rugged-box"
+        assert assoc.project_slug == "soft-jaw"
         assert assoc.role == "editor"
         assert assoc.user_id == user.id
 
@@ -155,17 +155,17 @@ class TestTouchUserProject:
         )
 
         user = upsert_user_from_claims(_make_claims())
-        assoc1 = touch_user_project(user, "rugged-box")
+        assoc1 = touch_user_project(user, "soft-jaw")
         first_access = assoc1.last_accessed_at
 
-        assoc2 = touch_user_project(user, "rugged-box")
+        assoc2 = touch_user_project(user, "soft-jaw")
         assert assoc2.last_accessed_at >= first_access
         assert assoc2.id == assoc1.id  # same row, not a duplicate
 
     def test_returns_none_for_none_user(self, ctx):
         from services.core.user_service import touch_user_project
 
-        assert touch_user_project(None, "rugged-box") is None
+        assert touch_user_project(None, "soft-jaw") is None
 
     def test_returns_none_for_empty_slug(self, ctx):
         from services.core.user_service import (

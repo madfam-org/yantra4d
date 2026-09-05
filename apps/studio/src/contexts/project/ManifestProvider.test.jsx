@@ -22,10 +22,11 @@ function TestConsumer() {
   } = useManifest()
   if (loading) return <div data-testid="loading">loading</div>
 
-  const cupMode = getMode('cup')
-  // baseplate_scad is the OpenSCAD baseplate mode that scopes width_units/depth_units
-  // (via visible_in_modes) while height_units stays cup-only.
-  const baseplateParams = getParametersForMode('baseplate_scad')
+  const binMode = getMode('bin')
+  // The fallback manifest is synced from projects/gridfinity/project.json, which
+  // is CadQuery-only since 2026-09-04: modes are `bin` and `baseplate`, and no
+  // parameter declares visible_in_modes any more, so every mode sees all ten.
+  const baseplateParams = getParametersForMode('baseplate')
   const defaults = getDefaultParams()
   const colors = getDefaultColors()
   const label = getLabel({ name: { en: 'Hello', es: 'Hola' } }, 'name', 'en')
@@ -40,10 +41,10 @@ function TestConsumer() {
 
   return (
     <div>
-      <span data-testid="cup-id">{cupMode?.id}</span>
+      <span data-testid="bin-id">{binMode?.id}</span>
       <span data-testid="baseplate-params">{baseplateParams.map(p => p.id).join(',')}</span>
-      <span data-testid="default-width">{defaults.width_units}</span>
-      <span data-testid="default-color-cup">{colors.cup}</span>
+      <span data-testid="default-grid-x">{defaults.grid_x}</span>
+      <span data-testid="default-color-bin">{colors.bin}</span>
       <span data-testid="label">{label}</span>
       <span data-testid="string-label">{stringLabel}</span>
       <span data-testid="missing-mode">{missingMode === undefined ? 'undefined' : 'found'}</span>
@@ -73,9 +74,9 @@ describe('ManifestProvider', () => {
 
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
-    expect(screen.getByTestId('cup-id').textContent).toBe('cup')
-    expect(screen.getByTestId('default-width').textContent).toBe('2')
-    expect(screen.getByTestId('default-color-cup').textContent).toBe('#4a90d9')
+    expect(screen.getByTestId('bin-id').textContent).toBe('bin')
+    expect(screen.getByTestId('default-grid-x').textContent).toBe('2')
+    expect(screen.getByTestId('default-color-bin').textContent).toBe('#4a90d9')
     expect(screen.getByTestId('label').textContent).toBe('Hello')
     expect(screen.getByTestId('string-label').textContent).toBe('Plain')
     expect(screen.getByTestId('missing-mode').textContent).toBe('undefined')
@@ -168,9 +169,13 @@ describe('ManifestProvider', () => {
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
     const baseplateParamIds = screen.getByTestId('baseplate-params').textContent.split(',')
-    expect(baseplateParamIds).toContain('width_units')
-    expect(baseplateParamIds).toContain('depth_units')
-    expect(baseplateParamIds).not.toContain('height_units')
+    // width_units/depth_units/height_units were the OpenSCAD trio, scoped by
+    // visible_in_modes; they left with the OpenSCAD modes. Nothing in the
+    // cartridge declares visible_in_modes now, so the filter is a pass-through
+    // and every parameter reaches every mode — assert that, not a stale scope.
+    expect(baseplateParamIds).toContain('bp_thickness')
+    expect(baseplateParamIds).toContain('grid_x')
+    expect(baseplateParamIds).not.toContain('width_units')
   })
 
   it('projects list is empty when fetch fails (fallback mode)', async () => {

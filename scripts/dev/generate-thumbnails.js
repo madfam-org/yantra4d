@@ -14,10 +14,16 @@ const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+// Hardcoded slug list, trimmed on 2026-09-04: keyv2, multiboard, polydice and
+// stemfie left the commons under ADR-021 (slugs reserved for clean-room
+// re-creation), so a thumbnail run would 404 on them.
+// PRE-EXISTING STALENESS, left as found rather than silently fixed here:
+// 'ultimate-box' and 'yapp-box' are also not in the commons and predate this
+// change. This list should be derived from the manifests instead of hardcoded.
 const PROJECTS = [
   'fasteners', 'gear-reducer', 'gears', 'gridfinity', 'julia-vase',
-  'keyv2', 'maze', 'motor-mount', 'multiboard', 'polydice',
-  'portacosas', 'relief', 'spiral-planter', 'stemfie', 'superformula',
+  'maze', 'motor-mount',
+  'portacosas', 'relief', 'spiral-planter', 'superformula',
   'torus-knot', 'ultimate-box', 'voronoi', 'yapp-box',
 ];
 

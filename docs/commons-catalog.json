@@ -2,20 +2,20 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 500,
-    "with_cdg_interfaces": 486,
-    "with_commons_license": 500,
-    "dual_engine": 21
+    "cartridges": 495,
+    "with_cdg_interfaces": 485,
+    "with_commons_license": 495,
+    "dual_engine": 19
   },
   "domains": {
-    "household": 125,
+    "household": 124,
     "industrial": 108,
     "commercial": 75,
     "wearable": 72,
     "medical": 44,
     "infrastructure": 33,
     "hybrid": 14,
-    "uncategorized": 13,
+    "uncategorized": 9,
     "soft-robotics": 7,
     "agriculture": 5,
     "consumer": 2,
@@ -234,9 +234,6 @@
     "SG90/MG996R",
     "SMA / U.FL",
     "SPI 20-410 / 24-410 / 28-410 (8 TPI)",
-    "STEMFIE 10mm block unit",
-    "STEMFIE 4mm hole on 10mm pitch",
-    "STEMFIE fastener spec",
     "T-slot / 3/4in miter",
     "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
     "T8 leadscrew (8 mm major, 2 mm pitch, 8 mm lead)",
@@ -14811,13 +14808,12 @@
       "name": "Gridfinity",
       "domain": "household",
       "engines": [
-        "cadquery",
-        "openscad"
+        "cadquery"
       ],
-      "dual_engine": true,
-      "modes": 5,
-      "parts": 5,
-      "parameters": 37,
+      "dual_engine": false,
+      "modes": 2,
+      "parts": 2,
+      "parameters": 10,
       "parameter_ids": [
         "target_part",
         "grid_x",
@@ -14828,34 +14824,7 @@
         "lip_enabled",
         "enable_magnets",
         "finger_scoop",
-        "bp_thickness",
-        "width_units",
-        "depth_units",
-        "height_units",
-        "cup_wall_thickness",
-        "cup_floor_thickness",
-        "vertical_chambers",
-        "horizontal_chambers",
-        "lip_style_id",
-        "headroom",
-        "efficient_floor_id",
-        "fingerslide_enabled",
-        "label_enabled",
-        "sliding_lid_enabled",
-        "wallpattern_enabled",
-        "wallpattern_style_id",
-        "tapered_corner_id",
-        "tapered_corner_size",
-        "enable_screws",
-        "bp_enable_magnets",
-        "bp_enable_screws",
-        "bp_corner_radius",
-        "bp_reduced_wall",
-        "bp_reduced_wall_taper",
-        "lid_include_magnets",
-        "lid_efficient_floor",
-        "lid_type_id",
-        "fn"
+        "bp_thickness"
       ],
       "export_formats": [
         "stl",
@@ -14928,7 +14897,7 @@
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
         "manifest": "gridfinity/project.json",
         "has_cadquery": true,
-        "has_openscad": true
+        "has_openscad": false
       },
       "clone": {
         "kind": "sparse",
@@ -17759,54 +17728,6 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set keytag"
-      }
-    },
-    {
-      "slug": "keyv2",
-      "name": "KeyV2 Keycaps",
-      "domain": null,
-      "engines": [
-        "openscad"
-      ],
-      "dual_engine": false,
-      "modes": 1,
-      "parts": 1,
-      "parameters": 12,
-      "parameter_ids": [
-        "profile_id",
-        "row_id",
-        "key_size_id",
-        "stem_type_id",
-        "legend_enabled",
-        "legend_text",
-        "font_size",
-        "dish_depth",
-        "wall_thickness",
-        "keytop_thickness",
-        "stem_slop",
-        "fn"
-      ],
-      "export_formats": [
-        "stl",
-        "3mf",
-        "off",
-        "glb",
-        "obj"
-      ],
-      "commons_license": "GPL-3.0",
-      "societal_benefit": null,
-      "material_awareness": null,
-      "cdg_interfaces": [],
-      "standards": [],
-      "source": {
-        "repo": "https://github.com/madfam-org/solid-hyperobjects",
-        "manifest": "keyv2/project.json",
-        "has_cadquery": false,
-        "has_openscad": true
-      },
-      "clone": {
-        "kind": "sparse",
-        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set keyv2"
       }
     },
     {
@@ -21588,47 +21509,6 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set movement-holder"
-      }
-    },
-    {
-      "slug": "multiboard",
-      "name": "Multiboard Wall Storage",
-      "domain": null,
-      "engines": [
-        "openscad"
-      ],
-      "dual_engine": false,
-      "modes": 1,
-      "parts": 1,
-      "parameters": 5,
-      "parameter_ids": [
-        "x_cells",
-        "y_cells",
-        "cell_size",
-        "height",
-        "fn"
-      ],
-      "export_formats": [
-        "stl",
-        "3mf",
-        "off",
-        "glb",
-        "obj"
-      ],
-      "commons_license": "CC-BY-NC-SA-4.0",
-      "societal_benefit": null,
-      "material_awareness": null,
-      "cdg_interfaces": [],
-      "standards": [],
-      "source": {
-        "repo": "https://github.com/madfam-org/solid-hyperobjects",
-        "manifest": "multiboard/project.json",
-        "has_cadquery": false,
-        "has_openscad": true
-      },
-      "clone": {
-        "kind": "sparse",
-        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set multiboard"
       }
     },
     {
@@ -25738,49 +25618,6 @@
       }
     },
     {
-      "slug": "polydice",
-      "name": "PolyDice Generator",
-      "domain": null,
-      "engines": [
-        "openscad"
-      ],
-      "dual_engine": false,
-      "modes": 5,
-      "parts": 5,
-      "parameters": 7,
-      "parameter_ids": [
-        "die_size",
-        "font_depth",
-        "font_size",
-        "rounding_corner",
-        "rounding_edge",
-        "fn",
-        "dice_gradient"
-      ],
-      "export_formats": [
-        "stl",
-        "3mf",
-        "off",
-        "glb",
-        "obj"
-      ],
-      "commons_license": "BSD-2-Clause",
-      "societal_benefit": null,
-      "material_awareness": null,
-      "cdg_interfaces": [],
-      "standards": [],
-      "source": {
-        "repo": "https://github.com/madfam-org/solid-hyperobjects",
-        "manifest": "polydice/project.json",
-        "has_cadquery": false,
-        "has_openscad": true
-      },
-      "clone": {
-        "kind": "sparse",
-        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set polydice"
-      }
-    },
-    {
       "slug": "portacosas",
       "name": "Portacosas",
       "domain": null,
@@ -28013,75 +27850,6 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set rubiks-hyperobject"
-      }
-    },
-    {
-      "slug": "rugged-box",
-      "name": "Rugged Box",
-      "domain": null,
-      "engines": [
-        "openscad"
-      ],
-      "dual_engine": false,
-      "modes": 7,
-      "parts": 5,
-      "parameters": 32,
-      "parameter_ids": [
-        "internalBoxWidthXMm",
-        "internalboxLengthYMm",
-        "internalBoxTopHeightZMm",
-        "internalboxBottomHeightZMm",
-        "boxWallWidthMm",
-        "boxChamferRadiusMm",
-        "boxSealType",
-        "gasketSlotWidth",
-        "gasketSlotDepth",
-        "rimWidthMm",
-        "rimHeightMm",
-        "numSideSupportRibs",
-        "supportRibThickness",
-        "supportRibWidth",
-        "countainerWidthXSections",
-        "boxLengthYSections",
-        "numCountainerWidthXSectionsToSkip",
-        "numBoxLengthYSectionsToSkip",
-        "numberOfHinges",
-        "hingeTotalWidthMm",
-        "hingeRadiusMm",
-        "hingeCenterOffsetMm",
-        "numberOfLatches",
-        "latchSupportTotalWidth",
-        "latchCenterOffsetMm",
-        "latchClipCutoutAngle",
-        "latchOpenerLengthMultiplier",
-        "isFeetAdded",
-        "feetwidthMm",
-        "feetLengthMm",
-        "boxGapMm",
-        "BoxPolygonStyle"
-      ],
-      "export_formats": [
-        "stl",
-        "3mf",
-        "off",
-        "glb",
-        "obj"
-      ],
-      "commons_license": "CERN-OHL-W-2.0",
-      "license_exposure": "CC-BY-NC-SA-4.0 (vendored upstream files; see NOTICE)",
-      "societal_benefit": null,
-      "material_awareness": null,
-      "cdg_interfaces": [],
-      "standards": [],
-      "source": {
-        "repo": "https://github.com/madfam-org/solid-hyperobjects",
-        "manifest": "rugged-box/project.json",
-        "has_cadquery": false,
-        "has_openscad": true
-      },
-      "clone": {
-        "kind": "sparse",
-        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set rugged-box"
       }
     },
     {
@@ -32101,100 +31869,6 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set stacking-drawer"
-      }
-    },
-    {
-      "slug": "stemfie",
-      "name": "STEMFIE",
-      "domain": "household",
-      "engines": [
-        "cadquery",
-        "openscad"
-      ],
-      "dual_engine": true,
-      "modes": 3,
-      "parts": 3,
-      "parameters": 12,
-      "parameter_ids": [
-        "length_units",
-        "width_units",
-        "height_units",
-        "holes_x",
-        "holes_y",
-        "holes_z",
-        "arm_a_units",
-        "arm_b_units",
-        "thickness_units",
-        "holes_enabled",
-        "fastener_type_id",
-        "fn"
-      ],
-      "export_formats": [
-        "stl",
-        "3mf",
-        "off",
-        "step",
-        "glb",
-        "gltf",
-        "obj"
-      ],
-      "commons_license": "GPL-3.0-or-later",
-      "societal_benefit": {
-        "en": "Open-source construction kit for STEM education — enables schools to fabricate their own learning tools",
-        "es": "Kit de construcción de código abierto para educación STEM — permite a escuelas fabricar sus propias herramientas de aprendizaje"
-      },
-      "material_awareness": {
-        "shrinkage_compensation": false,
-        "recycled_material_toggle": false,
-        "tolerance_by_material": false
-      },
-      "cdg_interfaces": [
-        {
-          "id": "stemfie_beam_profile",
-          "label": "STEMFIE Beam Profile",
-          "geometry_type": "profile",
-          "standard": "STEMFIE 10mm block unit",
-          "parameters": [
-            "length_units",
-            "width_units",
-            "height_units"
-          ]
-        },
-        {
-          "id": "stemfie_through_hole",
-          "label": "STEMFIE 4mm Through-Hole",
-          "geometry_type": "bolt_pattern",
-          "standard": "STEMFIE 4mm hole on 10mm pitch",
-          "parameters": [
-            "holes_x",
-            "holes_y",
-            "holes_z"
-          ]
-        },
-        {
-          "id": "stemfie_fastener_interface",
-          "label": "STEMFIE Pin/Screw Fastener",
-          "geometry_type": "thread",
-          "standard": "STEMFIE fastener spec",
-          "parameters": [
-            "fastener_type_id"
-          ]
-        }
-      ],
-      "standards": [
-        "STEMFIE 10mm block unit",
-        "STEMFIE 4mm hole on 10mm pitch",
-        "STEMFIE fastener spec"
-      ],
-      "source": {
-        "repo": "https://github.com/madfam-org/solid-hyperobjects",
-        "manifest": "stemfie/project.json",
-        "has_cadquery": true,
-        "has_openscad": true
-      },
-      "clone": {
-        "kind": "sparse",
-        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set stemfie"
       }
     },
     {

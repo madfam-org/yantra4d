@@ -27,7 +27,13 @@ class TestBOSL2Smoke:
         """Actually render a minimal SCAD file that uses BOSL2."""
         with tempfile.TemporaryDirectory() as tmpdir:
             scad_file = Path(tmpdir) / "smoke.scad"
-            scad_file.write_text('use <BOSL2/std.scad>;\ncube(1);')
+            # `include`, not `use`: BOSL2 documents include-only, because its
+            # top-level defaults (`$tags_shown = "ALL"` in attachments.scad) are
+            # assignments that `use` never applies — with `use`, every attachable
+            # primitive (cube() included) fails BOSL2's own assertion on
+            # `$tags_shown`, on every OpenSCAD version. The commons cartridges
+            # all `include <BOSL2/std.scad>`; this smoke must exercise the same.
+            scad_file.write_text('include <BOSL2/std.scad>\ncube(1);\n')
             output_file = Path(tmpdir) / "smoke.stl"
 
             result = subprocess.run(

@@ -10,9 +10,9 @@ import threading
 import time
 from collections.abc import Callable
 
-from utils.project_resolver import project_roots
 from services.engine.cq_pool import cq_pool
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager
+from utils.project_resolver import project_roots
 
 logger = logging.getLogger(__name__)
 

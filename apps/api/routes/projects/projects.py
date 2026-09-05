@@ -23,6 +23,7 @@ from services.core.project_access import (
     is_private_project,
     require_project_access,
 )
+from utils.project_resolver import find_project_dir, project_write_root
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
@@ -192,9 +193,10 @@ def fork_project(slug):
     if not new_slug or not SLUG_PATTERN.match(new_slug):
         return error_response("Invalid slug (lowercase alphanumeric, hyphens, 3-50 chars)", 400)
 
-    dest_dir = Config.PROJECTS_DIR / new_slug
-    if dest_dir.exists():
+    # A fork is a new public cartridge even when its source is private.
+    if find_project_dir(new_slug) is not None:
         return error_response(f"Project '{new_slug}' already exists", 409)
+    dest_dir = project_write_root() / new_slug
 
     try:
         shutil.copytree(

@@ -37,6 +37,7 @@ from services.engine.render_orchestrator import (
     extract_render_payload,
 )
 from services.storage import publish_artifact_best_effort
+from utils.project_resolver import find_project_dir, resolve_project_dir
 from utils.route_helpers import (
     error_response,
     handle_exceptions,
@@ -54,10 +55,8 @@ def _get_github_project(slug: str) -> tuple[Path | None, str | None]:
 
     Returns (project_dir, error_message). error_message is None on success.
     """
-    project_dir = (Config.PROJECTS_DIR / slug).resolve()
-    if not project_dir.is_relative_to(Config.PROJECTS_DIR.resolve()):
-        return None, "Project not found"
-    if not project_dir.is_dir():
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
         return None, "Project not found"
 
     meta_path = project_dir / "project.meta.json"
@@ -84,13 +83,9 @@ def _get_git_project(slug: str) -> tuple[Path | None, str | None]:
 
     Returns (project_dir, error_message). error_message is None on success.
     """
-    project_dir = (Config.PROJECTS_DIR / slug).resolve()
-    if not project_dir.is_relative_to(Config.PROJECTS_DIR.resolve()):
-        return None, "Project not found"
-    if not project_dir.is_dir():
-        return None, "Project not found"
-    if not (project_dir / ".git").is_dir():
-        return None, "Project does not have a git repository"
+    project_dir, err = resolve_project_dir(slug, require_git=True)
+    if err:
+        return None, err
     return project_dir, None
 
 

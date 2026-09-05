@@ -18,7 +18,7 @@ Virtual filesystem layout
 Every path in a bundle is POSIX and relative to a virtual root that mirrors the
 server's own directory shape::
 
-    /projects/<slug>/…      Config.PROJECTS_DIR/<slug>  (the cartridge)
+    /projects/<slug>/…      <cartridge root>/<slug>     (the cartridge)
     /libs/…                 Config.LIBS_DIR             (BOSL2, dotSCAD, …)
     /fonts/…                Config.FONTS_DIR            (shared typefaces)
 

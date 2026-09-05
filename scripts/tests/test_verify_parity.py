@@ -23,10 +23,12 @@ Three things are separated deliberately:
     a comparable pair). A placeholder is now a SKIP that is counted apart from
     failures, and the tests below assert OpenSCAD is never invoked for one.
 
-  - ``check_mesh_parity`` decides agreement from geometry. Bounding box and
-    volume are HARD (a real shape difference), while surface divergence only
-    WARNS — tessellation noise between a CSG kernel and a B-Rep kernel is
-    expected and must not fail a build.
+  - ``check_mesh_parity`` decides agreement from geometry. Volume is HARD (a
+    real shape difference); surface divergence only WARNS — tessellation noise
+    between a CSG kernel and a B-Rep kernel is expected and must not fail a
+    build. Since the G27 ruling (2026-09-05) the bounding box has BOTH: a delta
+    inside the 0.05mm faceting band whose surfaces still agree is a warn, and
+    anything larger, or any surface divergence, is still hard.
   - ``verify_project`` decides which modes are even eligible. A mode with no
     ``cq_file`` is SKIPPED (single-kernel modes are legitimate), but a mode
     that names a file which is not on disk is a FAILURE — those two must never
@@ -123,13 +125,13 @@ def renders(monkeypatch):
     def run_cadquery_script(cq_path, out_path, params_json, fmt):
         calls["cq"].append((cq_path, params_json, fmt))
 
-    def check_mesh_parity(a, b, tolerance=0.001):
+    def check_mesh_parity_report(a, b, tolerance=0.001):
         calls["parity"].append((a, b, tolerance))
-        return True, "identical"
+        return True, "identical", {}
 
     monkeypatch.setattr(lane, "run_render", run_render)
     monkeypatch.setattr(lane, "run_cadquery_script", run_cadquery_script)
-    monkeypatch.setattr(lane, "check_mesh_parity", check_mesh_parity)
+    monkeypatch.setattr(lane, "check_mesh_parity_report", check_mesh_parity_report)
     return calls
 
 
@@ -296,8 +298,8 @@ def test_a_sandbox_rejection_does_not_stop_the_remaining_cartridges(
 
 
 def test_a_failed_parity_comparison_fails_the_cartridge(tmp_path, renders, monkeypatch):
-    monkeypatch.setattr(lane, "check_mesh_parity",
-                        lambda a, b, t: (False, "Volumes differ by 12.0mm^3"))
+    monkeypatch.setattr(lane, "check_mesh_parity_report",
+                        lambda a, b, t: (False, "Volumes differ by 12.0mm^3", {}))
     directory = cartridge(tmp_path, hyperobject([
         {"id": "main", "scad_file": "main.scad", "cq_file": "main.py"}]),
         files=["main.scad", "main.py"])
@@ -306,8 +308,8 @@ def test_a_failed_parity_comparison_fails_the_cartridge(tmp_path, renders, monke
 
 def test_one_failing_mode_fails_the_cartridge_even_when_another_passes(
         tmp_path, renders, monkeypatch):
-    results = iter([(True, "ok"), (False, "Volumes differ")])
-    monkeypatch.setattr(lane, "check_mesh_parity", lambda a, b, t: next(results))
+    results = iter([(True, "ok", {}), (False, "Volumes differ", {})])
+    monkeypatch.setattr(lane, "check_mesh_parity_report", lambda a, b, t: next(results))
     directory = cartridge(tmp_path, hyperobject([
         {"id": "good", "scad_file": "good.scad", "cq_file": "good.py"},
         {"id": "bad", "scad_file": "bad.scad", "cq_file": "bad.py"},
@@ -360,13 +362,122 @@ def test_a_difference_inside_the_tolerance_is_agreement(tmp_path):
     assert ok is True
 
 
-def test_the_same_difference_outside_the_tolerance_is_not(tmp_path):
-    ok, reason = lane.check_mesh_parity(
+def test_the_same_difference_outside_the_tolerance_now_warns(tmp_path):
+    """Changed by the G27 ruling, deliberately.
+
+    Before the warn tier this was a hard failure: 0.0005mm exceeds a 0.0001mm
+    tolerance and gate 1 did a bare `return False`. It is now a PASS that says
+    so, because the delta is inside the 0.05mm faceting band and the surfaces
+    agree to 0.00025mm. The tolerance parameter still decides whether the gate
+    is engaged at all — it is what makes this a warn rather than silence — but
+    it no longer decides the verdict on its own.
+    """
+    ok, reason, report = lane.check_mesh_parity_report(
         stl(tmp_path, "a.stl", trimesh.creation.box(extents=(10, 10, 10))),
         stl(tmp_path, "b.stl", trimesh.creation.box(extents=(10, 10, 10.0005))),
         tolerance=0.0001)
-    assert ok is False
+    assert ok is True
+    assert report["aabb_warn"] is True
     assert "Bounding boxes differ" in reason
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# the AABB warn tier (G27, ruled 2026-09-05)
+#
+# Gate 1 was a bare `return False` on any extents delta over `tolerance`, which
+# failed five commons pairs (faircap-filter, gears herringbone, glia-diagnostic
+# stethoscope, julia-vase, spiral-planter planter) by 0.012-0.034mm of $fn
+# chord error rather than shape. The ruling downgrades that to a WARN, but only
+# CONJUNCTIVELY: within a 0.05mm band AND with the Hausdorff proxy passing.
+# Both halves are pinned below, because the band alone would let a real 0.04mm
+# dimensional error through.
+# ──────────────────────────────────────────────────────────────────────────────
+
+def test_an_exact_match_passes_with_no_warning(tmp_path):
+    box = trimesh.creation.box(extents=(10, 10, 10))
+    ok, reason, report = lane.check_mesh_parity_report(
+        stl(tmp_path, "a.stl", box), stl(tmp_path, "b.stl", box))
+    assert ok is True
+    assert report["aabb_warn"] is False
+    assert report["aabb_delta_mm"] == pytest.approx(0.0, abs=1e-9)
+    assert "faceting warn" not in reason
+
+
+def test_an_aabb_delta_inside_the_band_with_agreeing_surfaces_warns(tmp_path):
+    """0.03mm of chord error: a pass that says why, not a failure."""
+    ok, reason, report = lane.check_mesh_parity_report(
+        stl(tmp_path, "a.stl", trimesh.creation.box(extents=(10, 10, 10))),
+        stl(tmp_path, "b.stl", trimesh.creation.box(extents=(10, 10, 10.03))))
+    assert ok is True
+    assert report["aabb_warn"] is True
+    assert report["aabb_delta_mm"] == pytest.approx(0.03, abs=1e-5)
+    # The surfaces are half the extents delta apart, well inside the 0.5mm proxy.
+    assert report["hausdorff_proxy_mm"] == pytest.approx(0.015, abs=1e-5)
+    # The parsed wording survives: the sweep harness and PR bodies read it.
+    assert "Bounding boxes differ by 0.030000mm" in reason
+
+
+def test_the_same_delta_with_diverging_surfaces_still_fails(tmp_path):
+    """The band is necessary, not sufficient. A notch moves a surface 2mm."""
+    notched = trimesh.boolean.difference([
+        trimesh.creation.box(extents=(10, 10, 10.03)),
+        trimesh.creation.box(extents=(4, 4, 4), transform=trimesh.transformations
+                             .translation_matrix((0, 0, 5)))])
+    ok, reason, report = lane.check_mesh_parity_report(
+        stl(tmp_path, "a.stl", trimesh.creation.box(extents=(10, 10, 10))),
+        stl(tmp_path, "b.stl", notched))
+    assert ok is False
+    assert report["aabb_warn"] is False
+    assert report["aabb_delta_mm"] == pytest.approx(0.03, abs=1e-5)
+    assert report["hausdorff_proxy_mm"] > 0.5
+    assert "Bounding boxes differ by 0.030000mm" in reason
+
+
+def test_an_aabb_delta_beyond_the_band_fails_whatever_the_surfaces_say(tmp_path):
+    """0.6mm is over the 0.05mm band: a hard fail, with no surface query."""
+    ok, reason, report = lane.check_mesh_parity_report(
+        stl(tmp_path, "a.stl", trimesh.creation.box(extents=(10, 10, 10))),
+        stl(tmp_path, "b.stl", trimesh.creation.box(extents=(10, 10, 10.6))))
+    assert ok is False
+    assert report["aabb_warn"] is False
+    assert report["aabb_delta_mm"] == pytest.approx(0.6, abs=1e-5)
+    # Not measured at all: over the band nothing gate 3 could say would help.
+    assert report["hausdorff_proxy_mm"] is None
+    assert "Bounding boxes differ by 0.600000mm" in reason
+
+
+def test_the_band_is_not_the_tolerance_parameter(tmp_path):
+    """A caller's tighter tolerance still gets the band; the two are separate."""
+    paths = (stl(tmp_path, "a.stl", trimesh.creation.box(extents=(10, 10, 10))),
+             stl(tmp_path, "b.stl", trimesh.creation.box(extents=(10, 10, 10.03))))
+    ok, _reason, report = lane.check_mesh_parity_report(*paths, tolerance=0.0001)
+    assert ok is True
+    assert report["aabb_warn"] is True
+
+
+def test_a_warn_is_a_pass_for_the_cartridge_and_is_counted_apart(tmp_path, renders,
+                                                                 monkeypatch):
+    """verify_project must not report a warn run as unqualified agreement."""
+    monkeypatch.setattr(lane, "check_mesh_parity_report",
+                        lambda a, b, t: (True, "faceting warn", {"aabb_warn": True}))
+    directory = cartridge(tmp_path, hyperobject([
+        {"id": "main", "scad_file": "main.scad", "cq_file": "main.py"}]),
+        files=["main.scad", "main.py"])
+    stats: dict = {}
+    assert lane.verify_project(directory, stats=stats) is True
+    assert stats["mode_passed"] == 1
+    assert stats["mode_passed_aabb_warn"] == 1
+
+
+def test_the_public_two_tuple_contract_is_unchanged(tmp_path):
+    """Callers and PR-body parsers unpack exactly two values. They still can."""
+    result = lane.check_mesh_parity(
+        stl(tmp_path, "a.stl", trimesh.creation.box(extents=(10, 10, 10))),
+        stl(tmp_path, "b.stl", trimesh.creation.box(extents=(10, 10, 10.03))))
+    assert len(result) == 2
+    ok, reason = result
+    assert ok is True
+    assert "Bounding boxes differ by 0.030000mm" in reason
 
 
 def test_an_unloadable_mesh_is_reported_rather_than_raising(tmp_path):
@@ -571,7 +682,8 @@ def test_a_real_pair_is_counted_as_compared(tmp_path, monkeypatch, capsys, rende
 
 def test_a_failing_real_pair_still_exits_non_zero(
         tmp_path, monkeypatch, capsys, renders):
-    monkeypatch.setattr(lane, "check_mesh_parity", lambda a, b, t: (False, "Volumes differ"))
+    monkeypatch.setattr(lane, "check_mesh_parity_report",
+                        lambda a, b, t: (False, "Volumes differ", {}))
     commons(tmp_path, "dual", hyperobject([
         {"id": "m", "scad_file": "m.scad", "cq_file": "m.py"}]), files=["m.scad", "m.py"])
     code, out = run_audit(tmp_path, monkeypatch, capsys)

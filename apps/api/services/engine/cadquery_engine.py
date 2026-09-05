@@ -10,7 +10,7 @@ import threading
 import time
 from collections.abc import Callable
 
-from config import Config
+from utils.project_resolver import project_roots
 from services.engine.cq_pool import cq_pool
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager
 
@@ -22,8 +22,12 @@ _cq_process_manager = ProcessManager()
 def _cadquery_env():
     env = os.environ.copy()
     pythonpath = env.get("PYTHONPATH", "")
-    projects_dir = str(Config.PROJECTS_DIR)
-    env["PYTHONPATH"] = f"{projects_dir}{os.pathsep}{pythonpath}" if pythonpath else projects_dir
+    # Every cartridge root, not just the public commons: a CadQuery script in
+    # a client-private cartridge imports its siblings the same way a public one
+    # does.
+    roots = [str(r) for r in project_roots()]
+    parts = roots + ([pythonpath] if pythonpath else [])
+    env["PYTHONPATH"] = os.pathsep.join(parts)
     return env
 
 

@@ -21,6 +21,7 @@ class AppConfig:
 
     SCAD_DIR: Path = field(init=False)
     PROJECTS_DIR: Path = field(init=False)
+    PRIVATE_PROJECTS_DIR: Path = field(init=False)
     CARTRIDGES_DIRS: list[Path] = field(init=False)
     LIBS_DIR: Path = field(init=False)
     REDIS_URL: str = field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379"))
@@ -150,8 +151,23 @@ class AppConfig:
         default_projects = parent / "projects"
         self.PROJECTS_DIR = Path(os.getenv("PROJECTS_DIR", default_projects))
 
-        # Dynamic search paths for cartridges
-        cartridge_paths = [self.PROJECTS_DIR]
+        # Second cartridge root for the client-private cartridges. Since RFC
+        # 0038 P2 the public commons is ONE submodule mounted at `projects/`
+        # (madfam-org/solid-hyperobjects), so the private client cartridges --
+        # which are separate private repos and must never live inside the
+        # public commons -- mount at their own root instead. Absent on a public
+        # clone; every read path treats that as "no private cartridges", never
+        # as an error.
+        default_private_projects = parent / "private-projects"
+        self.PRIVATE_PROJECTS_DIR = Path(
+            os.getenv("PRIVATE_PROJECTS_DIR", default_private_projects)
+        )
+
+        # Dynamic search paths for cartridges. Order is significant and is the
+        # resolution order used by `utils.project_resolver`: the public commons
+        # wins a slug collision, and writes (onboard, fork) always target
+        # PROJECTS_DIR.
+        cartridge_paths = [self.PROJECTS_DIR, self.PRIVATE_PROJECTS_DIR]
         # Support node_modules cartridges if present
         root_node_modules = parent / "node_modules" / "@yantra4d"
         if root_node_modules.is_dir():

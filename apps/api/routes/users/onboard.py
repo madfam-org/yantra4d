@@ -11,11 +11,11 @@ from pathlib import Path
 from flask import Blueprint, g, jsonify, request
 
 import rate_limits
-from config import Config
 from extensions import limiter
 from manifest import invalidate_cache
 from middleware.auth import require_role
 from services.core.manifest_generator import generate_manifest
+from utils.project_resolver import find_project_dir, project_write_root
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import validate_project_slug
 
@@ -114,9 +114,11 @@ def create_project():
     if slug_err:
         return error_response(slug_err, 400)
 
-    project_dir = Config.PROJECTS_DIR / slug
-    if project_dir.exists():
+    # New cartridges are authored into the public commons root. The existence
+    # check spans every root so onboarding cannot shadow a private slug.
+    if find_project_dir(slug) is not None:
         return error_response(f"Project '{slug}' already exists.", 409)
+    project_dir = project_write_root() / slug
 
     try:
         project_dir.mkdir(parents=True, exist_ok=False)

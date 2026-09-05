@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from config import Config
+from utils.project_resolver import find_project_dir, project_write_root
 
 logger = logging.getLogger(__name__)
 
@@ -155,9 +155,12 @@ def import_repo(repo_url: str, slug: str, manifest: dict, github_token: str | No
 
     Returns dict with keys: success, slug, error
     """
-    project_dir = Config.PROJECTS_DIR / slug
-    if project_dir.exists():
+    # A newly imported cartridge is authored here, so it lands in the public
+    # commons root; the existence check spans every root so an import can never
+    # shadow a client-private slug.
+    if find_project_dir(slug) is not None:
         return {"success": False, "error": f"Project '{slug}' already exists"}
+    project_dir = project_write_root() / slug
 
     # Full clone (no --depth 1) directly into projects/{slug}/
     if not clone_repo(repo_url, project_dir, github_token, shallow=False):
@@ -189,7 +192,9 @@ def sync_repo(slug: str, github_token: str | None = None) -> dict:
 
     Returns dict with keys: success, updated_files, error
     """
-    project_dir = Config.PROJECTS_DIR / slug
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        return {"success": False, "error": "No source metadata found for this project"}
     meta_path = project_dir / "project.meta.json"
 
     if not meta_path.exists():

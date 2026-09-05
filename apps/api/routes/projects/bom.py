@@ -8,13 +8,11 @@ import io
 import json
 import logging
 import operator
-import os
 
 from flask import Blueprint, Response, jsonify, request
 
-from config import Config
 from services.core.project_access import require_project_access
-from utils.project_resolver import require_project
+from utils.project_resolver import find_project_dir, require_project
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
@@ -72,9 +70,11 @@ def _eval_node(node, original_formula):
 
 
 def _load_manifest(slug: str):
-    projects_dir = Config.PROJECTS_DIR
-    manifest_path = os.path.join(projects_dir, slug, "project.json")
-    if not os.path.isfile(manifest_path):
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        return None
+    manifest_path = project_dir / "project.json"
+    if not manifest_path.is_file():
         return None
     with open(manifest_path) as f:
         return json.load(f)

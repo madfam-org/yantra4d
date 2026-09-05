@@ -6,7 +6,6 @@ import json
 import logging
 import os
 import time
-from pathlib import Path
 
 from flask import Blueprint, Response, jsonify, request
 from sqlalchemy import desc, func
@@ -22,6 +21,7 @@ from services.engine.render_orchestrator import (
     active_job_ids,
     r,
 )
+from utils.project_resolver import find_project_dir
 from utils.route_helpers import error_response
 from utils.validators import require_valid_slug
 
@@ -153,20 +153,34 @@ def _collect_recent_render_events(limit: int = 10) -> list[dict]:
 
 def _load_raw_manifest(slug: str) -> dict | None:
     """Load raw project.json dict (not the parsed ManifestService object)."""
-    p = Path(Config.PROJECTS_DIR) / slug / "project.json"
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        return None
+    p = project_dir / "project.json"
     if not p.is_file():
         return None
     return json.loads(p.read_text())
 
 
 def _save_raw_manifest(slug: str, data: dict) -> None:
-    p = Path(Config.PROJECTS_DIR) / slug / "project.json"
+    # Writes back to wherever the cartridge actually lives -- editing a
+    # client-private cartridge must not fabricate a public copy of it.
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        raise FileNotFoundError(f"Project '{slug}' not found in any cartridge root")
+    p = project_dir / "project.json"
     p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
 
 
 def _enrich_project(proj):
     """Add computed metadata to a project dict."""
-    project_dir = Config.PROJECTS_DIR / proj["slug"]
+    project_dir = find_project_dir(proj["slug"])
+    if project_dir is None:
+        proj["has_manifest"] = False
+        proj["modified_at"] = None
+        proj["scad_file_count"] = 0
+        proj["export_count"] = 0
+        return proj
     manifest_path = project_dir / "project.json"
 
     proj["has_manifest"] = manifest_path.exists()
@@ -251,10 +265,8 @@ def admin_list_projects() -> Response:
 @require_role("admin")
 def admin_project_detail(slug: str) -> Response | tuple[Response, int]:
     """Return detailed info for a single project."""
-    project_dir = Config.PROJECTS_DIR / slug
-    manifest_path = project_dir / "project.json"
-
-    if not project_dir.is_dir() or not manifest_path.exists():
+    project_dir = find_project_dir(slug)
+    if project_dir is None or not (project_dir / "project.json").exists():
         return error_response(f"Project '{slug}' not found", 404, error_code="project_not_found")
 
     projects = discover_projects()

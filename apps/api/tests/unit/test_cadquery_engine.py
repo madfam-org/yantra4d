@@ -1,4 +1,5 @@
 import json
+import os
 from unittest.mock import MagicMock, patch
 
 from services.engine.cadquery_engine import (
@@ -11,16 +12,33 @@ from services.engine.cadquery_engine import (
 
 
 def test_cadquery_env(monkeypatch):
+    # Both cartridge roots land on PYTHONPATH (RFC 0038 P2): a CadQuery script
+    # in a client-private cartridge imports its siblings like a public one.
     monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")
+    monkeypatch.setattr("config.Config.PRIVATE_PROJECTS_DIR", "/fake/private")
     # if it had pre-existing pythonpath, we ensure it prepend
     monkeypatch.setenv("PYTHONPATH", "/old/path")
     env = _cadquery_env()
     assert "/fake/proj" in env["PYTHONPATH"]
+    assert "/fake/private" in env["PYTHONPATH"]
     assert "/old/path" in env["PYTHONPATH"]
+    # The public commons is searched first.
+    parts = env["PYTHONPATH"].split(os.pathsep)
+    assert parts.index("/fake/proj") < parts.index("/fake/private")
+    assert parts[-1] == "/old/path"
 
     monkeypatch.delenv("PYTHONPATH", raising=False)
     env2 = _cadquery_env()
-    assert env2["PYTHONPATH"] == "/fake/proj"
+    assert env2["PYTHONPATH"] == os.pathsep.join(["/fake/proj", "/fake/private"])
+
+
+def test_cadquery_env_single_root_when_private_is_unset(monkeypatch):
+    # A deployment with one cartridge root gets exactly one entry, not a
+    # duplicate of the same directory.
+    monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")
+    monkeypatch.setattr("config.Config.PRIVATE_PROJECTS_DIR", "/fake/proj")
+    monkeypatch.delenv("PYTHONPATH", raising=False)
+    assert _cadquery_env()["PYTHONPATH"] == "/fake/proj"
 
 def test_build_cadquery_command():
     cmd = build_cadquery_command("out.stl", "script.py", {"p": 1}, "STL")

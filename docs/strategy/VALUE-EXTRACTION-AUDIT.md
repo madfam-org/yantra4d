@@ -91,7 +91,7 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Landing-gallery entries the Commons catalog does not publish | 0 | 500 | 0.0% | — | new in 2026-09 |
 | Cartridges offering STEP (B-Rep) export | 491 | 500 | 98.2% | — | new in 2026-09 |
 | Cartridges carrying an explicit licence | 500 | 500 | 100.0% | — | new in 2026-09 |
-| Cartridges carrying a `verification` block | 11 | 500 | 2.2% | — | new in 2026-09 |
+| Cartridges carrying a `verification` block | 62 | 500 | 12.4% | — | new in 2026-09 |
 
 **Not recomputed — reported instead of approximated.** These figures in the 2026-08 section are judgement, frontend code reachability, or another QA lane's output; a proxy number here would look computed while measuring something else.
 

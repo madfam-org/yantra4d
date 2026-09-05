@@ -361,8 +361,8 @@ def test_cohort_split_is_optional_and_never_gates_the_check(commons):
     #   - `stemfie`    declared material_awareness -> material_awareness 310 -> 309
     #
     # 2026-09-05, ADR-021 clean-room re-creations: four of those five returned
-    # (keyv2 #5, stemfie #3, multiboard #7, rugged-box #4; polydice still
-    # reserved). They are audit-era slugs, so they re-enter this cohort, and
+    # (keyv2 #5, stemfie #3, multiboard #7, rugged-box #4; polydice
+    # followed in #14). They are audit-era slugs, so they re-enter this cohort, and
     # the re-created manifests declare MORE than the ones that left. Measured
     # from the returned manifests, slug by slug:
     #   - cadquery_first        300 -> 303  (keyv2, stemfie, rugged-box; multiboard is openscad)
@@ -374,12 +374,23 @@ def test_cohort_split_is_optional_and_never_gates_the_check(commons):
     #     extraction logic did not drift. A logic change would have moved
     #     figures no return can explain.
     #
-    # If polydice lands, or a clean-room cartridge changes what it declares,
-    # these numbers move again and this comment must say so.
+    # 2026-09-05, ADR-021 complete: polydice returned (#14, clean room), the
+    # last reserved slug. It is an audit-era slug, so it re-enters this cohort.
+    # Measured from the returned manifest:
+    #   - cadquery_first        303 -> 304  (polydice is CadQuery-first)
+    #   - material_awareness    313 -> 314
+    #   - tolerance_by_material 297 -> 298
+    #   - constraint_coverage unchanged at 288: polydice declares no
+    #     constraints block. shrinkage_compensation / recycled_material_toggle
+    #     unchanged as well — again the evidence that only the named return
+    #     moved these figures and the extraction logic did not drift.
+    #
+    # If a clean-room cartridge changes what it declares, these numbers move
+    # again and this comment must say so.
     era = cohorts["audit_era"]["metrics"]
-    assert era["cadquery_first"]["numerator"] == 303
+    assert era["cadquery_first"]["numerator"] == 304
     assert era["constraint_coverage"]["numerator"] == 288
-    assert era["material_awareness"]["numerator"] == 313
-    assert era["tolerance_by_material"]["numerator"] == 297
+    assert era["material_awareness"]["numerator"] == 314
+    assert era["tolerance_by_material"]["numerator"] == 298
     assert era["shrinkage_compensation"]["numerator"] == 30
     assert era["recycled_material_toggle"]["numerator"] == 16

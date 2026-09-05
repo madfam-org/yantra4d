@@ -426,7 +426,7 @@ Except for graph modes, which produce STEP natively, to advertise STEP support i
 - `projects/gridfinity/project.json` — all three modes declare `cq_file` alongside `scad_file`, with `"export_formats": ["stl", "3mf", "off", "step", "glb", "gltf", "obj"]`.
 - `projects/scara-robotics/project.json` — benchmark dual-engine parity implementation.
 - `projects/spacer-block/project.json`, `projects/flange-plate/project.json` — graph-engine cartridges (see [authoring guide](../guides/graph-cartridges.md)).
-- `projects/cq-hyperobject-test/project.json` — CadQuery-only test project.
+- `apps/api/tests/fixtures/cartridges/cq-hyperobject-test/project.json` — CadQuery-only test fixture (not a cartridge; see RFC 0038 P2).
 
 ---
 

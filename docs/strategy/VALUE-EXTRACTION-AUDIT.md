@@ -26,11 +26,15 @@ locale files, and the CDG family taxonomy in `apps/api`. The table below is gene
 recomputation, and `--json` emits the same data machine-readably. Two guards make the
 numbers trustworthy rather than merely printable. First, the on-disk cartridge count is
 asserted against `counts.cartridges` in the committed catalog before anything is
-measured: 34 of the 500 cartridges live in public submodules and **every** dual-engine
-cartridge is one of them (`.gitmodules` declares 37 under `projects/`; two are the
-client-private `tablaco*` entries, and the 35th, `cq-hyperobject-test`, is the engine
-fixture the catalog excludes). With an uninitialised checkout each metric silently
-under-counts and the table still prints. Second, the cartridges the Commons catalog does not publish are
+measured. Since RFC 0038 P2 the whole commons is ONE submodule at `projects/`
+(`madfam-org/solid-hyperobjects`), so an uninitialised checkout loses **all** 500
+cartridges rather than a subset, and the table would still print. Before P2 the
+exposure was partial and worse for being partial: 34 of the 500 cartridges were
+separate satellite repos and every dual-engine cartridge was among them. (Two
+earlier statements of that figure disagreed — this doc said 34 and the script's
+docstring said 35; 34 was right. `.gitmodules` declared 37 paths under
+`projects/`, of which two were the client-private `tablaco*` entries and one the
+`cq-hyperobject-test` fixture the catalog excludes.) Second, the cartridges the Commons catalog does not publish are
 excluded by importing the generator's own exclusion set rather than restating it, so this
 audit and `COMMONS.md` can never describe different commons.
 
@@ -77,7 +81,7 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Cartridges filed `domain: wearable` | 72 | 500 | 14.4% | — | new in 2026-09 |
 | Cartridges whose README declares a Fashion Cabinet bridge | 53 | 500 | 10.6% | — | new in 2026-09 |
 | Cartridges reachable from the public landing gallery | 500 | 500 | 100.0% | — | new in 2026-09 |
-| Landing-gallery entries the Commons catalog does not publish | 1 | 501 | 0.2% | — | new in 2026-09 |
+| Landing-gallery entries the Commons catalog does not publish | 0 | 500 | 0.0% | — | new in 2026-09 |
 | Cartridges offering STEP (B-Rep) export | 490 | 500 | 98.0% | — | new in 2026-09 |
 | Cartridges carrying an explicit licence | 500 | 500 | 100.0% | — | new in 2026-09 |
 | Cartridges carrying a `verification` block | 9 | 500 | 1.8% | — | new in 2026-09 |
@@ -125,17 +129,20 @@ cannot produce is how many FC links actually resolve — that lives on the Fashi
 side of the contract, and inventing a proxy for it here would be exactly the kind of
 number this re-measurement exists to remove.
 
-**Dual-engine cartridges.** 21 of 500. Every one is a submodule-backed standalone repo
-that predates the audit, and not one of the 176 new cartridges ships an OpenSCAD mode
+**Dual-engine cartridges.** 21 of 500. Every one predates the audit and came from
+what was then a standalone satellite repo (absorbed into the commons by RFC 0038 P2), and not one of the 176 new cartridges ships an OpenSCAD mode
 alongside its CadQuery one — so the number only ever moves downward. It stood at 22 until
 #115 found that `implicit-lattice-hyperobject` declared an OpenSCAD kernel it never
 implemented and dropped the claim. As a share it is 4.2%, down from 6.8% of the audit-era
 cohort — dilution, plus that one correction. Read together with 474 of 500 declaring
 `engine: cadquery` and 490 offering STEP export, the commons has
-settled on one kernel; all ten OpenSCAD-only cartridges are inherited standalone repos. This row
-is also the one most exposed to the submodule-empty trap — measured with `projects/*`
-uninitialised it reads 0 while every other row still looks reasonable, which is why the
-script refuses to print anything until the on-disk count matches the catalog.
+settled on one kernel; all ten OpenSCAD-only cartridges are inherited from former
+standalone repos. This row was the one most exposed to the submodule-empty trap — with the
+satellite submodules uninitialised it read 0 while every other row still looked
+reasonable, which is why the script refuses to print anything until the on-disk count
+matches the catalog. Under P2 that failure is no longer selective: an uninitialised
+`projects` submodule zeroes every row at once, and `validate_manifests.py`'s ratchet
+refuses the checkout outright.
 
 **Quadrilingual coverage.** de/fr/pt/zh carry 1,040 of 1,480 strings, 70.3% — down 5.6 pp
 from the audit's ~75.8%. Nothing was un-translated. The studio's key set grew from 327 to
@@ -238,7 +245,7 @@ re-measurement re-ranks the whole table rather than shuffling rows one at a time
 ### Reproducing this section
 
 ```bash
-git submodule update --init projects/   # skips the two `update = none` submodules
+git submodule update --init projects    # the commons; `update = none` mounts are skipped
 python3 scripts/qa/value_extraction_audit.py            # the table above
 python3 scripts/qa/value_extraction_audit.py --cohorts  # audit-era vs added-since
 python3 scripts/qa/value_extraction_audit.py --json     # machine-readable
@@ -246,8 +253,9 @@ python3 scripts/qa/value_extraction_audit.py --write    # refresh the generated 
 python3 scripts/qa/value_extraction_audit.py --check    # what CI runs
 ```
 
-`git submodule update` honours `update = none`, so the two private client submodules stay
-empty — do not add `--checkout`, which overrides that and tries to clone them. They are
+`git submodule update` honours `update = none`, so the two private client cartridges —
+which mount at `private-projects/` since RFC 0038 P2, outside the public commons — stay
+empty. Do not add `--checkout`, which overrides that and tries to clone them. They are
 excluded from every count here, exactly as `COMMONS.md` excludes them.
 
 ---

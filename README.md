@@ -112,8 +112,11 @@ manifest declares two conflicting licenses, or if an excluded cartridge appears
 in the published catalog (`scripts/qa/check_licenses.py --strict-all`).
 
 Two cartridges are deliberately **excluded** from the published Commons:
-`tablaco` is a client engagement whose client retains all private rights, and
-`cq-hyperobject-test` is an engine test fixture rather than a hyperobject.
+`tablaco` and `tablaco-v2` are client engagements whose client retains all
+private rights, so they live outside the commons repo entirely and mount at
+`private-projects/`. (`cq-hyperobject-test` used to be a third exclusion; since
+RFC 0038 P2 it is an engine test fixture vendored under
+`apps/api/tests/fixtures/cartridges/` and is not a cartridge at all.)
 
 **What is verified, precisely.** Every manifest is schema-validated in CI, and every
 mode is geometrically distinct (each mode's `parts[]` id drives `target_part` dispatch).

@@ -153,14 +153,17 @@ Decentralizing the Yantra4D Commons so every hyperobject project is a sovereign,
 
 > _Estate re-baseline (2026-09-02):_ "all 33 projects" describes this phase as it landed, not
 > the estate today, and federation turned out to be the flagship pattern rather than the
-> default. The Commons now publishes **500 cartridges**
-> (fact source: `docs/commons-catalog.json` → `counts.cartridges`), the large majority of them
-> ordinary in-repo `projects/<slug>/` directories. **37** `projects/…` entries are git
-> submodules pointing at independent `madfam-org` repos
-> (fact source: the `[submodule "projects/…"]` entries in `.gitmodules`): 34 of those are published
-> cartridges in the catalog, and 3 are not — the `cq-hyperobject-test` engine fixture and the
-> client-private `tablaco` / `tablaco-v2`, the latter two marked `update = none` so public
-> clones skip them. New cartridges land in-repo; only flagships are extracted.
+> default — and then RFC 0038 P2 ended it entirely. The Commons publishes
+> **500 cartridges**
+> (fact source: `docs/commons-catalog.json` → `counts.cartridges`), and every one of them now
+> lives in ONE repo, `madfam-org/solid-hyperobjects`, which this platform consumes as a single
+> pinned submodule at `projects/`
+> (fact source: the `[submodule "projects"]` entry in `.gitmodules`). The 34 satellite cartridge
+> repos that used to be separate `madfam-org` submodules were absorbed with full history and
+> archived; there is no "submodule-backed vs in-repo" distinction left to draw. The two
+> client-private cartridges are the only `projects/…`-era submodules that remain, and they moved
+> out of the commons to `private-projects/`, still marked `update = none` so public clones skip
+> them. New cartridges land in the commons repo.
 
 ---
 
@@ -187,9 +190,9 @@ _Dependency: None._
 
 Each federated project repo has its own CI to catch regressions independently of the yantra4d monorepo pipeline (33 repos when this sprint landed; 37 `projects/…` submodules today — see the estate re-baseline under Phase 12).
 
-- [x] **GitHub Actions template:** Reusable `.github/workflows/project-ci-reusable.yml` (52 lines) — lint SCAD, validate `project.json` against schema, run compliance audit.
-- [x] **Propagate to the federated repos:** `scripts/ci/propagate_project_ci.sh` + `scripts/ci/propagate_project_ci.py` apply the CI template across the `madfam-org/<slug>` repositories that back the `projects/…` submodules.
-- [x] **Submodule update automation:** `.github/workflows/project-ci.yml` triggers submodule SHA bump when a project repo's `main` branch passes CI.
+- [x] ~~**GitHub Actions template:** Reusable `.github/workflows/project-ci-reusable.yml`~~ — RETIRED by RFC 0038 P2. There are no federated cartridge repos left to give CI to; the commons repo has one CI lane of its own.
+- [x] ~~**Propagate to the federated repos:** `scripts/ci/propagate_project_ci.{sh,py}`~~ — RETIRED with the above, along with `scripts/propagate_ci.sh`.
+- [x] ~~**Submodule update automation:** `.github/workflows/project-ci.yml` + `bump-submodule.yml` + `update-submodules.yml`~~ — RETIRED and replaced by ONE `.github/workflows/bump-commons-pin.yml`, which opens a PR when `solid-hyperobjects` main moves ahead of the pin. Issue #69's dormant 33-repo bump loop is retired by construction.
 - [x] **`tablaco` exclusion hardening:** `update = none` in `.gitmodules` confirmed — public clones skip the private repo.
 
 ---
@@ -325,8 +328,11 @@ rows sum past 500):
 | With declared CDG interfaces | 486 |
 | Carrying an explicit `commons_license` | 500 |
 
-The API serves 501 projects — the 500 published cartridges plus the `cq-hyperobject-test`
-engine fixture, which is excluded from the catalog (as is the client-private `tablaco`).
+The API serves 500 projects — the published cartridges, and only those. Since
+RFC 0038 P2 the `cq-hyperobject-test` engine fixture is vendored under
+`apps/api/tests/fixtures/cartridges/` instead of sitting in `projects/`, and the
+client-private `tablaco` cartridges mount at `private-projects/` (served only to
+authorized identities, and excluded from the catalog).
 
 - [x] **Per-mode engine resolution:** `ManifestService.mode_engine(mode_id)` resolves the
   render engine per mode (explicit mode `engine` → `.py`/`.cq` inference → project engine;

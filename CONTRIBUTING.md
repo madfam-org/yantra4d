@@ -148,31 +148,58 @@ job's summary — it says which way it classified the PR and why.
 
 - `apps/studio/src/components/ui/*` — Shadcn UI managed components (use shadcn CLI to regenerate)
 - `libs/*` — Git submodules (BOSL2, NopSCADlib, Round-Anything, threads-scad, MCAD, dotSCAD)
+- `projects/` — the commons submodule; cartridge changes go to `madfam-org/solid-hyperobjects`
+- `private-projects/*` — client-private cartridge submodules
 - `node_modules/`, `dist/` — Generated artifacts
 - `.github/workflows/*` — Only with explicit CI/CD intent
 
-## Adding a New Project
+## Adding a New Cartridge
 
-1. Create `projects/{slug}/project.json` following the manifest schema
-2. Add `.scad` files to `projects/{slug}/`
-3. The project is auto-discovered — no code changes needed
+**Cartridges are contributed to the commons repo, not to this one.** Since
+RFC 0038 P2 every published cartridge lives in
+[`madfam-org/solid-hyperobjects`](https://github.com/madfam-org/solid-hyperobjects),
+which this repo consumes as a single pinned submodule at `projects/`. Open your
+PR there:
+
+1. Create `<slug>/project.json` at the ROOT of the commons repo, following the
+   manifest schema (`packages/schemas/project-manifest.schema.json` here)
+2. Add the `.scad` / CadQuery sources alongside it
+3. The cartridge is auto-discovered — no platform code changes needed
+
+Once it merges, the pin moves here (see below) and the platform serves it.
 
 ## Submodule Management
 
-OpenSCAD libraries in `libs/` and federated projects in `projects/` are git submodules.
+There are nine submodules: six OpenSCAD libraries under `libs/`, the public
+commons at `projects/`, and the two client-private cartridges under
+`private-projects/`.
 
-- **Weekly auto-update**: The `update-submodules.yml` workflow updates all submodules weekly and creates a PR
-- **Per-push auto-bump**: The `bump-submodule.yml` workflow bumps individual project submodules when their upstream repos push to main
-- **Excluded submodules**: the client-private `projects/tablaco` and `projects/tablaco-v2` carry `update = none` in `.gitmodules` and are excluded from automated updates (managed separately via their own deployment pipeline). The other 35 `projects/*` submodules are public. `git submodule update` honours `update = none`, so never add `--checkout` — that overrides it and tries to clone the private repos, which a normal contributor cannot read
-
-To manually update a specific submodule:
 ```bash
-cd projects/my-project
-git fetch origin
-git checkout origin/main
-cd ../..
-git add projects/my-project
-git commit -m "chore(deps): update my-project submodule"
+git submodule update --init projects libs    # what a contributor needs
+```
+
+- **Weekly commons bump**: `.github/workflows/bump-commons-pin.yml` opens a PR
+  when `solid-hyperobjects` main moves ahead of the pin, regenerating every
+  derived artifact in the same commit. It never pushes to `main`.
+- **Client-private cartridges**: `private-projects/tablaco` and
+  `private-projects/tablaco-v2` carry `update = none` in `.gitmodules` and are
+  excluded from automated updates (managed separately via their own deployment
+  pipeline). `git submodule update` honours `update = none`, so **never add
+  `--checkout`** — that overrides it and tries to clone the private repos,
+  which a normal contributor cannot read.
+
+To move the commons pin by hand:
+```bash
+git submodule update --init projects
+cd projects && git fetch origin && git checkout origin/main && cd ..
+git add projects
+# Regenerate everything derived from the manifests before committing:
+python3 scripts/qa/sync_fallback_manifest.py
+python3 scripts/qa/generate_commons_catalog.py
+python3 scripts/qa/derive_mating_candidates.py
+python3 scripts/qa/value_extraction_audit.py --write
+node scripts/dev/generate-landing-projects.mjs
+git commit -m "chore(commons): bump the solid-hyperobjects pin"
 ```
 
 ## Questions?

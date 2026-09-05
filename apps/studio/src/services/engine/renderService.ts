@@ -102,6 +102,14 @@ interface RenderPart {
   type: string
   url?: string
   blob?: Blob
+  /**
+   * The geometry format `url`/`blob` hold, when the URL cannot say so itself.
+   *
+   * Set by the browser (WASM) kernel, whose output is always STL behind an
+   * extension-less `blob:` URL. Absent on server renders, where the URL carries
+   * a real extension and remains the answer.
+   */
+  format?: string
 }
 
 interface RenderOptions {
@@ -679,7 +687,35 @@ async function renderWasm(
 
     const blob = new Blob([stlData], { type: 'application/sla' })
     const url = URL.createObjectURL(blob)
-    parts.push({ type: partId, blob, url })
+    // `format` states what these bytes ARE, because the URL cannot.
+    //
+    // A blob URL is `blob:<origin>/<uuid>` — it never carries an extension.
+    // Everything downstream identified a part's format by sniffing that
+    // extension: `handleDownloadStl` decides whether the viewer already holds
+    // the requested format with `url.split('?')[0].endsWith('.' + ext)`, and
+    // `pickUrl` chooses between `url` and `download_url` the same way. An
+    // extension-less URL therefore read as "not STL" even though the browser
+    // kernel emits STL and nothing else (`BROWSER_EXPORT_FORMATS`), so pressing
+    // Download STL on a browser-rendered part discarded bytes already in memory
+    // and rendered the identical geometry a second time.
+    //
+    // That second render is neither free nor necessarily local:
+    // `canBrowserEmitFormat('stl')` is true, so placement rule 4 does not pin it
+    // to the browser, and wherever the browser kernel is slow or failing it
+    // falls back to the server queue. That is what failed the nightly browser
+    // audit — `downloads STL for holder mode` on custom-msh, an OpenSCAD
+    // (browser-placed) cartridge, waited out the 60 s download timeout behind a
+    // queue four jobs deep and never emitted a `download` event. gridfinity's
+    // STL test passes through the same code only because its default `bin` mode
+    // is CadQuery: server-placed, so its parts carry real `/static/….stl` URLs.
+    //
+    // A field rather than a `#.stl` fragment on the URL. The fragment looks like
+    // the same fix — `useRender`'s L2 cache restore already appends one — but
+    // `URL.revokeObjectURL` does NOT resolve past a fragment: measured in
+    // Chromium 1169, revoking `blob:…#.stl` leaves the base URL alive and
+    // fetchable, so every fragmented URL this hook's cleanup effect revokes
+    // leaks its blob for the life of the document.
+    parts.push({ type: partId, blob, url, format: 'stl' })
 
     const partElapsed = (performance.now() - partStart) / 1000
     partTimings.push({ part: partId, seconds: partElapsed })

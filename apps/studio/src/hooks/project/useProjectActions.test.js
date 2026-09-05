@@ -326,6 +326,86 @@ describe('useProjectActions', () => {
       expect(items[1].url).toBe('http://b.stl?t=1')
     })
 
+    // ---------- browser (WASM) renders: the format is on the part, not the URL ----------
+    //
+    // `renderWasm` pushes `{ type, blob, url, format: 'stl' }`. The URL is a
+    // `blob:<origin>/<uuid>` — it never carries an extension — so before
+    // `format` existed these parts read as "not STL" and pressing Download STL
+    // re-rendered geometry the page was already displaying. Because
+    // `canBrowserEmitFormat('stl')` is true, placement rule 4 does not pin that
+    // re-render to the browser, so it could land on the server queue: the
+    // nightly browser audit's `downloads STL for holder mode` (custom-msh, an
+    // OpenSCAD/browser-placed cartridge) timed out waiting 60 s for a `download`
+    // event behind a queue four jobs deep, three nights running (#79).
+    it('downloads a browser-rendered part without re-rendering (issue #79)', async () => {
+      const parts = [{
+        type: 'holder_body',
+        url: 'blob:http://localhost:5173/2b1f-4c',
+        format: 'stl',
+      }]
+      const { result } = renderActions({ parts, exportFormat: 'stl' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      expect(downloadFile).toHaveBeenCalledWith(
+        'blob:http://localhost:5173/2b1f-4c',
+        'test-project_basic_holder_body.stl'
+      )
+    })
+
+    it('zips browser-rendered multi-part without re-rendering', async () => {
+      const parts = [
+        { type: 'top', url: 'blob:http://localhost:5173/aaa', format: 'stl' },
+        { type: 'bottom', url: 'blob:http://localhost:5173/bbb', format: 'stl' },
+      ]
+      const { result } = renderActions({ parts, exportFormat: 'stl' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      const [items] = downloadZip.mock.calls[0]
+      expect(items.map(i => i.url))
+        .toEqual(['blob:http://localhost:5173/aaa', 'blob:http://localhost:5173/bbb'])
+    })
+
+    it('still re-renders a browser part when another format is asked for', async () => {
+      // The browser kernel emits STL and nothing else, so GLB genuinely needs a
+      // render — `format` must not short-circuit a format the part does not hold.
+      const parts = [{ type: 'body', url: 'blob:http://localhost:5173/ccc', format: 'stl' }]
+      renderParts.mockResolvedValue([{ type: 'body', url: 'http://backend/body.glb' }])
+      const { result } = renderActions({ parts, exportFormat: 'glb' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).toHaveBeenCalled()
+      expect(downloadFile).toHaveBeenCalledWith(
+        'http://backend/body.glb',
+        'test-project_basic_body.glb'
+      )
+    })
+
+    // An L2 (IndexedDB) cache hit rebuilds both blobs, so both URLs are
+    // extension-less and each states its own format.
+    it('downloads an L2-restored part via download_format without re-rendering', async () => {
+      const parts = [{
+        type: 'body',
+        url: 'blob:http://localhost:5173/viewer',
+        isGlb: true,
+        download_url: 'blob:http://localhost:5173/download',
+        download_format: 'stl',
+      }]
+      const { result } = renderActions({ parts, exportFormat: 'stl' })
+      await act(async () => {
+        await result.current.handleDownloadStl()
+      })
+      expect(renderParts).not.toHaveBeenCalled()
+      expect(downloadFile).toHaveBeenCalledWith(
+        'blob:http://localhost:5173/download',
+        'test-project_basic_body.stl'
+      )
+    })
+
     it('re-renders when export format differs from viewer parts', async () => {
       // Viewer has STL, but user wants STEP — must re-render
       const parts = [{

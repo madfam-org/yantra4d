@@ -210,17 +210,33 @@ describe('parseGitmodules', () => {
 })
 
 describe('cartridgeSubmodules', () => {
-  it('separates public cartridges from `update = none` ones and ignores libs', () => {
+  it('requires the commons submodule and expects the private mounts to be absent', () => {
+    // RFC 0038 P2: one submodule at `projects/` carries every cartridge; the
+    // client-private ones mount at `private-projects/` with `update = none`.
     const repo = makeRepo({
       submodules: [
         ['libs/BOSL2', ''],
-        ['projects/public-one', ''],
-        ['projects/tablaco', 'none'],
+        ['projects', ''],
+        ['private-projects/tablaco', 'none'],
+        ['private-projects/tablaco-v2', 'none'],
       ],
     })
     const { required, expectedAbsent } = cartridgeSubmodules(repo)
-    expect(required).toEqual(['projects/public-one'])
-    expect(expectedAbsent).toEqual(['projects/tablaco'])
+    expect(required).toEqual(['projects'])
+    expect(expectedAbsent).toEqual([
+      'private-projects/tablaco',
+      'private-projects/tablaco-v2',
+    ])
+  })
+
+  it('never requires a private mount, even one declared under projects/', () => {
+    const repo = makeRepo({
+      submodules: [
+        ['projects', ''],
+        ['projects/tablaco', 'none'],
+      ],
+    })
+    expect(cartridgeSubmodules(repo).required).toEqual(['projects'])
   })
 
   it('reports nothing when the repo has no .gitmodules', () => {
@@ -293,12 +309,12 @@ describe('generate — private cartridges are dropped', () => {
 // ─── Checkout completeness ──────────────────────────────────────────────────
 
 describe('generate — checkout completeness', () => {
-  it('treats an absent `update = none` submodule as expected, not incomplete', () => {
+  it('treats an absent `update = none` mount as expected, not incomplete', () => {
     const repo = makeRepo({
       manifests: [{ slug: 'public-one' }],
       submodules: [
-        ['projects/public-one', ''],
-        ['projects/tablaco', 'none'],
+        ['projects', ''],
+        ['private-projects/tablaco', 'none'],
       ],
     })
     expect(generate({ repo, env: {} }).missing).toEqual([])
@@ -309,39 +325,42 @@ describe('generate — checkout completeness', () => {
     const repo = makeRepo({
       manifests: [{ slug: 'public-one' }],
       submodules: [
-        ['projects/public-one', ''],
-        ['projects/tablaco', 'none'],
+        ['projects', ''],
+        ['private-projects/tablaco', 'none'],
       ],
-      emptyDirs: ['projects/tablaco'],
+      emptyDirs: ['private-projects/tablaco'],
     })
     expect(generate({ repo, env: {} }).missing).toEqual([])
   })
 
-  it('reports a public cartridge submodule with no project.json as missing', () => {
+  it('reports an uninitialised commons submodule as missing', () => {
+    // The failure is all-or-nothing since P2: an empty `projects/` is a
+    // commons that never came in, and would empty the whole gallery.
+    const repo = makeRepo({
+      submodules: [
+        ['projects', ''],
+        ['private-projects/tablaco', 'none'],
+      ],
+    })
+    expect(generate({ repo, env: {} }).missing).toEqual(['projects'])
+  })
+
+  it('reports complete as soon as the commons carries one cartridge', () => {
     const repo = makeRepo({
       manifests: [{ slug: 'public-one' }],
-      submodules: [
-        ['projects/public-one', ''],
-        ['projects/public-two', ''],
-        ['projects/tablaco', 'none'],
-      ],
-      emptyDirs: ['projects/public-two'],
+      submodules: [['projects', '']],
     })
-    expect(generate({ repo, env: {} }).missing).toEqual(['projects/public-two'])
+    expect(generate({ repo, env: {} }).missing).toEqual([])
   })
 })
 
 // ─── CLI behaviour ──────────────────────────────────────────────────────────
 
 describe('run — fail closed on an incomplete checkout', () => {
+  // An uninitialised commons submodule: registered, but carrying no cartridge.
   const partialRepo = () =>
     makeRepo({
-      manifests: [{ slug: 'public-one' }],
-      submodules: [
-        ['projects/public-one', ''],
-        ['projects/public-two', ''],
-      ],
-      emptyDirs: ['projects/public-two'],
+      submodules: [['projects', '']],
     })
 
   it('refuses to write and names the missing path', () => {
@@ -349,7 +368,8 @@ describe('run — fail closed on an incomplete checkout', () => {
     const io = capture()
     expect(run({ argv: [], repo, env: {}, ...io })).toBe(EXIT_INCOMPLETE)
     expect(io.err.join('\n')).toContain('INCOMPLETE CHECKOUT')
-    expect(io.err.join('\n')).toContain('projects/public-two')
+    expect(io.err.join('\n')).toContain('projects')
+    expect(io.err.join('\n')).toContain('git submodule update --init projects')
     expect(fs.existsSync(path.join(repo, 'apps/landing/src/data/projects.ts'))).toBe(false)
   })
 
@@ -365,7 +385,9 @@ describe('run — fail closed on an incomplete checkout', () => {
     const io = capture()
     expect(run({ argv: ['--allow-partial'], repo, env: {}, ...io })).toBe(EXIT_OK)
     expect(io.err.join('\n')).toContain('--allow-partial')
-    expect(slugsIn(committedFile(repo))).toEqual(['public-one'])
+    // An uninitialised commons yields an empty gallery — which is exactly the
+    // outcome --allow-partial exists to make deliberate rather than silent.
+    expect(slugsIn(committedFile(repo))).toEqual([])
   })
 
   it('fails --check on an incomplete checkout even with --allow-partial', () => {

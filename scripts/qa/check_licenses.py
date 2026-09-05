@@ -33,7 +33,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import configparser
 import json
 import os
 import re
@@ -43,23 +42,6 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 PROJECTS = REPO / "projects"
 
-
-def submodule_slugs() -> set[str]:
-    """Cartridges published as their own repo.
-
-    Only these need a LICENSE file of their own — a cartridge that lives inside
-    this repo is covered by the root LICENSE plus its declared commons_license.
-    """
-    gitmodules = REPO / ".gitmodules"
-    if not gitmodules.exists():
-        return set()
-    cp = configparser.ConfigParser()
-    cp.read_string(gitmodules.read_text(encoding="utf-8"))
-    return {
-        cp[s]["path"].split("/", 1)[1]
-        for s in cp.sections()
-        if cp[s].get("path", "").startswith("projects/")
-    }
 
 # Licenses that cannot be relicensed under the Commons default because they are
 # copyleft: a derivative work has to keep them.
@@ -207,7 +189,6 @@ def normalize(identifier: str | None) -> str | None:
 
 def audit() -> list[dict]:
     findings = []
-    standalone = submodule_slugs()
     published = published_slugs()
 
     # Inverted requirement: client work must stay out of the public catalogue.
@@ -245,11 +226,13 @@ def audit() -> list[dict]:
                              "files": files, "message": message})
 
         if not files:
-            # An in-repo cartridge is covered by the root LICENSE; only a
-            # cartridge published as its own repo needs to carry one.
-            if slug in standalone:
-                add("METADATA", "published as its own repo but ships no LICENSE file")
-            elif not declared:
+            # Every cartridge is covered by the commons repo's root LICENSE
+            # plus its own declared commons_license, so a missing LICENSE file
+            # is only a finding when nothing is declared either. Before
+            # RFC 0038 P2 the 34 cartridges published as their own repos each
+            # needed to carry one; those satellites are absorbed into the one
+            # commons repo, so that severity split is gone.
+            if not declared:
                 add("METADATA", "declares no commons_license and ships no LICENSE file")
             continue
 

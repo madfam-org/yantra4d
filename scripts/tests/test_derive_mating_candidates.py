@@ -60,10 +60,14 @@ def iface(iface_id: str, role: str, standard: str, **extra) -> dict:
 
 def build(projects: Path, gitmodules: Path | None = None,
           bridge_snapshot: Path | None = None) -> dict:
-    """Run the whole derivation over a synthetic tree, with no bridge/catalog inputs."""
+    """Run the whole derivation over a synthetic tree, with no bridge/catalog inputs.
+
+    `gitmodules` is accepted and ignored: since RFC 0038 P2 the derivation no
+    longer reads .gitmodules at all (the commons is one submodule, so there is
+    no per-cartridge gitlink to classify).
+    """
     return derive.build_artifact(
         projects_dir=projects,
-        gitmodules=gitmodules if gitmodules is not None else projects / "absent.gitmodules",
         bridge_snapshot=bridge_snapshot or projects / "absent-bridge.json",
         commons_catalog=projects / "absent-catalog.json",
     )
@@ -136,35 +140,48 @@ def test_unlisted_cartridges_are_not_scanned(projects: Path):
     assert rule_by_id(artifact, "vesa:bolt_pattern+bolt_pattern")["claimed_pairs"] == 1
 
 
-def test_submodule_and_private_cartridges_are_never_read(projects: Path, tmp_path: Path):
-    """The input boundary holds even when the private manifests ARE on disk.
+def test_private_cartridges_are_never_read(projects: Path, tmp_path: Path):
+    """The input boundary holds even when a private manifest IS on disk.
 
-    CI checks out submodules recursively and a developer usually does not; if presence
-    on disk decided the input set, the committed artifact would be unreproducible and
-    client-private geometry would leak into a published file.
+    Since RFC 0038 P2 the private cartridges mount at private-projects/ and are
+    not under projects/ at all, so this is belt-and-braces: even planted under
+    projects/, a PRIVATE_EXCLUDED slug must never reach a published artifact.
     """
     write_cartridge(projects, "public-a", [iface("vesa", "bolt_pattern", VESA)])
     write_cartridge(projects, "public-b", [iface("vesa", "bolt_pattern", VESA)])
-    write_cartridge(projects, "vendored-sub", [iface("secret_sub", "bolt_pattern", VESA)])
     write_cartridge(projects, "tablaco", [iface("secret_client", "bolt_pattern", VESA)])
+    write_cartridge(projects, "tablaco-v2", [iface("secret_client2", "bolt_pattern", VESA)])
 
-    gitmodules = tmp_path / ".gitmodules"
-    gitmodules.write_text(
-        '[submodule "projects/vendored-sub"]\n'
-        "\tpath = projects/vendored-sub\n"
-        "\turl = https://example.invalid/vendored-sub.git\n"
-        '[submodule "libs/some-lib"]\n'
-        "\tpath = libs/some-lib\n"
-        "\turl = https://example.invalid/some-lib.git\n",
-        encoding="utf-8",
-    )
-
-    artifact = build(projects, gitmodules=gitmodules)
+    artifact = build(projects)
     payload = derive.serialize(artifact)
 
     assert artifact["inputs"]["cartridges_scanned"] == 2
-    for forbidden in ("vendored-sub", "tablaco", "secret_sub", "secret_client"):
+    for forbidden in ("tablaco", "secret_client", "secret_client2"):
         assert forbidden not in payload
+
+
+def test_a_gitmodules_entry_no_longer_removes_a_cartridge_from_scope(
+    projects: Path, tmp_path: Path,
+):
+    """RFC 0038 P2: the commons is one submodule, so nothing is skipped for being one.
+
+    Before P2 this pass skipped the 34 cartridges that were separate repos,
+    because a developer usually had them unfetched. Now projects/ is either
+    fully checked out or empty, so skipping them would mean deliberately
+    under-reading a third of the commons.
+    """
+    write_cartridge(projects, "public-a", [iface("vesa", "bolt_pattern", VESA)])
+    write_cartridge(projects, "gears", [iface("vesa", "bolt_pattern", VESA)])
+    gitmodules = tmp_path / ".gitmodules"
+    gitmodules.write_text(
+        '[submodule "projects/gears"]\n\tpath = projects/gears\n'
+        "\turl = https://example.invalid/gears.git\n", encoding="utf-8",
+    )
+
+    artifact = build(projects, gitmodules=gitmodules)
+
+    assert artifact["inputs"]["cartridges_scanned"] == 2
+    assert "gears" in derive.serialize(artifact)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -289,17 +306,14 @@ def test_a_pairing_the_live_graph_already_admits_is_flagged_and_not_counted_as_n
 def test_compatible_with_links_to_out_of_scope_slugs_are_counted_not_paired(
     projects: Path, tmp_path: Path,
 ):
+    # `tablaco` is the out-of-scope slug now: PRIVATE_EXCLUDED is the only
+    # thing that removes a cartridge from the input set (RFC 0038 P2).
     write_cartridge(projects, "screen-a", [
-        iface("vesa", "bolt_pattern", VESA, compatible_with=["screen-b", "vendored-sub"])])
+        iface("vesa", "bolt_pattern", VESA, compatible_with=["screen-b", "tablaco"])])
     write_cartridge(projects, "screen-b", [iface("vesa", "bolt_pattern", VESA)])
-    write_cartridge(projects, "vendored-sub", [iface("vesa", "bolt_pattern", VESA)])
-    gitmodules = tmp_path / ".gitmodules"
-    gitmodules.write_text(
-        '[submodule "projects/vendored-sub"]\n\tpath = projects/vendored-sub\n'
-        "\turl = https://example.invalid/vendored-sub.git\n", encoding="utf-8",
-    )
+    write_cartridge(projects, "tablaco", [iface("vesa", "bolt_pattern", VESA)])
 
-    artifact = build(projects, gitmodules=gitmodules)
+    artifact = build(projects)
 
     assert artifact["inputs"]["author_declared_pairs_in_scope"] == 1
     assert artifact["inputs"]["author_declared_links_out_of_scope"] == 1

@@ -19,7 +19,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import configparser
 import json
 import sys
 from pathlib import Path
@@ -32,6 +31,12 @@ README_MD = REPO / "README.md"
 README_BEGIN = "<!-- BEGIN COMMONS_COUNTS -->"
 README_END = "<!-- END COMMONS_COUNTS -->"
 UPSTREAM = "https://github.com/madfam-org/yantra4d"
+#: Where the cartridges themselves live. Since RFC 0038 P2 every published
+#: cartridge is a directory at the ROOT of one commons repo, which the platform
+#: consumes as the single `projects/` submodule — so there is no longer a
+#: "submodule-backed vs vendored" distinction to draw, and every entry clones
+#: the same way.
+COMMONS_REPO = "https://github.com/madfam-org/solid-hyperobjects"
 SCHEMA_VERSION = "commons_catalog_v1"
 
 # Cartridges deliberately kept OUT of the published Commons catalogue, and why.
@@ -46,8 +51,10 @@ NOT_COMMONS = {
     # clone command for it.
     "tablaco": "client engagement — client retains all private rights",
     "tablaco-v2": "client engagement — client retains all private rights",
-    # Test fixture (box.py + box.step), not a Bounded 4D Hyperobject. Its repo
-    # is archived and therefore read-only, so it cannot be corrected in place.
+    # Test fixture (box.py + box.step), not a Bounded 4D Hyperobject. Since
+    # RFC 0038 P2 it is vendored under apps/api/tests/fixtures/cartridges/ and
+    # is not under a cartridge root at all, so this entry is belt-and-braces:
+    # it keeps the exclusion explicit if the fixture is ever mounted as one.
     "cq-hyperobject-test": "engine test fixture, not a Commons object; repo archived",
 }
 CLIENT_PRIVATE = set(NOT_COMMONS)
@@ -66,31 +73,20 @@ KNOWN_NC_EXPOSURE = {
 }
 
 
-def submodule_urls() -> dict[str, str]:
-    """Map project slug -> upstream git URL for cartridges published standalone."""
-    gitmodules = REPO / ".gitmodules"
-    if not gitmodules.exists():
-        return {}
-    cp = configparser.ConfigParser()
-    cp.read_string(gitmodules.read_text(encoding="utf-8"))
-    out = {}
-    for section in cp.sections():
-        path = cp[section].get("path", "")
-        url = cp[section].get("url", "")
-        if path.startswith("projects/") and url:
-            out[path.split("/", 1)[1]] = url
-    return out
+def clone_instructions(slug: str) -> dict[str, str]:
+    """How to obtain just this cartridge.
 
-
-def clone_instructions(slug: str, submodules: dict[str, str]) -> dict[str, str]:
-    """How to obtain just this cartridge."""
-    if slug in submodules:
-        return {"kind": "submodule", "command": f"git clone {submodules[slug]}"}
+    One answer for every cartridge since RFC 0038 P2: they all live at the root
+    of the commons repo. Before P2 this returned `kind: "submodule"` with a
+    per-cartridge repo URL for the 34 satellite repos and `kind: "sparse"` for
+    the rest; those satellites are absorbed and archived, so the distinction is
+    gone and `kind` is always `"sparse"`.
+    """
     return {
         "kind": "sparse",
         "command": (
-            f"git clone --filter=blob:none --sparse {UPSTREAM} && "
-            f"cd yantra4d && git sparse-checkout set projects/{slug}"
+            f"git clone --filter=blob:none --sparse {COMMONS_REPO} && "
+            f"cd solid-hyperobjects && git sparse-checkout set {slug}"
         ),
     }
 
@@ -149,7 +145,7 @@ def _engine_support(manifest: dict, directory: Path) -> tuple[list[str], bool]:
     return sorted(engines) or ["openscad"], dual
 
 
-def build_entry(manifest_path: Path, submodules: dict[str, str]) -> dict:
+def build_entry(manifest_path: Path) -> dict:
     slug = manifest_path.parent.name
     m = json.loads(manifest_path.read_text(encoding="utf-8"))
     project = m.get("project") or {}
@@ -207,18 +203,20 @@ def build_entry(manifest_path: Path, submodules: dict[str, str]) -> dict:
             if i.get("standard") and i["standard"] != "internal"
         }),
         "source": {
-            "manifest": f"projects/{slug}/project.json",
+            # Path within the commons repo (COMMONS_REPO), which the platform
+            # mounts at `projects/` — so this is also the platform path.
+            "repo": COMMONS_REPO,
+            "manifest": f"{slug}/project.json",
             "has_cadquery": "cadquery" in engines,
             "has_openscad": "openscad" in engines,
         },
-        "clone": clone_instructions(slug, submodules),
+        "clone": clone_instructions(slug),
     }
 
 
 def build_catalog() -> dict:
-    submodules = submodule_urls()
     entries = [
-        build_entry(p, submodules)
+        build_entry(p)
         for p in sorted(PROJECTS.glob("*/project.json"))
         if p.parent.name not in CLIENT_PRIVATE
     ]

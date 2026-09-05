@@ -158,12 +158,63 @@ def test_submodule_paths_under_projects_ignores_libs():
     assert set(registered) == {"gears"}
 
 
-def test_real_gitmodules_marks_the_private_cartridges():
-    """Pins the file this script's SKIPPED_PRIVATE branch reads, not a fixture."""
-    registered = vm.submodule_paths_under_projects(vm.parse_gitmodules())
-    private = {slug for slug, cfg in registered.items() if cfg.get("update") == "none"}
-    assert private == {"tablaco", "tablaco-v2"}
-    assert len(registered) > 30  # the commons' submodule cartridges
+def test_real_gitmodules_registers_the_commons_as_one_submodule():
+    """Pins the real file the ratchet reads, not a fixture (RFC 0038 P2)."""
+    subs = vm.parse_gitmodules()
+    assert vm.COMMONS_SUBMODULE_PATH in subs
+    assert subs[vm.COMMONS_SUBMODULE_PATH]["url"].endswith("solid-hyperobjects.git")
+    # No per-cartridge gitlinks under projects/ any more.
+    assert vm.submodule_paths_under_projects(subs) == {}
+
+
+def test_real_gitmodules_mounts_the_private_cartridges_off_the_commons():
+    """They must NOT be under projects/, and must stay `update = none`."""
+    subs = vm.parse_gitmodules()
+    private = {p: c for p, c in subs.items() if p.startswith("private-projects/")}
+    assert set(private) == {"private-projects/tablaco", "private-projects/tablaco-v2"}
+    assert all(c.get("update") == "none" for c in private.values())
+
+
+def test_the_commons_ratchet_fires_on_an_empty_commons(tmp_path):
+    """An uninitialised commons is a failure, not a silently-green skip."""
+    subs = {vm.COMMONS_SUBMODULE_PATH: {"path": vm.COMMONS_SUBMODULE_PATH}}
+    empty = tmp_path / "projects"
+    empty.mkdir()
+    assert vm.commons_submodule_state(subs, empty) == (True, False)
+
+    (empty / "gears").mkdir()
+    (empty / "gears" / "project.json").write_text("{}", encoding="utf-8")
+    assert vm.commons_submodule_state(subs, empty) == (True, True)
+
+
+def test_the_commons_ratchet_never_fires_on_the_private_mounts(tmp_path):
+    """A private mount is out of the ratchet's scope by construction."""
+    subs = {
+        vm.COMMONS_SUBMODULE_PATH: {"path": vm.COMMONS_SUBMODULE_PATH},
+        "private-projects/tablaco": {"path": "private-projects/tablaco", "update": "none"},
+    }
+    projects = tmp_path / "projects"
+    (projects / "gears").mkdir(parents=True)
+    (projects / "gears" / "project.json").write_text("{}", encoding="utf-8")
+    # The private mount is absent (update = none, never fetched) and the
+    # commons is healthy: nothing to report.
+    assert vm.commons_submodule_state(subs, projects) == (True, True)
+
+
+def test_main_fails_when_the_commons_submodule_is_uninitialised(tmp_path, monkeypatch, caplog):
+    empty = tmp_path / "projects"
+    empty.mkdir()
+    gitmodules = tmp_path / ".gitmodules"
+    gitmodules.write_text(
+        '[submodule "projects"]\n'
+        "\tpath = projects\n"
+        "\turl = https://github.com/madfam-org/solid-hyperobjects.git\n",
+        encoding="utf-8")
+    monkeypatch.setattr(vm, "PROJECTS_DIR", empty)
+    monkeypatch.setattr(vm, "GITMODULES_PATH", gitmodules)
+
+    assert vm.main([]) == 1
+    assert "submodule is not initialised" in caplog.text
 
 
 # --- read-proof ------------------------------------------------------------

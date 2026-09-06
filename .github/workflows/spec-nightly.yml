@@ -65,6 +65,22 @@ jobs:
         # Same keystone SHA as ci.yml's spec-conformance job and both commons'
         # SPEC_PIN — never a floating tag; the repo is public, no token needed.
         run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@3aa57133186573b26279417f8de59b6c47ed9027"
+      - name: Keystone's vendored graph engine matches this repo's
+        # The reverse half of the graph-engine drift guard (Wave D / G-SPEC). The
+        # keystone renders `.graph.json` cartridges by transpiling them with a
+        # BYTE-IDENTICAL vendored copy of apps/api/services/engine/graph_engine.py plus
+        # packages/schemas/graph{.schema,-node-catalog}.json. Its own
+        # scripts/qa/check_graph_sync.py only stops it drifting from its own lock; it
+        # cannot see an engine change made HERE. Without this step both repos stay green
+        # while the commons' graph cartridges are verified against a transpiler this
+        # platform no longer runs.
+        #
+        # A pin predating y4d_spec.graph stands the check down in one line rather than
+        # failing, exactly as check_render_env.py does — so this can never go red because
+        # of a pin move. It goes LIVE once SPEC_PIN carries the vendored engine.
+        if: inputs.report_fixture == ''
+        run: python3 scripts/qa/check_spec_graph_vendor.py
+
       - name: Full render sweep
         id: sweep
         if: inputs.report_fixture == ''

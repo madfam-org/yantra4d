@@ -279,3 +279,117 @@ describe('fetchAssemblyGeometries', () => {
     expect(payload.project).toBeUndefined()
   })
 })
+
+// ---------------------------------------------------------------------------
+// Settling: every parse path must resolve or reject — a pending promise is the
+// bug the animated grid hung on ("preparing" with nothing left to wait for).
+// ---------------------------------------------------------------------------
+describe('fetchAssemblyGeometries — settling', () => {
+  /** A worker that never answers on its own; tests drive its listeners. */
+  class SilentWorker {
+    constructor() {
+      this.listeners = {}
+      this.addEventListener = vi.fn((type, fn) => { (this.listeners[type] ||= []).push(fn) })
+      this.removeEventListener = vi.fn((type, fn) => {
+        this.listeners[type] = (this.listeners[type] || []).filter(f => f !== fn)
+      })
+      this.terminate = vi.fn()
+      this.postMessage = vi.fn()
+    }
+    emit(type, event) { for (const fn of [...(this.listeners[type] || [])]) fn(event) }
+  }
+
+  let workers
+  const params = { size: 20 }
+  const keys = ['size']
+
+  async function loadFetcher() {
+    workers = []
+    globalThis.Worker = class extends SilentWorker { constructor() { super(); workers.push(this) } }
+    apiFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ parts: [{ type: 'body', url: '/renders/body.stl' }] }),
+    })
+    return import('./assemblyFetcher')
+  }
+
+  it('forwards the AbortSignal to the render request', async () => {
+    const { fetchAssemblyGeometries } = await loadFetcher()
+    const controller = new AbortController()
+    const p = fetchAssemblyGeometries(params, keys, 'proj', { signal: controller.signal })
+    await vi.waitFor(() => expect(apiFetch).toHaveBeenCalled())
+    expect(apiFetch.mock.calls[0][1].signal).toBe(controller.signal)
+    controller.abort()
+    await expect(p).rejects.toMatchObject({ name: 'AbortError' })
+  })
+
+  it('rejects with AbortError when aborted while the worker is parsing, and detaches its listener', async () => {
+    const { fetchAssemblyGeometries } = await loadFetcher()
+    const controller = new AbortController()
+    const p = fetchAssemblyGeometries(params, keys, undefined, { signal: controller.signal })
+    await vi.waitFor(() => expect(workers[0]?.postMessage).toHaveBeenCalled())
+    controller.abort()
+    await expect(p).rejects.toMatchObject({ name: 'AbortError' })
+    expect(workers[0].listeners.message).toHaveLength(0)
+    expect(workers[0].listeners.error).toHaveLength(0)
+  })
+
+  it('rejects when the worker dies, and starts a fresh worker for the next parse', async () => {
+    const { fetchAssemblyGeometries } = await loadFetcher()
+    const p = fetchAssemblyGeometries(params, keys)
+    await vi.waitFor(() => expect(workers[0]?.postMessage).toHaveBeenCalled())
+    workers[0].emit('error', { message: 'out of memory' })
+    await expect(p).rejects.toThrow('STL worker failed: out of memory')
+    expect(workers[0].terminate).toHaveBeenCalled()
+    // next call spawns a new worker instead of reusing the dead one
+    const p2 = fetchAssemblyGeometries({ size: 21 }, keys)
+    await vi.waitFor(() => expect(workers).toHaveLength(2))
+    workers[1].emit('error', { message: 'again' })
+    await expect(p2).rejects.toThrow('again')
+  })
+
+  it('rejects on messageerror instead of waiting forever', async () => {
+    const { fetchAssemblyGeometries } = await loadFetcher()
+    const p = fetchAssemblyGeometries(params, keys)
+    await vi.waitFor(() => expect(workers[0]?.postMessage).toHaveBeenCalled())
+    workers[0].emit('messageerror', {})
+    await expect(p).rejects.toThrow('could not be deserialized')
+  })
+
+  it('rejects after STL_PARSE_TIMEOUT_MS when the worker never answers', async () => {
+    vi.useFakeTimers()
+    try {
+      const { fetchAssemblyGeometries, STL_PARSE_TIMEOUT_MS } = await loadFetcher()
+      const p = fetchAssemblyGeometries(params, keys)
+      // let the render POST resolve and the worker task start
+      await vi.advanceTimersByTimeAsync(0)
+      expect(workers[0].postMessage).toHaveBeenCalled()
+      const rejection = expect(p).rejects.toThrow('STL parse timed out')
+      await vi.advanceTimersByTimeAsync(STL_PARSE_TIMEOUT_MS + 1)
+      await rejection
+      expect(workers[0].terminate).toHaveBeenCalled()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not cache a result the aborted caller never consumed', async () => {
+    const { fetchAssemblyGeometries } = await loadFetcher()
+    const controller = new AbortController()
+    const p = fetchAssemblyGeometries(params, keys, undefined, { signal: controller.signal })
+    await vi.waitFor(() => expect(workers[0]?.postMessage).toHaveBeenCalled())
+    const { id } = workers[0].postMessage.mock.calls[0][0]
+    controller.abort()
+    // a late success from the worker must not resurrect the aborted call
+    workers[0].emit('message', { data: { id, success: true, geometryData: { positions: new Float32Array(9) } } })
+    await expect(p).rejects.toMatchObject({ name: 'AbortError' })
+    // a fresh, un-aborted call with the same params must fetch again (nothing was cached)
+    apiFetch.mockClear()
+    const p2 = fetchAssemblyGeometries(params, keys)
+    await vi.waitFor(() => expect(apiFetch).toHaveBeenCalledTimes(1))
+    await vi.waitFor(() => expect(workers[0].postMessage).toHaveBeenCalledTimes(2))
+    const { id: id2 } = workers[0].postMessage.mock.calls[1][0]
+    workers[0].emit('message', { data: { id: id2, success: true, geometryData: { positions: new Float32Array(9) } } })
+    await expect(p2).resolves.toHaveLength(1)
+  })
+})

@@ -1,6 +1,6 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render } from '@testing-library/react'
+import { render, act } from '@testing-library/react'
 
 // ---------------------------------------------------------------------------
 // Capture useFrame callback so we can drive the animation loop in tests
@@ -81,11 +81,14 @@ vi.mock('@react-three/drei', () => ({
 // ---------------------------------------------------------------------------
 let fetchResolve = null
 let fetchReject = null
+let fetchSignal = null
 vi.mock('../../services/domain/assemblyFetcher', () => ({
-  fetchAssemblyGeometries: vi.fn(() => new Promise((res, rej) => {
+  fetchAssemblyGeometries: vi.fn((params, keys, project, options) => new Promise((res, rej) => {
     fetchResolve = res
     fetchReject = rej
+    fetchSignal = options?.signal ?? null
   })),
+  isAbortError: (err) => !!err && err.name === 'AbortError',
 }))
 
 // ---------------------------------------------------------------------------
@@ -414,10 +417,91 @@ describe('AnimatedGrid', () => {
     })
 
     it('ignores fetch error when component unmounts before reject', async () => {
-      const { unmount } = renderGrid()
+      const onError = vi.fn()
+      const { unmount } = renderGrid({ onError })
       await vi.waitFor(() => expect(fetchReject).toBeTruthy())
       unmount()
       fetchReject(new Error('too late'))
+      await Promise.resolve()
+      expect(onError).not.toHaveBeenCalled()
+    })
+  })
+
+  // =========================================================================
+  // Settling contract: exactly one of onReady / onError / onCancelled per mount
+  // =========================================================================
+  describe('settling on unmount mid-fetch', () => {
+    it('passes an AbortSignal to the fetch and aborts it on unmount', async () => {
+      const { unmount } = renderGrid()
+      await vi.waitFor(() => expect(fetchSignal).toBeTruthy())
+      expect(fetchSignal.aborted).toBe(false)
+      unmount()
+      expect(fetchSignal.aborted).toBe(true)
+    })
+
+    it('fires onCancelled exactly once when unmounted before the fetch settles', async () => {
+      const onCancelled = vi.fn()
+      const onReady = vi.fn()
+      const onError = vi.fn()
+      const { unmount } = renderGrid({ onCancelled, onReady, onError })
+      await vi.waitFor(() => expect(fetchResolve).toBeTruthy())
+      unmount()
+      expect(onCancelled).toHaveBeenCalledTimes(1)
+      // a late result must not add a second outcome
+      fetchResolve(makeGeometries())
+      await Promise.resolve()
+      expect(onReady).not.toHaveBeenCalled()
+      expect(onError).not.toHaveBeenCalled()
+      expect(onCancelled).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not fire onCancelled when the fetch had already settled', async () => {
+      const onCancelled = vi.fn()
+      const onReady = vi.fn()
+      const { unmount } = renderGrid({ onCancelled, onReady })
+      await vi.waitFor(() => expect(fetchResolve).toBeTruthy())
+      await act(async () => { fetchResolve(makeGeometries()) })
+      await vi.waitFor(() => expect(onReady).toHaveBeenCalledTimes(1))
+      unmount()
+      expect(onCancelled).not.toHaveBeenCalled()
+    })
+
+    it('does not fire onCancelled on a parameter change: the previous fetch is aborted and the new one settles', async () => {
+      const onCancelled = vi.fn()
+      const onReady = vi.fn()
+      const { rerender } = renderGrid({ onCancelled, onReady })
+      await vi.waitFor(() => expect(fetchSignal).toBeTruthy())
+      const firstSignal = fetchSignal
+      await act(async () => {
+        rerender(
+          <AnimatedGrid
+            params={{ ...defaultParams, size: 30 }}
+            colors={{}}
+            wireframe={false}
+            onReady={onReady}
+            onError={vi.fn()}
+            onCancelled={onCancelled}
+          />
+        )
+      })
+      await vi.waitFor(() => expect(fetchSignal).not.toBe(firstSignal))
+      expect(firstSignal.aborted).toBe(true)
+      expect(onCancelled).not.toHaveBeenCalled()
+      await act(async () => { fetchResolve(makeGeometries()) })
+      await vi.waitFor(() => expect(onReady).toHaveBeenCalledTimes(1))
+    })
+
+    it('treats an AbortError rejection as silence, not as an error', async () => {
+      const onError = vi.fn()
+      const onCancelled = vi.fn()
+      const { unmount } = renderGrid({ onError, onCancelled })
+      await vi.waitFor(() => expect(fetchReject).toBeTruthy())
+      unmount()
+      const err = new Error('aborted'); err.name = 'AbortError'
+      fetchReject(err)
+      await Promise.resolve()
+      expect(onError).not.toHaveBeenCalled()
+      expect(onCancelled).toHaveBeenCalledTimes(1)
     })
   })
 

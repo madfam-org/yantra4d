@@ -111,10 +111,12 @@ vi.mock('./NumberedAxes', () => ({
 // ── Controllable AnimatedGrid mock ──
 let capturedAnimatedGridOnReady = null
 let capturedAnimatedGridOnError = null
+let capturedAnimatedGridOnCancelled = null
 vi.mock('./AnimatedGrid', () => ({
   default: (props) => {
     capturedAnimatedGridOnReady = props.onReady
     capturedAnimatedGridOnError = props.onError
+    capturedAnimatedGridOnCancelled = props.onCancelled
     return <div data-testid="animated-grid" />
   },
 }))
@@ -197,6 +199,7 @@ describe('Viewer', () => {
     mockComputeCentroid.mockReturnValue({ x: 5, y: 5, z: 5 })
     capturedAnimatedGridOnReady = null
     capturedAnimatedGridOnError = null
+    capturedAnimatedGridOnCancelled = null
   })
 
   // ────────────────────────────────────────
@@ -534,6 +537,33 @@ describe('Viewer', () => {
 
     // After onReady, preparing overlay should disappear
     expect(screen.queryByText('anim.preparing')).not.toBeInTheDocument()
+  })
+
+  // ────────────────────────────────────────
+  // AnimatedGrid onCancelled: the grid went away mid-fetch → stop animating,
+  // without flagging an error (it is not a failure, nobody is waiting)
+  // ────────────────────────────────────────
+
+  it('stops animating without an error state when AnimatedGrid is cancelled mid-fetch', () => {
+    const setAnimating = vi.fn()
+    render(
+      <Viewer
+        {...defaultProps}
+        animating={true}
+        setAnimating={setAnimating}
+        mode="grid"
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(capturedAnimatedGridOnCancelled).toBeTypeOf('function')
+    act(() => {
+      capturedAnimatedGridOnCancelled?.()
+    })
+    expect(setAnimating).toHaveBeenCalledWith(false)
+    // not an app-initiated abort: the toggle must not read "error"
+    const toggle = screen.getByRole('button', { name: /viewer\.(pause|play)_anim/ })
+    expect(toggle.getAttribute('data-anim-state')).not.toBe('error')
   })
 
   // ────────────────────────────────────────

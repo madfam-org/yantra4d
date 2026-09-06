@@ -933,6 +933,10 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                             wireframe={wireframe}
                                             onReady={() => setAnimReady(true)}
                                             onError={() => { setAnimError(true); setAnimAborted(true); setAnimating(false) }}
+                                            // The grid went away before its geometry arrived (mode
+                                            // switch, unmount mid-fetch). Nothing is animating, so
+                                            // the toggle must not keep reporting "preparing".
+                                            onCancelled={() => { setAnimReady(false); setAnimating(false) }}
                                         />
                                     </group>
                                 )}

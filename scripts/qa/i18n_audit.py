@@ -110,6 +110,62 @@ def check_locale_key_parity():
     return True
 
 
+UNTRANSLATED_MARKER = "[UNTRANSLATED]"
+
+
+def flatten_pairs(obj, prefix=""):
+    """Recursively flatten a nested dict into (dot-separated key, value) pairs."""
+    pairs = []
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            new_key = f"{prefix}.{k}" if prefix else k
+            pairs.extend(flatten_pairs(v, new_key))
+    elif isinstance(obj, str):
+        pairs.append((prefix, obj))
+    return pairs
+
+
+def check_untranslated_markers():
+    """Fail on any `[UNTRANSLATED]` placeholder left in a locale file.
+
+    Key parity cannot see this. `resolveTranslation` in LanguageProvider.tsx is
+    `locales[lang]?.[key] || locales.en?.[key] || key`, so it falls back to
+    English only when a key is MISSING; a key that is present but holds
+    "[UNTRANSLATED] Save" is truthy and reaches the user verbatim. That is
+    exactly how the four locales sat at ~110 markers each while parity was
+    green. The locales carry zero markers as of #133, so this is a hard gate
+    with no ratchet: the count may never rise above zero again.
+    """
+    locale_files = sorted(LOCALES_DIR.glob("*.json"))
+    if not locale_files:
+        print(f"ERROR: No locale files found in {LOCALES_DIR}")
+        return False
+
+    issues = []
+    for lf in locale_files:
+        with open(lf, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        for key, value in flatten_pairs(data):
+            if UNTRANSLATED_MARKER in value:
+                issues.append(f"  [{lf.stem}] untranslated: {key}")
+
+    if issues:
+        print(
+            f"UNTRANSLATED MARKERS: {len(issues)} placeholder(s) across "
+            f"{len(locale_files)} locales"
+        )
+        for issue in issues:
+            print(issue)
+        print(
+            "  A marker is truthy, so it renders verbatim instead of falling "
+            "back to English. Translate the key or remove it."
+        )
+        return False
+
+    print(f"UNTRANSLATED MARKERS: OK (0 across {len(locale_files)} locales)")
+    return True
+
+
 def scan_hardcoded_strings():
     """Scan JSX/TSX components for potential hardcoded English strings.
 
@@ -229,10 +285,12 @@ def main(argv=None):
 
     parity_ok = check_locale_key_parity()
     print()
+    markers_ok = check_untranslated_markers()
+    print()
     hardcoded_ok = check_hardcoded_strings(update_baseline=args.update_baseline)
     print()
 
-    if parity_ok and hardcoded_ok:
+    if parity_ok and markers_ok and hardcoded_ok:
         print("RESULT: All i18n checks passed.")
         return 0
     else:

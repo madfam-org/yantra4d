@@ -8,7 +8,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Architecture Audit](./architecture/architecture_audit.md): Deep dive into platform architecture and components.
 -   [Database & Analytics](./architecture/database.md): SQLite/PostgreSQL, Alembic migrations, analytics schema.
 -   [Engine architecture](./architecture/dual-engine.md): the four render kernels — OpenSCAD, CadQuery, implicit SDF, graph — and B-Rep export.
--   [Authoring graph cartridges](./guides/graph-cartridges.md): node graphs compiled to sandboxed CadQuery.
+-   [Authoring graph cartridges](./guides/graph-cartridges.md): node graphs compiled to sandboxed CadQuery — including what the keystone does NOT yet verify about them.
 -   [Sim4D extraction record](./architecture/sim4d-extraction.md): what was taken from sim4d and what was left behind.
 -   [Cross-ecosystem interventions](./operations/cross-ecosystem-interventions.md): what Yantra4D is owed from other platforms.
 -   [Render artifact storage](./operations/render-artifact-storage.md): the artifact store behind renders — filesystem default, S3 backend, migration and rollback.
@@ -17,7 +17,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 
 ### Guides
 -   [Authentication, tiers and rate-limit identity](./AUTH.md): Janua JWT, the `guest | essentials | pro | premium` ladder and the permanent `madfam` alias, `TIER_OVERRIDES`, `HARNESS_TIER`, the private-project gate, and the WebSocket read matrix.
--   [Verification Suite](./guides/verification.md): Automated STL quality checks — watertightness, volume count, assembly fit.
+-   [Verification Suite](./guides/verification.md): the two verification systems — the pinned keystone that gates CI, and the in-repo manifest-driven STL checks (watertightness, body count, assembly fit).
 -   [Developer Experience Guide](./guides/devx-guide.md): Onboarding external SCAD projects, CLI tool, and analyzer.
 -   [Browser rendering and render placement](./guides/wasm-mode.md): the browser is the DEFAULT placement — the 11-rule precedence table, the capability probe, the wasm bundle, limitations and browser support.
 -   [Multi-Project Platform](./guides/multi-project.md): Multi-project setup, project switching, and Docker configuration.

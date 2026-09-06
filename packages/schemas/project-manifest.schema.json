@@ -968,7 +968,7 @@
     },
     "constraints": {
       "type": "array",
-      "description": "Cross-parameter validation rules evaluated client-side via expr-eval.",
+      "description": "Cross-parameter validation rules evaluated client-side by the Studio's own safeFormula evaluator (apps/studio/src/lib/safeFormula.ts), reached through the useConstraints hook. The expr-eval dependency was removed in 2026-05. The dialect is arithmetic (+ - * / %), comparison (< <= > >= == != === !==), boolean (&& || !) and the ternary c ? a : b over parameter identifiers and numeric literals; there are no string literals and no function calls, and a formula is capped at 256 characters and 128 tokens. Authored manifests use `expression`; the legacy `rule` key is still accepted. A formula that throws (an unknown identifier, say) is skipped, so the constraint silently does not fire.",
       "items": {},
       "anyOf": [
         {

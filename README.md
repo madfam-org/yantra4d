@@ -47,7 +47,7 @@ Honest, code-verified snapshot. **Working today:**
 - **Browser-first rendering** — the visitor's browser is the **default** placement: the OpenSCAD **WASM** worker renders there, free for us and unmetered for them, and the server's native OpenSCAD/CadQuery is the only metered path. Which one runs is decided by `decideRenderPlacement()`, a pure 11-rule precedence function: four HARD server rules first (a `cadquery`/`graph`/`implicit` mode, manifest `render.server_only`, an unusable wasm bundle, and **any `export_format` but `stl`** — the browser kernel writes one `/output.stl` and has no converter), then the `?render=` override, the visitor's preference, the measured device tier, this session's browser failures, the estimate budget, the legacy `force_backend` **soft hint**, and finally the browser. A *soft* server decision flips back to the browser when the API is unreachable; a hard one does not. Full table: [`docs/guides/wasm-mode.md`](docs/guides/wasm-mode.md).
 - **STL / mesh export** — server render pipeline produces STL/GLB/3MF artifacts.
 - **Geometry verification** — dedicated verify endpoint (`apps/api/routes/engine/verify.py`); the parity check CI runs is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a local dual-engine comparison tool, not a CI lane: it reports 18 of 28 comparable mode pairs passing after #115 pinned the ten parity-fixed cartridges, so the dual-engine parity claim is an intent rather than an enforced invariant — see [`docs/architecture/dual-engine.md`](docs/architecture/dual-engine.md#the-geometric-parity-guarantee).
-- **Cartridge project system** — `project.json` manifests, 495-cartridge CadQuery-first Commons catalog (including curated art/misc projects), admin app, Janua-authenticated admin flows. <!-- fact source: docs/commons-catalog.json → counts.cartridges; see the generated table under "The Commons Catalog" below -->
+- **Cartridge project system** — `project.json` manifests, 500-cartridge CadQuery-first Commons catalog (including curated art/misc projects), admin app, Janua-authenticated admin flows. <!-- fact source: docs/commons-catalog.json → counts.cartridges; see the generated table under "The Commons Catalog" below -->
 - **Implicit SDF engine** — TPMS/lattice field generation, including the energy→sag "phase shift" heuristic behind the digital-twin slider.
 - **Per-mode engine resolution** — a single cartridge can mix modes across kernels; the render engine is resolved per mode (`ManifestService.mode_engine`), so the flagship hyperobjects ship **dual-engine** (exact CadQuery B-Rep modes alongside their original OpenSCAD modes).
 
@@ -91,7 +91,7 @@ Two licenses apply to this repository and they cover different things:
   **CERN-OHL-W-2.0** (see the table above). Weakly reciprocal: modifications to a design
   must be shared, but a larger product incorporating one need not be.
 
-**Every one of the 495 cartridges is CERN-OHL-W-2.0.** There are no licence
+**Every one of the 500 cartridges is CERN-OHL-W-2.0.** There are no licence
 exceptions left in the commons.
 
 Five cartridges that carried a non-CERN origin licence were **removed whole on

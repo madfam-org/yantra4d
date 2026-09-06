@@ -188,7 +188,7 @@ For grid-based models where render complexity scales with parameters:
 }
 ```
 
-Quantity formulas can reference any parameter ID and are evaluated client-side using `expr-eval`.
+Quantity formulas can reference any parameter ID and are evaluated client-side by the Studio's own `safeFormula` evaluator (`apps/studio/src/lib/safeFormula.ts`) — arithmetic, comparison, boolean and ternary over parameter identifiers and numeric literals, with no string literals, no function calls, and caps of 256 characters / 128 tokens. The `expr-eval` dependency was removed in 2026-05.
 
 ## Adding presets
 

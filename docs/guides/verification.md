@@ -4,6 +4,50 @@ The project maintains a rigorous quality assurance process using the config-driv
 
 The verification engine uses `trimesh` to analyze exported STL geometry. Checks are organized into **manufacturing stages** (`geometry`, `printability`, `assembly_fit`), configurable per **mode** and per **part** from `project.json`.
 
+## Two verification systems, and which one gates CI
+
+This page documents `tests/verify_design.py`, the **in-repo, manifest-driven** suite invoked
+by `POST /api/verify` and the Studio's "Run Verification Suite" button. It is not the gate a
+cartridge has to clear to merge.
+
+That gate is the **keystone**, `hyperobjects-spec`, consumed as a pinned external package by
+the `spec-conformance` job in `.github/workflows/ci.yml` and by the nightly sweep in
+`.github/workflows/spec-nightly.yml`. Both pin the **same commit**,
+`3aa57133186573b26279417f8de59b6c47ed9027`, and deliberately never a floating tag: the bar
+the platform clears must be the bar the commons cleared, so this pin tracks `SPEC_PIN` in
+`solid-hyperobjects` / `soft-hyperobjects`. The keystone repo went public on 2026-09-05, so
+fetching it needs no token.
+
+What each lane runs:
+
+| Lane | Command | Scope |
+| :-- | :-- | :-- |
+| `spec-conformance` (every PR) | `y4d-spec check projects/*/` | structural, whole commons |
+| `spec-conformance` (every PR) | `y4d-spec check --render --parity -v <changed>` | real renders, **only the cartridges the PR touched** |
+| `spec-nightly` | the same render sweep, chunked into groups | whole commons |
+| `spec-conformance` | `scripts/qa/check_render_env.py` | the runner image's OpenSCAD must match `y4d_spec.render_environment` |
+
+Per-PR renders are scoped to changed cartridges because a full sweep is hours at 15–25 s per
+part; the nightly carries the rest and aggregates a completeness check plus a rows-based
+verdict, turning a red sweep into **one** tracking issue rather than a per-cartridge storm.
+`check_render_env.py` stands itself down with a one-line notice if the pinned spec predates
+the `render_environment` module — but a module that is present and *broken* still fails the
+job. Only a missing one is tolerated.
+
+`--parity` asks the keystone to compare a cartridge's two kernels where it has both. The
+keystone owns that policy object and its schema (`enabled`, `tolerance`, `reason`,
+`placement`) — including the requirement that an exemption carry a written reason rather
+than merely switching the check off. Because the schema lives in the keystone rather than in
+`packages/schemas/`, this page does not restate its field semantics; read them at the pinned
+commit. Two cartridges carry reasoned per-part exemptions today.
+
+**Graph cartridges are outside all of this.** `y4d-spec` renders `.py`, `.cq` and `.scad`
+only, so a `.graph.json` mode gets no render bar and no nightly row — see
+[graph-cartridges.md](graph-cartridges.md#what-is-not-verified-yet). Closing that hole is
+lane G-SPEC in [`ROADMAP.md`](../../ROADMAP.md#the-node-based-geometry-programme-waves-df-s).
+
+## The in-repo suite
+
 For Hyperobjects, an additional **Geometric Parity** check compares output across the OpenSCAD and CadQuery engines. The check CI enforces is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a separate, local-only tool for the same comparison; no workflow runs it, and as of 2026-09-02 (after #115) it reports 18 of 28 comparable mode pairs passing — see [dual-engine.md](../architecture/dual-engine.md#the-geometric-parity-guarantee).
 
 ## Script: `tests/verify_design.py`

@@ -127,6 +127,68 @@ def test_no_locale_files_at_all_fails(studio, capsys):
     assert "No locale files found" in capsys.readouterr().out
 
 
+# --- untranslated markers: the gate parity cannot be -----------------------
+#
+# `resolveTranslation` is `locales[lang]?.[key] || locales.en?.[key] || key`, so
+# a MISSING key falls back to English but a key holding "[UNTRANSLATED] Save" is
+# truthy and renders verbatim. Parity is green either way -- which is how the
+# four locales sat at ~110 markers each. Zero markers ship today (#133), so this
+# is a hard gate with no ratchet.
+
+def test_clean_locales_have_no_markers(studio, capsys):
+    locales, _, _ = studio
+    locale(locales, "en", {"editor": {"save": "Save"}})
+    locale(locales, "es", {"editor": {"save": "Guardar"}})
+    assert lane.check_untranslated_markers() is True
+    assert "OK (0 across 2 locales)" in capsys.readouterr().out
+
+
+def test_a_marker_fails_and_names_its_key(studio, capsys):
+    locales, _, _ = studio
+    locale(locales, "en", {"editor": {"save": "Save"}})
+    locale(locales, "de", {"editor": {"save": "[UNTRANSLATED] Save"}})
+    assert lane.check_untranslated_markers() is False
+    out = capsys.readouterr().out
+    assert "[de] untranslated: editor.save" in out
+
+
+def test_a_marker_is_invisible_to_the_parity_gate(studio):
+    """The whole reason this check exists: parity passes on a marked locale."""
+    locales, _, _ = studio
+    locale(locales, "en", {"editor": {"save": "Save"}})
+    locale(locales, "de", {"editor": {"save": "[UNTRANSLATED] Save"}})
+    assert lane.check_locale_key_parity() is True
+    assert lane.check_untranslated_markers() is False
+
+
+def test_a_marker_anywhere_in_the_value_counts(studio):
+    """The marker is matched as a substring, not a prefix."""
+    locales, _, _ = studio
+    locale(locales, "en", {"a": "Save [UNTRANSLATED]"})
+    assert lane.check_untranslated_markers() is False
+
+
+def test_markers_are_found_at_any_nesting_depth(studio, capsys):
+    locales, _, _ = studio
+    locale(locales, "en", {"a": {"b": {"c": "[UNTRANSLATED] deep"}}})
+    assert lane.check_untranslated_markers() is False
+    assert "[en] untranslated: a.b.c" in capsys.readouterr().out
+
+
+def test_marker_check_fails_when_there_are_no_locale_files(studio, capsys):
+    assert lane.check_untranslated_markers() is False
+    assert "No locale files found" in capsys.readouterr().out
+
+
+def test_flatten_pairs_returns_keys_with_their_values():
+    assert lane.flatten_pairs({"editor": {"save": "Save"}}) == [("editor.save", "Save")]
+
+
+def test_flatten_pairs_ignores_non_string_leaves():
+    """flatten_keys counts a list as one key; flatten_pairs has no value to scan."""
+    assert lane.flatten_pairs({"tips": ["one", "two"], "a": "A"}) == [("a", "A")]
+
+
 # --- the hardcoded-string scan --------------------------------------------
 
 def test_a_hardcoded_string_literal_is_found_with_its_location(studio):

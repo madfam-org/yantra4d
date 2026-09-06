@@ -64,7 +64,7 @@ jobs:
         if: inputs.report_fixture == ''
         # Same keystone SHA as ci.yml's spec-conformance job and both commons'
         # SPEC_PIN — never a floating tag; the repo is public, no token needed.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@53e972dd121a07de68a67e2b3f7699a5550376a2"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@3aa57133186573b26279417f8de59b6c47ed9027"
       - name: Full render sweep
         id: sweep
         if: inputs.report_fixture == ''

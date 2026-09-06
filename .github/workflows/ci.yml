@@ -791,7 +791,11 @@ jobs:
           python-version: "3.12"
       # [geometry] pulls cadquery 2.7 + trimesh for the --render pass below.
       - name: Install hyperobjects-spec
-        run: pip install "hyperobjects-spec[geometry] @ git+https://x-access-token:${{ secrets.MADFAM_BOT_PAT }}@github.com/madfam-org/hyperobjects-spec.git@v0.1.1"
+        # Pinned to the same keystone SHA the commons CI pins (SPEC_PIN in
+        # solid-hyperobjects / soft-hyperobjects), never a floating tag: the bar
+        # the platform clears must be the bar the commons cleared. The repo is
+        # public (2026-09-05), so no token is needed to fetch it.
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@db65cf1e7a2732d7263efd6eb6ba533640eb536f"
       - name: Structural conformance (full commons)
         run: |
           status=0

@@ -70,13 +70,13 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Curated camera angles per cartridge | 1210 | 500 | 2.42 | 883 / 326 = 2.71 | -0.29 |
 | Cartridges shipping ≥1 preset | 470 | 500 | 94.0% | 303 / 326 = 92.9% | +1.1 pp |
 | Proven configurations (presets) per cartridge | 1505 | 500 | 3.01 | 1021 / 326 = 3.13 | -0.12 |
-| Cartridges declaring ≥1 constraint | 401 | 500 | 80.2% | 287 / 326 = 88.0% | -7.8 pp |
-| Bilingual constraints per cartridge | 766 | 500 | 1.53 | 555 / 326 = 1.70 | -0.17 |
+| Cartridges declaring ≥1 constraint | 500 | 500 | 100.0% | 287 / 326 = 88.0% | +12.0 pp |
+| Bilingual constraints per cartridge | 1083 | 500 | 2.17 | 555 / 326 = 1.70 | +0.46 |
 | Cartridges carrying `hyperobject.material_awareness` | 488 | 500 | 97.6% | 310 / 326 = 95.1% | +2.5 pp |
 | …of which declare `tolerance_by_material` | 467 | 500 | 93.4% | 294 / 326 = 90.2% | +3.2 pp |
 | …of which declare `shrinkage_compensation` | 68 | 500 | 13.6% | 30 / 326 = 9.2% | +4.4 pp |
 | …of which declare `recycled_material_toggle` | 98 | 500 | 19.6% | 16 / 326 = 4.9% | +14.7 pp |
-| Cartridges declaring an `animations` block | 1 | 500 | 0.2% | 1 / 326 = 0.3% | -0.1 pp |
+| Cartridges declaring an `animations` block | 20 | 500 | 4.0% | 1 / 326 = 0.3% | +3.7 pp |
 | CDG family keys with ≥1 member in the commons | 113 | 116 | 97.4% | 55 / 61 = 90.2% | +7.2 pp |
 | Cartridges resolving to ≥1 CDG standard family | 211 | 500 | 42.2% | ~98 / 326 = 30.1% | +12.1 pp |
 | Studio strings translated across de/fr/pt/zh | 1480 | 1480 | 100.0% | ~992 / 1308 = 75.8% | +24.2 pp |
@@ -91,7 +91,7 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Landing-gallery entries the Commons catalog does not publish | 0 | 500 | 0.0% | — | new in 2026-09 |
 | Cartridges offering STEP (B-Rep) export | 491 | 500 | 98.2% | — | new in 2026-09 |
 | Cartridges carrying an explicit licence | 500 | 500 | 100.0% | — | new in 2026-09 |
-| Cartridges carrying a `verification` block | 65 | 500 | 13.0% | — | new in 2026-09 |
+| Cartridges carrying a `verification` block | 498 | 500 | 99.6% | — | new in 2026-09 |
 
 **Not recomputed — reported instead of approximated.** These figures in the 2026-08 section are judgement, frontend code reachability, or another QA lane's output; a proxy number here would look computed while measuring something else.
 

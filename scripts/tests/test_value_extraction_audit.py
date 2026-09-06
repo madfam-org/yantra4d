@@ -387,9 +387,21 @@ def test_cohort_split_is_optional_and_never_gates_the_check(commons):
     #
     # If a clean-room cartridge changes what it declares, these numbers move
     # again and this comment must say so.
+    #
+    # 2026-09-06, wave-2 commons (solid-hyperobjects #37 + #39): the two
+    # constraint-authoring commits gave a feasibility block to every cartridge
+    # that lacked one — 51 cartridges a–l (#37) and 48 cartridges m–z (#39),
+    # taking the whole commons to 500/500. One field moves here, and only one:
+    #   - constraint_coverage 288 -> 324, i.e. all 324 audit-era cartridges.
+    # Nothing else in this block moves — cadquery_first, material_awareness,
+    # tolerance_by_material, shrinkage_compensation and
+    # recycled_material_toggle are all unchanged, which is again the evidence
+    # that a named authoring wave moved the figure and the extraction logic did
+    # not drift. Constraint coverage is now saturated in this cohort, so a
+    # future move can only come from a removal.
     era = cohorts["audit_era"]["metrics"]
     assert era["cadquery_first"]["numerator"] == 304
-    assert era["constraint_coverage"]["numerator"] == 288
+    assert era["constraint_coverage"]["numerator"] == 324
     assert era["material_awareness"]["numerator"] == 314
     assert era["tolerance_by_material"]["numerator"] == 298
     assert era["shrinkage_compensation"]["numerator"] == 30

@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { Edges } from '@react-three/drei'
-import { fetchAssemblyGeometries } from '../../services/domain/assemblyFetcher'
+import { fetchAssemblyGeometries, isAbortError } from '../../services/domain/assemblyFetcher'
 import { useManifest } from '../../contexts/project/ManifestProvider'
 
 interface AssemblyGeometry {
@@ -35,9 +35,16 @@ interface AnimatedGridProps {
   wireframe: boolean
   onReady?: () => void
   onError?: (message: string) => void
+  /**
+   * Fired from the unmount cleanup when the geometry fetch had not settled yet.
+   * Exactly one of onReady / onError / onCancelled fires per mount, so a parent
+   * waiting on "preparing" always learns the outcome. A parameter change that
+   * restarts the fetch is not a cancellation: the new fetch settles instead.
+   */
+  onCancelled?: () => void
 }
 
-function AnimatedGrid({ params, colors, wireframe, onReady, onError }: AnimatedGridProps) {
+function AnimatedGrid({ params, colors, wireframe, onReady, onError, onCancelled }: AnimatedGridProps) {
   const { getViewerConfig, manifest, projectSlug } = useManifest()
   const rows = params.rows as number
   const cols = params.cols as number
@@ -79,20 +86,43 @@ function AnimatedGrid({ params, colors, wireframe, onReady, onError }: AnimatedG
     [geometryKeys, params]
   )
 
-  // Fetch assembly geometries on mount / param change
+  // Mount tracker. Declared BEFORE the fetch effect so that on unmount its
+  // cleanup runs first and the fetch cleanup below can tell "unmounted" from
+  // "re-running because the parameters changed".
+  const mountedRef = useRef(true)
   useEffect(() => {
-    let cancelled = false
+    mountedRef.current = true
+    return () => { mountedRef.current = false }
+  }, [])
+
+  // Fetch assembly geometries on mount / param change.
+  // The in-flight request is aborted on cleanup (unmount or parameter change)
+  // so nothing keeps running for a grid nobody will see, and the outcome is
+  // always reported: ready, error, or — if the component went away first —
+  // cancelled. Without that last branch an unmount mid-fetch left the parent
+  // waiting on "preparing" for a callback that could never come.
+  useEffect(() => {
+    const controller = new AbortController()
+    let settled = false
     setError(null) // eslint-disable-line react-hooks/set-state-in-effect
-    fetchAssemblyGeometries(params, geometryKeys, projectSlug)
+    fetchAssemblyGeometries(params, geometryKeys, projectSlug, { signal: controller.signal })
       .then(geos => {
-        if (!cancelled) {
-          setGeometries(geos)
-          setGeoCenter(getCombinedCenter(geos))
-          onReady?.()
-        }
+        if (controller.signal.aborted) return
+        settled = true
+        setGeometries(geos)
+        setGeoCenter(getCombinedCenter(geos))
+        onReady?.()
       })
-      .catch(err => { if (!cancelled) { setError(err.message); onError?.(err.message) } })
-    return () => { cancelled = true }
+      .catch(err => {
+        if (controller.signal.aborted || isAbortError(err)) return
+        settled = true
+        setError(err.message)
+        onError?.(err.message)
+      })
+    return () => {
+      controller.abort()
+      if (!settled && !mountedRef.current) onCancelled?.()
+    }
   }, [geoHash]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Group refs created synchronously so they're available on first render

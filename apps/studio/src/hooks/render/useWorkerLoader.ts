@@ -107,16 +107,45 @@ export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean 
         })
         geometryCache.set(url, loaderPromise)
 
+        // Every path settles the cached promise: message, worker error,
+        // messageerror, or the timer. A worker that dies never posts `message`,
+        // and a promise cached forever-pending would block every later load of
+        // the same URL (the cache returns the pending promise first).
+        const WORKER_TIMEOUT_MS = 120_000
+        const worker = stlWorkerInstance
+        let settled = false
+        const detach = () => {
+            worker.removeEventListener('message', handleMessage)
+            worker.removeEventListener('error', handleError)
+            worker.removeEventListener('messageerror', handleMessageError)
+            clearTimeout(timer)
+        }
+        const fail = (message: string, discardWorker = false) => {
+            if (settled) return
+            settled = true
+            detach()
+            console.error('[WorkerLoader]', message)
+            rejectCache!(new Error(message))
+            geometryCache.delete(url)
+            if (discardWorker && stlWorkerInstance === worker) {
+                stlWorkerInstance = null
+                try { worker.terminate() } catch { /* already gone */ }
+            }
+        }
+        const handleError = (e: ErrorEvent) => fail(`STL worker failed: ${e.message || 'unknown error'}`, true)
+        const handleMessageError = () => fail('STL worker sent a message that could not be deserialized')
+        const timer = setTimeout(() => fail(`STL parse timed out after ${WORKER_TIMEOUT_MS / 1000}s`, true), WORKER_TIMEOUT_MS)
+
         const handleMessage = (e: MessageEvent<WorkerMessage>) => {
             const { id, success, geometryData, error } = e.data
             if (id !== taskId) return
 
             if (!success) {
-                console.error('[WorkerLoader] Failed to parse STL:', error)
-                rejectCache!(new Error(error))
-                geometryCache.delete(url)
+                fail(`Failed to parse STL: ${error}`)
                 return
             }
+            settled = true
+            detach()
 
             // Reconstruct the Three.js BufferGeometry on the main thread
             const newGeom = new BufferGeometry()
@@ -138,12 +167,11 @@ export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean 
             // Resolve the promise for any pending awaiters
             resolveCache!(newGeom)
             setGeometry(newGeom)
-
-            // Cleanup the listener
-            stlWorkerInstance!.removeEventListener('message', handleMessage)
         }
 
-        stlWorkerInstance.addEventListener('message', handleMessage)
+        worker.addEventListener('message', handleMessage)
+        worker.addEventListener('error', handleError)
+        worker.addEventListener('messageerror', handleMessageError)
 
         // Kick off the worker task
         stlWorkerInstance.postMessage({ url, id: taskId })

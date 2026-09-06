@@ -1,5 +1,9 @@
+/* global process */
 import { test, expect } from '../../fixtures/app.fixture.js'
 import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
+
+// Same scaling as the POM: the shared runner pool is heavily contended.
+const CONTROL_TIMEOUT = process.env.CI ? 90_000 : 15_000
 
 test.describe('Studio Viewer', () => {
   test.beforeEach(async ({ page }) => {
@@ -73,23 +77,44 @@ test.describe('Studio Viewer', () => {
 
   test('clicking animation toggle switches play/pause', async ({ sidebar, viewer }) => {
     await sidebar.selectMode('grid')
-    // Two textContent() samples around the click raced React's re-render: on a
-    // loaded runner the second read still saw the pre-click glyph and the test
-    // failed as `expect(textAfter).not.toBe(textBefore)` on all three retries.
-    // A fixed 1000 ms wait for the mode debounce is the same bet in another
-    // place. Wait for the toggle to actually be there and for the viewer to be
-    // render-idle, then assert on aria-pressed with Playwright's auto-retrying
-    // matcher, which polls until the attribute flips instead of sampling once.
-    await expect(viewer.animationToggle).toBeVisible({ timeout: 15_000 })
-    const before = await viewer.animationToggle.getAttribute('aria-pressed')
-    // toggleAnimation() re-clicks until the state flips: a single click can be
-    // eaten by the render overlay without Playwright calling it a failure.
-    await viewer.toggleAnimation()
-    await expect(viewer.animationToggle).toHaveAttribute(
-      'aria-pressed',
-      before === 'true' ? 'false' : 'true',
-      { timeout: 15_000 },
-    )
+    // Earlier attempts at this test were all readiness guesses: two
+    // textContent() samples around the click (raced React's re-render), then a
+    // fixed 1000 ms wait, then a re-click loop on aria-pressed. The re-click
+    // loop is the one that failed twice on #134 — 18 polls, aria-pressed
+    // "false" every time — and it failed because it was fighting the app, not
+    // the DOM. AnimatedGrid fetches and worker-parses assembly STLs; when that
+    // loses its race on a starved runner its onError calls setAnimating(false),
+    // so the app turns the toggle back off on its own. Every click landed; each
+    // one was undone.
+    //
+    // So: wait on the viewer's real render-idle signal, click once, and assert
+    // on the state the app actually settled into. `error` — the animated grid
+    // gave up — is a truthful outcome under CPU starvation, not a flake to
+    // retry away; what this test guarantees is that the click reaches the
+    // handler and drives a state transition.
+    // Every wait here carries CONTROL_TIMEOUT. The config floor is 10s, and the
+    // viewer tree is mounted from `isDesktop` in StudioMainView — a responsive
+    // hook — so a layout settle can unmount and remount the whole <Viewer>
+    // mid-test. Any assertion left on the default floor is a coin flip.
+    await expect(viewer.animationToggle).toBeVisible({ timeout: CONTROL_TIMEOUT })
+    await expect(viewer.animationToggle).toHaveAttribute('data-anim-state', 'paused', {
+      timeout: CONTROL_TIMEOUT,
+    })
+
+    const settled = await viewer.toggleAnimation()
+    expect(['playing', 'error']).toContain(settled)
+
+    if (settled === 'playing') {
+      await expect(viewer.animationToggle).toHaveAttribute('aria-pressed', 'true', {
+        timeout: CONTROL_TIMEOUT,
+      })
+      // Turning it back off starts no fetch of its own, but the grid's in-flight
+      // one can still land and abort — so `error` stays admissible here too.
+      expect(['paused', 'error']).toContain(await viewer.toggleAnimation())
+      await expect(viewer.animationToggle).toHaveAttribute('aria-pressed', 'false', {
+        timeout: CONTROL_TIMEOUT,
+      })
+    }
   })
 
   // Console

@@ -567,6 +567,65 @@ describe('Viewer', () => {
   })
 
   // ────────────────────────────────────────
+  // e2e readiness signals: data-render-state / data-anim-state
+  // ────────────────────────────────────────
+
+  it('publishes data-render-state on the viewer root', () => {
+    const { rerender } = render(<Viewer {...defaultProps} loading={false} />)
+    expect(screen.getByTestId('viewer-root')).toHaveAttribute('data-render-state', 'idle')
+    rerender(<Viewer {...defaultProps} loading={true} />)
+    expect(screen.getByTestId('viewer-root')).toHaveAttribute('data-render-state', 'rendering')
+  })
+
+  it('reports data-anim-state paused → preparing → playing', () => {
+    const { rerender } = render(<Viewer {...defaultProps} mode="grid" animating={false} />)
+    expect(screen.getByTestId('animation-toggle')).toHaveAttribute('data-anim-state', 'paused')
+
+    rerender(
+      <Viewer
+        {...defaultProps}
+        mode="grid"
+        animating={true}
+        parts={[{ type: 'base', url: '/api/render/base.stl' }]}
+        colors={{ base: '#ff0000' }}
+      />
+    )
+    expect(screen.getByTestId('animation-toggle')).toHaveAttribute('data-anim-state', 'preparing')
+
+    act(() => { capturedAnimatedGridOnReady?.() })
+    expect(screen.getByTestId('animation-toggle')).toHaveAttribute('data-anim-state', 'playing')
+  })
+
+  // The reason the e2e could not tell an app-initiated revert from a lost
+  // click: onError sets animError AND animating=false, and the reset effect
+  // clears animError as soon as animating is false, so the error is gone within
+  // a tick. animAborted survives it.
+  it('reports data-anim-state error after the grid aborts, and clears it on the next user click', () => {
+    let animating = true
+    const setAnimating = vi.fn((v) => { animating = typeof v === 'function' ? v(animating) : v })
+    const props = {
+      ...defaultProps,
+      mode: 'grid',
+      setAnimating,
+      parts: [{ type: 'base', url: '/api/render/base.stl' }],
+      colors: { base: '#ff0000' },
+    }
+    const { rerender } = render(<Viewer {...props} animating={true} />)
+
+    act(() => { capturedAnimatedGridOnError?.() })
+    expect(setAnimating).toHaveBeenCalledWith(false)
+
+    // The parent honours setAnimating(false); the toggle must still say "error",
+    // not "paused" — otherwise the revert is indistinguishable from a no-op.
+    rerender(<Viewer {...props} animating={false} />)
+    expect(screen.getByTestId('animation-toggle')).toHaveAttribute('data-anim-state', 'error')
+
+    // An explicit user click clears the sticky flag.
+    fireEvent.click(screen.getByTestId('animation-toggle'))
+    expect(screen.getByTestId('animation-toggle')).toHaveAttribute('data-anim-state', 'paused')
+  })
+
+  // ────────────────────────────────────────
   // structuralPartIds branch (grid mode vs assembly mode parts)
   // ────────────────────────────────────────
 

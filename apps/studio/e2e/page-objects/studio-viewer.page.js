@@ -1,5 +1,14 @@
+/* global process */
 import { expect } from '@playwright/test'
 import { BasePage } from './base.page.js'
+
+// CI budgets. The shared ARC pool runs the commons' nightly sweep (three render
+// groups at 1.5 CPU each) alongside PR matrices, so a viewer that goes idle in
+// under a second unloaded can take tens of seconds there. 20s was not a budget,
+// it was a coin flip; scale it under CI instead of tightening the assertions.
+const CI = !!process.env.CI
+const VIEWER_READY_TIMEOUT = CI ? 90_000 : 20_000
+const CONTROL_CLICK_TIMEOUT = CI ? 30_000 : 10_000
 
 export class StudioViewerPage extends BasePage {
   constructor(page) {
@@ -35,7 +44,7 @@ export class StudioViewerPage extends BasePage {
   }
 
   /**
-   * Wait for the render overlay to clear.
+   * Wait for the viewer to actually be render-idle.
    *
    * While a render is in flight the viewer covers itself with
    * `absolute inset-0 z-50 bg-background/80 backdrop-blur-sm`, which intercepts
@@ -43,69 +52,80 @@ export class StudioViewerPage extends BasePage {
    * out — Playwright reports "element is visible, enabled and stable" followed
    * by "<div …> intercepts pointer events", which reads like a flaky selector
    * but is the app correctly blocking input mid-render.
+   *
+   * The viewer root publishes exactly that condition as
+   * `data-render-state="rendering" | "idle"` — the same `loading` prop that
+   * decides whether LoadingOverlay mounts — so we wait on the app's own signal
+   * rather than on a visibility predicate that has to agree with Playwright's.
+   *
+   * This THROWS on timeout. The previous version ended in `.catch(() => {})`,
+   * so a viewer that never went idle inside the budget resolved anyway and the
+   * caller clicked straight into the overlay; the failure then surfaced far
+   * downstream as an attribute that never changed. A readiness helper that
+   * cannot fail is not a readiness helper.
    */
-  async waitForRenderIdle(timeout = 20_000) {
-    // Wait on the app's own idle signal — Generate is disabled for as long as a
-    // render is in flight — rather than on the overlay that does the blocking.
-    //
-    // Watching the overlay directly did not work. Checking for its absence
-    // passed instantly at t=0, before the auto-render had started. Waiting for
-    // it to appear and then clear still failed: at the moment of the blocked
-    // click, `offsetParent`-based visibility reported no overlay at all while
-    // Playwright's own actionability check was reporting one intercepting
-    // pointer events. Rather than keep guessing at a visibility predicate that
-    // agrees with Playwright's, wait for the state the overlay represents.
-    const generate = this.page
-      .locator('[data-testid="studio-sidebar"] button')
-      .filter({ hasText: /Generate|Generar/ })
-      .first()
-    await generate.waitFor({ state: 'visible', timeout: 8000 }).catch(() => { })
-    await this.page
-      .waitForFunction(
-        () => {
-          const btns = [...document.querySelectorAll('[data-testid="studio-sidebar"] button')]
-          const gen = btns.find((b) => /Generate|Generar/.test(b.textContent || ''))
-          return !!gen && !gen.disabled
-        },
-        null,
-        { timeout },
-      )
-      .catch(() => { })
+  async waitForRenderIdle(timeout = VIEWER_READY_TIMEOUT) {
+    // One assertion, one budget. `toHaveAttribute` already waits for the
+    // element to exist, so there is no separate attach wait to cap — and
+    // capping it was a real bug: StudioMainView mounts the viewer tree from
+    // `isDesktop`, a responsive hook, so a layout settle under load unmounts
+    // and remounts the whole <Viewer>. A 15s attach cap inside a 90s budget
+    // could not ride that out, and the helper failed on a viewer that was
+    // merely remounting (2/10 locally before this line was fixed).
+    await expect(
+      this.page.locator('[data-testid="viewer-root"]').first(),
+    ).toHaveAttribute('data-render-state', 'idle', { timeout })
+  }
+
+  /**
+   * Click a viewer control once the viewer is render-idle.
+   *
+   * Every viewer control sits under the same overlay, so every one of them can
+   * lose a click the same way the animation toggle did. Route them all through
+   * one helper so the fix is structural rather than a patch on the one test
+   * that happened to fail.
+   */
+  async clickViewerControl(locator) {
+    await this.waitForRenderIdle()
+    await locator.click({ timeout: CONTROL_CLICK_TIMEOUT })
   }
 
   /** Click a camera view. */
   async setCameraView(viewId) {
-    await this.waitForRenderIdle()
-    await this.cameraViewButton(viewId).click()
+    await this.clickViewerControl(this.cameraViewButton(viewId))
   }
 
   /** Toggle axes visibility. */
   async toggleAxes() {
-    await this.waitForRenderIdle()
-    await this.axesToggle.click()
+    await this.clickViewerControl(this.axesToggle)
   }
 
   /**
-   * Toggle grid animation, and confirm the toggle actually flipped.
+   * Toggle grid animation and wait for the app to settle on a real state.
    *
-   * `waitForRenderIdle()` ends in `.catch(() => {})`, so when the render does
-   * not go idle inside its budget it resolves rather than throwing and the
-   * click goes out anyway — straight into the render overlay, which swallows
-   * it. Playwright still reports the click as successful (the overlay is a
-   * legitimate hit target), so the failure only surfaced downstream as an
-   * `aria-pressed` that never changed. Re-click until the state flips instead
-   * of assuming one click landed.
+   * Resolves to the settled `data-anim-state`. Callers must look at it: the
+   * animated grid fetches and worker-parses assembly STLs, and on a starved
+   * runner that fetch/parse fails, at which point AnimatedGrid's `onError`
+   * calls `setAnimating(false)` — the app turns the toggle back off by itself.
+   * A test that only watches `aria-pressed` sees that revert as a click that
+   * never landed and re-clicks into a loop it cannot win, because every
+   * successful click is undone by the next failed fetch. That is precisely how
+   * this test failed on run 34023576549: `aria-pressed` was polled 18 times and
+   * was `false` every time, while the click had in fact landed each round.
+   *
+   * There is no blind re-click here. One click, then wait for `data-anim-state`
+   * to leave `preparing` — the only transient value — and report what it landed
+   * on. `error` is a legitimate outcome under CPU starvation and is the caller's
+   * to interpret, not something to retry away.
    */
   async toggleAnimation() {
-    await this.waitForRenderIdle()
-    const before = await this.animationToggle.getAttribute('aria-pressed')
-    const want = before === 'true' ? 'false' : 'true'
-
-    await expect(async () => {
-      if ((await this.animationToggle.getAttribute('aria-pressed')) === want) return
-      await this.animationToggle.click({ timeout: 5_000 })
-      expect(await this.animationToggle.getAttribute('aria-pressed')).toBe(want)
-    }).toPass({ timeout: 30_000 })
+    await this.clickViewerControl(this.animationToggle)
+    await expect(this.animationToggle).not.toHaveAttribute(
+      'data-anim-state',
+      'preparing',
+      { timeout: VIEWER_READY_TIMEOUT },
+    )
+    return this.animationToggle.getAttribute('data-anim-state')
   }
 
   /** Get console log text. */

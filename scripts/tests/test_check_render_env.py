@@ -38,7 +38,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "scripts" / "qa"))
 
-import check_render_env as lane  # noqa: E402
+import check_render_env as lane
 
 DOCKERFILE = """FROM python:3.12-slim
 
@@ -223,3 +223,21 @@ def test_a_missing_dockerfile_fails_rather_than_passing_vacuously(
     monkeypatch.setattr(lane, "load_spec", lambda: (spec_module(), None))
     assert lane.main(["--dockerfile", str(tmp_path / "nope")]) == 1
     assert "not found" in capsys.readouterr().out
+
+
+def test_build_only_fetch_tools_are_not_drift(tmp_path):
+    """wget/curl/ca-certificates exist to build the image, not to render."""
+    class Spec:
+        APT_PACKAGES = ("libgl1", "fontconfig")
+        OPENSCAD_VERSION = "2026.02.13"
+        OPENSCAD_SHA256 = "a" * 64
+
+    dockerfile = (
+        "ARG OPENSCAD_VERSION=2026.02.13\n"
+        "ARG OPENSCAD_SHA256=" + "a" * 64 + "\n"
+        "RUN apt-get update && apt-get install -y --no-install-recommends \\\n"
+        "  libgl1 \\\n  fontconfig \\\n  wget \\\n  ca-certificates && \\\n"
+        "  wget -q https://example.invalid/openscad.AppImage\n"
+    )
+    assert lane.compare(Spec, dockerfile) == []
+

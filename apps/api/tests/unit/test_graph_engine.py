@@ -614,6 +614,43 @@ class TestEndToEndExecution:
         assert out_path.is_file()
         assert out_path.stat().st_size > 100
 
+    @pytest.mark.skipif(not HAS_CADQUERY, reason="cadquery not installed")
+    def test_an_expression_is_recomputed_per_render_not_frozen(self, tmp_path):
+        """The property the whole design turns on.
+
+        `prepare_graph_script` runs once per graph+manifest and caches the
+        script; per-request values arrive later as globals `_param` reads. So
+        an expression folded to a constant at transpile time would be *inert* —
+        the slider would move and the geometry would not. ONE script, rendered
+        twice with different values, must give two different solids.
+        """
+        import trimesh
+
+        graph_path = tmp_path / "live.graph.json"
+        graph_path.write_text(json.dumps({
+            "version": "1.1.0",
+            "nodes": [{"id": "b", "type": "box",
+                       "params": {"w": {"expr": "n * 10"}, "d": 5, "h": 5}}],
+            "outputs": {"p": "b"},
+        }))
+        manifest = SimpleNamespace(parameters=[{"id": "n", "default": 1.0}])
+        script_path = prepare_graph_script(str(graph_path), manifest)
+
+        runner = Path(__file__).resolve().parents[2] / "services" / "engine" / "cq_runner.py"
+        widths = {}
+        for n in (1, 3):
+            out_path = tmp_path / f"n{n}.stl"
+            result = subprocess.run(
+                [sys.executable, str(runner), script_path, str(out_path),
+                 json.dumps({"target_part": "p", "n": n}), "stl"],
+                capture_output=True, text=True, timeout=120, check=False,
+            )
+            assert result.returncode == 0, result.stdout + result.stderr
+            widths[n] = trimesh.load(str(out_path)).extents[0]
+
+        assert widths[1] == pytest.approx(10.0, abs=0.01)
+        assert widths[3] == pytest.approx(30.0, abs=0.01)
+
 
 class TestExpressionAndParameterInputs:
     """`{"expr": "..."}` and `{"param": id}` param values (lane G-EXPR).

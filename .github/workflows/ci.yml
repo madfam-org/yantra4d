@@ -795,7 +795,7 @@ jobs:
         # solid-hyperobjects / soft-hyperobjects), never a floating tag: the bar
         # the platform clears must be the bar the commons cleared. The repo is
         # public (2026-09-05), so no token is needed to fetch it.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@db65cf1e7a2732d7263efd6eb6ba533640eb536f"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@53e972dd121a07de68a67e2b3f7699a5550376a2"
       - name: Structural conformance (full commons)
         run: |
           status=0
@@ -825,7 +825,7 @@ jobs:
             exit 0
           fi
           status=0
-          y4d-spec check --render -v $dirs | tee render-report.txt || status=$?
+          y4d-spec check --render --parity -v $dirs | tee render-report.txt || status=$?
           echo "### y4d-spec renders (changed)" >> "$GITHUB_STEP_SUMMARY"
           tail -1 render-report.txt >> "$GITHUB_STEP_SUMMARY"
           exit $status

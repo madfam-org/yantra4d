@@ -64,14 +64,14 @@ jobs:
         if: inputs.report_fixture == ''
         # Same keystone SHA as ci.yml's spec-conformance job and both commons'
         # SPEC_PIN — never a floating tag; the repo is public, no token needed.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@db65cf1e7a2732d7263efd6eb6ba533640eb536f"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@53e972dd121a07de68a67e2b3f7699a5550376a2"
       - name: Full render sweep
         id: sweep
         if: inputs.report_fixture == ''
         run: |
           # default shell is bash -e -o pipefail: don't abort before the summary
           status=0
-          y4d-spec check --render projects/*/ | tee sweep-report.txt || status=$?
+          y4d-spec check --render --parity projects/*/ | tee sweep-report.txt || status=$?
           echo "### y4d-spec nightly render sweep" >> "$GITHUB_STEP_SUMMARY"
           tail -1 sweep-report.txt >> "$GITHUB_STEP_SUMMARY"
           grep "FAIL" sweep-report.txt | head -40 >> "$GITHUB_STEP_SUMMARY" || true

@@ -533,6 +533,14 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
     const [activeView, setActiveView] = useState('iso')
     const [animReady, setAnimReady] = useState(false)
     const [animError, setAnimError] = useState(false)
+    // Sticky record of "the animated grid gave up and turned itself off".
+    // `animError` cannot carry this: onError sets animError AND animating=false,
+    // and the reset effect below immediately clears animError because animating
+    // just became false — so the error state is erased within a tick and nothing
+    // outside the component can ever observe it. That invisibility is what made
+    // the e2e read an app-initiated revert as a click that never landed. This
+    // flag survives the revert and is cleared only by an explicit user toggle.
+    const [animAborted, setAnimAborted] = useState(false)
 
     // When the mode changes AND loading completes (progress reaches 100), position the camera
     useEffect(() => {
@@ -597,7 +605,16 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
     const fov = useResponsiveFov()
 
     return (
-        <div className="relative h-full w-full" style={{ touchAction: 'none' }}>
+        <div
+            className="relative h-full w-full"
+            style={{ touchAction: 'none' }}
+            // Machine-readable render state for e2e. `loading` is exactly the
+            // condition under which LoadingOverlay covers the viewer with an
+            // `inset-0 z-50` sheet that intercepts pointer events, so tests can
+            // wait on "idle" instead of guessing at the overlay's visibility.
+            data-testid="viewer-root"
+            data-render-state={loading ? 'rendering' : 'idle'}
+        >
             <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
 
             {animating && mode === 'grid' && !animReady && !animError && (
@@ -633,11 +650,17 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
             {mode === 'grid' && (
                 <button
                     data-testid="animation-toggle"
-                    onClick={() => setAnimating(a => !a)}
+                    onClick={() => { setAnimAborted(false); setAnimating(a => !a) }}
                     className="absolute top-16 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-lg hover:bg-background/90 backdrop-blur-sm"
                     title={animating ? t("viewer.pause_anim") : t("viewer.play_anim")}
                     aria-pressed={animating}
                     aria-label={animating ? t("viewer.pause_anim") : t("viewer.play_anim")}
+                    // The animated grid resets `animating` to false by itself when
+                    // its geometry fetch/parse fails (see AnimatedGrid onError
+                    // below). Without this attribute an e2e cannot tell "the user
+                    // toggled it off" from "the app gave up", and reads the revert
+                    // as a click that never landed. Surface the three states.
+                    data-anim-state={animAborted ? 'error' : animating ? (animReady ? 'playing' : 'preparing') : 'paused'}
                 >
                     {animating ? "⏸" : "▶"}
                 </button>
@@ -909,7 +932,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                             colors={colors}
                                             wireframe={wireframe}
                                             onReady={() => setAnimReady(true)}
-                                            onError={() => { setAnimError(true); setAnimating(false) }}
+                                            onError={() => { setAnimError(true); setAnimAborted(true); setAnimating(false) }}
                                         />
                                     </group>
                                 )}

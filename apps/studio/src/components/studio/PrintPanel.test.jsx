@@ -222,32 +222,58 @@ describe('PrintPanel', () => {
     })
 
     // --- Dispatch and cancel --------------------------------------------------
+    //
+    // These two used call-order mocks (`mockResolvedValueOnce` chains plus a
+    // catch-all `mockResolvedValue`) for a component that also polls
+    // `/api/printers/:id/status` on a 5 s `setInterval`. Which call the dispatch
+    // POST received was therefore a race between the click and the poll: on a
+    // loaded runner the poll could land first and eat the response the dispatch
+    // was meant to get. Route by URL and method instead, so every request
+    // resolves to the same thing no matter what order they arrive in and no
+    // matter how many status polls fire.
+    const routeFetch = ({ dispatch }) => {
+        mockFetch.mockImplementation((url, options = {}) => {
+            const method = options.method ?? 'GET'
+            if (url === '/api/printers') {
+                return Promise.resolve({ ok: true, json: async () => ({ printers: MOCK_PRINTERS }) })
+            }
+            if (url.endsWith('/status')) {
+                return Promise.resolve({ ok: true, json: async () => MOCK_STATUS })
+            }
+            if (url.endsWith('/print') && method === 'POST') {
+                return Promise.resolve(dispatch)
+            }
+            return Promise.resolve({ ok: true, json: async () => ({}) })
+        })
+    }
 
     it('a successful dispatch reports success', async () => {
-        withPrinters()
-        // The list, the status polls, then the dispatch POST.
-        mockFetch.mockResolvedValue({ ok: true, json: async () => ({ status: 'ok' }) })
+        routeFetch({ dispatch: { ok: true, json: async () => ({ status: 'ok' }) } })
         await panel()
 
-        const btn = screen.queryByRole('button', { name: /send to printer/i })
-        if (btn) {
-            fireEvent.click(btn)
-            await waitFor(() => expect(screen.queryByText(/dispatched successfully/i)).toBeTruthy())
-        }
+        // findBy… rather than queryBy… + `if (btn)`: the old guard turned a
+        // button that had not rendered yet into a silent pass, so the test only
+        // ever asserted anything when it won the render race.
+        const btn = await screen.findByRole('button', { name: /send to printer/i })
+        fireEvent.click(btn)
+        expect(await screen.findByText(/dispatched successfully/i, {}, { timeout: 10000 })).toBeInTheDocument()
     })
 
     it('a failed dispatch surfaces the error', async () => {
-        mockFetch
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ printers: MOCK_PRINTERS }) })
-            .mockResolvedValueOnce({ ok: true, json: async () => MOCK_STATUS })
-            .mockResolvedValue({ ok: false, status: 502, json: async () => ({ error: 'printer offline' }) })
+        routeFetch({
+            dispatch: { ok: false, status: 502, json: async () => ({ error: 'printer offline' }) },
+        })
         await panel()
 
-        const btn = screen.queryByRole('button', { name: /send to printer/i })
-        if (btn) {
-            fireEvent.click(btn)
-            await waitFor(() => expect(screen.queryByRole('alert')).toBeTruthy())
-        }
+        const btn = await screen.findByRole('button', { name: /send to printer/i })
+        fireEvent.click(btn)
+        // The error surface is two awaited microtask hops past the click
+        // (dispatchPrint → res.json() → setError → re-render). waitFor's default
+        // 1 s budget was enough locally and not enough on a 1.5-CPU runner, where
+        // this failed as "expected null to be truthy". Give it a real timeout and
+        // assert on the element rather than on a truthy query result.
+        const alert = await screen.findByRole('alert', {}, { timeout: 10000 })
+        expect(alert).toHaveTextContent(/printer offline/i)
     })
 })
 

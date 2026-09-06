@@ -636,6 +636,8 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                     onClick={() => setAnimating(a => !a)}
                     className="absolute top-16 left-2 z-10 flex items-center justify-center w-11 h-11 rounded bg-background/70 border border-border text-lg hover:bg-background/90 backdrop-blur-sm"
                     title={animating ? t("viewer.pause_anim") : t("viewer.play_anim")}
+                    aria-pressed={animating}
+                    aria-label={animating ? t("viewer.pause_anim") : t("viewer.play_anim")}
                 >
                     {animating ? "⏸" : "▶"}
                 </button>

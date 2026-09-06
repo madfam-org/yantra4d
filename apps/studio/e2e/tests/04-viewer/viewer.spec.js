@@ -71,13 +71,25 @@ test.describe('Studio Viewer', () => {
     await expect(viewer.animationToggle).not.toBeVisible()
   })
 
-  test('clicking animation toggle switches play/pause', async ({ page, sidebar, viewer }) => {
+  test('clicking animation toggle switches play/pause', async ({ sidebar, viewer }) => {
     await sidebar.selectMode('grid')
-    await page.waitForTimeout(1000) // Wait for debounce (500ms) and potential render
-    const textBefore = await viewer.animationToggle.textContent()
+    // Two textContent() samples around the click raced React's re-render: on a
+    // loaded runner the second read still saw the pre-click glyph and the test
+    // failed as `expect(textAfter).not.toBe(textBefore)` on all three retries.
+    // A fixed 1000 ms wait for the mode debounce is the same bet in another
+    // place. Wait for the toggle to actually be there and for the viewer to be
+    // render-idle, then assert on aria-pressed with Playwright's auto-retrying
+    // matcher, which polls until the attribute flips instead of sampling once.
+    await expect(viewer.animationToggle).toBeVisible({ timeout: 15_000 })
+    const before = await viewer.animationToggle.getAttribute('aria-pressed')
+    // toggleAnimation() re-clicks until the state flips: a single click can be
+    // eaten by the render overlay without Playwright calling it a failure.
     await viewer.toggleAnimation()
-    const textAfter = await viewer.animationToggle.textContent()
-    expect(textAfter).not.toBe(textBefore)
+    await expect(viewer.animationToggle).toHaveAttribute(
+      'aria-pressed',
+      before === 'true' ? 'false' : 'true',
+      { timeout: 15_000 },
+    )
   })
 
   // Console

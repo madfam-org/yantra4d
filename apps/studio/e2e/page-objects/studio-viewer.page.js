@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test'
 import { BasePage } from './base.page.js'
 
 export class StudioViewerPage extends BasePage {
@@ -84,10 +85,27 @@ export class StudioViewerPage extends BasePage {
     await this.axesToggle.click()
   }
 
-  /** Toggle grid animation. */
+  /**
+   * Toggle grid animation, and confirm the toggle actually flipped.
+   *
+   * `waitForRenderIdle()` ends in `.catch(() => {})`, so when the render does
+   * not go idle inside its budget it resolves rather than throwing and the
+   * click goes out anyway — straight into the render overlay, which swallows
+   * it. Playwright still reports the click as successful (the overlay is a
+   * legitimate hit target), so the failure only surfaced downstream as an
+   * `aria-pressed` that never changed. Re-click until the state flips instead
+   * of assuming one click landed.
+   */
   async toggleAnimation() {
     await this.waitForRenderIdle()
-    await this.animationToggle.click()
+    const before = await this.animationToggle.getAttribute('aria-pressed')
+    const want = before === 'true' ? 'false' : 'true'
+
+    await expect(async () => {
+      if ((await this.animationToggle.getAttribute('aria-pressed')) === want) return
+      await this.animationToggle.click({ timeout: 5_000 })
+      expect(await this.animationToggle.getAttribute('aria-pressed')).toBe(want)
+    }).toPass({ timeout: 30_000 })
   }
 
   /** Get console log text. */

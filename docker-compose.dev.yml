@@ -94,7 +94,7 @@ services:
       HOST: "0.0.0.0"
       OPENSCAD_PATH: /usr/local/bin/openscad
       PROJECTS_DIR: /app/projects
-      OPENSCADPATH: /app/libs:/app/libs/dotSCAD/src
+      OPENSCADPATH: /app/libs:/app/libs/dotSCAD/src:/app/projects
       VERIFY_SCRIPT: /app/backend/tests/verify_design.py
       AUTH_ENABLED: "false"
       RATE_LIMIT_ENABLED: "false"

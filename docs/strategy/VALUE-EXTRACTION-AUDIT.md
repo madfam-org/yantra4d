@@ -71,7 +71,7 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Cartridges shipping ≥1 preset | 470 | 500 | 94.0% | 303 / 326 = 92.9% | +1.1 pp |
 | Proven configurations (presets) per cartridge | 1505 | 500 | 3.01 | 1021 / 326 = 3.13 | -0.12 |
 | Cartridges declaring ≥1 constraint | 401 | 500 | 80.2% | 287 / 326 = 88.0% | -7.8 pp |
-| Bilingual constraints per cartridge | 764 | 500 | 1.53 | 555 / 326 = 1.70 | -0.17 |
+| Bilingual constraints per cartridge | 766 | 500 | 1.53 | 555 / 326 = 1.70 | -0.17 |
 | Cartridges carrying `hyperobject.material_awareness` | 488 | 500 | 97.6% | 310 / 326 = 95.1% | +2.5 pp |
 | …of which declare `tolerance_by_material` | 467 | 500 | 93.4% | 294 / 326 = 90.2% | +3.2 pp |
 | …of which declare `shrinkage_compensation` | 68 | 500 | 13.6% | 30 / 326 = 9.2% | +4.4 pp |
@@ -91,7 +91,7 @@ Recomputed over **500 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Landing-gallery entries the Commons catalog does not publish | 0 | 500 | 0.0% | — | new in 2026-09 |
 | Cartridges offering STEP (B-Rep) export | 491 | 500 | 98.2% | — | new in 2026-09 |
 | Cartridges carrying an explicit licence | 500 | 500 | 100.0% | — | new in 2026-09 |
-| Cartridges carrying a `verification` block | 62 | 500 | 12.4% | — | new in 2026-09 |
+| Cartridges carrying a `verification` block | 65 | 500 | 13.0% | — | new in 2026-09 |
 
 **Not recomputed — reported instead of approximated.** These figures in the 2026-08 section are judgement, frontend code reachability, or another QA lane's output; a proxy number here would look computed while measuring something else.
 

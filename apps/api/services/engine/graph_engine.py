@@ -12,6 +12,14 @@ Format governance: the document contract is `packages/schemas/graph.schema.json`
 (version 1.x). This module is the enforcing validator — schema-less documents,
 unknown keys, unknown node types, and cycles are all hard errors.
 
+A node param is a literal, a `{"param": id}` reference to a manifest parameter,
+or an `{"expr": "..."}` expression over manifest parameters (see
+`services/engine/graph_expr.py`). Expressions are parsed and type-checked here,
+at transpile time, and emitted as arithmetic over the same `_param` probes a
+binding emits — so a derived dimension stays live at render time instead of
+freezing into a constant, and the cache key (graph content + binding map) stays
+correct. An expression that references nothing live folds to a number.
+
 Known cache limit: the render cache keys on the graph file's content hash plus
 request params. A manifest edit that only retargets a parameter `binding`
 (without touching the graph or the incoming param values) is not reflected in
@@ -26,6 +34,14 @@ import os
 import re
 import tempfile
 from pathlib import Path
+
+from .graph_expr import (
+    EXPR_RUNTIME_LINES,
+    GraphExprError,
+    compile_expression,
+    expression_identifiers,
+    is_emittable_identifier,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +68,16 @@ _RESERVED_IDENTIFIERS = frozenset({
 
 _ALLOWED_TOP_KEYS = frozenset({"version", "units", "nodes", "outputs", "meta"})
 _ALLOWED_NODE_KEYS = frozenset({"id", "type", "params", "inputs", "meta"})
+
+# A param value that is an object is one of these forms, and exactly one key.
+_PARAM_REF_KEY = "param"
+_PARAM_EXPR_KEY = "expr"
+_ALLOWED_PARAM_OBJECT_KEYS = frozenset({_PARAM_REF_KEY, _PARAM_EXPR_KEY})
+
+# Numeric kinds are the only ones an expression or a `{"param": id}` reference
+# may produce. Structural kinds (selector, axis, plane) stay literal so a
+# render-time value can never change the *shape* of the emitted code.
+_BINDABLE_KINDS = frozenset({"float", "count"})
 
 _AXIS_TUPLES = {"x": "(1, 0, 0)", "y": "(0, 1, 0)", "z": "(0, 0, 1)"}
 _PLANES = frozenset({"XY", "XZ", "YZ"})
@@ -375,6 +401,140 @@ def _bound_expr(kind: str, pid: str, default_literal: str, where: str) -> str:
     raise GraphError(f"{where}: unknown param kind {kind!r}")  # pragma: no cover
 
 
+def _numeric_wrapper(kind: str, code: str, where: str) -> str:
+    """Coerce an emitted numeric expression to what the param kind requires.
+
+    Mirrors `_bound_expr`: a float stays a float; a count is rounded, then
+    clamped in the generated script so a live value can never detonate a union
+    loop inside the render worker.
+    """
+    if kind == "float":
+        return f"float({code})"
+    if kind == "count":
+        return f"min(max(int(round({code})), 1), {MAX_PATTERN_COUNT})"
+    raise GraphError(f"{where}: {kind} params cannot be computed")  # pragma: no cover
+
+
+def _resolved_param_default(pid: str, parameters: dict, where: str):
+    """The transpile-time default for a manifest parameter id, or raise."""
+    if pid not in parameters:
+        raise GraphError(
+            f"{where}: unknown parameter '{pid}' — declare it in the manifest's parameters[]"
+        )
+    value = parameters[pid]
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)) and math.isfinite(float(value)):
+        return value
+    raise GraphError(f"{where}: parameter '{pid}' has no numeric default (got {value!r})")
+
+
+def _expression_code(source, kind: str, parameters: dict, where: str) -> str:
+    """Compile an `{"expr": ...}` param into emitted Python, or raise.
+
+    Identifiers resolve to manifest parameters: each becomes the same
+    `_param(lambda: pid, default)` probe a binding emits, so the expression is
+    recomputed at render time from live values. An expression naming nothing
+    live folds to a validated numeric literal instead.
+    """
+    if kind not in _BINDABLE_KINDS:
+        raise GraphError(
+            f"{where}: a {kind} param cannot be an expression — it must stay a literal"
+        )
+    if not isinstance(source, str):
+        raise GraphError(f"{where}: 'expr' must be a string, got {type(source).__name__}")
+
+    # Report every unknown identifier at once; the parser would stop at the first.
+    try:
+        names = expression_identifiers(source)
+    except GraphExprError as exc:
+        raise GraphError(f"{where}: invalid expression: {exc}") from exc
+    unknown = [
+        name for name in names
+        if not is_emittable_identifier(name)
+        or name not in parameters
+        or _RESERVED_IDENTIFIERS.intersection({name})
+    ]
+    if unknown:
+        raise GraphError(
+            f"{where}: expression references unknown parameter(s) {sorted(set(unknown))} — "
+            "identifiers must name a manifest parameter"
+        )
+
+    def resolve(name: str):
+        default = _resolved_param_default(name, parameters, where)
+        return (f"_param(lambda: {name}, {_literal_code(default)})", None)
+
+    try:
+        code, is_constant, constant = compile_expression(source, resolve)
+    except GraphExprError as exc:
+        raise GraphError(f"{where}: invalid expression: {exc}") from exc
+
+    if is_constant:
+        # Nothing live: validate the folded value against the param's own kind
+        # so `{"expr": "0.5"}` on a count fails exactly like the literal would.
+        return _literal(kind, _coerce_folded(kind, constant, where), where)
+    return _numeric_wrapper(kind, code, where)
+
+
+def _coerce_folded(kind: str, value, where: str):
+    """A folded expression value, shaped for `_literal` of the given kind."""
+    if isinstance(value, bool):
+        raise GraphError(f"{where}: expression evaluates to a boolean, not a number")
+    if kind == "count":
+        if isinstance(value, float):
+            if not value.is_integer():
+                raise GraphError(
+                    f"{where}: expression evaluates to {value}, but a count must be whole"
+                )
+            return int(value)
+        return value
+    return float(value)
+
+
+def _literal_code(value) -> str:
+    """A Python literal for a transpile-time default (bool stays bool)."""
+    if isinstance(value, bool):
+        return "True" if value else "False"
+    return repr(value)
+
+
+def _param_object_key(raw: dict, where: str) -> str:
+    """The single key of a `{"param": …}` / `{"expr": …}` param value."""
+    keys = set(raw)
+    unknown = keys - _ALLOWED_PARAM_OBJECT_KEYS
+    if unknown:
+        raise GraphError(
+            f"{where}: unknown keys {sorted(unknown)} — a param object is "
+            f"{{'param': id}} or {{'expr': '...'}}"
+        )
+    if len(keys) != 1:
+        raise GraphError(
+            f"{where}: a param object needs exactly one of 'param' or 'expr' (got {sorted(keys)})"
+        )
+    return next(iter(keys))
+
+
+def _param_reference_code(pid, kind: str, parameters: dict, where: str) -> str:
+    """Emit an in-graph `{"param": id}` reference.
+
+    Identical in effect to a manifest `binding`, written from the graph's side:
+    the graph says which parameter drives the socket instead of the manifest
+    reaching down. Same probe, same clamp, same restriction to numeric kinds.
+    """
+    if kind not in _BINDABLE_KINDS:
+        raise GraphError(
+            f"{where}: a {kind} param cannot reference a manifest parameter — "
+            "it must stay a literal"
+        )
+    if not isinstance(pid, str) or not _IDENT_RE.match(pid) or keyword.iskeyword(pid):
+        raise GraphError(f"{where}: 'param' must be a plain identifier (got {pid!r})")
+    if pid.startswith("_") or pid in _RESERVED_IDENTIFIERS:
+        raise GraphError(f"{where}: parameter '{pid}' collides with a reserved name")
+    default = _resolved_param_default(pid, parameters, where)
+    return _bound_expr(kind, pid, _literal(kind, _coerce_folded(kind, default, where), where), where)
+
+
 # ── Validation ────────────────────────────────────────────────────────────────
 
 def extract_bindings(manifest_parameters: list) -> dict:
@@ -513,14 +673,49 @@ def _validate_bindings(bindings: dict, by_id: dict, where: str) -> None:
 
 # ── Transpilation ─────────────────────────────────────────────────────────────
 
-def transpile(doc: dict, bindings: dict | None = None, source_name: str = "graph") -> str:
+def parameter_defaults(manifest_parameters: list) -> dict:
+    """Map manifest parameter id → its declared default, for expression use.
+
+    Only numeric and boolean defaults are carried: an expression identifier
+    must name something the dialect can hold. A parameter with a non-numeric
+    default is simply absent, so an expression naming it fails as unknown
+    rather than emitting a probe that would blow up at render time.
+    """
+    defaults: dict = {}
+    for entry in manifest_parameters or []:
+        pid = entry.get("id", "") if isinstance(entry, dict) else ""
+        if not isinstance(pid, str) or not _IDENT_RE.match(pid) or keyword.iskeyword(pid):
+            continue
+        if pid.startswith("_") or pid in _RESERVED_IDENTIFIERS:
+            continue
+        value = entry.get("default")
+        if isinstance(value, bool) or (
+            isinstance(value, (int, float)) and math.isfinite(float(value))
+        ):
+            defaults[pid] = value
+    return defaults
+
+
+def transpile(
+    doc: dict,
+    bindings: dict | None = None,
+    source_name: str = "graph",
+    parameters: dict | None = None,
+) -> str:
     """Compile a validated graph document into CadQuery script text.
 
     Deterministic: emission follows file order (topologically constrained), and
-    every substituted value is a validated literal or a `_param` probe reading a
-    manifest-bound parameter injected by cq_runner.
+    every substituted value is a validated literal, a `_param` probe reading a
+    manifest-bound parameter injected by cq_runner, or arithmetic over such
+    probes compiled from an `{"expr": ...}` input. No character of the document
+    is ever interpolated into the emitted script.
+
+    `parameters` maps manifest parameter id → default (see
+    `parameter_defaults`). Expression identifiers and `{"param": id}`
+    references resolve against it; anything else is a hard error.
     """
     bindings = bindings or {}
+    parameters = parameters if parameters is not None else {}
     _validate_document(doc, source_name)
     by_id = _validate_nodes(doc["nodes"], source_name)
     _validate_bindings(bindings, by_id, source_name)
@@ -536,30 +731,39 @@ def transpile(doc: dict, bindings: dict | None = None, source_name: str = "graph
                 f"{source_name}: output '{part_id}' is a profile; extrude it into a solid first"
             )
 
-    lines = [
-        "# Generated by the Yantra4D graph engine - DO NOT EDIT.",
-        f"# Source: {source_name}",
-        "import cadquery as cq",
-        "",
-        "",
-        "def _param(getter, default):",
-        "    try:",
-        "        return getter()",
-        "    except Exception:  # noqa: BLE001 - sandbox probe for injected params",
-        "        return default",
-        "",
-        "",
-    ]
+    # Emitted only when an expression actually needs it, so a graph that uses
+    # no expressions transpiles to exactly the script it always did.
+    uses_expressions = False
 
     def _param_expr(node: dict, name: str, kind: str, default) -> str:
+        nonlocal uses_expressions
         where = f"{source_name}: node '{node['id']}' param '{name}'"
         raw = node.get("params", {}).get(name, default)
+
+        # An object value is an in-graph reference or an expression. Either one
+        # takes precedence over a manifest `binding` on the same target, and a
+        # collision between the two is refused rather than silently ranked.
+        if isinstance(raw, dict):
+            key = _param_object_key(raw, where)
+            if bindings.get((node["id"], name)) is not None:
+                raise GraphError(
+                    f"{where}: the graph sets this param with '{key}' but a manifest "
+                    "parameter also binds it — use one or the other"
+                )
+            if key == _PARAM_EXPR_KEY:
+                code = _expression_code(raw[key], kind, parameters, where)
+                if "_expr_" in code:
+                    uses_expressions = True
+                return code
+            return _param_reference_code(raw[key], kind, parameters, where)
+
         default_literal = _literal(kind, raw, where)
         pid = bindings.get((node["id"], name))
         if pid is None:
             return default_literal
         return _bound_expr(kind, pid, default_literal, where)
 
+    body: list[str] = []
     emitted: set[str] = set()
     remaining = list(by_id.values())
     while remaining:
@@ -577,7 +781,7 @@ def transpile(doc: dict, bindings: dict | None = None, source_name: str = "graph
                 for name, (kind, default) in spec["params"].items()
             }
             rendered = spec["emit"](f"_n_{node['id']}", input_vars, param_exprs)
-            lines.extend([rendered] if isinstance(rendered, str) else rendered)
+            body.extend([rendered] if isinstance(rendered, str) else rendered)
             emitted.add(node["id"])
             progressed = True
         if not progressed:
@@ -586,15 +790,38 @@ def transpile(doc: dict, bindings: dict | None = None, source_name: str = "graph
         remaining = still
 
     default_part = next(iter(outputs))
-    lines.append("")
-    lines.append("_outputs = {")
+    body.append("")
+    body.append("_outputs = {")
     for part_id, ref in outputs.items():
-        lines.append(f"    {json.dumps(part_id)}: _n_{ref},")
-    lines.append("}")
-    lines.append(f"_target = str(_param(lambda: target_part, {json.dumps(default_part)}))")
-    lines.append("result = _outputs.get(_target)")
-    lines.append("if result is None:")
-    lines.append("    raise ValueError(\"Unknown target_part: \" + _target)")
+        body.append(f"    {json.dumps(part_id)}: _n_{ref},")
+    body.append("}")
+    body.append(f"_target = str(_param(lambda: target_part, {json.dumps(default_part)}))")
+    body.append("result = _outputs.get(_target)")
+    body.append("if result is None:")
+    body.append("    raise ValueError(\"Unknown target_part: \" + _target)")
+
+    lines = [
+        "# Generated by the Yantra4D graph engine - DO NOT EDIT.",
+        f"# Source: {source_name}",
+    ]
+    if uses_expressions:
+        lines.append("import math")
+    lines.extend([
+        "import cadquery as cq",
+        "",
+        "",
+        "def _param(getter, default):",
+        "    try:",
+        "        return getter()",
+        "    except Exception:  # noqa: BLE001 - sandbox probe for injected params",
+        "        return default",
+        "",
+        "",
+    ])
+    if uses_expressions:
+        lines.extend(EXPR_RUNTIME_LINES)
+        lines.extend(["", ""])
+    lines.extend(body)
     lines.append("")
     return "\n".join(lines)
 
@@ -627,10 +854,16 @@ def prepare_graph_script(graph_path: str, manifest) -> str:
     either input produces a new file (no stale-overwrite races between parts).
     """
     doc, raw = load_graph_document(graph_path)
-    bindings = extract_bindings(getattr(manifest, "parameters", None) or [])
+    manifest_parameters = getattr(manifest, "parameters", None) or []
+    bindings = extract_bindings(manifest_parameters)
+    parameters = parameter_defaults(manifest_parameters)
 
+    # The defaults join the key: an expression folds a parameter's default into
+    # the emitted probe, so changing a default must produce a new script.
     fingerprint = hashlib.sha256(
-        raw + json.dumps(sorted(bindings.items()), sort_keys=True).encode()
+        raw
+        + json.dumps(sorted(bindings.items()), sort_keys=True).encode()
+        + json.dumps(sorted(parameters.items()), sort_keys=True).encode()
     ).hexdigest()
 
     out_dir = Path(tempfile.gettempdir()) / "yantra4d_graphgen"
@@ -639,7 +872,9 @@ def prepare_graph_script(graph_path: str, manifest) -> str:
     if out_path.is_file():
         return str(out_path)
 
-    script = transpile(doc, bindings, source_name=os.path.basename(graph_path))
+    script = transpile(
+        doc, bindings, source_name=os.path.basename(graph_path), parameters=parameters
+    )
 
     tmp_path = out_path.with_suffix(".tmp")
     tmp_path.write_text(script)

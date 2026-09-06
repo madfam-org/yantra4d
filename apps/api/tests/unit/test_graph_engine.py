@@ -18,9 +18,11 @@ from unittest.mock import patch
 import pytest
 
 from services.engine.graph_engine import (
+    NODE_TYPES,
     GraphError,
     extract_bindings,
     load_graph_document,
+    parameter_defaults,
     prepare_graph_script,
     transpile,
 )
@@ -611,3 +613,257 @@ class TestEndToEndExecution:
         assert result.returncode == 0, result.stdout + result.stderr
         assert out_path.is_file()
         assert out_path.stat().st_size > 100
+
+
+class TestExpressionAndParameterInputs:
+    """`{"expr": "..."}` and `{"param": id}` param values (lane G-EXPR).
+
+    The property that matters: an expression is *parsed* at transpile time —
+    unknown identifiers and syntax errors are hard errors there — but *emitted*
+    as arithmetic over the same `_param` probes a binding uses, so a derived
+    dimension stays live at render time instead of freezing into a constant.
+    """
+
+    def _graph(self, params, node_type="box"):
+        """One node of `node_type`, fed a box when the type needs a shape."""
+        node = {"id": "b", "type": node_type, "params": params}
+        if NODE_TYPES[node_type]["inputs"]:
+            node["inputs"] = {"shape": "src"}
+            return {
+                "version": "1.1.0",
+                "nodes": [{"id": "src", "type": "box"}, node],
+                "outputs": {"p": "b"},
+            }
+        return {
+            "version": "1.1.0",
+            "nodes": [node],
+            "outputs": {"p": "b"},
+        }
+
+    def _transpile(self, params, parameters=None, node_type="box"):
+        return transpile(
+            self._graph(params, node_type), {}, "t.graph.json", parameters or {}
+        )
+
+    # ── emission ──────────────────────────────────────────────────────────────
+
+    def test_expression_emits_live_probe_arithmetic(self):
+        script = self._transpile({"w": {"expr": "width / 2"}}, {"width": 60.0})
+        assert "_param(lambda: width, 60.0)" in script
+        assert "_expr_div" in script
+        # ...and the value is NOT frozen to the default.
+        assert "30.0" not in script
+
+    def test_parameter_reference_emits_the_same_probe_as_a_binding(self):
+        script = self._transpile({"w": {"param": "width"}}, {"width": 60.0})
+        assert "float(_param(lambda: width, 60.0))" in script
+
+    def test_a_literal_expression_folds_to_a_number(self):
+        script = self._transpile({"w": {"expr": "2 + 3 * 4"}})
+        assert "cq.Workplane(\"XY\").box(14.0," in script
+        # No live parameter, so no runtime helpers are emitted at all.
+        assert "_expr_num" not in script
+        assert "import math" not in script
+
+    def test_the_runtime_preamble_appears_only_when_needed(self):
+        plain = transpile(make_graph())
+        assert "_expr_num" not in plain
+        assert "import math" not in plain
+        live = self._transpile({"w": {"expr": "width * 2"}}, {"width": 3.0})
+        assert "def _expr_num(value):" in live
+        assert "import math" in live
+
+    def test_a_graph_without_expressions_is_byte_identical_to_before(self):
+        # The whole point of the conditional preamble: adding expressions to the
+        # engine must not rewrite the script of any existing graph cartridge.
+        assert transpile(make_graph()) == transpile(make_graph(), {}, "graph", {})
+
+    def test_a_computed_count_is_rounded_and_clamped(self):
+        script = self._transpile(
+            {"count": {"expr": "n * 2"}, "angle": 30.0},
+            {"n": 3},
+            node_type="pattern_polar",
+        )
+        assert "min(max(int(round(" in script
+        assert ", 1), 200)" in script
+
+    def test_the_emitted_script_is_syntactically_valid_python(self):
+        script = self._transpile(
+            {"w": {"expr": "a > 2 ? a * 2 : a / 2"}, "d": {"expr": "!a ? 1 : a % 3"}},
+            {"a": 5.0},
+        )
+        compile(script, "<graph>", "exec")
+
+    # ── validation ────────────────────────────────────────────────────────────
+
+    def test_unknown_identifier_is_a_hard_error(self):
+        with pytest.raises(GraphError, match="unknown parameter"):
+            self._transpile({"w": {"expr": "nope * 2"}}, {"width": 1.0})
+
+    def test_every_unknown_identifier_is_named_at_once(self):
+        with pytest.raises(GraphError, match=r"\['one', 'two'\]"):
+            self._transpile({"w": {"expr": "one + two"}}, {})
+
+    def test_a_syntax_error_is_a_hard_error_not_a_silent_literal(self):
+        with pytest.raises(GraphError, match="invalid expression"):
+            self._transpile({"w": {"expr": "(1 + 2"}})
+
+    @pytest.mark.parametrize(
+        "expr",
+        [
+            'constructor.constructor("return process")()',
+            "a.b",
+            'a["b"]',
+            "a = 1",
+            "1, 2",
+            "() => 1",
+            "`x`",
+            "__import__",
+            "1 # 2",
+        ],
+    )
+    def test_escapes_are_refused(self, expr):
+        with pytest.raises(GraphError):
+            self._transpile({"w": {"expr": expr}}, {"a": 1.0})
+
+    def test_an_over_long_expression_is_refused(self):
+        with pytest.raises(GraphError, match="too long"):
+            self._transpile({"w": {"expr": "1 +" * 200 + "1"}})
+
+    def test_an_over_token_expression_is_refused(self):
+        with pytest.raises(GraphError, match="too many tokens"):
+            self._transpile({"w": {"expr": "1+" * 80 + "1"}})
+
+    def test_a_structural_param_cannot_be_an_expression(self):
+        with pytest.raises(GraphError, match="must stay a literal"):
+            transpile(
+                {
+                    "version": "1.1.0",
+                    "nodes": [
+                        {"id": "b", "type": "box"},
+                        {
+                            "id": "c",
+                            "type": "chamfer",
+                            "inputs": {"shape": "b"},
+                            "params": {"edges": {"expr": "1"}},
+                        },
+                    ],
+                    "outputs": {"p": "c"},
+                },
+                {},
+                "t.graph.json",
+                {},
+            )
+
+    def test_a_structural_param_cannot_reference_a_parameter(self):
+        with pytest.raises(GraphError, match="must stay a literal"):
+            transpile(
+                {
+                    "version": "1.1.0",
+                    "nodes": [
+                        {"id": "b", "type": "box"},
+                        {
+                            "id": "r",
+                            "type": "rotate",
+                            "inputs": {"shape": "b"},
+                            "params": {"axis": {"param": "a"}},
+                        },
+                    ],
+                    "outputs": {"p": "r"},
+                },
+                {},
+                "t.graph.json",
+                {"a": 1.0},
+            )
+
+    @pytest.mark.parametrize(
+        "value",
+        [{}, {"param": "a", "expr": "a"}, {"nope": 1}, {"expr": "a", "other": 2}],
+    )
+    def test_a_param_object_needs_exactly_one_known_key(self, value):
+        with pytest.raises(GraphError):
+            self._transpile({"w": value}, {"a": 1.0})
+
+    def test_expr_must_be_a_string(self):
+        with pytest.raises(GraphError, match="'expr' must be a string"):
+            self._transpile({"w": {"expr": 42}})
+
+    def test_a_reference_to_an_undeclared_parameter_is_refused(self):
+        with pytest.raises(GraphError, match="unknown parameter 'nope'"):
+            self._transpile({"w": {"param": "nope"}}, {"width": 1.0})
+
+    def test_a_reference_to_a_reserved_name_is_refused(self):
+        with pytest.raises(GraphError, match="reserved name"):
+            self._transpile({"w": {"param": "result"}}, {"result": 1.0})
+
+    def test_an_expression_naming_a_reserved_identifier_is_refused(self):
+        with pytest.raises(GraphError, match="unknown parameter"):
+            self._transpile({"w": {"expr": "result * 2"}}, {"result": 1.0})
+
+    def test_a_graph_expression_and_a_manifest_binding_cannot_both_drive_a_param(self):
+        with pytest.raises(GraphError, match="use one or the other"):
+            transpile(
+                self._graph({"w": {"expr": "width * 2"}}),
+                {("b", "w"): "width"},
+                "t.graph.json",
+                {"width": 3.0},
+            )
+
+    def test_a_folded_expression_is_range_checked_like_a_literal(self):
+        # 0 is out of the count range; the fold must not sneak past _literal.
+        with pytest.raises(GraphError, match="count must be between"):
+            self._transpile(
+                {"count": {"expr": "1 - 1"}, "angle": 30.0}, {}, node_type="pattern_polar"
+            )
+
+    def test_a_folded_fractional_count_is_refused(self):
+        with pytest.raises(GraphError, match="must be whole"):
+            self._transpile(
+                {"count": {"expr": "3 / 2"}, "angle": 30.0}, {}, node_type="pattern_polar"
+            )
+
+    def test_a_folded_boolean_is_not_a_number(self):
+        with pytest.raises(GraphError, match="boolean, not a number"):
+            self._transpile({"w": {"expr": "1 > 0"}})
+
+    def test_a_parameter_without_a_numeric_default_is_unknown(self):
+        # parameter_defaults drops non-numeric defaults, so naming one is the
+        # same error as naming something that does not exist.
+        params = parameter_defaults([{"id": "style", "default": "wide"}])
+        assert params == {}
+        with pytest.raises(GraphError, match="unknown parameter"):
+            self._transpile({"w": {"expr": "style * 2"}}, params)
+
+
+class TestParameterDefaults:
+    def test_collects_numeric_and_boolean_defaults(self):
+        assert parameter_defaults(
+            [
+                {"id": "a", "default": 1},
+                {"id": "b", "default": 2.5},
+                {"id": "flag", "default": True},
+            ]
+        ) == {"a": 1, "b": 2.5, "flag": True}
+
+    @pytest.mark.parametrize(
+        "entry",
+        [
+            {"id": "s", "default": "wide"},
+            {"id": "n", "default": None},
+            {"id": "l", "default": [1]},
+            {"id": "", "default": 1},
+            {"id": "9bad", "default": 1},
+            {"id": "class", "default": 1},
+            {"id": "_hidden", "default": 1},
+            {"id": "result", "default": 1},
+            {"id": "no_default"},
+        ],
+    )
+    def test_drops_what_an_expression_cannot_use(self, entry):
+        assert parameter_defaults([entry]) == {}
+
+    def test_tolerates_junk_entries(self):
+        assert parameter_defaults([None, "x", 5, {"id": "ok", "default": 1}]) == {"ok": 1}
+
+    def test_none_is_empty(self):
+        assert parameter_defaults(None) == {}

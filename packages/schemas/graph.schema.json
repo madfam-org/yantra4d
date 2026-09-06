@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://yantra4d.com/schemas/graph.schema.json",
   "title": "Yantra4D Graph Document",
-  "description": "Node-graph geometry document (.graph.json) compiled by the graph engine into a sandboxed CadQuery script. Version 1.x. The enforcing validator is apps/api/services/engine/graph_engine.py — it additionally checks socket types, cycles, and value ranges; this schema is the public contract for authoring tools and the studio editor.",
+  "description": "Node-graph geometry document (.graph.json) compiled by the graph engine into a sandboxed CadQuery script. Version 1.x. The enforcing validator is apps/api/services/engine/graph_engine.py — it additionally checks socket types, cycles, and value ranges; this schema is the public contract for authoring tools and the studio editor. A node param is a literal, a {\"param\": id} reference to a manifest parameter, or an {\"expr\": \"...\"} expression over manifest parameters (the safeFormula dialect: arithmetic, comparison, boolean, ternary; no strings, no function calls; 256 characters and 128 tokens). Only numeric params (float, count) accept those forms; selector, axis and plane stay literal.",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "nodes", "outputs"],
@@ -10,7 +10,7 @@
     "version": {
       "type": "string",
       "pattern": "^1\\.\\d+(\\.\\d+)?$",
-      "description": "Graph format version. Major 1 is the only supported line; the renderer rejects anything else."
+      "description": "Graph format version. Major 1 is the only supported line; the renderer rejects anything else. The minor version records which features the document uses: 1.0 is literals and manifest bindings only; 1.1 adds {\"param\": id} and {\"expr\": \"...\"} param values. A 1.0 document stays valid — the addition is backwards compatible — but a document that uses the 1.1 forms should say 1.1 so an older reader fails loudly instead of misreading a param object."
     },
     "units": {
       "type": "string",
@@ -41,8 +41,43 @@
       "type": "string",
       "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
     },
-    "float": { "type": "number" },
-    "count": { "type": "integer", "minimum": 1, "maximum": 200 },
+    "paramId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "description": "A manifest parameter id (parameters[].id)."
+    },
+    "paramRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["param"],
+      "description": "Drive this socket from a manifest parameter, stated from the graph's side. Equivalent to a manifest parameters[].binding pointing here; use one or the other, never both.",
+      "properties": { "param": { "$ref": "#/$defs/paramId" } }
+    },
+    "paramExpr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expr"],
+      "description": "Compute this socket from manifest parameters. The dialect is the one manifest constraints already use (apps/studio/src/lib/safeFormula.ts): arithmetic (+ - * / %), comparison (< <= > >= == != === !==), boolean (&& || !), a ternary (c ? a : b) and parentheses, over numeric literals and manifest parameter identifiers. There are no string literals and no function calls. An unknown identifier or a syntax error is a validation error, never a silent literal.",
+      "properties": {
+        "expr": { "type": "string", "minLength": 1, "maxLength": 256 }
+      }
+    },
+    "float": {
+      "description": "A number, or a manifest parameter reference or expression that produces one.",
+      "anyOf": [
+        { "type": "number" },
+        { "$ref": "#/$defs/paramRef" },
+        { "$ref": "#/$defs/paramExpr" }
+      ]
+    },
+    "count": {
+      "description": "A whole number in 1..200, or a manifest parameter reference or expression that produces one. A computed count is rounded and clamped to that range in the generated script.",
+      "anyOf": [
+        { "type": "integer", "minimum": 1, "maximum": 200 },
+        { "$ref": "#/$defs/paramRef" },
+        { "$ref": "#/$defs/paramExpr" }
+      ]
+    },
     "plane": { "type": "string", "enum": ["XY", "XZ", "YZ"] },
     "selector": { "type": "string", "maxLength": 120 },
     "shapeInput": {

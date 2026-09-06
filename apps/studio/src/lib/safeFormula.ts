@@ -291,3 +291,38 @@ class SafeFormulaParser {
 export function evaluateSafeFormula(source: string, params: Record<string, unknown>): number | boolean {
   return new SafeFormulaParser(source, params).parse()
 }
+
+/** Every identifier a formula reads, in first-appearance order. Throws on a syntax error. */
+export function safeFormulaIdentifiers(source: string): string[] {
+  const seen: string[] = []
+  for (const token of tokenize(source)) {
+    if (token.type === 'identifier' && !seen.includes(token.value)) seen.push(token.value)
+  }
+  return seen
+}
+
+/**
+ * Check a formula's *shape* without needing values for its identifiers.
+ *
+ * Graph socket expressions are validated in the editor before any parameter
+ * values exist, so `evaluateSafeFormula` is the wrong tool there: it would
+ * report "Missing numeric parameter" for a perfectly well-formed expression.
+ * This runs the same parser with every identifier standing in as 1, so only
+ * genuine syntax problems — an unbalanced parenthesis, a dangling operator, a
+ * function call, an over-long formula — come back. Returns null when the
+ * formula parses, or the parser's own message when it does not.
+ *
+ * A missing *parameter* is a separate concern, reported by the caller against
+ * the manifest's declared parameters.
+ */
+export function checkSafeFormulaSyntax(source: string): string | null {
+  try {
+    const identifiers = safeFormulaIdentifiers(source)
+    const stand_ins: Record<string, number> = {}
+    for (const name of identifiers) stand_ins[name] = 1
+    evaluateSafeFormula(source, stand_ins)
+    return null
+  } catch (err) {
+    return (err as Error).message
+  }
+}

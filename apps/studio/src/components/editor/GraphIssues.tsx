@@ -5,6 +5,22 @@ import type { GraphDoc } from '../../lib/graph/graphDocument'
 interface GraphIssuesProps {
   /** Current editor buffer for a .graph.json file. */
   content: string
+  /**
+   * The cartridge manifest, for its `parameters[].id` list. Without it a
+   * `{"param": id}` or `{"expr": "..."}` value can only be syntax-checked;
+   * with it, an identifier naming no declared parameter is reported here
+   * rather than on the save round-trip.
+   */
+  manifest?: Record<string, unknown>
+}
+
+/** `parameters[].id` from a manifest of unknown shape. */
+function declaredParameterIds(manifest: Record<string, unknown> | undefined): string[] | undefined {
+  const parameters = manifest?.parameters
+  if (!Array.isArray(parameters)) return undefined
+  return parameters
+    .map((entry) => (entry as { id?: unknown } | null)?.id)
+    .filter((id): id is string => typeof id === 'string')
 }
 
 /**
@@ -16,7 +32,8 @@ interface GraphIssuesProps {
  * immediately — and when the document is valid, it shows the evaluation order
  * the transpiler will emit, which is the thing a node graph otherwise hides.
  */
-export default function GraphIssues({ content }: GraphIssuesProps) {
+export default function GraphIssues({ content, manifest }: GraphIssuesProps) {
+  const declared = useMemo(() => declaredParameterIds(manifest), [manifest])
   const result = useMemo(() => {
     const trimmed = content.trim()
     if (!trimmed) return { kind: 'empty' as const }
@@ -28,7 +45,7 @@ export default function GraphIssues({ content }: GraphIssuesProps) {
       return { kind: 'unparseable' as const, message: (err as Error).message }
     }
 
-    const issues = validateGraph(parsed)
+    const issues = validateGraph(parsed, declared)
     if (issues.length > 0) return { kind: 'invalid' as const, issues }
 
     const doc = parsed as GraphDoc
@@ -38,7 +55,7 @@ export default function GraphIssues({ content }: GraphIssuesProps) {
       nodes: doc.nodes,
       outputs: doc.outputs,
     }
-  }, [content])
+  }, [content, declared])
 
   if (result.kind === 'empty') return null
 

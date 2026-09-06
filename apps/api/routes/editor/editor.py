@@ -39,25 +39,54 @@ def _validate_filepath(project_dir: Path, filepath: str) -> Path | None:
     return resolved
 
 
-def _graph_rejection(resolved: Path, content: str) -> str | None:
+def _manifest_parameters(slug: str) -> list:
+    """The cartridge's declared parameters, or [] if the manifest is unreadable.
+
+    A graph's `{"param": id}` and `{"expr": "..."}` values name manifest
+    parameters, so validating a save without them would reject every
+    well-formed expression. A manifest that cannot be read degrades to [] —
+    the render path validates against the real manifest regardless, so the
+    editor is never the last line of defence.
+    """
+    try:
+        from manifest import get_manifest
+
+        return get_manifest(slug).parameters or []
+    except Exception:  # a broken manifest must not block the editor
+        logger.warning("Could not read parameters for %s while validating a graph", slug)
+        return []
+
+
+def _graph_rejection(resolved: Path, content: str, slug: str) -> str | None:
     """Return why this graph document must not be saved, or None if it is fine.
 
     The transpiler is the authority: validating here means the editor reports a
-    dangling input or a cycle immediately, instead of the author discovering it
-    when a render fails.
+    dangling input, a cycle or a bad expression immediately, instead of the
+    author discovering it when a render fails.
     """
     if not resolved.name.endswith(GRAPH_SUFFIX):
         return None
     import json
 
-    from services.engine.graph_engine import GraphError, transpile
+    from services.engine.graph_engine import (
+        GraphError,
+        extract_bindings,
+        parameter_defaults,
+        transpile,
+    )
 
     try:
         document = json.loads(content)
     except json.JSONDecodeError as exc:
         return f"That is not valid JSON: {exc}"
+    parameters = _manifest_parameters(slug)
     try:
-        transpile(document, {}, resolved.name)
+        transpile(
+            document,
+            extract_bindings(parameters),
+            resolved.name,
+            parameter_defaults(parameters),
+        )
     except GraphError as exc:
         return str(exc)
     return None
@@ -130,7 +159,7 @@ def write_file(slug, filepath, project_dir):
     if len(content.encode("utf-8")) > MAX_FILE_SIZE:
         return error_response(f"File exceeds maximum size of {MAX_FILE_SIZE // 1024}KB", 400)
 
-    rejection = _graph_rejection(resolved, content)
+    rejection = _graph_rejection(resolved, content, slug)
     if rejection:
         return error_response(rejection, 400)
 
@@ -166,7 +195,7 @@ def create_file(slug, project_dir):
     if len(content.encode("utf-8")) > MAX_FILE_SIZE:
         return error_response(f"File exceeds maximum size of {MAX_FILE_SIZE // 1024}KB", 400)
 
-    rejection = _graph_rejection(resolved, content)
+    rejection = _graph_rejection(resolved, content, slug)
     if rejection:
         return error_response(rejection, 400)
 

@@ -369,9 +369,9 @@ the roadmap commitment stops at the 500 already in `docs/commons-catalog.json`.
 _Added 2026-09-06 (CDMX). Sourced from the read-only graph-engine audit
 (`audit-graph-engine-2026-09-06.md`) and the method write-up
 (`node-based-geometry-method-2026-09-06.md`), both under
-`claudedocs/commons-p2-2026-09-04/`. Nothing in this section is checked: no lane
-has started. The numbers below are the audit's, and the "where we are" row is the
-state of `origin/main` at `3c700d53`._
+`claudedocs/commons-p2-2026-09-04/`. The numbers below are the audit's, and the
+"where we are" rows describe `origin/main` at `3c700d53` except where a landed
+lane has updated them._
 
 A hyperobject today is a **script** plus a manifest, and the script is opaque: the
 platform can run it, verify its output and interpolate its parameters, but it cannot see
@@ -397,7 +397,7 @@ verified scripts to use as oracles.**
 | Expressibility | **134 / 494 (27 %)** mechanically expressible today; six more node types (revolve, loft, sweep, text, point array, free-form profile) reach **369 (75 %)**; seven more reach 390 (79 %); **104** need low-level `Solid`/`Wire`/`Face` (86) or `Assembly` (21) work and are not node-expressible without an escape hatch. The single biggest unlock is the free-form profile node — **218** cartridges use polyline/arc paths |
 | Verification hole | the keystone is **blind to graphs**: `y4d-spec` renders `.py`/`.cq`/`.scad` only, so the two graph cartridges have no render bar, no watertight/body-count check and no nightly row |
 | Studio | the graph view is **read-only** (`ScadEditor.tsx` Text/Graph toggle + validation panel); the mutation model exists, but no palette, drag-to-connect, parameter editing or save path calls it |
-| Expressions | **none.** A node input is a literal or a bound manifest parameter, never `width / 2 - wall` — see `docs/guides/graph-cartridges.md` |
+| Expressions | **landed (G-EXPR).** A node input is a literal, `{"param": id}`, or `{"expr": "width / 2 - wall"}` over manifest parameters — see `docs/guides/graph-cartridges.md`. _Drift ledger — G-EXPR, 2026-09-06. This row read "**none.** A node input is a literal or a bound manifest parameter, never `width / 2 - wall`", which was true of `origin/main` at `3c700d53` when the section was written and false the moment this lane landed. No gate covers this table; it is hand-written prose about the engine's capabilities._ |
 
 ### Wave D — foundation
 
@@ -408,10 +408,17 @@ as a graph passes the same bar as its script. Effort ≈ 6 lanes._
   `.graph.json` and the renderer transpiles through the same `graph_engine` code (shared as
   a package or vendored with a pinned catalog), judged exactly like a script. **This comes
   first: until it exists, growing graph coverage grows _unverified_ surface.**
-- [ ] **G-EXPR:** `{"expr": "..."}` socket inputs evaluated at transpile time against the
-  bound parameters, on the same dialect the constraints use
-  (`apps/studio/src/lib/safeFormula.ts`). Without it a graph is a *frozen* script — every
-  derived dimension becomes a constant and parametricity is lost.
+- [x] **G-EXPR:** `{"expr": "..."}` and `{"param": id}` socket inputs, on the same dialect
+  the constraints use (`apps/studio/src/lib/safeFormula.ts`, ported to
+  `apps/api/services/engine/graph_expr.py` and cross-validated against that file's own
+  accept/reject vectors). Parsed at transpile time — an unknown identifier or a syntax
+  error is a hard validation error — and emitted as arithmetic over the same `_param`
+  probes a binding emits, so a derived dimension stays live at render time instead of
+  freezing into a constant. Graph format `1.1`. Proof: `flange-plate`'s bolt spacing is now
+  `{"expr": "360 / bolt_count"}` and its `bolt_spacing_deg` slider is gone; the STL is
+  byte-identical at the defaults and matches, at `bolt_count: 8`, what the old graph
+  produced only when the author *also* set the spacing to 45 by hand — leaving it at 60 had
+  silently rendered the 6-bolt part.
 - [ ] **G-LIST:** a `list`/`points` socket type plus range/series/repeat nodes —
   Grasshopper's data trees, deliberately scoped to one level.
 - [ ] **G-NODES-1:** free-form profile path (line/arc/spline segments) — the 218-cartridge

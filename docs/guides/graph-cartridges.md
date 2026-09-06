@@ -8,7 +8,7 @@ writing Python.
 
 Reference cartridges: [`projects/spacer-block/`](../../projects/spacer-block)
 (primitives and bindings) and [`projects/flange-plate/`](../../projects/flange-plate)
-(profiles, extrude, polar pattern, CDG interfaces).
+(profiles, extrude, polar pattern, a derived `expr` spacing, CDG interfaces).
 
 Contract: [`packages/schemas/graph.schema.json`](../../packages/schemas/graph.schema.json).
 Generated node catalog (params, defaults, socket types, limits):
@@ -51,6 +51,10 @@ only geometric check a graph cartridge gets.
 }
 ```
 
+- `version` is `1.x`. The minor version records which features the document
+  uses: `1.0` is literals and manifest bindings only, `1.1` adds the
+  `{"param": id}` and `{"expr": "..."}` param values below. A `1.0` document
+  stays valid — the addition is backwards compatible.
 - Every node has a unique `id` (a plain identifier) and a `type`.
 - `inputs` reference other nodes **by id**. Connectivity is stored once, here —
   there is no separate edge list to keep in sync.
@@ -86,7 +90,8 @@ CI fails if the committed catalog drifts from the engine.
 ## Wiring parameters
 
 A graph's own values are defaults. To expose a control, add a `binding` to a
-manifest parameter:
+manifest parameter (or point at the parameter from the graph with
+`{"param": id}` — see [Expressions and parameter references](#expressions-and-parameter-references)):
 
 ```json
 {
@@ -108,25 +113,73 @@ both variants:
 
 Each node param may be driven by at most one manifest parameter.
 
-## Two rules that follow from the security model
+## Expressions and parameter references
 
-The transpiler emits **only** validated literals and bound-parameter reads;
-it never interpolates text into code. Two consequences shape authoring:
+A numeric param does not have to be a number. It may also be:
 
-**There are no expressions** — today. A derived value must be its own parameter. A
-polar pattern therefore exposes both `count` and `angle` rather than computing
-`360 / count`, and the cartridge documents that an even circle wants
-`spacing = 360 / count`. This was a deliberate trade: no expression evaluator meant no
-evaluator to escape.
+```json
+{ "id": "ring", "type": "pattern_polar", "inputs": { "shape": "hole" },
+  "params": { "count": { "param": "bolt_count" },
+              "angle": { "expr": "360 / bolt_count" } } }
+```
 
-The cost of that trade is now understood to be parametricity itself — without
-`width / 2 - wall` in a socket, a graph is a *frozen* script and every derived dimension is
-a constant. Lane **G-EXPR** (Wave D) reverses it the safe way: `{"expr": "..."}` inputs
-evaluated **at transpile time**, on the same restricted dialect the manifest constraints
-already use (`apps/studio/src/lib/safeFormula.ts` — arithmetic, comparison, boolean and
-ternary over parameter identifiers and numeric literals; no string literals, no function
-calls, capped at 256 characters and 128 tokens). The transpiler would still emit only
-validated numbers, so the security property above is preserved.
+- **`{"param": id}`** drives the socket from a manifest parameter, written from
+  the graph's side. It is exactly equivalent to a manifest `binding` pointing
+  here — use one or the other for a given socket; setting both is an error, not
+  a precedence puzzle.
+- **`{"expr": "..."}`** computes the socket from manifest parameters.
+
+This is what makes a graph *parametric* rather than a frozen script: before
+graph v1.1 a derived dimension had to be its own slider, so `flange-plate`
+carried both `bolt_count` and a `bolt_spacing_deg` the author had to keep at
+`360 / count` by hand. Now the spacing is derived and cannot be misconfigured.
+
+### The dialect
+
+The same one manifest constraints already use
+([`apps/studio/src/lib/safeFormula.ts`](../../apps/studio/src/lib/safeFormula.ts)),
+so there is one expression language in the product rather than two:
+
+- arithmetic `+ - * / %`, comparison `< <= > >= == != === !==`,
+  boolean `&& || !`, a ternary `c ? a : b`, and parentheses;
+- numeric literals (`0.5` and `.25` both parse) and identifiers naming manifest
+  parameters;
+- **no string literals and no function calls** — the tokenizer has no token for
+  a quote, a dot, a bracket or a comma, so `constructor.constructor("x")()`
+  fails on the `.` rather than being caught by a denylist;
+- capped at **256 characters** and **128 tokens**.
+
+An identifier resolves to a manifest parameter (its default, a preset override,
+or the value the request carries). **An unknown identifier or a syntax error is
+a hard validation error** — reported when the graph is saved in the editor and
+again at transpile time, never degraded into a silent literal.
+
+### What gets emitted
+
+An expression is parsed and type-checked at transpile time, then emitted as
+arithmetic over the same `_param(...)` probes a binding emits:
+
+```python
+float(_expr_div(_expr_num(360), _expr_num(_param(lambda: bolt_count, 6))))
+```
+
+So the value is **recomputed at render time** from the live parameter — moving
+the `bolt_count` slider moves the spacing with it. An expression that names no
+parameter is folded to a number at transpile time instead, and a graph that uses
+no expressions transpiles to exactly the script it always did, byte for byte.
+
+A computed `count` is rounded and clamped to `1..200` in the generated script,
+the same guard a bound count already had.
+
+### Two rules that follow from the security model
+
+The transpiler emits **only** validated literals, bound-parameter reads, and
+arithmetic it assembled itself from a parsed expression; **no character of the
+document is ever interpolated into code**. Two consequences shape authoring:
+
+**Only numeric params can be computed.** `float` and `count` params accept
+`{"param": …}` and `{"expr": …}`; the generated node catalog marks them
+`"computable": true`.
 
 **Structural params are not bindable.** Selectors (`edges`, `face`), `axis` and
 `plane` stay literal, so a render-time value can never change the *shape* of

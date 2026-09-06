@@ -17,6 +17,7 @@
  * a bad edit immediately instead of round-tripping to a render that will fail.
  */
 import catalog from '../../config/graph-node-catalog.json'
+import { checkSafeFormulaSyntax, safeFormulaIdentifiers } from '../safeFormula'
 
 export type SocketType = 'solid' | 'profile'
 export type ParamKind = 'float' | 'count' | 'selector' | 'axis' | 'plane'
@@ -24,13 +25,33 @@ export type ParamKind = 'float' | 'count' | 'selector' | 'axis' | 'plane'
 export interface NodeTypeSpec {
   output: SocketType
   inputs: Record<string, SocketType>
-  params: Record<string, { kind: ParamKind; default: number | string; bindable: boolean }>
+  params: Record<string, { kind: ParamKind; default: number | string; bindable: boolean; computable: boolean }>
+}
+
+/** Drive a socket from a manifest parameter, stated from the graph's side. */
+export interface ParamRef {
+  param: string
+}
+
+/** Compute a socket from manifest parameters, in the safeFormula dialect. */
+export interface ParamExpr {
+  expr: string
+}
+
+export type ParamValue = number | string | ParamRef | ParamExpr
+
+export function isParamRef(value: unknown): value is ParamRef {
+  return typeof value === 'object' && value !== null && !Array.isArray(value) && 'param' in value
+}
+
+export function isParamExpr(value: unknown): value is ParamExpr {
+  return typeof value === 'object' && value !== null && !Array.isArray(value) && 'expr' in value
 }
 
 export interface GraphNode {
   id: string
   type: string
-  params?: Record<string, number | string>
+  params?: Record<string, ParamValue>
   inputs?: Record<string, string>
   meta?: Record<string, unknown>
 }
@@ -78,14 +99,86 @@ export function defaultParams(type: string): Record<string, number | string> {
   return params
 }
 
+const MAX_EXPR_LENGTH = (catalog.limits as { max_expr_length?: number }).max_expr_length ?? 256
+const PARAM_ID_RE = /^[A-Za-z][A-Za-z0-9_]*$/
+
+/**
+ * Check one param value's form, mirroring the transpiler's own rules.
+ *
+ * `declaredParameters` is the set of manifest parameter ids in scope. When it
+ * is undefined the editor is validating a graph without its manifest, so an
+ * identifier cannot be checked against anything and only *syntax* is reported
+ * — the server still refuses an unknown identifier at transpile time, so this
+ * is a weaker check in the editor, never a weaker rule.
+ */
+function validateParamValue(
+  value: unknown,
+  spec: NodeTypeSpec['params'][string],
+  nodeType: string,
+  name: string,
+  declaredParameters: ReadonlySet<string> | undefined,
+  push: (message: string) => void,
+): void {
+  const isObject = typeof value === 'object' && value !== null && !Array.isArray(value)
+  if (!isObject) return
+
+  const keys = Object.keys(value as object)
+  const known = keys.filter((k) => k === 'param' || k === 'expr')
+  if (known.length !== 1 || keys.length !== 1) {
+    push(`Parameter "${name}" must be a value, {"param": id} or {"expr": "..."}.`)
+    return
+  }
+  if (!spec.computable) {
+    push(`"${nodeType}" parameter "${name}" is structural — it must be a plain ${spec.kind} value.`)
+    return
+  }
+
+  if (isParamRef(value)) {
+    const id = (value as ParamRef).param
+    if (typeof id !== 'string' || !PARAM_ID_RE.test(id)) {
+      push(`Parameter "${name}" references ${JSON.stringify(id ?? null)}, which is not a parameter id.`)
+    } else if (declaredParameters && !declaredParameters.has(id)) {
+      push(`Parameter "${name}" references undeclared manifest parameter "${id}".`)
+    }
+    return
+  }
+
+  const source = (value as ParamExpr).expr
+  if (typeof source !== 'string' || source.trim() === '') {
+    push(`Parameter "${name}" has an empty expression.`)
+    return
+  }
+  if (source.length > MAX_EXPR_LENGTH) {
+    push(`Expression for "${name}" is longer than ${MAX_EXPR_LENGTH} characters.`)
+    return
+  }
+  const syntaxError = checkSafeFormulaSyntax(source)
+  if (syntaxError) {
+    push(`Expression for "${name}" is not valid: ${syntaxError}.`)
+    return
+  }
+  if (declaredParameters) {
+    const unknown = safeFormulaIdentifiers(source).filter((id) => !declaredParameters.has(id))
+    if (unknown.length > 0) {
+      push(`Expression for "${name}" uses undeclared manifest parameter(s): ${unknown.join(', ')}.`)
+    }
+  }
+}
+
 /**
  * Validate a document against the rules the server transpiler enforces.
  * Returns every problem found rather than throwing on the first, so an editor
  * can show them all at once.
+ *
+ * Pass `declaredParameters` — the manifest's `parameters[].id` values — to have
+ * `{"param": id}` references and expression identifiers checked against them.
+ * Without it those names are only syntax-checked; the server checks them for
+ * real at transpile time either way.
  */
-export function validateGraph(doc: unknown): GraphIssue[] {
+export function validateGraph(doc: unknown, declaredParameters?: Iterable<string>): GraphIssue[] {
   const issues: GraphIssue[] = []
   const push = (message: string, nodeId?: string) => issues.push({ message, nodeId })
+  const declared = declaredParameters ? new Set(declaredParameters) : undefined
 
   if (typeof doc !== 'object' || doc === null || Array.isArray(doc)) {
     return [{ message: 'Document must be a JSON object.' }]
@@ -120,8 +213,14 @@ export function validateGraph(doc: unknown): GraphIssue[] {
       push(`Unknown node type ${JSON.stringify(node.type)}.`, node.id)
       continue
     }
-    for (const name of Object.keys(node.params ?? {})) {
-      if (!(name in spec.params)) push(`"${node.type}" has no parameter "${name}".`, node.id)
+    for (const [name, value] of Object.entries(node.params ?? {})) {
+      if (!(name in spec.params)) {
+        push(`"${node.type}" has no parameter "${name}".`, node.id)
+        continue
+      }
+      validateParamValue(value, spec.params[name], node.type, name, declared, (message) =>
+        push(message, node.id),
+      )
     }
     const sockets = Object.keys(spec.inputs)
     const given = Object.keys(node.inputs ?? {})
@@ -329,7 +428,7 @@ export function removeNode(doc: GraphDoc, nodeId: string): GraphDoc {
   return { ...doc, nodes, outputs }
 }
 
-export function setNodeParam(doc: GraphDoc, nodeId: string, name: string, value: number | string): GraphDoc {
+export function setNodeParam(doc: GraphDoc, nodeId: string, name: string, value: ParamValue): GraphDoc {
   return {
     ...doc,
     nodes: doc.nodes.map((n) =>
@@ -379,14 +478,14 @@ export function setOutput(doc: GraphDoc, partId: string, nodeId: string): GraphD
 // ── Serialization ─────────────────────────────────────────────────────────────
 
 /** Parse and validate. Throws with every problem listed, not just the first. */
-export function parseGraph(text: string): GraphDoc {
+export function parseGraph(text: string, declaredParameters?: Iterable<string>): GraphDoc {
   let parsed: unknown
   try {
     parsed = JSON.parse(text)
   } catch (err) {
     throw new Error(`That file is not valid JSON: ${(err as Error).message}`)
   }
-  const issues = validateGraph(parsed)
+  const issues = validateGraph(parsed, declaredParameters)
   if (issues.length > 0) {
     throw new Error(
       `This graph has ${issues.length} problem${issues.length === 1 ? '' : 's'}:\n` +

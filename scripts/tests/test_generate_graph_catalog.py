@@ -121,15 +121,35 @@ def test_bindability_follows_the_kind_not_the_parameter_name():
 
 def test_catalog_carries_defaults_alongside_kinds(synthetic):
     params = synthetic["nodes"]["widget"]["params"]
-    assert params["height"] == {"kind": "float", "default": 10.0, "bindable": True}
-    assert params["plane"] == {"kind": "plane", "default": "XY", "bindable": False}
+    assert params["height"] == {
+        "kind": "float", "default": 10.0, "bindable": True, "computable": True,
+    }
+    assert params["plane"] == {
+        "kind": "plane", "default": "XY", "bindable": False, "computable": False,
+    }
+
+
+def test_computability_tracks_bindability(synthetic):
+    """A param an expression may compute is exactly one a parameter may bind.
+
+    Both restrictions have the same cause — a structural value must stay
+    literal so a render-time value cannot reshape the emitted script — so the
+    two flags must never drift apart.
+    """
+    for spec in lane.build_catalog()["nodes"].values():
+        for name, p in spec["params"].items():
+            assert p["computable"] == p["bindable"], name
 
 
 def test_catalog_carries_the_engine_limits_and_planes(synthetic):
+    from services.engine import graph_expr
+
     assert synthetic["limits"] == {
         "max_nodes": graph_engine.MAX_NODES,
         "max_outputs": graph_engine.MAX_OUTPUTS,
         "max_pattern_count": graph_engine.MAX_PATTERN_COUNT,
+        "max_expr_length": graph_expr.MAX_FORMULA_LENGTH,
+        "max_expr_tokens": graph_expr.MAX_TOKENS,
     }
     assert synthetic["planes"] == sorted(graph_engine._PLANES)
     assert synthetic["graph_file_suffix"] == graph_engine.GRAPH_FILE_SUFFIX

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { evaluateSafeFormula } from './safeFormula'
+import { checkSafeFormulaSyntax, evaluateSafeFormula, safeFormulaIdentifiers } from './safeFormula'
 
 describe('evaluateSafeFormula', () => {
   it('evaluates arithmetic and comparison expressions', () => {
@@ -142,5 +142,58 @@ describe('evaluateSafeFormula', () => {
     ])('rejects %s', (_name, formula) => {
       expect(() => evaluateSafeFormula(formula, { a: 1 })).toThrow()
     })
+  })
+})
+
+describe('safeFormulaIdentifiers', () => {
+  it('lists identifiers in first-appearance order, without repeats', () => {
+    expect(safeFormulaIdentifiers('b + a * b - c')).toEqual(['b', 'a', 'c'])
+  })
+
+  it('is empty for pure arithmetic', () => {
+    expect(safeFormulaIdentifiers('1 + 2 * 3')).toEqual([])
+  })
+
+  it('still throws on a syntax error', () => {
+    expect(() => safeFormulaIdentifiers('1 # 2')).toThrow()
+  })
+})
+
+describe('checkSafeFormulaSyntax', () => {
+  // Graph socket expressions are validated before any parameter values exist,
+  // so a well-formed formula over unknown identifiers must come back clean.
+  it('accepts a formula whose identifiers have no values yet', () => {
+    expect(checkSafeFormulaSyntax('bolt_count * 2')).toBeNull()
+    expect(checkSafeFormulaSyntax('360 / bolt_count')).toBeNull()
+    expect(checkSafeFormulaSyntax('a > 2 ? a * 2 : a / 2')).toBeNull()
+  })
+
+  it.each([
+    ['unbalanced parenthesis', '(1 + 2'],
+    ['trailing token', '1 + 2 3'],
+    ['empty formula', ''],
+    ['dangling operator', '1 +'],
+    ['unsupported character', '1 # 2'],
+    ['a function call', 'constructor.constructor("return process")()'],
+    ['property access', 'a.b'],
+    ['bracket access', 'a["b"]'],
+    ['assignment', 'a = 1'],
+    ['a sequence', '1, 2'],
+    ['an arrow function', '() => 1'],
+    ['a template literal', '`x`'],
+  ])('reports %s', (_name, formula) => {
+    expect(checkSafeFormulaSyntax(formula)).toEqual(expect.any(String))
+  })
+
+  it('reports an over-long formula', () => {
+    expect(checkSafeFormulaSyntax('1 +'.repeat(200) + '1')).toMatch(/too long/)
+  })
+
+  it('reports an over-token formula', () => {
+    expect(checkSafeFormulaSyntax('1+'.repeat(80) + '1')).toMatch(/too many tokens/)
+  })
+
+  it('reports a literal division by zero', () => {
+    expect(checkSafeFormulaSyntax('1 / 0')).toMatch(/Division by zero/)
   })
 })

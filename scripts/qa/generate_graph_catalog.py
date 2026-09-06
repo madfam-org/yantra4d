@@ -32,7 +32,9 @@ sys.path.insert(0, str(API_DIR))
 
 
 def build_catalog() -> dict:
+    from services.engine.graph_expr import MAX_FORMULA_LENGTH, MAX_TOKENS
     from services.engine.graph_engine import (
+        _BINDABLE_KINDS,
         _PLANES,
         GRAPH_FILE_SUFFIX,
         MAX_NODES,
@@ -41,9 +43,12 @@ def build_catalog() -> dict:
         NODE_TYPES,
     )
 
-    # Kinds that a manifest parameter may bind to. Structural kinds stay literal
-    # so a render-time value can never reshape the emitted script.
-    bindable_kinds = {"float", "count"}
+    # Kinds that a manifest parameter may bind to, that a {"param": id} value
+    # may reference, and that an {"expr": "..."} value may compute. Structural
+    # kinds stay literal so a render-time value can never reshape the emitted
+    # script — so "bindable" and "computable" are the same set, and the catalog
+    # says so once rather than inviting the studio to guess.
+    bindable_kinds = set(_BINDABLE_KINDS)
 
     nodes = {}
     for type_name in sorted(NODE_TYPES):
@@ -55,6 +60,7 @@ def build_catalog() -> dict:
                 "kind": kind,
                 "default": default,
                 "bindable": kind in bindable_kinds,
+                "computable": kind in bindable_kinds,
             }
         nodes[type_name] = {
             "output": spec["output"],
@@ -70,6 +76,8 @@ def build_catalog() -> dict:
             "max_nodes": MAX_NODES,
             "max_outputs": MAX_OUTPUTS,
             "max_pattern_count": MAX_PATTERN_COUNT,
+            "max_expr_length": MAX_FORMULA_LENGTH,
+            "max_expr_tokens": MAX_TOKENS,
         },
         "planes": sorted(_PLANES),
         "nodes": nodes,

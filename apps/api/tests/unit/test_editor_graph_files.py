@@ -6,6 +6,7 @@ the transpiler would reject — a dangling input or a cycle is reported while th
 author is still in the editor rather than at render time.
 """
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -50,17 +51,22 @@ class TestAcceptedPaths:
 
 
 class TestGraphValidationOnSave:
-    def _reject(self, tmp_path, document, name="part.graph.json"):
-        return _graph_rejection(tmp_path / name, json.dumps(document))
+    def _reject(self, tmp_path, document, name="part.graph.json", parameters=None):
+        # The slug is only used to look up manifest parameters; patch that
+        # lookup so these stay unit tests of the validation, not of manifest IO.
+        with patch(
+            "routes.editor.editor._manifest_parameters", return_value=parameters or []
+        ):
+            return _graph_rejection(tmp_path / name, json.dumps(document), "some-slug")
 
     def test_valid_graph_is_accepted(self, tmp_path):
         assert self._reject(tmp_path, valid_graph()) is None
 
     def test_scad_files_are_not_graph_checked(self, tmp_path):
-        assert _graph_rejection(tmp_path / "main.scad", "cube([1,1,1]);") is None
+        assert _graph_rejection(tmp_path / "main.scad", "cube([1,1,1]);", "some-slug") is None
 
     def test_malformed_json_is_explained(self, tmp_path):
-        assert "not valid JSON" in _graph_rejection(tmp_path / "p.graph.json", "{nope")
+        assert "not valid JSON" in _graph_rejection(tmp_path / "p.graph.json", "{nope", "s")
 
     def test_dangling_input_is_reported(self, tmp_path):
         doc = valid_graph()
@@ -108,3 +114,53 @@ class TestGraphValidationOnSave:
         )
         doc["outputs"]["part"] = "f"
         assert "selector" in self._reject(tmp_path, doc)
+
+
+class TestExpressionValidationOnSave:
+    """`{"expr"}` and `{"param"}` values are checked against the manifest.
+
+    Without the manifest's parameters in hand the editor would reject every
+    well-formed expression, so the save path loads them — and a bad expression
+    is still reported here rather than at render time.
+    """
+
+    def _graph(self, params):
+        return {
+            "version": "1.1.0",
+            "nodes": [{"id": "b", "type": "box", "params": params}],
+            "outputs": {"p": "b"},
+        }
+
+    def _reject(self, tmp_path, document, parameters=None):
+        with patch(
+            "routes.editor.editor._manifest_parameters", return_value=parameters or []
+        ):
+            return _graph_rejection(tmp_path / "part.graph.json", json.dumps(document), "s")
+
+    def test_expression_over_a_declared_parameter_is_accepted(self, tmp_path):
+        assert self._reject(
+            tmp_path,
+            self._graph({"w": {"expr": "width / 2"}}),
+            [{"id": "width", "default": 60.0}],
+        ) is None
+
+    def test_parameter_reference_is_accepted(self, tmp_path):
+        assert self._reject(
+            tmp_path,
+            self._graph({"w": {"param": "width"}}),
+            [{"id": "width", "default": 60.0}],
+        ) is None
+
+    def test_unknown_identifier_is_reported(self, tmp_path):
+        rejection = self._reject(tmp_path, self._graph({"w": {"expr": "nope * 2"}}), [])
+        assert "unknown parameter" in rejection
+
+    def test_syntax_error_is_reported(self, tmp_path):
+        rejection = self._reject(tmp_path, self._graph({"w": {"expr": "(1 + 2"}}), [])
+        assert "invalid expression" in rejection
+
+    def test_a_function_call_is_refused(self, tmp_path):
+        rejection = self._reject(
+            tmp_path, self._graph({"w": {"expr": 'constructor.constructor("x")()'}}), []
+        )
+        assert "invalid expression" in rejection

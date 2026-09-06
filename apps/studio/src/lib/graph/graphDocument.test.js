@@ -395,3 +395,120 @@ describe('serialization', () => {
     expect(G.validateGraph(built)).toEqual([])
   })
 })
+
+describe('expression and parameter-reference socket inputs', () => {
+  /** The same forms the server transpiler accepts (lane G-EXPR). */
+  function withParam(value) {
+    const doc = makeDoc()
+    doc.nodes[0].params.w = value
+    return doc
+  }
+
+  it('accepts a well-formed expression on a numeric param', () => {
+    expect(G.validateGraph(withParam({ expr: 'plate_width / 2' }), ['plate_width'])).toEqual([])
+  })
+
+  it('accepts a parameter reference on a numeric param', () => {
+    expect(G.validateGraph(withParam({ param: 'plate_width' }), ['plate_width'])).toEqual([])
+  })
+
+  it('accepts a count expression', () => {
+    const doc = makeDoc()
+    doc.nodes.push({
+      id: 'ring',
+      type: 'pattern_polar',
+      inputs: { shape: 'soft' },
+      params: { count: { param: 'bolts' }, angle: { expr: '360 / bolts' } },
+    })
+    doc.outputs.part = 'ring'
+    expect(G.validateGraph(doc, ['bolts'])).toEqual([])
+  })
+
+  it('reports a syntax error as a validation error, never a silent literal', () => {
+    const issues = G.validateGraph(withParam({ expr: '(1 + 2' }), ['plate_width'])
+    expect(issues).toHaveLength(1)
+    expect(issues[0].message).toMatch(/is not valid/)
+    expect(issues[0].nodeId).toBe('base')
+  })
+
+  it.each([
+    ['a function call', 'constructor.constructor("return process")()'],
+    ['property access', 'a.b'],
+    ['bracket access', 'a["b"]'],
+    ['assignment', 'a = 1'],
+    ['a sequence', '1, 2'],
+    ['an arrow function', '() => 1'],
+    ['a dangling operator', '1 +'],
+    ['a trailing token', '1 + 2 3'],
+    ['an unsupported character', '1 # 2'],
+  ])('refuses %s', (_name, expr) => {
+    const issues = G.validateGraph(withParam({ expr }), ['a'])
+    expect(issues.length).toBeGreaterThan(0)
+    expect(issues[0].message).toMatch(/is not valid/)
+  })
+
+  it('refuses an expression longer than the cap', () => {
+    const issues = G.validateGraph(withParam({ expr: `1 +${' '.repeat(300)}1` }), [])
+    expect(issues[0].message).toMatch(/longer than 256/)
+  })
+
+  it('refuses an empty expression', () => {
+    expect(G.validateGraph(withParam({ expr: '   ' }), [])[0].message).toMatch(/empty expression/)
+  })
+
+  it('reports an identifier that no manifest parameter declares', () => {
+    const issues = G.validateGraph(withParam({ expr: 'unknown_thing * 2' }), ['plate_width'])
+    expect(issues).toHaveLength(1)
+    expect(issues[0].message).toMatch(/undeclared manifest parameter\(s\): unknown_thing/)
+  })
+
+  it('reports an undeclared parameter reference', () => {
+    const issues = G.validateGraph(withParam({ param: 'nope' }), ['plate_width'])
+    expect(issues[0].message).toMatch(/undeclared manifest parameter "nope"/)
+  })
+
+  it('only syntax-checks identifiers when no parameter set is supplied', () => {
+    // The editor may validate a graph without its manifest in hand; the server
+    // still refuses an unknown identifier at transpile time.
+    expect(G.validateGraph(withParam({ expr: 'anything * 2' }))).toEqual([])
+    expect(G.validateGraph(withParam({ expr: '(1 + 2' }))).toHaveLength(1)
+  })
+
+  it('refuses an expression on a structural param', () => {
+    const doc = makeDoc()
+    doc.nodes[3].params.edges = { expr: '1 + 1' }
+    const issues = G.validateGraph(doc, [])
+    expect(issues[0].message).toMatch(/structural/)
+  })
+
+  it('refuses a param object that is neither form, or is both', () => {
+    expect(G.validateGraph(withParam({ nope: 1 }), [])[0].message).toMatch(/must be a value/)
+    expect(G.validateGraph(withParam({ param: 'a', expr: 'a' }), [])[0].message).toMatch(/must be a value/)
+    expect(G.validateGraph(withParam({}), [])[0].message).toMatch(/must be a value/)
+  })
+
+  it('refuses a reference that is not a parameter id', () => {
+    expect(G.validateGraph(withParam({ param: '9lives' }), [])[0].message).toMatch(/not a parameter id/)
+    expect(G.validateGraph(withParam({ param: 42 }), [])[0].message).toMatch(/not a parameter id/)
+  })
+
+  it('recognises the two forms', () => {
+    expect(G.isParamExpr({ expr: 'a' })).toBe(true)
+    expect(G.isParamRef({ param: 'a' })).toBe(true)
+    expect(G.isParamExpr(5)).toBe(false)
+    expect(G.isParamRef(null)).toBe(false)
+    expect(G.isParamRef([])).toBe(false)
+  })
+
+  it('parseGraph forwards the declared parameters', () => {
+    const text = JSON.stringify(withParam({ expr: 'plate_width / 2' }))
+    expect(() => G.parseGraph(text, ['plate_width'])).not.toThrow()
+    expect(() => G.parseGraph(text, ['other'])).toThrow(/undeclared manifest parameter/)
+  })
+
+  it('the catalog says which params accept the computed forms', () => {
+    expect(G.NODE_TYPES.box.params.w.computable).toBe(true)
+    expect(G.NODE_TYPES.chamfer.params.edges.computable).toBe(false)
+    expect(G.NODE_TYPES.rotate.params.axis.computable).toBe(false)
+  })
+})

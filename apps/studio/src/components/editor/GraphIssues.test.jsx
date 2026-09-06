@@ -80,4 +80,39 @@ describe('GraphIssues', () => {
     render(<GraphIssues content={json(validDoc)} />)
     expect(screen.queryByText(/consumed by extrude/)).not.toBeInTheDocument()
   })
+
+  describe('expression inputs', () => {
+    const exprDoc = (expr) => {
+      const doc = structuredClone(validDoc)
+      doc.version = '1.1.0'
+      doc.nodes[0].params.w = { expr }
+      return doc
+    }
+    const manifest = { parameters: [{ id: 'plate_width' }, { id: 'other' }] }
+
+    it('accepts an expression over a declared parameter', () => {
+      render(<GraphIssues content={json(exprDoc('plate_width / 2'))} manifest={manifest} />)
+      expect(screen.queryByText(/will not save/)).not.toBeInTheDocument()
+    })
+
+    it('reports an identifier no manifest parameter declares', () => {
+      render(<GraphIssues content={json(exprDoc('mystery * 2'))} manifest={manifest} />)
+      expect(screen.getByText(/undeclared manifest parameter/)).toBeInTheDocument()
+    })
+
+    it('reports a syntax error while the author types', () => {
+      render(<GraphIssues content={json(exprDoc('(1 + 2'))} manifest={manifest} />)
+      expect(screen.getByText(/is not valid/)).toBeInTheDocument()
+    })
+
+    it('only syntax-checks identifiers when no manifest is supplied', () => {
+      render(<GraphIssues content={json(exprDoc('mystery * 2'))} />)
+      expect(screen.queryByText(/undeclared manifest parameter/)).not.toBeInTheDocument()
+    })
+
+    it('tolerates a manifest with no parameters array', () => {
+      render(<GraphIssues content={json(exprDoc('mystery * 2'))} manifest={{}} />)
+      expect(screen.queryByText(/will not save/)).not.toBeInTheDocument()
+    })
+  })
 })

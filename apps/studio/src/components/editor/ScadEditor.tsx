@@ -354,7 +354,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
         )}
       </div>
 
-      {activeTab && isGraphFile && <GraphIssues content={activeContent} />}
+      {activeTab && isGraphFile && <GraphIssues content={activeContent} manifest={manifest} />}
 
       {/* AI Code Editor panel */}
       {aiOpen && (

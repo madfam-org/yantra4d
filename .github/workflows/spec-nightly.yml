@@ -95,7 +95,11 @@ jobs:
       # …and a green sweep closes it, so the alert clears itself instead of
       # training everyone to ignore a permanently open issue.
       - name: Close the tracking issue when the sweep is green
-        if: success() && inputs.report_fixture == ''
+        # Keyed on the SWEEP's own outcome, not merely on the job being green:
+        # a job whose sweep step never ran (a fixture dispatch, or any future
+        # skip) must not clear an alert it did not re-verify. "Did not run" and
+        # "passed" must never look the same.
+        if: success() && steps.sweep.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}

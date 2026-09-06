@@ -1,0 +1,17 @@
+# Fixture log for the nightly tracking-issue reporter — NOT a real sweep.
+#
+# Fed to .github/scripts/nightly_report.py by the nightly workflow's
+# `report_fixture` dispatch input, so the issue open/update/close path can be
+# exercised on demand without rendering 500 cartridges. The three slugs below
+# are deliberately fake (`fixture-*`): no cartridge in this repo is named that,
+# so an issue raised from this file can never be mistaken for a real failure.
+#
+# The three lines cover the three shapes the parser has to get right:
+#   1. mode + part + engine, no preset
+#   2. mode + part + preset + engine
+#   3. a bare "FAIL <slug>: <reason>" with no render parenthetical
+cartridges: 500
+  FAIL fixture-alpha: render (print, body, cadquery): FAIL — mesh is not watertight (2 open edges)
+  FAIL fixture-beta: render (display, lid, preset 'tall', openscad): FAIL — geometry is identical to the fallback body
+  FAIL fixture-gamma: script assigned no top-level `result`
+y4d-spec check: cartridges=500 failures=3 rendered=1497 presets=612

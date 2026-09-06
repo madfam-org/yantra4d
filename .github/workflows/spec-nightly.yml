@@ -4,16 +4,34 @@
 # (mode, part) rendered, judged watertight, and checked distinct from the
 # cartridge's fallback body. Reports to the run summary; no artifacts are
 # uploaded (artifact storage is billed — policy: self-hosted infra only).
+#
+# A red sweep must reach a human. The 2026-08-26 availability audit found that
+# no alert from this estate ever had: the sweep failed into a run log nobody
+# opened, and the summary above is only visible to whoever thinks to look. The
+# `report` steps below turn a red sweep into ONE tracking issue in this
+# repository — kept current rather than re-opened every night — and the green
+# path closes it again. See .github/scripts/nightly_report.py.
 name: spec-nightly
 on:
   schedule:
     - cron: "0 7 * * *" # 01:00 CDMX
   workflow_dispatch:
+    inputs:
+      report_fixture:
+        description: >-
+          Exercise the tracking-issue reporter against a committed fixture log
+          instead of rendering (e.g. .github/fixtures/nightly-fail-sample.txt).
+          Leave blank for a real sweep.
+        required: false
+        default: ""
 
 jobs:
   full-render-sweep:
     runs-on: madfam-runners-blue
     timeout-minutes: 360
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,14 +39,35 @@ jobs:
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
+
+      # Dispatch-only escape hatch: feed the reporter a committed fixture log so
+      # the issue open/update/close path can be exercised without spending hours
+      # of kernel time — and without inventing a fake failure in a real
+      # cartridge. Every heavy step below is skipped on a fixture run.
+      - name: Reporter dry run (fixture, no rendering)
+        if: inputs.report_fixture != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}
+        run: |
+          fixture="${{ inputs.report_fixture }}"
+          test -f "$fixture" || { echo "::error::fixture $fixture not found"; exit 1; }
+          python3 .github/scripts/nightly_report.py --selftest "$fixture"
+          python3 .github/scripts/nightly_report.py \
+            --log "$fixture" --workflow "spec-nightly full render sweep (FIXTURE)"
+
       - uses: actions/setup-python@v5
+        if: inputs.report_fixture == ''
         with:
           python-version: "3.12"
       - name: Install hyperobjects-spec
+        if: inputs.report_fixture == ''
         # Same keystone SHA as ci.yml's spec-conformance job and both commons'
         # SPEC_PIN — never a floating tag; the repo is public, no token needed.
         run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@db65cf1e7a2732d7263efd6eb6ba533640eb536f"
       - name: Full render sweep
+        id: sweep
+        if: inputs.report_fixture == ''
         run: |
           # default shell is bash -e -o pipefail: don't abort before the summary
           status=0
@@ -37,3 +76,27 @@ jobs:
           tail -1 sweep-report.txt >> "$GITHUB_STEP_SUMMARY"
           grep "FAIL" sweep-report.txt | head -40 >> "$GITHUB_STEP_SUMMARY" || true
           exit $status
+
+      # A red sweep opens or updates the ONE tracking issue labelled
+      # `nightly-sweep`, with the failing renders as a table and a comment
+      # naming what broke and what got fixed since the previous red run.
+      # Reporting never fails the sweep: the script exits 0 after an
+      # `::error::` annotation if it cannot reach the API.
+      - name: Report the red sweep to its tracking issue
+        if: failure() && steps.sweep.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}
+        run: |
+          python3 .github/scripts/nightly_report.py \
+            --log sweep-report.txt \
+            --workflow "spec-nightly full render sweep"
+
+      # …and a green sweep closes it, so the alert clears itself instead of
+      # training everyone to ignore a permanently open issue.
+      - name: Close the tracking issue when the sweep is green
+        if: success() && inputs.report_fixture == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}
+        run: python3 .github/scripts/nightly_report.py --green

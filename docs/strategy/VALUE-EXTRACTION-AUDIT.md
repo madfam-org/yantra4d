@@ -151,20 +151,29 @@ matches the catalog. Under P2 that failure is no longer selective: an uninitiali
 `projects` submodule zeroes every row at once, and `validate_manifests.py`'s ratchet
 refuses the checkout outright.
 
-**Quadrilingual coverage.** de/fr/pt/zh carry 1,040 of 1,480 strings, 70.3% — down 5.6 pp
-from the audit's ~75.8%. Nothing was un-translated. The studio's key set grew from 327 to
-370, the four locales absorbed the new keys as `[UNTRANSLATED]` markers, and the per-locale
-marker count went from ~79 to 110. Key parity is intact (six files, 370 keys each), which
-is precisely why a parity gate cannot see this regression, and why the mechanism audit #6
-described is unchanged: `resolveTranslation` in
-`apps/studio/src/contexts/system/LanguageProvider.tsx:26` returns the stored string
-whenever it is truthy, and `"[UNTRANSLATED] …"` is truthy, so the marker reaches the user
-instead of the English fallback. **The CI half of #6 has since closed**: `#86` gave
-`scripts/qa/i18n_audit.py` its own blocking `i18n-audit` job, reached by `ci-success`, with
-key parity as a hard gate and the hardcoded-string count ratcheted against
-`scripts/qa/i18n_baseline.json`. The parity gate is exactly the gate that cannot see this
-regression, so every key added still widens the gap by construction until either the
-translations land or the fallback stops treating the marker as a translation.
+**Quadrilingual coverage — closed.** de/fr/pt/zh carry **1,480 of 1,480 strings, 100.0%**,
+and **no locale contains a single `[UNTRANSLATED]` marker**; all six files carry the same
+370-key set. Both halves of audit #6 are now done: `#86` gave `scripts/qa/i18n_audit.py` its
+own blocking `i18n-audit` job, reached by `ci-success`, with key parity as a hard gate and
+the hardcoded-string count ratcheted against `scripts/qa/i18n_baseline.json`; `#133` then
+landed the missing translations and removed the marker from the locale files.
+
+_Drift ledger — P5, 2026-09-06._ This paragraph read "1,040 of 1,480, 70.3%, 110 markers per
+locale" until today, and the priority row below it still called the gap open. Cause: `#133`
+translated the four locales but did not revisit the prose that described them, and the
+generated table above (which `--check` gates) had already moved to 100% — so the document
+disagreed with itself for two days. The generated rows are gated; **this prose is not**, which
+is why the ledger entry exists rather than a silent edit.
+
+The structural warning that motivated #6 still stands and is unchanged by the fix.
+`resolveTranslation` in `apps/studio/src/contexts/system/LanguageProvider.tsx:25` returns the
+stored string whenever it is truthy, and `"[UNTRANSLATED] …"` is truthy, so a marker would
+still reach the user instead of the English fallback. Key parity cannot see a marker, so a future
+wave of new keys absorbed as markers would have reopened this silently, at 100% parity, with
+the audit table still green until the next `--write`. That hole is now closed too:
+`check_untranslated_markers()` in `scripts/qa/i18n_audit.py` (2026-09-06) fails the
+`i18n-audit` job on any `[UNTRANSLATED]` substring in any locale, at any nesting depth, as a
+hard gate with no ratchet — the locales are at zero today, so zero is the only passing count.
 
 **Constraints.** The one metric that fell hard: 400 of 500 cartridges carry constraints
 (80.0%, −8.0 pp) at 1.52 per cartridge, down from 1.70. The cohort split shows this is
@@ -242,12 +251,12 @@ re-measurement re-ranks the whole table rather than shuffling rows one at a time
 | 1 | **CLOSED (regeneration) — Regenerate the landing gallery and migrate it to `/api/catalog/search`** [#8] | was 326 / 500 reachable with 2 entries the catalog excludes; now **500 / 500 reachable, 1 excluded entry** (the `cq-hyperobject-test` fixture) | #100 regenerated the list to 501 entries, dropped the client-private cartridge, gated `--check` in `manifest-validation` and made `build-landing` regenerate at deploy. The **migration** to `/api/catalog/search` is still open — the generated file is now correct by construction, but it is still a second surface over the same manifests |
 | 2 | **Restore constraint coverage in the authoring canon** [#11, new shape] | 64.2% on the 176 new cartridges vs 88.6% on the audit-era cohort | Live validation now works, so every constraint authored is immediately worth something — and the newest cartridges are the ones not authoring them |
 | 3 | **Cross-catalog preset browse** [#7] | 1,505 presets across 470 cartridges, no commons-wide index | The single largest untapped data asset, and 47% larger than when the audit ranked it |
-| 4 | **Close the quadrilingual gap** (the CI gate half is CLOSED) [#6] | 70.3%, −5.6 pp; 110 markers per locale; `i18n_audit.py` now runs in its own blocking `i18n-audit` job (#86) | The only metric that regresses automatically with every merge. The gate landed and it holds key parity, but parity is precisely what cannot see this regression — the translations themselves are what is left |
+| 4 | **Close the quadrilingual gap** — **CLOSED 2026-09-06** [#6] | 100.0% (1480 / 1480), up from 70.3%; **0** `[UNTRANSLATED]` markers in any of the six locales, each carrying the full 370-key set; `i18n_audit.py` runs in its own blocking `i18n-audit` job (#86) | Both halves are now done: #86 gave key parity a gate, #133 landed the translations and removed the marker. The structural warning still stands — key parity is exactly the gate that cannot see a marker regression, so a future wave of new keys can reopen this silently |
 | 5 | **Family resolution + the graph map UI** [#5, #9] | 210 / 500 resolve to a family; 276 interface-declaring cartridges resolve to none; `/api/catalog/graph` still has no consumer | The moat is declared but neither fully resolved nor visible |
 | 6 | **Retarget AI authoring to CadQuery** [#2] | 474 / 500 `engine: cadquery`; `ai_synthesizer.py:25,36` still writes `main.scad`, `ai_code_editor.py:30` still says "modifies OpenSCAD code" | Unchanged since the audit, and now wrong for 95% of the commons instead of 92% |
-| 7 | **`verification` blocks** [not audited in 2026-08] | 9 / 500, none in the post-audit cohort | A defined manifest field carrying almost no data; cheap to backfill during authoring, expensive to retrofit later |
+| 7 | **`verification` blocks** [not audited in 2026-08] | 498 / 500 carry the block (the generated table above; this row read 9 / 500 until 2026-09-06, before the fail-closed wave backfilled them) | Effectively closed — the two without a block are the graph cartridges, which the keystone cannot render at all yet (see the Node-Based Geometry Programme in ROADMAP.md) |
 | 8 | **Test coverage on `/simulate/*`** [#12] | no test under `apps/api/tests` references the simulate blueprint | Unchanged; a live pro-gated surface with no safety net |
-| 9 | **Animation panel** [#3b] | 1 / 500 cartridges declare animations | Still last: mounting is small, but the data to animate does not exist |
+| 9 | **Animation panel** [#3b] | 20 / 500 cartridges declare animations (the generated table above; this row read 1 / 500 until 2026-09-06 — it had never been refreshed after the animation waves) | Mounting is small and the data now exists for 20 cartridges. Note what an `animations` entry is: two parameter states plus a frame count, interpolated server-side — not keyframes |
 
 ### Reproducing this section
 

@@ -45,7 +45,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
       "parts": ["main"],                    // Part IDs rendered in this mode
       "part_quantities": {                   // Optional: per-part quantity formulas
         "bottom": "rows * cols",             // Formula referencing parameter IDs
-        "rods": "cols",                      // Evaluated client-side via expr-eval
+        "rods": "cols",                      // Evaluated client-side by safeFormula
         "stoppers": "2"                      // Constant string or number also accepted
       },
       "estimate": {

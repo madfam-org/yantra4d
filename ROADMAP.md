@@ -154,7 +154,7 @@ Decentralizing the Yantra4D Commons so every hyperobject project is a sovereign,
 > _Estate re-baseline (2026-09-02):_ "all 33 projects" describes this phase as it landed, not
 > the estate today, and federation turned out to be the flagship pattern rather than the
 > default — and then RFC 0038 P2 ended it entirely. The Commons publishes
-> **495 cartridges**
+> **500 cartridges**
 > (fact source: `docs/commons-catalog.json` → `counts.cartridges`; five slugs are reserved for
 > clean-room re-creation under ADR-021), and every one of them now
 > lives in ONE repo, `madfam-org/solid-hyperobjects`, which this platform consumes as a single
@@ -203,8 +203,8 @@ _Dependency: None — Three.js viewer already in place._
 
 The Yantra4D Studio animates parametric transitions between named states, producing in-browser assembly instruction animations.
 
-- [x] **Manifest keyframes:** `animations[]` schema block with from-state params, to-state params, duration, easing, label.
-- [x] **Three.js interpolation engine:** `apps/api/routes/projects/animations.py` (224 lines) — SSE streaming render with frame interpolation and easing functions (ease-in, ease-out, ease-in-out).
+- [x] **Manifest parameter states (not keyframes):** the `animations[]` schema block declares `from_state` and `to_state` parameter maps, a frame count (2–30), `duration_ms`, an easing curve and a label. An animation interpolates **parameter values** and re-renders the geometry per frame — numeric params linearly, non-numeric snapping at t ≥ 0.5 (`_interpolate_params` in `apps/api/routes/projects/animations.py`). There is no keyframe track and no transform interpolation; the word "keyframes" in this line was wrong from the start.
+- [x] **Server-side interpolation engine:** `apps/api/routes/projects/animations.py` (234 lines) — SSE-streaming render of N interpolated frames with four easing curves (`linear`, `ease-in`, `ease-out`, `ease-in-out`). It is Python on the API, not Three.js: the parameters are interpolated server-side and each frame is a real engine render converted to GLB. Three.js only plays the resulting frames back.
 - [x] **Assembly sequence panel:** `AnimationPanel.jsx` — play/pause/scrub animation with flipbook playback. GIF/WebM export deferred to Phase 3A.
 - [x] **Reference implementation:** Animation support across OpenSCAD, CadQuery, and Implicit engines.
 
@@ -314,22 +314,22 @@ cartridges. Expansion then continued past the sprint: the catalog reached **500*
 target the catalog passed two and a half times over, so it survives only as the record of
 what this sprint itself delivered.
 
-Catalog shape at 495 (fact source: `docs/commons-catalog.json` → `counts`, and the
+Catalog shape at 500 (fact source: `docs/commons-catalog.json` → `counts`, and the
 per-cartridge `engines` sets — a cartridge may declare more than one engine, so the engine
-rows sum past 495):
+rows sum past 500; re-taken 2026-09-06, the numbers below had been left at a 495 shape):
 
 | | |
 | :-- | --: |
-| Cartridges | 495 |
-| Declaring CadQuery | 487 |
-| Declaring OpenSCAD | 25 (19 of them alongside CadQuery) |
+| Cartridges | 500 |
+| Declaring CadQuery | 491 |
+| Declaring OpenSCAD | 27 (20 of them alongside CadQuery) |
 | Declaring Graph | 2 |
 | Declaring Implicit | 1 |
-| Flagged `dual_engine` | 19 |
-| With declared CDG interfaces | 485 |
-| Carrying an explicit `commons_license` | 495 |
+| Flagged `dual_engine` | 20 |
+| With declared CDG interfaces | 490 |
+| Carrying an explicit `commons_license` | 500 |
 
-The API serves 495 projects — the published cartridges, and only those. Since
+The API serves 500 projects — the published cartridges, and only those. Since
 RFC 0038 P2 the `cq-hyperobject-test` engine fixture is vendored under
 `apps/api/tests/fixtures/cartridges/` instead of sitting in `projects/`, and the
 client-private `tablaco` cartridges mount at `private-projects/` (served only to
@@ -356,8 +356,141 @@ authorized identities, and excluded from the catalog).
   negative-volume / severed-body defects that watertightness alone misses.
 
 **Next waves are RFC scale, not sprint scale.** 501–600 and anything past it is deliberately
-not committed here. At 495 cartridges the binding constraints are domain selection,
+not committed here. At 500 cartridges the binding constraints are domain selection,
 CDG-interface leverage, licensing provenance, and the per-wave verification budget (real-sandbox
 watertightness plus the body-count check on every mode) — each of which needs an RFC that names
 the wave's domains and its verification cost before authoring starts. Until such an RFC lands,
-the roadmap commitment stops at the 495 already in `docs/commons-catalog.json`.
+the roadmap commitment stops at the 500 already in `docs/commons-catalog.json`.
+
+---
+
+## The Node-Based Geometry Programme (Waves D–F, S)
+
+_Added 2026-09-06 (CDMX). Sourced from the read-only graph-engine audit
+(`audit-graph-engine-2026-09-06.md`) and the method write-up
+(`node-based-geometry-method-2026-09-06.md`), both under
+`claudedocs/commons-p2-2026-09-04/`. Nothing in this section is checked: no lane
+has started. The numbers below are the audit's, and the "where we are" row is the
+state of `origin/main` at `3c700d53`._
+
+A hyperobject today is a **script** plus a manifest, and the script is opaque: the
+platform can run it, verify its output and interpolate its parameters, but it cannot see
+inside it. The node-based method makes the geometry a **graph** — a DAG (`.graph.json`)
+of named operations with typed sockets — so the same document can be visualised
+(every intermediate is addressable), built by composition instead of code, and
+parametrised from the graph rather than from a hand-written parameter list.
+
+**"Better than Grasshopper" is not "more components."** Grasshopper ships ~800 core
+components; we need only the subset that expresses this catalogue. The bar is:
+**verified** (every graph clears the same fail-closed bar the 500 scripts clear),
+**parametric** (expressions, presets, constraints derived from node semantics),
+**portable** (a manifest-bound, licensed, i18n'd document, not a `.gh` file), and
+**dual-engine** where it matters. The one advantage Grasshopper does not have: **494
+verified scripts to use as oracles.**
+
+### Where we are (verified against `origin/main`, 2026-09-06)
+
+| | |
+| :-- | :-- |
+| Engine | `apps/api/services/engine/graph_engine.py` transpiles `.graph.json` → sandboxed CadQuery. **19 node types** (3 solids, 3 profiles + extrude, 3 booleans, 3 transforms, 2 patterns, 4 finishing), cycle/socket/dangling-ref validation, tier-gated `pro+`, CI-enforced generated node catalog |
+| Coverage | **2 of 500** cartridges are graphs (`flange-plate`, `spacer-block`), hand-authored as references |
+| Expressibility | **134 / 494 (27 %)** mechanically expressible today; six more node types (revolve, loft, sweep, text, point array, free-form profile) reach **369 (75 %)**; seven more reach 390 (79 %); **104** need low-level `Solid`/`Wire`/`Face` (86) or `Assembly` (21) work and are not node-expressible without an escape hatch. The single biggest unlock is the free-form profile node — **218** cartridges use polyline/arc paths |
+| Verification hole | the keystone is **blind to graphs**: `y4d-spec` renders `.py`/`.cq`/`.scad` only, so the two graph cartridges have no render bar, no watertight/body-count check and no nightly row |
+| Studio | the graph view is **read-only** (`ScadEditor.tsx` Text/Graph toggle + validation panel); the mutation model exists, but no palette, drag-to-connect, parameter editing or save path calls it |
+| Expressions | **none.** A node input is a literal or a bound manifest parameter, never `width / 2 - wall` — see `docs/guides/graph-cartridges.md` |
+
+### Wave D — foundation
+
+_Exit criterion: the 2 graph cartridges have nightly rows, and a Tier-A cartridge authored
+as a graph passes the same bar as its script. Effort ≈ 6 lanes._
+
+- [ ] **G-SPEC:** teach `y4d-spec` the graph engine — `mode_sources()` recognises
+  `.graph.json` and the renderer transpiles through the same `graph_engine` code (shared as
+  a package or vendored with a pinned catalog), judged exactly like a script. **This comes
+  first: until it exists, growing graph coverage grows _unverified_ surface.**
+- [ ] **G-EXPR:** `{"expr": "..."}` socket inputs evaluated at transpile time against the
+  bound parameters, on the same dialect the constraints use
+  (`apps/studio/src/lib/safeFormula.ts`). Without it a graph is a *frozen* script — every
+  derived dimension becomes a constant and parametricity is lost.
+- [ ] **G-LIST:** a `list`/`points` socket type plus range/series/repeat nodes —
+  Grasshopper's data trees, deliberately scoped to one level.
+- [ ] **G-NODES-1:** free-form profile path (line/arc/spline segments) — the 218-cartridge
+  unlock — plus the point-array socket.
+- [ ] **G-NODES-2:** loft, sweep, **bounded** revolve, and text with `fontPath`. Revolve
+  needs a memory-bounded design: an unbounded revolve OOM-killed the render worker during
+  bring-up, which is why it is absent today.
+- [ ] **G-DEADPARAM:** keystone rule — a declared parameter must be referenced by every
+  source that lists it. OpenSCAD silently accepts unknown `-D` parameters, so three manifest
+  parameters were never consumed by their sources; a graph cannot have that bug (an unbound
+  input is a validation error), but scripts need the rule.
+
+### Wave E — authoring at scale
+
+_Exit criterion: ≥ 50 % of the catalogue served from graphs, each with parity to the script
+it retires. Effort ≈ 6–8 lanes (the twins are the long tail)._
+
+- [ ] **G-SCAFFOLD:** script → graph skeleton generator (parameters bound, structure
+  inferred from the operation trace, derived dimensions left as `expr` for the author to
+  confirm) plus the per-cartridge readiness matrix in `docs/`. Depends on G-EXPR — a
+  scaffolder without expressions produces frozen graphs. Fully automatic transpilation of a
+  script's operation trace is **rejected**: it flattens every derived value into a constant
+  and produces a graph nobody would maintain.
+- [ ] **G-TWIN-A / G-TWIN-B:** golden-twin graphs for the 134 Tier-A cartridges, then
+  Tier-B. **The golden-twin rule:** a graph authored for a cartridge that already has a
+  script must agree with that script under `--parity` for every preset before the script is
+  retired. This turns the existing scripts into the test oracle for the graphs.
+- [ ] **G-SCRIPT-NODE:** an embedded-CadQuery escape hatch for the 104 low-level cartridges,
+  staying inside the render sandbox. Grasshopper has one too.
+
+### Wave F — the editor
+
+_Exit criterion: a designer builds a new Tier-A hyperobject in the Studio without writing a
+script, and it passes the bar. Effort ≈ 6 lanes. G-EDITOR can start after Wave D — it only
+needs the schema stable._
+
+- [ ] **G-EDITOR:** palette, drag-to-connect through the existing `connect()` (which already
+  refuses type mismatches and cycles), node-parameter editing, node positions in `meta`, and
+  a save path. React Flow is MIT and already a dependency.
+- [ ] **G-PREVIEW:** per-node preview by rendering the sub-graph up to the selected node —
+  the transpiler already emits in topological order, so cutting emission at node N is
+  cheap, and the render queue already exists. Server round-trips first; OCCT-wasm only if
+  the LGPL-2.1 source-availability ruling allows it in an AGPL-3.0 repo.
+- [ ] **G-CLUSTERS:** sub-graphs as reusable nodes — the commons-lib idiom for graphs, and
+  how BOSL2-style helpers become nodes.
+- [ ] **G-PROMOTE:** a node input promotes itself to a manifest parameter (id, range,
+  default, i18n label), so `parameters[]` is generated from the graph; `constraints[]`
+  derived where node semantics imply them.
+
+### Wave S — soft track (parallel)
+
+_Exit criterion: a garment block authored as a graph drafts identically to its script.
+Effort ≈ 4–6 lanes._
+
+- [ ] **FC-GRAPH:** a 2D drafting vocabulary for fashion-cabinet — measurements →
+  construction lines → curves → offsets/seam allowances → pieces, with `curve`/`piece`
+  sockets.
+- [ ] **FC-TWIN:** golden twins for the block cartridges, verified against the `fc` kernel's
+  drafts.
+- [ ] **FC-BRIDGE-NODES:** hardware bindings to solid cartridges as nodes, so the
+  yantra4d ↔ FC bridge becomes graph-level.
+
+### Sequencing and the decisions this programme assumes
+
+**D before E** (a scaffolder without expressions produces frozen graphs); **E before F** for
+coverage, though F's G-EDITOR can start after D. Four decisions gate the programme and are
+taken as recommended unless an RFC overturns them:
+
+1. **Graph is an authoring format verified through its transpiled output**, with the
+   golden-twin rule — not a peer engine under the dual-engine rule.
+2. **Coverage target** = every new cartridge in an expressible class, plus a Tier-A/B
+   back-fill, with the script node for the remaining 104. "All 500" is not reachable without
+   that escape hatch.
+3. **Expressions first**, because they unlock the scaffolder and honest parametricity.
+4. **OCCT-wasm** needs the LGPL ruling before per-node preview leaves the server.
+
+Beyond the catalogue, the same document model carries analysis nodes (mass, centroid,
+wall-thickness, overhang — already computed by the keystone's notes), solver/optimisation
+nodes (natural on a dataflow, impossible on an opaque script), AI-assisted authoring (a graph
+is exactly what an assistant can propose, explain node by node, and have verified by the same
+bar), and the CDG standard itself, where a mating interface becomes a node with typed sockets
+and "does A mate with B" becomes a graph-level check.

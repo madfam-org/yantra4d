@@ -14,6 +14,27 @@ Contract: [`packages/schemas/graph.schema.json`](../../packages/schemas/graph.sc
 Generated node catalog (params, defaults, socket types, limits):
 [`packages/schemas/graph-node-catalog.json`](../../packages/schemas/graph-node-catalog.json).
 
+## What is NOT verified yet
+
+**The keystone cannot render a graph.** `y4d-spec`'s `mode_sources()` recognises `.py`,
+`.cq` and `.scad` only, so a `.graph.json` mode gets **no render bar**: no watertight
+check, no body-count check, no cross-kernel parity, no B-Rep validity gate, and no row in
+the nightly sweep. Every other cartridge in the commons clears that bar; the two graph
+cartridges do not, and the nightly completeness check now *names* them rather than passing
+over them silently.
+
+Concretely, this is why 498 of 500 cartridges carry a `verification` block and the two
+missing ones are exactly `flange-plate` and `spacer-block`. The structural gates below
+(`compliance_audit.py`, `validate_manifests.py`, the generated node catalog, the
+transpiler's own cycle/socket/dangling-ref validation) do run on graphs, so a graph cannot
+be malformed — but nothing yet proves the *geometry it emits* is sound.
+
+Closing this is lane **G-SPEC**, the first lane of Wave D in
+[`ROADMAP.md`](../../ROADMAP.md#the-node-based-geometry-programme-waves-df-s): until it
+lands, authoring more graph cartridges grows unverified surface. Treat the render probe in
+"Checking your work" below as mandatory rather than advisory for now — it is currently the
+only geometric check a graph cartridge gets.
+
 ## The shape of a graph
 
 ```json
@@ -92,11 +113,20 @@ Each node param may be driven by at most one manifest parameter.
 The transpiler emits **only** validated literals and bound-parameter reads;
 it never interpolates text into code. Two consequences shape authoring:
 
-**There are no expressions.** A derived value must be its own parameter. A
+**There are no expressions** — today. A derived value must be its own parameter. A
 polar pattern therefore exposes both `count` and `angle` rather than computing
 `360 / count`, and the cartridge documents that an even circle wants
-`spacing = 360 / count`. This is a deliberate trade: no expression evaluator
-means no evaluator to escape.
+`spacing = 360 / count`. This was a deliberate trade: no expression evaluator meant no
+evaluator to escape.
+
+The cost of that trade is now understood to be parametricity itself — without
+`width / 2 - wall` in a socket, a graph is a *frozen* script and every derived dimension is
+a constant. Lane **G-EXPR** (Wave D) reverses it the safe way: `{"expr": "..."}` inputs
+evaluated **at transpile time**, on the same restricted dialect the manifest constraints
+already use (`apps/studio/src/lib/safeFormula.ts` — arithmetic, comparison, boolean and
+ternary over parameter identifiers and numeric literals; no string literals, no function
+calls, capped at 256 characters and 128 tokens). The transpiler would still emit only
+validated numbers, so the security property above is preserved.
 
 **Structural params are not bindable.** Selectors (`edges`, `face`), `axis` and
 `plane` stay literal, so a render-time value can never change the *shape* of
@@ -105,7 +135,9 @@ counts are additionally clamped in the generated script, so a slider wired to a
 count cannot detonate a boolean loop inside the render worker.
 
 `revolve` is deliberately absent: an unbounded revolve exhausted memory during
-bring-up, and the render worker must not host an operation that can hang a job.
+bring-up, and the render worker must not host an operation that can hang a job. A
+**bounded** revolve is scheduled in lane G-NODES-2, alongside loft, sweep and text — the
+memory bound is the design work, not the operation.
 
 ## Wiring the manifest
 

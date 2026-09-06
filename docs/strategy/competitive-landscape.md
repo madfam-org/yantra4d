@@ -96,7 +96,7 @@ The following capabilities were added since the original competitive analysis an
 
 **2.1 Bill of Materials (BOM)** ✅ Implemented
 - Manifest-driven BOM (better than NopSCADlib's code-derived approach — editable by non-programmers)
-- `bom.hardware[]` with `quantity_formula` evaluated via `expr-eval` against current params
+- `bom.hardware[]` with `quantity_formula` evaluated by `safeFormula` against current params (`expr-eval` was removed in 2026-05)
 - `BomPanel` component renders table with computed quantities, units, and optional supplier links
 - Live in portacosas and gridfinity projects
 
@@ -111,7 +111,7 @@ The following capabilities were added since the original competitive analysis an
 
 **2.4 Cross-Parameter Validation** ✅ Implemented
 - Manifest-driven constraint rules: `{ rule, message, severity, applies_to }`
-- `useConstraints` hook evaluates rules via `expr-eval`, returns violations indexed by param
+- `useConstraints` hook evaluates rules via `safeFormula`, returns violations indexed by param (a formula that throws is skipped, so that constraint does not fire)
 - Supports `warning` and `error` severities; `error` blocks render
 - Live in portacosas and gridfinity projects
 

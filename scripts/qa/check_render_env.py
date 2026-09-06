@@ -104,12 +104,19 @@ def load_spec():
     return render_environment, None
 
 
+# Packages that exist only to BUILD an image (fetch the OpenSCAD AppImage,
+# verify it) and never at render time. They are ignored on BOTH sides: the
+# contract describes what a render environment needs, and whether an image
+# fetches with wget or curl is its own business, never drift.
+BUILD_ONLY_PACKAGES = frozenset({"wget", "curl", "ca-certificates"})
+
+
 def compare(spec, dockerfile_text: str) -> list:
     """Every disagreement between the two, as human-readable lines."""
     problems = []
 
-    spec_packages = set(spec.APT_PACKAGES)
-    image_packages = parse_apt_packages(dockerfile_text)
+    spec_packages = set(spec.APT_PACKAGES) - BUILD_ONLY_PACKAGES
+    image_packages = parse_apt_packages(dockerfile_text) - BUILD_ONLY_PACKAGES
     only_spec = sorted(spec_packages - image_packages)
     only_image = sorted(image_packages - spec_packages)
     if only_spec:

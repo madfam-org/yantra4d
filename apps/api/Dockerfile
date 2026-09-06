@@ -3,8 +3,31 @@ FROM python:3.12-slim
 
 # OpenSCAD snapshot version — update hash after changing version:
 #   wget -q <url> -O openscad && sha256sum openscad
-ARG OPENSCAD_VERSION=2026.02.01
-ARG OPENSCAD_SHA256=dad3a8d19e63c543129eabef314676ac9348ffcab727544f4283b2ae9000277c
+#
+# CONTRACT SOURCE: hyperobjects-spec `y4d_spec.render_environment`
+# (OPENSCAD_VERSION / OPENSCAD_SHA256). These two ARGs must equal it, and the
+# enclii ARC runner image (infra/docker/arc-runner/Dockerfile) must equal it
+# too — CI only proves anything about production if it renders with the same
+# binary production renders with.
+#
+# 2026-09-05, ruling G31 — bumped 2026.02.01 -> 2026.02.13. 2026.02.01 CANNOT
+# RENDER our own pinned BOSL2 v2.0.753 (libs/BOSL2 @ fcfce7c7). Two lines:
+#
+#     include <BOSL2/std.scad>
+#     cube([1,1,1], anchor=[-1,-1,-1]);
+#
+#     ERROR: Assertion '(is_list($tags_shown) || ($tags_shown == "ALL"))'
+#            failed in libs/BOSL2/attachments.scad, line 3809
+#     Current top level object is empty.
+#
+# i.e. every ANCHORED BOSL2 primitive — most of the library — with an empty
+# STL rather than a build error. Caught by
+# tests/integration/test_submodule_smoke.py::TestBOSL2Smoke on PR #125; the
+# same file renders a 1443-byte STL under 2026.02.13. This image renders BOSL2
+# cartridges server-side, so the broken snapshot was a production defect, not
+# only a CI one.
+ARG OPENSCAD_VERSION=2026.02.13
+ARG OPENSCAD_SHA256=01e4bdeb00518b20ba00d5acc1d3df9c62813d9f64bb68a1fd0a546c7e46ab28
 
 # Install OpenSCAD snapshot (2026+) for Gridfinity extended syntax support
 # AppImages require FUSE which isn't available in containers, so we extract

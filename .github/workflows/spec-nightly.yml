@@ -25,7 +25,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install hyperobjects-spec
-        run: pip install "hyperobjects-spec[geometry] @ git+https://x-access-token:${{ secrets.MADFAM_BOT_PAT }}@github.com/madfam-org/hyperobjects-spec.git@v0.1.1"
+        # Same keystone SHA as ci.yml's spec-conformance job and both commons'
+        # SPEC_PIN — never a floating tag; the repo is public, no token needed.
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@db65cf1e7a2732d7263efd6eb6ba533640eb536f"
       - name: Full render sweep
         run: |
           # default shell is bash -e -o pipefail: don't abort before the summary

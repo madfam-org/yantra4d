@@ -21,16 +21,16 @@ So this compares, against ``y4d_spec.render_environment``:
     Dockerfile pipes the ARG straight into ``sha256sum -c``, so a mismatch
     there is the difference between a verified download and a different binary.
 
-INACTIVE UNTIL THE PIN CATCHES UP
----------------------------------
-``y4d_spec.render_environment`` is being added by lane L-G31 and is not in the
-pinned spec (v0.1.1) this repo installs. An ImportError is therefore NOT a
-failure — it is the expected state today, and the check exits 0 saying so in
-one line. Wiring it now rather than after the bump means the guard is already
-in place when the pin moves, instead of being a follow-up someone has to
-remember; the day the pin bumps, this check starts comparing on its own with
-no further change. Any OTHER import error is still an error: a spec that is
-present but broken must not read as a spec that is merely old.
+WHEN THE SPEC IS OLDER THAN THE CONTRACT
+----------------------------------------
+``y4d_spec.render_environment`` exists from hyperobjects-spec 9c2b341f on, and
+the spec-conformance job pins a SHA that carries it (the same SHA as both
+commons' SPEC_PIN), so the check is live there. Should the pin ever move to a
+spec without the module, an ImportError of that module is NOT a failure — the
+check exits 0 saying "spec too old — check inactive" in one line — so a pin
+change can never make this guard red by accident. Any OTHER import error is
+still an error: a spec that is present but broken must not read as a spec that
+is merely old.
 """
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 DOCKERFILE = REPO / "apps" / "api" / "Dockerfile"
 
-# `ARG OPENSCAD_VERSION=2026.02.01` / `ARG OPENSCAD_SHA256=dad3a8d1...`
+# `ARG OPENSCAD_VERSION=<snapshot>` / `ARG OPENSCAD_SHA256=<64 hex>`
 ARG_RE = re.compile(r"^\s*ARG\s+([A-Z0-9_]+)\s*=\s*(\S+)\s*$", re.MULTILINE)
 
 

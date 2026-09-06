@@ -10,7 +10,7 @@ environment against ``y4d_spec.render_environment``. Two things make it worth
 pinning carefully:
 
   - It is INACTIVE today, on purpose. The module lands with lane L-G31 and is
-    not in the pinned spec (v0.1.1), so the check exits 0 with a line saying
+    absent from the installed spec, so the check exits 0 with a line saying
     so. A guard that is inactive by design and a guard that is broken look
     identical from a green CI log, so the tests below assert the difference:
     a MISSING ``render_environment`` stands down, and any other ImportError

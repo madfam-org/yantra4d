@@ -257,11 +257,12 @@ Or use the web UI: upload `.scad` files -> review analysis -> edit manifest -> s
 4. Update `fallback-manifest.json`
 
 ### Classify a project as a Hyperobject
-1. Add `hyperobject` block to `projects/{slug}/project.json` with `domain`, `cdg_interfaces[]`, `material_awareness`, `societal_benefit`, `commons_license`
-2. Each `cdg_interfaces` entry declares: `id`, `label`, `geometry_type` (grid/rail/thread/socket/pocket/snap/bolt_pattern/profile/spline/surface/custom), `standard`, and `parameters[]` (referencing manifest param IDs)
-3. Add `hyperobject` and `commons` to `project.tags`
-4. Update `projects/{slug}/docs/README.md` with a Hyperobject Profile section
-5. See `projects/microscope-slide-holder/project.json` for the reference implementation
+1. Add a TOP-LEVEL `hyperobject` block to `projects/{slug}/project.json` with `domain`, `cdg_interfaces[]`, `material_awareness`, `societal_benefit`, `commons_license`. That block is now a validated property of the manifest schema rather than an unread sibling of `properties`, so a typo in either vocabulary below fails `validate_manifests.py`
+2. `domain` is one of household/industrial/medical/commercial/infrastructure/agriculture/construction/energy/wearable/consumer-electronics/soft-robotics/hybrid (`consumer`, `electronics` and `play` are legacy one-offs kept for the cartridges that predate the canonical names — do not file new work under them)
+3. Each `cdg_interfaces` entry declares: `id`, `label`, `geometry_type` (grid/rail/thread/socket/pocket/snap/bolt_pattern/profile/spline/surface/flange/boss/threaded_socket/seal/hinge/screen/port/engraving/polyhedron/fem_mesh/custom), `standard`, and `parameters[]` (referencing manifest param IDs)
+4. Add `hyperobject` and `commons` to `project.tags`
+5. Update `projects/{slug}/docs/README.md` with a Hyperobject Profile section
+6. See `projects/microscope-slide-holder/project.json` for the reference implementation
 
 ### Add a new SCAD project
 1. Create `projects/{slug}/project.json` following the manifest schema (see `docs/reference/manifest.md`)

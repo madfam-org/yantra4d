@@ -284,12 +284,18 @@ Projects can optionally declare `hyperobject` metadata to be classified as **Bou
 ```jsonc
 {
   "hyperobject": {
-    "domain": "medical",               // household | industrial | medical | commercial | infrastructure | hybrid
+    // domain: household | industrial | medical | commercial | infrastructure | agriculture |
+    //         construction | energy | wearable | consumer-electronics | soft-robotics | hybrid
+    //         (legacy one-offs still accepted, not for new work: consumer | electronics | play)
+    "domain": "medical",
     "cdg_interfaces": [                // Common Denominator Geometry interfaces
       {
         "id": "iso_8037_standard",
         "label": { "en": "ISO 8037 Microscope Slide", "es": "Estándar ISO 8037" },
-        "geometry_type": "pocket",     // grid | rail | thread | socket | pocket | snap | bolt_pattern | profile | spline | surface | custom
+        // geometry_type: grid | rail | thread | socket | pocket | snap | bolt_pattern | profile |
+        //                spline | surface | flange | boss | threaded_socket | seal | hinge |
+        //                screen | port | engraving | polyhedron | fem_mesh | custom
+        "geometry_type": "pocket",
         "standard": "ISO 8037-1:2003", // ISO/internal standard
         "parameters": ["slide_standard", "custom_slide_length"]  // References to manifest param IDs
       }
@@ -307,6 +313,13 @@ Projects can optionally declare `hyperobject` metadata to be classified as **Bou
   }
 }
 ```
+
+The `hyperobject` block is a validated property of the manifest schema: an undeclared `domain`
+or `geometry_type` fails `python3 scripts/qa/validate_manifests.py`. `material_awareness` also
+accepts a bare `true` — the legacy shorthand for "this cartridge is material-aware" that two
+commons cartridges (`flange-plate`, `spacer-block`) still ship; new cartridges use the object
+form shown above. `project.hyperobject` is the older nested location and carries the same
+`domain` vocabulary; new cartridges declare the top-level block instead.
 
 **Reference implementations**:
 - See `projects/microscope-slide-holder/project.json` for the first hyperobject in the commons.

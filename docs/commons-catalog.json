@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 500,
-    "with_cdg_interfaces": 490,
-    "with_commons_license": 500,
+    "cartridges": 501,
+    "with_cdg_interfaces": 491,
+    "with_commons_license": 501,
     "dual_engine": 20
   },
   "domains": {
@@ -20,6 +20,7 @@
     "agriculture": 5,
     "consumer": 2,
     "construction": 1,
+    "consumer-electronics": 1,
     "electronics": 1,
     "energy": 1,
     "play": 1
@@ -311,11 +312,17 @@
     "internal — pitch floored at slot width plus a 2 mm bar",
     "internal/aocl",
     "internal: 3 mm foot pads registering base floor to lid crown",
+    "internal: a rectangular aperture of the display's published active area, sunk screen_recess_depth into the lower deck's face. It also sets where the control clusters sit.",
+    "internal: a rectangular aperture of the display's published active area, sunk screen_recess_depth into the upper deck's inner face.",
+    "internal: a rectangular opening in the front face of the lower deck, sized to clear a USB-C receptacle. Present only where the registry lists the port.",
     "internal: base knuckle r = hingeRadiusMm, lid knuckle r = that minus 0.5 mm running clearance; lid knuckle 1 mm narrower axially",
     "internal: catch latchSupportTotalWidth wide, 5 mm engagement, 4 mm strap thickness",
     "internal: rim enters the base rimHeightMm deep with 0.5 mm assembly clearance",
     "internal: ring outer face inset 1.75 mm per side from the shell face; ring width = rimWidthMm; ring height = gasketSlotDepth (1-5 mm)",
+    "internal: the X axis through the origin, in the seam plane at the rear face. Barrel radius hinge_barrel_radius against a hinge_relief_radius pocket in both decks; the difference is the running clearance. fold_angle 0 closed, 180 flat.",
     "internal: the cavity is exactly the declared internal dimensions",
+    "internal: the closed outline — deck_length x deck_depth x (upper + lower deck thickness), corners rounded by corner_radius. An accessory that takes a device envelope mates here.",
+    "internal: the lower deck's outer face and its rounded footprint — the surface a dock, stand or cradle registers against.",
     "iso_8559",
     "kinematic (Maxwell / Kelvin) 3-ball coupling",
     "low / high shank (19 / 32 mm bar-to-plate)",
@@ -6361,6 +6368,218 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set circuit-trainer"
+      }
+    },
+    {
+      "slug": "clamshell-dual-screen-handheld",
+      "name": "Clamshell Dual-Screen Handheld",
+      "domain": "consumer-electronics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 5,
+      "parts": 3,
+      "parameters": 82,
+      "parameter_ids": [
+        "deck_length",
+        "deck_depth",
+        "upper_deck_thickness",
+        "lower_deck_thickness",
+        "corner_radius",
+        "fold_angle",
+        "deck_center_y",
+        "lower_deck_center_z",
+        "upper_deck_center_z",
+        "hinge_barrel_radius",
+        "hinge_relief_radius",
+        "hinge_relief_span",
+        "hinge_knuckle_count",
+        "hinge_knuckle_length",
+        "hinge_knuckle_pitch",
+        "hinge_knuckle_start_x",
+        "hinge_clip_span",
+        "hinge_clip_center_y",
+        "primary_screen_width",
+        "primary_screen_height",
+        "primary_screen_center_y",
+        "primary_screen_cut_center_z",
+        "secondary_screen_width",
+        "secondary_screen_height",
+        "secondary_screen_center_y",
+        "secondary_screen_cut_center_z",
+        "screen_recess_depth",
+        "control_recess_depth",
+        "control_cut_center_z",
+        "dpad_center_x",
+        "dpad_center_y",
+        "dpad_arm_length",
+        "dpad_arm_width",
+        "face_button_center_x",
+        "face_button_center_y",
+        "face_button_count",
+        "face_button_spacing_deg",
+        "face_button_circle_radius",
+        "face_button_radius",
+        "stick_count",
+        "stick_first_center_x",
+        "stick_pitch_x",
+        "stick_center_y",
+        "stick_radius",
+        "shoulder_button_count",
+        "shoulder_button_first_center_x",
+        "shoulder_button_pitch_x",
+        "shoulder_button_center_y",
+        "shoulder_button_center_z",
+        "shoulder_button_width",
+        "shoulder_button_depth",
+        "shoulder_button_height",
+        "menu_button_count",
+        "menu_button_first_center_x",
+        "menu_button_pitch_x",
+        "menu_button_center_y",
+        "menu_button_radius",
+        "speaker_hole_count",
+        "speaker_first_center_x",
+        "speaker_center_y",
+        "speaker_hole_radius",
+        "speaker_hole_pitch",
+        "usb_c_width",
+        "usb_c_height",
+        "usb_c_depth",
+        "usb_c_center_x",
+        "usb_c_center_y",
+        "usb_c_center_z",
+        "headphone_radius",
+        "headphone_depth",
+        "headphone_center_x",
+        "headphone_center_y",
+        "headphone_center_z",
+        "cartridge_slot_width",
+        "cartridge_slot_height",
+        "cartridge_slot_depth",
+        "cartridge_slot_center_x",
+        "cartridge_slot_center_y",
+        "cartridge_slot_center_z",
+        "usb_c_present",
+        "headphone_present",
+        "cartridge_slot_present"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A dimensioned, parametric model of the dual-screen handhelds people actually own lets anyone fabricate a cradle, a dock, a travel shell or a repair fixture that fits — for hardware whose manufacturer publishes an outline and nothing else, and for hardware whose manufacturer is gone. Because every named preset is built from published dimensions with its source recorded, a correction travels to every accessory that mates with it.",
+        "es": "Un modelo paramétrico y acotado de las consolas de doble pantalla que la gente tiene permite fabricar una base, un dock, una funda de viaje o un útil de reparación que encaje — para equipos cuyo fabricante publica un contorno y nada más, y para equipos cuyo fabricante ya no existe. Como cada preajuste con nombre se construye con dimensiones publicadas y su fuente anotada, una corrección llega a cada accesorio que acopla con él."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "device_envelope",
+          "label": "Device Envelope",
+          "geometry_type": "profile",
+          "standard": "internal: the closed outline — deck_length x deck_depth x (upper + lower deck thickness), corners rounded by corner_radius. An accessory that takes a device envelope mates here.",
+          "parameters": [
+            "deck_length",
+            "deck_depth",
+            "upper_deck_thickness",
+            "lower_deck_thickness",
+            "corner_radius"
+          ]
+        },
+        {
+          "id": "hinge_axis",
+          "label": "Hinge Axis",
+          "geometry_type": "hinge",
+          "standard": "internal: the X axis through the origin, in the seam plane at the rear face. Barrel radius hinge_barrel_radius against a hinge_relief_radius pocket in both decks; the difference is the running clearance. fold_angle 0 closed, 180 flat.",
+          "parameters": [
+            "hinge_barrel_radius",
+            "hinge_relief_radius",
+            "hinge_relief_span",
+            "hinge_knuckle_count",
+            "hinge_knuckle_length",
+            "hinge_knuckle_pitch",
+            "hinge_knuckle_start_x",
+            "fold_angle"
+          ]
+        },
+        {
+          "id": "primary_screen_window",
+          "label": "Primary Display Window",
+          "geometry_type": "screen",
+          "standard": "internal: a rectangular aperture of the display's published active area, sunk screen_recess_depth into the upper deck's inner face.",
+          "parameters": [
+            "primary_screen_width",
+            "primary_screen_height",
+            "primary_screen_center_y",
+            "screen_recess_depth"
+          ]
+        },
+        {
+          "id": "secondary_screen_window",
+          "label": "Secondary Display Window",
+          "geometry_type": "screen",
+          "standard": "internal: a rectangular aperture of the display's published active area, sunk screen_recess_depth into the lower deck's face. It also sets where the control clusters sit.",
+          "parameters": [
+            "secondary_screen_width",
+            "secondary_screen_height",
+            "secondary_screen_center_y",
+            "screen_recess_depth"
+          ]
+        },
+        {
+          "id": "usb_c_port",
+          "label": "USB-C Port Opening",
+          "geometry_type": "port",
+          "standard": "internal: a rectangular opening in the front face of the lower deck, sized to clear a USB-C receptacle. Present only where the registry lists the port.",
+          "parameters": [
+            "usb_c_present",
+            "usb_c_width",
+            "usb_c_height",
+            "usb_c_center_x",
+            "usb_c_center_z"
+          ]
+        },
+        {
+          "id": "cradle_seat",
+          "label": "Cradle Seat",
+          "geometry_type": "surface",
+          "standard": "internal: the lower deck's outer face and its rounded footprint — the surface a dock, stand or cradle registers against.",
+          "parameters": [
+            "deck_length",
+            "deck_depth",
+            "lower_deck_thickness",
+            "corner_radius"
+          ]
+        }
+      ],
+      "standards": [
+        "internal: a rectangular aperture of the display's published active area, sunk screen_recess_depth into the lower deck's face. It also sets where the control clusters sit.",
+        "internal: a rectangular aperture of the display's published active area, sunk screen_recess_depth into the upper deck's inner face.",
+        "internal: a rectangular opening in the front face of the lower deck, sized to clear a USB-C receptacle. Present only where the registry lists the port.",
+        "internal: the X axis through the origin, in the seam plane at the rear face. Barrel radius hinge_barrel_radius against a hinge_relief_radius pocket in both decks; the difference is the running clearance. fold_angle 0 closed, 180 flat.",
+        "internal: the closed outline — deck_length x deck_depth x (upper + lower deck thickness), corners rounded by corner_radius. An accessory that takes a device envelope mates here.",
+        "internal: the lower deck's outer face and its rounded footprint — the surface a dock, stand or cradle registers against."
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "clamshell-dual-screen-handheld/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set clamshell-dual-screen-handheld"
       }
     },
     {
@@ -26107,7 +26326,7 @@
       "dual_engine": false,
       "modes": 3,
       "parts": 3,
-      "parameters": 20,
+      "parameters": 19,
       "parameter_ids": [
         "proximal_dia",
         "distal_dia",
@@ -26127,7 +26346,6 @@
         "circumference_bottom",
         "length",
         "voronoi_density",
-        "wall_thickness",
         "fn"
       ],
       "export_formats": [

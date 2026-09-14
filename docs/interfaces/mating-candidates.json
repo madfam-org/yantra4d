@@ -4,14 +4,14 @@
   "generated_by": "scripts/qa/derive_mating_candidates.py",
   "status": "proposed",
   "inputs": {
-    "cartridges_scanned": 501,
-    "cartridges_public_total": 501,
+    "cartridges_scanned": 502,
+    "cartridges_public_total": 502,
     "cartridges_out_of_scope": 0,
     "scope_note": "every projects/*/project.json is read; only the client-private slugs named in PRIVATE_EXCLUDED are skipped, and since RFC 0038 P2 those are not under projects/ at all (they mount at private-projects/). The commons is one submodule, so projects/ is either fully checked out or empty; validate_manifests.py's ratchet is what refuses the empty case",
-    "interfaces_declared": 960,
+    "interfaces_declared": 969,
     "interfaces_with_resolved_family": 278,
     "objects_with_resolved_family": 211,
-    "author_declared_pairs_in_scope": 296,
+    "author_declared_pairs_in_scope": 301,
     "author_declared_links_out_of_scope": 0,
     "bridge_snapshot_available": true,
     "bridge_targets": 89
@@ -22,10 +22,10 @@
     "edges": 262,
     "isolated_graph_nodes": 71,
     "density_pct_over_graph_nodes": 1.1826,
-    "density_pct_over_catalog": 0.2092,
+    "density_pct_over_catalog": 0.2083,
     "author_declared_pairs_reproduced": 167,
-    "author_declared_pairs_missing": 129,
-    "author_declared_pairs_without_shared_family": 106
+    "author_declared_pairs_missing": 134,
+    "author_declared_pairs_without_shared_family": 111
   },
   "tier_summary": {
     "corroborated": 26,
@@ -39,11 +39,11 @@
       "new_edges_in_tranche": 64,
       "edges_after": 326,
       "author_declared_pairs_explained": 180,
-      "author_declared_pairs_explained_pct": 60.81,
+      "author_declared_pairs_explained_pct": 59.8,
       "graph_nodes": 211,
       "isolated_graph_nodes_after": 66,
       "density_pct_over_graph_nodes": 1.4715,
-      "density_pct_over_catalog": 0.2603
+      "density_pct_over_catalog": 0.2592
     },
     {
       "tranche": "plausible",
@@ -51,11 +51,11 @@
       "new_edges_in_tranche": 15,
       "edges_after": 341,
       "author_declared_pairs_explained": 190,
-      "author_declared_pairs_explained_pct": 64.19,
+      "author_declared_pairs_explained_pct": 63.12,
       "graph_nodes": 211,
       "isolated_graph_nodes_after": 55,
       "density_pct_over_graph_nodes": 1.5392,
-      "density_pct_over_catalog": 0.2723
+      "density_pct_over_catalog": 0.2712
     },
     {
       "tranche": "speculative",
@@ -63,17 +63,17 @@
       "new_edges_in_tranche": 87,
       "edges_after": 428,
       "author_declared_pairs_explained": 190,
-      "author_declared_pairs_explained_pct": 64.19,
+      "author_declared_pairs_explained_pct": 63.12,
       "graph_nodes": 211,
       "isolated_graph_nodes_after": 41,
       "density_pct_over_graph_nodes": 1.9318,
-      "density_pct_over_catalog": 0.3417
+      "density_pct_over_catalog": 0.3404
     }
   ],
   "rejected_interfaces": {
     "counts": {
       "standard_absent": 2,
-      "standard_internal": 554,
+      "standard_internal": 563,
       "standard_unrecognized": 126
     },
     "unrecognized_standards": [

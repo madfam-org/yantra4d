@@ -63,6 +63,14 @@ jobs:
         with:
           python-version: "3.12"
 
+      # generate-landing-projects.mjs runs under node. The runner image has no
+      # node on PATH, so the regenerate step died with `node: command not found`
+      # (exit 127) on every run since 2026-09-07, leaving the commons pin stale.
+      - uses: actions/setup-node@v4
+        if: steps.bump.outputs.moved == 'true'
+        with:
+          node-version: 22
+
       - name: Regenerate everything derived from the cartridge manifests
         if: steps.bump.outputs.moved == 'true'
         run: |

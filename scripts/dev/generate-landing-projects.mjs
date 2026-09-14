@@ -96,6 +96,16 @@ export const BUILTIN_PRIVATE_SLUGS = ['tablaco', 'tablaco-v2'];
  * both fold into 'industrial'. There is no 'culture' domain in the manifests, so it
  * is never produced here (the previous hand-curated 'culture' entry is dropped by the
  * full regen, per the task). Unknown / empty domains yield `undefined`.
+ *
+ * 'consumer-electronics' folds into 'commercial': the landing enum has no consumer
+ * member, and the mapped value also feeds deriveCategory(), where 'household' would
+ * file a phone cradle under 'storage'. Device cartridges carrying an electronics tag
+ * are routed to the 'electronics' category before any domain rule fires anyway.
+ *
+ * NOT mapped, deliberately: 'wearable' (72 cartridges), 'agriculture', 'construction',
+ * 'energy', 'consumer', 'electronics' and 'play' still yield `undefined`. Folding them
+ * would rewrite ~80 entries of the generated projects.ts, which is a presentation
+ * decision for the maintainers, not a side effect of the schema vocabulary work.
  */
 const DOMAIN_MAP = {
   household: 'household',
@@ -105,6 +115,7 @@ const DOMAIN_MAP = {
   hybrid: 'hybrid',
   infrastructure: 'industrial',
   'soft-robotics': 'industrial',
+  'consumer-electronics': 'commercial',
 };
 
 // Geometry types that read as physical storage/containment features.

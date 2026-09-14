@@ -78,6 +78,16 @@ Each interface declares a `geometry_type` that describes the kind of mechanical 
 | `profile` | 2D cross-section used for extrusion | Rail profiles, channel shapes |
 | `spline` | Keyed rotational coupling | Motor shaft adapters |
 | `surface` | Mating flat or curved surface | Alignment faces |
+| `flange` | Protruding rim bearing against a mating face | Garment eyelets, pipe collars |
+| `boss` | Raised pad locating or reinforcing a fastener | Shank buttons, epaulette posts |
+| `threaded_socket` | Receptacle whose bore carries a thread | Multiboard inserts |
+| `seal` | Gasket or O-ring groove closing a joint | Weatherproof case lids |
+| `hinge` | Pivoting joint constraining rotation about one axis | Case lids, clamshell and book-fold devices |
+| `screen` | Display or window aperture the panel occupies | Phone and laptop display cut-outs |
+| `port` | Through-opening for a connector, cable or airflow | USB-C cut-outs, vents |
+| `engraving` | Incised or embossed surface marking | Die pips, dial faces |
+| `polyhedron` | Faceted solid whose faces are the interface | Polyhedral dice |
+| `fem_mesh` | Finite-element mesh boundary for a simulation consumer | Compliant gripper studies |
 | `custom` | Project-specific interface | Anything not covered above |
 
 ### Standards
@@ -102,7 +112,16 @@ The `domain` field categorizes the hyperobject:
 | `medical` | Lab equipment, surgical guides, prosthetic components |
 | `commercial` | Retail displays, POS fixtures, signage |
 | `infrastructure` | Pipe fittings, cable management, structural connectors |
+| `agriculture` | Seeding plates, graft clips, hive hardware |
+| `construction` | Site and building hardware |
+| `energy` | Generation, storage and distribution hardware |
+| `wearable` | Garment closures, carry hardware, body-worn fittings |
+| `consumer-electronics` | Personal computing and communication devices, including dual-screen and foldable geometry |
+| `soft-robotics` | Pneumatic and compliant actuators |
 | `hybrid` | Cross-domain designs |
+
+`consumer`, `electronics` and `play` are also accepted, but only because a handful of
+cartridges predate the canonical names above. New cartridges should not use them.
 
 ## Material awareness
 
@@ -113,6 +132,9 @@ The `material_awareness` block declares how the geometry adapts to the physical 
 | `shrinkage_compensation` | Whether the geometry compensates for material shrinkage during cooling |
 | `recycled_material_toggle` | Whether tolerances loosen for less dimensionally stable recycled filament |
 | `tolerance_by_material` | Whether tolerance profiles vary by material (PLA vs PETG vs ABS) |
+
+A bare `"material_awareness": true` is the legacy shorthand for the same claim and still
+validates; new cartridges declare the object form.
 
 When material awareness is enabled, the platform can adjust interface geometries to maintain correct fit across different printing materials. A pocket designed for PLA may need slightly different clearances when printed in PETG.
 

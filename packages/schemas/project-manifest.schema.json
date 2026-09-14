@@ -68,8 +68,19 @@
                 "industrial",
                 "medical",
                 "commercial",
+                "infrastructure",
+                "agriculture",
+                "construction",
+                "energy",
+                "wearable",
+                "consumer-electronics",
+                "soft-robotics",
+                "consumer",
+                "electronics",
+                "play",
                 "hybrid"
-              ]
+              ],
+              "description": "Legacy location for the deployment domain, kept in step with the canonical `hyperobject.domain` enum. New cartridges declare the top-level `hyperobject` block instead."
             },
             "cdg_interface": {
               "type": "string"
@@ -153,6 +164,130 @@
               "description": "Call-to-action button text (default: 'Get Started')"
             }
           }
+        }
+      }
+    },
+    "hyperobject": {
+      "type": "object",
+      "description": "Hyperobject Commons metadata — classifies the project as a Bounded 4D Hyperobject with CDG interfaces, material awareness, and societal benefit.",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "enum": [
+            "household",
+            "industrial",
+            "medical",
+            "commercial",
+            "infrastructure",
+            "agriculture",
+            "construction",
+            "energy",
+            "wearable",
+            "consumer-electronics",
+            "soft-robotics",
+            "consumer",
+            "electronics",
+            "play",
+            "hybrid"
+          ],
+          "description": "Primary deployment domain per the Hyperobject taxonomy. household: domestic fixtures and organisers. industrial: shop-floor, machine and fixturing work. medical: clinical and assistive devices. commercial: trade, retail and studio equipment. infrastructure: pipes, cabling and structural connectors. agriculture: growing, seeding and apiculture. construction: site and building hardware. energy: generation, storage and distribution hardware. wearable: garment closures, carry hardware and body-worn fittings. consumer-electronics: personal computing and communication devices, including dual-screen and foldable device geometry. soft-robotics: pneumatic and compliant actuators. hybrid: spans several domains with no principal one. `consumer`, `electronics` and `play` are legacy one-offs kept so the cartridges that predate the canonical names keep validating — new cartridges should file under `consumer-electronics`, `consumer-electronics` and `commercial` respectively."
+        },
+        "cdg_interfaces": {
+          "type": "array",
+          "description": "Common Denominator Geometry interfaces — standardized geometric connection points that enable interoperability.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "geometry_type"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]*$",
+                "description": "Machine-readable interface identifier."
+              },
+              "label": {
+                "$ref": "#/$defs/i18nString",
+                "description": "Human-readable interface name."
+              },
+              "geometry_type": {
+                "type": "string",
+                "enum": [
+                  "grid",
+                  "rail",
+                  "thread",
+                  "socket",
+                  "pocket",
+                  "snap",
+                  "bolt_pattern",
+                  "profile",
+                  "spline",
+                  "surface",
+                  "flange",
+                  "boss",
+                  "threaded_socket",
+                  "seal",
+                  "hinge",
+                  "screen",
+                  "port",
+                  "engraving",
+                  "polyhedron",
+                  "fem_mesh",
+                  "custom"
+                ],
+                "description": "Category of the geometric interface. grid: a regular 2D pattern of features. rail: a linear guide or sliding interface. thread: a helical screw interface. socket: a cylindrical or shaped receptacle. pocket: a recessed cavity for an inserted object. snap: a press-fit or clip engagement. bolt_pattern: a hole pattern for fasteners. profile: a 2D cross-section used for extrusion. spline: a keyed rotational coupling. surface: a mating flat or curved face. flange: a protruding rim that bears against a mating face. boss: a raised pad that locates or reinforces a fastener. threaded_socket: a receptacle whose bore carries a thread. seal: a gasket or O-ring groove closing a joint against fluid or dust. hinge: a pivoting joint constraining rotation about one axis — lids, clamshells, book-folds and flip devices. screen: a display or window aperture, the bounded flat area a panel or lens occupies. port: a through-opening for a connector, cable or airflow. engraving: an incised or embossed surface marking. polyhedron: a faceted solid whose faces are themselves the interface. fem_mesh: a finite-element mesh boundary handed to a simulation consumer. custom: anything the categories above do not cover."
+              },
+              "standard": {
+                "type": "string",
+                "description": "Reference standard (e.g. 'ISO 8037-1:2003', 'DIN 35', 'Gridfinity 42mm') or 'internal' for project-specific interfaces."
+              },
+              "parameters": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Parameter IDs from this manifest that define the interface geometry."
+              },
+              "compatible_with": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Slugs of other Yantra4D projects that share this interface (cross-commons interoperability)."
+              }
+            }
+          }
+        },
+        "material_awareness": {
+          "type": ["object", "boolean"],
+          "description": "Declares which material-geometry interactions the SCAD code supports. A bare `true` is the legacy shorthand for \"this cartridge is material-aware\" and is still shipped by two commons cartridges (flange-plate, spacer-block); new cartridges declare the object form.",
+          "properties": {
+            "shrinkage_compensation": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether the code adjusts geometry based on material shrinkage factors."
+            },
+            "recycled_material_toggle": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether the code offers adjusted tolerances for recycled filament (rPET, rPLA)."
+            },
+            "tolerance_by_material": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether the code varies clearances based on the selected material profile."
+            }
+          }
+        },
+        "societal_benefit": {
+          "$ref": "#/$defs/i18nString",
+          "description": "Human-readable statement of the hyperobject's societal value (commons utility)."
+        },
+        "commons_license": {
+          "type": "string",
+          "description": "SPDX identifier for the open hardware license (e.g. 'CERN-OHL-W-2.0', 'CC-BY-SA-4.0')."
         }
       }
     },
@@ -1122,111 +1257,6 @@
       "imported_at": {
         "type": "string",
         "format": "date-time"
-      }
-    }
-  },
-  "hyperobject": {
-    "type": "object",
-    "description": "Hyperobject Commons metadata — classifies the project as a Bounded 4D Hyperobject with CDG interfaces, material awareness, and societal benefit.",
-    "properties": {
-      "domain": {
-        "type": "string",
-        "enum": [
-          "household",
-          "industrial",
-          "medical",
-          "commercial",
-          "infrastructure",
-          "hybrid"
-        ],
-        "description": "Primary deployment domain per the Hyperobject taxonomy."
-      },
-      "cdg_interfaces": {
-        "type": "array",
-        "description": "Common Denominator Geometry interfaces — standardized geometric connection points that enable interoperability.",
-        "items": {
-          "type": "object",
-          "required": [
-            "id",
-            "label",
-            "geometry_type"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9_]*$",
-              "description": "Machine-readable interface identifier."
-            },
-            "label": {
-              "$ref": "#/$defs/i18nString",
-              "description": "Human-readable interface name."
-            },
-            "geometry_type": {
-              "type": "string",
-              "enum": [
-                "grid",
-                "rail",
-                "thread",
-                "socket",
-                "pocket",
-                "snap",
-                "bolt_pattern",
-                "profile",
-                "spline",
-                "surface",
-                "custom"
-              ],
-              "description": "Category of the geometric interface."
-            },
-            "standard": {
-              "type": "string",
-              "description": "Reference standard (e.g. 'ISO 8037-1:2003', 'DIN 35', 'Gridfinity 42mm') or 'internal' for project-specific interfaces."
-            },
-            "parameters": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "Parameter IDs from this manifest that define the interface geometry."
-            },
-            "compatible_with": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "Slugs of other Yantra4D projects that share this interface (cross-commons interoperability)."
-            }
-          }
-        }
-      },
-      "material_awareness": {
-        "type": "object",
-        "description": "Declares which material-geometry interactions the SCAD code supports.",
-        "properties": {
-          "shrinkage_compensation": {
-            "type": "boolean",
-            "default": false,
-            "description": "Whether the code adjusts geometry based on material shrinkage factors."
-          },
-          "recycled_material_toggle": {
-            "type": "boolean",
-            "default": false,
-            "description": "Whether the code offers adjusted tolerances for recycled filament (rPET, rPLA)."
-          },
-          "tolerance_by_material": {
-            "type": "boolean",
-            "default": false,
-            "description": "Whether the code varies clearances based on the selected material profile."
-          }
-        }
-      },
-      "societal_benefit": {
-        "$ref": "#/$defs/i18nString",
-        "description": "Human-readable statement of the hyperobject's societal value (commons utility)."
-      },
-      "commons_license": {
-        "type": "string",
-        "description": "SPDX identifier for the open hardware license (e.g. 'CERN-OHL-W-2.0', 'CC-BY-SA-4.0')."
       }
     }
   },

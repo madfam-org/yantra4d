@@ -19,7 +19,7 @@
     "@astrojs/react": "^6.0.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
-    "astro": "^7.2.1",
+    "astro": "^7.2.10",
     "autoprefixer": "^10.4.23",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

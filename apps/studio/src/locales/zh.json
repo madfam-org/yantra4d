@@ -368,5 +368,12 @@
   "placement.reason.estimate_over_threshold": "在浏览器标签页中渲染太慢。",
   "placement.reason.force_backend_hint_limited_device": "在这类设备上该项目更适合服务器渲染。",
   "placement.reason.backend_unavailable": "我们的服务器无法访问，改由你的浏览器接管。",
-  "placement.reason.backend_unavailable_no_browser_fallback": "我们的服务器无法访问，而此设备无法本地渲染。"
+  "placement.reason.backend_unavailable_no_browser_fallback": "我们的服务器无法访问，而此设备无法本地渲染。",
+  "storefront.presets": "配置",
+  "storefront.exitPreview": "退出预览",
+  "storefront.downloadStl": "下载 STL",
+  "storefront.active": "当前",
+  "storefront.bom": "物料清单",
+  "storefront.copied": "链接已复制！",
+  "storefront.share": "分享配置"
 }

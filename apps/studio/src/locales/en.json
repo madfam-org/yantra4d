@@ -368,5 +368,12 @@
   "placement.reason.estimate_over_threshold": "Too slow to render in a browser tab.",
   "placement.reason.force_backend_hint_limited_device": "This project prefers the server on a device like this one.",
   "placement.reason.backend_unavailable": "Our server is unreachable, so your browser is taking over.",
-  "placement.reason.backend_unavailable_no_browser_fallback": "Our server is unreachable and this device cannot render locally."
+  "placement.reason.backend_unavailable_no_browser_fallback": "Our server is unreachable and this device cannot render locally.",
+  "storefront.presets": "Configurations",
+  "storefront.exitPreview": "Exit Preview",
+  "storefront.downloadStl": "Download STL",
+  "storefront.active": "Active",
+  "storefront.bom": "Bill of Materials",
+  "storefront.copied": "Link copied!",
+  "storefront.share": "Share Configuration"
 }

@@ -12,9 +12,15 @@ const { mockManifestData } = vi.hoisted(() => {
             slug: 'test-product',
             description: 'A test product',
             tags: ['hyperobject', 'demo'],
+            thumbnail: '/projects/test-product.webp',
           },
+          parameter_groups: [{ id: 'envelope', label: 'Envelope' }, { id: 'detail', label: 'Detail' }],
+          parameters: [
+            { id: 'zeta', group: 'detail' },
+            { id: 'width', group: 'envelope' },
+          ],
           presets: [
-            { id: 'small', label: 'Small', values: { width: 10 } },
+            { id: 'small', label: 'Small', values: { zeta: 1, width: 10 } },
             { id: 'large', label: 'Large', values: { width: 50 }, emoji: '\u{1F3E0}' },
           ],
           bom: [
@@ -57,9 +63,15 @@ const DEFAULT_MANIFEST = {
       slug: 'test-product',
       description: 'A test product',
       tags: ['hyperobject', 'demo'],
+      thumbnail: '/projects/test-product.webp',
     },
+    parameter_groups: [{ id: 'envelope', label: 'Envelope' }, { id: 'detail', label: 'Detail' }],
+    parameters: [
+      { id: 'zeta', group: 'detail' },
+      { id: 'width', group: 'envelope' },
+    ],
     presets: [
-      { id: 'small', label: 'Small', values: { width: 10 } },
+      { id: 'small', label: 'Small', values: { zeta: 1, width: 10 } },
       { id: 'large', label: 'Large', values: { width: 50 }, emoji: '\u{1F3E0}' },
     ],
     bom: [
@@ -458,5 +470,20 @@ describe('StorefrontView', () => {
       render(<StorefrontView />)
       expect(screen.getByTestId('storefront-title')).toHaveTextContent('fallback-slug')
     })
+  })
+
+  it('renders the project thumbnail in the header when the manifest declares one', () => {
+    render(<StorefrontView projectSlug="test-product" />)
+    const img = screen.getByTestId('storefront-thumbnail')
+    expect(img.getAttribute('src')).toBe('/projects/test-product.webp')
+    expect(img.getAttribute('alt')).toBe('Test Product')
+  })
+
+  it('leads each preset summary with the first parameter group', () => {
+    render(<StorefrontView projectSlug="test-product" />)
+    const card = screen.getByTestId('preset-card-small')
+    const keys = Array.from(card.querySelectorAll('li span.font-mono')).map((el) => el.textContent)
+    expect(keys[0]).toBe('width')
+    expect(keys[1]).toBe('zeta')
   })
 })

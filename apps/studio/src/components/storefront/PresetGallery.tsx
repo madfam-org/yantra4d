@@ -14,9 +14,25 @@ interface PresetGalleryProps {
     currentMode: string
     onSelect?: (preset: Record<string, unknown>) => void
     activePreset?: string | null
+    /** Parameter ids to show first in a card's three-value summary (the manifest's
+     *  first parameter group — the envelope for a device cartridge — instead of
+     *  whichever keys sort first). Unknown ids are ignored. */
+    summaryKeys?: string[]
 }
 
-export default function PresetGallery({ presets = [], currentMode, onSelect, activePreset }: PresetGalleryProps) {
+/** Order a preset's values so `summaryKeys` come first (in that order), then the rest. */
+export function summaryEntries(values: Record<string, unknown>, summaryKeys: string[] = []): Array<[string, unknown]> {
+    const entries = Object.entries(values)
+    if (summaryKeys.length === 0) return entries
+    const rank = new Map(summaryKeys.map((k, i) => [k, i]))
+    return [...entries].sort((a, b) => {
+        const ra = rank.has(a[0]) ? (rank.get(a[0]) as number) : Number.MAX_SAFE_INTEGER
+        const rb = rank.has(b[0]) ? (rank.get(b[0]) as number) : Number.MAX_SAFE_INTEGER
+        return ra - rb
+    })
+}
+
+export default function PresetGallery({ presets = [], currentMode, onSelect, activePreset, summaryKeys = [] }: PresetGalleryProps) {
     const { t } = useLanguage()
 
     const visiblePresets = (presets as Preset[]).filter(p =>
@@ -57,7 +73,7 @@ export default function PresetGallery({ presets = [], currentMode, onSelect, act
                             {/* Show key parameter values as a summary */}
                             {preset.values && (
                                 <ul className="list-none p-0 m-0 space-y-0.5 w-full">
-                                    {Object.entries(preset.values).slice(0, 3).map(([k, v]) => (
+                                    {summaryEntries(preset.values, summaryKeys).slice(0, 3).map(([k, v]) => (
                                         <li key={k} className="flex justify-between text-xs text-muted-foreground">
                                             <span className="font-mono opacity-70">{k}</span>
                                             <span className="font-medium text-foreground">{String(v)}</span>

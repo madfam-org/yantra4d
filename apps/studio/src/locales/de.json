@@ -368,5 +368,12 @@
   "placement.reason.estimate_over_threshold": "Zu langsam für einen Browser-Tab.",
   "placement.reason.force_backend_hint_limited_device": "Dieses Projekt bevorzugt auf einem Gerät wie diesem den Server.",
   "placement.reason.backend_unavailable": "Unser Server ist nicht erreichbar, dein Browser übernimmt.",
-  "placement.reason.backend_unavailable_no_browser_fallback": "Unser Server ist nicht erreichbar und dieses Gerät kann lokal nicht rendern."
+  "placement.reason.backend_unavailable_no_browser_fallback": "Unser Server ist nicht erreichbar und dieses Gerät kann lokal nicht rendern.",
+  "storefront.presets": "Konfigurationen",
+  "storefront.exitPreview": "Vorschau beenden",
+  "storefront.downloadStl": "STL herunterladen",
+  "storefront.active": "Aktiv",
+  "storefront.bom": "Stückliste",
+  "storefront.copied": "Link kopiert!",
+  "storefront.share": "Konfiguration teilen"
 }

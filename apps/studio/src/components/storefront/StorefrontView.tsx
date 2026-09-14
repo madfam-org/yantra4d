@@ -25,7 +25,17 @@ export default function StorefrontView({ onExitStorefront }: StorefrontViewProps
     const name = (typeof project.name === 'object' ? (project.name as Record<string, string>)?.en : project.name) || project.slug || ''
     const description = (typeof project.description === 'object' ? (project.description as Record<string, string>)?.en : project.description) || ''
     const tags = project.tags as string[] | undefined
+    const thumbnail = typeof project.thumbnail === 'string' && project.thumbnail.length > 0 ? project.thumbnail : null
     const presets = manifest?.presets ?? []
+    // The first parameter group is the one a cartridge leads with (a device
+    // cartridge's envelope); its parameters head each preset card's summary.
+    const parameterGroups = ((manifest as Record<string, unknown>)?.parameter_groups as Array<Record<string, unknown>> | undefined) ?? []
+    const firstGroupId = typeof parameterGroups[0]?.id === 'string' ? (parameterGroups[0].id as string) : null
+    const summaryKeys = firstGroupId
+        ? (((manifest as Record<string, unknown>)?.parameters as Array<Record<string, unknown>> | undefined) ?? [])
+            .filter(param => param.group === firstGroupId && typeof param.id === 'string')
+            .map(param => param.id as string)
+        : []
     const bom = (manifest as Record<string, unknown>)?.bom as Array<Record<string, unknown>> ?? []
     const modes = manifest?.modes ?? []
     const firstMode = modes[0]?.id ?? ''
@@ -59,7 +69,16 @@ export default function StorefrontView({ onExitStorefront }: StorefrontViewProps
             {/* Header */}
             <header className="border-b border-border bg-card px-4 py-4 sm:px-6 sm:py-6">
                 <div className="flex items-start justify-between gap-4 max-w-4xl mx-auto">
-                    <div>
+                    {thumbnail && (
+                        <img
+                            src={thumbnail}
+                            alt={name}
+                            data-testid="storefront-thumbnail"
+                            className="w-24 h-24 sm:w-32 sm:h-32 rounded-lg object-cover bg-muted shrink-0"
+                            loading="eager"
+                        />
+                    )}
+                    <div className="min-w-0 flex-1">
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight" data-testid="storefront-title">
                             {name}
                         </h1>
@@ -99,6 +118,7 @@ export default function StorefrontView({ onExitStorefront }: StorefrontViewProps
                             currentMode={firstMode}
                             onSelect={handleSelectPreset}
                             activePreset={activePreset}
+                            summaryKeys={summaryKeys}
                         />
                     </section>
                 )}

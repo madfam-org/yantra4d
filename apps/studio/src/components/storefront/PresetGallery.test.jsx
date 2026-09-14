@@ -14,7 +14,7 @@ vi.mock('../../contexts/project/ManifestProvider', () => ({
     }),
 }))
 
-import PresetGallery from './PresetGallery'
+import PresetGallery, { summaryEntries } from './PresetGallery'
 
 const MOCK_PRESETS = [
     {
@@ -89,5 +89,11 @@ describe('PresetGallery', () => {
     it('renders the heading', () => {
         render(<PresetGallery {...defaultProps} />)
         expect(screen.getByText('Configurations')).toBeInTheDocument()
+    })
+
+    it('orders a summary by summaryKeys first, then the rest, and ignores unknown keys', () => {
+        const entries = summaryEntries({ c: 3, a: 1, b: 2 }, ['b', 'zz', 'a'])
+        expect(entries.map(([k]) => k)).toEqual(['b', 'a', 'c'])
+        expect(summaryEntries({ c: 3, a: 1 }).map(([k]) => k)).toEqual(['c', 'a'])
     })
 })

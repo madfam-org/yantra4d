@@ -2,9 +2,9 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 501,
-    "with_cdg_interfaces": 491,
-    "with_commons_license": 501,
+    "cartridges": 502,
+    "with_cdg_interfaces": 492,
+    "with_commons_license": 502,
     "dual_engine": 20
   },
   "domains": {
@@ -19,8 +19,8 @@
     "soft-robotics": 7,
     "agriculture": 5,
     "consumer": 2,
+    "consumer-electronics": 2,
     "construction": 1,
-    "consumer-electronics": 1,
     "electronics": 1,
     "energy": 1,
     "play": 1
@@ -312,17 +312,26 @@
     "internal — pitch floored at slot width plus a 2 mm bar",
     "internal/aocl",
     "internal: 3 mm foot pads registering base floor to lid crown",
+    "internal: a SIM-tray mouth in the cover half's end face. Present only where the registry lists a `sim` port; an eSIM-only device has a SOURCED absence, not an unknown.",
+    "internal: a recessed camera island with a row of circular apertures sunk through its floor, in the camera half's outer face. A RECESS, not a raised bump — every depth published in this family excludes the camera bump and none publishes its height.",
+    "internal: a rectangular aperture of the cover display's active area, sunk display_recess_depth into the cover half's outer face. The same id the clamshell cartridge's display_panel component exposes.",
     "internal: a rectangular aperture of the display's published active area, sunk screen_recess_depth into the lower deck's face. It also sets where the control clusters sit.",
     "internal: a rectangular aperture of the display's published active area, sunk screen_recess_depth into the upper deck's inner face.",
+    "internal: a rectangular opening in the cover half's end face, sized to clear a USB-C receptacle. Present only where the registry lists the port.",
     "internal: a rectangular opening in the front face of the lower deck, sized to clear a USB-C receptacle. Present only where the registry lists the port.",
+    "internal: a rectangular pocket in the cover half's opening edge, for a power or volume key. The same id the clamshell cartridge's face_button and button_row components expose, in a third arrangement.",
     "internal: base knuckle r = hingeRadiusMm, lid knuckle r = that minus 0.5 mm running clearance; lid knuckle 1 mm narrower axially",
     "internal: catch latchSupportTotalWidth wide, 5 mm engagement, 4 mm strap thickness",
     "internal: rim enters the base rimHeightMm deep with 0.5 mm assembly clearance",
     "internal: ring outer face inset 1.75 mm per side from the shell face; ring width = rimWidthMm; ring height = gasketSlotDepth (1-5 mm)",
+    "internal: the X axis through the origin, in the MIDDLE of the gap between the two half-frames. The gap is the published closed depth less twice the published open depth; it exists only when the device is closed, because a turn about this axis lands both halves in one z band. fold_angle 0 closed, 180 open.",
     "internal: the X axis through the origin, in the seam plane at the rear face. Barrel radius hinge_barrel_radius against a hinge_relief_radius pocket in both decks; the difference is the running clearance. fold_angle 0 closed, 180 flat.",
     "internal: the cavity is exactly the declared internal dimensions",
     "internal: the closed outline — deck_length x deck_depth x (upper + lower deck thickness), corners rounded by corner_radius. An accessory that takes a device envelope mates here.",
+    "internal: the closed outline — hinge_axis_length x cover_half_width x (2 x half_thickness + the hinge gap), with the opening edge rounded by corner_radius. An accessory that takes a device envelope mates here. The OPEN outline is hinge_axis_length x (cover_half_width + camera_half_width) x half_thickness.",
+    "internal: the cover half's outer face and its footprint — the surface a dock, stand or cradle registers against when the device is closed.",
     "internal: the lower deck's outer face and its rounded footprint — the surface a dock, stand or cradle registers against.",
+    "internal: the strip of the folding panel that bends, centred on the fold axis and running the display's full width along it. What the hinge's relief is sized to give room to.",
     "iso_8559",
     "kinematic (Maxwell / Kelvin) 3-ball coupling",
     "low / high shank (19 / 32 mm bar-to-plate)",
@@ -3589,6 +3598,247 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set boning-stay"
+      }
+    },
+    {
+      "slug": "book-fold-phone",
+      "name": "Book-Fold Phone",
+      "domain": "consumer-electronics",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 5,
+      "parts": 3,
+      "parameters": 70,
+      "parameter_ids": [
+        "hinge_axis_length",
+        "cover_half_width",
+        "camera_half_width",
+        "half_thickness",
+        "corner_radius",
+        "fold_angle",
+        "cover_half_center_y",
+        "cover_half_center_z",
+        "camera_half_center_y",
+        "camera_half_center_z",
+        "hinge_cavity_radius",
+        "hinge_cavity_span",
+        "hinge_leaf_radius",
+        "hinge_leaf_span",
+        "hinge_clip_span",
+        "hinge_clip_center_y",
+        "inner_display_width",
+        "inner_display_cover_span",
+        "inner_display_camera_span",
+        "inner_display_cover_center_y",
+        "inner_display_camera_center_y",
+        "inner_display_cover_cut_center_z",
+        "inner_display_camera_cut_center_z",
+        "cover_display_width",
+        "cover_display_height",
+        "cover_display_center_y",
+        "cover_display_cut_center_z",
+        "display_recess_depth",
+        "lens_island_width",
+        "lens_island_height",
+        "lens_island_depth",
+        "lens_island_center_x",
+        "lens_island_center_y",
+        "lens_island_cut_center_z",
+        "lens_count",
+        "lens_radius",
+        "lens_depth",
+        "lens_first_center_x",
+        "lens_pitch_x",
+        "lens_center_y",
+        "lens_cut_center_z",
+        "button_count",
+        "button_width",
+        "button_seat_depth",
+        "button_height",
+        "button_first_center_x",
+        "button_pitch_x",
+        "button_center_y",
+        "button_center_z",
+        "usb_c_present",
+        "usb_c_width",
+        "usb_c_height",
+        "usb_c_depth",
+        "usb_c_center_x",
+        "usb_c_center_y",
+        "usb_c_center_z",
+        "card_slot_present",
+        "card_slot_width",
+        "card_slot_height",
+        "card_slot_depth",
+        "card_slot_center_x",
+        "card_slot_center_y",
+        "card_slot_center_z",
+        "speaker_hole_count",
+        "speaker_hole_radius",
+        "speaker_hole_depth",
+        "speaker_center_x",
+        "speaker_first_center_y",
+        "speaker_pitch_y",
+        "speaker_center_z"
+      ],
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "A dimensioned, parametric model of the book-fold phones people actually own lets anyone fabricate a cradle, a dock, a travel shell, a screen-protector jig or a repair fixture that fits — for hardware whose manufacturer publishes an outline and nothing else. It also makes the family's own arithmetic legible: the gap between the two halves, the dimension that separates a 2019 fold from a 2026 one, is not a styling claim but the difference between two published numbers, and this cartridge is where you can see it.",
+        "es": "Un modelo paramétrico y acotado de los plegables de libro que la gente tiene permite fabricar una base, un dock, una funda de viaje, una plantilla de protector o un útil de reparación que encaje — para equipos cuyo fabricante publica un contorno y nada más. Además hace legible la aritmética de la familia: la holgura entre las dos mitades, la dimensión que separa un plegable de 2019 de uno de 2026, no es una afirmación de estilo sino la diferencia entre dos cifras publicadas."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "device_envelope",
+          "label": "Device Envelope",
+          "geometry_type": "profile",
+          "standard": "internal: the closed outline — hinge_axis_length x cover_half_width x (2 x half_thickness + the hinge gap), with the opening edge rounded by corner_radius. An accessory that takes a device envelope mates here. The OPEN outline is hinge_axis_length x (cover_half_width + camera_half_width) x half_thickness.",
+          "parameters": [
+            "hinge_axis_length",
+            "cover_half_width",
+            "camera_half_width",
+            "half_thickness",
+            "corner_radius"
+          ]
+        },
+        {
+          "id": "fold_axis",
+          "label": "Fold Axis",
+          "geometry_type": "hinge",
+          "standard": "internal: the X axis through the origin, in the MIDDLE of the gap between the two half-frames. The gap is the published closed depth less twice the published open depth; it exists only when the device is closed, because a turn about this axis lands both halves in one z band. fold_angle 0 closed, 180 open.",
+          "parameters": [
+            "cover_half_center_z",
+            "camera_half_center_z",
+            "half_thickness",
+            "hinge_cavity_radius",
+            "hinge_cavity_span",
+            "hinge_leaf_radius",
+            "fold_angle"
+          ]
+        },
+        {
+          "id": "crease_region",
+          "label": "Crease Region",
+          "geometry_type": "surface",
+          "standard": "internal: the strip of the folding panel that bends, centred on the fold axis and running the display's full width along it. What the hinge's relief is sized to give room to.",
+          "parameters": [
+            "inner_display_width",
+            "inner_display_cover_span",
+            "inner_display_camera_span",
+            "hinge_cavity_radius"
+          ]
+        },
+        {
+          "id": "display_recess",
+          "label": "Display Recess",
+          "geometry_type": "screen",
+          "standard": "internal: a rectangular aperture of the cover display's active area, sunk display_recess_depth into the cover half's outer face. The same id the clamshell cartridge's display_panel component exposes.",
+          "parameters": [
+            "cover_display_width",
+            "cover_display_height",
+            "cover_display_center_y",
+            "display_recess_depth"
+          ]
+        },
+        {
+          "id": "lens_aperture",
+          "label": "Lens Aperture",
+          "geometry_type": "pocket",
+          "standard": "internal: a recessed camera island with a row of circular apertures sunk through its floor, in the camera half's outer face. A RECESS, not a raised bump — every depth published in this family excludes the camera bump and none publishes its height.",
+          "parameters": [
+            "lens_island_width",
+            "lens_island_height",
+            "lens_island_depth",
+            "lens_count",
+            "lens_radius",
+            "lens_depth"
+          ]
+        },
+        {
+          "id": "button_seat",
+          "label": "Button Seat",
+          "geometry_type": "pocket",
+          "standard": "internal: a rectangular pocket in the cover half's opening edge, for a power or volume key. The same id the clamshell cartridge's face_button and button_row components expose, in a third arrangement.",
+          "parameters": [
+            "button_count",
+            "button_width",
+            "button_seat_depth",
+            "button_height",
+            "button_pitch_x"
+          ]
+        },
+        {
+          "id": "port_cutout",
+          "label": "USB-C Port Opening",
+          "geometry_type": "port",
+          "standard": "internal: a rectangular opening in the cover half's end face, sized to clear a USB-C receptacle. Present only where the registry lists the port.",
+          "parameters": [
+            "usb_c_present",
+            "usb_c_width",
+            "usb_c_height",
+            "usb_c_center_x",
+            "usb_c_center_z"
+          ]
+        },
+        {
+          "id": "card_slot",
+          "label": "Card Tray Slot",
+          "geometry_type": "socket",
+          "standard": "internal: a SIM-tray mouth in the cover half's end face. Present only where the registry lists a `sim` port; an eSIM-only device has a SOURCED absence, not an unknown.",
+          "parameters": [
+            "card_slot_present",
+            "card_slot_width",
+            "card_slot_height",
+            "card_slot_depth"
+          ]
+        },
+        {
+          "id": "cradle_seat",
+          "label": "Cradle Seat",
+          "geometry_type": "surface",
+          "standard": "internal: the cover half's outer face and its footprint — the surface a dock, stand or cradle registers against when the device is closed.",
+          "parameters": [
+            "hinge_axis_length",
+            "cover_half_width",
+            "half_thickness",
+            "corner_radius"
+          ]
+        }
+      ],
+      "standards": [
+        "internal: a SIM-tray mouth in the cover half's end face. Present only where the registry lists a `sim` port; an eSIM-only device has a SOURCED absence, not an unknown.",
+        "internal: a recessed camera island with a row of circular apertures sunk through its floor, in the camera half's outer face. A RECESS, not a raised bump — every depth published in this family excludes the camera bump and none publishes its height.",
+        "internal: a rectangular aperture of the cover display's active area, sunk display_recess_depth into the cover half's outer face. The same id the clamshell cartridge's display_panel component exposes.",
+        "internal: a rectangular opening in the cover half's end face, sized to clear a USB-C receptacle. Present only where the registry lists the port.",
+        "internal: a rectangular pocket in the cover half's opening edge, for a power or volume key. The same id the clamshell cartridge's face_button and button_row components expose, in a third arrangement.",
+        "internal: the X axis through the origin, in the MIDDLE of the gap between the two half-frames. The gap is the published closed depth less twice the published open depth; it exists only when the device is closed, because a turn about this axis lands both halves in one z band. fold_angle 0 closed, 180 open.",
+        "internal: the closed outline — hinge_axis_length x cover_half_width x (2 x half_thickness + the hinge gap), with the opening edge rounded by corner_radius. An accessory that takes a device envelope mates here. The OPEN outline is hinge_axis_length x (cover_half_width + camera_half_width) x half_thickness.",
+        "internal: the cover half's outer face and its footprint — the surface a dock, stand or cradle registers against when the device is closed.",
+        "internal: the strip of the folding panel that bends, centred on the fold axis and running the display's full width along it. What the hinge's relief is sized to give room to."
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "book-fold-phone/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set book-fold-phone"
       }
     },
     {

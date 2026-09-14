@@ -368,5 +368,12 @@
   "placement.reason.estimate_over_threshold": "Lento demais para uma aba do navegador.",
   "placement.reason.force_backend_hint_limited_device": "Este projeto prefere o servidor num dispositivo como este.",
   "placement.reason.backend_unavailable": "Nosso servidor está inacessível, então seu navegador assume.",
-  "placement.reason.backend_unavailable_no_browser_fallback": "Nosso servidor está inacessível e este dispositivo não renderiza localmente."
+  "placement.reason.backend_unavailable_no_browser_fallback": "Nosso servidor está inacessível e este dispositivo não renderiza localmente.",
+  "storefront.presets": "Configurações",
+  "storefront.exitPreview": "Sair da pré-visualização",
+  "storefront.downloadStl": "Baixar STL",
+  "storefront.active": "Ativa",
+  "storefront.bom": "Lista de materiais",
+  "storefront.copied": "Link copiado!",
+  "storefront.share": "Compartilhar configuração"
 }

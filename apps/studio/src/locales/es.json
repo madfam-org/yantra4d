@@ -368,5 +368,12 @@
   "placement.reason.estimate_over_threshold": "Demasiado lento para una pestaña del navegador.",
   "placement.reason.force_backend_hint_limited_device": "Este proyecto prefiere el servidor en un dispositivo como este.",
   "placement.reason.backend_unavailable": "Nuestro servidor no responde, así que tu navegador se encarga.",
-  "placement.reason.backend_unavailable_no_browser_fallback": "Nuestro servidor no responde y este dispositivo no puede renderizar localmente."
+  "placement.reason.backend_unavailable_no_browser_fallback": "Nuestro servidor no responde y este dispositivo no puede renderizar localmente.",
+  "storefront.presets": "Configuraciones",
+  "storefront.exitPreview": "Salir de la vista previa",
+  "storefront.downloadStl": "Descargar STL",
+  "storefront.active": "Activa",
+  "storefront.bom": "Lista de materiales",
+  "storefront.copied": "¡Enlace copiado!",
+  "storefront.share": "Compartir configuración"
 }

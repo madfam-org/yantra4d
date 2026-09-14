@@ -368,5 +368,12 @@
   "placement.reason.estimate_over_threshold": "Trop lent pour un onglet de navigateur.",
   "placement.reason.force_backend_hint_limited_device": "Ce projet préfère le serveur sur un appareil comme celui-ci.",
   "placement.reason.backend_unavailable": "Notre serveur est injoignable, votre navigateur prend le relais.",
-  "placement.reason.backend_unavailable_no_browser_fallback": "Notre serveur est injoignable et cet appareil ne peut pas rendre localement."
+  "placement.reason.backend_unavailable_no_browser_fallback": "Notre serveur est injoignable et cet appareil ne peut pas rendre localement.",
+  "storefront.presets": "Configurations",
+  "storefront.exitPreview": "Quitter l'aperçu",
+  "storefront.downloadStl": "Télécharger STL",
+  "storefront.active": "Active",
+  "storefront.bom": "Nomenclature",
+  "storefront.copied": "Lien copié !",
+  "storefront.share": "Partager la configuration"
 }

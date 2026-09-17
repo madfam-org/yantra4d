@@ -18,14 +18,23 @@
  * The upstream fix already exists in the typescript-sdk *source*
  * (`Auth.getJanuaAuthorizeUrl`, `Auth.handleJanuaSSOCallback`,
  * `buildJanuaAuthorizeUrl`) but is not published. This module mirrors that
- * contract exactly — the same URL shape, the same sessionStorage keys for the
- * PKCE material and the same localStorage keys for the tokens — so the SDK's
+ * contract exactly — the same URL shape, the same key names for the PKCE
+ * material and the same localStorage keys for the tokens — so the SDK's
  * `JanuaProvider` picks the session up on its next mount, and a later SDK bump
  * can delete this file without a migration. `januaSso.test.ts` pins the key
  * names against the installed SDK.
+ *
+ * One deliberate difference from the SDK: the PKCE material and the return
+ * path live in localStorage, not sessionStorage. The Studio asks Janua's
+ * hosted login for a magic link first (`login_method=magic_link`), and an
+ * emailed link is opened wherever the person reads mail — usually a NEW tab.
+ * sessionStorage is per tab, so the verifier minted in the first tab would be
+ * invisible to the tab that receives the code, and every link-based sign-in
+ * would die with "state did not match". localStorage is shared across tabs of
+ * the origin; the material is one-time and is cleared on completion or failure.
  */
 
-/** sessionStorage keys the SDK's `retrievePKCEParams()` / `validateState()` read. */
+/** Key names shared with the SDK's `retrievePKCEParams()` / `validateState()`; kept in localStorage here (see the module doc). */
 export const PKCE_STORAGE_KEYS = {
   codeVerifier: 'janua_pkce_verifier',
   state: 'janua_pkce_state',
@@ -42,6 +51,16 @@ export const TOKEN_STORAGE_KEYS = {
 export const RETURN_PATH_KEY = 'yantra4d_sign_in_return_path'
 
 export const DEFAULT_SCOPES = 'openid profile email'
+
+/**
+ * Which method Janua's hosted login offers first. The Studio is a public PKCE
+ * client whose people may hold no password at all (staff accounts were created
+ * by invitation and social sign-in), so it asks for the emailed sign-in link;
+ * the password form stays one click away on the hosted page. Janua ignores the
+ * hint on builds that predate it.
+ */
+export type JanuaLoginMethod = 'magic_link' | 'password'
+export const STUDIO_LOGIN_METHOD: JanuaLoginMethod = 'magic_link'
 
 export interface JanuaSsoConfig {
   /** Janua issuer, e.g. `https://auth.madfam.io`. */
@@ -113,6 +132,8 @@ export interface AuthorizeUrlParams {
   scopes?: string
   nonce?: string
   prompt?: string
+  /** Hosted-login method to offer first (`login_method=`); omitted when undefined. */
+  loginMethod?: JanuaLoginMethod
 }
 
 /**
@@ -122,7 +143,7 @@ export interface AuthorizeUrlParams {
 export function buildJanuaAuthorizeUrl(params: AuthorizeUrlParams): string {
   const {
     baseURL, clientId, redirectUri, codeChallenge, state,
-    scopes = DEFAULT_SCOPES, nonce, prompt,
+    scopes = DEFAULT_SCOPES, nonce, prompt, loginMethod,
   } = params
   const url = new URL(`${stripTrailingSlashes(baseURL)}/api/v1/oauth/authorize`)
   url.searchParams.set('response_type', 'code')
@@ -134,6 +155,7 @@ export function buildJanuaAuthorizeUrl(params: AuthorizeUrlParams): string {
   url.searchParams.set('state', state)
   if (nonce) url.searchParams.set('nonce', nonce)
   if (prompt) url.searchParams.set('prompt', prompt)
+  if (loginMethod) url.searchParams.set('login_method', loginMethod)
   return url.toString()
 }
 
@@ -156,13 +178,15 @@ function currentPath(): string {
 }
 
 function clearPkce(): void {
-  sessionStorage.removeItem(PKCE_STORAGE_KEYS.codeVerifier)
-  sessionStorage.removeItem(PKCE_STORAGE_KEYS.state)
+  localStorage.removeItem(PKCE_STORAGE_KEYS.codeVerifier)
+  localStorage.removeItem(PKCE_STORAGE_KEYS.state)
 }
 
 export interface BeginSignInOptions {
   /** Same-origin path to return to after the callback; defaults to the current page. */
   returnTo?: string
+  /** Hosted-login method to ask for first; defaults to the Studio's (`magic_link`). */
+  loginMethod?: JanuaLoginMethod
   /** Navigation hook, injectable for tests. Defaults to `window.location.assign`. */
   navigate?: (url: string) => void
 }
@@ -179,12 +203,12 @@ export async function beginJanuaSignIn(
   const challenge = await generateCodeChallenge(verifier)
   const state = generateState()
 
-  sessionStorage.setItem(PKCE_STORAGE_KEYS.codeVerifier, verifier)
-  sessionStorage.setItem(PKCE_STORAGE_KEYS.state, state)
+  localStorage.setItem(PKCE_STORAGE_KEYS.codeVerifier, verifier)
+  localStorage.setItem(PKCE_STORAGE_KEYS.state, state)
 
   const returnTo = sanitizeReturnPath(options.returnTo ?? currentPath())
-  if (returnTo) sessionStorage.setItem(RETURN_PATH_KEY, returnTo)
-  else sessionStorage.removeItem(RETURN_PATH_KEY)
+  if (returnTo) localStorage.setItem(RETURN_PATH_KEY, returnTo)
+  else localStorage.removeItem(RETURN_PATH_KEY)
 
   const url = buildJanuaAuthorizeUrl({
     baseURL: config.baseURL,
@@ -192,6 +216,7 @@ export async function beginJanuaSignIn(
     redirectUri: config.redirectUri,
     codeChallenge: challenge,
     state,
+    loginMethod: options.loginMethod ?? STUDIO_LOGIN_METHOD,
   })
   const navigate = options.navigate ?? ((target: string) => window.location.assign(target))
   navigate(url)
@@ -225,8 +250,8 @@ export async function completeJanuaSignIn(
   state: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<JanuaTokens> {
-  const storedState = sessionStorage.getItem(PKCE_STORAGE_KEYS.state)
-  const verifier = sessionStorage.getItem(PKCE_STORAGE_KEYS.codeVerifier)
+  const storedState = localStorage.getItem(PKCE_STORAGE_KEYS.state)
+  const verifier = localStorage.getItem(PKCE_STORAGE_KEYS.codeVerifier)
 
   if (!code) {
     clearPkce()
@@ -281,7 +306,7 @@ export async function completeJanuaSignIn(
 
 /** Read and forget the remembered return path; `null` when there is none or it is unsafe. */
 export function consumeReturnPath(): string | null {
-  const stored = sessionStorage.getItem(RETURN_PATH_KEY)
-  sessionStorage.removeItem(RETURN_PATH_KEY)
+  const stored = localStorage.getItem(RETURN_PATH_KEY)
+  localStorage.removeItem(RETURN_PATH_KEY)
   return sanitizeReturnPath(stored)
 }

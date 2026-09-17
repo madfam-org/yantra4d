@@ -1,3 +1,4 @@
+import { bearerHeaderForSameOrigin } from '../../lib/januaSso'
 /**
  * IndexedDB-backed persistent render cache.
  *
@@ -129,7 +130,8 @@ export async function put(key: string, parts: PutPart[]): Promise<void> {
         if (p.blob) {
           arrayBuffer = await p.blob.arrayBuffer()
         } else if (p.url) {
-          const res = await fetch(p.url)
+          const _auth = bearerHeaderForSameOrigin(p.url)
+          const res = await fetch(p.url, _auth ? { headers: { Authorization: _auth } } : undefined)
           arrayBuffer = await res.arrayBuffer()
         } else {
           return null
@@ -142,7 +144,8 @@ export async function put(key: string, parts: PutPart[]): Promise<void> {
         // so handleDownloadStl can skip redundant re-renders.
         if (p.download_url && p.download_url !== p.url) {
           try {
-            const dlRes = await fetch(p.download_url)
+            const _dlAuth = bearerHeaderForSameOrigin(p.download_url)
+            const dlRes = await fetch(p.download_url, _dlAuth ? { headers: { Authorization: _dlAuth } } : undefined)
             result.downloadArrayBuffer = await dlRes.arrayBuffer()
           } catch {
             // Non-fatal — download will fall back to re-render

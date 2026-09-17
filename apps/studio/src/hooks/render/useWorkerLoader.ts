@@ -4,6 +4,7 @@ import { BufferGeometry, BufferAttribute, Scene } from 'three'
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 // @ts-expect-error three.js examples lack type declarations in this project's TS config
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
+import { bearerHeaderForSameOrigin } from '../../lib/januaSso'
 
 interface WorkerGeometryData {
   positions: Float32Array
@@ -42,6 +43,8 @@ export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean 
     useEffect(() => {
         if (!isGLTF || !url) return
         const loader = new GLTFLoader()
+        const auth = bearerHeaderForSameOrigin(url)
+        if (auth) loader.setRequestHeader({ Authorization: auth })
         loader.loadAsync(url).then((data: GLTF) => setGltfData(data)).catch(console.error)
     }, [url, isGLTF])
 
@@ -174,7 +177,7 @@ export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean 
         worker.addEventListener('messageerror', handleMessageError)
 
         // Kick off the worker task
-        stlWorkerInstance.postMessage({ url, id: taskId })
+        stlWorkerInstance.postMessage({ url, id: taskId, authHeader: bearerHeaderForSameOrigin(url) })
 
         return () => {
             stlWorkerInstance?.removeEventListener('message', handleMessage)

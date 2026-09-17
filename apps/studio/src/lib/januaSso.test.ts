@@ -17,6 +17,7 @@ import {
   getStoredAccessToken,
   hasStoredJanuaSession,
   bearerHeaderForSameOrigin,
+  getStoredIdentityEmail,
 } from './januaSso'
 
 // jsdom ships getRandomValues but not SubtleCrypto; the S256 challenge needs it.
@@ -352,5 +353,42 @@ describe('bearerHeaderForSameOrigin', () => {
   it('returns null for an unparseable URL', () => {
     localStorage.setItem(TOKEN_STORAGE_KEYS.accessToken, jwt())
     expect(bearerHeaderForSameOrigin('http://[::bad')).toBeNull()
+  })
+})
+
+
+describe('getStoredIdentityEmail', () => {
+  const jwt = (payload: Record<string, unknown>) => {
+    const b64url = (o: unknown) =>
+      Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+    return `${b64url({ alg: 'none' })}.${b64url(payload)}.sig`
+  }
+
+  it('returns null with no stored token', () => {
+    expect(getStoredIdentityEmail()).toBeNull()
+  })
+
+  it('reads the email claim from the stored access token', () => {
+    localStorage.setItem(
+      TOKEN_STORAGE_KEYS.accessToken,
+      jwt({ email: 'caro@madfam.io', exp: Math.floor(Date.now() / 1000) + 3600 }),
+    )
+    expect(getStoredIdentityEmail()).toBe('caro@madfam.io')
+  })
+
+  it('returns null when the token carries no email claim', () => {
+    localStorage.setItem(
+      TOKEN_STORAGE_KEYS.accessToken,
+      jwt({ sub: 'u', exp: Math.floor(Date.now() / 1000) + 3600 }),
+    )
+    expect(getStoredIdentityEmail()).toBeNull()
+  })
+
+  it('returns null once the token has expired', () => {
+    localStorage.setItem(
+      TOKEN_STORAGE_KEYS.accessToken,
+      jwt({ email: 'caro@madfam.io', exp: Math.floor(Date.now() / 1000) - 60 }),
+    )
+    expect(getStoredIdentityEmail()).toBeNull()
   })
 })

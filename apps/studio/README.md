@@ -44,11 +44,12 @@ carry that access token as a `Bearer`. Three things make that happen:
 |---------|-----|
 | API calls (`apiFetch`) | `services/core/apiClient.ts` injects `Authorization` from a token getter. It is registered **eagerly in `main.tsx`, before React renders** (`setTokenGetter(getStoredAccessToken)`) so the very first request — e.g. a private project's manifest on a hard load — is authenticated; the SDK's richer getter (refresh-on-expiry) replaces it once the auth context mounts. |
 | Signed-in state | `AuthProvider` derives `isAuthenticated` from `hasStoredJanuaSession()`, not only the SDK's `user`. The SDK loads `user` from Janua's `/api/v1/auth/me`, which rejects a `yantra4d-api`-audience token, so a valid session would otherwise read as signed-out and the private-project gate would stay locked. |
-| Mesh artifacts | The 3D viewer's `GLTFLoader`, the STL Web Worker (`workers/stlWorker.js`), and the IndexedDB render cache (`services/cache/renderCache.ts`) fetch `/static/<slug>_preview_*.glb\|.stl` **outside** `apiFetch`. Each attaches the token via `bearerHeaderForSameOrigin(url)` (januaSso) — **same-origin only**, so the `yantra4d-api` bearer never leaks to a third-party host. A private-project artifact answers 403 without it, and THREE then fails with "GLTFLoader: Unsupported asset". `renderCache` also refuses to cache a non-OK response, so an error body can never poison the L2 store.
+| Mesh artifacts | The 3D viewer's `GLTFLoader`, the STL Web Worker (`workers/stlWorker.js`), and the IndexedDB render cache (`services/cache/renderCache.ts`) fetch `/static/<slug>_preview_*.glb\|.stl` **outside** `apiFetch`. Each attaches the token via `bearerHeaderForSameOrigin(url)` (januaSso) — **same-origin only**, so the `yantra4d-api` bearer never leaks to a third-party host. A private-project artifact answers 403 without it, and THREE then fails with "GLTFLoader: Unsupported asset". `renderCache` also refuses to cache a non-OK response, so an error body can never poison the L2 store. |
+| Nav / sign-out | `components/auth/AuthButton.tsx` decides signed-in from `isAuthenticated` (the stored session), **not** the SDK's `useSession().session` — which this flow never populates, so the nav otherwise showed a sign-in button that only bounced through the existing Janua session. Signed in, it shows the stored-token email (`getStoredIdentityEmail`) and a **Sign out** that uses the SDK's `signOut` — clearing the stored tokens **and** dropping the Janua session cookie (`client.signOut()`) — then reloads, so the next sign-in shows the login form instead of silently resuming. |
 
-The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()` and
-`bearerHeaderForSameOrigin()` live in `src/lib/januaSso.ts` and are unit-tested
-in `januaSso.test.ts`.
+The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()`,
+`getStoredIdentityEmail()` and `bearerHeaderForSameOrigin()` live in
+`src/lib/januaSso.ts` and are unit-tested in `januaSso.test.ts`.
 
 ### Key Files
 
@@ -60,8 +61,9 @@ in `januaSso.test.ts`.
 | `src/components/bom/BomPanel.tsx` | Smart Bill of Materials parsing physical parts and required hardware |
 | `src/components/viewer/Viewer.tsx` | Three.js STL viewer with camera controls and snapshot export |
 | `src/contexts/project/ManifestProvider.tsx` | Manifest fetch, fallback, typed accessors via `useManifest()` |
-| `src/lib/januaSso.ts` | OIDC/PKCE sign-in, token storage, and the auth helpers (`getStoredAccessToken`, `hasStoredJanuaSession`, `bearerHeaderForSameOrigin`) |
+| `src/lib/januaSso.ts` | OIDC/PKCE sign-in, token storage, and the auth helpers (`getStoredAccessToken`, `hasStoredJanuaSession`, `getStoredIdentityEmail`, `bearerHeaderForSameOrigin`) |
 | `src/contexts/auth/AuthProvider.tsx` | Bridges the Janua SDK session into `useAuth()`; derives `isAuthenticated` from the stored token |
+| `src/components/auth/AuthButton.tsx` | Nav account control — sign-in when signed out, email + a session-clearing Sign out when signed in |
 | `src/services/core/apiClient.ts` | `apiFetch` — injects the `Authorization` bearer from a registered token getter |
 | `src/hooks/render/useWorkerLoader.ts` | Loads a rendered mesh (GLB via `GLTFLoader`, STL via a Web Worker); attaches the bearer for same-origin, gated artifacts |
 | `src/services/cache/renderCache.ts` | IndexedDB L2 cache of rendered parts; authenticates artifact fetches and never caches a non-OK response |

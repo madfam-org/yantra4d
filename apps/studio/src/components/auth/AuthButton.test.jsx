@@ -8,6 +8,7 @@ const mockAuth = {
   isLoading: false,
   signOut: vi.fn(),
   signInWithOAuth: vi.fn(),
+  signInWithJanua: vi.fn(async () => {}),
 }
 
 let mockSession = null
@@ -46,10 +47,22 @@ describe('AuthButton', () => {
     expect(screen.getByText('auth.sign_in')).toBeInTheDocument()
   })
 
-  it('calls signInWithOAuth on sign in click', () => {
+  it('starts "Sign in with Janua" on click — never the social proxy flow', () => {
+    // signInWithOAuth(provider) navigates to Janua's POST-only social route
+    // (405) and auth.madfam.io has no social providers; see lib/januaSso.ts.
     render(<AuthButton />)
     fireEvent.click(screen.getByTitle('auth.sign_in'))
-    expect(mockAuth.signInWithOAuth).toHaveBeenCalledWith('google')
+    expect(mockAuth.signInWithJanua).toHaveBeenCalledTimes(1)
+    expect(mockAuth.signInWithOAuth).not.toHaveBeenCalled()
+  })
+
+  it('reports a sign-in that could not start instead of throwing from the click', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    mockAuth.signInWithJanua.mockRejectedValueOnce(new Error('no client'))
+    render(<AuthButton />)
+    fireEvent.click(screen.getByTitle('auth.sign_in'))
+    await vi.waitFor(() => expect(error).toHaveBeenCalledWith('Sign-in could not start:', expect.any(Error)))
+    error.mockRestore()
   })
 
   it('renders UserProfile when session exists', () => {

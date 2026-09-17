@@ -6,7 +6,7 @@ import { useLanguage } from "../../contexts/system/LanguageProvider"
 
 function AuthButtonInner() {
   const { t } = useLanguage()
-  const { signInWithOAuth } = useAuth()
+  const { signInWithJanua } = useAuth()
   const { session } = useSession()
 
   if (session) {
@@ -17,7 +17,9 @@ function AuthButtonInner() {
     <Button
       variant="ghost"
       size="sm"
-      onClick={() => signInWithOAuth('google')}
+      onClick={() => {
+        signInWithJanua().catch((err: unknown) => console.error('Sign-in could not start:', err))
+      }}
       className="gap-1"
       title={t('auth.sign_in')}
     >

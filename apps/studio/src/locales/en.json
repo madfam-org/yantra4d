@@ -134,6 +134,7 @@
   "auth.sign_out": "Sign out",
   "auth.sign_in_to_download": "Sign in to download",
   "auth.signed_in_as": "Signed in as",
+  "auth.sign_in_failed": "Sign-in failed",
   "print.title": "Print Estimate",
   "print.material": "Material",
   "print.infill": "Infill",

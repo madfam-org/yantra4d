@@ -703,6 +703,16 @@ jobs:
       # the whole point of the check that a partial checkout cannot pass.
       - name: Validate Project Manifests
         run: python3 scripts/qa/validate_manifests.py
+
+      # The Studio's Janua client is declared in janua.client.yaml and applied
+      # by the ecosystem provisioner; several ways it can be wrong (a redirect
+      # that is not the origin deploy.yml sends, a confidential flag on a
+      # browser client, a three-segment scope, a malformed pin) are otherwise
+      # rejected only by Janua's server-side validator, after review and merge.
+      - name: Janua client manifest matches deploy.yml
+        run: |
+          pip install --quiet pyyaml
+          python3 scripts/qa/check_janua_client.py
       # `apps/landing/src/data/projects.ts` is generated from these same
       # manifests and committed, and nothing used to check it: it sat 138
       # entries short of the commons and still listed a client-private

@@ -3,6 +3,7 @@ import { useTheme } from '../../contexts/system/ThemeProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useAuth } from '../../contexts/auth/AuthProvider'
 import { setTokenGetter } from '../../services/core/apiClient'
+import { toast } from 'sonner'
 
 interface ThemeAndLanguageOptions {
   currentView: string
@@ -45,7 +46,12 @@ export function useThemeAndLanguage({ currentView, projectName }: ThemeAndLangua
     const code = url.searchParams.get('code')
     const state = url.searchParams.get('state')
     if (code && state) {
-      (handleOAuth as (code: string, state: string) => Promise<void>)(code, state).catch((err: Error) => console.error('OAuth callback failed:', err))
+      (handleOAuth as (code: string, state: string) => Promise<void>)(code, state).catch((err: Error) => {
+        // A failed exchange used to vanish into the console while the page
+        // simply stayed signed out. Say so, with Janua's reason.
+        console.error('OAuth callback failed:', err)
+        toast.error(t('auth.sign_in_failed'), { description: err?.message })
+      })
       url.searchParams.delete('code')
       url.searchParams.delete('state')
       window.history.replaceState({}, '', url.pathname + url.hash)

@@ -125,6 +125,7 @@
   "auth.sign_out": "Se déconnecter",
   "auth.sign_in_to_download": "Connectez-vous pour télécharger",
   "auth.signed_in_as": "Connecté en tant que",
+  "auth.sign_in_failed": "La connexion a échoué",
   "print.title": "Estimation d'impression",
   "print.material": "Matériau",
   "print.infill": "Remplissage",

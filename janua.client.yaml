@@ -1,0 +1,73 @@
+# Janua OIDC client — the Yantra4D Studio (app.yantra4d.com)
+#
+# This is the Studio's sign-in identity: a PUBLIC client that runs the OIDC
+# authorization-code flow with PKCE (S256) in the browser and holds no secret
+# (apps/studio/src/lib/januaSso.ts). It is declared in two places on purpose:
+#
+#   * HERE, so the build can read the pinned `client_id` (deploy.yml passes it
+#     as VITE_JANUA_CLIENT_ID) instead of a repository secret. The secret this
+#     replaced (JANUA_CLIENT_ID, set 2026-04-09) held an id Janua no longer knew,
+#     and nothing noticed for five months because a secret cannot be reviewed.
+#   * In enclii's ecosystem OIDC registry (config/ecosystem-oidc-provision.yaml,
+#     platform `yantra4d-studio`), which is what actually registers it:
+#
+#       enclii secrets provision oidc --platform yantra4d-studio --reason "..."
+#
+#     runs under the operator's Enclii admin session, creates or reconciles the
+#     client on auth.madfam.io, and returns the `jnc_…` id. A public client has
+#     no secret to intake, so the registry entry has no Vault target.
+#
+# scripts/qa/check_janua_client.py keeps this file honest in CI and is what the
+# deploy reads the pin through. It fails the deploy when the pin is missing: a
+# Studio built without a client id cannot sign anyone in, and Janua would only
+# say so at the first click.
+#
+# THE client_id IS PINNED. Janua minted it with the `jnc_` prefix at the first
+# provision run (2026-09-17); the literal names below are the client's
+# metadata.name and audience, never its client_id. The same pin lives in the
+# enclii registry entry, so a re-run reconciles instead of creating a twin.
+#
+# REDIRECT URI = THE STUDIO ORIGIN, BYTE FOR BYTE. The SDK sends the origin
+# with no path and no trailing slash (VITE_JANUA_REDIRECT_URI), Janua matches it
+# literally at both the authorize and the token step, and Janua also derives
+# its CORS allow-list from active clients' redirect URIs — so this one line is
+# what lets the browser both come back and read the token response.
+#
+# SHAPE: Janua's CLI manifest envelope (apiVersion/kind/metadata/spec),
+# validated by janua packages/cli/src/manifest/schema.ts and, server-side, by
+# apps/api/app/schemas/oauth_client.py (OAuthClientCreate).
+apiVersion: janua.dev/v1
+kind: OAuthClient
+metadata:
+  name: yantra4d-studio
+spec:
+  # Pinned 2026-09-17 from the first provision run (`created: true`); deploy.yml
+  # reads this line. A pin is what makes a re-run reconcile instead of creating
+  # a twin, and it must equal the enclii registry entry's client_id.
+  client_id: jnc_eu9wVVAZZlxWPVa4FICFSVoBb-hrSVVH
+  # The audience the API validates on every token (docs/AUTH.md → Audience;
+  # JANUA_AUDIENCE in yantra4d-secrets). Several machine clients share it
+  # (Fashion Cabinet render, the licence server, Selva's quote client) — Janua
+  # keys registration by NAME, so sharing an audience is fine.
+  audience: yantra4d-api
+  description: Yantra4D Studio (app.yantra4d.com) — public PKCE login client
+  website_url: https://app.yantra4d.com
+  redirect_uris:
+    # Production: the origin exactly as VITE_JANUA_REDIRECT_URI is set in
+    # deploy.yml (no path, no trailing slash).
+    - https://app.yantra4d.com
+    # Local development (`npm run dev` on :5173). http is permitted for
+    # loopback only; the check script enforces https everywhere else.
+    - http://localhost:5173
+  allowed_scopes:
+    # Standard OIDC scopes only. Entitlement is the `yantra4d_tier` claim and
+    # the TIER_OVERRIDES seat — never a scope the Studio could ask for.
+    - openid
+    - profile
+    - email
+  grant_types:
+    - authorization_code
+    - refresh_token
+  # A browser cannot keep a secret. PKCE is what proves the exchange belongs to
+  # the browser that started the sign-in; Janua requires it for public clients.
+  is_confidential: false

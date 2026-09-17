@@ -125,6 +125,7 @@
   "auth.sign_out": "退出",
   "auth.sign_in_to_download": "登录后下载",
   "auth.signed_in_as": "已登录为",
+  "auth.sign_in_failed": "登录失败",
   "print.title": "打印估算",
   "print.material": "材料",
   "print.infill": "填充",

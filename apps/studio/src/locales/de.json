@@ -125,6 +125,7 @@
   "auth.sign_out": "Abmelden",
   "auth.sign_in_to_download": "Anmelden zum Herunterladen",
   "auth.signed_in_as": "Angemeldet als",
+  "auth.sign_in_failed": "Anmeldung fehlgeschlagen",
   "print.title": "Druckschätzung",
   "print.material": "Material",
   "print.infill": "Füllung",

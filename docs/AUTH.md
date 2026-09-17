@@ -643,7 +643,48 @@ A mismatch in any of these causes token validation to fail with a 401 error.
 
 ---
 
+## Sign-in prerequisites: the Studio's Janua client
+
+The Studio signs people in through Janua's **OIDC provider** endpoints —
+`GET /api/v1/oauth/authorize` (Janua's hosted login) and then
+`POST /api/v1/oauth/token` — as a public client with PKCE (S256). The flow is
+implemented in `apps/studio/src/lib/januaSso.ts`, which mirrors the
+`getJanuaAuthorizeUrl` / `handleJanuaSSOCallback` helpers that exist in the
+`@janua/typescript-sdk` *source* but are not published yet; delete the module
+when an SDK release carries them. It deliberately does **not** use the SDK's
+`signInWithOAuth(provider)`: that is the social-login proxy
+(`/api/v1/auth/oauth/authorize/{provider}`), which Janua serves as POST only
+(a browser navigation gets a 405) and for which auth.madfam.io has no
+providers configured (`GET /api/v1/auth/oauth/providers` is empty). Until
+2026-09-16 every "Sign in" click in production ended on that 405 page.
+
+For the flow to work Janua must hold an **active OAuth client** such that:
+
+| Field | Value | Why |
+|---|---|---|
+| `client_id` | the pin in `janua.client.yaml` (`spec.client_id`), which `deploy.yml` reads through `scripts/qa/check_janua_client.py` and passes as `VITE_JANUA_CLIENT_ID`. The client is registered and reconciled by the ecosystem provisioner, `enclii secrets provision oidc --platform yantra4d-studio` (enclii `config/ecosystem-oidc-provision.yaml`), under the operator's Enclii admin session; the same id is pinned in that registry entry so a re-run reconciles instead of duplicating | An unknown id answers `400 invalid_client: Unknown client_id` on authorize and `401 invalid_client: Unknown client` on token. That is what the repository secret this replaced (`JANUA_CLIENT_ID`, 2026-04-09) had drifted into by 2026-09-16 |
+| `is_confidential` | `false` | The exchange runs in the browser with `code_verifier`, no secret |
+| `audience` | `yantra4d-api` | See [Audience](#audience) |
+| `allowed_scopes` | `openid profile email` | What the Studio requests |
+| `redirect_uris` | the Studio origin **exactly** as the SDK sends it — `https://app.yantra4d.com` (no path, no trailing slash; `VITE_JANUA_REDIRECT_URI`), plus `http://localhost:5173` for local dev. `check_janua_client.py` cross-checks the manifest against `deploy.yml` | Janua matches `redirect_uri` literally, **and** derives its CORS allow-list from the origins of active clients' redirect URIs — so the same registration is what lets the browser read the token response |
+
+Symptoms map one-to-one:
+
+| What you see on "Sign in" | Cause |
+|---|---|
+| `405 Method Not Allowed` on `/api/v1/auth/oauth/authorize/google` | the SDK's social flow — fixed by `januaSso.ts` |
+| `400 invalid_client: Unknown client_id` on `/api/v1/oauth/authorize` | the client id in the Studio build is not registered on this Janua |
+| `422 … body.grant_type Field required` on `/api/v1/oauth/token` | a JSON body; the endpoint is form-encoded |
+| a CORS error on `/api/v1/oauth/token` | no active client lists the Studio origin among its redirect URIs |
+| `invalid_redirect_uri` | the registered URI differs from the one sent (path, slash, scheme) |
+
+---
+
 ## Operator playbook: private projects and tier overrides
+
+0. Make sure the Studio can sign in at all — see
+   [Sign-in prerequisites](#sign-in-prerequisites-the-studios-janua-client).
+   No entitlement can take effect before a token reaches the API.
 
 
 1. Put the identities in the `yantra4d-secrets` Secret via Enclii (never in a

@@ -125,6 +125,7 @@
   "auth.sign_out": "Sair",
   "auth.sign_in_to_download": "Entre para baixar",
   "auth.signed_in_as": "Conectado como",
+  "auth.sign_in_failed": "Falha ao iniciar sessão",
   "print.title": "Estimativa de Impressão",
   "print.material": "Material",
   "print.infill": "Preenchimento",

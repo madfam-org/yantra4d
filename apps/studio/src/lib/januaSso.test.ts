@@ -14,6 +14,8 @@ import {
   generateState,
   sanitizeReturnPath,
   stripTrailingSlashes,
+  getStoredAccessToken,
+  hasStoredJanuaSession,
 } from './januaSso'
 
 // jsdom ships getRandomValues but not SubtleCrypto; the S256 challenge needs it.
@@ -272,5 +274,51 @@ describe('storage-key contract with the installed @janua/react-sdk', () => {
       refreshToken: tokens.refreshToken,
       idToken: tokens.idToken,
     })
+  })
+})
+
+
+// A minimal unsigned JWT with the given payload — enough for the exp check,
+// which reads the claim without verifying the signature.
+const makeJwt = (payload: Record<string, unknown>) => {
+  const b64url = (o: unknown) =>
+    Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+  return `${b64url({ alg: 'none', typ: 'JWT' })}.${b64url(payload)}.sig`
+}
+
+describe('getStoredAccessToken / hasStoredJanuaSession', () => {
+  it('returns null with no stored token', () => {
+    expect(getStoredAccessToken()).toBeNull()
+    expect(hasStoredJanuaSession()).toBe(false)
+  })
+
+  it('returns a token whose exp is in the future', () => {
+    const token = makeJwt({ sub: 'u', exp: Math.floor(Date.now() / 1000) + 3600 })
+    localStorage.setItem(TOKEN_STORAGE_KEYS.accessToken, token)
+    expect(getStoredAccessToken()).toBe(token)
+    expect(hasStoredJanuaSession()).toBe(true)
+  })
+
+  it('treats an expired token as no session', () => {
+    localStorage.setItem(
+      TOKEN_STORAGE_KEYS.accessToken,
+      makeJwt({ sub: 'u', exp: Math.floor(Date.now() / 1000) - 60 }),
+    )
+    expect(getStoredAccessToken()).toBeNull()
+    expect(hasStoredJanuaSession()).toBe(false)
+  })
+
+  it('treats a token with no readable exp as usable (the API is the authority)', () => {
+    const token = makeJwt({ sub: 'u' })
+    localStorage.setItem(TOKEN_STORAGE_KEYS.accessToken, token)
+    expect(getStoredAccessToken()).toBe(token)
+    expect(hasStoredJanuaSession()).toBe(true)
+  })
+
+  it('is null-safe when the token is not a JWT', () => {
+    localStorage.setItem(TOKEN_STORAGE_KEYS.accessToken, 'not-a-jwt')
+    // Unparseable exp -> treated as usable rather than throwing.
+    expect(getStoredAccessToken()).toBe('not-a-jwt')
+    expect(hasStoredJanuaSession()).toBe(true)
   })
 })

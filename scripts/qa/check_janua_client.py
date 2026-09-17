@@ -30,11 +30,14 @@ TWO MODES
   check_janua_client.py                  CI: structure + cross-checks; an unpinned
                                          manifest is reported, not failed.
   check_janua_client.py --print-client-id
-                                         deploy: prints `client_id=jnc_…` for
-                                         $GITHUB_OUTPUT and FAILS when unpinned — a
-                                         Studio built without an id cannot sign
-                                         anyone in, and Janua would only say so at
-                                         the first click.
+                                         deploy: prints EXACTLY one line,
+                                         `client_id=jnc_…`, on stdout (everything
+                                         else goes to stderr — stdout is appended
+                                         to $GITHUB_OUTPUT, which rejects any other
+                                         shape) and FAILS when unpinned — a Studio
+                                         built without an id cannot sign anyone
+                                         in, and Janua would only say so at the
+                                         first click.
 
 EXIT CODES
 ----------
@@ -105,6 +108,14 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    # In --print-client-id mode stdout is machine-read (deploy.yml appends it to
+    # $GITHUB_OUTPUT, whose parser rejected "client_id: pinned (…)" on the first
+    # production deploy, 2026-09-17), so every human-facing line goes to stderr.
+    info = sys.stderr if args.print_client_id else sys.stdout
+
+    def say(message: str) -> None:
+        print(message, file=info)
+
     if not MANIFEST.exists():
         print(f"UNKNOWN: {MANIFEST} is missing — the Studio's OIDC client declaration.", file=sys.stderr)
         return 2
@@ -143,7 +154,7 @@ def main() -> int:
     client_id = spec.get("client_id")
     pinned = False
     if client_id is None:
-        print("client_id: not pinned (expected only before first registration)")
+        say("client_id: not pinned (expected only before first registration)")
     elif not isinstance(client_id, str) or not CLIENT_ID_RE.fullmatch(client_id):
         failures.append(
             f"spec.client_id is {client_id!r}, which does not match ^jnc_[A-Za-z0-9_-]{{8,56}}$. "
@@ -151,7 +162,7 @@ def main() -> int:
         )
     else:
         pinned = True
-        print(f"client_id: pinned ({client_id[:8]}…, {len(client_id)} chars)")
+        say(f"client_id: pinned ({client_id[:8]}…, {len(client_id)} chars)")
 
     # ── confidentiality ──────────────────────────────────────────────────────
     if spec.get("is_confidential") is not False:
@@ -215,7 +226,7 @@ def main() -> int:
         failures.append("grant_types lacks `authorization_code`; the Studio signs people in with it.")
 
     # ── read proof ───────────────────────────────────────────────────────────
-    print(f"checked: {len(redirects)} redirect URI(s), {len(scopes)} scope(s), {len(grants)} grant type(s)")
+    say(f"checked: {len(redirects)} redirect URI(s), {len(scopes)} scope(s), {len(grants)} grant type(s)")
     if not redirects or not scopes or not grants:
         failures.append("a manifest declaring no redirect URI, no scope or no grant cannot log anybody in.")
 
@@ -238,7 +249,7 @@ def main() -> int:
 
     if failures:
         return 1
-    print("OK: janua.client.yaml is consistent with deploy.yml")
+    say("OK: janua.client.yaml is consistent with deploy.yml")
     return 0
 
 

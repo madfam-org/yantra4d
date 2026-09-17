@@ -18,12 +18,37 @@ The frontend is data-driven via a **project manifest** fetched from the backend 
 ### Provider Hierarchy (`main.tsx`)
 
 ```
-ThemeProvider → ManifestProvider → LanguageProvider → App
+ErrorBoundary → BrowserRouter → ThemeProvider → AuthProvider → TierProvider
+  → ManifestProvider → ManifestAwareLanguageProvider → PlatformProvider
+    → UpgradePromptProvider → ProjectProvider → App
 ```
 
+- **AuthProvider**: "Sign in with Janua" (OIDC + PKCE, see [Client authentication](#client-authentication)). Bridges the `@janua/react-sdk` session into `useAuth()`.
 - **ManifestProvider**: Fetches manifest from API; falls back to `src/config/fallback-manifest.json`.
-- **LanguageProvider**: UI chrome translations only (buttons, log messages, phase labels). Parameter labels and tooltips come from the manifest.
+- **ManifestAwareLanguageProvider**: UI chrome translations only (buttons, log messages, phase labels). Parameter labels and tooltips come from the manifest.
+- **TierProvider / UpgradePromptProvider**: entitlement tier and paywall prompts.
 - **ThemeProvider**: Light / Dark / System theme persistence.
+
+### Client authentication
+
+Sign-in is OpenID Connect (authorization-code + PKCE) against Janua, implemented
+in `src/lib/januaSso.ts` (the SDK's own `signInWithOAuth` is a social-login proxy
+that does not fit a public PKCE client — see the module header). The exchanged
+tokens are stored in `localStorage` under the SDK's keys (`janua_access_token`,
+`janua_refresh_token`, `janua_id_token`).
+
+Every request to the backend (`api.yantra4d.com`, audience `yantra4d-api`) must
+carry that access token as a `Bearer`. Three things make that happen:
+
+| Concern | How |
+|---------|-----|
+| API calls (`apiFetch`) | `services/core/apiClient.ts` injects `Authorization` from a token getter. It is registered **eagerly in `main.tsx`, before React renders** (`setTokenGetter(getStoredAccessToken)`) so the very first request — e.g. a private project's manifest on a hard load — is authenticated; the SDK's richer getter (refresh-on-expiry) replaces it once the auth context mounts. |
+| Signed-in state | `AuthProvider` derives `isAuthenticated` from `hasStoredJanuaSession()`, not only the SDK's `user`. The SDK loads `user` from Janua's `/api/v1/auth/me`, which rejects a `yantra4d-api`-audience token, so a valid session would otherwise read as signed-out and the private-project gate would stay locked. |
+| Mesh artifacts | The 3D viewer's `GLTFLoader`, the STL Web Worker (`workers/stlWorker.js`), and the IndexedDB render cache (`services/cache/renderCache.ts`) fetch `/static/<slug>_preview_*.glb\|.stl` **outside** `apiFetch`. Each attaches the token via `bearerHeaderForSameOrigin(url)` (januaSso) — **same-origin only**, so the `yantra4d-api` bearer never leaks to a third-party host. A private-project artifact answers 403 without it, and THREE then fails with "GLTFLoader: Unsupported asset". `renderCache` also refuses to cache a non-OK response, so an error body can never poison the L2 store.
+
+The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()` and
+`bearerHeaderForSameOrigin()` live in `src/lib/januaSso.ts` and are unit-tested
+in `januaSso.test.ts`.
 
 ### Key Files
 
@@ -35,6 +60,11 @@ ThemeProvider → ManifestProvider → LanguageProvider → App
 | `src/components/bom/BomPanel.tsx` | Smart Bill of Materials parsing physical parts and required hardware |
 | `src/components/viewer/Viewer.tsx` | Three.js STL viewer with camera controls and snapshot export |
 | `src/contexts/project/ManifestProvider.tsx` | Manifest fetch, fallback, typed accessors via `useManifest()` |
+| `src/lib/januaSso.ts` | OIDC/PKCE sign-in, token storage, and the auth helpers (`getStoredAccessToken`, `hasStoredJanuaSession`, `bearerHeaderForSameOrigin`) |
+| `src/contexts/auth/AuthProvider.tsx` | Bridges the Janua SDK session into `useAuth()`; derives `isAuthenticated` from the stored token |
+| `src/services/core/apiClient.ts` | `apiFetch` — injects the `Authorization` bearer from a registered token getter |
+| `src/hooks/render/useWorkerLoader.ts` | Loads a rendered mesh (GLB via `GLTFLoader`, STL via a Web Worker); attaches the bearer for same-origin, gated artifacts |
+| `src/services/cache/renderCache.ts` | IndexedDB L2 cache of rendered parts; authenticates artifact fetches and never caches a non-OK response |
 | `src/services/engine/renderPlacement.ts` | The pure placement policy — the precedence table above lives here |
 | `src/services/engine/renderCapability.ts` | Device capability probe (`capable` / `limited` / `incapable`), cached in `localStorage` |
 | `src/config/fallback-manifest.json` | Bundled copy of `projects/gridfinity/project.json` minus `project.force_backend`; kept in step by `scripts/qa/sync_fallback_manifest.py --check` (blocking in CI: `manifest-sync`) — never edit it by hand |

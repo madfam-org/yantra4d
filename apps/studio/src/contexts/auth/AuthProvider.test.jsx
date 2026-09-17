@@ -128,4 +128,43 @@ describe('AuthProvider (Janua mode)', () => {
     // Restore env
     vi.stubEnv('VITE_JANUA_BASE_URL', '')
   })
+
+  it('reports isAuthenticated from a stored session even when the SDK reports signed-out', async () => {
+    vi.resetModules()
+    vi.stubEnv('VITE_JANUA_BASE_URL', 'https://auth.example.com')
+
+    // The SDK derives isAuthenticated from `user`, loaded via Janua's
+    // /api/v1/auth/me — which rejects a yantra4d-api-audience token — so after a
+    // successful OIDC sign-in the SDK reports signed-out. A valid stored token
+    // must still count as authenticated, or the private-project gate stays locked.
+    vi.doMock('@janua/react-sdk', () => ({
+      JanuaProvider: ({ children }) => <div>{children}</div>,
+      useJanua: () => ({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        getAccessToken: async () => null,
+      }),
+    }))
+
+    const b64url = (o) =>
+      btoa(JSON.stringify(o)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+    const token = `${b64url({ alg: 'none' })}.${b64url({ exp: Math.floor(Date.now() / 1000) + 3600 })}.sig`
+    localStorage.setItem('janua_access_token', token)
+
+    const { AuthProvider: StoredAuthProvider, useAuth: useStoredAuth } = await import('./AuthProvider')
+    function StoredConsumer() {
+      const auth = useStoredAuth()
+      return <span data-testid="stored-auth">{String(auth.isAuthenticated)}</span>
+    }
+    render(
+      <StoredAuthProvider>
+        <StoredConsumer />
+      </StoredAuthProvider>
+    )
+    expect(screen.getByTestId('stored-auth')).toHaveTextContent('true')
+
+    localStorage.removeItem('janua_access_token')
+    vi.stubEnv('VITE_JANUA_BASE_URL', '')
+  })
 })

@@ -445,6 +445,23 @@ jobs:
           REGISTRY_PASSWORD: ${{ secrets.MADFAM_BOT_PAT }}
         run: ./scripts/ci/registry_login.sh
 
+      # The Studio's OAuth client id is a public identifier declared and pinned
+      # in janua.client.yaml, registered through the ecosystem provisioner
+      # (`enclii secrets provision oidc --platform yantra4d-studio`). The build
+      # reads the pin instead of a repository secret: the secret this replaced
+      # (JANUA_CLIENT_ID, 2026-04-09) held an id Janua no longer knew, and
+      # nothing noticed for five months because a secret cannot be reviewed.
+      # The script FAILS when the pin is missing — a Studio without its client
+      # id cannot sign anyone in, and Janua would only say so at the first click.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Resolve the Studio's Janua client id from janua.client.yaml
+        id: janua_client
+        run: |
+          pip install --quiet pyyaml
+          python3 scripts/qa/check_janua_client.py --print-client-id >> "$GITHUB_OUTPUT"
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -470,7 +487,7 @@ jobs:
           build-args: |
             VITE_API_BASE=https://api.yantra4d.com
             VITE_JANUA_BASE_URL=${{ secrets.JANUA_BASE_URL }}
-            VITE_JANUA_CLIENT_ID=${{ secrets.JANUA_CLIENT_ID }}
+            VITE_JANUA_CLIENT_ID=${{ steps.janua_client.outputs.client_id }}
             VITE_JANUA_REDIRECT_URI=https://app.yantra4d.com
             VITE_DHANAM_CHECKOUT_URL=https://app.dhan.am/checkout
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}

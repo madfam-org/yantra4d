@@ -134,6 +134,7 @@
   "auth.sign_out": "Cerrar sesión",
   "auth.sign_in_to_download": "Inicia sesión para descargar",
   "auth.signed_in_as": "Sesión como",
+  "auth.sign_in_failed": "No se pudo iniciar sesión",
   "print.title": "Estimación de Impresión",
   "print.material": "Material",
   "print.infill": "Relleno",

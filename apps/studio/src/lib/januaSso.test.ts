@@ -1,0 +1,253 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { createHash, webcrypto } from 'node:crypto'
+import {
+  PKCE_STORAGE_KEYS,
+  TOKEN_STORAGE_KEYS,
+  RETURN_PATH_KEY,
+  JanuaSignInError,
+  beginJanuaSignIn,
+  buildJanuaAuthorizeUrl,
+  completeJanuaSignIn,
+  consumeReturnPath,
+  generateCodeChallenge,
+  generateCodeVerifier,
+  generateState,
+  sanitizeReturnPath,
+  stripTrailingSlashes,
+} from './januaSso'
+
+// jsdom ships getRandomValues but not SubtleCrypto; the S256 challenge needs it.
+if (!globalThis.crypto?.subtle) {
+  vi.stubGlobal('crypto', webcrypto)
+}
+
+// The real react-sdk requires @janua/ui, whose package resolves to TypeScript
+// sources under node_modules that vitest will not transform. The contract test
+// below only needs the SDK's storage-key constants, so the UI package is
+// stubbed for this file while the SDK itself is imported for real.
+vi.mock('@janua/ui', () => ({}))
+
+const CONFIG = {
+  baseURL: 'https://auth.example.test/',
+  clientId: 'jnc_test',
+  redirectUri: 'https://studio.example.test',
+}
+
+const base64UrlSha256 = (value: string) =>
+  createHash('sha256').update(value).digest('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+
+beforeEach(() => {
+  sessionStorage.clear()
+  localStorage.clear()
+})
+
+describe('PKCE material', () => {
+  it('mints a 43-character base64url verifier and a matching S256 challenge', async () => {
+    const verifier = generateCodeVerifier()
+    expect(verifier).toMatch(/^[A-Za-z0-9_-]{43}$/)
+    expect(await generateCodeChallenge(verifier)).toBe(base64UrlSha256(verifier))
+  })
+
+  it('mints a base64url state that differs between calls', () => {
+    const a = generateState()
+    expect(a).toMatch(/^[A-Za-z0-9_-]{22}$/)
+    expect(generateState()).not.toBe(a)
+  })
+})
+
+describe('buildJanuaAuthorizeUrl', () => {
+  it('targets the OIDC provider endpoint, not the social proxy, with every required parameter', () => {
+    const url = new URL(buildJanuaAuthorizeUrl({
+      baseURL: 'https://auth.example.test///',
+      clientId: 'jnc_test',
+      redirectUri: 'https://studio.example.test',
+      codeChallenge: 'chal',
+      state: 'st',
+    }))
+    expect(url.origin + url.pathname).toBe('https://auth.example.test/api/v1/oauth/authorize')
+    expect(url.pathname).not.toContain('/auth/oauth/authorize/')
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      response_type: 'code',
+      client_id: 'jnc_test',
+      redirect_uri: 'https://studio.example.test',
+      scope: 'openid profile email',
+      code_challenge: 'chal',
+      code_challenge_method: 'S256',
+      state: 'st',
+    })
+  })
+
+  it('adds nonce and prompt only when given', () => {
+    const url = new URL(buildJanuaAuthorizeUrl({
+      baseURL: CONFIG.baseURL, clientId: 'c', redirectUri: 'r', codeChallenge: 'x', state: 's',
+      nonce: 'n1', prompt: 'none', scopes: 'openid',
+    }))
+    expect(url.searchParams.get('nonce')).toBe('n1')
+    expect(url.searchParams.get('prompt')).toBe('none')
+    expect(url.searchParams.get('scope')).toBe('openid')
+  })
+
+  it('strips trailing slashes without a regex', () => {
+    expect(stripTrailingSlashes('https://a.test///')).toBe('https://a.test')
+    expect(stripTrailingSlashes('https://a.test')).toBe('https://a.test')
+    expect(stripTrailingSlashes('')).toBe('')
+  })
+})
+
+describe('sanitizeReturnPath', () => {
+  it('keeps same-origin absolute paths with query and hash', () => {
+    expect(sanitizeReturnPath('/project/tablaco?x=1#view')).toBe('/project/tablaco?x=1#view')
+    expect(sanitizeReturnPath('  /projects ')).toBe('/projects')
+  })
+
+  it('drops anything that could leave the origin', () => {
+    for (const bad of ['//evil.test/x', '/\\evil.test', 'https://evil.test', 'javascript:alert(1)', 'projects', '', null, undefined]) {
+      expect(sanitizeReturnPath(bad)).toBeNull()
+    }
+  })
+})
+
+describe('beginJanuaSignIn', () => {
+  it('persists the PKCE material under the SDK keys, remembers the page, and navigates to Janua', async () => {
+    const navigate = vi.fn()
+    const url = new URL(await beginJanuaSignIn(CONFIG, { returnTo: '/project/tablaco', navigate }))
+
+    expect(navigate).toHaveBeenCalledWith(url.toString())
+    expect(url.origin + url.pathname).toBe('https://auth.example.test/api/v1/oauth/authorize')
+
+    const verifier = sessionStorage.getItem(PKCE_STORAGE_KEYS.codeVerifier)
+    const state = sessionStorage.getItem(PKCE_STORAGE_KEYS.state)
+    expect(verifier).toMatch(/^[A-Za-z0-9_-]{43}$/)
+    expect(url.searchParams.get('code_challenge')).toBe(base64UrlSha256(verifier!))
+    expect(url.searchParams.get('state')).toBe(state)
+    expect(url.searchParams.get('client_id')).toBe('jnc_test')
+    expect(url.searchParams.get('redirect_uri')).toBe('https://studio.example.test')
+    expect(sessionStorage.getItem(RETURN_PATH_KEY)).toBe('/project/tablaco')
+  })
+
+  it('defaults the return path to the current page and refuses an off-site one', async () => {
+    window.history.replaceState({}, '', '/project/gridfinity?mode=bin#3d')
+    await beginJanuaSignIn(CONFIG, { navigate: vi.fn() })
+    expect(sessionStorage.getItem(RETURN_PATH_KEY)).toBe('/project/gridfinity?mode=bin#3d')
+
+    await beginJanuaSignIn(CONFIG, { returnTo: 'https://evil.test/', navigate: vi.fn() })
+    expect(sessionStorage.getItem(RETURN_PATH_KEY)).toBeNull()
+  })
+})
+
+describe('completeJanuaSignIn', () => {
+  const arm = (state = 'st', verifier = 'v'.repeat(43)) => {
+    sessionStorage.setItem(PKCE_STORAGE_KEYS.state, state)
+    sessionStorage.setItem(PKCE_STORAGE_KEYS.codeVerifier, verifier)
+  }
+
+  const okResponse = (body: unknown) =>
+    new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } })
+
+  it('exchanges the code as a form-encoded public-client request and stores the tokens for the SDK', async () => {
+    arm()
+    const fetchImpl = vi.fn(async () => okResponse({
+      access_token: 'at', refresh_token: 'rt', id_token: 'idt', token_type: 'Bearer', expires_in: 3600,
+    }))
+
+    const tokens = await completeJanuaSignIn(CONFIG, 'code123', 'st', fetchImpl as unknown as typeof fetch)
+
+    expect(tokens.access_token).toBe('at')
+    expect(fetchImpl).toHaveBeenCalledTimes(1)
+    const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit]
+    expect(url).toBe('https://auth.example.test/api/v1/oauth/token')
+    expect(init.method).toBe('POST')
+    expect((init.headers as Record<string, string>)['Content-Type']).toBe('application/x-www-form-urlencoded')
+    expect(Object.fromEntries(new URLSearchParams(init.body as string))).toEqual({
+      grant_type: 'authorization_code',
+      code: 'code123',
+      redirect_uri: 'https://studio.example.test',
+      client_id: 'jnc_test',
+      code_verifier: 'v'.repeat(43),
+    })
+
+    expect(localStorage.getItem(TOKEN_STORAGE_KEYS.accessToken)).toBe('at')
+    expect(localStorage.getItem(TOKEN_STORAGE_KEYS.refreshToken)).toBe('rt')
+    expect(localStorage.getItem(TOKEN_STORAGE_KEYS.idToken)).toBe('idt')
+    // One-time material is gone once used.
+    expect(sessionStorage.getItem(PKCE_STORAGE_KEYS.state)).toBeNull()
+    expect(sessionStorage.getItem(PKCE_STORAGE_KEYS.codeVerifier)).toBeNull()
+  })
+
+  it('refuses a state that was not minted here, without calling Janua', async () => {
+    arm('expected')
+    const fetchImpl = vi.fn()
+    await expect(completeJanuaSignIn(CONFIG, 'c', 'forged', fetchImpl as unknown as typeof fetch))
+      .rejects.toBeInstanceOf(JanuaSignInError)
+    expect(fetchImpl).not.toHaveBeenCalled()
+    expect(sessionStorage.getItem(PKCE_STORAGE_KEYS.state)).toBeNull()
+    expect(localStorage.getItem(TOKEN_STORAGE_KEYS.accessToken)).toBeNull()
+  })
+
+  it("surfaces Janua's error message and status, and stores nothing", async () => {
+    arm()
+    const fetchImpl = vi.fn(async () => new Response(
+      JSON.stringify({ error: { code: 'HTTP_ERROR', message: 'invalid_client: Unknown client' } }),
+      { status: 401 },
+    ))
+    const failure = await completeJanuaSignIn(CONFIG, 'c', 'st', fetchImpl as unknown as typeof fetch).catch((e) => e)
+    expect(failure).toBeInstanceOf(JanuaSignInError)
+    expect(failure.message).toBe('invalid_client: Unknown client')
+    expect(failure.status).toBe(401)
+    expect(localStorage.getItem(TOKEN_STORAGE_KEYS.accessToken)).toBeNull()
+    expect(sessionStorage.getItem(PKCE_STORAGE_KEYS.codeVerifier)).toBeNull()
+  })
+
+  it('reads FastAPI and OAuth error shapes too', async () => {
+    arm()
+    const detail = vi.fn(async () => new Response(JSON.stringify({ detail: 'invalid_grant: expired' }), { status: 400 }))
+    await expect(completeJanuaSignIn(CONFIG, 'c', 'st', detail as unknown as typeof fetch)).rejects.toThrow('invalid_grant: expired')
+
+    arm()
+    const oauth = vi.fn(async () => new Response(JSON.stringify({ error: 'invalid_request', error_description: 'bad code' }), { status: 400 }))
+    await expect(completeJanuaSignIn(CONFIG, 'c', 'st', oauth as unknown as typeof fetch)).rejects.toThrow('bad code')
+
+    arm()
+    const html = vi.fn(async () => new Response('<html>502</html>', { status: 502 }))
+    await expect(completeJanuaSignIn(CONFIG, 'c', 'st', html as unknown as typeof fetch)).rejects.toThrow('Token exchange failed (502)')
+  })
+
+  it('rejects a 200 without an access token', async () => {
+    arm()
+    const fetchImpl = vi.fn(async () => okResponse({ token_type: 'Bearer' }))
+    await expect(completeJanuaSignIn(CONFIG, 'c', 'st', fetchImpl as unknown as typeof fetch)).rejects.toThrow('without an access token')
+    expect(localStorage.getItem(TOKEN_STORAGE_KEYS.accessToken)).toBeNull()
+  })
+})
+
+describe('consumeReturnPath', () => {
+  it('returns the remembered path once', () => {
+    sessionStorage.setItem(RETURN_PATH_KEY, '/project/tablaco')
+    expect(consumeReturnPath()).toBe('/project/tablaco')
+    expect(consumeReturnPath()).toBeNull()
+  })
+
+  it('never returns an off-site value even if storage was tampered with', () => {
+    sessionStorage.setItem(RETURN_PATH_KEY, 'https://evil.test/')
+    expect(consumeReturnPath()).toBeNull()
+  })
+})
+
+describe('storage-key contract with the installed @janua/react-sdk', () => {
+  // The whole point of this module is that JanuaProvider picks the session up
+  // on its next mount. That only holds while the key names agree, so pin them
+  // against the real package (bypassing the test-wide mock) whenever it is
+  // installed; the registry-less stub has no keys to compare against.
+  it('uses the same sessionStorage and localStorage keys as the SDK', async () => {
+    const sdk = await vi.importActual<Record<string, unknown>>('@janua/react-sdk').catch(() => null)
+    const pkce = sdk?.PKCE_STORAGE_KEYS as Record<string, string> | undefined
+    const tokens = sdk?.STORAGE_KEYS as Record<string, string> | undefined
+    if (!pkce || !tokens) return // stub build without the private registry
+    expect(PKCE_STORAGE_KEYS).toEqual({ codeVerifier: pkce.codeVerifier, state: pkce.state })
+    expect(TOKEN_STORAGE_KEYS).toEqual({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      idToken: tokens.idToken,
+    })
+  })
+})

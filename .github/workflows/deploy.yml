@@ -293,7 +293,12 @@ jobs:
       # (PRIVATE_PROJECTS / access_control.view = private, see docs/AUTH.md),
       # and the GHCR image is private, so they belong in this image. Only the
       # cartridges listed here are pulled in; `--checkout` is git's documented
-      # override for `update = none`.
+      # override for `update = none`. Keep this list equal to the
+      # PRIVATE_PROJECTS value in k8s/production/yantra4d-backend-deployment.yaml:
+      # a slug that is forced private but never baked in answers 403 to
+      # strangers and 404 to the people it was locked for. `tablaco-v2` was
+      # missing here from #78 (2026-09-02) until 2026-09-16 for exactly that
+      # reason.
       #
       # Since RFC 0038 P2 they mount at private-projects/ rather than inside
       # the public commons submodule. The API resolves both roots
@@ -304,7 +309,7 @@ jobs:
           MADFAM_BOT_PAT: ${{ secrets.MADFAM_BOT_PAT }}
         run: |
           set -euo pipefail
-          for path in private-projects/tablaco; do
+          for path in private-projects/tablaco private-projects/tablaco-v2; do
             git -c "url.https://x-access-token:${MADFAM_BOT_PAT}@github.com/.insteadOf=https://github.com/" \
               submodule update --init --checkout --depth 1 "$path"
             test -f "$path/project.json" || { echo "::error::$path/project.json missing after init"; exit 1; }

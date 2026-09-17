@@ -266,6 +266,7 @@ describe('renderCache', () => {
     it('stores parts from URLs via fetch', async () => {
       const buf = new ArrayBuffer(8)
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
         arrayBuffer: () => Promise.resolve(buf),
       }))
       const { put } = await loadModule()
@@ -277,8 +278,22 @@ describe('renderCache', () => {
       expect(storeData['url-key'].timestamp).toBeGreaterThan(0)
     })
 
+    it('does not cache a non-OK artifact response (no cache poisoning)', async () => {
+      // A gated private-project artifact answers 403 with a JSON error body;
+      // that must never be stored as the mesh, or the L2 cache is poisoned.
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: false,
+        status: 403,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+      }))
+      const { put } = await loadModule()
+      await put('locked-key', [{ type: 'base', url: 'http://example.com/private.glb' }])
+      expect(storeData['locked-key']).toBeUndefined()
+    })
+
     it('marks GLB URLs with isGlb flag', async () => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
       }))
       const { put } = await loadModule()
@@ -288,6 +303,7 @@ describe('renderCache', () => {
 
     it('marks GLB URLs with query string cache-buster as isGlb', async () => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
       }))
       const { put } = await loadModule()
@@ -304,6 +320,7 @@ describe('renderCache', () => {
 
     it('round-trips via put then get for URL parts', async () => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(16)),
       }))
       const { put, get } = await loadModule()
@@ -323,6 +340,7 @@ describe('renderCache', () => {
 
     it('filters out invalid parts from mixed input', async () => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
       }))
       const { put } = await loadModule()
@@ -338,7 +356,7 @@ describe('renderCache', () => {
       const downloadBuf = new ArrayBuffer(16)
       vi.stubGlobal('fetch', vi.fn().mockImplementation((url) => {
         const buf = url.includes('.stl') ? downloadBuf : viewerBuf
-        return Promise.resolve({ arrayBuffer: () => Promise.resolve(buf) })
+        return Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(buf) })
       }))
       const { put } = await loadModule()
       await put('dual-key', [{
@@ -356,7 +374,7 @@ describe('renderCache', () => {
       const downloadBuf = new ArrayBuffer(12)
       vi.stubGlobal('fetch', vi.fn().mockImplementation((url) => {
         const buf = url.includes('.stl') ? downloadBuf : viewerBuf
-        return Promise.resolve({ arrayBuffer: () => Promise.resolve(buf) })
+        return Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(buf) })
       }))
       const { put, get } = await loadModule()
       await put('rt-dual-key', [{
@@ -373,6 +391,7 @@ describe('renderCache', () => {
 
     it('does not store downloadArrayBuffer when download_url matches url', async () => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
       }))
       const { put } = await loadModule()
@@ -408,6 +427,7 @@ describe('renderCache', () => {
       }
 
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
       }))
       const { put } = await loadModule()

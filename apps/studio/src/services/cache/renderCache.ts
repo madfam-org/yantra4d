@@ -132,6 +132,11 @@ export async function put(key: string, parts: PutPart[]): Promise<void> {
         } else if (p.url) {
           const _auth = bearerHeaderForSameOrigin(p.url)
           const res = await fetch(p.url, _auth ? { headers: { Authorization: _auth } } : undefined)
+          // Never cache an error body. A gated private-project artifact answers
+          // 403 with a JSON error, and caching THAT as the mesh poisons the L2
+          // store — every later load then fails in the viewer
+          // ("GLTFLoader: Unsupported asset") until the cache is skipped.
+          if (!res.ok) return null
           arrayBuffer = await res.arrayBuffer()
         } else {
           return null
@@ -146,6 +151,7 @@ export async function put(key: string, parts: PutPart[]): Promise<void> {
           try {
             const _dlAuth = bearerHeaderForSameOrigin(p.download_url)
             const dlRes = await fetch(p.download_url, _dlAuth ? { headers: { Authorization: _dlAuth } } : undefined)
+            if (!dlRes.ok) throw new Error(`download fetch ${dlRes.status}`)
             result.downloadArrayBuffer = await dlRes.arrayBuffer()
           } catch {
             // Non-fatal — download will fall back to re-render

@@ -662,11 +662,11 @@ For the flow to work Janua must hold an **active OAuth client** such that:
 
 | Field | Value | Why |
 |---|---|---|
-| `client_id` | the Studio's `VITE_JANUA_CLIENT_ID` build argument (GitHub secret `JANUA_CLIENT_ID` in `deploy.yml`) | An unknown id answers `400 invalid_client: Unknown client_id` on authorize and `401 invalid_client: Unknown client` on token |
+| `client_id` | the pin in `janua.client.yaml` (`spec.client_id`), which `deploy.yml` reads through `scripts/qa/check_janua_client.py` and passes as `VITE_JANUA_CLIENT_ID`. The client is registered and reconciled by the ecosystem provisioner, `enclii secrets provision oidc --platform yantra4d-studio` (enclii `config/ecosystem-oidc-provision.yaml`), under the operator's Enclii admin session; the same id is pinned in that registry entry so a re-run reconciles instead of duplicating | An unknown id answers `400 invalid_client: Unknown client_id` on authorize and `401 invalid_client: Unknown client` on token. That is what the repository secret this replaced (`JANUA_CLIENT_ID`, 2026-04-09) had drifted into by 2026-09-16 |
 | `is_confidential` | `false` | The exchange runs in the browser with `code_verifier`, no secret |
 | `audience` | `yantra4d-api` | See [Audience](#audience) |
 | `allowed_scopes` | `openid profile email` | What the Studio requests |
-| `redirect_uris` | the Studio origin **exactly** as the SDK sends it — `https://app.yantra4d.com` (no path, no trailing slash; `VITE_JANUA_REDIRECT_URI`), plus `http://localhost:5173` for local dev | Janua matches `redirect_uri` literally, **and** derives its CORS allow-list from the origins of active clients' redirect URIs — so the same registration is what lets the browser read the token response |
+| `redirect_uris` | the Studio origin **exactly** as the SDK sends it — `https://app.yantra4d.com` (no path, no trailing slash; `VITE_JANUA_REDIRECT_URI`), plus `http://localhost:5173` for local dev. `check_janua_client.py` cross-checks the manifest against `deploy.yml` | Janua matches `redirect_uri` literally, **and** derives its CORS allow-list from the origins of active clients' redirect URIs — so the same registration is what lets the browser read the token response |
 
 Symptoms map one-to-one:
 

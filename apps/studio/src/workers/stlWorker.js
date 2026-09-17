@@ -1,9 +1,11 @@
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 
 self.onmessage = async (e) => {
-    const { url, id } = e.data
+    const { url, id, authHeader } = e.data
     try {
-        const response = await fetch(url)
+        // authHeader is set by useWorkerLoader for same-origin, access-gated
+        // private-project artifacts; an unauthenticated GET returns 403.
+        const response = await fetch(url, authHeader ? { headers: { Authorization: authHeader } } : undefined)
         if (!response.ok) {
             throw new Error(`Failed to fetch STL: HTTP ${response.status}`)
         }

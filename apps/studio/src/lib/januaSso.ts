@@ -115,6 +115,25 @@ export function hasStoredJanuaSession(): boolean {
   return getStoredAccessToken() !== null
 }
 
+/**
+ * The `Authorization` header value for a fetch to `url`, or null when there is
+ * no session or the URL is cross-origin. Private-project render artifacts
+ * (`/static/<slug>_preview_*.glb|.stl`) are access-gated — an unauthenticated
+ * GET returns 403 — and THREE's mesh loaders / the STL worker fetch them
+ * outside `apiFetch`, so the token is attached explicitly here. Same-origin
+ * only: never leak a `yantra4d-api` bearer to a third-party host.
+ */
+export function bearerHeaderForSameOrigin(url: string): string | null {
+  const token = getStoredAccessToken()
+  if (!token) return null
+  try {
+    if (new URL(url, window.location.href).origin !== window.location.origin) return null
+  } catch {
+    return null
+  }
+  return `Bearer ${token}`
+}
+
 export interface JanuaSsoConfig {
   /** Janua issuer, e.g. `https://auth.madfam.io`. */
   baseURL: string

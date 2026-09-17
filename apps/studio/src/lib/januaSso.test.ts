@@ -16,6 +16,7 @@ import {
   stripTrailingSlashes,
   getStoredAccessToken,
   hasStoredJanuaSession,
+  bearerHeaderForSameOrigin,
 } from './januaSso'
 
 // jsdom ships getRandomValues but not SubtleCrypto; the S256 challenge needs it.
@@ -320,5 +321,36 @@ describe('getStoredAccessToken / hasStoredJanuaSession', () => {
     // Unparseable exp -> treated as usable rather than throwing.
     expect(getStoredAccessToken()).toBe('not-a-jwt')
     expect(hasStoredJanuaSession()).toBe(true)
+  })
+})
+
+
+describe('bearerHeaderForSameOrigin', () => {
+  const jwt = () => {
+    const b64url = (o: unknown) =>
+      Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+    return `${b64url({ alg: 'none' })}.${b64url({ exp: Math.floor(Date.now() / 1000) + 3600 })}.sig`
+  }
+
+  it('returns null when there is no session', () => {
+    expect(bearerHeaderForSameOrigin('/static/x.glb')).toBeNull()
+    expect(bearerHeaderForSameOrigin('https://app.yantra4d.com/static/x.glb')).toBeNull()
+  })
+
+  it('returns the bearer for a same-origin (relative) URL', () => {
+    const t = jwt()
+    localStorage.setItem(TOKEN_STORAGE_KEYS.accessToken, t)
+    expect(bearerHeaderForSameOrigin('/static/tablaco-v2_preview_cell_v.glb')).toBe(`Bearer ${t}`)
+    expect(bearerHeaderForSameOrigin(window.location.origin + '/static/x.stl')).toBe(`Bearer ${t}`)
+  })
+
+  it('never leaks the bearer to a cross-origin URL', () => {
+    localStorage.setItem(TOKEN_STORAGE_KEYS.accessToken, jwt())
+    expect(bearerHeaderForSameOrigin('https://evil.example.com/x.glb')).toBeNull()
+  })
+
+  it('returns null for an unparseable URL', () => {
+    localStorage.setItem(TOKEN_STORAGE_KEYS.accessToken, jwt())
+    expect(bearerHeaderForSameOrigin('http://[::bad')).toBeNull()
   })
 })

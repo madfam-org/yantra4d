@@ -62,6 +62,59 @@ export const DEFAULT_SCOPES = 'openid profile email'
 export type JanuaLoginMethod = 'magic_link' | 'password'
 export const STUDIO_LOGIN_METHOD: JanuaLoginMethod = 'magic_link'
 
+/**
+ * Decode a JWT payload without verifying it. Returns the claims object, or
+ * null when the token is malformed. Verification is the API's job; this only
+ * reads unprivileged, self-asserted claims (here: `exp`).
+ */
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const payload = token.split('.')[1]
+    if (!payload) return null
+    const b64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
+    return JSON.parse(new TextDecoder().decode(bytes)) as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
+/**
+ * The stored Janua access token if one is present and not past its `exp`,
+ * else null. A token whose `exp` cannot be read is treated as usable — the
+ * backend is the final authority and answers 401 if it is not.
+ */
+export function getStoredAccessToken(): string | null {
+  try {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEYS.accessToken)
+    if (!token) return null
+    const claims = decodeJwtPayload(token)
+    const exp = claims && typeof claims.exp === 'number' ? (claims.exp as number) : null
+    if (exp !== null && exp * 1000 <= Date.now()) return null
+    return token
+  } catch {
+    // localStorage can throw (Safari private mode, disabled storage).
+    return null
+  }
+}
+
+/**
+ * Whether a usable Janua session is already in hand.
+ *
+ * "Signed in", for the Studio, means holding a live token for its OWN backend
+ * (`api.yantra4d.com`, audience `yantra4d-api`) — which this OIDC flow stores.
+ * The SDK's `isAuthenticated` cannot report that: it is `!!user`, and it loads
+ * `user` from Janua's `GET /api/v1/auth/me`, an endpoint that rejects a
+ * `yantra4d-api`-audience token with 401. So after a successful sign-in the
+ * SDK still reports `isAuthenticated: false`, the private-project gate stays
+ * locked and ManifestProvider never re-fetches with the token it already has.
+ * AuthProvider ORs this in to close that gap. See
+ * `AuthProvider.tsx` (JanuaBridge) and `ManifestProvider` (`signedIn`).
+ */
+export function hasStoredJanuaSession(): boolean {
+  return getStoredAccessToken() !== null
+}
+
 export interface JanuaSsoConfig {
   /** Janua issuer, e.g. `https://auth.madfam.io`. */
   baseURL: string

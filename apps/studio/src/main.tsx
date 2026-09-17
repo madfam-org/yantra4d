@@ -14,6 +14,8 @@ import { ErrorBoundary } from "./components/feedback/ErrorBoundary.jsx"
 import { PlatformProvider } from "./contexts/system/PlatformProvider"
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
+import { setTokenGetter } from './services/core/apiClient'
+import { getStoredAccessToken } from './lib/januaSso'
 
 // Pre-mount hash-to-path redirect: convert legacy hash URLs (e.g. /#/slug/preset/mode)
 // to BrowserRouter-compatible paths before React mounts (no flash).
@@ -41,6 +43,19 @@ console.warn = (...args: unknown[]) => {
   if (typeof args[0] === 'string' && /unsupported G[A-Z]{3} table/.test(args[0])) return;
   _warn.apply(console, args);
 };
+
+// Wire the auth token into the shared API client BEFORE React renders.
+//
+// The token getter is normally registered from a React effect
+// (useThemeAndLanguage -> setTokenGetter). On a HARD load of a private project
+// the first manifest request can fire before that effect runs, so it went out
+// with no Authorization header; the backend answered 403 and the Studio showed
+// the project as locked even for an authorized, signed-in user. (A client-side
+// navigation never hit this: by then the getter was registered.) This
+// synchronous, localStorage-backed getter is ready for request #1. The SDK's
+// richer getter (which also refreshes on expiry) replaces it once the auth
+// context mounts; both read the same stored token.
+setTokenGetter(async () => getStoredAccessToken())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

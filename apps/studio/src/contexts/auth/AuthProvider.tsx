@@ -8,7 +8,7 @@
 import { createContext, useContext, useMemo } from 'react'
 import { JanuaProvider, useJanua } from '@janua/react-sdk'
 import type { JanuaUser, JanuaErrorState, OAuthProviderName } from '@janua/react-sdk'
-import { beginJanuaSignIn, completeJanuaSignIn, consumeReturnPath } from '../../lib/januaSso'
+import { beginJanuaSignIn, completeJanuaSignIn, consumeReturnPath, hasStoredJanuaSession } from '../../lib/januaSso'
 
 const JANUA_BASE_URL = import.meta.env.VITE_JANUA_BASE_URL as string | undefined
 const JANUA_CLIENT_ID = (import.meta.env.VITE_JANUA_CLIENT_ID as string | undefined) || 'yantra4d'
@@ -84,6 +84,13 @@ function JanuaBridge({ children }: AuthProviderProps) {
   const janua = useJanua()
   const value = useMemo<AuthContextValue>(() => ({
     ...janua,
+    // The SDK derives `isAuthenticated` from `!!user`, and it loads `user` from
+    // Janua's `GET /api/v1/auth/me` — which 401s on our `yantra4d-api`-audience
+    // token. So a successful OIDC sign-in leaves the SDK `isAuthenticated:
+    // false`, the private-project gate locked and the manifest re-fetch (keyed
+    // on `signedIn`) never fires. A stored, unexpired token IS a session for
+    // the Studio's own backend, so it counts as signed in.
+    isAuthenticated: janua.isAuthenticated || hasStoredJanuaSession(),
     signInWithJanua: async (returnTo?: string) => {
       await beginJanuaSignIn(SSO_CONFIG, { returnTo })
     },

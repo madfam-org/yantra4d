@@ -6,7 +6,7 @@ const mockAuth = {
   user: null,
   isAuthenticated: false,
   isLoading: false,
-  signOut: vi.fn(),
+  signOut: vi.fn(async () => {}),
   signInWithOAuth: vi.fn(),
   signInWithJanua: vi.fn(async () => {}),
 }
@@ -38,6 +38,7 @@ beforeEach(() => {
   mockAuth.isAuthenticated = false
   mockAuth.isLoading = false
   mockSession = null
+  try { localStorage.clear() } catch { /* jsdom */ }
   vi.clearAllMocks()
 })
 
@@ -75,6 +76,24 @@ describe('AuthButton', () => {
     mockSession = { user: { display_name: 'Alice' } }
     render(<AuthButton />)
     expect(screen.queryByText('auth.sign_in')).not.toBeInTheDocument()
+  })
+
+  it('shows the signed-in email and a working sign-out from a stored session (no SDK session)', () => {
+    // The OIDC flow leaves the SDK `session` null even when signed in, so the
+    // nav must key off the stored token: show who is signed in, offer sign-out.
+    const b64url = (o) =>
+      btoa(JSON.stringify(o)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+    const token = `${b64url({ alg: 'none' })}.${b64url({ email: 'caro@madfam.io', exp: Math.floor(Date.now() / 1000) + 3600 })}.sig`
+    localStorage.setItem('janua_access_token', token)
+    mockAuth.isAuthenticated = true
+    mockSession = null
+
+    render(<AuthButton />)
+
+    expect(screen.queryByText('auth.sign_in')).not.toBeInTheDocument()
+    expect(screen.getByText('caro@madfam.io')).toBeInTheDocument()
+    fireEvent.click(screen.getByTitle('auth.sign_out'))
+    expect(mockAuth.signOut).toHaveBeenCalledTimes(1)
   })
 })
 

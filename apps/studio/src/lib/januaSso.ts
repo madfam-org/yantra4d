@@ -116,6 +116,19 @@ export function hasStoredJanuaSession(): boolean {
 }
 
 /**
+ * The signed-in identity's email, read from the stored access token's `email`
+ * claim, or null. Used by the nav to show who is signed in — the SDK's own
+ * `user` object is never populated by this OIDC flow (it loads `user` from
+ * Janua's /api/v1/auth/me, which rejects a yantra4d-api-audience token).
+ */
+export function getStoredIdentityEmail(): string | null {
+  const token = getStoredAccessToken()
+  if (!token) return null
+  const claims = decodeJwtPayload(token)
+  return claims && typeof claims.email === 'string' ? (claims.email as string) : null
+}
+
+/**
  * The `Authorization` header value for a fetch to `url`, or null when there is
  * no session or the URL is cross-origin. Private-project render artifacts
  * (`/static/<slug>_preview_*.glb|.stl`) are access-gated — an unauthenticated

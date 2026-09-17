@@ -383,6 +383,8 @@ After a render completes, the studio idle-pre-renders the top 3 dimensional para
 
 Each mode entry can declare both a `scad_file` (OpenSCAD `.scad` script) and an optional `cq_file` (CadQuery `.py` script). When both are present, the backend uses automatic engine routing based on the requested export format:
 
+> **Path resolution.** `scad_file` and `cq_file` are resolved **relative to the project directory** (`project_dir / scad_file`), and the referenced file must exist at exactly that path. A subdirectory path is fine — e.g. a CadQuery cartridge whose sources live under `geometry/` declares `"cq_file": "geometry/main.py"`, not `"main.py"`. A path that names a file the cartridge does not actually ship (a stale flat filename, a since-moved script) makes the render read a non-existent path and exit non-zero — surfaced in the Studio as "Render failed with code 1".
+
 - **OpenSCAD engine** is the default and handles `stl`, `3mf`, and `off` natively. Additional formats (`obj`, `glb`, `gltf`, `3mf`, `off`, `ply`) are available via automatic trimesh post-render conversion from STL.
 - **CadQuery engine** is used when the requested format requires B-Rep capabilities that OpenSCAD cannot provide, such as `step`. Dual-engine fallback also activates for `glb` and `gltf` when a `cq_file` is present.
 - **Implicit engine** natively produces STL. Other mesh formats (`obj`, `glb`, `gltf`, `3mf`, `off`) are available via trimesh conversion. STEP export requires a `cq_file` fallback.

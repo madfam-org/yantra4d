@@ -523,6 +523,14 @@ artifact backend is configured — `/static` is answered by one store-backed rul
 on both — see
 [`docs/operations/render-artifact-storage.md`](operations/render-artifact-storage.md).
 
+**Client side.** Because the gate is real, the caller must present the bearer on
+these `/static` fetches, not only on API calls. In the Studio those fetches
+happen outside the normal API client — a Three.js `GLTFLoader`, an STL Web
+Worker, and the IndexedDB render cache — so each attaches the token explicitly
+(same-origin only). A viewer that fetches a private artifact unauthenticated
+gets the 403 JSON body and then fails with `THREE.GLTFLoader: Unsupported asset`.
+See the frontend's [Client authentication](../apps/studio/README.md#client-authentication).
+
 Both env vars are read at call time and both are deployment configuration (a
 Kubernetes secret). No identity is ever committed to this repository.
 
@@ -730,6 +738,23 @@ Symptoms map one-to-one:
 - Check the user's role assignment in Janua.
 - Verify the token includes the expected custom claims (`role`, `tier`).
 - Use a JWT decoder (e.g., `jwt.io`) to inspect the token payload.
+
+### A private project's 3D model never renders (`GLTFLoader: Unsupported asset`)
+
+**Symptom**: The project unlocks and the render log says `STL Generado`, but the
+viewport stays empty and the console shows `THREE.GLTFLoader: Unsupported asset.
+glTF versions >=2.0 are supported.`
+
+**Cause**: The mesh artifact fetch (`/static/<slug>_preview_*.glb|.stl`) went out
+**without** the bearer, so the gate returned 403 and the loader tried to parse
+that JSON error body as glTF. Confirm by fetching the artifact URL with the
+`Authorization: Bearer <token>` header — it returns a valid glTF (magic `glTF`).
+
+**Fix**: Attach the token to the loader / worker / cache fetch (frontend,
+same-origin only). If a plain reload keeps failing after that, the IndexedDB
+render cache was poisoned by a pre-fix 403 body — force a regeneration (skip the
+cache) once. See the frontend
+[Client authentication](../apps/studio/README.md#client-authentication).
 
 ### Every authenticated request 401s and the logs show a JWKS fetch failure
 

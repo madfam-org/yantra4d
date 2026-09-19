@@ -66,7 +66,7 @@ DEFAULT_PROJECTS = REPO / "projects"
 DEFAULT_OUT = REPO / "apps" / "landing" / "public" / "models" / "raw"
 INDEX_NAME = ".render-index.json"
 REPORT_NAME = ".render-report.json"
-INDEX_VERSION = 1
+INDEX_VERSION = 2
 
 PRODUCTION_HOSTS = {"api.yantra4d.com", "yantra4d.com", "app.yantra4d.com"}
 
@@ -294,11 +294,18 @@ class RenderError(Exception):
 
 def render_item(api: str, item: dict, timeout: float) -> bytes:
     """POST /api/render for one item and return the GLB bytes (parts merged when needed)."""
+    # STL, not GLB, on purpose. Asking the API for glb makes it re-route an
+    # OpenSCAD mode to its CadQuery twin (dual-engine cartridges such as
+    # motor-mount and spiral-planter) and transcode through STEP + cascadio —
+    # a path the 2026-09-19 smoke run showed failing for both with "Unknown
+    # extensions, specify export type explicitly". STL is what every kernel
+    # produces natively; trimesh turns it into the position-only GLB the
+    # optimizer expects (merge_parts handles single- and multi-part alike).
     payload = {
         "project": item["slug"],
         "mode": item["mode"],
         "parameters": item["parameters"],
-        "export_format": "glb",
+        "export_format": "stl",
     }
     status, body, raw = http_json(f"{api}/api/render", payload, timeout=timeout)
     if status == 503:
@@ -316,7 +323,7 @@ def render_item(api: str, item: dict, timeout: float) -> bytes:
         raise RenderError("a part came back without a url")
     blobs = [(url, http_bytes(api + url if url.startswith("/") else url)) for url in urls]
     if len(blobs) == 1 and blobs[0][0].lower().endswith(".glb"):
-        return blobs[0][1]
+        return blobs[0][1]  # a kernel that already produced GLB (not requested today)
     return merge_parts(blobs)
 
 

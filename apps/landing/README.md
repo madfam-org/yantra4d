@@ -130,7 +130,7 @@ roughly nine times its budget); Phase 2 is the gallery that fits them.
 | :-- | :-- | :-- | :-- |
 | Bundle budget | `npm run build && npm run budget` | Brotli (and gzip) transfer size of every `dist/_astro/*.js`. `initial` = every script the two entry pages request at load — `<script src>`, `<link rel="modulepreload">`, each island's `component-url`/`renderer-url` — plus their **static** import closure; a dynamic `import()` is not an edge. The 3D chunk (`vendor-three.*`) and the post-processing chunk are checked by name; a 3D chunk that is statically reachable counts as initial and is called out with a warning naming its importers. | `transfer.initialJsBytes`, `transfer.threeChunkBytes`, `transfer.postprocessingChunkBytes` |
 | Playwright | `npm run build && npm run test:e2e` | In a real Chromium, against `astro preview` of the same dist: the tier contract (`tier.spec.ts`), transfer and runtime budgets (`budget.spec.ts`), axe (`a11y.spec.ts`), still/full parity (`parity.spec.ts`). Three profiles: `desktop-full` (`?tier=full`), `mobile-lite` (Pixel 5, `?tier=lite`), `still` (reduced motion, no override — the page must reach `still` on its own signals). | `transfer.*`, `runtime.maxWebglContexts`, `runtime.maxLongTaskMs` |
-| Lighthouse CI | `npm run build && npm run lhci` | Mobile Lighthouse, three runs per URL (`/index.html?tier=full`, `/index.html`, `/en/index.html?tier=full`), median run asserted: category scores, plus resource-size and timing budgets generated from the budgets file at load time (`lighthouserc.cjs`). | `lighthouse.*`, `transfer.initialJsBytes` (script), `transfer.initialPageBytes` (total), `vitals.lcpMs.mobile`, `vitals.tbtMs`, `vitals.cls` |
+| Lighthouse CI | `npm run build && npm run lhci` | Mobile Lighthouse, three runs per URL (`/index.html?tier=full`, `/index.html`, `/en/index.html?tier=full`), median run asserted: the four category scores and the timing budgets (LCP, TBT, CLS) generated from the budgets file at load time (`lighthouserc.cjs`). Bytes are not asserted here — the bundle step and Playwright measure them exactly. CPU throttling is calibrated to the host first (below). | `lighthouse.*`, `vitals.lcpMs.mobile`, `vitals.tbtMs`, `vitals.cls` |
 
 In CI (`ci.yml` → `landing`) all three run after the build, each one even when
 an earlier gate has failed, and the Playwright report and `.lighthouseci/`
@@ -146,6 +146,16 @@ npx playwright test --project=still e2e/tier.spec.ts   # one profile, one spec
 npx playwright show-report    # the HTML report of the last run
 npm run lhci                  # writes .lighthouseci/*.html|json; open the .html for the waterfall
 ```
+
+`npm run lhci` measures the machine first. Lighthouse's default 4× CPU
+throttle is written for a high-end desktop (BenchmarkIndex 1500–2000); the CI
+pod measured 937–1782 within a single job and total-blocking-time tracked it
+run by run for the same build. `scripts/ci/landing-lighthouse-cpu.mjs` runs
+Lighthouse's own BenchmarkIndex in the Playwright Chromium, takes the median
+of three samples and sets `LH_CPU_MULTIPLIER = 4 × index / 1750` (1–10, one
+decimal), so a laptop at 2200 audits at 5×, the pod at ~1300 at ~3×, and both
+emulate the same phone. The line it prints is in the job log and summary;
+`LH_CPU_MULTIPLIER=4 npm run lhci` pins Lighthouse's default instead.
 
 Lighthouse launches its own Chrome. `lighthouserc.cjs` points it at the
 Chromium that Playwright installed (`npx playwright install chromium`) when

@@ -11,7 +11,7 @@
  * spec for the history).
  */
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect, landingPath, settle } from './fixtures';
+import { test, expect, landingPath, settle, renderSkippedSections } from './fixtures';
 
 const PAGES = ['/', '/en/', '/concepts/hyperobjects/', '/en/concepts/commons/'];
 const GATED = new Set(['serious', 'critical']);
@@ -38,6 +38,11 @@ for (const path of PAGES) {
       await gallery.scrollIntoViewIfNeeded();
       await settle(page);
     }
+
+    // Sections below the fold are content-visibility: auto; axe cannot measure
+    // the contrast of text the browser has not laid out. Render them all so the
+    // audit keeps covering the whole page, as it did before the sections skipped.
+    await renderSkippedSections(page);
 
     // Only violations are read, so only violations are collected in full —
     // markedly cheaper on a page with hundreds of cards.

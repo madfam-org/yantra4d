@@ -8,7 +8,7 @@
  * stage or the still strip has mounted, and compared. Each page is closed once
  * read: two live canvases in one browser starve each other's main thread.
  */
-import { test, expect, settle, type Tier } from './fixtures';
+import { test, expect, settle, renderSkippedSections, type Tier } from './fixtures';
 import type { Page } from '@playwright/test';
 
 const PAGES = ['/', '/en/'];
@@ -30,6 +30,8 @@ async function snapshot(page: Page, path: string, tier: Tier) {
     await expect(page.locator('html')).toHaveAttribute('data-tier', tier);
     await page.getByTestId('commons-search').scrollIntoViewIfNeeded();
     await settle(page);
+    // innerText of a skipped content-visibility section is '' — render them all first.
+    await renderSkippedSections(page);
     const headings = (await page.locator('h1, h2').allInnerTexts()).map(normalise).filter(Boolean);
     const facts: Record<string, string[]> = {};
     for (const selector of FACT_SECTIONS) facts[selector] = numbers(await page.locator(selector).innerText());

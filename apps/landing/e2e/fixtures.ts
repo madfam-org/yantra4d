@@ -74,6 +74,19 @@ export async function settle(page: Page): Promise<void> {
 }
 
 /**
+ * Render every `content-visibility: auto` section (global.css `.cv-auto`).
+ * Below-the-fold sections skip style, layout and paint until they near the
+ * viewport, and the `innerText` of a skipped subtree is the empty string — by
+ * design, not a missing heading. The DOM, the accessibility tree and
+ * find-in-page still carry the content; a spec that READS the page as text
+ * (parity) or audits it whole (axe) opts out of the skipping first, otherwise
+ * it measures the scroll position rather than the content.
+ */
+export async function renderSkippedSections(page: Page): Promise<void> {
+  await page.addStyleTag({ content: '.cv-auto{content-visibility:visible}' });
+}
+
+/**
  * Scroll to the footer the way a person does — one viewport at a time, with a
  * pause so IntersectionObservers and lazy images fire — then settle the
  * network. ONE in-page loop rather than a CDP round trip per step: with a live

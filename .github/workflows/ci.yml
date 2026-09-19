@@ -359,6 +359,9 @@ jobs:
           path: apps/landing/.lighthouseci/
           retention-days: 14
           if-no-files-found: ignore
+          # The directory is dot-prefixed and upload-artifact v4 skips hidden
+          # paths by default — the first two runs uploaded nothing.
+          include-hidden-files: true
 
   admin:
     needs: changes

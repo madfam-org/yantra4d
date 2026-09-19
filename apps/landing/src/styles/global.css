@@ -22,6 +22,14 @@
 }
 
 @layer utilities {
+    /* Below-the-fold sections: the browser skips their style, layout and paint
+       (and their looping CSS animations) until they approach the viewport.
+       The 2026-09-19 Lighthouse traces put ~3 s of "Style & Layout" +
+       "Rendering" on the main thread during load at a 10× CPU slowdown, almost
+       all of it inline document work — a dozen infinite SVG/box animations in
+       sections nobody had scrolled to yet. `auto` intrinsic size remembers the
+       real height once rendered, so no layout jump on the way back up. */
+    .cv-auto { content-visibility: auto; contain-intrinsic-size: auto 900px; }
     .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
     .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
     .px-safe { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }

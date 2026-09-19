@@ -1,6 +1,17 @@
 import { describe, it, expect } from 'vitest'
-import { getTranslations, getLangFromUrl } from './i18n'
+import { readFileSync, readdirSync } from 'node:fs'
+import { join, resolve } from 'node:path'
+import {
+  PLANNED_LOCALES,
+  SUPPORTED_LOCALES,
+  getTranslations,
+  getLangFromUrl,
+  isSupportedLocale,
+  localizedPath,
+} from './i18n'
 import type { Locale } from './i18n'
+
+const LOCALES_DIR = resolve(__dirname, '..', 'locales')
 
 describe('i18n', () => {
   describe('getTranslations', () => {
@@ -53,6 +64,37 @@ describe('i18n', () => {
 
     it('returns "es" for unknown language prefixes', () => {
       expect(getLangFromUrl(new URL('https://yantra4d.com/fr/'))).toBe('es')
+    })
+  })
+
+  describe('locale roster (RFC 0039 G-P scaffolding)', () => {
+    it('serves es and en, and knows fr and pt are planned, not served', () => {
+      expect([...SUPPORTED_LOCALES]).toEqual(['es', 'en'])
+      expect([...PLANNED_LOCALES]).toEqual(['fr', 'pt'])
+      expect(isSupportedLocale('en')).toBe(true)
+      expect(isSupportedLocale('fr')).toBe(false)
+      expect(isSupportedLocale(undefined)).toBe(false)
+    })
+
+    it('maps a path into another locale, Spanish unprefixed', () => {
+      expect(localizedPath('/en/concepts/commons/', 'es')).toBe('/concepts/commons/')
+      expect(localizedPath('/concepts/commons/', 'en')).toBe('/en/concepts/commons/')
+      expect(localizedPath('/en/', 'es')).toBe('/')
+      expect(localizedPath('/', 'en')).toBe('/en/')
+      expect(localizedPath('/fr/x', 'en')).toBe('/en/x')
+    })
+
+    it('every locale file on disk has exactly the same key tree (deep parity)', () => {
+      const files = readdirSync(LOCALES_DIR).filter((f) => /^[a-z]{2}\.json$/.test(f))
+      expect(files.length).toBeGreaterThanOrEqual(2)
+      const leaves = (value: unknown, prefix = ''): string[] =>
+        value && typeof value === 'object' && !Array.isArray(value)
+          ? Object.entries(value as Record<string, unknown>).flatMap(([k, v]) => leaves(v, prefix ? `${prefix}.${k}` : k))
+          : [prefix]
+      const trees = files.map((f) => ({ f, keys: leaves(JSON.parse(readFileSync(join(LOCALES_DIR, f), 'utf8'))).sort() }))
+      for (const { f, keys } of trees.slice(1)) {
+        expect(keys, `${f} diverges from ${trees[0].f}`).toEqual(trees[0].keys)
+      }
     })
   })
 

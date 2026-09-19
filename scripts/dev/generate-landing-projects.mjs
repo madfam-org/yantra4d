@@ -148,7 +148,182 @@ export function makeContext(repo = DEFAULT_REPO) {
     projectsDir: path.join(repo, 'projects'),
     publicDir: path.join(repo, 'apps', 'landing', 'public'),
     outFile: path.join(repo, 'apps', 'landing', 'src', 'data', 'projects.ts'),
+    /** The entitlement source of truth the pricing copy quotes. */
+    tiersFile: path.join(repo, 'apps', 'api', 'tiers.json'),
+    /** Committed snapshots of the data the landing binds but does not own (see SNAPSHOTS). */
+    snapshotsDir: path.join(repo, 'apps', 'landing', 'src', 'data', 'snapshots'),
   };
+}
+
+// ──────────────────────────────────────────────
+// Tier facts (apps/api/tiers.json)
+// ──────────────────────────────────────────────
+
+/**
+ * The quotas the pricing section states. They used to be typed into the locale
+ * strings ("10 server renders per hour") and could drift from `tiers.json`
+ * without anything noticing; now the copy carries placeholders and the numbers
+ * come from the file the API enforces. Absent file → nulls, and the template
+ * leaves `{guestRenders}` visible rather than inventing a figure.
+ */
+export function computeTierFacts(ctx) {
+  const empty = {
+    guestRenders: null,
+    essentialsRenders: null,
+    proRenders: null,
+    essentialsProjects: null,
+    proProjects: null,
+  };
+  if (!fs.existsSync(ctx.tiersFile)) return empty;
+  let tiers;
+  try {
+    tiers = JSON.parse(fs.readFileSync(ctx.tiersFile, 'utf8'));
+  } catch {
+    return empty;
+  }
+  const num = (tier, key) => {
+    const v = tiers?.[tier]?.[key];
+    return typeof v === 'number' && Number.isFinite(v) ? v : null;
+  };
+  return {
+    guestRenders: num('guest', 'backend_renders_per_hour'),
+    essentialsRenders: num('essentials', 'backend_renders_per_hour'),
+    proRenders: num('pro', 'backend_renders_per_hour'),
+    essentialsProjects: num('essentials', 'max_projects'),
+    proProjects: num('pro', 'max_projects'),
+  };
+}
+
+// ──────────────────────────────────────────────
+// Snapshots (data the landing binds but does not own)
+// ──────────────────────────────────────────────
+
+/**
+ * Committed under apps/landing/src/data/snapshots/:
+ *
+ *   cdg-graph.json     GET https://api.yantra4d.com/api/catalog/graph     (--refresh-snapshots)
+ *   cdg-families.json  GET https://api.yantra4d.com/api/catalog/families  (--refresh-snapshots)
+ *   soft-catalog.json  GET https://fashioncabi.net/api/v1/catalog, paged   (--refresh-snapshots)
+ *   fc-consumers.json  vendored by hand from the fashion-cabinet repository
+ *                      (docs/interfaces/yantra4d-consumers.json) — see its _comment
+ *
+ * The BUILD never calls a network: it reads these files. Refreshing them is an
+ * explicit, reviewed step, so a deploy cannot fail because another service is
+ * down and a page figure cannot change without a diff someone approved. A
+ * missing snapshot yields `null` for its figures, and the components hide a
+ * card whose figure is null — never a zero, never a guess.
+ */
+export const SNAPSHOT_SOURCES = {
+  'cdg-graph.json': 'https://api.yantra4d.com/api/catalog/graph',
+  'cdg-families.json': 'https://api.yantra4d.com/api/catalog/families',
+  'soft-catalog.json': 'https://fashioncabi.net/api/v1/catalog',
+};
+
+function readSnapshot(ctx, name) {
+  const file = path.join(ctx.snapshotsDir, name);
+  if (!fs.existsSync(file)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+export function computeSnapshotStats(ctx) {
+  const graph = readSnapshot(ctx, 'cdg-graph.json');
+  const families = readSnapshot(ctx, 'cdg-families.json');
+  const soft = readSnapshot(ctx, 'soft-catalog.json');
+  const consumers = readSnapshot(ctx, 'fc-consumers.json');
+
+  const links = consumers?.consumers && typeof consumers.consumers === 'object'
+    ? Object.values(consumers.consumers).reduce((n, list) => n + (Array.isArray(list) ? list.length : 0), 0)
+    : null;
+
+  return {
+    graphEdges: Number.isFinite(graph?.edge_count) ? graph.edge_count : null,
+    graphNodes: Number.isFinite(graph?.node_count) ? graph.node_count : null,
+    families: Number.isFinite(families?.count) ? families.count : null,
+    softCartridges: Number.isFinite(soft?.total) ? soft.total : null,
+    softWithFlats: Array.isArray(soft?.items) ? soft.items.filter((i) => i && i.thumbnail).length : null,
+    crossLinks: links,
+    bridgedSolids: consumers?.consumers && typeof consumers.consumers === 'object'
+      ? Object.keys(consumers.consumers).length
+      : null,
+  };
+}
+
+const iso = () => new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+
+/**
+ * Fetch the public sources and write trimmed snapshots. Only ever run on
+ * purpose (`--refresh-snapshots`); never part of a build. `fetchImpl` is
+ * injectable so tests never touch the network.
+ */
+export async function refreshSnapshots(ctx, { fetchImpl = globalThis.fetch, log = console.log } = {}) {
+  if (typeof fetchImpl !== 'function') throw new Error('fetch is not available in this runtime');
+  fs.mkdirSync(ctx.snapshotsDir, { recursive: true });
+  const getJson = async (url) => {
+    const res = await fetchImpl(url, { headers: { accept: 'application/json' } });
+    if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
+    return res.json();
+  };
+  const write = (name, data) => {
+    const file = path.join(ctx.snapshotsDir, name);
+    fs.writeFileSync(file, `${JSON.stringify(data, null, 1)}\n`, 'utf8');
+    log(`wrote ${path.relative(ctx.repo, file)}`);
+  };
+  const generated_at = iso();
+
+  const graph = await getJson(SNAPSHOT_SOURCES['cdg-graph.json']);
+  write('cdg-graph.json', {
+    source: SNAPSHOT_SOURCES['cdg-graph.json'],
+    generated_at,
+    edge_count: graph.edge_count ?? (Array.isArray(graph.edges) ? graph.edges.length : 0),
+    node_count: graph.node_count ?? null,
+    family_sizes: graph.family_sizes ?? null,
+    edges: (graph.edges ?? []).map((e) => ({
+      a: e.a, b: e.b, family: e.family ?? null, kind: e.kind ?? null, via: e.via ?? null, geometry: e.geometry ?? null,
+    })),
+  });
+
+  const families = await getJson(SNAPSHOT_SOURCES['cdg-families.json']);
+  write('cdg-families.json', {
+    source: SNAPSHOT_SOURCES['cdg-families.json'],
+    generated_at,
+    count: families.count ?? (families.families ?? []).length,
+    families: (families.families ?? []).map((f) => ({ family: f.family, members: f.members, slugs: f.slugs ?? [] })),
+  });
+
+  // Fashion Cabinet pages at 100 (its `limit` is capped there); follow `total`.
+  const items = [];
+  let total = null;
+  for (let offset = 0; offset < 10000; offset += 100) {
+    const page = await getJson(`${SNAPSHOT_SOURCES['soft-catalog.json']}?limit=100&offset=${offset}`);
+    total = page.total ?? total;
+    const batch = Array.isArray(page.items) ? page.items : [];
+    for (const it of batch) {
+      items.push({
+        slug: it.slug,
+        name: it.name,
+        family: it.family ?? null,
+        kind: it.kind ?? null,
+        rank: it.rank ?? null,
+        tier: it.tier ?? null,
+        thumbnail: it.thumbnail ?? null,
+        views: it.views ?? null,
+        interfaces: Array.isArray(it.interfaces) ? it.interfaces.length : 0,
+        fabric: it.fabric ?? null,
+      });
+    }
+    if (batch.length < 100 || (total !== null && items.length >= total)) break;
+  }
+  items.sort((a, b) => String(a.slug).localeCompare(String(b.slug)));
+  write('soft-catalog.json', {
+    source: SNAPSHOT_SOURCES['soft-catalog.json'],
+    generated_at,
+    total: total ?? items.length,
+    items,
+  });
 }
 
 // ──────────────────────────────────────────────
@@ -365,9 +540,16 @@ function deriveCategory(domain, geometryType, tags) {
 function resolveThumbnail(ctx, proj, slug) {
   const declared = proj.thumbnail;
   if (declared && declared.startsWith('/')) {
+    // A WebP sibling always wins over a declared PNG: the landing's thumbnail
+    // budget (perf-budgets.json `images`) is enforced on `.webp`, and
+    // scripts/dev/optimize-landing-thumbnails.mjs converts PNGs into them.
+    const webp = declared.replace(/\.png$/i, '.webp');
+    if (webp !== declared && fs.existsSync(path.join(ctx.publicDir, webp.replace(/^\//, '')))) return webp;
     const abs = path.join(ctx.publicDir, declared.replace(/^\//, ''));
     if (fs.existsSync(abs)) return declared;
   }
+  const slugWebp = `/projects/${slug}.webp`;
+  if (fs.existsSync(path.join(ctx.publicDir, slugWebp.replace(/^\//, '')))) return slugWebp;
   return `/projects/${slug}.svg`;
 }
 
@@ -538,11 +720,13 @@ function computeStats(ctx, manifests, projects) {
 }
 
 function renderStats(stats) {
-  const entries = Object.entries(stats).map(([key, value]) => `  ${key}: ${value},`);
+  const entries = Object.entries(stats).map(([key, value]) => `  ${key}: ${value === null ? 'null' : value},`);
   return [
     '/**',
     ' * Live commons figures, regenerated with the project list. Quote these in',
-    ' * copy instead of writing a number into a locale string.',
+    ' * copy instead of writing a number into a locale string. A `null` means',
+    ' * the snapshot behind the figure was absent when this file was generated;',
+    ' * components hide that card rather than show a zero.',
     ' */',
     'export const COMMONS_STATS = {',
     ...entries,
@@ -551,7 +735,21 @@ function renderStats(stats) {
   ];
 }
 
-function renderFile(projects, stats) {
+function renderTierFacts(tierFacts) {
+  const entries = Object.entries(tierFacts).map(([key, value]) => `  ${key}: ${value === null ? 'null' : value},`);
+  return [
+    '/**',
+    ' * Tier quotas from apps/api/tiers.json — the file the API enforces. The',
+    ' * pricing copy carries `{guestRenders}`-style placeholders bound to these.',
+    ' */',
+    'export const TIER_FACTS = {',
+    ...entries,
+    '} as const;',
+    '',
+  ];
+}
+
+function renderFile(projects, stats, tierFacts) {
   const lines = [
     '// AUTO-GENERATED by scripts/dev/generate-landing-projects.mjs — do not edit by hand.',
     '// Run `npm run gen:projects` (from apps/landing) to regenerate from projects/*/project.json.',
@@ -577,6 +775,7 @@ function renderFile(projects, stats) {
     "export const CATEGORIES = ['all', 'commons', 'storage', 'mechanical', 'art', 'tabletop', 'education', 'electronics'] as const;",
     '',
     ...renderStats(stats),
+    ...renderTierFacts(tierFacts),
   ];
   return lines.join('\n');
 }
@@ -592,12 +791,14 @@ export function generate({ repo = DEFAULT_REPO, env = process.env } = {}) {
   const { manifests, projects, skippedNoManifest, skippedBad, skippedPrivate } =
     collectProjects(ctx, priv);
   const sorted = sortProjects(projects);
-  const stats = computeStats(ctx, manifests, sorted);
+  const stats = { ...computeStats(ctx, manifests, sorted), ...computeSnapshotStats(ctx) };
+  const tierFacts = computeTierFacts(ctx);
   return {
     ctx,
-    output: renderFile(sorted, stats),
+    output: renderFile(sorted, stats, tierFacts),
     projects: sorted,
     stats,
+    tierFacts,
     missing: missingCartridges(repo),
     meta: { skippedNoManifest, skippedBad, skippedPrivate },
   };
@@ -702,5 +903,11 @@ export function run({
 
 // Only self-execute as a CLI, so the test suite can import the functions above.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  process.exit(run());
+  const argv = process.argv.slice(2);
+  if (argv.includes('--refresh-snapshots')) {
+    // Network, on purpose, once — then the ordinary generation below reads the
+    // files it just wrote. Never combined with --check: a refresh IS a change.
+    await refreshSnapshots(makeContext());
+  }
+  process.exit(run({ argv: argv.filter((a) => a !== '--refresh-snapshots') }));
 }

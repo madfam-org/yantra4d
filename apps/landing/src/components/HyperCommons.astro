@@ -11,11 +11,18 @@ const h = t?.hyperCommons;
 // Impact figures are generated from the manifests. The cards previously
 // carried "99% cheaper" and "3-17x cheaper" with no source anywhere in the
 // repo; these four are each derived from the commons itself.
-const { cartridges, standards, interfaceInstances, cernLicensed } = COMMONS_STATS;
+const { cartridges, standards, interfaceInstances, cernLicensed, softCartridges, crossLinks } = COMMONS_STATS;
+// The soft half of the commons (Fashion Cabinet) and the verified bridge
+// between the two come from committed snapshots; a null figure means the
+// snapshot was absent at build time and the card is not rendered — never a zero.
+const softCards = [
+  { value: softCartridges, label: h?.impact5label ?? 'Prendas en el procomún blando' },
+  { value: crossLinks, label: h?.impact6label ?? 'Vínculos de hardware verificados' },
+].filter((c) => typeof c.value === 'number');
 ---
 
 <!-- ═══════ Section: The Parametric Commons ═══════ -->
-<section id="hyper-commons" class="relative py-28 px-6 overflow-hidden">
+<section id="hyper-commons" class="cv-auto relative py-28 px-6 overflow-hidden">
 
   <!-- Animated background grid -->
   <div class="hc-grid-bg absolute inset-0 -z-10" aria-hidden="true"></div>
@@ -247,7 +254,7 @@ const { cartridges, standards, interfaceInstances, cernLicensed } = COMMONS_STAT
       <h3 class="text-center text-xl font-bold tracking-tight sm:text-2xl mb-8">
         {h?.impactHeading ?? 'Impacto Real'}
       </h3>
-      <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 max-w-4xl mx-auto">
+      <div class={`grid grid-cols-2 gap-4 sm:grid-cols-3 max-w-5xl mx-auto ${softCards.length ? 'lg:grid-cols-6' : 'lg:grid-cols-4'}`}>
         <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5">
           <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{cartridges}</div>
           <div class="text-xs text-muted-foreground">{h?.impact1label ?? 'Cartuchos abiertos'}</div>
@@ -264,6 +271,12 @@ const { cartridges, standards, interfaceInstances, cernLicensed } = COMMONS_STAT
           <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{h?.impact4value ?? 'CERN OHL'}</div>
           <div class="text-xs text-muted-foreground">{cernLicensed} {h?.impact4label ?? 'diseños'}</div>
         </div>
+        {softCards.map((card) => (
+          <div class="hc-stat-card rounded-xl border border-border bg-card/50 p-5 text-center backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-primary/5" data-testid="impact-soft">
+            <div class="text-xl sm:text-2xl font-bold text-primary mb-1">{card.value}</div>
+            <div class="text-xs text-muted-foreground">{card.label}</div>
+          </div>
+        ))}
       </div>
     </div>
 

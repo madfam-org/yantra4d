@@ -1,26 +1,151 @@
 ---
-import type { Translations } from "../lib/i18n";
-import ProjectGalleryContainer from "./ProjectGalleryContainer";
+/**
+ * The commons gallery section.
+ *
+ * Server-rendered: the heading, the tier controls, the first page of cards
+ * (`ProjectCard.astro`) and a "show more" link — the commons is on the page
+ * for every visitor before any JavaScript runs. The `CommonsGallery` island
+ * (client:visible) adds search, filters, paging and the 3D stage; it fetches
+ * the full list and the mesh manifest only when they are needed, and imports
+ * three.js only on the lite/full tiers.
+ */
+import type { Translations } from '../lib/i18n';
+import { PROJECTS, CATEGORIES } from '../data/projects';
+import modelManifest from '../../public/models/manifest.json';
+import { modelledSlugs } from '../lib/models-manifest';
+import { PAGE_SIZE, domainsOf, fillTemplate, partitionGallery, type GalleryItem } from '../lib/gallery';
+import { STUDIO_URL } from '../lib/env';
+import CommonsGallery, { type GalleryLabels } from './CommonsGallery';
+import ProjectCard from './ProjectCard.astro';
+import TierToggle from './TierToggle.astro';
 
 interface Props {
   lang?: string;
   t?: Translations;
 }
 
-const { lang = "es", t } = Astro.props;
+const { lang = 'es', t } = Astro.props;
+const locale: 'es' | 'en' = lang === 'en' ? 'en' : 'es';
+
+const items: GalleryItem[] = PROJECTS.map((p) => ({
+  slug: p.slug,
+  name: p.name,
+  description: locale === 'es' ? p.descriptionEs : p.description,
+  category: p.category,
+  thumbnail: p.thumbnail,
+  isHyperobject: Boolean(p.isHyperobject),
+  domain: p.domain ?? '',
+}));
+
+// The same partition the island reproduces client-side (same pure function,
+// same modelled set), so "show more" pages continue exactly where the
+// server-rendered first page stopped.
+const modelled = modelledSlugs(modelManifest as any);
+const { carousel: stageFull, grid } = partitionGallery(items, new Set(modelled));
+const firstPage = grid.slice(0, PAGE_SIZE);
+const domains = domainsOf(items);
+
+// The stage list travels as island props inside the HTML. Its descriptions
+// only ever show two clamped lines in the overlay card, so they are clipped
+// here; the full text stays in the server-rendered cards and the JSON.
+const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
+const stage = stageFull.map((p) => ({ ...p, description: clip(p.description, 180) }));
+
+const g = t?.galleryUi;
+const cats = t?.gallery?.categories;
+const labels: GalleryLabels = {
+  search: g?.search ?? 'Buscar hiperobjetos…',
+  allCategories: g?.allCategories ?? 'Todas las categorías',
+  allDomains: g?.allDomains ?? 'Todos los dominios',
+  showMore: g?.showMore ?? 'Ver más',
+  showing: g?.showing ?? 'Mostrando {shown} de {total}',
+  inThreeD: g?.inThreeD ?? 'Mostrando {shown} de {total} en 3D — explora todos abajo',
+  noResults: g?.noResults ?? 'No se encontraron hiperobjetos.',
+  openStudio: g?.openStudio ?? 'Abrir Studio',
+  openInStudio: t?.gallery?.openInStudio ?? 'Abrir en Studio →',
+  swipe: g?.swipe ?? 'Desliza para explorar',
+  drag: g?.drag ?? 'Arrastra para explorar',
+  prev: g?.prev ?? 'Proyecto anterior',
+  next: g?.next ?? 'Proyecto siguiente',
+  live: g?.live ?? 'Render 3D en vivo',
+  stillStrip: g?.stillStrip ?? 'Una selección del procomún — abre cualquiera en Studio.',
+  hyperobject: g?.hyperobject ?? 'Hiperobjeto',
+  loading: g?.loading ?? 'Cargando el procomún…',
+  categories: {
+    all: cats?.all ?? 'Todos',
+    commons: cats?.commons ?? '🔷 Commons',
+    storage: cats?.storage ?? 'Almacenamiento',
+    mechanical: cats?.mechanical ?? 'Mecánico',
+    art: cats?.art ?? 'Arte y Generativo',
+    tabletop: cats?.tabletop ?? 'Mesa de Juego',
+    education: cats?.education ?? 'Educación',
+    electronics: cats?.electronics ?? 'Electrónica',
+  },
+  domains: g?.domains ?? {},
+};
+
+const moreLabel = `${labels.showMore} · ${fillTemplate(labels.showing, { shown: Math.min(PAGE_SIZE, grid.length), total: grid.length })}`;
 ---
 
 <section id="gallery" class="py-16 sm:py-24 px-6">
   <div class="mx-auto max-w-6xl">
     <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-      {t?.gallery.heading ?? "Galería de Proyectos"}
+      {t?.gallery.heading ?? 'Galería de Proyectos'}
     </h2>
-    <p class="mb-8 sm:mb-12 text-center text-muted-foreground max-w-2xl mx-auto">
-      {
-        t?.gallery.subtitle ??
-          "21 diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo."
-      }
+    <p class="mb-8 text-center text-muted-foreground max-w-2xl mx-auto">
+      {t?.gallery.subtitle ?? 'Diseños paramétricos listos para personalizar. Abre cualquiera en Studio y hazlo tuyo.'}
     </p>
-    <ProjectGalleryContainer lang={lang} t={t} client:only="react" />
+
+    <div class="mb-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
+      <p class="text-xs text-muted-foreground max-w-xl" data-still-only>{t?.tier?.stillNote ?? ''}</p>
+      <TierToggle t={t} />
+    </div>
+
+    <CommonsGallery
+      client:visible={{ rootMargin: '240px' }}
+      lang={locale}
+      labels={labels}
+      stage={stage}
+      modelled={modelled}
+      total={items.length}
+      categories={[...CATEGORIES]}
+      domains={domains}
+      dataUrl={`/data/${locale}/commons.json`}
+      manifestUrl="/models/manifest.json"
+      studioUrl={STUDIO_URL}
+    />
+
+    <div class="mt-12">
+      <div data-testid="commons-grid" class="grid gap-4 phone-landscape:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {firstPage.map((project) => (
+          <ProjectCard
+            project={project}
+            studioUrl={STUDIO_URL}
+            openLabel={labels.openInStudio}
+            hyperobjectLabel={labels.hyperobject}
+            categoryLabel={labels.categories[project.category] ?? project.category}
+            domainLabel={labels.domains[project.domain]}
+          />
+        ))}
+      </div>
+      {grid.length > PAGE_SIZE && (
+        <div class="mt-6 text-center">
+          <a
+            data-testid="commons-more"
+            href={`${STUDIO_URL}/`}
+            class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm min-h-[44px] hover:bg-secondary/40 transition-colors"
+          >
+            {moreLabel}
+          </a>
+        </div>
+      )}
+    </div>
   </div>
 </section>
+
+<style is:global>
+  /* The still-tier note reads only when the page is, in fact, still. */
+  html:not([data-tier='still']) [data-still-only] {
+    display: none;
+  }
+</style>

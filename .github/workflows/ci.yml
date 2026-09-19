@@ -257,7 +257,18 @@ jobs:
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: madfam-runners-blue
-    timeout-minutes: 15
+    # 15 → 25 for the quality gates below: a Chromium install (about a minute
+    # cold), 55 Playwright tests on a single worker and nine Lighthouse runs.
+    # Measured on a laptop (2026-09-19): 8.7 min of Playwright with no retries
+    # and 34 of the 55 tests red against today's gallery, ~4 min of Lighthouse,
+    # on top of the ~3 min the job already took. The CI retry budget runs every
+    # red test three times, which projects to ~23 min of Playwright while the
+    # gates stay red — so a fully red Phase 1 run can hit this cap on a slow
+    # pod. That is the cost of retries that exist for flakes, not for a page
+    # that is over budget by design; the gates turn green when the Phase 2
+    # gallery lands, and a run that hits the cap still uploads its Playwright
+    # report (see the upload steps below).
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: apps/landing
@@ -277,7 +288,80 @@ jobs:
       - name: Audit build tooling (advisory)
         run: npm audit --audit-level=high || true
       - run: npm run test:coverage
-      - run: npm run build
+      - id: build
+        run: npm run build
+      # ── Quality gates (landing revamp, Phase 1) ───────────────────────────
+      # Three independent measurements of the SAME build, every threshold read
+      # from apps/landing/perf-budgets.json — the one source of truth, so a
+      # budget changes in one place and the three gates cannot disagree. Each
+      # gate runs whenever the build is green, even after an earlier gate has
+      # failed: a red gate is exactly when the whole picture matters, and the
+      # first finding must not hide the second. Phase 1 IS the gates — they
+      # fail against today's gallery by design (the initial JS is ~9x the
+      # budget); Phase 2 is the gallery that fits them.
+      #
+      # 1. Bundle budget: brotli transfer size of every built JS chunk, with the
+      #    load-time graph, the 3D chunk and the post-processing chunk each held
+      #    to its budget. The table lands in the step summary.
+      - name: Bundle budget
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run budget
+      # 2. Playwright: device tiers, transfer budgets in a real browser, axe,
+      #    and still/full parity against `astro preview` of this same dist.
+      #    Chromium only (playwright.config.ts), so one browser to install and
+      #    cache — same shape as the studio's e2e cache above.
+      - name: Cache Playwright browsers
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-landing-chromium-${{ hashFiles('apps/landing/package-lock.json') }}
+      - if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npx playwright install --with-deps chromium
+      - name: Tier, budget, axe and parity gates
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run test:e2e
+        env:
+          CI: true
+      # 3. Lighthouse CI on the same dist: category scores plus the resource and
+      #    timing budgets, mobile emulation, median of three runs. Lighthouse
+      #    launches its own Chrome and the runner has none installed, so it is
+      #    pointed at the Chromium Playwright just installed — the very build
+      #    the e2e suite measured with (lighthouserc.cjs falls back to the same
+      #    path when CHROME_PATH is unset, e.g. on a laptop).
+      - name: Lighthouse CI
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
+          echo "Lighthouse will use CHROME_PATH=$CHROME_PATH"
+          npm run lhci
+      # The reports are how a red gate is read after the fact: the Playwright
+      # HTML report carries each failing assertion's message (the offending
+      # requests, long tasks or axe nodes are IN the message) plus the trace of
+      # the first retry; .lighthouseci/ holds every Lighthouse run as .json and
+      # .html. Failure-only, 14 days — same policy as the studio's e2e diffs.
+      # `cancelled()` is added for the timeout case described at the top of the
+      # job: Playwright writes its report for the tests that did run when it is
+      # interrupted, and a run that hit the cap is exactly one worth reading.
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() || cancelled() }}
+        with:
+          name: landing-playwright-report
+          path: apps/landing/playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Upload Lighthouse CI results
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() || cancelled() }}
+        with:
+          name: landing-lighthouseci
+          path: apps/landing/.lighthouseci/
+          retention-days: 14
+          if-no-files-found: ignore
+          # The directory is dot-prefixed and upload-artifact v4 skips hidden
+          # paths by default — the first two runs uploaded nothing.
+          include-hidden-files: true
 
   admin:
     needs: changes

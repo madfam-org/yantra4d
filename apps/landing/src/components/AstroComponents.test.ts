@@ -447,7 +447,10 @@ describe('HyperCommons.astro', () => {
 
   it('has impact stats section', () => {
     expect(html).toMatch(/Impacto Real|impactHeading/)
-    expect(html).toContain('sm:grid-cols-4')
+    // Four solid-commons figures plus the soft-commons cards, which render
+    // only when their snapshot figure is a number (never a zero).
+    expect(html).toContain('sm:grid-cols-3')
+    expect(html).toContain('data-testid="impact-soft"')
   })
 
   it('has fade-in animation classes', () => {

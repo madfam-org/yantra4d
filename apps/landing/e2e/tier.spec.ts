@@ -108,9 +108,20 @@ test.describe('device tier', () => {
     await toggle.click();
     await reloaded;
 
-    expect(await readTierRecord(page), `${TIER_STORAGE_KEY} should be cleared`).toBeNull();
-    await expect(page.locator('html')).toHaveAttribute('data-tier-source', 'signals');
-    await expect(page.locator('html')).toHaveAttribute('data-tier', await signalTier(page));
+    // The choice is gone. What the page holds afterwards is either nothing or
+    // a MEASURED record: the reload lands with the gallery still in view, the
+    // island settles the tier with the WebGL probe, and on a software GPU
+    // (headless Chromium) that probe demotes and stores `probed: true`. Never
+    // a `user` record — that is the assertion.
+    const after = await readTierRecord(page);
+    expect(after === null || (after.probed === true && !after.user), `${TIER_STORAGE_KEY} should be cleared or re-measured, got ${JSON.stringify(after)}`).toBe(true);
+    const source = await page.locator('html').getAttribute('data-tier-source');
+    expect(['signals', 'probe', 'stored'], `data-tier-source after clearing the choice: ${source}`).toContain(source);
+    // The probe can only demote: the tier is the signals' answer or lower.
+    const tier = await page.locator('html').getAttribute('data-tier');
+    const ceiling = await signalTier(page);
+    const order = ['still', 'lite', 'full'];
+    expect(order.indexOf(tier ?? ''), `tier ${tier} must not exceed the signals' ${ceiling}`).toBeLessThanOrEqual(order.indexOf(ceiling));
   });
 
   test('on a device the signals classify still, the toggle asks for lite explicitly', async ({ page }) => {

@@ -84,6 +84,18 @@ export default function CommonsGallery(props: CommonsGalleryProps) {
   const loadPromise = useRef<Promise<GalleryItem[]> | null>(null);
   const modelledSet = useMemo(() => new Set(modelled), [modelled]);
 
+  // Anything typed into the server-rendered search box BEFORE this island
+  // hydrated (it wakes up on scroll, and a fast visitor can reach the box
+  // first) would be silently dropped: no change handler existed yet. Read the
+  // DOM value once, on the first client render, and replay it after mount.
+  const preHydrationQuery = useRef<string | null>(null);
+  if (preHydrationQuery.current === null) {
+    preHydrationQuery.current =
+      typeof document !== 'undefined'
+        ? (document.querySelector<HTMLInputElement>('[data-testid="commons-search"]')?.value ?? '')
+        : '';
+  }
+
   // 1. Settle the tier once, right before anything 3D could load.
   useEffect(() => {
     if (forcedTier) return;
@@ -137,6 +149,11 @@ export default function CommonsGallery(props: CommonsGalleryProps) {
     setPages(1);
     void ensureData();
   };
+
+  useEffect(() => {
+    const typed = preHydrationQuery.current;
+    if (typed) update({ query: typed });
+  }, []); // once, after hydration
 
   // The partition the server made, reproduced when the data is here; before
   // that, the server's stage stands in.
@@ -225,7 +242,7 @@ export default function CommonsGallery(props: CommonsGalleryProps) {
         />
       )}
       {(tier === 'lite' || tier === 'full') && (
-        <Suspense fallback={<div data-testid="commons-loading" className="h-[60vh] rounded-xl border border-border bg-zinc-950 flex items-center justify-center text-sm text-zinc-500" aria-busy="true">{labels.loading}</div>}>
+        <Suspense fallback={<div data-testid="commons-loading" className="h-[60vh] rounded-xl border border-border bg-zinc-950 flex items-center justify-center text-sm text-zinc-400" aria-busy="true">{labels.loading}</div>}>
           <ProjectCarousel3D
             lang={lang}
             tier={tier}

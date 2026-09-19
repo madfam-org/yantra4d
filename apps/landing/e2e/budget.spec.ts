@@ -126,6 +126,11 @@ test.describe('transfer budgets', () => {
 
       const search = page.getByTestId('commons-search');
       await expect(search).toBeVisible();
+      // The island hydrates on scroll and stamps `data-tier` on its root once it
+      // has settled the tier; typing before that would test the SSR input, not
+      // the island (the island replays such a value, but the assertion here is
+      // about the fetch, so wait for the handler to exist).
+      await expect(page.getByTestId('commons-gallery')).toHaveAttribute('data-tier', /still|lite|full/, { timeout: 30_000 });
       const responded = page.waitForResponse((r) => COMMONS_JSON_RE.test(r.url()));
       await search.fill('grid');
       const response = await responded;

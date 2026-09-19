@@ -287,7 +287,7 @@ export default function ProjectCarousel3D({ tier, labels, projects, manifest, no
 
       {projects.length === 0 && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-          <p className="text-zinc-500 text-lg">{labels.noResults}</p>
+          <p className="text-zinc-400 text-lg">{labels.noResults}</p>
         </div>
       )}
 

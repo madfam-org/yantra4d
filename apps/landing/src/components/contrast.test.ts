@@ -317,3 +317,16 @@ describe('BeforeAfter captions and elided-code comment (small text)', () => {
     }
   })
 })
+
+describe('gallery island copy on the stage surface (bg-zinc-950)', () => {
+  // text-zinc-500 (#71717a) on zinc-950 (#09090b) is 3.9:1 — under the 4.5:1
+  // floor for the 14px loading line and the 18px empty state. axe flagged the
+  // Suspense fallback the moment the stage mounted in the audit; zinc-400 is
+  // 9:1 on the same surface. Locked by source, like the grid's open label.
+  it('never uses text-zinc-500 for text on the stage', () => {
+    for (const file of ['CommonsGallery.tsx', 'ProjectCarousel3D.tsx', 'StillStrip.tsx']) {
+      const src = readFileSync(resolve(COMPONENTS_DIR, file), 'utf-8')
+      expect(src, `${file} uses text-zinc-500`).not.toContain('text-zinc-500')
+    }
+  })
+})

@@ -103,7 +103,14 @@ module.exports = {
         // The ARC runner executes the job inside a container, where Chrome's
         // sandbox cannot set itself up; Playwright's launcher already runs
         // without it there. Locally the sandbox stays on.
-        chromeFlags: process.env.CI ? '--no-sandbox' : undefined,
+        //
+        // --disable-dev-shm-usage: the container's /dev/shm is tiny, and a
+        // full-tier page (WebGL stage on SwiftShader, 4× CPU throttle) crashes
+        // the renderer with TARGET_CRASHED ("Browser tab has unexpectedly
+        // crashed") when Chrome keeps its shared memory there — seen on the
+        // first CI run, 2026-09-19. Playwright passes the same flag by default,
+        // which is why the e2e suite never hit it.
+        chromeFlags: process.env.CI ? '--no-sandbox --disable-dev-shm-usage' : undefined,
       },
     },
     assert: {

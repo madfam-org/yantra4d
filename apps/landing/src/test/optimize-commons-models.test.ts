@@ -42,6 +42,8 @@ import {
   parseInputName,
   resolveLod0Selection,
   run,
+  targetsFor,
+  validateExceptions,
 } from '../../../../scripts/dev/optimize-commons-models.mjs'
 
 // ─── Synthetic geometry ─────────────────────────────────────────────────────
@@ -444,6 +446,38 @@ describe('run — raw inputs', () => {
     expect(strict.out.join('\n')).toMatch(/OVER \+\d+%/)
   })
 
+  it('a budget kept by exception passes --strict and is recorded on the manifest entry', async () => {
+    // Same floor as above; the exception raises gridfinity's lod1 cap, with a reason, and nothing else.
+    const reason = 'test lattice: the simplifier floors above 200 B'
+    const budgets = { ...BUDGETS, lod1Bytes: 200, exceptions: { gridfinity: { lod1Bytes: 65536, reason } } }
+    const repo = makeRepo({ budgets, raw: { 'gridfinity.glb': dense, 'motor-mount.glb': small } })
+    const strict = await optimize(repo, ['--strict'])
+    // gridfinity passes by exception; motor-mount still breaks the 200 B block budget.
+    expect(strict.code).toBe(EXIT_BUDGET)
+    expect(strict.err.join('\n')).toMatch(/ERROR: 1 output\(s\) over their byte budget/)
+    expect(strict.err.join('\n')).toContain('motor-mount.lod1.glb')
+    expect(strict.err.join('\n')).not.toContain('gridfinity.lod1.glb')
+    expect(strict.out.join('\n')).toMatch(/gridfinity\.lod1\.glb.*ok \(by exception/)
+    const manifest = readManifest(repo)
+    const gridfinity = manifest.models.find((m: { slug: string }) => m.slug === 'gridfinity')
+    const motorMount = manifest.models.find((m: { slug: string }) => m.slug === 'motor-mount')
+    expect(gridfinity.budget).toEqual({ lod1Bytes: 65536, reason })
+    expect(gridfinity.lod1.bytes).toBeGreaterThan(200)
+    expect(motorMount).not.toHaveProperty('budget')
+    // The block as this repo declares it (lod1 at 200 B), never the exceptions map.
+    expect(manifest.budgets).toEqual(manifestBudgets({ ...BUDGETS, lod1Bytes: 200 }))
+    expect(manifest.budgets).not.toHaveProperty('exceptions')
+  })
+
+  it('rejects a malformed exceptions map as a usage error, before touching any file', async () => {
+    const budgets = { ...BUDGETS, exceptions: { gridfinity: { lod1Bytes: 65536 } } } // no reason
+    const repo = makeRepo({ budgets, raw: { 'gridfinity.glb': small } })
+    const result = await optimize(repo)
+    expect(result.code).toBe(EXIT_USAGE)
+    expect(result.err.join('\n')).toMatch(/meshes\.exceptions\.gridfinity needs a written reason/)
+    expect(fs.existsSync(path.join(modelsDir(repo), 'manifest.json'))).toBe(false)
+  })
+
   it('appends the report to $GITHUB_STEP_SUMMARY when set', async () => {
     const repo = makeRepo({ raw: { 'gridfinity.glb': small } })
     const summary = path.join(repo, 'summary.md')
@@ -632,5 +666,62 @@ describe('buildManifest', () => {
     expect(manifest.models[0].frames.map((f: { file: string }) => f.file)).toEqual(['alpha.a.2.glb', 'alpha.a.10.glb', 'alpha.b.1.glb'])
     expect(manifest.models[1]).toEqual({ slug: 'zeta', size: 10, lod1: { file: 'zeta.lod1.glb', bytes: 10, triangles: 5 } })
     expect(manifest.source).toEqual({ kind: 'render-api', commons_pin: null })
+  })
+})
+
+describe('budget exceptions (meshes.exceptions)', () => {
+  const lattice = {
+    lod1Bytes: 32768,
+    reason: 'a lattice: the simplifier floors at 12,365 triangles / 28 KB; needs a smaller preview instance',
+  }
+
+  it('validates the map: slug keys, a written reason, budget keys only, positive numbers', () => {
+    expect(validateExceptions(undefined)).toEqual({})
+    expect(validateExceptions({ _comment: 'why', 'implicit-lattice-hyperobject': lattice })).toEqual({
+      'implicit-lattice-hyperobject': { lod1Bytes: 32768, reason: lattice.reason },
+    })
+    expect(() => validateExceptions([])).toThrow(/must be an object keyed by slug/)
+    expect(() => validateExceptions({ 'Not A Slug': lattice })).toThrow(/invalid slug/)
+    expect(() => validateExceptions({ lattice: { lod1Bytes: 32768 } })).toThrow(/written reason/)
+    expect(() => validateExceptions({ lattice: { lod1Bytes: 32768, reason: '   ' } })).toThrow(/written reason/)
+    expect(() => validateExceptions({ lattice: { reason: 'r', lod1Kilobytes: 3 } })).toThrow(/not a budget key/)
+    expect(() => validateExceptions({ lattice: { reason: 'r', lod1Bytes: 0 } })).toThrow(/positive number/)
+    expect(() => validateExceptions({ lattice: { reason: 'r' } })).toThrow(/overrides nothing/)
+  })
+
+  it('targetsFor applies the override to that slug only and reports the exception', () => {
+    const budgets = { ...BUDGETS, exceptions: { lattice } }
+    const forLattice = targetsFor(budgets, 'lattice')
+    expect(forLattice.lod1).toEqual({ triangles: BUDGETS.lod1Triangles, bytes: 32768 })
+    expect(forLattice.lod0).toEqual({ triangles: BUDGETS.lod0Triangles, bytes: BUDGETS.lod0Bytes })
+    expect(forLattice.frame).toEqual({ triangles: BUDGETS.lod0Triangles, bytes: BUDGETS.keyframeBytes })
+    expect(forLattice.exception).toEqual({ lod1Bytes: 32768, reason: lattice.reason })
+    const forOther = targetsFor(budgets, 'gridfinity')
+    expect(forOther.lod1).toEqual({ triangles: BUDGETS.lod1Triangles, bytes: BUDGETS.lod1Bytes })
+    expect(forOther.exception).toBeNull()
+    expect(targetsFor(BUDGETS, 'lattice').exception).toBeNull()
+  })
+
+  it('the manifest keeps the block scalar and records the exception on the entry', () => {
+    const budgets = { ...BUDGETS, exceptions: { lattice } }
+    expect(manifestBudgets(budgets)).toEqual(manifestBudgets(BUDGETS))
+    expect(manifestBudgets(budgets)).not.toHaveProperty('exceptions')
+    const entries = new Map([
+      [
+        'lattice',
+        {
+          lod1: { file: 'lattice.lod1.glb', bytes: 28316, triangles: 12365 },
+          lod0: null,
+          frames: [],
+          budget: { lod1Bytes: 32768, reason: lattice.reason },
+        },
+      ],
+      ['plain', { lod1: { file: 'plain.lod1.glb', bytes: 900, triangles: 300 }, lod0: null, frames: [], budget: null }],
+    ])
+    const manifest = buildManifest({ generated: 'g', sourceKind: 'render-api', commonsPin: null, budgets, entries })
+    const [latticeModel, plainModel] = manifest.models
+    expect(latticeModel.budget).toEqual({ lod1Bytes: 32768, reason: lattice.reason })
+    expect(plainModel).not.toHaveProperty('budget')
+    expect(manifest.budgets).not.toHaveProperty('exceptions')
   })
 })

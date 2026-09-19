@@ -14,7 +14,10 @@
     }
   },
   "vitals": {
-    "lcpMs": { "mobile": 2000, "desktop": 1200 },
+    "lcpMs": {
+      "mobile": 2000,
+      "desktop": 1200
+    },
     "inpMs": 200,
     "cls": 0.05,
     "tbtMs": 200
@@ -38,7 +41,14 @@
     "lod0Bytes": 61440,
     "lod1Triangles": 2500,
     "lod0Triangles": 25000,
-    "keyframeBytes": 61440
+    "keyframeBytes": 61440,
+    "exceptions": {
+      "_comment": "Per-cartridge overrides of the block above, each with a written reason. The optimizer applies an override to that slug's target only and records it on the manifest entry (`budget`), so a cap kept by exception is never mistaken for one kept outright. Remove an entry when its reason no longer holds.",
+      "implicit-lattice-hyperobject": {
+        "lod1Bytes": 32768,
+        "reason": "A lattice: 359,268 triangles simplify to a floor of 12,365 (28,316 B) before the struts collapse, so the 12,288 B lod1 cap is unreachable from this render. The right fix is a smaller preview instance (fewer cells), which needs per-cartridge preview parameters in the pipeline; until then the model ships at 28 KB rather than the card losing its 3D preview (2026-09-19, prerender run 35460054814)."
+      }
+    }
   },
   "lighthouse": {
     "_comment": "Category scores are 0-1 in Lighthouse CI assertions; kept here as percentages for humans.",

@@ -49,6 +49,28 @@ Where it is checked:
 The committed file is therefore a fallback for local dev and for the
 submodule-less landing CI job, not the source of truth.
 
+## Models
+
+`public/models/` holds the 3D models the page streams: one meshopt-compressed
+`<slug>.lod1.glb` per cartridge, a `<slug>.lod0.glb` for the hero cartridges,
+`<slug>.<animation>.<index>.glb` keyframes, and `manifest.json` (v2) listing
+them with their byte and triangle counts. They are produced by
+[`scripts/dev/optimize-commons-models.mjs`](../../scripts/dev/optimize-commons-models.mjs)
+from raw renders and committed; the per-file budgets are the `meshes` block of
+`perf-budgets.json`.
+
+```bash
+npm run models:optimize -- --strict --clean --lod0 hero   # from apps/landing, over public/models/raw/
+npm run models:optimize -- --check                        # drift lane: exit 3 when the committed files are stale
+```
+
+The raw renders come from `.github/workflows/prerender-commons.yml`, which
+renders every public cartridge through a local API on the runner (never
+production) and opens a PR with the refreshed models on request. Everything —
+the mesh pipeline, the manifest contract the reader depends on, how to run both
+halves locally — is in
+[`docs/guides/landing-models-pipeline.md`](../../docs/guides/landing-models-pipeline.md).
+
 ## License
 
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](../../LICENSE) file for more details.

@@ -7,6 +7,15 @@
 // dark / 1.10:1 light — effectively invisible. They now use text-foreground,
 // which also keeps them visually distinct from the keywords.
 // Locked by src/components/contrast.test.ts.
+//
+// The two panel captions ("Código OpenSCAD" / "Configurador Yantra4D") are
+// 12px text on a bg-secondary/50 bar: text-muted-foreground measured 6.9:1
+// dark / 5.8:1 light — passing, but visibly dim next to the panels' body copy,
+// so they use text-foreground (17:1 / 19:1) and let the bar carry the
+// "caption" role. The elided-code comment used text-muted-foreground/60,
+// which composites to 3.4:1 dark / 2.6:1 light against bg-card — under the
+// 4.5:1 floor for 14px code; it is now plain text-muted-foreground in italics
+// (7.8:1 / 6.0:1), which still reads as a comment.
 import type { Translations } from '../lib/i18n';
 
 interface Props {
@@ -24,7 +33,7 @@ const { t } = Astro.props;
     <div class="grid gap-6 md:grid-cols-2">
       <!-- Code side -->
       <div class="rounded-xl border border-border bg-card overflow-hidden">
-        <div class="border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground bg-secondary/50">
+        <div class="border-b border-border px-4 py-2 text-xs font-medium text-foreground bg-secondary/50" data-caption>
           {t?.beforeAfter.codeSide ?? 'Código OpenSCAD'}
         </div>
         <pre class="p-4 text-sm font-mono text-muted-foreground overflow-x-auto leading-relaxed"><code><span class="text-primary-readable">module</span> <span class="text-foreground">gridfinity_bin</span>(
@@ -35,13 +44,13 @@ const { t } = Astro.props;
   lip      = <span class="text-primary-readable">true</span>,
   magnet   = <span class="text-primary-readable">true</span>
 ) &#123;
-  <span class="text-muted-foreground/60">// 200+ lines of geometry...</span>
+  <span class="text-muted-foreground italic">// 200+ lines of geometry...</span>
 &#125;</code></pre>
       </div>
 
       <!-- UI side -->
       <div class="rounded-xl border border-border bg-card overflow-hidden">
-        <div class="border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground bg-secondary/50">
+        <div class="border-b border-border px-4 py-2 text-xs font-medium text-foreground bg-secondary/50" data-caption>
           {t?.beforeAfter.uiSide ?? 'Configurador Yantra4D'}
         </div>
         <div class="p-4 space-y-4">

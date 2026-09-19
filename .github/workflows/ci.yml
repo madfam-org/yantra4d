@@ -323,23 +323,22 @@ jobs:
         run: npm run test:e2e
         env:
           CI: true
-      # 3. Lighthouse CI on the same dist: category scores plus the resource and
-      #    timing budgets, mobile emulation, median of three runs. Lighthouse
-      #    launches its own Chrome and the runner has none installed, so it is
-      #    pointed at the Chromium Playwright just installed — the very build
-      #    the e2e suite measured with (lighthouserc.cjs falls back to the same
-      #    path when CHROME_PATH is unset, e.g. on a laptop).
-      - name: Lighthouse CI
+      # 3. Lighthouse runs in its own job (landing-lighthouse, below) once the
+      #    e2e matrix has drained, on this very dist — uploaded here so the
+      #    audit measures the build the two gates above measured.
+      - name: Upload the built site for the Lighthouse job
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        run: |
-          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
-          echo "Lighthouse will use CHROME_PATH=$CHROME_PATH"
-          npm run lhci
+        uses: actions/upload-artifact@v4
+        with:
+          name: landing-dist
+          path: apps/landing/dist/
+          retention-days: 1
+          if-no-files-found: error
       # The reports are how a red gate is read after the fact: the Playwright
       # HTML report carries each failing assertion's message (the offending
       # requests, long tasks or axe nodes are IN the message) plus the trace of
-      # the first retry; .lighthouseci/ holds every Lighthouse run as .json and
-      # .html. Failure-only, 14 days — same policy as the studio's e2e diffs.
+      # the first retry. Failure-only, 14 days — same policy as the studio's
+      # e2e diffs. The Lighthouse reports are uploaded by landing-lighthouse.
       # `cancelled()` is added for the timeout case described at the top of the
       # job: Playwright writes its report for the tests that did run when it is
       # interrupted, and a run that hit the cap is exactly one worth reading.
@@ -351,6 +350,60 @@ jobs:
           path: apps/landing/playwright-report/
           retention-days: 14
           if-no-files-found: ignore
+
+
+  landing-lighthouse:
+    # Lighthouse's timing budgets are CPU measurements, and the ARC pods share
+    # their node with the ten e2e shards above. While the matrix runs, one
+    # pod's BenchmarkIndex swings 937–1782 within minutes and total-blocking-
+    # time swings with it for the SAME build: 985 → 974 ms, 1504 → 123 ms,
+    # 1782 → 91 ms (ci run 35460027219); at a calibrated 3.4× the runs still
+    # read 926–1338 and 88–420 ms (run 35461707348). Every pass so far came
+    # when Lighthouse ran after the shards had finished, every failure while
+    # it overlapped them (2026-09-19). So the audit waits for the matrix and
+    # measures the dist the landing job built, on a CPU multiplier calibrated
+    # to the pod it lands on (`npm run lhci` → scripts/ci/landing-lighthouse-
+    # cpu.mjs). Not gated on the matrix passing: `!cancelled()` runs it after
+    # a red shard too; it only needs the node to be quiet.
+    needs: [landing, e2e]
+    if: ${{ !cancelled() && needs.landing.result == 'success' }}
+    runs-on: madfam-runners-blue
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/landing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/landing/package-lock.json
+      - run: npm ci
+      - name: Download the built site
+        uses: actions/download-artifact@v4
+        with:
+          name: landing-dist
+          path: apps/landing/dist/
+      # Lighthouse launches its own Chrome and the runner has none installed, so
+      # it is pointed at the Chromium Playwright installs — the very build the
+      # e2e suite measured with (lighthouserc.cjs falls back to the same path
+      # when CHROME_PATH is unset, e.g. on a laptop).
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-landing-chromium-${{ hashFiles('apps/landing/package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      # Category scores plus the timing budgets, mobile emulation, median of
+      # three runs, every threshold from perf-budgets.json.
+      - name: Lighthouse CI
+        run: |
+          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
+          echo "Lighthouse will use CHROME_PATH=$CHROME_PATH"
+          npm run lhci
+      # .lighthouseci/ holds every run as .json and .html; the .html next to a
+      # failing .json has the waterfall. Failure-only, 14 days.
       - name: Upload Lighthouse CI results
         uses: actions/upload-artifact@v4
         if: ${{ failure() || cancelled() }}
@@ -1057,6 +1110,7 @@ jobs:
       - changes
       - studio
       - landing
+      - landing-lighthouse
       - admin
       - backend
       - e2e

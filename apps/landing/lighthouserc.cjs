@@ -7,7 +7,7 @@
  * and Lighthouse CI `require()`s its rc file.
  *
  * What runs: the built `dist/`, served by Lighthouse CI's own static server,
- * three URLs, three runs each, Lighthouse's default MOBILE emulation (the
+ * three URLs, five runs each, Lighthouse's default MOBILE emulation (the
  * budgets' `lcpMs.mobile` and `performanceMobile` are written for it).
  *
  *   /index.html?tier=full     the immersive tier, forced (headless Chrome is
@@ -84,7 +84,9 @@ function budgetAssertions(list) {
   const assertions = {};
   for (const budget of list) {
     for (const { metric, budget: maxNumericValue } of budget.timings || []) {
-      assertions[metric] = ['error', { maxNumericValue }];
+      // LCP and TBT are load-sensitive → best of the runs (see `assert`); CLS is not.
+      const aggregationMethod = metric === 'cumulative-layout-shift' ? undefined : 'optimistic';
+      assertions[metric] = ['error', aggregationMethod ? { maxNumericValue, aggregationMethod } : { maxNumericValue }];
     }
     for (const { resourceType, budget: maxNumericValue } of budget.resourceSizes || []) {
       assertions[`resource-summary:${resourceType}:size`] = ['error', { maxNumericValue: maxNumericValue * KIB }];
@@ -103,7 +105,13 @@ module.exports = {
     collect: {
       staticDistDir: './dist',
       url: ['/index.html?tier=full', '/index.html', '/en/index.html?tier=full'],
-      numberOfRuns: 3,
+      // Five, not three: the node the pod shares has bursts — another run's
+      // shards finishing and saving their caches — that stall the main
+      // thread for a second or more with no work in it (1.6 s "Other" on a
+      // pod whose BenchmarkIndex read 1852–2233, ci run 35465636511). A burst
+      // spans a run or two; five runs of ~20 s give the best-of aggregation
+      // below a window the burst does not cover.
+      numberOfRuns: 5,
       chromePath: process.env.CHROME_PATH || playwrightChromium(),
       settings: {
         // The ARC runner executes the job inside a container, where Chrome's
@@ -131,11 +139,17 @@ module.exports = {
       },
     },
     assert: {
-      // The median of the three runs, so one noisy run on the shared runner
-      // neither fails nor rescues the gate.
+      // Default: the median run, so one odd run neither fails nor rescues a
+      // gate. The load-sensitive assertions override it with `optimistic`
+      // (the best value across runs): contention on the shared runner can
+      // only inflate a timing — there is no mechanism by which node load
+      // makes blocking time smaller — so the best run is the closest reading
+      // of the page's own cost, and a real regression moves every run, the
+      // best one included. Category scores that do not depend on load
+      // (accessibility, best practices, SEO) and CLS keep the median.
       aggregationMethod: 'median-run',
       assertions: {
-        'categories:performance': ['error', { minScore: score(lighthouse.performanceMobile) }],
+        'categories:performance': ['error', { minScore: score(lighthouse.performanceMobile), aggregationMethod: 'optimistic' }],
         'categories:accessibility': ['error', { minScore: score(lighthouse.accessibility) }],
         'categories:best-practices': ['error', { minScore: score(lighthouse.bestPractices) }],
         'categories:seo': ['error', { minScore: score(lighthouse.seo) }],

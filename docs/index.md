@@ -28,6 +28,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Rate Limiting](./guides/rate-limiting.md): Flask-Limiter, per-tier render limits, why a browser render costs no quota, production Redis setup.
 -   [White-Labeling](./guides/white-labeling.md): Deploying branded instances — env vars, Docker Compose override, Kubernetes pattern, license key enforcement.
 -   [Troubleshooting](./guides/troubleshooting.md): Common issues — render timeouts, CORS, Docker.
+-   [Landing models pipeline](./guides/landing-models-pipeline.md): how the commons cartridges become the meshopt-compressed LOD GLBs and `manifest.json` (v2) the landing streams — budgets, the manifest contract, the local run, the prerender workflow.
 
 ### Strategy & Planning
 -   [Platform Manifesto](./strategy/MANIFESTO.md): Vision and philosophical hyperobject principles.

@@ -22,7 +22,9 @@ digest the workflow keys its cache on.
 
 Keyframes follow the API's own flipbook route
 (``apps/api/routes/projects/animations.py::_interpolate_params``): numeric
-parameters are interpolated from ``from_state`` to ``to_state``, rounded when
+parameters are interpolated from ``from_state`` to ``to_state``, then snapped
+onto the parameter's declared ``min``/``step`` grid (what the slider can send;
+see ``snap_to_parameter_grid``), rounded when
 both ends are integers; booleans and strings switch at the midpoint. Unlike that
 route, ``t`` here is LINEAR over the frames (the manifest's ``easing`` is for
 the player's timing, not for which states get rendered).
@@ -111,12 +113,54 @@ def interpolate_params(from_state: dict, to_state: dict, t: float) -> dict:
     return result
 
 
+def _is_number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def snap_to_parameter_grid(params: dict, definitions) -> dict:
+    """Snap interpolated numeric values onto each parameter's declared grid.
+
+    A slider declares ``min``/``max``/``step``; the Studio can only ever send
+    ``min + k * step`` (clamped), so a keyframe holding any other value asks the
+    cartridge for a state its own control cannot produce. The first
+    commons-wide prerender (run 35460054814, 2026-09-19) showed what happens
+    then: motor-mount's ``nema_size`` (min 17, step 6) interpolated linearly to
+    21, 26 and 30, the script mapped those to its default, and four of five
+    frames of the NEMA sweep were the same geometry. Snapping to the grid gives
+    17 → 23 → 29 → 29 → 34 instead (Python rounds the half-way frame to the
+    even grid step); the optimizer collapses the repeat.
+
+    Mirror of the API's ``_interpolate_params`` grid step (apps/api/routes/
+    projects/animations.py). Values already on the grid keep their type;
+    parameters without a numeric ``step``/``min``, and non-numeric values, pass
+    through untouched.
+    """
+    defs = {d.get("id"): d for d in (definitions or []) if isinstance(d, dict) and d.get("id")}
+    out = dict(params)
+    for key, value in params.items():
+        definition = defs.get(key)
+        if definition is None or not _is_number(value):
+            continue
+        step, lo, hi = definition.get("step"), definition.get("min"), definition.get("max")
+        if not (_is_number(step) and step > 0 and _is_number(lo)):
+            continue
+        snapped = lo + round((value - lo) / step) * step
+        if _is_number(hi):
+            snapped = min(snapped, hi)
+        snapped = max(snapped, lo)
+        if snapped == value:
+            continue
+        out[key] = int(snapped) if isinstance(value, int) and float(snapped).is_integer() else snapped
+    return out
+
+
 def frame_items(slug: str, manifest: dict) -> list[dict]:
     """One render item per keyframe of every animation the manifest declares."""
     animations = manifest.get("animations")
     if not isinstance(animations, list):
         return []
     default_mode = manifest["modes"][0]["id"]
+    definitions = manifest.get("parameters")
     items = []
     for anim in animations:
         if not isinstance(anim, dict) or not anim.get("id"):
@@ -132,7 +176,9 @@ def frame_items(slug: str, manifest: dict) -> list[dict]:
                     "file": f"{slug}.{anim['id']}.{index}.glb",
                     "slug": slug,
                     "mode": mode,
-                    "parameters": interpolate_params(anim.get("from_state") or {}, anim.get("to_state") or {}, t),
+                    "parameters": snap_to_parameter_grid(
+                        interpolate_params(anim.get("from_state") or {}, anim.get("to_state") or {}, t), definitions
+                    ),
                     "label": f"{anim['id']}#{index}",
                 }
             )

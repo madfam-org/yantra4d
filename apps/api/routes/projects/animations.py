@@ -68,7 +68,8 @@ def _snap_to_parameter_grid(params: dict, definitions) -> dict:
     cartridge for a state its own control cannot produce. motor-mount's
     ``nema_size`` (min 17, step 6) interpolated linearly to 21, 26, 30 came out
     as the default geometry — four of five frames identical (prerender run
-    35460054814, 2026-09-19). Snapping gives 17 → 23 → 23 → 29 → 34.
+    35460054814, 2026-09-19). Snapping gives 17 → 23 → 29 → 29 → 34 (round-half-even
+    at the middle frame).
 
     Mirror of ``snap_to_parameter_grid`` in scripts/dev/render_commons_models.py
     (the landing's prerender), so the Studio flipbook and the landing agree.

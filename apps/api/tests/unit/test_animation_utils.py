@@ -85,13 +85,17 @@ class TestInterpolateParams:
         assert result["c"] == "blue"
 
 
-class TestParameterGrid:
-    NEMA = [{"id": "nema_size", "type": "slider", "min": 17, "max": 34, "step": 6}]
+NEMA_DEFINITIONS = [{"id": "nema_size", "type": "slider", "min": 17, "max": 34, "step": 6}]
 
+
+class TestParameterGrid:
     def test_frames_land_on_the_slider_grid(self):
         # motor-mount as shipped: linear gave 17, 21, 26, 30, 34 and four identical frames.
-        values = [_interpolate_params({"nema_size": 17}, {"nema_size": 34}, i / 4, self.NEMA)["nema_size"] for i in range(5)]
-        assert values == [17, 23, 23, 29, 34]
+        values = [
+            _interpolate_params({"nema_size": 17}, {"nema_size": 34}, i / 4, NEMA_DEFINITIONS)["nema_size"]
+            for i in range(5)
+        ]
+        assert values == [17, 23, 29, 29, 34]  # round-half-even at the middle frame
         assert all(isinstance(v, int) for v in values)
 
     def test_without_definitions_nothing_changes(self):

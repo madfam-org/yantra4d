@@ -12,6 +12,7 @@
  * here once. Nothing in e2e/ hardcodes a budget.
  */
 import fs from 'node:fs';
+import { brotliCompressSync, constants as zlibConstants } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { test as base, expect, type Page } from '@playwright/test';
 import { TIER_STORAGE_KEY, TIER_VERSION } from '../src/lib/tier-core.js';
@@ -118,8 +119,26 @@ export interface Transfer {
   url: string;
   status: number;
   type: string;
-  /** Encoded (compressed) response body bytes — what actually crossed the wire. */
+  /**
+   * Bytes charged against the budgets. Text resources (scripts, styles,
+   * documents, JSON) are re-compressed here with brotli at the level
+   * Cloudflare serves them, so the figure is what production transfers and
+   * matches perf-budgets.json and scripts/ci/landing-bundle-budget.mjs exactly
+   * (`astro preview` only speaks gzip, ~10% larger). Binary resources (meshes,
+   * images) keep the encoded body size — compression would not change them.
+   */
   bytes: number;
+  /** Encoded body bytes as the preview server actually sent them. */
+  wireBytes: number;
+}
+
+/** Cloudflare's brotli level for static assets; the same level the CI bundle step uses. */
+const BROTLI_QUALITY = 11;
+
+function isText(type: string, url: string, contentType = ''): boolean {
+  if (type === 'script' || type === 'stylesheet' || type === 'document') return true;
+  if (/\.(m?js|css|html|json|svg)(\?|$)/.test(url)) return true;
+  return /^(text\/|application\/(javascript|json|xml))/.test(contentType);
 }
 
 function isScript(t: Transfer): boolean {
@@ -139,8 +158,15 @@ export function trackTransfers(page: Page) {
     pending.push(
       request
         .sizes()
-        .then((s) => {
-          entries.push({ url: response.url(), status: response.status(), type: request.resourceType(), bytes: s.responseBodySize });
+        .then(async (s) => {
+          const type = request.resourceType();
+          const wireBytes = s.responseBodySize;
+          let bytes = wireBytes;
+          if (isText(type, response.url(), response.headers()['content-type'])) {
+            const body = await response.body();
+            bytes = brotliCompressSync(body, { params: { [zlibConstants.BROTLI_PARAM_QUALITY]: BROTLI_QUALITY } }).length;
+          }
+          entries.push({ url: response.url(), status: response.status(), type, bytes, wireBytes });
         })
         .catch(() => {
           /* aborted before it finished: nothing reached the page */
@@ -222,13 +248,29 @@ export async function readLongTasks(page: Page): Promise<{ tasks: LongTask[]; un
 }
 
 /** Seed the visitor's tier record before the page's <head> bootstrap reads it. */
+let seedNonce = 0;
+
+/**
+ * Seed (or clear) the stored tier record before the NEXT navigation — once.
+ *
+ * `addInitScript` runs on every navigation of the page, including the reload
+ * the toggle performs, so a naive seed would overwrite the page's own write
+ * before the assertion could read it. Each call therefore registers a script
+ * that fires only the first time its nonce is seen in this tab
+ * (sessionStorage survives reloads, not new contexts). Repeated seeds in one
+ * test each get a fresh nonce, so the newest wins on the next navigation and
+ * every older one stays quiet.
+ */
 export async function seedTierRecord(page: Page, record: Record<string, unknown> | null): Promise<void> {
+  seedNonce += 1;
   await page.addInitScript(
-    ([key, value]) => {
+    ([key, value, flag]) => {
+      if (window.sessionStorage.getItem(flag)) return;
+      window.sessionStorage.setItem(flag, '1');
       if (value === null) window.localStorage.removeItem(key);
       else window.localStorage.setItem(key, value);
     },
-    [TIER_STORAGE_KEY, record === null ? null : JSON.stringify(record)] as const,
+    [TIER_STORAGE_KEY, record === null ? null : JSON.stringify(record), `y4d.e2e.seed.${seedNonce}`] as const,
   );
 }
 

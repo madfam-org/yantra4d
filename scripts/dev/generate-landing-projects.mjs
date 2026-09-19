@@ -540,9 +540,16 @@ function deriveCategory(domain, geometryType, tags) {
 function resolveThumbnail(ctx, proj, slug) {
   const declared = proj.thumbnail;
   if (declared && declared.startsWith('/')) {
+    // A WebP sibling always wins over a declared PNG: the landing's thumbnail
+    // budget (perf-budgets.json `images`) is enforced on `.webp`, and
+    // scripts/dev/optimize-landing-thumbnails.mjs converts PNGs into them.
+    const webp = declared.replace(/\.png$/i, '.webp');
+    if (webp !== declared && fs.existsSync(path.join(ctx.publicDir, webp.replace(/^\//, '')))) return webp;
     const abs = path.join(ctx.publicDir, declared.replace(/^\//, ''));
     if (fs.existsSync(abs)) return declared;
   }
+  const slugWebp = `/projects/${slug}.webp`;
+  if (fs.existsSync(path.join(ctx.publicDir, slugWebp.replace(/^\//, '')))) return slugWebp;
   return `/projects/${slug}.svg`;
 }
 

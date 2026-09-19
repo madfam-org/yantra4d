@@ -33,7 +33,7 @@ for (const path of PAGES) {
     // Lazily mounted UI (the stage, "show more") has to be in the DOM to be
     // audited, and it mounts once the gallery is in view. Everything below the
     // gallery is static HTML, so no full scroll is needed for the audit.
-    const gallery = page.locator('#gallery');
+    const gallery = page.getByTestId('commons-search');
     if (await gallery.count()) {
       await gallery.scrollIntoViewIfNeeded();
       await settle(page);

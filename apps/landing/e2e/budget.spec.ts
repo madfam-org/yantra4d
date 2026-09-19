@@ -2,10 +2,11 @@
  * Transfer and runtime budgets, measured in a real browser against the built
  * site. Every threshold comes from perf-budgets.json.
  *
- * Bytes are `request.sizes().responseBodySize`: the ENCODED body, i.e. what the
- * server actually sent. `astro preview` speaks gzip, so these figures run ~10%
- * above the brotli numbers the budgets are written in — the gate errs on the
- * strict side, never the lenient one.
+ * Bytes for text resources are the body re-compressed with brotli (what
+ * Cloudflare serves in production and what perf-budgets.json is written in);
+ * binary resources count their encoded body. See `trackTransfers` in
+ * fixtures.ts. `astro preview` itself only speaks gzip, which would read ~10%
+ * high and make the same build pass the CI bundle step yet fail here.
  */
 import {
   test,
@@ -32,12 +33,24 @@ test.describe('transfer budgets', () => {
     await page.goto(landingPath('/', tier));
     await settle(page);
     await transfers.flush();
-    const js = transfers.js(transfers.snapshot());
+    const snapshot = transfers.snapshot();
+    const js = transfers.js(snapshot);
     const total = transfers.total(js);
     expect(
       total,
       `initial JS on ${effectiveTier(tier)}: ${kb(total)} against ${kb(transfer.initialJsBytes)}\n${transfers.describe(js)}`,
     ).toBeLessThanOrEqual(transfer.initialJsBytes);
+
+    // The initial PAGE: document + stylesheets + that JavaScript. Images are
+    // deliberately excluded — Chrome's lazy-load distance fetches the first
+    // grid thumbnails on a tall viewport, and they have their own budget
+    // (perf-budgets.json `images`).
+    const page_ = snapshot.filter((r) => r.type === 'document' || r.type === 'stylesheet' || /\.css(\?|$)/.test(r.url));
+    const pageTotal = transfers.total(page_) + total;
+    expect(
+      pageTotal,
+      `initial page (document + css + js) on ${effectiveTier(tier)}: ${kb(pageTotal)} against ${kb(transfer.initialPageBytes)}\n${transfers.describe([...page_, ...js])}`,
+    ).toBeLessThanOrEqual(transfer.initialPageBytes);
   });
 
   test('the 3D chunk: never on still; only once the gallery is in view on lite/full, within transfer.threeChunkBytes', async ({ page, tier }) => {
@@ -60,7 +73,10 @@ test.describe('transfer budgets', () => {
       return;
     }
 
-    await page.locator('#gallery').scrollIntoViewIfNeeded();
+    // Scroll the island itself into view: the section is taller than any
+    // viewport, so centring `#gallery` can leave the toolbar (the island's
+    // root) above the fold and the client:visible observer never fires.
+    await page.getByTestId('commons-search').scrollIntoViewIfNeeded();
     await expect(page.getByTestId('commons-stage'), 'the stage mounts once the gallery is in view').toBeVisible({ timeout: 30_000 });
     await settle(page);
     await transfers.flush();
@@ -103,7 +119,7 @@ test.describe('transfer budgets', () => {
       const transfers = trackTransfers(page);
       await page.goto(landingPath(path, tier));
       await settle(page);
-      await page.locator('#gallery').scrollIntoViewIfNeeded();
+      await page.getByTestId('commons-search').scrollIntoViewIfNeeded();
       await settle(page);
       await transfers.flush();
       expect(transfers.matching(COMMONS_JSON_RE).map((t) => t.url), 'commons.json before any search, filter or "show more"').toEqual([]);
@@ -126,7 +142,12 @@ test.describe('transfer budgets', () => {
     await page.waitForTimeout(1_000);
     const { tasks, unsupported, loadEventEnd } = await readLongTasks(page);
     expect(unsupported, 'PerformanceObserver("longtask") is unsupported in this browser').toBe(false);
-    const over = tasks.filter((task) => task.duration > runtime.maxLongTaskMs);
+    // The budget is about the page AFTER it has loaded: the parse-and-hydrate
+    // work that runs before loadEventEnd is what Lighthouse's TBT budget
+    // (vitals.tbtMs) measures, on a throttled CPU. Counting it here too would
+    // fail the page on the banner's one-time react-dom evaluation and say
+    // nothing about the stage.
+    const over = tasks.filter((task) => task.start >= loadEventEnd && task.duration > runtime.maxLongTaskMs);
     const describe = tasks
       .map((task) => `${Math.round(task.duration)} ms at ${Math.round(task.start)} ms${task.start > loadEventEnd ? ' (after load)' : ''}`)
       .join(', ');

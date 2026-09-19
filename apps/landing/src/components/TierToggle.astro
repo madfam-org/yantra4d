@@ -37,6 +37,15 @@ const labels = {
   <span data-tier-label>{labels.on}</span>
 </button>
 
+<style>
+  /* Tailwind's `inline-flex` would beat the UA stylesheet's `[hidden] { display: none }`,
+     so without JavaScript (or before this component's script runs) the button
+     would show. The attribute must win: there is no 3D to turn off yet. */
+  [data-tier-toggle][hidden] {
+    display: none;
+  }
+</style>
+
 <script>
   import { currentTier, setUserTier, userChoseTier, TIER_CHANGE_EVENT } from '../lib/tier';
 

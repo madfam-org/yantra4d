@@ -28,7 +28,7 @@ async function snapshot(page: Page, path: string, tier: Tier) {
     await page.goto(`${path}?tier=${tier}`);
     await settle(page);
     await expect(page.locator('html')).toHaveAttribute('data-tier', tier);
-    await page.locator('#gallery').scrollIntoViewIfNeeded();
+    await page.getByTestId('commons-search').scrollIntoViewIfNeeded();
     await settle(page);
     const headings = (await page.locator('h1, h2').allInnerTexts()).map(normalise).filter(Boolean);
     const facts: Record<string, string[]> = {};

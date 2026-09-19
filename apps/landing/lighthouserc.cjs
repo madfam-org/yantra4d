@@ -31,11 +31,8 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- CommonJS by contract: Lighthouse CI require()s this file */
 const budgets = require('./perf-budgets.json');
 
-const { transfer, vitals, lighthouse } = budgets;
+const { vitals, lighthouse } = budgets;
 const KIB = 1024;
-
-/** Lighthouse budgets are whole KiB; floor so a budget never rounds UP. */
-const kib = (bytes) => Math.floor(bytes / KIB);
 /** Category scores are 0–1 in assertions, percentages in the budgets file. */
 const score = (percent) => percent / 100;
 
@@ -49,18 +46,20 @@ function playwrightChromium() {
 
 /**
  * The budgets in Lighthouse's budget.json shape, generated from
- * perf-budgets.json. `resourceSizes` are TRANSFER sizes Lighthouse observes
- * during its (scroll-less) load: `script` against the initial-JS budget,
- * `total` against the initial-page budget. `timings` are the vitals for the
- * mobile profile Lighthouse emulates.
+ * perf-budgets.json: the vitals for the mobile profile Lighthouse emulates.
+ *
+ * No `resourceSizes` here, on purpose. Lighthouse CI's static server speaks
+ * gzip, so every byte figure it observes runs ~10% above the brotli numbers
+ * the budgets are written in, and Chrome's lazy-load distance pulls the first
+ * grid thumbnails into a "total" that has nothing to do with the initial page.
+ * Bytes are gated where they can be measured exactly: the CI bundle step
+ * (`npm run budget`, brotli on disk) and the Playwright suite (bodies
+ * re-compressed with brotli). Lighthouse owns what it is good at — the
+ * category scores and the field-like timings on a throttled mobile profile.
  */
 const lighthouseBudgets = [
   {
     path: '/*',
-    resourceSizes: [
-      { resourceType: 'script', budget: kib(transfer.initialJsBytes) },
-      { resourceType: 'total', budget: kib(transfer.initialPageBytes) },
-    ],
     timings: [
       { metric: 'largest-contentful-paint', budget: vitals.lcpMs.mobile },
       { metric: 'total-blocking-time', budget: vitals.tbtMs },

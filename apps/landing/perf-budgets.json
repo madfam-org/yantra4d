@@ -27,6 +27,11 @@
     "maxHeapMb": 150,
     "maxLongTaskMs": 100
   },
+  "images": {
+    "_comment": "Per-thumbnail budget (public/projects/<slug>.webp), enforced by scripts/dev/optimize-landing-thumbnails.mjs and src/test/landing-thumbnails.test.ts. Cards render at most 640 px wide.",
+    "thumbnailBytes": 40960,
+    "thumbnailMaxWidth": 640
+  },
   "meshes": {
     "_comment": "Per-file budgets the prerender pipeline enforces (meshopt-compressed GLB on disk).",
     "lod1Bytes": 12288,

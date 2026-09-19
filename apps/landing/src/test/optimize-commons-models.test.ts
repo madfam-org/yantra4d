@@ -647,8 +647,11 @@ describe("run — raw inputs", () => {
     expect(gridfinity.budget).toEqual({ lod1Bytes: 65536, reason });
     expect(gridfinity.lod1.bytes).toBeGreaterThan(200);
     expect(motorMount).not.toHaveProperty("budget");
-    expect(manifest.budgets).toEqual(manifestBudgets(BUDGETS)); // the block, not the exceptions
-    expect(manifest.budgets.lod1Bytes).toBe(200);
+    // The block as this repo declares it (lod1 at 200 B), never the exceptions map.
+    expect(manifest.budgets).toEqual(
+      manifestBudgets({ ...BUDGETS, lod1Bytes: 200 }),
+    );
+    expect(manifest.budgets).not.toHaveProperty("exceptions");
   });
 
   it("rejects a malformed exceptions map as a usage error, before touching any file", async () => {

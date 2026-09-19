@@ -131,8 +131,9 @@ module.exports = {
         // 2026-09-19) and TBT tracked it run by run — 985 → 974 ms, 1504 →
         // 123 ms, 1782 → 91 ms — for the same build. `npm run lhci` measures
         // the BenchmarkIndex first (scripts/ci/landing-lighthouse-cpu.mjs) and
-        // sets LH_CPU_MULTIPLIER so the emulated phone stays the same on a
-        // laptop and on the runner. Unset means Lighthouse's own 4×. Only the
+        // sets LH_CPU_MULTIPLIER — at most Lighthouse's own 4×, less on a slow
+        // pod — so a slow runner is not held to a harsher phone than the
+        // budgets assume. Unset means Lighthouse's own 4×. Only the
         // multiplier is given: Lighthouse merges it into its mobile network
         // preset, which stays untouched.
         ...(cpuSlowdownMultiplier ? { throttling: { cpuSlowdownMultiplier } } : {}),

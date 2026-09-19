@@ -152,9 +152,12 @@ throttle is written for a high-end desktop (BenchmarkIndex 1500–2000); the CI
 pod measured 937–1782 within a single job and total-blocking-time tracked it
 run by run for the same build. `scripts/ci/landing-lighthouse-cpu.mjs` runs
 Lighthouse's own BenchmarkIndex in the Playwright Chromium, takes the median
-of three samples and sets `LH_CPU_MULTIPLIER = 4 × index / 1750` (1–10, one
-decimal), so a laptop at 2200 audits at 5×, the pod at ~1300 at ~3×, and both
-emulate the same phone. The line it prints is in the job log and summary;
+of three samples and sets `LH_CPU_MULTIPLIER = 4 × index / 1750`, one decimal,
+between 1 and Lighthouse's own 4× — the pod at ~1300 audits at ~3×, anything at
+or above the reference host at the standard 4×. The budgets are written
+against that standard emulation, and above 4× the linear model overshoots
+(a pod at 2650 throttled to 6.1× read 734 ms of TBT for a build that reads
+under 200 at 4×), so the gate relaxes on slow hosts and never tightens. The line it prints is in the job log and summary;
 `LH_CPU_MULTIPLIER=4 npm run lhci` pins Lighthouse's default instead.
 
 Lighthouse launches its own Chrome. `lighthouserc.cjs` points it at the

@@ -21,6 +21,9 @@
  *   <slug>.lod0.glb   ≤ meshes.lod0Triangles / meshes.lod0Bytes   (--lod0 selection;
  *                     skipped when it would add no triangles over lod1)
  *   <slug>.<animation>.<index>.glb   keyframes at lod0 settings, ≤ meshes.keyframeBytes
+ *                                    (a frame byte-identical to the base or to an
+ *                                    earlier frame is not written; the manifest
+ *                                    points its entry at the file that exists)
  *
  * Budgets come from `apps/landing/perf-budgets.json` (`meshes` block; a
  * `meshes.exceptions` map may raise them for one slug, with a written reason,
@@ -66,6 +69,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -700,6 +704,7 @@ const fmtInt = (n) => Number(n).toLocaleString('en-US');
 const pct = (bytes, budget) => `${Math.round(((bytes - budget) / budget) * 100)}%`;
 
 function statusOf(row) {
+  if (row.sameAs) return `= ${row.sameAs}`;
   if (!row.withinBytes) return `OVER +${pct(row.afterBytes, row.budgetBytes)}`;
   const notes = [];
   if (row.exception) notes.push('by exception');
@@ -850,6 +855,11 @@ export async function run({
   };
 
   const planned = []; // { name, bytes, row }
+  // `${slug}:${sha256}` → the output already planned with exactly these bytes.
+  // A keyframe that comes out byte-identical to the base or to an earlier
+  // frame (a sweep parked on the same grid step, run 35460054814: 11 of 245)
+  // is not written again; its manifest entry points at the file that exists.
+  const seenBytes = new Map();
   const rows = [];
   const failures = [];
   let rawBytesTotal = 0;
@@ -890,6 +900,9 @@ export async function run({
       const name = outputNameFor(input, target);
       const targets = targetsOf(input.slug);
       const budget = targets[target];
+      const digest = `${input.slug}:${createHash('sha256').update(built.bytes).digest('hex')}`;
+      const sameAs = target === 'frame' ? (seenBytes.get(digest) ?? null) : null;
+      if (!seenBytes.has(digest)) seenBytes.set(digest, name);
       const row = {
         slug: input.slug,
         target: input.kind === 'frame' ? `${input.animation}#${input.index}` : target,
@@ -904,15 +917,18 @@ export async function run({
         byteCapped: built.byteCapped,
         reachedTriangleBudget: built.reachedTriangleBudget,
         exception: targets.exception ? targets.exception.reason : null,
+        sameAs,
       };
       rows.push(row);
-      planned.push({ name, bytes: built.bytes, row });
-      const record = { file: name, bytes: built.bytes.length, triangles: built.triangles };
+      if (!sameAs) planned.push({ name, bytes: built.bytes, row });
+      const record = { file: sameAs ?? name, bytes: built.bytes.length, triangles: built.triangles };
       const entry = entryFor(input.slug);
       if (target === 'frame') entry.frames.push({ ...record, animation: input.animation, index: input.index });
       else entry[target] = record;
       info(
-        `  ${name.padEnd(44)} ${fmtInt(result.before.bytes).padStart(10)} B → ${fmtInt(built.bytes.length).padStart(8)} B  ${fmtInt(result.before.triangles).padStart(8)} → ${fmtInt(built.triangles).padStart(6)} tris  ${statusOf(row)}`,
+        sameAs
+          ? `  ${name.padEnd(44)} = ${sameAs} (identical bytes; not written)`
+          : `  ${name.padEnd(44)} ${fmtInt(result.before.bytes).padStart(10)} B → ${fmtInt(built.bytes.length).padStart(8)} B  ${fmtInt(result.before.triangles).padStart(8)} → ${fmtInt(built.triangles).padStart(6)} tris  ${statusOf(row)}`,
       );
     }
   }
@@ -996,8 +1012,10 @@ export async function run({
     fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `${renderMarkdownReport(rows, totals)}\n`);
   }
 
-  const offenders = rows.filter((r) => !r.withinBytes);
-  const shortfalls = rows.filter((r) => r.withinBytes && !r.reachedTriangleBudget);
+  // Aliased frames are the same bytes as a row already counted.
+  const written = rows.filter((r) => !r.sameAs);
+  const offenders = written.filter((r) => !r.withinBytes);
+  const shortfalls = written.filter((r) => r.withinBytes && !r.reachedTriangleBudget);
   if (shortfalls.length) {
     logError(`NOTE: ${shortfalls.length} output(s) stayed over the triangle budget (topology limits the simplifier): ${shortfalls.map((r) => r.file).join(', ')}`);
   }

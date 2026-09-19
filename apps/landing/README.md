@@ -71,10 +71,6 @@ the mesh pipeline, the manifest contract the reader depends on, how to run both
 halves locally — is in
 [`docs/guides/landing-models-pipeline.md`](../../docs/guides/landing-models-pipeline.md).
 
-## License
-
-This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](../../LICENSE) file for more details.
-
 ## Device tiers, budgets, and the data the page binds
 
 The landing renders one of three experiences, decided **before first paint**:
@@ -120,3 +116,7 @@ file formats). Counts, prices and percentages about the product belong in genera
 cards). `CommonsGallery.tsx` (client:visible) fetches `/data/<lang>/commons.json` only on the
 first search, filter or "show more", and lazy-imports `ProjectCarousel3D` only on tier ≥ lite.
 `src/lib/models-manifest.ts` reads `public/models/manifest.json` in its v1 and v2 shapes.
+
+## License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](../../LICENSE) file for more details.

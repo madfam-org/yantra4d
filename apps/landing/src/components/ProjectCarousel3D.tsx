@@ -56,7 +56,11 @@ function LoadedModel({ url }: { url: string }) {
     box.getSize(size);
     const maxDim = Math.max(size.x, size.y, size.z);
     const scale = maxDim > 0 ? 2.5 / maxDim : 1;
-    const material = new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.4, metalness: 0.1 });
+    // The pipeline's LOD files carry POSITION only (no normals, no materials —
+    // the page owns the look). GLTFLoader flat-shades its own material for such
+    // primitives; since we replace it, we must say so too, or the lighting is
+    // wrong. See docs/guides/landing-models-pipeline.md.
+    const material = new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.4, metalness: 0.1, flatShading: true });
     root.traverse((child: any) => {
       if (child.isMesh) child.material = material;
     });

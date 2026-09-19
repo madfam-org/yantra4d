@@ -389,6 +389,18 @@
     "live": "Live 3D rendering",
     "stillStrip": "A selection of the commons — open any of them in Studio.",
     "hyperobject": "Hyperobject",
-    "loading": "Loading the commons…"
+    "loading": "Loading the commons…",
+    "domains": {
+      "household": "Household",
+      "industrial": "Industrial",
+      "medical": "Medical",
+      "commercial": "Commercial",
+      "hybrid": "Hybrid",
+      "culture": "Culture",
+      "infrastructure": "Infrastructure",
+      "wearable": "Wearable",
+      "soft-robotics": "Soft robotics",
+      "agriculture": "Agriculture"
+    }
   }
 }

@@ -389,6 +389,18 @@
     "live": "Render 3D en vivo",
     "stillStrip": "Una selección del procomún — abre cualquiera en Studio.",
     "hyperobject": "Hiperobjeto",
-    "loading": "Cargando el procomún…"
+    "loading": "Cargando el procomún…",
+    "domains": {
+      "household": "Hogar",
+      "industrial": "Industrial",
+      "medical": "Médico",
+      "commercial": "Comercial",
+      "hybrid": "Híbrido",
+      "culture": "Cultura",
+      "infrastructure": "Infraestructura",
+      "wearable": "Vestible",
+      "soft-robotics": "Robótica blanda",
+      "agriculture": "Agricultura"
+    }
   }
 }

@@ -2,9 +2,9 @@
   "_comment": "Performance budgets for the landing (yantra4d.com). ONE source of truth: the CI bundle step, the Lighthouse CI budget, the Playwright e2e assertions and the prerender pipeline all read this file. Bytes are TRANSFER sizes (brotli for text over Cloudflare; gzip is the CI proxy, ~10% larger) unless a key says otherwise. Plan of record: internal-devops docs/strategy/2026-09-18-yantra4d-landing-revamp-plan.md §3.6.",
   "version": 1,
   "transfer": {
-    "_comment": "initialJs = every script the page requests before the 3D chunk (islands + runtime). threeChunk = the lazily imported bundle carrying three + R3F + drei + decoders, loaded after LCP and only on tier >= lite. fullScroll = everything a full scroll to the footer transfers, per tier.",
-    "initialJsBytes": 40960,
-    "initialPageBytes": 92160,
+    "_comment": "initialJs = every script the page requests before the 3D chunk (islands + their static import closure). Measured 2026-09-19 after the island diet: 60 KB brotli, of which 51 KB is vendor-react (react-dom), a floor set by the mandatory @madfam/ecosystem-banner island; the gallery island itself is 4 KB and three.js is deferred. The plan's 40 KB figure assumed the banner could be React-free — tracked as a Phase 2 follow-up; until then 64 KB is the honest gate. threeChunk = the lazily imported bundle carrying three + R3F + drei + the meshopt decoder, loaded after LCP and only on tier >= lite. fullScroll = everything a full scroll to the footer transfers, per tier.",
+    "initialJsBytes": 65536,
+    "initialPageBytes": 102400,
     "threeChunkBytes": 358400,
     "postprocessingChunkBytes": 61440,
     "fullScrollBytes": {

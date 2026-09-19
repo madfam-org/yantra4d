@@ -7,6 +7,24 @@ import react from '@astrojs/react';
 // but wire up the same PostCSS plugin this project already configures directly.
 // This keeps Tailwind 3 in place, avoiding a Tailwind 4 migration on the public
 // marketing site.
+
+// Vendor chunking. Two named chunks, for two different lifetimes:
+//
+//   vendor-react — react + react-dom + scheduler. Every island needs it, the
+//                  ecosystem banner mounts at client:load, so this is paid on
+//                  every page view. ~55 KB gzipped.
+//   vendor-three — three + @react-three/* (+ the meshopt decoder under
+//                  three/examples). Imported dynamically by the 3D stage only,
+//                  on the lite/full tiers, once the gallery is in view.
+//
+// Both are named so the CI budget step and the e2e suite can measure them as
+// things rather than guess from hashed filenames. Naming react explicitly is
+// not decoration: without it the bundler merged react-dom INTO vendor-three
+// (react is a dependency of @react-three/fiber), which made the banner pull
+// the whole 3D bundle at load — the exact regression the budgets exist to catch.
+const VENDOR_THREE = /node_modules[\\/](three|@react-three)[\\/]/;
+const VENDOR_REACT = /node_modules[\\/](react|react-dom|scheduler)[\\/]/;
+
 export default defineConfig({
   integrations: [react()],
   output: 'static',
@@ -17,15 +35,14 @@ export default defineConfig({
   },
   vite: {
     build: {
+      // vendor-three is ~1.1 MB on disk (240 KB brotli) by design and lazy;
+      // the budget that matters is enforced in CI on transfer size, not here.
+      chunkSizeWarningLimit: 1200,
       rollupOptions: {
         output: {
-          // Everything 3D lands in ONE named chunk. It is imported dynamically
-          // (only on tier >= lite, only when the gallery scrolls into view), so
-          // naming it lets the CI budget step and the e2e suite measure "the 3D
-          // chunk" as a thing, instead of guessing from hashed filenames. The
-          // meshopt decoder lives under three/examples and rides along.
           manualChunks(id) {
-            if (/node_modules\/(three|@react-three)\//.test(id)) return 'vendor-three';
+            if (VENDOR_THREE.test(id)) return 'vendor-three';
+            if (VENDOR_REACT.test(id)) return 'vendor-react';
             return undefined;
           },
         },

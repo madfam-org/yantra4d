@@ -67,7 +67,9 @@ const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN || '';
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased pb-8">
     <slot />
-    <EcosystemBannerClient client:load />
+    <!-- The banner is fixed at the bottom and never part of the LCP; hydrating
+         it at idle keeps react-dom's parse/execute off the critical path. -->
+    <EcosystemBannerClient client:idle />
   </body>
 </html>
 

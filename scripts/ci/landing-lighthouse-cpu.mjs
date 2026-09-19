@@ -20,13 +20,16 @@
  * the multiplier so that host speed ÷ multiplier lands where Lighthouse's
  * default puts it:
  *
- *   multiplier = 4 × benchmarkIndex / 1750      clamped to 1–10, one decimal
+ *   multiplier = 4 × benchmarkIndex / 1750      clamped to 1–4, one decimal
  *
- * 1750 is the middle of the bracket the default is written for; 1–10 is the
- * range the guide gives for that bracket. A host at 1750 gets Lighthouse's own
- * 4×, the runner at ~1300 gets ~3×, a fast laptop at 2200 gets 5×; the emulated
- * phone is the same in every case, which is what makes one timing budget
- * comparable between a laptop and the runner.
+ * 1750 is the middle of the bracket the default is written for. A host at
+ * 1750 gets Lighthouse's own 4×, the runner at ~1300 gets ~3×, and nothing
+ * ever gets MORE than the default: the budgets are written against
+ * Lighthouse's standard emulation, and above 4× the linear model overshoots —
+ * a pod reading 2650 throttled to 6.1× produced 734 and 341 ms of TBT where
+ * a pod reading 1740 at 4× produced under 200 for the same build (ci runs
+ * 35469373879 and 35461707348, 2026-09-19). Relax on slow hosts, never
+ * tighten beyond the standard.
  *
  * Usage (from apps/landing; `npm run lhci` is the second form):
  *   node ../../scripts/ci/landing-lighthouse-cpu.mjs                  measure and print; also appends
@@ -53,7 +56,7 @@ export const DEFAULTS = Object.freeze({
   base: 4,
   anchor: 1750,
   min: 1,
-  max: 10,
+  max: 4,
   samples: 3,
 });
 

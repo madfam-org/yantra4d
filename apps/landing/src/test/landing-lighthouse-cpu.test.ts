@@ -1,7 +1,8 @@
 /**
  * The Lighthouse CPU calibration (scripts/ci/landing-lighthouse-cpu.mjs): the
  * pure arithmetic, pinned to the numbers the runner actually produced on
- * 2026-09-19 (ci run 35460027219) so the rationale in the script stays true.
+ * 2026-09-19 (ci runs 35460027219 and 35469373879) so the rationale in the
+ * script stays true.
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -18,27 +19,38 @@ describe("multiplierFor", () => {
     expect(DEFAULTS.anchor).toBe(1750);
   });
 
-  it("scales in proportion to the BenchmarkIndex, one decimal", () => {
+  it("scales in proportion to the BenchmarkIndex below the reference, one decimal", () => {
     expect(multiplierFor(875)).toBe(2);
-    expect(multiplierFor(2200)).toBe(5);
     expect(multiplierFor(1335)).toBe(3.1); // the first ARC pod measured
+    expect(multiplierFor(1739)).toBe(4); // the quiet pod, which is the reference host
   });
 
-  it("keeps the emulated device constant across the spread one job saw", () => {
-    // BenchmarkIndex → multiplier; benchmarkIndex / multiplier ≈ 437 throughout.
-    const seen = { 937: 2.1, 985: 2.3, 1173: 2.7, 1504: 3.4, 1782: 4.1 };
+  it("never throttles harder than Lighthouse's default, however fast the host", () => {
+    // A pod reading 2650 was throttled to 6.1× and read 734 / 341 ms of TBT for a
+    // build that reads under 200 at 4× on a 1740 pod (run 35469373879).
+    expect(multiplierFor(2200)).toBe(4);
+    expect(multiplierFor(2651)).toBe(4);
+    expect(multiplierFor(10_000)).toBe(4);
+    expect(DEFAULTS.max).toBe(DEFAULTS.base);
+  });
+
+  it("keeps the emulated device constant across the spread one job saw, up to the reference", () => {
+    // BenchmarkIndex → multiplier; benchmarkIndex / multiplier ≈ 437 below 1750, then the cap.
+    const seen = { 937: 2.1, 985: 2.3, 1173: 2.7, 1504: 3.4, 1782: 4 };
     for (const [bi, expected] of Object.entries(seen)) {
       const m = multiplierFor(Number(bi));
       expect(m).toBe(expected);
-      expect(Number(bi) / m).toBeGreaterThan(400);
-      expect(Number(bi) / m).toBeLessThan(480);
+      if (Number(bi) <= 1750) {
+        expect(Number(bi) / m).toBeGreaterThan(400);
+        expect(Number(bi) / m).toBeLessThan(480);
+      }
     }
   });
 
-  it("clamps to the range Lighthouse's guide gives for the reference bracket", () => {
+  it("clamps: a floor of 1, a ceiling of the default, both overridable", () => {
     expect(multiplierFor(100)).toBe(1);
-    expect(multiplierFor(10_000)).toBe(10);
     expect(multiplierFor(3000, { max: 6 })).toBe(6);
+    expect(multiplierFor(3000, { max: 10 })).toBe(6.9);
   });
 
   it("falls back to the default on anything that is not a positive number", () => {

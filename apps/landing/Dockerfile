@@ -9,6 +9,9 @@ ENV PUBLIC_STUDIO_URL=$PUBLIC_STUDIO_URL
 # Cloudflare Web Analytics site token. Empty (the default) ships no beacon.
 ARG PUBLIC_CF_BEACON_TOKEN=
 ENV PUBLIC_CF_BEACON_TOKEN=$PUBLIC_CF_BEACON_TOKEN
+# First-party tier beacon (src/lib/rum.ts). Off until the API accepts the event.
+ARG PUBLIC_RUM_BEACON=0
+ENV PUBLIC_RUM_BEACON=$PUBLIC_RUM_BEACON
 RUN npm run build
 
 FROM nginx:alpine

@@ -70,6 +70,16 @@ const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN || '';
     <!-- The banner is fixed at the bottom and never part of the LCP; hydrating
          it at idle keeps react-dom's parse/execute off the critical path. -->
     <EcosystemBannerClient client:idle />
+    <script>
+      // The tier beacon: one anonymous sendBeacon per session, only when the
+      // build enables it (PUBLIC_RUM_BEACON=1) — see src/lib/rum.ts.
+      import { sendTierBeacon } from '../lib/rum';
+      import { API_URL } from '../lib/env';
+      const enabled = import.meta.env.PUBLIC_RUM_BEACON === '1';
+      const fire = () => sendTierBeacon({ endpoint: `${API_URL}/api/analytics/track`, enabled });
+      if ('requestIdleCallback' in window) window.requestIdleCallback(fire, { timeout: 4000 });
+      else setTimeout(fire, 2000);
+    </script>
   </body>
 </html>
 

@@ -1,0 +1,40 @@
+{
+  "_comment": "The truth lane (src/test/locale-figures.test.ts) fails the build when a locale string carries a digit that is neither a bound placeholder ({cartridges}) nor listed here. Every entry needs a reason. Counts, prices, percentages and multipliers about the product belong in generated data (COMMONS_STATS / TIER_FACTS), never here.",
+  "tokens": {
+    "Yantra4D": "product name",
+    "Sim4D": "former product name",
+    "3D": "dimensionality, not a figure",
+    "2D": "dimensionality, not a figure",
+    "4D": "dimensionality, not a figure",
+    "AGPLv3": "licence name",
+    "3MF": "file format",
+    "STEP": "file format",
+    "$9/mo": "pro price copy — tulana owns prices; changing it is a ruling, not a regeneration",
+    "$9/mes": "pro price copy (es)",
+    "1": "hyperCommons.shiftStat1 '1 file → ∞ objects' is a statement of what a hyperobject is",
+    "1,000": "cdg.impactBody: rhetorical contrast ('more valuable than 1,000 cup holders'), not a claim",
+    "42mm": "Gridfinity module pitch — spec data",
+    "1881": "PCO 1881 bottle-thread standard",
+    "TS35": "DIN rail profile name",
+    "TS35/TS15": "DIN rail profile names",
+    "80/20": "T-slot extrusion brand/system name",
+    "7mm": "Gridfinity Z-unit — spec data",
+    "26.7mm": "PCO 1881 thread outer diameter — spec data",
+    "3.18mm": "PCO 1881 thread pitch — spec data",
+    "60715": "IEC/EN 60715 standard number",
+    "35mm": "TS35 rail width — spec data",
+    "7.5mm": "TS35 rail depth — spec data",
+    "8037": "ISO 8037 microscope slide standard",
+    "8037-1:2003": "ISO 8037-1:2003 standard designation",
+    "76×26×1mm": "ISO 8037 slide dimensions — spec data",
+    "6\"": "vise jaw width — spec data",
+    "5/16-18": "UNC thread designation",
+    "4.5\"": "vise bolt spacing — spec data",
+    "4.25mm": "involute gear reference dimension — spec data",
+    "3°": "involute gear pressure-angle related spec data",
+    "53": "ISO 53 basic rack standard number"
+  },
+  "patterns": [
+    { "regex": "^\\{[a-zA-Z]+\\}$", "reason": "a bound placeholder filled from generated data" }
+  ]
+}

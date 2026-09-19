@@ -52,7 +52,7 @@
     },
     "export": {
       "title": "Exporta a Tu Manera",
-      "desc": "STL para el laminador, STEP para CAD real. 317 cartuchos exportan sólidos B-Rep que abres en Fusion, SolidWorks o FreeCAD."
+      "desc": "STL para el laminador, STEP para CAD real. {stepCapable} cartuchos exportan sólidos B-Rep que abres en Fusion, SolidWorks o FreeCAD."
     },
     "assembly": {
       "title": "Ensamblaje Claro",
@@ -141,15 +141,15 @@
     "free": {
       "name": "Explorador",
       "price": "Gratis",
-      "f1": "Explora los 324 cartuchos abiertos",
+      "f1": "Explora los {cartridges} cartuchos abiertos",
       "f2": "Renderizado en el navegador y exportación STL",
-      "f3": "10 renders en servidor por hora",
+      "f3": "{guestRenders} renders en servidor por hora",
       "cta": "Abrir el estudio"
     },
     "essentials": {
       "name": "Essentials",
       "price": "Gratis con cuenta",
-      "f1": "30 renders en servidor por hora",
+      "f1": "{essentialsRenders} renders en servidor por hora",
       "f2": "Exportación 3MF y OBJ",
       "f3": "Configurador con IA",
       "cta": "Crear cuenta"
@@ -158,7 +158,7 @@
       "name": "Pro",
       "price": "desde $9/mes",
       "badge": "Recomendado",
-      "f1": "150 renders en servidor por hora",
+      "f1": "{proRenders} renders en servidor por hora",
       "f2": "Todos los formatos de exportación, incluido STEP",
       "f3": "Motor CadQuery, importación de GitHub y editor de código",
       "f4": "Envío a impresora y cotizaciones de manufactura",
@@ -203,8 +203,8 @@
     "medical": {
       "title": "Médico",
       "desc": "Salud accesible a través de dispositivos diagnósticos y protésicos de código abierto.",
-      "items": "Prótesis de Socket (paramétricas por escaneo) · Estetoscopio Glia ($5 vs $500) · Otoscopio Abierto",
-      "stat": "99% reducción de costo"
+      "items": "Prótesis de Socket (paramétricas por escaneo) · Estetoscopio Glia · Otoscopio Abierto",
+      "stat": "Diagnóstico abierto"
     },
     "commercial": {
       "title": "Comercial",
@@ -213,14 +213,13 @@
       "stat": "Cero residuos electrónicos"
     },
     "impactHeading": "Impacto Real",
-    "impact1label": "Otoscopio Glia",
-    "impact1value": "99% más barato",
-    "impact2label": "Conectores Tubería",
-    "impact2value": "3-17× más baratos",
-    "impact3label": "Gridfinity",
-    "impact3value": "Estándar global",
-    "impact4label": "Licencia",
-    "impact4value": "CERN OHL"
+    "impact1label": "Cartuchos abiertos",
+    "impact2label": "Estándares que hablan",
+    "impact3label": "Interfaces declaradas",
+    "impact4label": "diseños",
+    "impact4value": "CERN OHL",
+    "impact5label": "Prendas en el procomún blando",
+    "impact6label": "Vínculos de hardware verificados"
   },
   "cdg": {
     "badge": "Geometría de Denominador Común",
@@ -275,11 +274,8 @@
     },
     "impactTitle": "La Estrategia de Interfaces",
     "impactBody": "Deja de diseñar productos. Empieza a diseñar interfaces. Una base Gridfinity perfecta es más valiosa que 1,000 portavasos diferentes.",
-    "stat1value": "14",
     "stat1label": "Interfaces CDG",
-    "stat2value": "10",
     "stat2label": "Hiperobjetos",
-    "stat3value": "4",
     "stat3label": "Dominios",
     "stat4value": "CERN OHL",
     "stat4label": "Licencia Abierta"

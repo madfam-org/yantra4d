@@ -259,7 +259,9 @@ describe('accent text never uses text-primary on small copy', () => {
     const html = loadTemplate('HyperCommons.astro')
     const stats = html.match(/text-xl sm:text-2xl font-bold text-primary\b/g)
     expect(stats).not.toBeNull()
-    expect(stats!.length).toBe(4)
+    // Four solid-commons cards plus the soft-commons card template, which
+    // renders once per non-null snapshot figure — five occurrences in source.
+    expect(stats!.length).toBe(5)
   })
 
   it('ProjectGalleryGrid open label uses the readable accent', () => {

@@ -10,10 +10,19 @@
 // + all formats + CadQuery + GitHub + print dispatch. The pro price is the
 // product's existing "from $9/mo" copy. Checkout is Dhanam's hosted page with
 // the same query contract as apps/studio/src/lib/billing.ts.
+import { COMMONS_STATS, TIER_FACTS } from '../data/projects';
+import { fillTemplate } from '../lib/i18n';
+
 const { t } = Astro.props;
 
 const CHECKOUT_URL = 'https://app.dhan.am/checkout?plan=yantra4d_pro&product=yantra4d';
 const APP_URL = 'https://app.yantra4d.com';
+
+// Every figure in this section is bound, never typed: the commons count from the
+// generated catalog figures, the quotas from apps/api/tiers.json via TIER_FACTS.
+// A missing figure leaves its `{placeholder}` visible on purpose.
+const facts = { cartridges: COMMONS_STATS.cartridges, ...TIER_FACTS };
+const fill = (s: string | undefined) => fillTemplate(s ?? '', facts);
 ---
 
 <section id="pricing" class="py-24 px-6">
@@ -29,9 +38,9 @@ const APP_URL = 'https://app.yantra4d.com';
         <h3 class="text-xl font-bold mb-1">{t?.pricing?.free?.name ?? 'Explorador'}</h3>
         <div class="text-3xl font-bold mb-4">{t?.pricing?.free?.price ?? 'Gratis'}</div>
         <ul class="space-y-2 text-sm text-muted-foreground mb-8 flex-1">
-          <li>{t?.pricing?.free?.f1 ?? ''}</li>
+          <li>{fill(t?.pricing?.free?.f1)}</li>
           <li>{t?.pricing?.free?.f2 ?? ''}</li>
-          <li>{t?.pricing?.free?.f3 ?? ''}</li>
+          <li>{fill(t?.pricing?.free?.f3)}</li>
         </ul>
         <a href={APP_URL} class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
           {t?.pricing?.free?.cta ?? 'Abrir el estudio'}
@@ -43,7 +52,7 @@ const APP_URL = 'https://app.yantra4d.com';
         <h3 class="text-xl font-bold mb-1">{t?.pricing?.essentials?.name ?? 'Essentials'}</h3>
         <div class="text-3xl font-bold mb-4">{t?.pricing?.essentials?.price ?? 'Gratis con cuenta'}</div>
         <ul class="space-y-2 text-sm text-muted-foreground mb-8 flex-1">
-          <li>{t?.pricing?.essentials?.f1 ?? ''}</li>
+          <li>{fill(t?.pricing?.essentials?.f1)}</li>
           <li>{t?.pricing?.essentials?.f2 ?? ''}</li>
           <li>{t?.pricing?.essentials?.f3 ?? ''}</li>
         </ul>
@@ -60,7 +69,7 @@ const APP_URL = 'https://app.yantra4d.com';
         <h3 class="text-xl font-bold mb-1">{t?.pricing?.pro?.name ?? 'Pro'}</h3>
         <div class="text-3xl font-bold mb-4">{t?.pricing?.pro?.price ?? 'desde $9/mes'}</div>
         <ul class="space-y-2 text-sm text-muted-foreground mb-8 flex-1">
-          <li>{t?.pricing?.pro?.f1 ?? ''}</li>
+          <li>{fill(t?.pricing?.pro?.f1)}</li>
           <li>{t?.pricing?.pro?.f2 ?? ''}</li>
           <li>{t?.pricing?.pro?.f3 ?? ''}</li>
           <li>{t?.pricing?.pro?.f4 ?? ''}</li>

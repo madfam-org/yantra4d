@@ -52,7 +52,7 @@
     },
     "export": {
       "title": "Export Your Way",
-      "desc": "STL for the slicer, STEP for real CAD. 317 cartridges export B-Rep solids you can open in Fusion, SolidWorks or FreeCAD."
+      "desc": "STL for the slicer, STEP for real CAD. {stepCapable} cartridges export B-Rep solids you can open in Fusion, SolidWorks or FreeCAD."
     },
     "assembly": {
       "title": "Assembly Made Clear",
@@ -141,15 +141,15 @@
     "free": {
       "name": "Explorer",
       "price": "Free",
-      "f1": "Browse all 324 open cartridges",
+      "f1": "Browse all {cartridges} open cartridges",
       "f2": "In-browser rendering + STL export",
-      "f3": "10 server renders per hour",
+      "f3": "{guestRenders} server renders per hour",
       "cta": "Open the studio"
     },
     "essentials": {
       "name": "Essentials",
       "price": "Free with an account",
-      "f1": "30 server renders per hour",
+      "f1": "{essentialsRenders} server renders per hour",
       "f2": "3MF and OBJ exports",
       "f3": "AI configurator",
       "cta": "Create an account"
@@ -158,7 +158,7 @@
       "name": "Pro",
       "price": "from $9/mo",
       "badge": "Recommended",
-      "f1": "150 server renders per hour",
+      "f1": "{proRenders} server renders per hour",
       "f2": "All export formats, including STEP",
       "f3": "CadQuery engine, GitHub import & code editor",
       "f4": "Print dispatch & manufacturing quotes",
@@ -203,8 +203,8 @@
     "medical": {
       "title": "Medical",
       "desc": "Accessible healthcare through open-source diagnostic and prosthetic devices.",
-      "items": "Prosthetic Sockets (limb-scan parametric) · Glia Stethoscope ($5 vs $500) · Open Otoscope",
-      "stat": "99% cost reduction"
+      "items": "Prosthetic Sockets (limb-scan parametric) · Glia Stethoscope · Open Otoscope",
+      "stat": "Open diagnostics"
     },
     "commercial": {
       "title": "Commercial",
@@ -213,14 +213,13 @@
       "stat": "Zero e-waste"
     },
     "impactHeading": "Real-World Impact",
-    "impact1label": "Glia Otoscope",
-    "impact1value": "99% cheaper",
-    "impact2label": "Pipe Fittings",
-    "impact2value": "3-17× cheaper",
-    "impact3label": "Gridfinity",
-    "impact3value": "Global standard",
-    "impact4label": "License",
-    "impact4value": "CERN OHL"
+    "impact1label": "Open cartridges",
+    "impact2label": "Standards spoken",
+    "impact3label": "Declared interfaces",
+    "impact4label": "designs",
+    "impact4value": "CERN OHL",
+    "impact5label": "Garments in the soft commons",
+    "impact6label": "Verified hardware links"
   },
   "cdg": {
     "badge": "Common Denominator Geometry",
@@ -275,11 +274,8 @@
     },
     "impactTitle": "The Interface Strategy",
     "impactBody": "Stop designing products. Start designing interfaces. A perfect Gridfinity base is more valuable than 1,000 different cup holders.",
-    "stat1value": "14",
     "stat1label": "CDG Interfaces",
-    "stat2value": "10",
     "stat2label": "Hyperobjects",
-    "stat3value": "4",
     "stat3label": "Domains",
     "stat4value": "CERN OHL",
     "stat4label": "Open License"

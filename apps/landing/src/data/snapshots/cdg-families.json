@@ -1,0 +1,942 @@
+{
+ "source": "https://api.yantra4d.com/api/catalog/families",
+ "generated_at": "2026-09-19T06:49:21Z",
+ "count": 113,
+ "families": [
+  {
+   "family": "unc-1/4-20",
+   "members": 17,
+   "slugs": [
+    "arca-l-bracket",
+    "arca-plate",
+    "ball-socket",
+    "camera-quarter-twenty",
+    "drill-fence",
+    "gopro-ballhead",
+    "gopro-mount",
+    "nato-rail",
+    "optical-post",
+    "rod-bridge",
+    "rod-rig-clamp",
+    "sensor-mount-plate",
+    "shoe-bar",
+    "shoe-mount",
+    "spigot-adapter",
+    "suction-mount",
+    "ttrack-clamp"
+   ]
+  },
+  {
+   "family": "pco-1881",
+   "members": 9,
+   "slugs": [
+    "bird-feeder",
+    "bottle-coupler",
+    "bottle-thread",
+    "faircap-filter",
+    "filter-straw",
+    "jar-adapter",
+    "pco-cap",
+    "pet-dispenser",
+    "rain-gauge-funnel"
+   ]
+  },
+  {
+   "family": "involute-gear",
+   "members": 7,
+   "slugs": [
+    "bevel-pair",
+    "gear-kit",
+    "gear-rack",
+    "gears",
+    "planetary-gearset",
+    "planetary-stage",
+    "worm-wheel"
+   ]
+  },
+  {
+   "family": "din-rail-35",
+   "members": 7,
+   "slugs": [
+    "busbar-support",
+    "devboard-tray",
+    "din-module",
+    "din-rail-clip",
+    "din-relay",
+    "din-terminal-comb",
+    "terminal-cover"
+   ]
+  },
+  {
+   "family": "iso-m3",
+   "members": 7,
+   "slugs": [
+    "din-rail-clip",
+    "enclosure-vent",
+    "ferro-handle",
+    "flexure-mount",
+    "insert-jig",
+    "matrix-frame",
+    "pcb-standoff"
+   ]
+  },
+  {
+   "family": "t-slot-extrusion",
+   "members": 7,
+   "slugs": [
+    "featherboard",
+    "linear-wheel",
+    "psu-mount",
+    "roller-bracket",
+    "seed-tray",
+    "tslot-2020",
+    "tslot-corner"
+   ]
+  },
+  {
+   "family": "bearing-608",
+   "members": 6,
+   "slugs": [
+    "bearing-housing",
+    "gt2-idler",
+    "idler-608",
+    "linear-wheel",
+    "roller-bracket",
+    "timing-pulley"
+   ]
+  },
+  {
+   "family": "iso-m4",
+   "members": 6,
+   "slugs": [
+    "bottle-bracket",
+    "captive-nut",
+    "dryer-holster",
+    "hasp",
+    "mc4-junction",
+    "toiletry-holder"
+   ]
+  },
+  {
+   "family": "gridfinity",
+   "members": 6,
+   "slugs": [
+    "din-rail-clip",
+    "grid-hub",
+    "gridfinity",
+    "gridfinity-baseplate",
+    "gridfinity-tool",
+    "locking-mechanism-hyperobject"
+   ]
+  },
+  {
+   "family": "webbing-strap",
+   "members": 6,
+   "slugs": [
+    "molle-clip",
+    "molle-pouch",
+    "nebulizer-mask-strap",
+    "paracord-jig",
+    "pet-hardware",
+    "strap-buckle"
+   ]
+  },
+  {
+   "family": "arca-swiss",
+   "members": 5,
+   "slugs": [
+    "arca-gopro-bridge",
+    "arca-l-bracket",
+    "arca-plate",
+    "rail-bridge",
+    "tripod-hub"
+   ]
+  },
+  {
+   "family": "vesa",
+   "members": 5,
+   "slugs": [
+    "framing-hyperobject",
+    "vesa-arm-extender",
+    "vesa-mount",
+    "vesa-plate-adapter",
+    "vesa-thinclient"
+   ]
+  },
+  {
+   "family": "gopro-mount",
+   "members": 4,
+   "slugs": [
+    "arca-gopro-bridge",
+    "gopro-arm",
+    "gopro-ballhead",
+    "gopro-mount"
+   ]
+  },
+  {
+   "family": "miter-ttrack",
+   "members": 4,
+   "slugs": [
+    "bench-dog",
+    "camlock-latch",
+    "featherboard",
+    "lock-cam"
+   ]
+  },
+  {
+   "family": "optical-breadboard",
+   "members": 4,
+   "slugs": [
+    "breadboard-holder",
+    "circuit-trainer",
+    "dovetail-slide",
+    "multiboard"
+   ]
+  },
+  {
+   "family": "luer",
+   "members": 4,
+   "slugs": [
+    "dosing-aid",
+    "sharps-lid",
+    "sharps-lid-adapter",
+    "syringe-carriage"
+   ]
+  },
+  {
+   "family": "pc-fan",
+   "members": 4,
+   "slugs": [
+    "dust-shroud",
+    "fan-adapter",
+    "fan-duct",
+    "fan-filter"
+   ]
+  },
+  {
+   "family": "spi-neck",
+   "members": 4,
+   "slugs": [
+    "growler-cap",
+    "pump-adapter",
+    "sharps-lid-adapter",
+    "squeeze-nozzle"
+   ]
+  },
+  {
+   "family": "e26-e27-lamp",
+   "members": 4,
+   "slugs": [
+    "lamp-adapter-kit",
+    "lamp-socket-extender",
+    "lampshade",
+    "socket-adapter"
+   ]
+  },
+  {
+   "family": "nema-stepper",
+   "members": 4,
+   "slugs": [
+    "motor-mount",
+    "nema-bracket",
+    "nema-damper",
+    "scara-robotics"
+   ]
+  },
+  {
+   "family": "ips-pipe",
+   "members": 3,
+   "slugs": [
+    "bar-clamp",
+    "condensate-fitting",
+    "pipe-fitting"
+   ]
+  },
+  {
+   "family": "battery-cell",
+   "members": 3,
+   "slugs": [
+    "battery-caddy",
+    "battery-holder",
+    "media-caddy"
+   ]
+  },
+  {
+   "family": "timing-belt",
+   "members": 3,
+   "slugs": [
+    "belt-clamp",
+    "gt2-idler",
+    "timing-pulley"
+   ]
+  },
+  {
+   "family": "cuvette",
+   "members": 3,
+   "slugs": [
+    "cuvette-rack",
+    "cuvette-sleeve",
+    "filter-wheel"
+   ]
+  },
+  {
+   "family": "iso-m5",
+   "members": 3,
+   "slugs": [
+    "drum-hardware",
+    "iv-pole-clamp",
+    "thumb-screw"
+   ]
+  },
+  {
+   "family": "ght-hose",
+   "members": 3,
+   "slugs": [
+    "hose-adapter",
+    "sprinkler-adapter",
+    "thread-adapter-kit"
+   ]
+  },
+  {
+   "family": "drone-motor-mount",
+   "members": 3,
+   "slugs": [
+    "landing-skid",
+    "motor-soft-mount",
+    "prop-guard"
+   ]
+  },
+  {
+   "family": "slas-microplate",
+   "members": 3,
+   "slugs": [
+    "microplate-tray",
+    "pipette-stand",
+    "tube-rack"
+   ]
+  },
+  {
+   "family": "aerator-m22-m24",
+   "members": 2,
+   "slugs": [
+    "aerator-adapter",
+    "aerator-cache"
+   ]
+  },
+  {
+   "family": "handlebar-clamp",
+   "members": 2,
+   "slugs": [
+    "barend-mount",
+    "bike-mount"
+   ]
+  },
+  {
+   "family": "bevel-gear",
+   "members": 2,
+   "slugs": [
+    "bevel-gear",
+    "bevel-pair"
+   ]
+  },
+  {
+   "family": "wall-stud",
+   "members": 2,
+   "slugs": [
+    "bike-wall-rack",
+    "stud-bracket"
+   ]
+  },
+  {
+   "family": "card-format",
+   "members": 2,
+   "slugs": [
+    "card-holder",
+    "deck-box"
+   ]
+  },
+  {
+   "family": "business-card",
+   "members": 2,
+   "slugs": [
+    "card-stand",
+    "card-tray"
+   ]
+  },
+  {
+   "family": "conical-tube",
+   "members": 2,
+   "slugs": [
+    "centrifuge-adapter",
+    "centrifuge-tube-adapter"
+   ]
+  },
+  {
+   "family": "drip-irrigation",
+   "members": 2,
+   "slugs": [
+    "drip-fitting",
+    "drip-manifold"
+   ]
+  },
+  {
+   "family": "iso-hex-fastener",
+   "members": 2,
+   "slugs": [
+    "fasteners",
+    "locking-mechanism-hyperobject"
+   ]
+  },
+  {
+   "family": "filter-thread",
+   "members": 2,
+   "slugs": [
+    "filter-step-ring",
+    "lens-cap"
+   ]
+  },
+  {
+   "family": "servo-spline",
+   "members": 2,
+   "slugs": [
+    "finray-gripper",
+    "servo-horn"
+   ]
+  },
+  {
+   "family": "support-rod-12",
+   "members": 2,
+   "slugs": [
+    "flask-clamp",
+    "optical-post"
+   ]
+  },
+  {
+   "family": "pegboard-1in",
+   "members": 2,
+   "slugs": [
+    "grid-hub",
+    "pegboard-hooks"
+   ]
+  },
+  {
+   "family": "indicator-stem-8mm",
+   "members": 2,
+   "slugs": [
+    "indicator-base",
+    "indicator-holder"
+   ]
+  },
+  {
+   "family": "shaft-spline",
+   "members": 2,
+   "slugs": [
+    "knob-dshaft",
+    "spline-hub"
+   ]
+  },
+  {
+   "family": "gu10-lamp",
+   "members": 2,
+   "slugs": [
+    "lamp-adapter-kit",
+    "socket-adapter"
+   ]
+  },
+  {
+   "family": "mc4",
+   "members": 2,
+   "slugs": [
+    "mc4-holder",
+    "mc4-junction"
+   ]
+  },
+  {
+   "family": "microscope-slide",
+   "members": 2,
+   "slugs": [
+    "microscope-slide-holder",
+    "microscope-slide-hyperobject"
+   ]
+  },
+  {
+   "family": "molle-pals",
+   "members": 2,
+   "slugs": [
+    "molle-clip",
+    "molle-pouch"
+   ]
+  },
+  {
+   "family": "nato-rail",
+   "members": 2,
+   "slugs": [
+    "nato-rail",
+    "rail-bridge"
+   ]
+  },
+  {
+   "family": "net-cup",
+   "members": 2,
+   "slugs": [
+    "net-cup",
+    "net-cup-lid"
+   ]
+  },
+  {
+   "family": "rms-objective",
+   "members": 2,
+   "slugs": [
+    "objective-case",
+    "objective-turret"
+   ]
+  },
+  {
+   "family": "rpi-mount",
+   "members": 2,
+   "slugs": [
+    "pi-hat-case",
+    "sbc-case"
+   ]
+  },
+  {
+   "family": "picatinny",
+   "members": 2,
+   "slugs": [
+    "picatinny-rail",
+    "rail-bridge"
+   ]
+  },
+  {
+   "family": "enable-prosthetic",
+   "members": 2,
+   "slugs": [
+    "prosthetic-socket",
+    "prosthetic-wrist"
+   ]
+  },
+  {
+   "family": "15mm-rod",
+   "members": 2,
+   "slugs": [
+    "rod-bridge",
+    "rod-rig-clamp"
+   ]
+  },
+  {
+   "family": "iso-518-shoe",
+   "members": 2,
+   "slugs": [
+    "shoe-bar",
+    "shoe-mount"
+   ]
+  },
+  {
+   "family": "worm-gear",
+   "members": 2,
+   "slugs": [
+    "worm-gear",
+    "worm-wheel"
+   ]
+  },
+  {
+   "family": "bobbin-class-15",
+   "members": 1,
+   "slugs": [
+    "bobbin-holder"
+   ]
+  },
+  {
+   "family": "bottle-cage-boss",
+   "members": 1,
+   "slugs": [
+    "bottle-cage"
+   ]
+  },
+  {
+   "family": "crown-cap-26",
+   "members": 1,
+   "slugs": [
+    "bottle-capper"
+   ]
+  },
+  {
+   "family": "brick-8mm-stud",
+   "members": 1,
+   "slugs": [
+    "brick-tile"
+   ]
+  },
+  {
+   "family": "cable-gland",
+   "members": 1,
+   "slugs": [
+    "cable-gland"
+   ]
+  },
+  {
+   "family": "unc-3/8-16",
+   "members": 1,
+   "slugs": [
+    "camera-quarter-twenty"
+   ]
+  },
+  {
+   "family": "portafilter-58",
+   "members": 1,
+   "slugs": [
+    "coffee-funnel"
+   ]
+  },
+  {
+   "family": "compass-capsule",
+   "members": 1,
+   "slugs": [
+    "compass-housing"
+   ]
+  },
+  {
+   "family": "conduit",
+   "members": 1,
+   "slugs": [
+    "conduit-clip"
+   ]
+  },
+  {
+   "family": "arduino-mount",
+   "members": 1,
+   "slugs": [
+    "devboard-tray"
+   ]
+  },
+  {
+   "family": "tubular-drain",
+   "members": 1,
+   "slugs": [
+    "drain-trap"
+   ]
+  },
+  {
+   "family": "round-duct",
+   "members": 1,
+   "slugs": [
+    "duct-adapter"
+   ]
+  },
+  {
+   "family": "microswitch-d2f",
+   "members": 1,
+   "slugs": [
+    "endstop-mount"
+   ]
+  },
+  {
+   "family": "iso-metric-thread",
+   "members": 1,
+   "slugs": [
+    "fasteners"
+   ]
+  },
+  {
+   "family": "ferro-rod",
+   "members": 1,
+   "slugs": [
+    "ferro-handle"
+   ]
+  },
+  {
+   "family": "optic-25.4",
+   "members": 1,
+   "slugs": [
+    "filter-wheel"
+   ]
+  },
+  {
+   "family": "sma-rf",
+   "members": 1,
+   "slugs": [
+    "fpv-antenna-mount"
+   ]
+  },
+  {
+   "family": "fpv-cam",
+   "members": 1,
+   "slugs": [
+    "fpv-camera-cage"
+   ]
+  },
+  {
+   "family": "beverage-can",
+   "members": 1,
+   "slugs": [
+    "fridge-dispenser"
+   ]
+  },
+  {
+   "family": "auto-gauge-52-60",
+   "members": 1,
+   "slugs": [
+    "gauge-pod"
+   ]
+  },
+  {
+   "family": "multiboard",
+   "members": 1,
+   "slugs": [
+    "grid-hub"
+   ]
+  },
+  {
+   "family": "french-cleat",
+   "members": 1,
+   "slugs": [
+    "grid-hub"
+   ]
+  },
+  {
+   "family": "indicator-dovetail",
+   "members": 1,
+   "slugs": [
+    "indicator-base"
+   ]
+  },
+  {
+   "family": "hex-bit-1/4",
+   "members": 1,
+   "slugs": [
+    "key-organizer"
+   ]
+  },
+  {
+   "family": "trapezoidal-thread",
+   "members": 1,
+   "slugs": [
+    "leadscrew-nut"
+   ]
+  },
+  {
+   "family": "led-strip",
+   "members": 1,
+   "slugs": [
+    "led-channel"
+   ]
+  },
+  {
+   "family": "cam-lock",
+   "members": 1,
+   "slugs": [
+    "lock-cam"
+   ]
+  },
+  {
+   "family": "addressable-led",
+   "members": 1,
+   "slugs": [
+    "matrix-frame"
+   ]
+  },
+  {
+   "family": "mic-thread-5/8-27",
+   "members": 1,
+   "slugs": [
+    "mic-clip"
+   ]
+  },
+  {
+   "family": "watch-movement",
+   "members": 1,
+   "slugs": [
+    "movement-holder"
+   ]
+  },
+  {
+   "family": "multiconnect",
+   "members": 1,
+   "slugs": [
+    "multiconnect-adapter"
+   ]
+  },
+  {
+   "family": "sae-j1962",
+   "members": 1,
+   "slugs": [
+    "obd-holder"
+   ]
+  },
+  {
+   "family": "ato-fuse",
+   "members": 1,
+   "slugs": [
+    "obd-holder"
+   ]
+  },
+  {
+   "family": "wall-box",
+   "members": 1,
+   "slugs": [
+    "outlet-plate"
+   ]
+  },
+  {
+   "family": "paint-pot",
+   "members": 1,
+   "slugs": [
+    "paint-rack"
+   ]
+  },
+  {
+   "family": "paracord-550",
+   "members": 1,
+   "slugs": [
+    "paracord-jig"
+   ]
+  },
+  {
+   "family": "petri-90mm",
+   "members": 1,
+   "slugs": [
+    "petri-rack"
+   ]
+  },
+  {
+   "family": "cts-pipe",
+   "members": 1,
+   "slugs": [
+    "pipe-clip"
+   ]
+  },
+  {
+   "family": "license-plate",
+   "members": 1,
+   "slugs": [
+    "plate-frame"
+   ]
+  },
+  {
+   "family": "psu-mount",
+   "members": 1,
+   "slugs": [
+    "psu-mount"
+   ]
+  },
+  {
+   "family": "round-rail-25",
+   "members": 1,
+   "slugs": [
+    "rail-mount"
+   ]
+  },
+  {
+   "family": "mgn-rail",
+   "members": 1,
+   "slugs": [
+    "scara-robotics"
+   ]
+  },
+  {
+   "family": "usb-sd-media",
+   "members": 1,
+   "slugs": [
+    "sd-case"
+   ]
+  },
+  {
+   "family": "iso-m6",
+   "members": 1,
+   "slugs": [
+    "sentinel-gripper-hyperobject"
+   ]
+  },
+  {
+   "family": "servo-body",
+   "members": 1,
+   "slugs": [
+    "servo-bracket"
+   ]
+  },
+  {
+   "family": "presser-shank",
+   "members": 1,
+   "slugs": [
+    "sewing-guide"
+   ]
+  },
+  {
+   "family": "kurt-vise",
+   "members": 1,
+   "slugs": [
+    "soft-jaw"
+   ]
+  },
+  {
+   "family": "keyhole-hanger",
+   "members": 1,
+   "slugs": [
+    "speaker-bracket"
+   ]
+  },
+  {
+   "family": "baby-pin-5/8",
+   "members": 1,
+   "slugs": [
+    "spigot-adapter"
+   ]
+  },
+  {
+   "family": "stemfie",
+   "members": 1,
+   "slugs": [
+    "stemfie"
+   ]
+  },
+  {
+   "family": "stir-bar",
+   "members": 1,
+   "slugs": [
+    "stirrbar-rack"
+   ]
+  },
+  {
+   "family": "ansi-a156-strike",
+   "members": 1,
+   "slugs": [
+    "strike-plate"
+   ]
+  },
+  {
+   "family": "at-switch-3.5mm",
+   "members": 1,
+   "slugs": [
+    "switch-mount"
+   ]
+  },
+  {
+   "family": "iso-m8",
+   "members": 1,
+   "slugs": [
+    "syringe-carriage"
+   ]
+  },
+  {
+   "family": "er-collet",
+   "members": 1,
+   "slugs": [
+    "tool-holder"
+   ]
+  },
+  {
+   "family": "v-belt",
+   "members": 1,
+   "slugs": [
+    "vbelt-pulley"
+   ]
+  },
+  {
+   "family": "watch-lug",
+   "members": 1,
+   "slugs": [
+    "watch-adapter"
+   ]
+  }
+ ]
+}

@@ -76,11 +76,19 @@ export function partitionGallery(
   return { carousel, grid: items.filter((p) => !taken.has(p.slug)) };
 }
 
-/** `"Showing {shown} of {total}"` → `"Showing 24 of 502"`. Unknown keys are left as-is. */
-export function fillTemplate(template: string, vars: Record<string, string | number>): string {
-  return template.replace(/\{(\w+)\}/g, (m, key: string) =>
-    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : m,
-  );
+/**
+ * `"Showing {shown} of {total}"` → `"Showing 24 of 502"`. Unknown, null and
+ * undefined keys stay visible as `{key}` — a missing figure must be seen, not
+ * silently blanked. Client-safe (no locale imports); `i18n.ts` re-exports it.
+ */
+export function fillTemplate(
+  template: string,
+  vars: Record<string, string | number | null | undefined>,
+): string {
+  return template.replace(/\{(\w+)\}/g, (m, key: string) => {
+    const value = vars[key];
+    return value === null || value === undefined ? m : String(value);
+  });
 }
 
 /** The distinct, non-empty domains in list order of first appearance. */

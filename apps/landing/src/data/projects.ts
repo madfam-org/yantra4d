@@ -524,7 +524,9 @@ export const CATEGORIES = ['all', 'commons', 'storage', 'mechanical', 'art', 'ta
 
 /**
  * Live commons figures, regenerated with the project list. Quote these in
- * copy instead of writing a number into a locale string.
+ * copy instead of writing a number into a locale string. A `null` means
+ * the snapshot behind the figure was absent when this file was generated;
+ * components hide that card rather than show a zero.
  */
 export const COMMONS_STATS = {
   cartridges: 502,
@@ -536,4 +538,23 @@ export const COMMONS_STATS = {
   engines: 4,
   stepCapable: 493,
   cernLicensed: 502,
+  graphEdges: 266,
+  graphNodes: 211,
+  families: 113,
+  softCartridges: 516,
+  softWithFlats: 516,
+  crossLinks: 302,
+  bridgedSolids: 88,
+} as const;
+
+/**
+ * Tier quotas from apps/api/tiers.json — the file the API enforces. The
+ * pricing copy carries `{guestRenders}`-style placeholders bound to these.
+ */
+export const TIER_FACTS = {
+  guestRenders: 10,
+  essentialsRenders: 30,
+  proRenders: 150,
+  essentialsProjects: 5,
+  proProjects: -1,
 } as const;

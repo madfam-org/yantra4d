@@ -15,7 +15,7 @@
     "test:coverage": "vitest run --coverage",
     "gen:projects": "node ../../scripts/dev/generate-landing-projects.mjs",
     "test:e2e": "playwright test",
-    "lhci": "lhci autorun",
+    "lhci": "node ../../scripts/ci/landing-lighthouse-cpu.mjs -- lhci autorun",
     "budget": "node ../../scripts/ci/landing-bundle-budget.mjs",
     "models:optimize": "node ../../scripts/dev/optimize-commons-models.mjs"
   },

@@ -25,6 +25,19 @@ name: Prerender commons models
 on:
   schedule:
     - cron: '0 6 1 * *'  # Monthly, the 1st at 06:00 UTC
+  # Smoke on pull requests that touch the pipeline itself: five cartridges
+  # (one animated), artifact only, never a PR. Two reasons. A change to the
+  # render driver or the optimizer should prove itself end to end before it
+  # merges, on the same runner shape the full run uses. And GitHub only lets a
+  # workflow_dispatch-only workflow be dispatched once it exists on the
+  # default branch, so without this a brand-new pipeline could not be exercised
+  # at all until after it merged (learned 2026-09-19: HTTP 404 from a branch).
+  pull_request:
+    paths:
+      - '.github/workflows/prerender-commons.yml'
+      - 'scripts/dev/render_commons_models.py'
+      - 'scripts/dev/optimize-commons-models.mjs'
+      - 'scripts/tests/test_render_commons_models.py'
   workflow_dispatch:
     inputs:
       open_pr:
@@ -245,7 +258,8 @@ jobs:
         id: render
         continue-on-error: true
         env:
-          SLUGS: ${{ inputs.slugs }}
+          # pull_request = the five-cartridge smoke set; a dispatch names its own.
+          SLUGS: ${{ github.event_name == 'pull_request' && 'gridfinity,motor-mount,din-rail-clip,spiral-planter,hook-and-eye' || inputs.slugs }}
         run: |
           set -uo pipefail
           args=(--api http://localhost:5000 --jobs 4 --engine-fingerprint "${{ steps.key.outputs.fingerprint }}")
@@ -277,7 +291,8 @@ jobs:
         continue-on-error: true
         working-directory: apps/landing
         env:
-          SLUGS: ${{ inputs.slugs }}
+          # pull_request = the five-cartridge smoke set; a dispatch names its own.
+          SLUGS: ${{ github.event_name == 'pull_request' && 'gridfinity,motor-mount,din-rail-clip,spiral-planter,hook-and-eye' || inputs.slugs }}
           LOD0: ${{ inputs.lod0 || 'hero' }}
         run: |
           set -uo pipefail

@@ -265,3 +265,13 @@ Two caveats worth knowing before dispatching it:
 - A cartridge that fails and has no raw file from a previous run gets no LODs,
   and a full run's `--clean` retires any it had. The summary lists every
   failure; check it before merging the PR.
+
+## Smoke run on pull requests
+
+A pull request that touches the pipeline itself (`prerender-commons.yml`, `render_commons_models.py`,
+`optimize-commons-models.mjs` or its tests) runs the workflow on five cartridges —
+`gridfinity`, `motor-mount` (animated), `din-rail-clip`, `spiral-planter`, `hook-and-eye` — and
+uploads the result as an artifact; it never opens a PR. That proves a pipeline change end to end on
+the real runner before it merges, and it is what registers the workflow with GitHub in the first
+place: a `workflow_dispatch`-only workflow cannot be dispatched until it exists on the default branch.
+The commons-wide run is always a dispatch from `main`.

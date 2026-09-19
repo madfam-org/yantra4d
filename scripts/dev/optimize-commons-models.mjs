@@ -63,15 +63,15 @@
  * apps/landing, so they are resolved from there rather than from this file's
  * own location — see loadDeps().
  */
-import fs from "node:fs";
-import path from "node:path";
-import { execFileSync } from "node:child_process";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-export const DEFAULT_REPO = path.resolve(__dirname, "..", "..");
+export const DEFAULT_REPO = path.resolve(__dirname, '..', '..');
 
-export const GENERATOR = "scripts/dev/optimize-commons-models.mjs";
+export const GENERATOR = 'scripts/dev/optimize-commons-models.mjs';
 export const MANIFEST_VERSION = 2;
 
 /** Exit codes, named so the workflow, the docs and the tests agree on them. */
@@ -100,13 +100,7 @@ const MAX_BYTE_PASSES = 5;
 /** Position quantization bits (KHR_mesh_quantization). 14 bits over a 300 mm part ≈ 0.02 mm. */
 const POSITION_BITS = 14;
 
-const BUDGET_KEYS = [
-  "lod1Bytes",
-  "lod0Bytes",
-  "lod1Triangles",
-  "lod0Triangles",
-  "keyframeBytes",
-];
+const BUDGET_KEYS = ['lod1Bytes', 'lod0Bytes', 'lod1Triangles', 'lod0Triangles', 'keyframeBytes'];
 
 // ──────────────────────────────────────────────
 // Dependencies
@@ -119,68 +113,40 @@ const BUDGET_KEYS = [
  * this file from where it lives.
  */
 function resolveLandingPackage(landingDir, name) {
-  const pkgDir = path.join(landingDir, "node_modules", ...name.split("/"));
-  const pkgFile = path.join(pkgDir, "package.json");
+  const pkgDir = path.join(landingDir, 'node_modules', ...name.split('/'));
+  const pkgFile = path.join(pkgDir, 'package.json');
   if (!fs.existsSync(pkgFile)) {
     throw new Error(
-      `${name} is not installed under ${path.relative(process.cwd(), pkgDir) || "."} — run \`npm ci\` in apps/landing first.`,
+      `${name} is not installed under ${path.relative(process.cwd(), pkgDir) || '.'} — run \`npm ci\` in apps/landing first.`,
     );
   }
-  const pkg = JSON.parse(fs.readFileSync(pkgFile, "utf8"));
-  let entry =
-    pkg.exports && typeof pkg.exports === "object" && "." in pkg.exports
-      ? pkg.exports["."]
-      : pkg.exports;
-  while (entry && typeof entry === "object") {
-    entry =
-      entry.import ??
-      entry.default ??
-      entry.module ??
-      entry.node ??
-      entry.require;
+  const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
+  let entry = pkg.exports && typeof pkg.exports === 'object' && '.' in pkg.exports ? pkg.exports['.'] : pkg.exports;
+  while (entry && typeof entry === 'object') {
+    entry = entry.import ?? entry.default ?? entry.module ?? entry.node ?? entry.require;
   }
-  entry = entry ?? pkg.module ?? pkg.main ?? "index.js";
+  entry = entry ?? pkg.module ?? pkg.main ?? 'index.js';
   return pathToFileURL(path.join(pkgDir, entry)).href;
 }
 
 let depsPromise = null;
 
 /** Load @gltf-transform/* and meshoptimizer once, from the landing's node_modules. */
-export function loadDeps(
-  landingDir = path.join(DEFAULT_REPO, "apps", "landing"),
-) {
+export function loadDeps(landingDir = path.join(DEFAULT_REPO, 'apps', 'landing')) {
   if (!depsPromise) {
     depsPromise = (async () => {
       const [core, extensions, functions, meshoptimizer] = await Promise.all(
-        [
-          "@gltf-transform/core",
-          "@gltf-transform/extensions",
-          "@gltf-transform/functions",
-          "meshoptimizer",
-        ].map((name) => import(resolveLandingPackage(landingDir, name))),
+        ['@gltf-transform/core', '@gltf-transform/extensions', '@gltf-transform/functions', 'meshoptimizer'].map(
+          (name) => import(resolveLandingPackage(landingDir, name)),
+        ),
       );
-      const { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } =
-        meshoptimizer;
-      await Promise.all([
-        MeshoptDecoder.ready,
-        MeshoptEncoder.ready,
-        MeshoptSimplifier.ready,
-      ]);
+      const { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } = meshoptimizer;
+      await Promise.all([MeshoptDecoder.ready, MeshoptEncoder.ready, MeshoptSimplifier.ready]);
       const io = new core.NodeIO()
         .registerExtensions(extensions.ALL_EXTENSIONS)
-        .registerDependencies({
-          "meshopt.decoder": MeshoptDecoder,
-          "meshopt.encoder": MeshoptEncoder,
-        })
+        .registerDependencies({ 'meshopt.decoder': MeshoptDecoder, 'meshopt.encoder': MeshoptEncoder })
         .setLogger(new core.Logger(core.Logger.Verbosity.SILENT));
-      return {
-        core,
-        functions,
-        io,
-        MeshoptDecoder,
-        MeshoptEncoder,
-        MeshoptSimplifier,
-      };
+      return { core, functions, io, MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier };
     })();
   }
   return depsPromise;
@@ -190,54 +156,33 @@ export function loadDeps(
 // CLI arguments
 // ──────────────────────────────────────────────
 
-const VALUE_FLAGS = new Set([
-  "in",
-  "out",
-  "lod0",
-  "generated",
-  "repo",
-  "commons-pin",
-  "budgets",
-]);
-const BOOL_FLAGS = new Set(["strict", "check", "clean", "quiet", "help"]);
+const VALUE_FLAGS = new Set(['in', 'out', 'lod0', 'generated', 'repo', 'commons-pin', 'budgets']);
+const BOOL_FLAGS = new Set(['strict', 'check', 'clean', 'quiet', 'help']);
 
 /** `--flag value` and `--flag=value` for the flags above; anything else is a usage error. */
 export function parseArgs(argv) {
   const opts = {};
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
-    if (!arg.startsWith("--"))
-      throw new UsageError(`Unexpected argument: ${arg}`);
-    const eq = arg.indexOf("=");
+    if (!arg.startsWith('--')) throw new UsageError(`Unexpected argument: ${arg}`);
+    const eq = arg.indexOf('=');
     const name = eq === -1 ? arg.slice(2) : arg.slice(2, eq);
     if (BOOL_FLAGS.has(name)) {
       if (eq !== -1) throw new UsageError(`--${name} takes no value`);
       opts[name] = true;
     } else if (VALUE_FLAGS.has(name)) {
       const value = eq === -1 ? argv[++i] : arg.slice(eq + 1);
-      if (value === undefined || value.startsWith("--"))
-        throw new UsageError(`--${name} needs a value`);
+      if (value === undefined || value.startsWith('--')) throw new UsageError(`--${name} needs a value`);
       opts[name] = value;
     } else {
       throw new UsageError(`Unknown flag: --${name}`);
     }
   }
-  if (
-    opts.generated !== undefined &&
-    Number.isNaN(Date.parse(opts.generated))
-  ) {
-    throw new UsageError(
-      `--generated must be an ISO-8601 timestamp, got ${opts.generated}`,
-    );
+  if (opts.generated !== undefined && Number.isNaN(Date.parse(opts.generated))) {
+    throw new UsageError(`--generated must be an ISO-8601 timestamp, got ${opts.generated}`);
   }
-  if (
-    opts["commons-pin"] !== undefined &&
-    opts["commons-pin"] !== "none" &&
-    !/^[0-9a-f]{40}$/.test(opts["commons-pin"])
-  ) {
-    throw new UsageError(
-      `--commons-pin must be a 40-hex sha or "none", got ${opts["commons-pin"]}`,
-    );
+  if (opts['commons-pin'] !== undefined && opts['commons-pin'] !== 'none' && !/^[0-9a-f]{40}$/.test(opts['commons-pin'])) {
+    throw new UsageError(`--commons-pin must be a 40-hex sha or "none", got ${opts['commons-pin']}`);
   }
   return opts;
 }
@@ -245,50 +190,42 @@ export function parseArgs(argv) {
 export class UsageError extends Error {}
 
 export const USAGE = [
-  "Usage: node scripts/dev/optimize-commons-models.mjs [options]",
-  "",
-  "  --in <dir>              raw GLBs (default apps/landing/public/models/raw; absent → legacy",
-  "                          apps/landing/public/models/<slug>.glb files are the inputs)",
-  "  --out <dir>             default apps/landing/public/models",
-  "  --lod0 all|hero|none|a,b  which slugs also get a lod0 (default: all for ≤ 40 inputs, else hero)",
-  "  --strict                exit 1 when any output is over its byte budget",
-  "  --check                 compare against what is on disk, write nothing (exit 3 on drift)",
-  "  --clean                 remove stale outputs and consumed legacy inputs",
-  "  --generated <iso>       manifest timestamp (default: now, second precision)",
-  "  --commons-pin <sha>|none  override the detected commons submodule sha",
-  "  --budgets <file>        default apps/landing/perf-budgets.json",
-  "  --quiet                 only warnings and the summary",
-].join("\n");
+  'Usage: node scripts/dev/optimize-commons-models.mjs [options]',
+  '',
+  '  --in <dir>              raw GLBs (default apps/landing/public/models/raw; absent → legacy',
+  '                          apps/landing/public/models/<slug>.glb files are the inputs)',
+  '  --out <dir>             default apps/landing/public/models',
+  '  --lod0 all|hero|none|a,b  which slugs also get a lod0 (default: all for ≤ 40 inputs, else hero)',
+  '  --strict                exit 1 when any output is over its byte budget',
+  '  --check                 compare against what is on disk, write nothing (exit 3 on drift)',
+  '  --clean                 remove stale outputs and consumed legacy inputs',
+  '  --generated <iso>       manifest timestamp (default: now, second precision)',
+  '  --commons-pin <sha>|none  override the detected commons submodule sha',
+  '  --budgets <file>        default apps/landing/perf-budgets.json',
+  '  --quiet                 only warnings and the summary',
+].join('\n');
 
 // ──────────────────────────────────────────────
 // Context
 // ──────────────────────────────────────────────
 
 /** Paths and options for one run, all derived from a repo root (tests point it at a fixture). */
-export function makeContext({
-  repo = DEFAULT_REPO,
-  opts = {},
-  cwd = process.cwd(),
-} = {}) {
-  const landingDir = path.join(repo, "apps", "landing");
-  const modelsDir = path.join(landingDir, "public", "models");
+export function makeContext({ repo = DEFAULT_REPO, opts = {}, cwd = process.cwd() } = {}) {
+  const landingDir = path.join(repo, 'apps', 'landing');
+  const modelsDir = path.join(landingDir, 'public', 'models');
   const outDir = opts.out ? path.resolve(cwd, opts.out) : modelsDir;
-  const rawDir = opts.in
-    ? path.resolve(cwd, opts.in)
-    : path.join(modelsDir, "raw");
+  const rawDir = opts.in ? path.resolve(cwd, opts.in) : path.join(modelsDir, 'raw');
   const legacyMode = !opts.in && !fs.existsSync(rawDir);
   return {
     repo,
     landingDir,
-    projectsDir: path.join(repo, "projects"),
-    heroFile: path.join(landingDir, "models.hero.json"),
-    budgetsFile: opts.budgets
-      ? path.resolve(cwd, opts.budgets)
-      : path.join(landingDir, "perf-budgets.json"),
+    projectsDir: path.join(repo, 'projects'),
+    heroFile: path.join(landingDir, 'models.hero.json'),
+    budgetsFile: opts.budgets ? path.resolve(cwd, opts.budgets) : path.join(landingDir, 'perf-budgets.json'),
     outDir,
     inDir: legacyMode ? outDir : rawDir,
     legacyMode,
-    manifestFile: path.join(outDir, "manifest.json"),
+    manifestFile: path.join(outDir, 'manifest.json'),
     opts,
   };
 }
@@ -299,12 +236,10 @@ export function makeContext({
 
 /** The `meshes` block of perf-budgets.json; every key the pipeline enforces must be a positive number. */
 export function loadBudgets(file) {
-  if (!fs.existsSync(file))
-    throw new UsageError(`Budgets file not found: ${file}`);
-  const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (!fs.existsSync(file)) throw new UsageError(`Budgets file not found: ${file}`);
+  const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
   const meshes = parsed && parsed.meshes;
-  if (!meshes || typeof meshes !== "object")
-    throw new UsageError(`${file} has no "meshes" block`);
+  if (!meshes || typeof meshes !== 'object') throw new UsageError(`${file} has no "meshes" block`);
   for (const key of BUDGET_KEYS) {
     if (!(Number.isFinite(meshes[key]) && meshes[key] > 0)) {
       throw new UsageError(`${file}: meshes.${key} must be a positive number`);
@@ -324,51 +259,29 @@ export function loadBudgets(file) {
  * mistaken for one kept outright. Keys beside the budget keys and `reason`
  * are rejected: an exception must not smuggle anything else in.
  */
-export function validateExceptions(exceptions, file = "perf-budgets.json") {
+export function validateExceptions(exceptions, file = 'perf-budgets.json') {
   if (exceptions === undefined) return {};
-  if (
-    !exceptions ||
-    typeof exceptions !== "object" ||
-    Array.isArray(exceptions)
-  ) {
-    throw new UsageError(
-      `${file}: meshes.exceptions must be an object keyed by slug`,
-    );
+  if (!exceptions || typeof exceptions !== 'object' || Array.isArray(exceptions)) {
+    throw new UsageError(`${file}: meshes.exceptions must be an object keyed by slug`);
   }
   const out = {};
   for (const [slug, spec] of Object.entries(exceptions)) {
-    if (slug.startsWith("_")) continue; // `_comment`
-    if (!SLUG_RE.test(slug))
-      throw new UsageError(
-        `${file}: meshes.exceptions has an invalid slug "${slug}"`,
-      );
-    if (!spec || typeof spec !== "object" || Array.isArray(spec)) {
-      throw new UsageError(
-        `${file}: meshes.exceptions.${slug} must be an object`,
-      );
+    if (slug.startsWith('_')) continue; // `_comment`
+    if (!SLUG_RE.test(slug)) throw new UsageError(`${file}: meshes.exceptions has an invalid slug "${slug}"`);
+    if (!spec || typeof spec !== 'object' || Array.isArray(spec)) {
+      throw new UsageError(`${file}: meshes.exceptions.${slug} must be an object`);
     }
-    if (typeof spec.reason !== "string" || !spec.reason.trim()) {
-      throw new UsageError(
-        `${file}: meshes.exceptions.${slug} needs a written reason`,
-      );
+    if (typeof spec.reason !== 'string' || !spec.reason.trim()) {
+      throw new UsageError(`${file}: meshes.exceptions.${slug} needs a written reason`);
     }
     const overrides = {};
     for (const [key, value] of Object.entries(spec)) {
-      if (key === "reason" || key.startsWith("_")) continue;
-      if (!BUDGET_KEYS.includes(key))
-        throw new UsageError(
-          `${file}: meshes.exceptions.${slug}.${key} is not a budget key`,
-        );
-      if (!(Number.isFinite(value) && value > 0))
-        throw new UsageError(
-          `${file}: meshes.exceptions.${slug}.${key} must be a positive number`,
-        );
+      if (key === 'reason' || key.startsWith('_')) continue;
+      if (!BUDGET_KEYS.includes(key)) throw new UsageError(`${file}: meshes.exceptions.${slug}.${key} is not a budget key`);
+      if (!(Number.isFinite(value) && value > 0)) throw new UsageError(`${file}: meshes.exceptions.${slug}.${key} must be a positive number`);
       overrides[key] = value;
     }
-    if (!Object.keys(overrides).length)
-      throw new UsageError(
-        `${file}: meshes.exceptions.${slug} overrides nothing`,
-      );
+    if (!Object.keys(overrides).length) throw new UsageError(`${file}: meshes.exceptions.${slug} overrides nothing`);
     out[slug] = { ...overrides, reason: spec.reason.trim() };
   }
   return out;
@@ -380,13 +293,12 @@ export function validateExceptions(exceptions, file = "perf-budgets.json") {
  */
 export function targetsFor(budgets, slug) {
   const exception = validateExceptions(budgets.exceptions)[slug] ?? null;
-  const pick = (key) =>
-    exception && exception[key] !== undefined ? exception[key] : budgets[key];
+  const pick = (key) => (exception && exception[key] !== undefined ? exception[key] : budgets[key]);
   return {
     exception,
-    lod1: { triangles: pick("lod1Triangles"), bytes: pick("lod1Bytes") },
-    lod0: { triangles: pick("lod0Triangles"), bytes: pick("lod0Bytes") },
-    frame: { triangles: pick("lod0Triangles"), bytes: pick("keyframeBytes") },
+    lod1: { triangles: pick('lod1Triangles'), bytes: pick('lod1Bytes') },
+    lod0: { triangles: pick('lod0Triangles'), bytes: pick('lod0Bytes') },
+    frame: { triangles: pick('lod0Triangles'), bytes: pick('keyframeBytes') },
   };
 }
 
@@ -394,7 +306,7 @@ export function targetsFor(budgets, slug) {
 export function manifestBudgets(meshes) {
   const out = {};
   for (const [key, value] of Object.entries(meshes)) {
-    if (key.startsWith("_") || key === "exceptions") continue; // exceptions are recorded on the entry they apply to
+    if (key.startsWith('_') || key === 'exceptions') continue; // exceptions are recorded on the entry they apply to
     out[key] = value;
   }
   return out;
@@ -414,30 +326,19 @@ const SLUG_RE = /^[a-z0-9][a-z0-9_-]*$/;
  * → null.
  */
 export function parseInputName(fileName) {
-  if (!fileName.endsWith(".glb") || fileName.startsWith(".")) return null;
-  const parts = fileName.slice(0, -".glb".length).split(".");
-  if (parts.length === 1 && SLUG_RE.test(parts[0]))
-    return { kind: "base", slug: parts[0] };
-  if (
-    parts.length === 3 &&
-    SLUG_RE.test(parts[0]) &&
-    SLUG_RE.test(parts[1]) &&
-    /^\d+$/.test(parts[2])
-  ) {
-    return {
-      kind: "frame",
-      slug: parts[0],
-      animation: parts[1],
-      index: Number.parseInt(parts[2], 10),
-    };
+  if (!fileName.endsWith('.glb') || fileName.startsWith('.')) return null;
+  const parts = fileName.slice(0, -'.glb'.length).split('.');
+  if (parts.length === 1 && SLUG_RE.test(parts[0])) return { kind: 'base', slug: parts[0] };
+  if (parts.length === 3 && SLUG_RE.test(parts[0]) && SLUG_RE.test(parts[1]) && /^\d+$/.test(parts[2])) {
+    return { kind: 'frame', slug: parts[0], animation: parts[1], index: Number.parseInt(parts[2], 10) };
   }
   return null;
 }
 
 function compareInputs(a, b) {
   if (a.slug !== b.slug) return a.slug < b.slug ? -1 : 1;
-  if (a.kind !== b.kind) return a.kind === "base" ? -1 : 1;
-  if (a.kind === "frame") {
+  if (a.kind !== b.kind) return a.kind === 'base' ? -1 : 1;
+  if (a.kind === 'frame') {
     if (a.animation !== b.animation) return a.animation < b.animation ? -1 : 1;
     return a.index - b.index;
   }
@@ -451,7 +352,7 @@ export function discoverInputs(ctx) {
   for (const name of fs.readdirSync(ctx.inDir)) {
     const parsed = parseInputName(name);
     if (!parsed) continue;
-    if (ctx.legacyMode && parsed.kind !== "base") continue;
+    if (ctx.legacyMode && parsed.kind !== 'base') continue;
     inputs.push({ ...parsed, file: path.join(ctx.inDir, name), name });
   }
   return inputs.sort(compareInputs);
@@ -468,30 +369,20 @@ export function discoverInputs(ctx) {
  */
 export function heroSlugs(ctx) {
   if (fs.existsSync(ctx.heroFile)) {
-    const parsed = JSON.parse(fs.readFileSync(ctx.heroFile, "utf8"));
-    const list = Array.isArray(parsed)
-      ? parsed
-      : parsed && Array.isArray(parsed.slugs)
-        ? parsed.slugs
-        : null;
-    if (!list)
-      throw new UsageError(
-        `${ctx.heroFile} must be a JSON array of slugs or { "slugs": [...] }`,
-      );
+    const parsed = JSON.parse(fs.readFileSync(ctx.heroFile, 'utf8'));
+    const list = Array.isArray(parsed) ? parsed : parsed && Array.isArray(parsed.slugs) ? parsed.slugs : null;
+    if (!list) throw new UsageError(`${ctx.heroFile} must be a JSON array of slugs or { "slugs": [...] }`);
     return new Set(list.map(String));
   }
   const slugs = new Set();
   if (!fs.existsSync(ctx.projectsDir)) return slugs;
-  for (const entry of fs.readdirSync(ctx.projectsDir, {
-    withFileTypes: true,
-  })) {
+  for (const entry of fs.readdirSync(ctx.projectsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    const file = path.join(ctx.projectsDir, entry.name, "project.json");
+    const file = path.join(ctx.projectsDir, entry.name, 'project.json');
     if (!fs.existsSync(file)) continue;
     try {
-      const data = JSON.parse(fs.readFileSync(file, "utf8"));
-      if (Array.isArray(data.animations) && data.animations.length > 0)
-        slugs.add(entry.name);
+      const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+      if (Array.isArray(data.animations) && data.animations.length > 0) slugs.add(entry.name);
     } catch {
       /* an unreadable manifest is validate_manifests.py's problem, not this lane's */
     }
@@ -501,28 +392,17 @@ export function heroSlugs(ctx) {
 
 /** Resolve `--lod0` against the slugs that actually have a base input. */
 export function resolveLod0Selection(spec, baseSlugs, ctx) {
-  const mode =
-    spec ?? (baseSlugs.length <= LOD0_ALL_MAX_INPUTS ? "all" : "hero");
-  if (mode === "all") return { mode, slugs: new Set(baseSlugs) };
-  if (mode === "none") return { mode, slugs: new Set() };
-  if (mode === "hero") {
+  const mode = spec ?? (baseSlugs.length <= LOD0_ALL_MAX_INPUTS ? 'all' : 'hero');
+  if (mode === 'all') return { mode, slugs: new Set(baseSlugs) };
+  if (mode === 'none') return { mode, slugs: new Set() };
+  if (mode === 'hero') {
     const hero = heroSlugs(ctx);
     return { mode, slugs: new Set(baseSlugs.filter((s) => hero.has(s))) };
   }
-  const wanted = mode
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (!wanted.length)
-    throw new UsageError(
-      `--lod0 needs all, hero, none or a comma-separated list of slugs`,
-    );
+  const wanted = mode.split(',').map((s) => s.trim()).filter(Boolean);
+  if (!wanted.length) throw new UsageError(`--lod0 needs all, hero, none or a comma-separated list of slugs`);
   const known = new Set(baseSlugs);
-  return {
-    mode: "list",
-    slugs: new Set(wanted.filter((s) => known.has(s))),
-    unknown: wanted.filter((s) => !known.has(s)),
-  };
+  return { mode: 'list', slugs: new Set(wanted.filter((s) => known.has(s))), unknown: wanted.filter((s) => !known.has(s)) };
 }
 
 // ──────────────────────────────────────────────
@@ -535,9 +415,7 @@ function triangleCount(doc, core) {
     for (const prim of mesh.listPrimitives()) {
       if (prim.getMode() !== core.Primitive.Mode.TRIANGLES) continue;
       const indices = prim.getIndices();
-      const n = indices
-        ? indices.getCount()
-        : prim.getAttribute("POSITION").getCount();
+      const n = indices ? indices.getCount() : prim.getAttribute('POSITION').getCount();
       count += Math.floor(n / 3);
     }
   }
@@ -547,8 +425,7 @@ function triangleCount(doc, core) {
 function vertexCount(doc) {
   let count = 0;
   for (const mesh of doc.getRoot().listMeshes()) {
-    for (const prim of mesh.listPrimitives())
-      count += prim.getAttribute("POSITION").getCount();
+    for (const prim of mesh.listPrimitives()) count += prim.getAttribute('POSITION').getCount();
   }
   return count;
 }
@@ -586,9 +463,7 @@ async function bakeToSoup(srcDoc, deps) {
   await srcDoc.transform(functions.dequantize());
 
   const root = srcDoc.getRoot();
-  const scenes = root.getDefaultScene()
-    ? [root.getDefaultScene()]
-    : root.listScenes();
+  const scenes = root.getDefaultScene() ? [root.getDefaultScene()] : root.listScenes();
   const chunks = [];
   let total = 0;
   let skippedPrimitives = 0;
@@ -600,7 +475,7 @@ async function bakeToSoup(srcDoc, deps) {
       const matrix = node.getWorldMatrix();
       const mirrored = determinant3(matrix) < 0;
       for (const prim of mesh.listPrimitives()) {
-        const position = prim.getAttribute("POSITION");
+        const position = prim.getAttribute('POSITION');
         if (!position || prim.getMode() !== core.Primitive.Mode.TRIANGLES) {
           skippedPrimitives += 1;
           continue;
@@ -609,12 +484,7 @@ async function bakeToSoup(srcDoc, deps) {
         const count = position.getCount();
         const positions = new Float32Array(count * 3);
         for (let i = 0; i < count; i += 1) {
-          const [x, y, z] = transformPoint(
-            matrix,
-            src[i * 3],
-            src[i * 3 + 1],
-            src[i * 3 + 2],
-          );
+          const [x, y, z] = transformPoint(matrix, src[i * 3], src[i * 3 + 1], src[i * 3 + 2]);
           positions[i * 3] = x;
           positions[i * 3 + 1] = y;
           positions[i * 3 + 2] = z;
@@ -644,30 +514,19 @@ async function bakeToSoup(srcDoc, deps) {
   let iOffset = 0;
   for (const chunk of chunks) {
     positions.set(chunk.positions, vOffset * 3);
-    for (let i = 0; i < chunk.indices.length; i += 1)
-      indices[iOffset + i] = chunk.indices[i] + vOffset;
+    for (let i = 0; i < chunk.indices.length; i += 1) indices[iOffset + i] = chunk.indices[i] + vOffset;
     vOffset += chunk.count;
     iOffset += chunk.indices.length;
   }
 
-  const doc = new core.Document().setLogger(
-    new core.Logger(core.Logger.Verbosity.SILENT),
-  );
+  const doc = new core.Document().setLogger(new core.Logger(core.Logger.Verbosity.SILENT));
   const buffer = doc.createBuffer();
-  const positionAccessor = doc
-    .createAccessor()
-    .setType("VEC3")
-    .setArray(positions)
-    .setBuffer(buffer);
-  const indexAccessor = doc
-    .createAccessor()
-    .setType("SCALAR")
-    .setArray(indices)
-    .setBuffer(buffer);
+  const positionAccessor = doc.createAccessor().setType('VEC3').setArray(positions).setBuffer(buffer);
+  const indexAccessor = doc.createAccessor().setType('SCALAR').setArray(indices).setBuffer(buffer);
   const prim = doc
     .createPrimitive()
     .setMode(core.Primitive.Mode.TRIANGLES)
-    .setAttribute("POSITION", positionAccessor)
+    .setAttribute('POSITION', positionAccessor)
     .setIndices(indexAccessor);
   const mesh = doc.createMesh().addPrimitive(prim);
   const node = doc.createNode().setMesh(mesh);
@@ -683,9 +542,7 @@ async function bakeToSoup(srcDoc, deps) {
 
 /** `Document.clone()` left the core in v4; the functions package clones, and the clone needs its own silent logger. */
 function cloneSilently(doc, { core, functions }) {
-  return functions
-    .cloneDocument(doc)
-    .setLogger(new core.Logger(core.Logger.Verbosity.SILENT));
+  return functions.cloneDocument(doc).setLogger(new core.Logger(core.Logger.Verbosity.SILENT));
 }
 
 /**
@@ -696,27 +553,15 @@ function cloneSilently(doc, { core, functions }) {
 async function simplifyTo(prepared, target, deps) {
   const { core, functions, MeshoptSimplifier } = deps;
   const current = triangleCount(prepared, core);
-  if (current <= target)
-    return {
-      doc: cloneSilently(prepared, deps),
-      triangles: current,
-      reached: true,
-      error: 0,
-    };
+  if (current <= target) return { doc: cloneSilently(prepared, deps), triangles: current, reached: true, error: 0 };
   let best = null;
   for (const error of ERROR_SCHEDULE) {
     const doc = cloneSilently(prepared, deps);
     await doc.transform(
-      functions.simplify({
-        simplifier: MeshoptSimplifier,
-        ratio: target / current,
-        error,
-        lockBorder: false,
-      }),
+      functions.simplify({ simplifier: MeshoptSimplifier, ratio: target / current, error, lockBorder: false }),
     );
     const triangles = triangleCount(doc, core);
-    if (!best || triangles < best.triangles)
-      best = { doc, triangles, reached: triangles <= target, error };
+    if (!best || triangles < best.triangles) best = { doc, triangles, reached: triangles <= target, error };
     if (triangles <= target) break;
   }
   return best;
@@ -726,13 +571,7 @@ async function simplifyTo(prepared, target, deps) {
 async function encode(doc, deps) {
   const { functions, io, MeshoptEncoder } = deps;
   const out = cloneSilently(doc, deps);
-  await out.transform(
-    functions.meshopt({
-      encoder: MeshoptEncoder,
-      level: "medium",
-      quantizePosition: POSITION_BITS,
-    }),
-  );
+  await out.transform(functions.meshopt({ encoder: MeshoptEncoder, level: 'medium', quantizePosition: POSITION_BITS }));
   return io.writeBinary(out);
 }
 
@@ -758,19 +597,9 @@ export async function buildLod(prepared, target, deps) {
       byteCapped: triangleTarget < target.triangles,
       withinBytes: bytes.length <= target.bytes,
     };
-    if (
-      result.withinBytes ||
-      simplified.triangles <= MIN_TRIANGLES ||
-      !simplified.reached
-    )
-      break;
-    const next = Math.floor(
-      simplified.triangles * (target.bytes / bytes.length) * 0.9,
-    );
-    triangleTarget = Math.max(
-      MIN_TRIANGLES,
-      Math.min(next, simplified.triangles - 1),
-    );
+    if (result.withinBytes || simplified.triangles <= MIN_TRIANGLES || !simplified.reached) break;
+    const next = Math.floor(simplified.triangles * (target.bytes / bytes.length) * 0.9);
+    triangleTarget = Math.max(MIN_TRIANGLES, Math.min(next, simplified.triangles - 1));
   }
   void core;
   return result;
@@ -782,19 +611,10 @@ export async function buildLod(prepared, target, deps) {
  */
 export async function optimizeGlb(rawBytes, targets, deps) {
   const { core, io } = deps;
-  const srcDoc = await io.readBinary(
-    rawBytes instanceof Uint8Array ? rawBytes : new Uint8Array(rawBytes),
-  );
-  const before = {
-    bytes: rawBytes.length,
-    triangles: triangleCount(srcDoc, core),
-  };
-  const {
-    doc: prepared,
-    triangles: preparedTriangles,
-    skippedPrimitives,
-  } = await bakeToSoup(srcDoc, deps);
-  if (preparedTriangles === 0) throw new Error("no triangle geometry found");
+  const srcDoc = await io.readBinary(rawBytes instanceof Uint8Array ? rawBytes : new Uint8Array(rawBytes));
+  const before = { bytes: rawBytes.length, triangles: triangleCount(srcDoc, core) };
+  const { doc: prepared, triangles: preparedTriangles, skippedPrimitives } = await bakeToSoup(srcDoc, deps);
+  if (preparedTriangles === 0) throw new Error('no triangle geometry found');
 
   const outputs = {};
   if (targets.lod1) outputs.lod1 = await buildLod(prepared, targets.lod1, deps);
@@ -802,12 +622,10 @@ export async function optimizeGlb(rawBytes, targets, deps) {
     // lod0 exists to carry more detail than lod1. When lod1 already holds every
     // triangle the raw render had, a lod0 would be the same bytes under a second
     // name, so it is skipped and the manifest simply carries no lod0.
-    if (outputs.lod1 && outputs.lod1.triangles >= preparedTriangles)
-      outputs.lod0Skipped = "already complete at lod1";
+    if (outputs.lod1 && outputs.lod1.triangles >= preparedTriangles) outputs.lod0Skipped = 'already complete at lod1';
     else outputs.lod0 = await buildLod(prepared, targets.lod0, deps);
   }
-  if (targets.frame)
-    outputs.frame = await buildLod(prepared, targets.frame, deps);
+  if (targets.frame) outputs.frame = await buildLod(prepared, targets.frame, deps);
   return { before, preparedTriangles, skippedPrimitives, outputs };
 }
 
@@ -818,15 +636,12 @@ export async function optimizeGlb(rawBytes, targets, deps) {
 /** The commons pin: the commit the `projects` submodule has checked out, or null. */
 export function detectCommonsPin(repo) {
   const attempts = [
-    ["-C", path.join(repo, "projects"), "rev-parse", "HEAD"],
-    ["-C", repo, "rev-parse", "HEAD:projects"],
+    ['-C', path.join(repo, 'projects'), 'rev-parse', 'HEAD'],
+    ['-C', repo, 'rev-parse', 'HEAD:projects'],
   ];
   for (const args of attempts) {
     try {
-      const sha = execFileSync("git", args, {
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"],
-      }).trim();
+      const sha = execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
       if (/^[0-9a-f]{40}$/.test(sha)) return sha;
     } catch {
       /* not a git checkout, or the submodule is not initialised */
@@ -837,7 +652,7 @@ export function detectCommonsPin(repo) {
 
 /** Second-precision ISO timestamp, like the v1 manifest carried. */
 export function isoNow(now = new Date()) {
-  return now.toISOString().replace(/\.\d{3}Z$/, "Z");
+  return now.toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
 /**
@@ -845,13 +660,7 @@ export function isoNow(now = new Date()) {
  * lod0?, frames: [] }, each value `{ file, bytes, triangles }` (frames also carry
  * `animation` and `index`).
  */
-export function buildManifest({
-  generated,
-  sourceKind,
-  commonsPin,
-  budgets,
-  entries,
-}) {
+export function buildManifest({ generated, sourceKind, commonsPin, budgets, entries }) {
   const models = [];
   for (const slug of [...entries.keys()].sort()) {
     const entry = entries.get(slug);
@@ -860,34 +669,12 @@ export function buildManifest({
     const model = { slug, size: Math.min(...files.map((f) => f.bytes)) };
     // A budget kept by exception says so on the entry: the overrides and why.
     if (entry.budget) model.budget = { ...entry.budget };
-    if (entry.lod1)
-      model.lod1 = {
-        file: entry.lod1.file,
-        bytes: entry.lod1.bytes,
-        triangles: entry.lod1.triangles,
-      };
-    if (entry.lod0)
-      model.lod0 = {
-        file: entry.lod0.file,
-        bytes: entry.lod0.bytes,
-        triangles: entry.lod0.triangles,
-      };
+    if (entry.lod1) model.lod1 = { file: entry.lod1.file, bytes: entry.lod1.bytes, triangles: entry.lod1.triangles };
+    if (entry.lod0) model.lod0 = { file: entry.lod0.file, bytes: entry.lod0.bytes, triangles: entry.lod0.triangles };
     if (entry.frames.length) {
       model.frames = [...entry.frames]
-        .sort((a, b) =>
-          a.animation === b.animation
-            ? a.index - b.index
-            : a.animation < b.animation
-              ? -1
-              : 1,
-        )
-        .map((f) => ({
-          animation: f.animation,
-          index: f.index,
-          file: f.file,
-          bytes: f.bytes,
-          triangles: f.triangles,
-        }));
+        .sort((a, b) => (a.animation === b.animation ? a.index - b.index : a.animation < b.animation ? -1 : 1))
+        .map((f) => ({ animation: f.animation, index: f.index, file: f.file, bytes: f.bytes, triangles: f.triangles }));
     }
     models.push(model);
   }
@@ -909,31 +696,21 @@ export function serializeManifest(manifest) {
 // Report
 // ──────────────────────────────────────────────
 
-const fmtInt = (n) => Number(n).toLocaleString("en-US");
-const pct = (bytes, budget) =>
-  `${Math.round(((bytes - budget) / budget) * 100)}%`;
+const fmtInt = (n) => Number(n).toLocaleString('en-US');
+const pct = (bytes, budget) => `${Math.round(((bytes - budget) / budget) * 100)}%`;
 
 function statusOf(row) {
   if (!row.withinBytes) return `OVER +${pct(row.afterBytes, row.budgetBytes)}`;
   const notes = [];
-  if (row.exception) notes.push("by exception");
-  if (row.byteCapped) notes.push("byte-capped");
-  if (!row.reachedTriangleBudget) notes.push("triangles over budget");
-  return notes.length ? `ok (${notes.join(", ")})` : "ok";
+  if (row.exception) notes.push('by exception');
+  if (row.byteCapped) notes.push('byte-capped');
+  if (!row.reachedTriangleBudget) notes.push('triangles over budget');
+  return notes.length ? `ok (${notes.join(', ')})` : 'ok';
 }
 
 /** Fixed-width text table for the terminal. */
 export function renderReport(rows) {
-  const header = [
-    "slug",
-    "target",
-    "before B",
-    "before tris",
-    "after B",
-    "after tris",
-    "budget B",
-    "status",
-  ];
+  const header = ['slug', 'target', 'before B', 'before tris', 'after B', 'after tris', 'budget B', 'status'];
   const body = rows.map((r) => [
     r.slug,
     r.target,
@@ -944,42 +721,30 @@ export function renderReport(rows) {
     fmtInt(r.budgetBytes),
     statusOf(r),
   ]);
-  const widths = header.map((h, i) =>
-    Math.max(h.length, ...body.map((b) => b[i].length)),
-  );
+  const widths = header.map((h, i) => Math.max(h.length, ...body.map((b) => b[i].length)));
   const line = (cells) =>
     cells
-      .map((c, i) =>
-        i >= 2 && i <= 6
-          ? c.padStart(widths[i])
-          : i === cells.length - 1
-            ? c
-            : c.padEnd(widths[i]),
-      )
-      .join("  ");
-  return [
-    line(header),
-    widths.map((w) => "-".repeat(w)).join("  "),
-    ...body.map(line),
-  ].join("\n");
+      .map((c, i) => (i >= 2 && i <= 6 ? c.padStart(widths[i]) : i === cells.length - 1 ? c : c.padEnd(widths[i])))
+      .join('  ');
+  return [line(header), widths.map((w) => '-'.repeat(w)).join('  '), ...body.map(line)].join('\n');
 }
 
 /** Markdown table for $GITHUB_STEP_SUMMARY. */
 export function renderMarkdownReport(rows, totals) {
   const lines = [
-    "### Commons models",
-    "",
+    '### Commons models',
+    '',
     `${fmtInt(totals.inputs)} input(s) → ${fmtInt(totals.outputs)} output file(s); ${fmtInt(totals.beforeBytes)} B raw → ${fmtInt(totals.afterBytes)} B on disk.`,
-    "",
-    "| slug | target | before (B / tris) | after (B / tris) | budget (B) | status |",
-    "| :-- | :-- | --: | --: | --: | :-- |",
+    '',
+    '| slug | target | before (B / tris) | after (B / tris) | budget (B) | status |',
+    '| :-- | :-- | --: | --: | --: | :-- |',
     ...rows.map(
       (r) =>
         `| ${r.slug} | ${r.target} | ${fmtInt(r.beforeBytes)} / ${fmtInt(r.beforeTriangles)} | ${fmtInt(r.afterBytes)} / ${fmtInt(r.afterTriangles)} | ${fmtInt(r.budgetBytes)} | ${statusOf(r)} |`,
     ),
-    "",
+    '',
   ];
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 // ──────────────────────────────────────────────
@@ -987,21 +752,18 @@ export function renderMarkdownReport(rows, totals) {
 // ──────────────────────────────────────────────
 
 function outputNameFor(input, target) {
-  if (input.kind === "frame") return input.name;
+  if (input.kind === 'frame') return input.name;
   return `${input.slug}.${target}.glb`;
 }
 
 function isOutputName(name) {
-  return (
-    /\.lod[01]\.glb$/.test(name) ||
-    (parseInputName(name) || {}).kind === "frame"
-  );
+  return /\.lod[01]\.glb$/.test(name) || (parseInputName(name) || {}).kind === 'frame';
 }
 
 function readExistingGenerated(manifestFile) {
   try {
-    const parsed = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
-    return typeof parsed.generated === "string" ? parsed.generated : null;
+    const parsed = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
+    return typeof parsed.generated === 'string' ? parsed.generated : null;
   } catch {
     return null;
   }
@@ -1054,13 +816,13 @@ export async function run({
   if (!inputs.length) {
     logError(
       ctx.legacyMode
-        ? `No inputs: neither ${path.join(path.dirname(ctx.inDir), "raw")} nor legacy <slug>.glb files in ${ctx.inDir}. Render the cartridges first (.github/workflows/prerender-commons.yml) or pass --in.`
+        ? `No inputs: neither ${path.join(path.dirname(ctx.inDir), 'raw')} nor legacy <slug>.glb files in ${ctx.inDir}. Render the cartridges first (.github/workflows/prerender-commons.yml) or pass --in.`
         : `No inputs found in ${ctx.inDir}. Expected <slug>.glb or <slug>.<animation>.<index>.glb files.`,
     );
     return EXIT_USAGE;
   }
 
-  const baseSlugs = inputs.filter((i) => i.kind === "base").map((i) => i.slug);
+  const baseSlugs = inputs.filter((i) => i.kind === 'base').map((i) => i.slug);
   let lod0;
   try {
     lod0 = resolveLod0Selection(opts.lod0, baseSlugs, ctx);
@@ -1068,28 +830,22 @@ export async function run({
     logError(err.message);
     return EXIT_USAGE;
   }
-  if (lod0.unknown && lod0.unknown.length)
-    logError(
-      `WARNING: --lod0 names slugs with no input: ${lod0.unknown.join(", ")}`,
-    );
+  if (lod0.unknown && lod0.unknown.length) logError(`WARNING: --lod0 names slugs with no input: ${lod0.unknown.join(', ')}`);
   for (const input of inputs) {
-    if (input.kind === "frame" && !baseSlugs.includes(input.slug)) {
-      logError(
-        `WARNING: ${input.name} is a keyframe for a slug with no base render (${input.slug}.glb)`,
-      );
+    if (input.kind === 'frame' && !baseSlugs.includes(input.slug)) {
+      logError(`WARNING: ${input.name} is a keyframe for a slug with no base render (${input.slug}.glb)`);
     }
   }
 
   const deps = await loadDeps();
-  const sourceKind = ctx.legacyMode ? "legacy-glb" : "render-api";
+  const sourceKind = ctx.legacyMode ? 'legacy-glb' : 'render-api';
   info(
-    `${sourceKind === "legacy-glb" ? "Legacy inputs" : "Raw inputs"}: ${inputs.length} file(s) in ${path.relative(cwd, ctx.inDir) || "."} → ${path.relative(cwd, ctx.outDir) || "."} (lod0: ${lod0.mode}, ${lod0.slugs.size} slug(s))`,
+    `${sourceKind === 'legacy-glb' ? 'Legacy inputs' : 'Raw inputs'}: ${inputs.length} file(s) in ${path.relative(cwd, ctx.inDir) || '.'} → ${path.relative(cwd, ctx.outDir) || '.'} (lod0: ${lod0.mode}, ${lod0.slugs.size} slug(s))`,
   );
 
   const targetsCache = new Map();
   const targetsOf = (slug) => {
-    if (!targetsCache.has(slug))
-      targetsCache.set(slug, targetsFor(budgets, slug));
+    if (!targetsCache.has(slug)) targetsCache.set(slug, targetsFor(budgets, slug));
     return targetsCache.get(slug);
   };
 
@@ -1101,12 +857,7 @@ export async function run({
   const entryFor = (slug) => {
     if (!entries.has(slug)) {
       const { exception } = targetsOf(slug);
-      entries.set(slug, {
-        lod1: null,
-        lod0: null,
-        frames: [],
-        budget: exception,
-      });
+      entries.set(slug, { lod1: null, lod0: null, frames: [], budget: exception });
     }
     return entries.get(slug);
   };
@@ -1119,12 +870,9 @@ export async function run({
       rawBytesTotal += rawBytes.length;
       const targets = targetsOf(input.slug);
       const wanted =
-        input.kind === "frame"
+        input.kind === 'frame'
           ? { frame: targets.frame }
-          : {
-              lod1: targets.lod1,
-              ...(lod0.slugs.has(input.slug) ? { lod0: targets.lod0 } : {}),
-            };
+          : { lod1: targets.lod1, ...(lod0.slugs.has(input.slug) ? { lod0: targets.lod0 } : {}) };
       result = await optimizeGlb(rawBytes, wanted, deps);
     } catch (err) {
       failures.push(`${input.name}: ${err.message}`);
@@ -1132,14 +880,11 @@ export async function run({
       continue;
     }
     if (result.skippedPrimitives) {
-      logError(
-        `WARNING: ${input.name}: dropped ${result.skippedPrimitives} non-triangle primitive(s)`,
-      );
+      logError(`WARNING: ${input.name}: dropped ${result.skippedPrimitives} non-triangle primitive(s)`);
     }
-    if (result.outputs.lod0Skipped)
-      info(`  ${input.slug}: lod0 skipped (${result.outputs.lod0Skipped})`);
+    if (result.outputs.lod0Skipped) info(`  ${input.slug}: lod0 skipped (${result.outputs.lod0Skipped})`);
 
-    for (const target of ["lod1", "lod0", "frame"]) {
+    for (const target of ['lod1', 'lod0', 'frame']) {
       const built = result.outputs[target];
       if (!built) continue;
       const name = outputNameFor(input, target);
@@ -1147,8 +892,7 @@ export async function run({
       const budget = targets[target];
       const row = {
         slug: input.slug,
-        target:
-          input.kind === "frame" ? `${input.animation}#${input.index}` : target,
+        target: input.kind === 'frame' ? `${input.animation}#${input.index}` : target,
         file: name,
         beforeBytes: result.before.bytes,
         beforeTriangles: result.before.triangles,
@@ -1163,18 +907,9 @@ export async function run({
       };
       rows.push(row);
       planned.push({ name, bytes: built.bytes, row });
-      const record = {
-        file: name,
-        bytes: built.bytes.length,
-        triangles: built.triangles,
-      };
+      const record = { file: name, bytes: built.bytes.length, triangles: built.triangles };
       const entry = entryFor(input.slug);
-      if (target === "frame")
-        entry.frames.push({
-          ...record,
-          animation: input.animation,
-          index: input.index,
-        });
+      if (target === 'frame') entry.frames.push({ ...record, animation: input.animation, index: input.index });
       else entry[target] = record;
       info(
         `  ${name.padEnd(44)} ${fmtInt(result.before.bytes).padStart(10)} B → ${fmtInt(built.bytes.length).padStart(8)} B  ${fmtInt(result.before.triangles).padStart(8)} → ${fmtInt(built.triangles).padStart(6)} tris  ${statusOf(row)}`,
@@ -1184,22 +919,9 @@ export async function run({
 
   // Manifest
   const commonsPin =
-    opts["commons-pin"] === "none"
-      ? null
-      : opts["commons-pin"]
-        ? opts["commons-pin"]
-        : detectCommonsPin(repo);
-  const generated =
-    opts.generated ??
-    (opts.check ? readExistingGenerated(ctx.manifestFile) : null) ??
-    isoNow(now);
-  const manifest = buildManifest({
-    generated,
-    sourceKind,
-    commonsPin,
-    budgets,
-    entries,
-  });
+    opts['commons-pin'] === 'none' ? null : opts['commons-pin'] ? opts['commons-pin'] : detectCommonsPin(repo);
+  const generated = opts.generated ?? (opts.check ? readExistingGenerated(ctx.manifestFile) : null) ?? isoNow(now);
+  const manifest = buildManifest({ generated, sourceKind, commonsPin, budgets, entries });
   const manifestText = serializeManifest(manifest);
 
   // Clean plan: stale outputs with no input any more, and consumed legacy files.
@@ -1212,8 +934,7 @@ export async function run({
   }
   if (ctx.legacyMode) {
     for (const input of inputs) {
-      if (entries.get(input.slug) && entries.get(input.slug).lod1)
-        removals.push(input.name);
+      if (entries.get(input.slug) && entries.get(input.slug).lod1) removals.push(input.name);
     }
   }
   removals.sort();
@@ -1224,31 +945,21 @@ export async function run({
     for (const { name, bytes } of planned) {
       const file = path.join(ctx.outDir, name);
       if (!fs.existsSync(file)) drift.push(`missing: ${name}`);
-      else if (!bytesEqual(fs.readFileSync(file), bytes))
-        drift.push(`differs: ${name}`);
+      else if (!bytesEqual(fs.readFileSync(file), bytes)) drift.push(`differs: ${name}`);
     }
-    const existingManifest = fs.existsSync(ctx.manifestFile)
-      ? fs.readFileSync(ctx.manifestFile, "utf8")
-      : null;
-    if (existingManifest === null) drift.push("missing: manifest.json");
-    else if (existingManifest !== manifestText)
-      drift.push("differs: manifest.json");
-    if (opts.clean)
-      for (const name of removals)
-        drift.push(`stale (would be removed): ${name}`);
+    const existingManifest = fs.existsSync(ctx.manifestFile) ? fs.readFileSync(ctx.manifestFile, 'utf8') : null;
+    if (existingManifest === null) drift.push('missing: manifest.json');
+    else if (existingManifest !== manifestText) drift.push('differs: manifest.json');
+    if (opts.clean) for (const name of removals) drift.push(`stale (would be removed): ${name}`);
     if (failures.length) {
       logError(`${failures.length} input(s) could not be processed:`);
       for (const f of failures) logError(`  ${f}`);
       return EXIT_FAILED;
     }
     if (drift.length) {
-      logError(
-        `DRIFT — ${path.relative(cwd, ctx.outDir) || "."} does not match the inputs:`,
-      );
+      logError(`DRIFT — ${path.relative(cwd, ctx.outDir) || '.'} does not match the inputs:`);
       for (const d of drift) logError(`  ${d}`);
-      logError(
-        "Run `npm run models:optimize` (from apps/landing) with the same inputs and commit the result.",
-      );
+      logError('Run `npm run models:optimize` (from apps/landing) with the same inputs and commit the result.');
       return EXIT_DRIFT;
     }
     log(`models are up to date (${planned.length} file(s) + manifest.json).`);
@@ -1257,18 +968,15 @@ export async function run({
 
   // Write.
   fs.mkdirSync(ctx.outDir, { recursive: true });
-  for (const { name, bytes } of planned)
-    fs.writeFileSync(path.join(ctx.outDir, name), bytes);
-  fs.writeFileSync(ctx.manifestFile, manifestText, "utf8");
+  for (const { name, bytes } of planned) fs.writeFileSync(path.join(ctx.outDir, name), bytes);
+  fs.writeFileSync(ctx.manifestFile, manifestText, 'utf8');
   if (opts.clean) {
     for (const name of removals) {
       fs.rmSync(path.join(ctx.outDir, name), { force: true });
       info(`  removed ${name}`);
     }
   } else if (removals.length) {
-    logError(
-      `NOTE: ${removals.length} file(s) would be removed by --clean: ${removals.join(", ")}`,
-    );
+    logError(`NOTE: ${removals.length} file(s) would be removed by --clean: ${removals.join(', ')}`);
   }
 
   // Report.
@@ -1278,36 +986,24 @@ export async function run({
     beforeBytes: rawBytesTotal,
     afterBytes: planned.reduce((n, p) => n + p.bytes.length, 0),
   };
-  log("");
+  log('');
   log(renderReport(rows));
-  log("");
+  log('');
   log(
-    `${fmtInt(totals.inputs)} input(s), ${fmtInt(totals.beforeBytes)} B → ${fmtInt(totals.outputs)} output(s), ${fmtInt(totals.afterBytes)} B; manifest v${MANIFEST_VERSION} generated ${generated} (commons pin ${commonsPin ?? "unknown"}).`,
+    `${fmtInt(totals.inputs)} input(s), ${fmtInt(totals.beforeBytes)} B → ${fmtInt(totals.outputs)} output(s), ${fmtInt(totals.afterBytes)} B; manifest v${MANIFEST_VERSION} generated ${generated} (commons pin ${commonsPin ?? 'unknown'}).`,
   );
   if (env.GITHUB_STEP_SUMMARY) {
-    fs.appendFileSync(
-      env.GITHUB_STEP_SUMMARY,
-      `${renderMarkdownReport(rows, totals)}\n`,
-    );
+    fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `${renderMarkdownReport(rows, totals)}\n`);
   }
 
   const offenders = rows.filter((r) => !r.withinBytes);
-  const shortfalls = rows.filter(
-    (r) => r.withinBytes && !r.reachedTriangleBudget,
-  );
+  const shortfalls = rows.filter((r) => r.withinBytes && !r.reachedTriangleBudget);
   if (shortfalls.length) {
-    logError(
-      `NOTE: ${shortfalls.length} output(s) stayed over the triangle budget (topology limits the simplifier): ${shortfalls.map((r) => r.file).join(", ")}`,
-    );
+    logError(`NOTE: ${shortfalls.length} output(s) stayed over the triangle budget (topology limits the simplifier): ${shortfalls.map((r) => r.file).join(', ')}`);
   }
   if (offenders.length) {
-    logError(
-      `${opts.strict ? "ERROR" : "WARNING"}: ${offenders.length} output(s) over their byte budget (written anyway):`,
-    );
-    for (const r of offenders)
-      logError(
-        `  ${r.file}: ${fmtInt(r.afterBytes)} B > ${fmtInt(r.budgetBytes)} B (${r.afterTriangles} tris)`,
-      );
+    logError(`${opts.strict ? 'ERROR' : 'WARNING'}: ${offenders.length} output(s) over their byte budget (written anyway):`);
+    for (const r of offenders) logError(`  ${r.file}: ${fmtInt(r.afterBytes)} B > ${fmtInt(r.budgetBytes)} B (${r.afterTriangles} tris)`);
   }
   if (failures.length) {
     logError(`${failures.length} input(s) could not be processed:`);
@@ -1319,9 +1015,6 @@ export async function run({
 }
 
 // Only self-execute as a CLI, so the test suite can import the functions above.
-if (
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(process.argv[1]).href
-) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   process.exit(await run());
 }

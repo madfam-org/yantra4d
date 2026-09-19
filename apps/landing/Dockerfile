@@ -6,6 +6,9 @@ COPY packages/ /app/packages/
 COPY apps/landing/ ./
 ARG PUBLIC_STUDIO_URL
 ENV PUBLIC_STUDIO_URL=$PUBLIC_STUDIO_URL
+# Cloudflare Web Analytics site token. Empty (the default) ships no beacon.
+ARG PUBLIC_CF_BEACON_TOKEN=
+ENV PUBLIC_CF_BEACON_TOKEN=$PUBLIC_CF_BEACON_TOKEN
 RUN npm run build
 
 FROM nginx:alpine

@@ -1,0 +1,76 @@
+---
+/**
+ * The visible "Lite mode" control. The tier is decided automatically (see
+ * src/lib/tier-core.js); this button is how a person overrules that decision
+ * in either direction. A choice is stored without expiry and wins over
+ * measurements — never over `?tier=`, which is QA's.
+ *
+ * Hidden until its script runs: without JavaScript there is no 3D to turn off.
+ */
+import type { Translations } from '../lib/i18n';
+
+interface Props {
+  t?: Translations;
+  class?: string;
+}
+
+const { t, class: className = '' } = Astro.props;
+const labels = {
+  on: t?.tier?.liteOn ?? 'Modo ligero',
+  off: t?.tier?.liteOff ?? 'Activar 3D',
+  hint: t?.tier?.hint ?? 'Cambia entre la experiencia 3D y una versión ligera.',
+};
+---
+
+<button
+  type="button"
+  data-testid="tier-toggle"
+  data-tier-toggle
+  data-label-on={labels.on}
+  data-label-off={labels.off}
+  title={labels.hint}
+  aria-pressed="false"
+  hidden
+  class={`inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[44px] ${className}`}
+>
+  <span aria-hidden="true" class="inline-block h-2 w-2 rounded-full bg-primary" data-tier-dot></span>
+  <span data-tier-label>{labels.on}</span>
+</button>
+
+<script>
+  import { currentTier, setUserTier, userChoseTier, TIER_CHANGE_EVENT } from '../lib/tier';
+
+  function wire(button: HTMLButtonElement) {
+    const label = button.querySelector<HTMLElement>('[data-tier-label]');
+    const on = button.dataset.labelOn ?? 'Lite mode';
+    const off = button.dataset.labelOff ?? 'Enable 3D';
+
+    const render = () => {
+      const { tier } = currentTier();
+      const lite = tier === 'still';
+      if (label) label.textContent = lite ? off : on;
+      button.setAttribute('aria-pressed', lite ? 'true' : 'false');
+      button.hidden = false;
+    };
+
+    button.addEventListener('click', () => {
+      const { tier, source } = currentTier();
+      if (source === 'override') return; // QA owns the page
+      if (tier === 'still') {
+        // Turning 3D back on: clear a previous choice, or, when the device was
+        // auto-classified still, ask for the lighter scene explicitly. The
+        // WebGL probe still runs before anything loads, so a machine with no
+        // GPU comes straight back here.
+        setUserTier(userChoseTier() ? null : 'lite');
+      } else {
+        setUserTier('still');
+      }
+      window.location.reload();
+    });
+
+    window.addEventListener(TIER_CHANGE_EVENT, render);
+    render();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-tier-toggle]').forEach(wire);
+</script>

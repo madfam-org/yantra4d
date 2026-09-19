@@ -366,5 +366,29 @@
     "docs": "Docs",
     "studio": "Studio",
     "gallery": "Gallery"
+  },
+  "tier": {
+    "liteOn": "Lite mode",
+    "liteOff": "Enable 3D",
+    "hint": "Switch between the 3D experience and a lighter version. Your choice is remembered on this device.",
+    "stillNote": "Showing images instead of live 3D — by your choice, your system settings, or because this browser has no WebGL."
+  },
+  "galleryUi": {
+    "search": "Search hyperobjects…",
+    "allCategories": "All categories",
+    "allDomains": "All domains",
+    "showMore": "Show more",
+    "showing": "Showing {shown} of {total}",
+    "inThreeD": "Showing {shown} of {total} in 3D — browse all below",
+    "noResults": "No hyperobjects found.",
+    "openStudio": "Open Studio",
+    "swipe": "Swipe to explore",
+    "drag": "Drag to explore",
+    "prev": "Previous project",
+    "next": "Next project",
+    "live": "Live 3D rendering",
+    "stillStrip": "A selection of the commons — open any of them in Studio.",
+    "hyperobject": "Hyperobject",
+    "loading": "Loading the commons…"
   }
 }

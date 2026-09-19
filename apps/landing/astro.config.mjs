@@ -15,4 +15,21 @@ export default defineConfig({
     locales: ['en', 'es'],
     routing: { prefixDefaultLocale: false },
   },
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          // Everything 3D lands in ONE named chunk. It is imported dynamically
+          // (only on tier >= lite, only when the gallery scrolls into view), so
+          // naming it lets the CI budget step and the e2e suite measure "the 3D
+          // chunk" as a thing, instead of guessing from hashed filenames. The
+          // meshopt decoder lives under three/examples and rides along.
+          manualChunks(id) {
+            if (/node_modules\/(three|@react-three)\//.test(id)) return 'vendor-three';
+            return undefined;
+          },
+        },
+      },
+    },
+  },
 });

@@ -366,5 +366,29 @@
     "docs": "Docs",
     "studio": "Studio",
     "gallery": "Galería"
+  },
+  "tier": {
+    "liteOn": "Modo ligero",
+    "liteOff": "Activar 3D",
+    "hint": "Cambia entre la experiencia 3D y una versión ligera. Tu elección se recuerda en este dispositivo.",
+    "stillNote": "Se muestran imágenes en vez de 3D en vivo — por tu elección, por la configuración de tu sistema o porque este navegador no tiene WebGL."
+  },
+  "galleryUi": {
+    "search": "Buscar hiperobjetos…",
+    "allCategories": "Todas las categorías",
+    "allDomains": "Todos los dominios",
+    "showMore": "Ver más",
+    "showing": "Mostrando {shown} de {total}",
+    "inThreeD": "Mostrando {shown} de {total} en 3D — explora todos abajo",
+    "noResults": "No se encontraron hiperobjetos.",
+    "openStudio": "Abrir Studio",
+    "swipe": "Desliza para explorar",
+    "drag": "Arrastra para explorar",
+    "prev": "Proyecto anterior",
+    "next": "Proyecto siguiente",
+    "live": "Render 3D en vivo",
+    "stillStrip": "Una selección del procomún — abre cualquiera en Studio.",
+    "hyperobject": "Hiperobjeto",
+    "loading": "Cargando el procomún…"
   }
 }

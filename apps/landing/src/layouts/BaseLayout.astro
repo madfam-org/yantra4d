@@ -1,6 +1,8 @@
 ---
 import type { Translations } from '../lib/i18n';
 import { EcosystemBannerClient } from '../components/EcosystemBannerClient';
+import { buildTierBootstrap } from '../lib/tier-bootstrap';
+import { SITE_ORIGIN } from '../lib/env';
 
 interface Props {
   lang?: string;
@@ -15,20 +17,53 @@ const {
   title = t?.meta.title ?? 'Yantra4D — Diseño 3D Paramétrico para Todos',
   description = t?.meta.description ?? 'Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD.',
 } = Astro.props;
+
+// The tier bootstrap runs inline, before first paint, so the CSS and every
+// island agree on Still / Lite / Full from the first frame. The <html> element
+// ships with data-tier="still": no JavaScript means no 3D, by construction.
+const tierBootstrap = buildTierBootstrap();
+
+// Locale alternates. Spanish is unprefixed, English lives under /en; the
+// counterpart of the current page is the same path with the prefix toggled.
+const path = Astro.url.pathname;
+const esPath = path.replace(/^\/en(\/|$)/, '/');
+const enPath = lang === 'en' ? path : `/en${path === '/' ? '/' : path}`;
+const canonical = `${SITE_ORIGIN}${path}`;
+
+// Cloudflare Web Analytics is cookie-less and already allowed by the CSP; the
+// beacon ships only when the deploy sets the token (see Dockerfile / deploy.yml).
+const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN || '';
 ---
 
 <!doctype html>
-<html lang={lang} class="dark">
+<html lang={lang} class="dark" data-tier="still">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script is:inline set:html={tierBootstrap} />
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0a0b" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={`${SITE_ORIGIN}${esPath}`} />
+    <link rel="alternate" hreflang="en" href={`${SITE_ORIGIN}${enPath}`} />
+    <link rel="alternate" hreflang="x-default" href={`${SITE_ORIGIN}${esPath}`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://yantra4d.com" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${SITE_ORIGIN}/hero-preview.webp`} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_MX'} />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    {cfBeaconToken && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: cfBeaconToken })}
+      />
+    )}
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased pb-8">
     <slot />

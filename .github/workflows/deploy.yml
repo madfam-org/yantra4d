@@ -648,6 +648,7 @@ jobs:
           sbom: false
           build-args: |
             PUBLIC_STUDIO_URL=https://app.yantra4d.com
+            PUBLIC_CF_BEACON_TOKEN=${{ vars.LANDING_CF_BEACON_TOKEN }}
 
       - name: Install cosign (checksum binary — the installer action dies on ARC runners)
         run: |

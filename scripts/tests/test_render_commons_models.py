@@ -189,7 +189,7 @@ def test_keyframes_snap_to_the_parameter_grid_like_the_slider():
         ],
     }
     items = rcm.frame_items("motor-mount", manifest)
-    assert [i["parameters"]["nema_size"] for i in items[:5]] == [17, 23, 23, 29, 34]
+    assert [i["parameters"]["nema_size"] for i in items[:5]] == [17, 23, 29, 29, 34]
     assert all(isinstance(i["parameters"]["nema_size"], int) for i in items[:5])
     # Integer interpolation lands on the 0.5 grid already; nothing changes, ints stay ints.
     assert [i["parameters"]["wall_thickness"] for i in items[5:]] == [3, 4, 6, 7, 8]

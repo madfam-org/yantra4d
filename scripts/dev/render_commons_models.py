@@ -127,7 +127,8 @@ def snap_to_parameter_grid(params: dict, definitions) -> dict:
     then: motor-mount's ``nema_size`` (min 17, step 6) interpolated linearly to
     21, 26 and 30, the script mapped those to its default, and four of five
     frames of the NEMA sweep were the same geometry. Snapping to the grid gives
-    17 → 23 → 23 → 29 → 34 instead; the optimizer collapses the repeat.
+    17 → 23 → 29 → 29 → 34 instead (Python rounds the half-way frame to the
+    even grid step); the optimizer collapses the repeat.
 
     Mirror of the API's ``_interpolate_params`` grid step (apps/api/routes/
     projects/animations.py). Values already on the grid keep their type;

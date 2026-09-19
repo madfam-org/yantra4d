@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "generated": "2026-09-19T07:10:21Z",
+  "generated": "2026-09-19T18:46:49Z",
   "generator": "scripts/dev/optimize-commons-models.mjs",
   "source": {
-    "kind": "legacy-glb",
+    "kind": "render-api",
     "commons_pin": "f2c578f78037c37f0f29fe0571b946aeeb45bc0f"
   },
   "budgets": {
@@ -15,199 +15,5637 @@
   },
   "models": [
     {
+      "slug": "aerator-adapter",
+      "size": 10764,
+      "lod1": {
+        "file": "aerator-adapter.lod1.glb",
+        "bytes": 10764,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "aerator-cache",
+      "size": 10720,
+      "lod1": {
+        "file": "aerator-cache.lod1.glb",
+        "bytes": 10720,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "airlock-grommet",
+      "size": 8792,
+      "lod1": {
+        "file": "airlock-grommet.lod1.glb",
+        "bytes": 8792,
+        "triangles": 2016
+      }
+    },
+    {
+      "slug": "angle-gauge",
+      "size": 2252,
+      "lod1": {
+        "file": "angle-gauge.lod1.glb",
+        "bytes": 2252,
+        "triangles": 316
+      }
+    },
+    {
+      "slug": "antibacklash-nut",
+      "size": 10780,
+      "lod1": {
+        "file": "antibacklash-nut.lod1.glb",
+        "bytes": 10780,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "aquarium-fitting",
+      "size": 3864,
+      "lod1": {
+        "file": "aquarium-fitting.lod1.glb",
+        "bytes": 3864,
+        "triangles": 732
+      }
+    },
+    {
+      "slug": "arca-gopro-bridge",
+      "size": 6832,
+      "lod1": {
+        "file": "arca-gopro-bridge.lod1.glb",
+        "bytes": 6832,
+        "triangles": 1684
+      }
+    },
+    {
+      "slug": "arca-l-bracket",
+      "size": 3100,
+      "lod1": {
+        "file": "arca-l-bracket.lod1.glb",
+        "bytes": 3100,
+        "triangles": 540
+      }
+    },
+    {
+      "slug": "arca-plate",
+      "size": 2988,
+      "lod1": {
+        "file": "arca-plate.lod1.glb",
+        "bytes": 2988,
+        "triangles": 524
+      }
+    },
+    {
+      "slug": "assembly-fixture",
+      "size": 9640,
+      "lod1": {
+        "file": "assembly-fixture.lod1.glb",
+        "bytes": 9640,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "assistive-grip",
+      "size": 7864,
+      "lod1": {
+        "file": "assistive-grip.lod1.glb",
+        "bytes": 7864,
+        "triangles": 2016
+      }
+    },
+    {
+      "slug": "bag-clip",
+      "size": 2188,
+      "lod1": {
+        "file": "bag-clip.lod1.glb",
+        "bytes": 2188,
+        "triangles": 312
+      }
+    },
+    {
+      "slug": "bag-feet",
+      "size": 10756,
+      "lod1": {
+        "file": "bag-feet.lod1.glb",
+        "bytes": 10756,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "bag-sealer",
+      "size": 1628,
+      "lod1": {
+        "file": "bag-sealer.lod1.glb",
+        "bytes": 1628,
+        "triangles": 124
+      }
+    },
+    {
+      "slug": "ball-socket",
+      "size": 10004,
+      "lod1": {
+        "file": "ball-socket.lod1.glb",
+        "bytes": 10004,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "ball-storage",
+      "size": 4948,
+      "lod1": {
+        "file": "ball-storage.lod1.glb",
+        "bytes": 4948,
+        "triangles": 1116
+      }
+    },
+    {
+      "slug": "bar-clamp",
+      "size": 4720,
+      "lod1": {
+        "file": "bar-clamp.lod1.glb",
+        "bytes": 4720,
+        "triangles": 1028
+      }
+    },
+    {
+      "slug": "barend-mount",
+      "size": 10032,
+      "lod1": {
+        "file": "barend-mount.lod1.glb",
+        "bytes": 10032,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "battery-caddy",
+      "size": 5280,
+      "lod1": {
+        "file": "battery-caddy.lod1.glb",
+        "bytes": 5280,
+        "triangles": 1196
+      }
+    },
+    {
+      "slug": "battery-holder",
+      "size": 9348,
+      "lod1": {
+        "file": "battery-holder.lod1.glb",
+        "bytes": 9348,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "battery-pad",
+      "size": 3520,
+      "lod1": {
+        "file": "battery-pad.lod1.glb",
+        "bytes": 3520,
+        "triangles": 700
+      }
+    },
+    {
+      "slug": "battery-pocket-frame",
+      "size": 9620,
+      "lod1": {
+        "file": "battery-pocket-frame.lod1.glb",
+        "bytes": 9620,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "bearing-housing",
+      "size": 9748,
+      "lod1": {
+        "file": "bearing-housing.lod1.glb",
+        "bytes": 9748,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "bed-corner",
+      "size": 7692,
+      "lod1": {
+        "file": "bed-corner.lod1.glb",
+        "bytes": 7692,
+        "triangles": 2084
+      }
+    },
+    {
+      "slug": "bellows-actuator",
+      "size": 11208,
+      "lod1": {
+        "file": "bellows-actuator.lod1.glb",
+        "bytes": 11208,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "belt-buckle",
+      "size": 10096,
+      "lod1": {
+        "file": "belt-buckle.lod1.glb",
+        "bytes": 10096,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "belt-clamp",
+      "size": 5516,
+      "lod1": {
+        "file": "belt-clamp.lod1.glb",
+        "bytes": 5516,
+        "triangles": 1308
+      }
+    },
+    {
+      "slug": "belt-clip",
+      "size": 3316,
+      "lod1": {
+        "file": "belt-clip.lod1.glb",
+        "bytes": 3316,
+        "triangles": 608
+      }
+    },
+    {
+      "slug": "belt-hanger",
+      "size": 9884,
+      "lod1": {
+        "file": "belt-hanger.lod1.glb",
+        "bytes": 9884,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "bench-dog",
+      "size": 8132,
+      "lod1": {
+        "file": "bench-dog.lod1.glb",
+        "bytes": 8132,
+        "triangles": 2036
+      }
+    },
+    {
+      "slug": "bevel-gear",
+      "size": 10396,
+      "lod1": {
+        "file": "bevel-gear.lod1.glb",
+        "bytes": 10396,
+        "triangles": 2424
+      }
+    },
+    {
+      "slug": "bevel-pair",
+      "size": 8920,
+      "lod1": {
+        "file": "bevel-pair.lod1.glb",
+        "bytes": 8920,
+        "triangles": 2040
+      }
+    },
+    {
+      "slug": "bias-tape-maker",
+      "size": 3164,
+      "lod1": {
+        "file": "bias-tape-maker.lod1.glb",
+        "bytes": 3164,
+        "triangles": 588
+      }
+    },
+    {
+      "slug": "bike-mount",
+      "size": 10092,
+      "lod1": {
+        "file": "bike-mount.lod1.glb",
+        "bytes": 10092,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "bike-wall-rack",
+      "size": 8956,
+      "lod1": {
+        "file": "bike-wall-rack.lod1.glb",
+        "bytes": 8956,
+        "triangles": 2384
+      }
+    },
+    {
+      "slug": "bird-feeder",
+      "size": 10916,
+      "lod1": {
+        "file": "bird-feeder.lod1.glb",
+        "bytes": 10916,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "board-feet",
+      "size": 3508,
+      "lod1": {
+        "file": "board-feet.lod1.glb",
+        "bytes": 3508,
+        "triangles": 656
+      }
+    },
+    {
+      "slug": "board-rack",
+      "size": 5732,
+      "lod1": {
+        "file": "board-rack.lod1.glb",
+        "bytes": 5732,
+        "triangles": 1342
+      }
+    },
+    {
+      "slug": "bobbin-holder",
+      "size": 9460,
+      "lod1": {
+        "file": "bobbin-holder.lod1.glb",
+        "bytes": 9460,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "body-form",
+      "size": 10516,
+      "lod1": {
+        "file": "body-form.lod1.glb",
+        "bytes": 10516,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "bollard-cap",
+      "size": 9344,
+      "lod1": {
+        "file": "bollard-cap.lod1.glb",
+        "bytes": 9344,
+        "triangles": 2232
+      }
+    },
+    {
+      "slug": "boning-stay",
+      "size": 3688,
+      "lod1": {
+        "file": "boning-stay.lod1.glb",
+        "bytes": 3688,
+        "triangles": 828
+      }
+    },
+    {
+      "slug": "book-fold-phone",
+      "size": 9484,
+      "lod1": {
+        "file": "book-fold-phone.lod1.glb",
+        "bytes": 9484,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "boot-hook-puller",
+      "size": 9676,
+      "lod1": {
+        "file": "boot-hook-puller.lod1.glb",
+        "bytes": 9676,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "bottle-bracket",
+      "size": 5520,
+      "lod1": {
+        "file": "bottle-bracket.lod1.glb",
+        "bytes": 5520,
+        "triangles": 1300
+      }
+    },
+    {
+      "slug": "bottle-cage",
+      "size": 9884,
+      "lod1": {
+        "file": "bottle-cage.lod1.glb",
+        "bytes": 9884,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "bottle-capper",
+      "size": 8148,
+      "lod1": {
+        "file": "bottle-capper.lod1.glb",
+        "bytes": 8148,
+        "triangles": 1946
+      }
+    },
+    {
+      "slug": "bottle-coupler",
+      "size": 8352,
+      "lod1": {
+        "file": "bottle-coupler.lod1.glb",
+        "bytes": 8352,
+        "triangles": 2016
+      }
+    },
+    {
+      "slug": "bottle-thread",
+      "size": 8400,
+      "lod1": {
+        "file": "bottle-thread.lod1.glb",
+        "bytes": 8400,
+        "triangles": 1942
+      }
+    },
+    {
+      "slug": "boxjoint-jig",
+      "size": 1832,
+      "lod1": {
+        "file": "boxjoint-jig.lod1.glb",
+        "bytes": 1832,
+        "triangles": 164
+      }
+    },
+    {
+      "slug": "bra-ring-slider",
+      "size": 10076,
+      "lod1": {
+        "file": "bra-ring-slider.lod1.glb",
+        "bytes": 10076,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "bra-underwire",
+      "size": 9748,
+      "lod1": {
+        "file": "bra-underwire.lod1.glb",
+        "bytes": 9748,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "bracket-generator",
+      "size": 7708,
+      "lod1": {
+        "file": "bracket-generator.lod1.glb",
+        "bytes": 7708,
+        "triangles": 2052
+      }
+    },
+    {
+      "slug": "breadboard-holder",
+      "size": 9184,
+      "lod1": {
+        "file": "breadboard-holder.lod1.glb",
+        "bytes": 9184,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "brick-tile",
+      "size": 9916,
+      "lod1": {
+        "file": "brick-tile.lod1.glb",
+        "bytes": 9916,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "busbar-support",
+      "size": 4576,
+      "lod1": {
+        "file": "busbar-support.lod1.glb",
+        "bytes": 4576,
+        "triangles": 1048
+      }
+    },
+    {
+      "slug": "button-hook-aid",
+      "size": 9952,
+      "lod1": {
+        "file": "button-hook-aid.lod1.glb",
+        "bytes": 9952,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "buttonhole-spacer",
+      "size": 9220,
+      "lod1": {
+        "file": "buttonhole-spacer.lod1.glb",
+        "bytes": 9220,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "cabinet-bin",
+      "size": 4684,
+      "lod1": {
+        "file": "cabinet-bin.lod1.glb",
+        "bytes": 4684,
+        "triangles": 1052
+      }
+    },
+    {
+      "slug": "cable-gland",
+      "size": 10724,
+      "lod1": {
+        "file": "cable-gland.lod1.glb",
+        "bytes": 10724,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "cable-label",
+      "size": 5768,
+      "lod1": {
+        "file": "cable-label.lod1.glb",
+        "bytes": 5768,
+        "triangles": 1274
+      }
+    },
+    {
+      "slug": "cable-management",
+      "size": 8384,
+      "lod1": {
+        "file": "cable-management.lod1.glb",
+        "bytes": 8384,
+        "triangles": 2040
+      }
+    },
+    {
+      "slug": "cable-wrap",
+      "size": 8520,
+      "lod1": {
+        "file": "cable-wrap.lod1.glb",
+        "bytes": 8520,
+        "triangles": 2092
+      }
+    },
+    {
+      "slug": "caliper-stand",
+      "size": 9540,
+      "lod1": {
+        "file": "caliper-stand.lod1.glb",
+        "bytes": 9540,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "cam-buckle",
+      "size": 9628,
+      "lod1": {
+        "file": "cam-buckle.lod1.glb",
+        "bytes": 9628,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "cam-profile",
+      "size": 7692,
+      "lod1": {
+        "file": "cam-profile.lod1.glb",
+        "bytes": 7692,
+        "triangles": 1832
+      }
+    },
+    {
+      "slug": "camera-quarter-twenty",
+      "size": 10168,
+      "lod1": {
+        "file": "camera-quarter-twenty.lod1.glb",
+        "bytes": 10168,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "camlock-latch",
+      "size": 9972,
+      "lod1": {
+        "file": "camlock-latch.lod1.glb",
+        "bytes": 9972,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "can-dispenser",
+      "size": 7696,
+      "lod1": {
+        "file": "can-dispenser.lod1.glb",
+        "bytes": 7696,
+        "triangles": 1958
+      }
+    },
+    {
+      "slug": "capo",
+      "size": 5344,
+      "lod1": {
+        "file": "capo.lod1.glb",
+        "bytes": 5344,
+        "triangles": 1208
+      }
+    },
+    {
+      "slug": "captive-nut",
+      "size": 7176,
+      "lod1": {
+        "file": "captive-nut.lod1.glb",
+        "bytes": 7176,
+        "triangles": 1700
+      }
+    },
+    {
+      "slug": "carabiner",
+      "size": 5056,
+      "lod1": {
+        "file": "carabiner.lod1.glb",
+        "bytes": 5056,
+        "triangles": 1064
+      }
+    },
+    {
+      "slug": "card-holder",
+      "size": 3116,
+      "lod1": {
+        "file": "card-holder.lod1.glb",
+        "bytes": 3116,
+        "triangles": 572
+      }
+    },
+    {
+      "slug": "card-stand",
+      "size": 3084,
+      "lod1": {
+        "file": "card-stand.lod1.glb",
+        "bytes": 3084,
+        "triangles": 540
+      }
+    },
+    {
+      "slug": "card-tray",
+      "size": 3856,
+      "lod1": {
+        "file": "card-tray.lod1.glb",
+        "bytes": 3856,
+        "triangles": 638
+      }
+    },
+    {
+      "slug": "center-finder",
+      "size": 1384,
+      "lod1": {
+        "file": "center-finder.lod1.glb",
+        "bytes": 1384,
+        "triangles": 32
+      }
+    },
+    {
+      "slug": "centrifuge-adapter",
+      "size": 9920,
+      "lod1": {
+        "file": "centrifuge-adapter.lod1.glb",
+        "bytes": 9920,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "centrifuge-tube-adapter",
+      "size": 7504,
+      "lod1": {
+        "file": "centrifuge-tube-adapter.lod1.glb",
+        "bytes": 7504,
+        "triangles": 1886
+      }
+    },
+    {
+      "slug": "chain-mount",
+      "size": 9208,
+      "lod1": {
+        "file": "chain-mount.lod1.glb",
+        "bytes": 9208,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "chicago-screw",
+      "size": 10744,
+      "lod1": {
+        "file": "chicago-screw.lod1.glb",
+        "bytes": 10744,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "circuit-trainer",
+      "size": 9936,
+      "lod1": {
+        "file": "circuit-trainer.lod1.glb",
+        "bytes": 9936,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "clamshell-dual-screen-handheld",
+      "size": 9672,
+      "lod1": {
+        "file": "clamshell-dual-screen-handheld.lod1.glb",
+        "bytes": 9672,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "coaster",
+      "size": 9556,
+      "lod1": {
+        "file": "coaster.lod1.glb",
+        "bytes": 9556,
+        "triangles": 2438
+      }
+    },
+    {
+      "slug": "coffee-funnel",
+      "size": 10456,
+      "lod1": {
+        "file": "coffee-funnel.lod1.glb",
+        "bytes": 10456,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "collar-stay",
+      "size": 2928,
+      "lod1": {
+        "file": "collar-stay.lod1.glb",
+        "bytes": 2928,
+        "triangles": 524
+      }
+    },
+    {
+      "slug": "comal-handle-guard",
+      "size": 5636,
+      "lod1": {
+        "file": "comal-handle-guard.lod1.glb",
+        "bytes": 5636,
+        "triangles": 1408
+      }
+    },
+    {
+      "slug": "compass-housing",
+      "size": 10392,
+      "lod1": {
+        "file": "compass-housing.lod1.glb",
+        "bytes": 10392,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "compliant-spring",
+      "size": 3636,
+      "lod1": {
+        "file": "compliant-spring.lod1.glb",
+        "bytes": 3636,
+        "triangles": 732
+      }
+    },
+    {
+      "slug": "condensate-fitting",
+      "size": 10532,
+      "lod1": {
+        "file": "condensate-fitting.lod1.glb",
+        "bytes": 10532,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "conduit-clip",
+      "size": 8052,
+      "lod1": {
+        "file": "conduit-clip.lod1.glb",
+        "bytes": 8052,
+        "triangles": 2060
+      }
+    },
+    {
+      "slug": "cookie-cutter",
+      "size": 1796,
+      "lod1": {
+        "file": "cookie-cutter.lod1.glb",
+        "bytes": 1796,
+        "triangles": 120
+      }
+    },
+    {
+      "slug": "cord-end",
+      "size": 10336,
+      "lod1": {
+        "file": "cord-end.lod1.glb",
+        "bytes": 10336,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "cord-guard",
+      "size": 6996,
+      "lod1": {
+        "file": "cord-guard.lod1.glb",
+        "bytes": 6996,
+        "triangles": 1800
+      }
+    },
+    {
+      "slug": "cord-lock",
+      "size": 5300,
+      "lod1": {
+        "file": "cord-lock.lod1.glb",
+        "bytes": 5300,
+        "triangles": 1134
+      }
+    },
+    {
+      "slug": "corner-bracket",
+      "size": 7824,
+      "lod1": {
+        "file": "corner-bracket.lod1.glb",
+        "bytes": 7824,
+        "triangles": 2052
+      }
+    },
+    {
+      "slug": "corner-clamp",
+      "size": 6800,
+      "lod1": {
+        "file": "corner-clamp.lod1.glb",
+        "bytes": 6800,
+        "triangles": 1684
+      }
+    },
+    {
+      "slug": "corset-busk",
+      "size": 9128,
+      "lod1": {
+        "file": "corset-busk.lod1.glb",
+        "bytes": 9128,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "cup-lid",
+      "size": 10120,
+      "lod1": {
+        "file": "cup-lid.lod1.glb",
+        "bytes": 10120,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "cupholder-adapter",
+      "size": 10236,
+      "lod1": {
+        "file": "cupholder-adapter.lod1.glb",
+        "bytes": 10236,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "curtain-bracket",
+      "size": 6812,
+      "lod1": {
+        "file": "curtain-bracket.lod1.glb",
+        "bytes": 6812,
+        "triangles": 1692
+      }
+    },
+    {
+      "slug": "custom-msh",
+      "size": 2012,
+      "lod1": {
+        "file": "custom-msh.lod1.glb",
+        "bytes": 2012,
+        "triangles": 240
+      },
+      "frames": [
+        {
+          "animation": "slot-fill",
+          "index": 0,
+          "file": "custom-msh.slot-fill.0.glb",
+          "bytes": 38944,
+          "triangles": 12622
+        },
+        {
+          "animation": "slot-fill",
+          "index": 1,
+          "file": "custom-msh.slot-fill.1.glb",
+          "bytes": 53900,
+          "triangles": 17686
+        },
+        {
+          "animation": "slot-fill",
+          "index": 2,
+          "file": "custom-msh.slot-fill.2.glb",
+          "bytes": 57004,
+          "triangles": 18482
+        },
+        {
+          "animation": "slot-fill",
+          "index": 3,
+          "file": "custom-msh.slot-fill.3.glb",
+          "bytes": 56948,
+          "triangles": 18182
+        },
+        {
+          "animation": "slot-fill",
+          "index": 4,
+          "file": "custom-msh.slot-fill.4.glb",
+          "bytes": 57048,
+          "triangles": 18232
+        },
+        {
+          "animation": "slot-fill",
+          "index": 5,
+          "file": "custom-msh.slot-fill.5.glb",
+          "bytes": 56620,
+          "triangles": 17982
+        },
+        {
+          "animation": "stack-up",
+          "index": 0,
+          "file": "custom-msh.stack-up.0.glb",
+          "bytes": 30940,
+          "triangles": 9656
+        },
+        {
+          "animation": "stack-up",
+          "index": 1,
+          "file": "custom-msh.stack-up.1.glb",
+          "bytes": 58428,
+          "triangles": 19068
+        },
+        {
+          "animation": "stack-up",
+          "index": 2,
+          "file": "custom-msh.stack-up.2.glb",
+          "bytes": 56728,
+          "triangles": 18312
+        },
+        {
+          "animation": "stack-up",
+          "index": 3,
+          "file": "custom-msh.stack-up.3.glb",
+          "bytes": 56988,
+          "triangles": 18442
+        },
+        {
+          "animation": "stack-up",
+          "index": 4,
+          "file": "custom-msh.stack-up.4.glb",
+          "bytes": 56864,
+          "triangles": 18032
+        }
+      ]
+    },
+    {
+      "slug": "cutlery-tray",
+      "size": 3140,
+      "lod1": {
+        "file": "cutlery-tray.lod1.glb",
+        "bytes": 3140,
+        "triangles": 604
+      }
+    },
+    {
+      "slug": "cuvette-rack",
+      "size": 3352,
+      "lod1": {
+        "file": "cuvette-rack.lod1.glb",
+        "bytes": 3352,
+        "triangles": 588
+      }
+    },
+    {
+      "slug": "cuvette-sleeve",
+      "size": 2812,
+      "lod1": {
+        "file": "cuvette-sleeve.lod1.glb",
+        "bytes": 2812,
+        "triangles": 540
+      }
+    },
+    {
+      "slug": "d-ring",
+      "size": 4992,
+      "lod1": {
+        "file": "d-ring.lod1.glb",
+        "bytes": 4992,
+        "triangles": 1060
+      }
+    },
+    {
+      "slug": "deck-box",
+      "size": 6424,
+      "lod1": {
+        "file": "deck-box.lod1.glb",
+        "bytes": 6424,
+        "triangles": 1608
+      }
+    },
+    {
+      "slug": "deck-gland",
+      "size": 9692,
+      "lod1": {
+        "file": "deck-gland.lod1.glb",
+        "bytes": 9692,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "desk-grommet",
+      "size": 9404,
+      "lod1": {
+        "file": "desk-grommet.lod1.glb",
+        "bytes": 9404,
+        "triangles": 2282
+      }
+    },
+    {
+      "slug": "desk-riser",
+      "size": 7832,
+      "lod1": {
+        "file": "desk-riser.lod1.glb",
+        "bytes": 7832,
+        "triangles": 2108
+      }
+    },
+    {
+      "slug": "devboard-tray",
+      "size": 9416,
+      "lod1": {
+        "file": "devboard-tray.lod1.glb",
+        "bytes": 9416,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "device-stand",
+      "size": 4980,
+      "lod1": {
+        "file": "device-stand.lod1.glb",
+        "bytes": 4980,
+        "triangles": 1140
+      }
+    },
+    {
+      "slug": "dice-tower",
+      "size": 1780,
+      "lod1": {
+        "file": "dice-tower.lod1.glb",
+        "bytes": 1780,
+        "triangles": 148
+      }
+    },
+    {
+      "slug": "din-module",
+      "size": 3312,
+      "lod1": {
+        "file": "din-module.lod1.glb",
+        "bytes": 3312,
+        "triangles": 612
+      }
+    },
+    {
       "slug": "din-rail-clip",
-      "size": 2432,
+      "size": 6336,
       "lod1": {
         "file": "din-rail-clip.lod1.glb",
-        "bytes": 2432,
-        "triangles": 334
+        "bytes": 6336,
+        "triangles": 1504
+      }
+    },
+    {
+      "slug": "din-relay",
+      "size": 3168,
+      "lod1": {
+        "file": "din-relay.lod1.glb",
+        "bytes": 3168,
+        "triangles": 564
+      }
+    },
+    {
+      "slug": "din-terminal-comb",
+      "size": 9580,
+      "lod1": {
+        "file": "din-terminal-comb.lod1.glb",
+        "bytes": 9580,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "dock-hook",
+      "size": 5500,
+      "lod1": {
+        "file": "dock-hook.lod1.glb",
+        "bytes": 5500,
+        "triangles": 1336
+      }
+    },
+    {
+      "slug": "door-wedge",
+      "size": 2096,
+      "lod1": {
+        "file": "door-wedge.lod1.glb",
+        "bytes": 2096,
+        "triangles": 280
+      }
+    },
+    {
+      "slug": "dosing-aid",
+      "size": 4116,
+      "lod1": {
+        "file": "dosing-aid.lod1.glb",
+        "bytes": 4116,
+        "triangles": 816
+      }
+    },
+    {
+      "slug": "dosing-holder",
+      "size": 6112,
+      "lod1": {
+        "file": "dosing-holder.lod1.glb",
+        "bytes": 6112,
+        "triangles": 1372
+      }
+    },
+    {
+      "slug": "dovetail-joint",
+      "size": 1360,
+      "lod1": {
+        "file": "dovetail-joint.lod1.glb",
+        "bytes": 1360,
+        "triangles": 28
+      }
+    },
+    {
+      "slug": "dovetail-slide",
+      "size": 6260,
+      "lod1": {
+        "file": "dovetail-slide.lod1.glb",
+        "bytes": 6260,
+        "triangles": 1548
+      }
+    },
+    {
+      "slug": "downspout-adapter",
+      "size": 10864,
+      "lod1": {
+        "file": "downspout-adapter.lod1.glb",
+        "bytes": 10864,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "drag-chain",
+      "size": 9272,
+      "lod1": {
+        "file": "drag-chain.lod1.glb",
+        "bytes": 9272,
+        "triangles": 2424
+      }
+    },
+    {
+      "slug": "drain-trap",
+      "size": 11148,
+      "lod1": {
+        "file": "drain-trap.lod1.glb",
+        "bytes": 11148,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "drawer-divider",
+      "size": 7640,
+      "lod1": {
+        "file": "drawer-divider.lod1.glb",
+        "bytes": 7640,
+        "triangles": 2196
+      }
+    },
+    {
+      "slug": "dressing-aid",
+      "size": 9920,
+      "lod1": {
+        "file": "dressing-aid.lod1.glb",
+        "bytes": 9920,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "drill-fence",
+      "size": 4496,
+      "lod1": {
+        "file": "drill-fence.lod1.glb",
+        "bytes": 4496,
+        "triangles": 1052
+      }
+    },
+    {
+      "slug": "drill-guide",
+      "size": 9140,
+      "lod1": {
+        "file": "drill-guide.lod1.glb",
+        "bytes": 9140,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "drip-chamber-holder",
+      "size": 4100,
+      "lod1": {
+        "file": "drip-chamber-holder.lod1.glb",
+        "bytes": 4100,
+        "triangles": 792
+      }
+    },
+    {
+      "slug": "drip-fitting",
+      "size": 10244,
+      "lod1": {
+        "file": "drip-fitting.lod1.glb",
+        "bytes": 10244,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "drip-manifold",
+      "size": 9824,
+      "lod1": {
+        "file": "drip-manifold.lod1.glb",
+        "bytes": 9824,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "drum-hardware",
+      "size": 10164,
+      "lod1": {
+        "file": "drum-hardware.lod1.glb",
+        "bytes": 10164,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "dryer-holster",
+      "size": 9704,
+      "lod1": {
+        "file": "dryer-holster.lod1.glb",
+        "bytes": 9704,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "dryer-manifold",
+      "size": 10256,
+      "lod1": {
+        "file": "dryer-manifold.lod1.glb",
+        "bytes": 10256,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "duct-adapter",
+      "size": 10408,
+      "lod1": {
+        "file": "duct-adapter.lod1.glb",
+        "bytes": 10408,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "dust-shroud",
+      "size": 9728,
+      "lod1": {
+        "file": "dust-shroud.lod1.glb",
+        "bytes": 9728,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "edge-guard",
+      "size": 6268,
+      "lod1": {
+        "file": "edge-guard.lod1.glb",
+        "bytes": 6268,
+        "triangles": 1436
+      }
+    },
+    {
+      "slug": "electronics-enclosure",
+      "size": 9608,
+      "lod1": {
+        "file": "electronics-enclosure.lod1.glb",
+        "bytes": 9608,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "enclosure-vent",
+      "size": 9716,
+      "lod1": {
+        "file": "enclosure-vent.lod1.glb",
+        "bytes": 9716,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "endstop-mount",
+      "size": 9152,
+      "lod1": {
+        "file": "endstop-mount.lod1.glb",
+        "bytes": 9152,
+        "triangles": 2432
+      }
+    },
+    {
+      "slug": "engine-clip",
+      "size": 5596,
+      "lod1": {
+        "file": "engine-clip.lod1.glb",
+        "bytes": 5596,
+        "triangles": 1260
+      }
+    },
+    {
+      "slug": "epaulette-board",
+      "size": 3016,
+      "lod1": {
+        "file": "epaulette-board.lod1.glb",
+        "bytes": 3016,
+        "triangles": 532
+      }
+    },
+    {
+      "slug": "extrusion-hyperobject",
+      "size": 1328,
+      "lod1": {
+        "file": "extrusion-hyperobject.lod1.glb",
+        "bytes": 1328,
+        "triangles": 28
       }
     },
     {
       "slug": "faircap-filter",
-      "size": 8632,
+      "size": 10640,
       "lod1": {
         "file": "faircap-filter.lod1.glb",
-        "bytes": 8632,
-        "triangles": 2200
+        "bytes": 10640,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "fan-adapter",
+      "size": 9748,
+      "lod1": {
+        "file": "fan-adapter.lod1.glb",
+        "bytes": 9748,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "fan-duct",
+      "size": 10436,
+      "lod1": {
+        "file": "fan-duct.lod1.glb",
+        "bytes": 10436,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "fan-filter",
+      "size": 9792,
+      "lod1": {
+        "file": "fan-filter.lod1.glb",
+        "bytes": 9792,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "fascinator-base",
+      "size": 10376,
+      "lod1": {
+        "file": "fascinator-base.lod1.glb",
+        "bytes": 10376,
+        "triangles": 2500
       }
     },
     {
       "slug": "fasteners",
-      "size": 10504,
+      "size": 9760,
       "lod1": {
         "file": "fasteners.lod1.glb",
-        "bytes": 10504,
+        "bytes": 9760,
         "triangles": 2500
-      },
-      "lod0": {
-        "file": "fasteners.lod0.glb",
-        "bytes": 22712,
-        "triangles": 6550
+      }
+    },
+    {
+      "slug": "featherboard",
+      "size": 10016,
+      "lod1": {
+        "file": "featherboard.lod1.glb",
+        "bytes": 10016,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "ferro-handle",
+      "size": 9856,
+      "lod1": {
+        "file": "ferro-handle.lod1.glb",
+        "bytes": 9856,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "figure-child",
+      "size": 9924,
+      "lod1": {
+        "file": "figure-child.lod1.glb",
+        "bytes": 9924,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "filter-step-ring",
+      "size": 10480,
+      "lod1": {
+        "file": "filter-step-ring.lod1.glb",
+        "bytes": 10480,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "filter-straw",
+      "size": 11036,
+      "lod1": {
+        "file": "filter-straw.lod1.glb",
+        "bytes": 11036,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "filter-wheel",
+      "size": 10312,
+      "lod1": {
+        "file": "filter-wheel.lod1.glb",
+        "bytes": 10312,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "finger-guard",
+      "size": 2692,
+      "lod1": {
+        "file": "finger-guard.lod1.glb",
+        "bytes": 2692,
+        "triangles": 444
+      }
+    },
+    {
+      "slug": "finray-gripper",
+      "size": 5084,
+      "lod1": {
+        "file": "finray-gripper.lod1.glb",
+        "bytes": 5084,
+        "triangles": 1200
+      }
+    },
+    {
+      "slug": "flange-plate",
+      "size": 10380,
+      "lod1": {
+        "file": "flange-plate.lod1.glb",
+        "bytes": 10380,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "flask-clamp",
+      "size": 6744,
+      "lod1": {
+        "file": "flask-clamp.lod1.glb",
+        "bytes": 6744,
+        "triangles": 1636
+      }
+    },
+    {
+      "slug": "flexure-mount",
+      "size": 7732,
+      "lod1": {
+        "file": "flexure-mount.lod1.glb",
+        "bytes": 7732,
+        "triangles": 2064
+      }
+    },
+    {
+      "slug": "folding-board",
+      "size": 9224,
+      "lod1": {
+        "file": "folding-board.lod1.glb",
+        "bytes": 9224,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "fpv-antenna-mount",
+      "size": 10432,
+      "lod1": {
+        "file": "fpv-antenna-mount.lod1.glb",
+        "bytes": 10432,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "fpv-camera-cage",
+      "size": 8812,
+      "lod1": {
+        "file": "fpv-camera-cage.lod1.glb",
+        "bytes": 8812,
+        "triangles": 2186
+      }
+    },
+    {
+      "slug": "frag-plug",
+      "size": 10348,
+      "lod1": {
+        "file": "frag-plug.lod1.glb",
+        "bytes": 10348,
+        "triangles": 2500
       }
     },
     {
       "slug": "framing-hyperobject",
-      "size": 4676,
+      "size": 1928,
       "lod1": {
         "file": "framing-hyperobject.lod1.glb",
-        "bytes": 4676,
-        "triangles": 980
+        "bytes": 1948,
+        "triangles": 216
+      },
+      "frames": [
+        {
+          "animation": "depth-sweep",
+          "index": 0,
+          "file": "framing-hyperobject.depth-sweep.0.glb",
+          "bytes": 1944,
+          "triangles": 216
+        },
+        {
+          "animation": "depth-sweep",
+          "index": 1,
+          "file": "framing-hyperobject.depth-sweep.1.glb",
+          "bytes": 1952,
+          "triangles": 216
+        },
+        {
+          "animation": "depth-sweep",
+          "index": 2,
+          "file": "framing-hyperobject.depth-sweep.2.glb",
+          "bytes": 1972,
+          "triangles": 216
+        },
+        {
+          "animation": "depth-sweep",
+          "index": 3,
+          "file": "framing-hyperobject.depth-sweep.3.glb",
+          "bytes": 1976,
+          "triangles": 216
+        },
+        {
+          "animation": "depth-sweep",
+          "index": 4,
+          "file": "framing-hyperobject.depth-sweep.4.glb",
+          "bytes": 1972,
+          "triangles": 216
+        },
+        {
+          "animation": "resize",
+          "index": 0,
+          "file": "framing-hyperobject.resize.0.glb",
+          "bytes": 1948,
+          "triangles": 216
+        },
+        {
+          "animation": "resize",
+          "index": 1,
+          "file": "framing-hyperobject.resize.1.glb",
+          "bytes": 1948,
+          "triangles": 216
+        },
+        {
+          "animation": "resize",
+          "index": 2,
+          "file": "framing-hyperobject.resize.2.glb",
+          "bytes": 1936,
+          "triangles": 216
+        },
+        {
+          "animation": "resize",
+          "index": 3,
+          "file": "framing-hyperobject.resize.3.glb",
+          "bytes": 1928,
+          "triangles": 216
+        },
+        {
+          "animation": "resize",
+          "index": 4,
+          "file": "framing-hyperobject.resize.4.glb",
+          "bytes": 2640,
+          "triangles": 436
+        },
+        {
+          "animation": "resize",
+          "index": 5,
+          "file": "framing-hyperobject.resize.5.glb",
+          "bytes": 1932,
+          "triangles": 216
+        }
+      ]
+    },
+    {
+      "slug": "french-cleat",
+      "size": 2484,
+      "lod1": {
+        "file": "french-cleat.lod1.glb",
+        "bytes": 2484,
+        "triangles": 384
+      }
+    },
+    {
+      "slug": "fridge-dispenser",
+      "size": 1508,
+      "lod1": {
+        "file": "fridge-dispenser.lod1.glb",
+        "bytes": 1508,
+        "triangles": 52
+      }
+    },
+    {
+      "slug": "frog-closure",
+      "size": 9816,
+      "lod1": {
+        "file": "frog-closure.lod1.glb",
+        "bytes": 9816,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "funnel",
+      "size": 10840,
+      "lod1": {
+        "file": "funnel.lod1.glb",
+        "bytes": 10840,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "garment-clip",
+      "size": 4892,
+      "lod1": {
+        "file": "garment-clip.lod1.glb",
+        "bytes": 4892,
+        "triangles": 1068
+      }
+    },
+    {
+      "slug": "garment-eyelet",
+      "size": 10012,
+      "lod1": {
+        "file": "garment-eyelet.lod1.glb",
+        "bytes": 10012,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "garment-hanger",
+      "size": 9384,
+      "lod1": {
+        "file": "garment-hanger.lod1.glb",
+        "bytes": 9384,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "garment-hanger.lod0.glb",
+        "bytes": 56920,
+        "triangles": 18734
+      },
+      "frames": [
+        {
+          "animation": "bar-drop",
+          "index": 0,
+          "file": "garment-hanger.bar-drop.0.glb",
+          "bytes": 56564,
+          "triangles": 18260
+        },
+        {
+          "animation": "bar-drop",
+          "index": 1,
+          "file": "garment-hanger.bar-drop.1.glb",
+          "bytes": 56792,
+          "triangles": 18352
+        },
+        {
+          "animation": "bar-drop",
+          "index": 2,
+          "file": "garment-hanger.bar-drop.2.glb",
+          "bytes": 57008,
+          "triangles": 18320
+        },
+        {
+          "animation": "bar-drop",
+          "index": 3,
+          "file": "garment-hanger.bar-drop.3.glb",
+          "bytes": 56748,
+          "triangles": 18326
+        },
+        {
+          "animation": "bar-drop",
+          "index": 4,
+          "file": "garment-hanger.bar-drop.4.glb",
+          "bytes": 56976,
+          "triangles": 18334
+        },
+        {
+          "animation": "bar-drop",
+          "index": 5,
+          "file": "garment-hanger.bar-drop.5.glb",
+          "bytes": 56616,
+          "triangles": 18334
+        },
+        {
+          "animation": "shoulder-span",
+          "index": 0,
+          "file": "garment-hanger.shoulder-span.0.glb",
+          "bytes": 56832,
+          "triangles": 17552
+        },
+        {
+          "animation": "shoulder-span",
+          "index": 1,
+          "file": "garment-hanger.shoulder-span.1.glb",
+          "bytes": 56736,
+          "triangles": 17848
+        },
+        {
+          "animation": "shoulder-span",
+          "index": 2,
+          "file": "garment-hanger.shoulder-span.2.glb",
+          "bytes": 56880,
+          "triangles": 18120
+        },
+        {
+          "animation": "shoulder-span",
+          "index": 3,
+          "file": "garment-hanger.shoulder-span.3.glb",
+          "bytes": 57152,
+          "triangles": 18412
+        },
+        {
+          "animation": "shoulder-span",
+          "index": 4,
+          "file": "garment-hanger.shoulder-span.4.glb",
+          "bytes": 57084,
+          "triangles": 18510
+        }
+      ]
+    },
+    {
+      "slug": "garment-stand",
+      "size": 9936,
+      "lod1": {
+        "file": "garment-stand.lod1.glb",
+        "bytes": 9936,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "garter-clip",
+      "size": 9984,
+      "lod1": {
+        "file": "garter-clip.lod1.glb",
+        "bytes": 9984,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "gauge-gonogo",
+      "size": 7052,
+      "lod1": {
+        "file": "gauge-gonogo.lod1.glb",
+        "bytes": 7052,
+        "triangles": 1772
+      }
+    },
+    {
+      "slug": "gauge-organizer",
+      "size": 9424,
+      "lod1": {
+        "file": "gauge-organizer.lod1.glb",
+        "bytes": 9424,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "gauge-pod",
+      "size": 7068,
+      "lod1": {
+        "file": "gauge-pod.lod1.glb",
+        "bytes": 7068,
+        "triangles": 1628
+      }
+    },
+    {
+      "slug": "gear-kit",
+      "size": 9976,
+      "lod1": {
+        "file": "gear-kit.lod1.glb",
+        "bytes": 9976,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "gear-rack",
+      "size": 1980,
+      "lod1": {
+        "file": "gear-rack.lod1.glb",
+        "bytes": 1980,
+        "triangles": 204
       }
     },
     {
       "slug": "gear-reducer",
-      "size": 4168,
+      "size": 9240,
       "lod1": {
         "file": "gear-reducer.lod1.glb",
-        "bytes": 4168,
-        "triangles": 812
-      }
+        "bytes": 9240,
+        "triangles": 2482
+      },
+      "lod0": {
+        "file": "gear-reducer.lod0.glb",
+        "bytes": 27956,
+        "triangles": 8436
+      },
+      "frames": [
+        {
+          "animation": "ratio-sweep",
+          "index": 0,
+          "file": "gear-reducer.ratio-sweep.0.glb",
+          "bytes": 21508,
+          "triangles": 6300
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 1,
+          "file": "gear-reducer.ratio-sweep.1.glb",
+          "bytes": 25088,
+          "triangles": 7460
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 2,
+          "file": "gear-reducer.ratio-sweep.2.glb",
+          "bytes": 28132,
+          "triangles": 8468
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 3,
+          "file": "gear-reducer.ratio-sweep.3.glb",
+          "bytes": 30656,
+          "triangles": 9220
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 4,
+          "file": "gear-reducer.ratio-sweep.4.glb",
+          "bytes": 34252,
+          "triangles": 10344
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 5,
+          "file": "gear-reducer.ratio-sweep.5.glb",
+          "bytes": 37264,
+          "triangles": 11356
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 6,
+          "file": "gear-reducer.ratio-sweep.6.glb",
+          "bytes": 40508,
+          "triangles": 12364
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 7,
+          "file": "gear-reducer.ratio-sweep.7.glb",
+          "bytes": 43692,
+          "triangles": 13372
+        },
+        {
+          "animation": "stack-height",
+          "index": 0,
+          "file": "gear-reducer.stack-height.0.glb",
+          "bytes": 26856,
+          "triangles": 8436
+        },
+        {
+          "animation": "stack-height",
+          "index": 1,
+          "file": "gear-reducer.stack-height.1.glb",
+          "bytes": 27956,
+          "triangles": 8436
+        },
+        {
+          "animation": "stack-height",
+          "index": 2,
+          "file": "gear-reducer.stack-height.2.glb",
+          "bytes": 27956,
+          "triangles": 8436
+        },
+        {
+          "animation": "stack-height",
+          "index": 3,
+          "file": "gear-reducer.stack-height.3.glb",
+          "bytes": 27980,
+          "triangles": 8436
+        },
+        {
+          "animation": "stack-height",
+          "index": 4,
+          "file": "gear-reducer.stack-height.4.glb",
+          "bytes": 27980,
+          "triangles": 8436
+        }
+      ]
     },
     {
       "slug": "gears",
-      "size": 9428,
+      "size": 8488,
       "lod1": {
         "file": "gears.lod1.glb",
-        "bytes": 9428,
-        "triangles": 2368
+        "bytes": 8488,
+        "triangles": 2104
+      }
+    },
+    {
+      "slug": "geodesic-hub",
+      "size": 10800,
+      "lod1": {
+        "file": "geodesic-hub.lod1.glb",
+        "bytes": 10800,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "gimbal-holder",
+      "size": 10076,
+      "lod1": {
+        "file": "gimbal-holder.lod1.glb",
+        "bytes": 10076,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "glasses-holder",
+      "size": 8352,
+      "lod1": {
+        "file": "glasses-holder.lod1.glb",
+        "bytes": 8352,
+        "triangles": 2180
       }
     },
     {
       "slug": "glia-diagnostic",
-      "size": 3140,
+      "size": 4060,
       "lod1": {
         "file": "glia-diagnostic.lod1.glb",
-        "bytes": 3140,
-        "triangles": 508
+        "bytes": 4060,
+        "triangles": 784
+      }
+    },
+    {
+      "slug": "golf-accessory",
+      "size": 9508,
+      "lod1": {
+        "file": "golf-accessory.lod1.glb",
+        "bytes": 9508,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "gopro-arm",
+      "size": 9936,
+      "lod1": {
+        "file": "gopro-arm.lod1.glb",
+        "bytes": 9936,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "gopro-ballhead",
+      "size": 10232,
+      "lod1": {
+        "file": "gopro-ballhead.lod1.glb",
+        "bytes": 10232,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "gopro-mount",
+      "size": 8712,
+      "lod1": {
+        "file": "gopro-mount.lod1.glb",
+        "bytes": 8712,
+        "triangles": 2212
+      }
+    },
+    {
+      "slug": "graft-clip",
+      "size": 5924,
+      "lod1": {
+        "file": "graft-clip.lod1.glb",
+        "bytes": 5924,
+        "triangles": 1284
+      }
+    },
+    {
+      "slug": "grid-hub",
+      "size": 10312,
+      "lod1": {
+        "file": "grid-hub.lod1.glb",
+        "bytes": 10312,
+        "triangles": 2500
       }
     },
     {
       "slug": "gridfinity",
-      "size": 3896,
+      "size": 10288,
       "lod1": {
         "file": "gridfinity.lod1.glb",
-        "bytes": 3896,
-        "triangles": 772
-      }
-    },
-    {
-      "slug": "julia-vase",
-      "size": 11484,
-      "lod1": {
-        "file": "julia-vase.lod1.glb",
-        "bytes": 11484,
+        "bytes": 10288,
         "triangles": 2500
-      },
-      "lod0": {
-        "file": "julia-vase.lod0.glb",
-        "bytes": 56584,
-        "triangles": 15760
       }
     },
     {
-      "slug": "maze",
-      "size": 3568,
+      "slug": "gridfinity-baseplate",
+      "size": 10244,
       "lod1": {
-        "file": "maze.lod1.glb",
-        "bytes": 3568,
-        "triangles": 664
+        "file": "gridfinity-baseplate.lod1.glb",
+        "bytes": 10244,
+        "triangles": 2500
       }
     },
     {
-      "slug": "microscope-slide-holder",
-      "size": 4772,
+      "slug": "gridfinity-tool",
+      "size": 10008,
       "lod1": {
-        "file": "microscope-slide-holder.lod1.glb",
-        "bytes": 4772,
-        "triangles": 1142
+        "file": "gridfinity-tool.lod1.glb",
+        "bytes": 10008,
+        "triangles": 2500
       }
     },
     {
-      "slug": "motor-mount",
-      "size": 4732,
+      "slug": "grip-aid",
+      "size": 6452,
       "lod1": {
-        "file": "motor-mount.lod1.glb",
-        "bytes": 4732,
-        "triangles": 972
+        "file": "grip-aid.lod1.glb",
+        "bytes": 6452,
+        "triangles": 1556
       }
     },
     {
-      "slug": "parametric-connector",
+      "slug": "growler-cap",
+      "size": 10532,
+      "lod1": {
+        "file": "growler-cap.lod1.glb",
+        "bytes": 10532,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "gt2-idler",
+      "size": 8356,
+      "lod1": {
+        "file": "gt2-idler.lod1.glb",
+        "bytes": 8356,
+        "triangles": 2016
+      }
+    },
+    {
+      "slug": "guy-wire-marker",
+      "size": 9628,
+      "lod1": {
+        "file": "guy-wire-marker.lod1.glb",
+        "bytes": 9628,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "guyline-adapter",
+      "size": 10152,
+      "lod1": {
+        "file": "guyline-adapter.lod1.glb",
+        "bytes": 10152,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "handwheel",
+      "size": 10248,
+      "lod1": {
+        "file": "handwheel.lod1.glb",
+        "bytes": 10248,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "hasp",
+      "size": 9632,
+      "lod1": {
+        "file": "hasp.lod1.glb",
+        "bytes": 9632,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "hat-size-reducer",
+      "size": 3316,
+      "lod1": {
+        "file": "hat-size-reducer.lod1.glb",
+        "bytes": 3316,
+        "triangles": 556
+      }
+    },
+    {
+      "slug": "headband-blank",
+      "size": 9644,
+      "lod1": {
+        "file": "headband-blank.lod1.glb",
+        "bytes": 9644,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "headphone-hook",
+      "size": 9440,
+      "lod1": {
+        "file": "headphone-hook.lod1.glb",
+        "bytes": 9440,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "headphone-stand",
+      "size": 9720,
+      "lod1": {
+        "file": "headphone-stand.lod1.glb",
+        "bytes": 9720,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "heel-tip-blank",
+      "size": 8676,
+      "lod1": {
+        "file": "heel-tip-blank.lod1.glb",
+        "bytes": 8676,
+        "triangles": 2016
+      }
+    },
+    {
+      "slug": "hinge-hyperobject",
+      "size": 1420,
+      "lod1": {
+        "file": "hinge-hyperobject.lod1.glb",
+        "bytes": 1420,
+        "triangles": 28
+      }
+    },
+    {
+      "slug": "hitch-plug-holder",
+      "size": 4432,
+      "lod1": {
+        "file": "hitch-plug-holder.lod1.glb",
+        "bytes": 4432,
+        "triangles": 956
+      }
+    },
+    {
+      "slug": "hive-frame-spacer",
+      "size": 4804,
+      "lod1": {
+        "file": "hive-frame-spacer.lod1.glb",
+        "bytes": 4804,
+        "triangles": 1188
+      }
+    },
+    {
+      "slug": "hook-and-eye",
       "size": 10020,
       "lod1": {
-        "file": "parametric-connector.lod1.glb",
+        "file": "hook-and-eye.lod1.glb",
         "bytes": 10020,
         "triangles": 2500
       },
       "lod0": {
-        "file": "parametric-connector.lod0.glb",
-        "bytes": 18040,
-        "triangles": 4994
+        "file": "hook-and-eye.lod0.glb",
+        "bytes": 56596,
+        "triangles": 17164
+      },
+      "frames": [
+        {
+          "animation": "size-sweep",
+          "index": 0,
+          "file": "hook-and-eye.size-sweep.0.glb",
+          "bytes": 56848,
+          "triangles": 16790
+        },
+        {
+          "animation": "size-sweep",
+          "index": 1,
+          "file": "hook-and-eye.size-sweep.1.glb",
+          "bytes": 56740,
+          "triangles": 17090
+        },
+        {
+          "animation": "size-sweep",
+          "index": 2,
+          "file": "hook-and-eye.size-sweep.2.glb",
+          "bytes": 56608,
+          "triangles": 17332
+        },
+        {
+          "animation": "size-sweep",
+          "index": 3,
+          "file": "hook-and-eye.size-sweep.3.glb",
+          "bytes": 56496,
+          "triangles": 17580
+        },
+        {
+          "animation": "size-sweep",
+          "index": 4,
+          "file": "hook-and-eye.size-sweep.4.glb",
+          "bytes": 56600,
+          "triangles": 17678
+        },
+        {
+          "animation": "tape-grow",
+          "index": 0,
+          "file": "hook-and-eye.tape-grow.0.glb",
+          "bytes": 56660,
+          "triangles": 17372
+        },
+        {
+          "animation": "tape-grow",
+          "index": 1,
+          "file": "hook-and-eye.tape-grow.1.glb",
+          "bytes": 56576,
+          "triangles": 16748
+        },
+        {
+          "animation": "tape-grow",
+          "index": 2,
+          "file": "hook-and-eye.tape-grow.2.glb",
+          "bytes": 56568,
+          "triangles": 16966
+        },
+        {
+          "animation": "tape-grow",
+          "index": 3,
+          "file": "hook-and-eye.tape-grow.3.glb",
+          "bytes": 57044,
+          "triangles": 16924
+        },
+        {
+          "animation": "tape-grow",
+          "index": 4,
+          "file": "hook-and-eye.tape-grow.4.glb",
+          "bytes": 56592,
+          "triangles": 16998
+        },
+        {
+          "animation": "tape-grow",
+          "index": 5,
+          "file": "hook-and-eye.tape-grow.5.glb",
+          "bytes": 56604,
+          "triangles": 17000
+        }
+      ]
+    },
+    {
+      "slug": "hook-loop-tape",
+      "size": 10316,
+      "lod1": {
+        "file": "hook-loop-tape.lod1.glb",
+        "bytes": 10316,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "hopper-feeder",
+      "size": 10348,
+      "lod1": {
+        "file": "hopper-feeder.lod1.glb",
+        "bytes": 10348,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "hose-adapter",
+      "size": 10840,
+      "lod1": {
+        "file": "hose-adapter.lod1.glb",
+        "bytes": 10840,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "hose-reel",
+      "size": 10596,
+      "lod1": {
+        "file": "hose-reel.lod1.glb",
+        "bytes": 10596,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "idler-608",
+      "size": 10156,
+      "lod1": {
+        "file": "idler-608.lod1.glb",
+        "bytes": 10156,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "implicit-lattice-hyperobject",
+      "size": 28316,
+      "lod1": {
+        "file": "implicit-lattice-hyperobject.lod1.glb",
+        "bytes": 28316,
+        "triangles": 12365
+      }
+    },
+    {
+      "slug": "indicator-base",
+      "size": 9988,
+      "lod1": {
+        "file": "indicator-base.lod1.glb",
+        "bytes": 9988,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "indicator-holder",
+      "size": 10080,
+      "lod1": {
+        "file": "indicator-holder.lod1.glb",
+        "bytes": 10080,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "insert-jig",
+      "size": 9896,
+      "lod1": {
+        "file": "insert-jig.lod1.glb",
+        "bytes": 9896,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "instrument-hook",
+      "size": 4812,
+      "lod1": {
+        "file": "instrument-hook.lod1.glb",
+        "bytes": 4812,
+        "triangles": 1068
+      }
+    },
+    {
+      "slug": "invisible-zipper",
+      "size": 8424,
+      "lod1": {
+        "file": "invisible-zipper.lod1.glb",
+        "bytes": 8424,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "invisible-zipper.lod0.glb",
+        "bytes": 56252,
+        "triangles": 19416
+      },
+      "frames": [
+        {
+          "animation": "coil-gauge",
+          "index": 0,
+          "file": "invisible-zipper.coil-gauge.0.glb",
+          "bytes": 55960,
+          "triangles": 19728
+        },
+        {
+          "animation": "coil-gauge",
+          "index": 1,
+          "file": "invisible-zipper.coil-gauge.1.glb",
+          "bytes": 56236,
+          "triangles": 19440
+        },
+        {
+          "animation": "coil-gauge",
+          "index": 2,
+          "file": "invisible-zipper.coil-gauge.2.glb",
+          "bytes": 56188,
+          "triangles": 19254
+        },
+        {
+          "animation": "coil-gauge",
+          "index": 3,
+          "file": "invisible-zipper.coil-gauge.3.glb",
+          "bytes": 55956,
+          "triangles": 18980
+        },
+        {
+          "animation": "coil-gauge",
+          "index": 4,
+          "file": "invisible-zipper.coil-gauge.4.glb",
+          "bytes": 56416,
+          "triangles": 18782
+        },
+        {
+          "animation": "length-sweep",
+          "index": 0,
+          "file": "invisible-zipper.length-sweep.0.glb",
+          "bytes": 56176,
+          "triangles": 17856
+        },
+        {
+          "animation": "length-sweep",
+          "index": 1,
+          "file": "invisible-zipper.length-sweep.1.glb",
+          "bytes": 55720,
+          "triangles": 19034
+        },
+        {
+          "animation": "length-sweep",
+          "index": 2,
+          "file": "invisible-zipper.length-sweep.2.glb",
+          "bytes": 56124,
+          "triangles": 19976
+        },
+        {
+          "animation": "length-sweep",
+          "index": 3,
+          "file": "invisible-zipper.length-sweep.3.glb",
+          "bytes": 56492,
+          "triangles": 20904
+        },
+        {
+          "animation": "length-sweep",
+          "index": 4,
+          "file": "invisible-zipper.length-sweep.4.glb",
+          "bytes": 55944,
+          "triangles": 21676
+        },
+        {
+          "animation": "length-sweep",
+          "index": 5,
+          "file": "invisible-zipper.length-sweep.5.glb",
+          "bytes": 56468,
+          "triangles": 22416
+        }
+      ]
+    },
+    {
+      "slug": "iv-pole-clamp",
+      "size": 6316,
+      "lod1": {
+        "file": "iv-pole-clamp.lod1.glb",
+        "bytes": 6316,
+        "triangles": 1520
+      }
+    },
+    {
+      "slug": "jar-adapter",
+      "size": 10528,
+      "lod1": {
+        "file": "jar-adapter.lod1.glb",
+        "bytes": 10528,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "jar-rack",
+      "size": 8512,
+      "lod1": {
+        "file": "jar-rack.lod1.glb",
+        "bytes": 8512,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "jbox-ears",
+      "size": 9564,
+      "lod1": {
+        "file": "jbox-ears.lod1.glb",
+        "bytes": 9564,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "jeans-button",
+      "size": 10196,
+      "lod1": {
+        "file": "jeans-button.lod1.glb",
+        "bytes": 10196,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "jewelry-blank",
+      "size": 10620,
+      "lod1": {
+        "file": "jewelry-blank.lod1.glb",
+        "bytes": 10620,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "julia-vase",
+      "size": 11568,
+      "lod1": {
+        "file": "julia-vase.lod1.glb",
+        "bytes": 11568,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "key-organizer",
+      "size": 9472,
+      "lod1": {
+        "file": "key-organizer.lod1.glb",
+        "bytes": 9472,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "keytag",
+      "size": 9588,
+      "lod1": {
+        "file": "keytag.lod1.glb",
+        "bytes": 9588,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "keyv2",
+      "size": 10696,
+      "lod1": {
+        "file": "keyv2.lod1.glb",
+        "bytes": 10696,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "kinematic-mount",
+      "size": 10148,
+      "lod1": {
+        "file": "kinematic-mount.lod1.glb",
+        "bytes": 10148,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "kiss-lock-frame",
+      "size": 9292,
+      "lod1": {
+        "file": "kiss-lock-frame.lod1.glb",
+        "bytes": 9292,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "knob-dshaft",
+      "size": 10204,
+      "lod1": {
+        "file": "knob-dshaft.lod1.glb",
+        "bytes": 10204,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "koozie-adapter",
+      "size": 10176,
+      "lod1": {
+        "file": "koozie-adapter.lod1.glb",
+        "bytes": 10176,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "lacing-hook",
+      "size": 10128,
+      "lod1": {
+        "file": "lacing-hook.lod1.glb",
+        "bytes": 10128,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "ladder-lock",
+      "size": 9612,
+      "lod1": {
+        "file": "ladder-lock.lod1.glb",
+        "bytes": 9612,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "lamp-adapter-kit",
+      "size": 10944,
+      "lod1": {
+        "file": "lamp-adapter-kit.lod1.glb",
+        "bytes": 10944,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "lamp-socket-extender",
+      "size": 10480,
+      "lod1": {
+        "file": "lamp-socket-extender.lod1.glb",
+        "bytes": 10480,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "lampshade",
+      "size": 10420,
+      "lod1": {
+        "file": "lampshade.lod1.glb",
+        "bytes": 10420,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "landing-skid",
+      "size": 7032,
+      "lod1": {
+        "file": "landing-skid.lod1.glb",
+        "bytes": 7032,
+        "triangles": 1668
+      }
+    },
+    {
+      "slug": "leadscrew-nut",
+      "size": 11048,
+      "lod1": {
+        "file": "leadscrew-nut.lod1.glb",
+        "bytes": 11048,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "led-channel",
+      "size": 4532,
+      "lod1": {
+        "file": "led-channel.lod1.glb",
+        "bytes": 4532,
+        "triangles": 1068
+      }
+    },
+    {
+      "slug": "lens-cap",
+      "size": 7628,
+      "lod1": {
+        "file": "lens-cap.lod1.glb",
+        "bytes": 7628,
+        "triangles": 1760
+      }
+    },
+    {
+      "slug": "linear-wheel",
+      "size": 10376,
+      "lod1": {
+        "file": "linear-wheel.lod1.glb",
+        "bytes": 10376,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "lingerie-form",
+      "size": 10276,
+      "lod1": {
+        "file": "lingerie-form.lod1.glb",
+        "bytes": 10276,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "lithophane-frame",
+      "size": 1532,
+      "lod1": {
+        "file": "lithophane-frame.lod1.glb",
+        "bytes": 1532,
+        "triangles": 78
+      }
+    },
+    {
+      "slug": "living-hinge",
+      "size": 1356,
+      "lod1": {
+        "file": "living-hinge.lod1.glb",
+        "bytes": 1356,
+        "triangles": 28
+      }
+    },
+    {
+      "slug": "lock-cam",
+      "size": 7448,
+      "lod1": {
+        "file": "lock-cam.lod1.glb",
+        "bytes": 7448,
+        "triangles": 1786
+      }
+    },
+    {
+      "slug": "locker-latch",
+      "size": 9764,
+      "lod1": {
+        "file": "locker-latch.lod1.glb",
+        "bytes": 9764,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "locking-mechanism-hyperobject",
+      "size": 1896,
+      "lod1": {
+        "file": "locking-mechanism-hyperobject.lod1.glb",
+        "bytes": 1896,
+        "triangles": 150
+      },
+      "frames": [
+        {
+          "animation": "clearance-sweep",
+          "index": 0,
+          "file": "locking-mechanism-hyperobject.clearance-sweep.0.glb",
+          "bytes": 4696,
+          "triangles": 1428
+        },
+        {
+          "animation": "clearance-sweep",
+          "index": 1,
+          "file": "locking-mechanism-hyperobject.clearance-sweep.1.glb",
+          "bytes": 4652,
+          "triangles": 1428
+        },
+        {
+          "animation": "clearance-sweep",
+          "index": 2,
+          "file": "locking-mechanism-hyperobject.clearance-sweep.2.glb",
+          "bytes": 4692,
+          "triangles": 1428
+        },
+        {
+          "animation": "clearance-sweep",
+          "index": 3,
+          "file": "locking-mechanism-hyperobject.clearance-sweep.3.glb",
+          "bytes": 4720,
+          "triangles": 1444
+        },
+        {
+          "animation": "clearance-sweep",
+          "index": 4,
+          "file": "locking-mechanism-hyperobject.clearance-sweep.4.glb",
+          "bytes": 4752,
+          "triangles": 1444
+        },
+        {
+          "animation": "latch-width",
+          "index": 0,
+          "file": "locking-mechanism-hyperobject.latch-width.0.glb",
+          "bytes": 2052,
+          "triangles": 272
+        },
+        {
+          "animation": "latch-width",
+          "index": 1,
+          "file": "locking-mechanism-hyperobject.latch-width.1.glb",
+          "bytes": 4652,
+          "triangles": 1428
+        },
+        {
+          "animation": "latch-width",
+          "index": 2,
+          "file": "locking-mechanism-hyperobject.latch-width.2.glb",
+          "bytes": 4656,
+          "triangles": 1428
+        },
+        {
+          "animation": "latch-width",
+          "index": 3,
+          "file": "locking-mechanism-hyperobject.latch-width.3.glb",
+          "bytes": 4656,
+          "triangles": 1428
+        },
+        {
+          "animation": "latch-width",
+          "index": 4,
+          "file": "locking-mechanism-hyperobject.latch-width.4.glb",
+          "bytes": 5100,
+          "triangles": 1444
+        },
+        {
+          "animation": "latch-width",
+          "index": 5,
+          "file": "locking-mechanism-hyperobject.latch-width.5.glb",
+          "bytes": 5072,
+          "triangles": 1444
+        }
+      ]
+    },
+    {
+      "slug": "lug-cover",
+      "size": 10008,
+      "lod1": {
+        "file": "lug-cover.lod1.glb",
+        "bytes": 10008,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "magnetic-button-cover",
+      "size": 10496,
+      "lod1": {
+        "file": "magnetic-button-cover.lod1.glb",
+        "bytes": 10496,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "magnetic-clasp",
+      "size": 10252,
+      "lod1": {
+        "file": "magnetic-clasp.lod1.glb",
+        "bytes": 10252,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "magnetic-coupling",
+      "size": 10408,
+      "lod1": {
+        "file": "magnetic-coupling.lod1.glb",
+        "bytes": 10408,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "magnetic-pin-dish",
+      "size": 10352,
+      "lod1": {
+        "file": "magnetic-pin-dish.lod1.glb",
+        "bytes": 10352,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "magnetic-tool-strip",
+      "size": 9228,
+      "lod1": {
+        "file": "magnetic-tool-strip.lod1.glb",
+        "bytes": 9228,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "marker-tray",
+      "size": 9444,
+      "lod1": {
+        "file": "marker-tray.lod1.glb",
+        "bytes": 9444,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "math-solids",
+      "size": 1368,
+      "lod1": {
+        "file": "math-solids.lod1.glb",
+        "bytes": 1368,
+        "triangles": 12
+      }
+    },
+    {
+      "slug": "matrix-frame",
+      "size": 3088,
+      "lod1": {
+        "file": "matrix-frame.lod1.glb",
+        "bytes": 3088,
+        "triangles": 560
+      }
+    },
+    {
+      "slug": "maze",
+      "size": 8332,
+      "lod1": {
+        "file": "maze.lod1.glb",
+        "bytes": 8332,
+        "triangles": 2144
+      }
+    },
+    {
+      "slug": "mc4-holder",
+      "size": 10264,
+      "lod1": {
+        "file": "mc4-holder.lod1.glb",
+        "bytes": 10264,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "mc4-junction",
+      "size": 9952,
+      "lod1": {
+        "file": "mc4-junction.lod1.glb",
+        "bytes": 9952,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "measuring-scoop",
+      "size": 10076,
+      "lod1": {
+        "file": "measuring-scoop.lod1.glb",
+        "bytes": 10076,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "media-basket",
+      "size": 9388,
+      "lod1": {
+        "file": "media-basket.lod1.glb",
+        "bytes": 9388,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "media-caddy",
+      "size": 3400,
+      "lod1": {
+        "file": "media-caddy.lod1.glb",
+        "bytes": 3400,
+        "triangles": 652
+      }
+    },
+    {
+      "slug": "mic-clip",
+      "size": 10200,
+      "lod1": {
+        "file": "mic-clip.lod1.glb",
+        "bytes": 10200,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "microplate-tray",
+      "size": 4884,
+      "lod1": {
+        "file": "microplate-tray.lod1.glb",
+        "bytes": 4884,
+        "triangles": 1084
+      }
+    },
+    {
+      "slug": "microscope-slide-holder",
+      "size": 1832,
+      "lod1": {
+        "file": "microscope-slide-holder.lod1.glb",
+        "bytes": 3820,
+        "triangles": 760
+      },
+      "frames": [
+        {
+          "animation": "capacity",
+          "index": 0,
+          "file": "microscope-slide-holder.capacity.0.glb",
+          "bytes": 1832,
+          "triangles": 152
+        },
+        {
+          "animation": "capacity",
+          "index": 1,
+          "file": "microscope-slide-holder.capacity.1.glb",
+          "bytes": 3292,
+          "triangles": 600
+        },
+        {
+          "animation": "capacity",
+          "index": 2,
+          "file": "microscope-slide-holder.capacity.2.glb",
+          "bytes": 4772,
+          "triangles": 1048
+        },
+        {
+          "animation": "capacity",
+          "index": 3,
+          "file": "microscope-slide-holder.capacity.3.glb",
+          "bytes": 6220,
+          "triangles": 1496
+        },
+        {
+          "animation": "capacity",
+          "index": 4,
+          "file": "microscope-slide-holder.capacity.4.glb",
+          "bytes": 7504,
+          "triangles": 1976
+        },
+        {
+          "animation": "capacity",
+          "index": 5,
+          "file": "microscope-slide-holder.capacity.5.glb",
+          "bytes": 8836,
+          "triangles": 2424
+        },
+        {
+          "animation": "capacity",
+          "index": 6,
+          "file": "microscope-slide-holder.capacity.6.glb",
+          "bytes": 10176,
+          "triangles": 2872
+        },
+        {
+          "animation": "capacity",
+          "index": 7,
+          "file": "microscope-slide-holder.capacity.7.glb",
+          "bytes": 11540,
+          "triangles": 3320
+        },
+        {
+          "animation": "slide-format",
+          "index": 0,
+          "file": "microscope-slide-holder.slide-format.0.glb",
+          "bytes": 3820,
+          "triangles": 760
+        },
+        {
+          "animation": "slide-format",
+          "index": 1,
+          "file": "microscope-slide-holder.slide-format.1.glb",
+          "bytes": 3820,
+          "triangles": 760
+        },
+        {
+          "animation": "slide-format",
+          "index": 2,
+          "file": "microscope-slide-holder.slide-format.2.glb",
+          "bytes": 3820,
+          "triangles": 760
+        },
+        {
+          "animation": "slide-format",
+          "index": 3,
+          "file": "microscope-slide-holder.slide-format.3.glb",
+          "bytes": 3820,
+          "triangles": 760
+        },
+        {
+          "animation": "slide-format",
+          "index": 4,
+          "file": "microscope-slide-holder.slide-format.4.glb",
+          "bytes": 3820,
+          "triangles": 760
+        }
+      ]
+    },
+    {
+      "slug": "microscope-slide-hyperobject",
+      "size": 1284,
+      "lod1": {
+        "file": "microscope-slide-hyperobject.lod1.glb",
+        "bytes": 1284,
+        "triangles": 12
+      }
+    },
+    {
+      "slug": "milpa-seed-plate",
+      "size": 9420,
+      "lod1": {
+        "file": "milpa-seed-plate.lod1.glb",
+        "bytes": 9420,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "mini-base",
+      "size": 3788,
+      "lod1": {
+        "file": "mini-base.lod1.glb",
+        "bytes": 3788,
+        "triangles": 752
+      }
+    },
+    {
+      "slug": "mobility-accessory",
+      "size": 9844,
+      "lod1": {
+        "file": "mobility-accessory.lod1.glb",
+        "bytes": 9844,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "mobility-tip",
+      "size": 10012,
+      "lod1": {
+        "file": "mobility-tip.lod1.glb",
+        "bytes": 10012,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "mold-tray",
+      "size": 3276,
+      "lod1": {
+        "file": "mold-tray.lod1.glb",
+        "bytes": 3276,
+        "triangles": 620
+      }
+    },
+    {
+      "slug": "molecule-kit",
+      "size": 11648,
+      "lod1": {
+        "file": "molecule-kit.lod1.glb",
+        "bytes": 11648,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "molle-clip",
+      "size": 5064,
+      "lod1": {
+        "file": "molle-clip.lod1.glb",
+        "bytes": 5064,
+        "triangles": 1090
+      }
+    },
+    {
+      "slug": "molle-pouch",
+      "size": 5100,
+      "lod1": {
+        "file": "molle-pouch.lod1.glb",
+        "bytes": 5100,
+        "triangles": 1180
+      }
+    },
+    {
+      "slug": "motor-mount",
+      "size": 6060,
+      "lod1": {
+        "file": "motor-mount.lod1.glb",
+        "bytes": 6108,
+        "triangles": 1404
+      },
+      "frames": [
+        {
+          "animation": "nema-sweep",
+          "index": 0,
+          "file": "motor-mount.nema-sweep.0.glb",
+          "bytes": 6108,
+          "triangles": 1404
+        },
+        {
+          "animation": "nema-sweep",
+          "index": 1,
+          "file": "motor-mount.nema-sweep.1.glb",
+          "bytes": 6108,
+          "triangles": 1404
+        },
+        {
+          "animation": "nema-sweep",
+          "index": 2,
+          "file": "motor-mount.nema-sweep.2.glb",
+          "bytes": 6108,
+          "triangles": 1404
+        },
+        {
+          "animation": "nema-sweep",
+          "index": 3,
+          "file": "motor-mount.nema-sweep.3.glb",
+          "bytes": 6108,
+          "triangles": 1404
+        },
+        {
+          "animation": "nema-sweep",
+          "index": 4,
+          "file": "motor-mount.nema-sweep.4.glb",
+          "bytes": 6060,
+          "triangles": 1404
+        },
+        {
+          "animation": "wall-sweep",
+          "index": 0,
+          "file": "motor-mount.wall-sweep.0.glb",
+          "bytes": 6112,
+          "triangles": 1404
+        },
+        {
+          "animation": "wall-sweep",
+          "index": 1,
+          "file": "motor-mount.wall-sweep.1.glb",
+          "bytes": 6108,
+          "triangles": 1404
+        },
+        {
+          "animation": "wall-sweep",
+          "index": 2,
+          "file": "motor-mount.wall-sweep.2.glb",
+          "bytes": 6152,
+          "triangles": 1404
+        },
+        {
+          "animation": "wall-sweep",
+          "index": 3,
+          "file": "motor-mount.wall-sweep.3.glb",
+          "bytes": 6124,
+          "triangles": 1404
+        },
+        {
+          "animation": "wall-sweep",
+          "index": 4,
+          "file": "motor-mount.wall-sweep.4.glb",
+          "bytes": 6128,
+          "triangles": 1404
+        }
+      ]
+    },
+    {
+      "slug": "motor-soft-mount",
+      "size": 9588,
+      "lod1": {
+        "file": "motor-soft-mount.lod1.glb",
+        "bytes": 9588,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "movement-holder",
+      "size": 10404,
+      "lod1": {
+        "file": "movement-holder.lod1.glb",
+        "bytes": 10404,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "multiboard",
+      "size": 11140,
+      "lod1": {
+        "file": "multiboard.lod1.glb",
+        "bytes": 11140,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "multiconnect-adapter",
+      "size": 1436,
+      "lod1": {
+        "file": "multiconnect-adapter.lod1.glb",
+        "bytes": 1436,
+        "triangles": 52
+      }
+    },
+    {
+      "slug": "nameplate",
+      "size": 5528,
+      "lod1": {
+        "file": "nameplate.lod1.glb",
+        "bytes": 5528,
+        "triangles": 1300
+      }
+    },
+    {
+      "slug": "nato-rail",
+      "size": 6532,
+      "lod1": {
+        "file": "nato-rail.lod1.glb",
+        "bytes": 6532,
+        "triangles": 1596
+      }
+    },
+    {
+      "slug": "nebulizer-mask-strap",
+      "size": 3144,
+      "lod1": {
+        "file": "nebulizer-mask-strap.lod1.glb",
+        "bytes": 3144,
+        "triangles": 564
+      }
+    },
+    {
+      "slug": "needle-gauge",
+      "size": 9176,
+      "lod1": {
+        "file": "needle-gauge.lod1.glb",
+        "bytes": 9176,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "nema-bracket",
+      "size": 9184,
+      "lod1": {
+        "file": "nema-bracket.lod1.glb",
+        "bytes": 9184,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "nema-damper",
+      "size": 10244,
+      "lod1": {
+        "file": "nema-damper.lod1.glb",
+        "bytes": 10244,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "net-cup",
+      "size": 11220,
+      "lod1": {
+        "file": "net-cup.lod1.glb",
+        "bytes": 11220,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "net-cup-lid",
+      "size": 9956,
+      "lod1": {
+        "file": "net-cup-lid.lod1.glb",
+        "bytes": 9956,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "obd-holder",
+      "size": 8860,
+      "lod1": {
+        "file": "obd-holder.lod1.glb",
+        "bytes": 8860,
+        "triangles": 2316
+      }
+    },
+    {
+      "slug": "objective-case",
+      "size": 10580,
+      "lod1": {
+        "file": "objective-case.lod1.glb",
+        "bytes": 10580,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "objective-turret",
+      "size": 10068,
+      "lod1": {
+        "file": "objective-turret.lod1.glb",
+        "bytes": 10068,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "opener-aid",
+      "size": 10308,
+      "lod1": {
+        "file": "opener-aid.lod1.glb",
+        "bytes": 10308,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "optical-post",
+      "size": 9556,
+      "lod1": {
+        "file": "optical-post.lod1.glb",
+        "bytes": 9556,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "outlet-plate",
+      "size": 9320,
+      "lod1": {
+        "file": "outlet-plate.lod1.glb",
+        "bytes": 9320,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "overall-buckle",
+      "size": 9916,
+      "lod1": {
+        "file": "overall-buckle.lod1.glb",
+        "bytes": 9916,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "oxygen-tubing-clip",
+      "size": 4960,
+      "lod1": {
+        "file": "oxygen-tubing-clip.lod1.glb",
+        "bytes": 4960,
+        "triangles": 1076
+      }
+    },
+    {
+      "slug": "paint-rack",
+      "size": 9996,
+      "lod1": {
+        "file": "paint-rack.lod1.glb",
+        "bytes": 9996,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "panel-connector",
+      "size": 9616,
+      "lod1": {
+        "file": "panel-connector.lod1.glb",
+        "bytes": 9616,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "panel-plug",
+      "size": 10156,
+      "lod1": {
+        "file": "panel-plug.lod1.glb",
+        "bytes": 10156,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "paracord-jig",
+      "size": 6332,
+      "lod1": {
+        "file": "paracord-jig.lod1.glb",
+        "bytes": 6332,
+        "triangles": 1556
+      }
+    },
+    {
+      "slug": "param-vase",
+      "size": 5480,
+      "lod1": {
+        "file": "param-vase.lod1.glb",
+        "bytes": 5480,
+        "triangles": 1276
+      }
+    },
+    {
+      "slug": "parametric-box",
+      "size": 9500,
+      "lod1": {
+        "file": "parametric-box.lod1.glb",
+        "bytes": 9500,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "parametric-connector",
+      "size": 10656,
+      "lod1": {
+        "file": "parametric-connector.lod1.glb",
+        "bytes": 10656,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "path-stake",
+      "size": 10012,
+      "lod1": {
+        "file": "path-stake.lod1.glb",
+        "bytes": 10012,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pattern-weight",
+      "size": 9340,
+      "lod1": {
+        "file": "pattern-weight.lod1.glb",
+        "bytes": 9340,
+        "triangles": 2264
+      }
+    },
+    {
+      "slug": "pcb-standoff",
+      "size": 9688,
+      "lod1": {
+        "file": "pcb-standoff.lod1.glb",
+        "bytes": 9688,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pco-cap",
+      "size": 11004,
+      "lod1": {
+        "file": "pco-cap.lod1.glb",
+        "bytes": 11004,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pedal-mount",
+      "size": 1632,
+      "lod1": {
+        "file": "pedal-mount.lod1.glb",
+        "bytes": 1632,
+        "triangles": 102
+      }
+    },
+    {
+      "slug": "pegboard-hooks",
+      "size": 9984,
+      "lod1": {
+        "file": "pegboard-hooks.lod1.glb",
+        "bytes": 9984,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pen-holder",
+      "size": 9980,
+      "lod1": {
+        "file": "pen-holder.lod1.glb",
+        "bytes": 9980,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "peristaltic-rotor",
+      "size": 10080,
+      "lod1": {
+        "file": "peristaltic-rotor.lod1.glb",
+        "bytes": 10080,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pet-dispenser",
+      "size": 9956,
+      "lod1": {
+        "file": "pet-dispenser.lod1.glb",
+        "bytes": 9956,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pet-feeder",
+      "size": 10368,
+      "lod1": {
+        "file": "pet-feeder.lod1.glb",
+        "bytes": 10368,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pet-hardware",
+      "size": 1568,
+      "lod1": {
+        "file": "pet-hardware.lod1.glb",
+        "bytes": 1568,
+        "triangles": 84
+      }
+    },
+    {
+      "slug": "petri-rack",
+      "size": 1968,
+      "lod1": {
+        "file": "petri-rack.lod1.glb",
+        "bytes": 1968,
+        "triangles": 220
+      }
+    },
+    {
+      "slug": "pi-hat-case",
+      "size": 9456,
+      "lod1": {
+        "file": "pi-hat-case.lod1.glb",
+        "bytes": 9456,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "picatinny-rail",
+      "size": 1576,
+      "lod1": {
+        "file": "picatinny-rail.lod1.glb",
+        "bytes": 1576,
+        "triangles": 92
+      }
+    },
+    {
+      "slug": "pick-holder",
+      "size": 4276,
+      "lod1": {
+        "file": "pick-holder.lod1.glb",
+        "bytes": 4276,
+        "triangles": 834
+      }
+    },
+    {
+      "slug": "pill-cutter",
+      "size": 3328,
+      "lod1": {
+        "file": "pill-cutter.lod1.glb",
+        "bytes": 3328,
+        "triangles": 574
+      }
+    },
+    {
+      "slug": "pill-insert",
+      "size": 3260,
+      "lod1": {
+        "file": "pill-insert.lod1.glb",
+        "bytes": 3260,
+        "triangles": 636
+      }
+    },
+    {
+      "slug": "pill-organizer",
+      "size": 1672,
+      "lod1": {
+        "file": "pill-organizer.lod1.glb",
+        "bytes": 1672,
+        "triangles": 124
+      }
+    },
+    {
+      "slug": "pin-vise",
+      "size": 9780,
+      "lod1": {
+        "file": "pin-vise.lod1.glb",
+        "bytes": 9780,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pipe-clip",
+      "size": 6176,
+      "lod1": {
+        "file": "pipe-clip.lod1.glb",
+        "bytes": 6176,
+        "triangles": 1464
+      }
+    },
+    {
+      "slug": "pipe-fitting",
+      "size": 10252,
+      "lod1": {
+        "file": "pipe-fitting.lod1.glb",
+        "bytes": 10252,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pipette-stand",
+      "size": 10100,
+      "lod1": {
+        "file": "pipette-stand.lod1.glb",
+        "bytes": 10100,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "planetary-gearset",
+      "size": 6328,
+      "lod1": {
+        "file": "planetary-gearset.lod1.glb",
+        "bytes": 6328,
+        "triangles": 1464
+      },
+      "frames": [
+        {
+          "animation": "planet-count",
+          "index": 0,
+          "file": "planetary-gearset.planet-count.0.glb",
+          "bytes": 18184,
+          "triangles": 6024
+        },
+        {
+          "animation": "planet-count",
+          "index": 1,
+          "file": "planetary-gearset.planet-count.1.glb",
+          "bytes": 18184,
+          "triangles": 6024
+        },
+        {
+          "animation": "planet-count",
+          "index": 2,
+          "file": "planetary-gearset.planet-count.2.glb",
+          "bytes": 18184,
+          "triangles": 6024
+        },
+        {
+          "animation": "planet-count",
+          "index": 3,
+          "file": "planetary-gearset.planet-count.3.glb",
+          "bytes": 18184,
+          "triangles": 6024
+        },
+        {
+          "animation": "planet-count",
+          "index": 4,
+          "file": "planetary-gearset.planet-count.4.glb",
+          "bytes": 18184,
+          "triangles": 6024
+        },
+        {
+          "animation": "planet-count",
+          "index": 5,
+          "file": "planetary-gearset.planet-count.5.glb",
+          "bytes": 18184,
+          "triangles": 6024
+        },
+        {
+          "animation": "planet-count",
+          "index": 6,
+          "file": "planetary-gearset.planet-count.6.glb",
+          "bytes": 18184,
+          "triangles": 6024
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 0,
+          "file": "planetary-gearset.ratio-sweep.0.glb",
+          "bytes": 19384,
+          "triangles": 5352
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 1,
+          "file": "planetary-gearset.ratio-sweep.1.glb",
+          "bytes": 22040,
+          "triangles": 6176
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 2,
+          "file": "planetary-gearset.ratio-sweep.2.glb",
+          "bytes": 25460,
+          "triangles": 7240
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 3,
+          "file": "planetary-gearset.ratio-sweep.3.glb",
+          "bytes": 28976,
+          "triangles": 8304
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 4,
+          "file": "planetary-gearset.ratio-sweep.4.glb",
+          "bytes": 32424,
+          "triangles": 9368
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 5,
+          "file": "planetary-gearset.ratio-sweep.5.glb",
+          "bytes": 35784,
+          "triangles": 10432
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 6,
+          "file": "planetary-gearset.ratio-sweep.6.glb",
+          "bytes": 37680,
+          "triangles": 11112
+        }
+      ]
+    },
+    {
+      "slug": "planetary-stage",
+      "size": 7032,
+      "lod1": {
+        "file": "planetary-stage.lod1.glb",
+        "bytes": 7032,
+        "triangles": 1656
+      }
+    },
+    {
+      "slug": "plant-clip",
+      "size": 9768,
+      "lod1": {
+        "file": "plant-clip.lod1.glb",
+        "bytes": 9768,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "plant-pot",
+      "size": 10404,
+      "lod1": {
+        "file": "plant-pot.lod1.glb",
+        "bytes": 10404,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "planter",
+      "size": 10304,
+      "lod1": {
+        "file": "planter.lod1.glb",
+        "bytes": 10304,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "planter-wall",
+      "size": 4096,
+      "lod1": {
+        "file": "planter-wall.lod1.glb",
+        "bytes": 4096,
+        "triangles": 1104
+      }
+    },
+    {
+      "slug": "plate-frame",
+      "size": 3044,
+      "lod1": {
+        "file": "plate-frame.lod1.glb",
+        "bytes": 3044,
+        "triangles": 560
+      }
+    },
+    {
+      "slug": "pneu-net-finger",
+      "size": 9372,
+      "lod1": {
+        "file": "pneu-net-finger.lod1.glb",
+        "bytes": 9372,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pneumatic-barb-port",
+      "size": 10352,
+      "lod1": {
+        "file": "pneumatic-barb-port.lod1.glb",
+        "bytes": 10352,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "point-turner",
+      "size": 4604,
+      "lod1": {
+        "file": "point-turner.lod1.glb",
+        "bytes": 4604,
+        "triangles": 1052
+      }
+    },
+    {
+      "slug": "polydice",
+      "size": 10412,
+      "lod1": {
+        "file": "polydice.lod1.glb",
+        "bytes": 10412,
+        "triangles": 2500
       }
     },
     {
       "slug": "portacosas",
-      "size": 4404,
+      "size": 9336,
       "lod1": {
         "file": "portacosas.lod1.glb",
-        "bytes": 4404,
-        "triangles": 1008
+        "bytes": 9336,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "portacosas.lod0.glb",
+        "bytes": 14752,
+        "triangles": 4314
+      },
+      "frames": [
+        {
+          "animation": "pen-bank",
+          "index": 0,
+          "file": "portacosas.pen-bank.0.glb",
+          "bytes": 13580,
+          "triangles": 3930
+        },
+        {
+          "animation": "pen-bank",
+          "index": 1,
+          "file": "portacosas.pen-bank.1.glb",
+          "bytes": 14152,
+          "triangles": 4122
+        },
+        {
+          "animation": "pen-bank",
+          "index": 2,
+          "file": "portacosas.pen-bank.2.glb",
+          "bytes": 14752,
+          "triangles": 4314
+        },
+        {
+          "animation": "pen-bank",
+          "index": 3,
+          "file": "portacosas.pen-bank.3.glb",
+          "bytes": 15392,
+          "triangles": 4506
+        },
+        {
+          "animation": "pen-bank",
+          "index": 4,
+          "file": "portacosas.pen-bank.4.glb",
+          "bytes": 16136,
+          "triangles": 4698
+        },
+        {
+          "animation": "pen-bank",
+          "index": 5,
+          "file": "portacosas.pen-bank.5.glb",
+          "bytes": 16668,
+          "triangles": 4890
+        },
+        {
+          "animation": "tray-grow",
+          "index": 0,
+          "file": "portacosas.tray-grow.0.glb",
+          "bytes": 14432,
+          "triangles": 4140
+        },
+        {
+          "animation": "tray-grow",
+          "index": 1,
+          "file": "portacosas.tray-grow.1.glb",
+          "bytes": 14976,
+          "triangles": 4318
+        },
+        {
+          "animation": "tray-grow",
+          "index": 2,
+          "file": "portacosas.tray-grow.2.glb",
+          "bytes": 14940,
+          "triangles": 4318
+        },
+        {
+          "animation": "tray-grow",
+          "index": 3,
+          "file": "portacosas.tray-grow.3.glb",
+          "bytes": 14880,
+          "triangles": 4322
+        },
+        {
+          "animation": "tray-grow",
+          "index": 4,
+          "file": "portacosas.tray-grow.4.glb",
+          "bytes": 14856,
+          "triangles": 4320
+        },
+        {
+          "animation": "tray-grow",
+          "index": 5,
+          "file": "portacosas.tray-grow.5.glb",
+          "bytes": 14620,
+          "triangles": 4318
+        }
+      ]
+    },
+    {
+      "slug": "produce-tray",
+      "size": 10080,
+      "lod1": {
+        "file": "produce-tray.lod1.glb",
+        "bytes": 10080,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "prop-guard",
+      "size": 8352,
+      "lod1": {
+        "file": "prop-guard.lod1.glb",
+        "bytes": 8352,
+        "triangles": 2130
       }
     },
     {
       "slug": "prosthetic-socket",
-      "size": 10136,
+      "size": 10620,
       "lod1": {
         "file": "prosthetic-socket.lod1.glb",
-        "bytes": 10136,
+        "bytes": 10620,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "prosthetic-wrist",
+      "size": 9740,
+      "lod1": {
+        "file": "prosthetic-wrist.lod1.glb",
+        "bytes": 9740,
         "triangles": 2498
-      },
-      "lod0": {
-        "file": "prosthetic-socket.lod0.glb",
-        "bytes": 28064,
-        "triangles": 7828
+      }
+    },
+    {
+      "slug": "psu-mount",
+      "size": 9204,
+      "lod1": {
+        "file": "psu-mount.lod1.glb",
+        "bytes": 9204,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "pump-adapter",
+      "size": 7092,
+      "lod1": {
+        "file": "pump-adapter.lod1.glb",
+        "bytes": 7092,
+        "triangles": 1632
+      }
+    },
+    {
+      "slug": "push-stick",
+      "size": 5492,
+      "lod1": {
+        "file": "push-stick.lod1.glb",
+        "bytes": 5492,
+        "triangles": 1304
+      }
+    },
+    {
+      "slug": "pv-cable-clip",
+      "size": 4796,
+      "lod1": {
+        "file": "pv-cable-clip.lod1.glb",
+        "bytes": 4796,
+        "triangles": 1068
+      }
+    },
+    {
+      "slug": "rack-accessory",
+      "size": 7900,
+      "lod1": {
+        "file": "rack-accessory.lod1.glb",
+        "bytes": 7900,
+        "triangles": 2068
+      }
+    },
+    {
+      "slug": "radiator-vent",
+      "size": 1868,
+      "lod1": {
+        "file": "radiator-vent.lod1.glb",
+        "bytes": 1868,
+        "triangles": 168
+      }
+    },
+    {
+      "slug": "rail-bridge",
+      "size": 4516,
+      "lod1": {
+        "file": "rail-bridge.lod1.glb",
+        "bytes": 4516,
+        "triangles": 972
+      }
+    },
+    {
+      "slug": "rail-mount",
+      "size": 9892,
+      "lod1": {
+        "file": "rail-mount.lod1.glb",
+        "bytes": 9892,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "rain-gauge-funnel",
+      "size": 10532,
+      "lod1": {
+        "file": "rain-gauge-funnel.lod1.glb",
+        "bytes": 10532,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "ratchet-pawl",
+      "size": 4720,
+      "lod1": {
+        "file": "ratchet-pawl.lod1.glb",
+        "bytes": 4720,
+        "triangles": 1010
+      }
+    },
+    {
+      "slug": "reagent-clip",
+      "size": 5548,
+      "lod1": {
+        "file": "reagent-clip.lod1.glb",
+        "bytes": 5548,
+        "triangles": 1260
+      }
+    },
+    {
+      "slug": "rebar-chair",
+      "size": 5460,
+      "lod1": {
+        "file": "rebar-chair.lod1.glb",
+        "bytes": 5460,
+        "triangles": 1192
+      }
+    },
+    {
+      "slug": "reed-cap",
+      "size": 10184,
+      "lod1": {
+        "file": "reed-cap.lod1.glb",
+        "bytes": 10184,
+        "triangles": 2500
       }
     },
     {
       "slug": "relief",
-      "size": 3532,
+      "size": 3540,
       "lod1": {
         "file": "relief.lod1.glb",
-        "bytes": 3532,
+        "bytes": 3540,
         "triangles": 688
       }
     },
     {
+      "slug": "rivet",
+      "size": 10120,
+      "lod1": {
+        "file": "rivet.lod1.glb",
+        "bytes": 10120,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "robot-sensor-mount",
+      "size": 10332,
+      "lod1": {
+        "file": "robot-sensor-mount.lod1.glb",
+        "bytes": 10332,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "rod-bridge",
+      "size": 9832,
+      "lod1": {
+        "file": "rod-bridge.lod1.glb",
+        "bytes": 9832,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "rod-holder",
+      "size": 10188,
+      "lod1": {
+        "file": "rod-holder.lod1.glb",
+        "bytes": 10188,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "rod-rig-clamp",
+      "size": 9380,
+      "lod1": {
+        "file": "rod-rig-clamp.lod1.glb",
+        "bytes": 9380,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "roll-holder",
+      "size": 6820,
+      "lod1": {
+        "file": "roll-holder.lod1.glb",
+        "bytes": 6820,
+        "triangles": 1740
+      }
+    },
+    {
+      "slug": "roller-bracket",
+      "size": 8644,
+      "lod1": {
+        "file": "roller-bracket.lod1.glb",
+        "bytes": 8644,
+        "triangles": 2324
+      }
+    },
+    {
+      "slug": "router-guide",
+      "size": 8564,
+      "lod1": {
+        "file": "router-guide.lod1.glb",
+        "bytes": 8564,
+        "triangles": 2016
+      }
+    },
+    {
+      "slug": "router-template",
+      "size": 9664,
+      "lod1": {
+        "file": "router-template.lod1.glb",
+        "bytes": 9664,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "rubiks-hyperobject",
+      "size": 9752,
+      "lod1": {
+        "file": "rubiks-hyperobject.lod1.glb",
+        "bytes": 9752,
+        "triangles": 2398
+      },
+      "lod0": {
+        "file": "rubiks-hyperobject.lod0.glb",
+        "bytes": 24676,
+        "triangles": 7360
+      },
+      "frames": [
+        {
+          "animation": "explode",
+          "index": 0,
+          "file": "rubiks-hyperobject.explode.0.glb",
+          "bytes": 24676,
+          "triangles": 7360
+        },
+        {
+          "animation": "explode",
+          "index": 1,
+          "file": "rubiks-hyperobject.explode.1.glb",
+          "bytes": 24924,
+          "triangles": 7360
+        },
+        {
+          "animation": "explode",
+          "index": 2,
+          "file": "rubiks-hyperobject.explode.2.glb",
+          "bytes": 24512,
+          "triangles": 7360
+        },
+        {
+          "animation": "explode",
+          "index": 3,
+          "file": "rubiks-hyperobject.explode.3.glb",
+          "bytes": 24684,
+          "triangles": 7360
+        },
+        {
+          "animation": "explode",
+          "index": 4,
+          "file": "rubiks-hyperobject.explode.4.glb",
+          "bytes": 24480,
+          "triangles": 7360
+        },
+        {
+          "animation": "explode",
+          "index": 5,
+          "file": "rubiks-hyperobject.explode.5.glb",
+          "bytes": 23848,
+          "triangles": 7360
+        },
+        {
+          "animation": "explode",
+          "index": 6,
+          "file": "rubiks-hyperobject.explode.6.glb",
+          "bytes": 24316,
+          "triangles": 7360
+        },
+        {
+          "animation": "explode",
+          "index": 7,
+          "file": "rubiks-hyperobject.explode.7.glb",
+          "bytes": 24008,
+          "triangles": 7360
+        },
+        {
+          "animation": "morph",
+          "index": 0,
+          "file": "rubiks-hyperobject.morph.0.glb",
+          "bytes": 10760,
+          "triangles": 2944
+        },
+        {
+          "animation": "morph",
+          "index": 1,
+          "file": "rubiks-hyperobject.morph.1.glb",
+          "bytes": 51828,
+          "triangles": 15520
+        },
+        {
+          "animation": "morph",
+          "index": 2,
+          "file": "rubiks-hyperobject.morph.2.glb",
+          "bytes": 54564,
+          "triangles": 15488
+        },
+        {
+          "animation": "morph",
+          "index": 3,
+          "file": "rubiks-hyperobject.morph.3.glb",
+          "bytes": 55616,
+          "triangles": 14976
+        },
+        {
+          "animation": "solve",
+          "index": 0,
+          "file": "rubiks-hyperobject.solve.0.glb",
+          "bytes": 24564,
+          "triangles": 7360
+        },
+        {
+          "animation": "solve",
+          "index": 1,
+          "file": "rubiks-hyperobject.solve.1.glb",
+          "bytes": 28828,
+          "triangles": 7876
+        },
+        {
+          "animation": "solve",
+          "index": 2,
+          "file": "rubiks-hyperobject.solve.2.glb",
+          "bytes": 28936,
+          "triangles": 7856
+        },
+        {
+          "animation": "solve",
+          "index": 3,
+          "file": "rubiks-hyperobject.solve.3.glb",
+          "bytes": 28088,
+          "triangles": 7610
+        },
+        {
+          "animation": "solve",
+          "index": 4,
+          "file": "rubiks-hyperobject.solve.4.glb",
+          "bytes": 27940,
+          "triangles": 7626
+        },
+        {
+          "animation": "solve",
+          "index": 5,
+          "file": "rubiks-hyperobject.solve.5.glb",
+          "bytes": 27300,
+          "triangles": 7468
+        },
+        {
+          "animation": "solve",
+          "index": 6,
+          "file": "rubiks-hyperobject.solve.6.glb",
+          "bytes": 28004,
+          "triangles": 7616
+        },
+        {
+          "animation": "solve",
+          "index": 7,
+          "file": "rubiks-hyperobject.solve.7.glb",
+          "bytes": 30076,
+          "triangles": 8228
+        },
+        {
+          "animation": "solve",
+          "index": 8,
+          "file": "rubiks-hyperobject.solve.8.glb",
+          "bytes": 27524,
+          "triangles": 7628
+        },
+        {
+          "animation": "solve",
+          "index": 9,
+          "file": "rubiks-hyperobject.solve.9.glb",
+          "bytes": 24676,
+          "triangles": 7360
+        }
+      ]
+    },
+    {
+      "slug": "rugged-box",
+      "size": 9780,
+      "lod1": {
+        "file": "rugged-box.lod1.glb",
+        "bytes": 9780,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "rugged-box.lod0.glb",
+        "bytes": 58864,
+        "triangles": 19272
+      },
+      "frames": [
+        {
+          "animation": "box-grow",
+          "index": 0,
+          "file": "rugged-box.box-grow.0.glb",
+          "bytes": 56916,
+          "triangles": 18440
+        },
+        {
+          "animation": "box-grow",
+          "index": 1,
+          "file": "rugged-box.box-grow.1.glb",
+          "bytes": 59432,
+          "triangles": 19272
+        },
+        {
+          "animation": "box-grow",
+          "index": 2,
+          "file": "rugged-box.box-grow.2.glb",
+          "bytes": 58608,
+          "triangles": 19272
+        },
+        {
+          "animation": "box-grow",
+          "index": 3,
+          "file": "rugged-box.box-grow.3.glb",
+          "bytes": 57380,
+          "triangles": 19272
+        },
+        {
+          "animation": "box-grow",
+          "index": 4,
+          "file": "rugged-box.box-grow.4.glb",
+          "bytes": 56392,
+          "triangles": 19272
+        },
+        {
+          "animation": "box-grow",
+          "index": 5,
+          "file": "rugged-box.box-grow.5.glb",
+          "bytes": 55488,
+          "triangles": 19272
+        },
+        {
+          "animation": "box-grow",
+          "index": 6,
+          "file": "rugged-box.box-grow.6.glb",
+          "bytes": 54704,
+          "triangles": 19272
+        },
+        {
+          "animation": "rib-count",
+          "index": 0,
+          "file": "rugged-box.rib-count.0.glb",
+          "bytes": 57844,
+          "triangles": 19000
+        },
+        {
+          "animation": "rib-count",
+          "index": 1,
+          "file": "rugged-box.rib-count.1.glb",
+          "bytes": 58484,
+          "triangles": 19136
+        },
+        {
+          "animation": "rib-count",
+          "index": 2,
+          "file": "rugged-box.rib-count.2.glb",
+          "bytes": 58864,
+          "triangles": 19272
+        },
+        {
+          "animation": "rib-count",
+          "index": 3,
+          "file": "rugged-box.rib-count.3.glb",
+          "bytes": 59388,
+          "triangles": 19408
+        },
+        {
+          "animation": "rib-count",
+          "index": 4,
+          "file": "rugged-box.rib-count.4.glb",
+          "bytes": 59872,
+          "triangles": 19544
+        },
+        {
+          "animation": "rib-count",
+          "index": 5,
+          "file": "rugged-box.rib-count.5.glb",
+          "bytes": 60208,
+          "triangles": 19680
+        },
+        {
+          "animation": "rib-count",
+          "index": 6,
+          "file": "rugged-box.rib-count.6.glb",
+          "bytes": 60464,
+          "triangles": 19816
+        }
+      ]
+    },
+    {
+      "slug": "sanding-block",
+      "size": 4648,
+      "lod1": {
+        "file": "sanding-block.lod1.glb",
+        "bytes": 4648,
+        "triangles": 1004
+      }
+    },
+    {
+      "slug": "sash-lock",
+      "size": 4752,
+      "lod1": {
+        "file": "sash-lock.lod1.glb",
+        "bytes": 4752,
+        "triangles": 1060
+      }
+    },
+    {
+      "slug": "sbc-case",
+      "size": 9528,
+      "lod1": {
+        "file": "sbc-case.lod1.glb",
+        "bytes": 9528,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "scara-robotics",
+      "size": 10032,
+      "lod1": {
+        "file": "scara-robotics.lod1.glb",
+        "bytes": 10032,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "scara-robotics.lod0.glb",
+        "bytes": 21536,
+        "triangles": 6036
+      },
+      "frames": [
+        {
+          "animation": "reach-sweep",
+          "index": 0,
+          "file": "scara-robotics.reach-sweep.0.glb",
+          "bytes": 11652,
+          "triangles": 3216
+        },
+        {
+          "animation": "reach-sweep",
+          "index": 1,
+          "file": "scara-robotics.reach-sweep.1.glb",
+          "bytes": 11620,
+          "triangles": 3216
+        },
+        {
+          "animation": "reach-sweep",
+          "index": 2,
+          "file": "scara-robotics.reach-sweep.2.glb",
+          "bytes": 11524,
+          "triangles": 3216
+        },
+        {
+          "animation": "reach-sweep",
+          "index": 3,
+          "file": "scara-robotics.reach-sweep.3.glb",
+          "bytes": 11484,
+          "triangles": 3216
+        },
+        {
+          "animation": "reach-sweep",
+          "index": 4,
+          "file": "scara-robotics.reach-sweep.4.glb",
+          "bytes": 11432,
+          "triangles": 3216
+        },
+        {
+          "animation": "reach-sweep",
+          "index": 5,
+          "file": "scara-robotics.reach-sweep.5.glb",
+          "bytes": 11072,
+          "triangles": 3216
+        },
+        {
+          "animation": "reach-sweep",
+          "index": 6,
+          "file": "scara-robotics.reach-sweep.6.glb",
+          "bytes": 11312,
+          "triangles": 3216
+        },
+        {
+          "animation": "reach-sweep",
+          "index": 7,
+          "file": "scara-robotics.reach-sweep.7.glb",
+          "bytes": 11312,
+          "triangles": 3216
+        },
+        {
+          "animation": "z-travel",
+          "index": 0,
+          "file": "scara-robotics.z-travel.0.glb",
+          "bytes": 11536,
+          "triangles": 3216
+        },
+        {
+          "animation": "z-travel",
+          "index": 1,
+          "file": "scara-robotics.z-travel.1.glb",
+          "bytes": 11536,
+          "triangles": 3216
+        },
+        {
+          "animation": "z-travel",
+          "index": 2,
+          "file": "scara-robotics.z-travel.2.glb",
+          "bytes": 11536,
+          "triangles": 3216
+        },
+        {
+          "animation": "z-travel",
+          "index": 3,
+          "file": "scara-robotics.z-travel.3.glb",
+          "bytes": 11536,
+          "triangles": 3216
+        },
+        {
+          "animation": "z-travel",
+          "index": 4,
+          "file": "scara-robotics.z-travel.4.glb",
+          "bytes": 10372,
+          "triangles": 3216
+        },
+        {
+          "animation": "z-travel",
+          "index": 5,
+          "file": "scara-robotics.z-travel.5.glb",
+          "bytes": 11340,
+          "triangles": 3216
+        }
+      ]
+    },
+    {
+      "slug": "sd-case",
+      "size": 3620,
+      "lod1": {
+        "file": "sd-case.lod1.glb",
+        "bytes": 3620,
+        "triangles": 716
+      }
+    },
+    {
+      "slug": "seam-conduit-clip",
+      "size": 9420,
+      "lod1": {
+        "file": "seam-conduit-clip.lod1.glb",
+        "bytes": 9420,
+        "triangles": 2406
+      }
+    },
+    {
+      "slug": "seam-strain-relief",
+      "size": 9808,
+      "lod1": {
+        "file": "seam-strain-relief.lod1.glb",
+        "bytes": 9808,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "seed-tray",
+      "size": 9676,
+      "lod1": {
+        "file": "seed-tray.lod1.glb",
+        "bytes": 9676,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "sensor-mount-plate",
+      "size": 9500,
+      "lod1": {
+        "file": "sensor-mount-plate.lod1.glb",
+        "bytes": 9500,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "sentinel-gripper-hyperobject",
+      "size": 10356,
+      "lod1": {
+        "file": "sentinel-gripper-hyperobject.lod1.glb",
+        "bytes": 10356,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "sentinel-gripper-hyperobject.lod0.glb",
+        "bytes": 17880,
+        "triangles": 4786
+      },
+      "frames": [
+        {
+          "animation": "finger-reach",
+          "index": 0,
+          "file": "sentinel-gripper-hyperobject.finger-reach.0.glb",
+          "bytes": 17512,
+          "triangles": 4690
+        },
+        {
+          "animation": "finger-reach",
+          "index": 1,
+          "file": "sentinel-gripper-hyperobject.finger-reach.1.glb",
+          "bytes": 17440,
+          "triangles": 4738
+        },
+        {
+          "animation": "finger-reach",
+          "index": 2,
+          "file": "sentinel-gripper-hyperobject.finger-reach.2.glb",
+          "bytes": 17672,
+          "triangles": 4834
+        },
+        {
+          "animation": "finger-reach",
+          "index": 3,
+          "file": "sentinel-gripper-hyperobject.finger-reach.3.glb",
+          "bytes": 18168,
+          "triangles": 4882
+        },
+        {
+          "animation": "finger-reach",
+          "index": 4,
+          "file": "sentinel-gripper-hyperobject.finger-reach.4.glb",
+          "bytes": 18488,
+          "triangles": 4978
+        },
+        {
+          "animation": "finger-reach",
+          "index": 5,
+          "file": "sentinel-gripper-hyperobject.finger-reach.5.glb",
+          "bytes": 18580,
+          "triangles": 5026
+        },
+        {
+          "animation": "flexure-sweep",
+          "index": 0,
+          "file": "sentinel-gripper-hyperobject.flexure-sweep.0.glb",
+          "bytes": 18436,
+          "triangles": 4978
+        },
+        {
+          "animation": "flexure-sweep",
+          "index": 1,
+          "file": "sentinel-gripper-hyperobject.flexure-sweep.1.glb",
+          "bytes": 17964,
+          "triangles": 4834
+        },
+        {
+          "animation": "flexure-sweep",
+          "index": 2,
+          "file": "sentinel-gripper-hyperobject.flexure-sweep.2.glb",
+          "bytes": 17508,
+          "triangles": 4690
+        },
+        {
+          "animation": "flexure-sweep",
+          "index": 3,
+          "file": "sentinel-gripper-hyperobject.flexure-sweep.3.glb",
+          "bytes": 17096,
+          "triangles": 4570
+        },
+        {
+          "animation": "flexure-sweep",
+          "index": 4,
+          "file": "sentinel-gripper-hyperobject.flexure-sweep.4.glb",
+          "bytes": 16724,
+          "triangles": 4450
+        }
+      ]
+    },
+    {
+      "slug": "servo-bracket",
+      "size": 7964,
+      "lod1": {
+        "file": "servo-bracket.lod1.glb",
+        "bytes": 7964,
+        "triangles": 2048
+      }
+    },
+    {
+      "slug": "servo-horn",
+      "size": 9512,
+      "lod1": {
+        "file": "servo-horn.lod1.glb",
+        "bytes": 9512,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "sew-on-snap",
+      "size": 10280,
+      "lod1": {
+        "file": "sew-on-snap.lod1.glb",
+        "bytes": 10280,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "sew-through-button",
+      "size": 10256,
+      "lod1": {
+        "file": "sew-through-button.lod1.glb",
+        "bytes": 10256,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "sewing-guide",
+      "size": 9128,
+      "lod1": {
+        "file": "sewing-guide.lod1.glb",
+        "bytes": 9128,
+        "triangles": 2292
+      }
+    },
+    {
+      "slug": "shaft-collar",
+      "size": 10248,
+      "lod1": {
+        "file": "shaft-collar.lod1.glb",
+        "bytes": 10248,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "shaft-coupler",
+      "size": 9992,
+      "lod1": {
+        "file": "shaft-coupler.lod1.glb",
+        "bytes": 9992,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "shaft-coupler-kit",
+      "size": 9932,
+      "lod1": {
+        "file": "shaft-coupler-kit.lod1.glb",
+        "bytes": 9932,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "shank-button-solid",
+      "size": 10616,
+      "lod1": {
+        "file": "shank-button-solid.lod1.glb",
+        "bytes": 10616,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "sharps-lid",
+      "size": 8788,
+      "lod1": {
+        "file": "sharps-lid.lod1.glb",
+        "bytes": 8788,
+        "triangles": 2254
+      }
+    },
+    {
+      "slug": "sharps-lid-adapter",
+      "size": 10304,
+      "lod1": {
+        "file": "sharps-lid-adapter.lod1.glb",
+        "bytes": 10304,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "shelf-bracket",
+      "size": 4520,
+      "lod1": {
+        "file": "shelf-bracket.lod1.glb",
+        "bytes": 4520,
+        "triangles": 1052
+      }
+    },
+    {
+      "slug": "shoe-accessory",
+      "size": 7168,
+      "lod1": {
+        "file": "shoe-accessory.lod1.glb",
+        "bytes": 7168,
+        "triangles": 1696
+      }
+    },
+    {
+      "slug": "shoe-bar",
+      "size": 6608,
+      "lod1": {
+        "file": "shoe-bar.lod1.glb",
+        "bytes": 6608,
+        "triangles": 1636
+      }
+    },
+    {
+      "slug": "shoe-horn",
+      "size": 10740,
+      "lod1": {
+        "file": "shoe-horn.lod1.glb",
+        "bytes": 10740,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "shoe-mount",
+      "size": 4816,
+      "lod1": {
+        "file": "shoe-mount.lod1.glb",
+        "bytes": 4816,
+        "triangles": 1072
+      }
+    },
+    {
+      "slug": "shoe-tree",
+      "size": 1660,
+      "lod1": {
+        "file": "shoe-tree.lod1.glb",
+        "bytes": 1660,
+        "triangles": 116
+      }
+    },
+    {
+      "slug": "side-release-buckle",
+      "size": 5972,
+      "lod1": {
+        "file": "side-release-buckle.lod1.glb",
+        "bytes": 5972,
+        "triangles": 1416
+      }
+    },
+    {
+      "slug": "sign-post-bracket",
+      "size": 9220,
+      "lod1": {
+        "file": "sign-post-bracket.lod1.glb",
+        "bytes": 9220,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "size-marker-ring",
+      "size": 10540,
+      "lod1": {
+        "file": "size-marker-ring.lod1.glb",
+        "bytes": 10540,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "snap-electrode-carrier",
+      "size": 10332,
+      "lod1": {
+        "file": "snap-electrode-carrier.lod1.glb",
+        "bytes": 10332,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "snap-fit",
+      "size": 1620,
+      "lod1": {
+        "file": "snap-fit.lod1.glb",
+        "bytes": 1620,
+        "triangles": 72
+      }
+    },
+    {
+      "slug": "snap-hook-swivel",
+      "size": 10140,
+      "lod1": {
+        "file": "snap-hook-swivel.lod1.glb",
+        "bytes": 10140,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "soap-holder",
+      "size": 9780,
+      "lod1": {
+        "file": "soap-holder.lod1.glb",
+        "bytes": 9780,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "socket-adapter",
+      "size": 11340,
+      "lod1": {
+        "file": "socket-adapter.lod1.glb",
+        "bytes": 11340,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "soft-finger",
+      "size": 9412,
+      "lod1": {
+        "file": "soft-finger.lod1.glb",
+        "bytes": 9412,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "soft-gripper-pad",
+      "size": 5688,
+      "lod1": {
+        "file": "soft-gripper-pad.lod1.glb",
+        "bytes": 5688,
+        "triangles": 1288
+      }
+    },
+    {
       "slug": "soft-jaw",
-      "size": 2312,
+      "size": 9584,
       "lod1": {
         "file": "soft-jaw.lod1.glb",
-        "bytes": 2312,
-        "triangles": 284
+        "bytes": 9584,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "solar-dryer-tray",
+      "size": 2700,
+      "lod1": {
+        "file": "solar-dryer-tray.lod1.glb",
+        "bytes": 2700,
+        "triangles": 392
+      }
+    },
+    {
+      "slug": "solar-mount",
+      "size": 2540,
+      "lod1": {
+        "file": "solar-mount.lod1.glb",
+        "bytes": 2540,
+        "triangles": 352
+      }
+    },
+    {
+      "slug": "spacer-block",
+      "size": 2880,
+      "lod1": {
+        "file": "spacer-block.lod1.glb",
+        "bytes": 2880,
+        "triangles": 536
+      }
+    },
+    {
+      "slug": "speaker-bracket",
+      "size": 4708,
+      "lod1": {
+        "file": "speaker-bracket.lod1.glb",
+        "bytes": 4708,
+        "triangles": 1060
+      }
+    },
+    {
+      "slug": "spice-jar",
+      "size": 10080,
+      "lod1": {
+        "file": "spice-jar.lod1.glb",
+        "bytes": 10080,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "spigot-adapter",
+      "size": 10076,
+      "lod1": {
+        "file": "spigot-adapter.lod1.glb",
+        "bytes": 10076,
+        "triangles": 2500
       }
     },
     {
       "slug": "spiral-planter",
-      "size": 10084,
+      "size": 10188,
       "lod1": {
         "file": "spiral-planter.lod1.glb",
-        "bytes": 10084,
+        "bytes": 10188,
         "triangles": 2500
       },
       "lod0": {
         "file": "spiral-planter.lod0.glb",
-        "bytes": 56376,
-        "triangles": 17170
+        "bytes": 56340,
+        "triangles": 17138
+      },
+      "frames": [
+        {
+          "animation": "height-sweep",
+          "index": 0,
+          "file": "spiral-planter.height-sweep.0.glb",
+          "bytes": 56324,
+          "triangles": 17184
+        },
+        {
+          "animation": "height-sweep",
+          "index": 1,
+          "file": "spiral-planter.height-sweep.1.glb",
+          "bytes": 56340,
+          "triangles": 17138
+        },
+        {
+          "animation": "height-sweep",
+          "index": 2,
+          "file": "spiral-planter.height-sweep.2.glb",
+          "bytes": 56324,
+          "triangles": 17218
+        },
+        {
+          "animation": "height-sweep",
+          "index": 3,
+          "file": "spiral-planter.height-sweep.3.glb",
+          "bytes": 56208,
+          "triangles": 17386
+        },
+        {
+          "animation": "height-sweep",
+          "index": 4,
+          "file": "spiral-planter.height-sweep.4.glb",
+          "bytes": 56524,
+          "triangles": 17586
+        },
+        {
+          "animation": "turn-sweep",
+          "index": 0,
+          "file": "spiral-planter.turn-sweep.0.glb",
+          "bytes": 56672,
+          "triangles": 17768
+        },
+        {
+          "animation": "turn-sweep",
+          "index": 1,
+          "file": "spiral-planter.turn-sweep.1.glb",
+          "bytes": 56504,
+          "triangles": 17398
+        },
+        {
+          "animation": "turn-sweep",
+          "index": 2,
+          "file": "spiral-planter.turn-sweep.2.glb",
+          "bytes": 56340,
+          "triangles": 17138
+        },
+        {
+          "animation": "turn-sweep",
+          "index": 3,
+          "file": "spiral-planter.turn-sweep.3.glb",
+          "bytes": 56132,
+          "triangles": 17002
+        },
+        {
+          "animation": "turn-sweep",
+          "index": 4,
+          "file": "spiral-planter.turn-sweep.4.glb",
+          "bytes": 56260,
+          "triangles": 16942
+        },
+        {
+          "animation": "turn-sweep",
+          "index": 5,
+          "file": "spiral-planter.turn-sweep.5.glb",
+          "bytes": 56120,
+          "triangles": 16884
+        }
+      ]
+    },
+    {
+      "slug": "spline-hub",
+      "size": 4600,
+      "lod1": {
+        "file": "spline-hub.lod1.glb",
+        "bytes": 4600,
+        "triangles": 956
+      }
+    },
+    {
+      "slug": "splint",
+      "size": 10076,
+      "lod1": {
+        "file": "splint.lod1.glb",
+        "bytes": 10076,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "sprinkler-adapter",
+      "size": 11044,
+      "lod1": {
+        "file": "sprinkler-adapter.lod1.glb",
+        "bytes": 11044,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "sprue-tray",
+      "size": 5000,
+      "lod1": {
+        "file": "sprue-tray.lod1.glb",
+        "bytes": 5000,
+        "triangles": 1132
+      }
+    },
+    {
+      "slug": "squeeze-nozzle",
+      "size": 10416,
+      "lod1": {
+        "file": "squeeze-nozzle.lod1.glb",
+        "bytes": 10416,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "stacking-bin",
+      "size": 2360,
+      "lod1": {
+        "file": "stacking-bin.lod1.glb",
+        "bytes": 2360,
+        "triangles": 344
+      }
+    },
+    {
+      "slug": "stacking-drawer",
+      "size": 1952,
+      "lod1": {
+        "file": "stacking-drawer.lod1.glb",
+        "bytes": 1952,
+        "triangles": 204
+      }
+    },
+    {
+      "slug": "stemfie",
+      "size": 10084,
+      "lod1": {
+        "file": "stemfie.lod1.glb",
+        "bytes": 10084,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "stirrbar-rack",
+      "size": 4452,
+      "lod1": {
+        "file": "stirrbar-rack.lod1.glb",
+        "bytes": 4452,
+        "triangles": 932
+      }
+    },
+    {
+      "slug": "stormwater-grate",
+      "size": 3764,
+      "lod1": {
+        "file": "stormwater-grate.lod1.glb",
+        "bytes": 3764,
+        "triangles": 784
+      }
+    },
+    {
+      "slug": "strain-relief",
+      "size": 9044,
+      "lod1": {
+        "file": "strain-relief.lod1.glb",
+        "bytes": 9044,
+        "triangles": 2304
+      }
+    },
+    {
+      "slug": "strap-buckle",
+      "size": 6880,
+      "lod1": {
+        "file": "strap-buckle.lod1.glb",
+        "bytes": 6880,
+        "triangles": 1768
+      }
+    },
+    {
+      "slug": "strap-end-tip",
+      "size": 10244,
+      "lod1": {
+        "file": "strap-end-tip.lod1.glb",
+        "bytes": 10244,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "strap-ring",
+      "size": 10844,
+      "lod1": {
+        "file": "strap-ring.lod1.glb",
+        "bytes": 10844,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "strike-plate",
+      "size": 9660,
+      "lod1": {
+        "file": "strike-plate.lod1.glb",
+        "bytes": 9660,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "string-winder",
+      "size": 9796,
+      "lod1": {
+        "file": "string-winder.lod1.glb",
+        "bytes": 9796,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "stud-bracket",
+      "size": 9060,
+      "lod1": {
+        "file": "stud-bracket.lod1.glb",
+        "bytes": 9060,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "suction-cup-bellows",
+      "size": 10908,
+      "lod1": {
+        "file": "suction-cup-bellows.lod1.glb",
+        "bytes": 10908,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "suction-mount",
+      "size": 10348,
+      "lod1": {
+        "file": "suction-mount.lod1.glb",
+        "bytes": 10348,
+        "triangles": 2500
       }
     },
     {
       "slug": "superformula",
-      "size": 4712,
+      "size": 11480,
       "lod1": {
         "file": "superformula.lod1.glb",
-        "bytes": 4712,
-        "triangles": 908
+        "bytes": 11480,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "suspender-clip",
+      "size": 3308,
+      "lod1": {
+        "file": "suspender-clip.lod1.glb",
+        "bytes": 3308,
+        "triangles": 636
+      }
+    },
+    {
+      "slug": "switch-mount",
+      "size": 10244,
+      "lod1": {
+        "file": "switch-mount.lod1.glb",
+        "bytes": 10244,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "syringe-carriage",
+      "size": 8032,
+      "lod1": {
+        "file": "syringe-carriage.lod1.glb",
+        "bytes": 8032,
+        "triangles": 1950
+      }
+    },
+    {
+      "slug": "tape-dispenser",
+      "size": 4112,
+      "lod1": {
+        "file": "tape-dispenser.lod1.glb",
+        "bytes": 4112,
+        "triangles": 840
+      }
+    },
+    {
+      "slug": "tendon-knuckle",
+      "size": 9824,
+      "lod1": {
+        "file": "tendon-knuckle.lod1.glb",
+        "bytes": 9824,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "terminal-cover",
+      "size": 3112,
+      "lod1": {
+        "file": "terminal-cover.lod1.glb",
+        "bytes": 3112,
+        "triangles": 548
+      }
+    },
+    {
+      "slug": "terrain-clip",
+      "size": 9480,
+      "lod1": {
+        "file": "terrain-clip.lod1.glb",
+        "bytes": 9480,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "thimble",
+      "size": 10600,
+      "lod1": {
+        "file": "thimble.lod1.glb",
+        "bytes": 10600,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "thread-adapter-kit",
+      "size": 11088,
+      "lod1": {
+        "file": "thread-adapter-kit.lod1.glb",
+        "bytes": 11088,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "thread-capsule",
+      "size": 10336,
+      "lod1": {
+        "file": "thread-capsule.lod1.glb",
+        "bytes": 10336,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "thread-capsule.lod0.glb",
+        "bytes": 17380,
+        "triangles": 4548
+      },
+      "frames": [
+        {
+          "animation": "length-sweep",
+          "index": 0,
+          "file": "thread-capsule.length-sweep.0.glb",
+          "bytes": 46512,
+          "triangles": 12600
+        },
+        {
+          "animation": "length-sweep",
+          "index": 1,
+          "file": "thread-capsule.length-sweep.1.glb",
+          "bytes": 44308,
+          "triangles": 12350
+        },
+        {
+          "animation": "length-sweep",
+          "index": 2,
+          "file": "thread-capsule.length-sweep.2.glb",
+          "bytes": 43436,
+          "triangles": 12436
+        },
+        {
+          "animation": "length-sweep",
+          "index": 3,
+          "file": "thread-capsule.length-sweep.3.glb",
+          "bytes": 43264,
+          "triangles": 12618
+        },
+        {
+          "animation": "length-sweep",
+          "index": 4,
+          "file": "thread-capsule.length-sweep.4.glb",
+          "bytes": 42668,
+          "triangles": 12618
+        },
+        {
+          "animation": "size-sweep",
+          "index": 0,
+          "file": "thread-capsule.size-sweep.0.glb",
+          "bytes": 39036,
+          "triangles": 11136
+        },
+        {
+          "animation": "size-sweep",
+          "index": 1,
+          "file": "thread-capsule.size-sweep.1.glb",
+          "bytes": 44680,
+          "triangles": 12388
+        },
+        {
+          "animation": "size-sweep",
+          "index": 2,
+          "file": "thread-capsule.size-sweep.2.glb",
+          "bytes": 29396,
+          "triangles": 8116
+        },
+        {
+          "animation": "size-sweep",
+          "index": 3,
+          "file": "thread-capsule.size-sweep.3.glb",
+          "bytes": 30360,
+          "triangles": 8502
+        },
+        {
+          "animation": "size-sweep",
+          "index": 4,
+          "file": "thread-capsule.size-sweep.4.glb",
+          "bytes": 48504,
+          "triangles": 13338
+        },
+        {
+          "animation": "size-sweep",
+          "index": 5,
+          "file": "thread-capsule.size-sweep.5.glb",
+          "bytes": 48652,
+          "triangles": 13576
+        }
+      ]
+    },
+    {
+      "slug": "threaded-boss",
+      "size": 10124,
+      "lod1": {
+        "file": "threaded-boss.lod1.glb",
+        "bytes": 10124,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "thumb-screw",
+      "size": 10524,
+      "lod1": {
+        "file": "thumb-screw.lod1.glb",
+        "bytes": 10524,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "timing-pulley",
+      "size": 10056,
+      "lod1": {
+        "file": "timing-pulley.lod1.glb",
+        "bytes": 10056,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "toggle",
+      "size": 10140,
+      "lod1": {
+        "file": "toggle.lod1.glb",
+        "bytes": 10140,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "toiletry-holder",
+      "size": 9896,
+      "lod1": {
+        "file": "toiletry-holder.lod1.glb",
+        "bytes": 9896,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "tool-gripper",
+      "size": 6884,
+      "lod1": {
+        "file": "tool-gripper.lod1.glb",
+        "bytes": 6884,
+        "triangles": 1620
+      }
+    },
+    {
+      "slug": "tool-holder",
+      "size": 9320,
+      "lod1": {
+        "file": "tool-holder.lod1.glb",
+        "bytes": 9320,
+        "triangles": 2498
       }
     },
     {
@@ -217,11 +5655,371 @@
         "file": "torus-knot.lod1.glb",
         "bytes": 11228,
         "triangles": 2500
+      }
+    },
+    {
+      "slug": "tpu-chainmail-panel",
+      "size": 11032,
+      "lod1": {
+        "file": "tpu-chainmail-panel.lod1.glb",
+        "bytes": 11032,
+        "triangles": 2494
+      }
+    },
+    {
+      "slug": "tpu-flexure-cuff",
+      "size": 9884,
+      "lod1": {
+        "file": "tpu-flexure-cuff.lod1.glb",
+        "bytes": 9884,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "tpu-gusset-flexure",
+      "size": 2180,
+      "lod1": {
+        "file": "tpu-gusset-flexure.lod1.glb",
+        "bytes": 2180,
+        "triangles": 292
+      }
+    },
+    {
+      "slug": "tpu-hinge-collar",
+      "size": 2780,
+      "lod1": {
+        "file": "tpu-hinge-collar.lod1.glb",
+        "bytes": 2780,
+        "triangles": 572
+      }
+    },
+    {
+      "slug": "tpu-lattice-panel",
+      "size": 7532,
+      "lod1": {
+        "file": "tpu-lattice-panel.lod1.glb",
+        "bytes": 7532,
+        "triangles": 1560
+      }
+    },
+    {
+      "slug": "tpu-pleat-panel",
+      "size": 1652,
+      "lod1": {
+        "file": "tpu-pleat-panel.lod1.glb",
+        "bytes": 1652,
+        "triangles": 124
+      }
+    },
+    {
+      "slug": "tpu-scale-mail",
+      "size": 2016,
+      "lod1": {
+        "file": "tpu-scale-mail.lod1.glb",
+        "bytes": 2016,
+        "triangles": 212
+      }
+    },
+    {
+      "slug": "tri-glide-slider",
+      "size": 9356,
+      "lod1": {
+        "file": "tri-glide-slider.lod1.glb",
+        "bytes": 9356,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "trim-clip",
+      "size": 10460,
+      "lod1": {
+        "file": "trim-clip.lod1.glb",
+        "bytes": 10460,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "tripod-hub",
+      "size": 9956,
+      "lod1": {
+        "file": "tripod-hub.lod1.glb",
+        "bytes": 9956,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "trouser-hook-bar",
+      "size": 8852,
+      "lod1": {
+        "file": "trouser-hook-bar.lod1.glb",
+        "bytes": 8852,
+        "triangles": 2454
       },
       "lod0": {
-        "file": "torus-knot.lod0.glb",
-        "bytes": 22880,
-        "triangles": 5760
+        "file": "trouser-hook-bar.lod0.glb",
+        "bytes": 59100,
+        "triangles": 20138
+      },
+      "frames": [
+        {
+          "animation": "sew-holes",
+          "index": 0,
+          "file": "trouser-hook-bar.sew-holes.0.glb",
+          "bytes": 54808,
+          "triangles": 18106
+        },
+        {
+          "animation": "sew-holes",
+          "index": 1,
+          "file": "trouser-hook-bar.sew-holes.1.glb",
+          "bytes": 59100,
+          "triangles": 20138
+        },
+        {
+          "animation": "sew-holes",
+          "index": 2,
+          "file": "trouser-hook-bar.sew-holes.2.glb",
+          "bytes": 61312,
+          "triangles": 21154
+        },
+        {
+          "animation": "sew-holes",
+          "index": 3,
+          "file": "trouser-hook-bar.sew-holes.3.glb",
+          "bytes": 49932,
+          "triangles": 16074
+        },
+        {
+          "animation": "sew-holes",
+          "index": 4,
+          "file": "trouser-hook-bar.sew-holes.4.glb",
+          "bytes": 49932,
+          "triangles": 16074
+        },
+        {
+          "animation": "width-sweep",
+          "index": 0,
+          "file": "trouser-hook-bar.width-sweep.0.glb",
+          "bytes": 58488,
+          "triangles": 20138
+        },
+        {
+          "animation": "width-sweep",
+          "index": 1,
+          "file": "trouser-hook-bar.width-sweep.1.glb",
+          "bytes": 59216,
+          "triangles": 20138
+        },
+        {
+          "animation": "width-sweep",
+          "index": 2,
+          "file": "trouser-hook-bar.width-sweep.2.glb",
+          "bytes": 59340,
+          "triangles": 20226
+        },
+        {
+          "animation": "width-sweep",
+          "index": 3,
+          "file": "trouser-hook-bar.width-sweep.3.glb",
+          "bytes": 59752,
+          "triangles": 20350
+        },
+        {
+          "animation": "width-sweep",
+          "index": 4,
+          "file": "trouser-hook-bar.width-sweep.4.glb",
+          "bytes": 60116,
+          "triangles": 20350
+        }
+      ]
+    },
+    {
+      "slug": "tslot-2020",
+      "size": 4080,
+      "lod1": {
+        "file": "tslot-2020.lod1.glb",
+        "bytes": 4080,
+        "triangles": 842
+      }
+    },
+    {
+      "slug": "tslot-corner",
+      "size": 7348,
+      "lod1": {
+        "file": "tslot-corner.lod1.glb",
+        "bytes": 7348,
+        "triangles": 1800
+      }
+    },
+    {
+      "slug": "ttrack-clamp",
+      "size": 3624,
+      "lod1": {
+        "file": "ttrack-clamp.lod1.glb",
+        "bytes": 3624,
+        "triangles": 684
+      }
+    },
+    {
+      "slug": "tube-rack",
+      "size": 9984,
+      "lod1": {
+        "file": "tube-rack.lod1.glb",
+        "bytes": 9984,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "tube-squeezer",
+      "size": 8268,
+      "lod1": {
+        "file": "tube-squeezer.lod1.glb",
+        "bytes": 8268,
+        "triangles": 2152
+      }
+    },
+    {
+      "slug": "tweezer-stand",
+      "size": 9612,
+      "lod1": {
+        "file": "tweezer-stand.lod1.glb",
+        "bytes": 9612,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "twist-lock-closure",
+      "size": 9760,
+      "lod1": {
+        "file": "twist-lock-closure.lod1.glb",
+        "bytes": 9760,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "tx-tray-mount",
+      "size": 5328,
+      "lod1": {
+        "file": "tx-tray-mount.lod1.glb",
+        "bytes": 5328,
+        "triangles": 1100
+      }
+    },
+    {
+      "slug": "u-joint",
+      "size": 10320,
+      "lod1": {
+        "file": "u-joint.lod1.glb",
+        "bytes": 10320,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "undershelf-mount",
+      "size": 1532,
+      "lod1": {
+        "file": "undershelf-mount.lod1.glb",
+        "bytes": 1532,
+        "triangles": 60
+      }
+    },
+    {
+      "slug": "utensil-cuff",
+      "size": 8796,
+      "lod1": {
+        "file": "utensil-cuff.lod1.glb",
+        "bytes": 8796,
+        "triangles": 2280
+      }
+    },
+    {
+      "slug": "utility-hook",
+      "size": 3812,
+      "lod1": {
+        "file": "utility-hook.lod1.glb",
+        "bytes": 3812,
+        "triangles": 740
+      }
+    },
+    {
+      "slug": "vacuum-manifold-block",
+      "size": 9544,
+      "lod1": {
+        "file": "vacuum-manifold-block.lod1.glb",
+        "bytes": 9544,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "vbelt-pulley",
+      "size": 10580,
+      "lod1": {
+        "file": "vbelt-pulley.lod1.glb",
+        "bytes": 10580,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "veil-comb",
+      "size": 9392,
+      "lod1": {
+        "file": "veil-comb.lod1.glb",
+        "bytes": 9392,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "vent-louvre",
+      "size": 1840,
+      "lod1": {
+        "file": "vent-louvre.lod1.glb",
+        "bytes": 1840,
+        "triangles": 168
+      }
+    },
+    {
+      "slug": "vent-mount",
+      "size": 1732,
+      "lod1": {
+        "file": "vent-mount.lod1.glb",
+        "bytes": 1732,
+        "triangles": 132
+      }
+    },
+    {
+      "slug": "vesa-arm-extender",
+      "size": 9540,
+      "lod1": {
+        "file": "vesa-arm-extender.lod1.glb",
+        "bytes": 9540,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "vesa-mount",
+      "size": 9088,
+      "lod1": {
+        "file": "vesa-mount.lod1.glb",
+        "bytes": 9088,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "vesa-plate-adapter",
+      "size": 9880,
+      "lod1": {
+        "file": "vesa-plate-adapter.lod1.glb",
+        "bytes": 9880,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "vesa-thinclient",
+      "size": 9492,
+      "lod1": {
+        "file": "vesa-thinclient.lod1.glb",
+        "bytes": 9492,
+        "triangles": 2498
       }
     },
     {
@@ -231,6 +6029,327 @@
         "file": "voronoi.lod1.glb",
         "bytes": 4392,
         "triangles": 900
+      }
+    },
+    {
+      "slug": "walker-glide-cup",
+      "size": 10096,
+      "lod1": {
+        "file": "walker-glide-cup.lod1.glb",
+        "bytes": 10096,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "wall-device-mount",
+      "size": 4524,
+      "lod1": {
+        "file": "wall-device-mount.lod1.glb",
+        "bytes": 4524,
+        "triangles": 1052
+      }
+    },
+    {
+      "slug": "wall-tile",
+      "size": 1596,
+      "lod1": {
+        "file": "wall-tile.lod1.glb",
+        "bytes": 1596,
+        "triangles": 76
+      }
+    },
+    {
+      "slug": "warp-comb",
+      "size": 9180,
+      "lod1": {
+        "file": "warp-comb.lod1.glb",
+        "bytes": 9180,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "watch-adapter",
+      "size": 6636,
+      "lod1": {
+        "file": "watch-adapter.lod1.glb",
+        "bytes": 6636,
+        "triangles": 1676
+      }
+    },
+    {
+      "slug": "water-meter-lid",
+      "size": 7788,
+      "lod1": {
+        "file": "water-meter-lid.lod1.glb",
+        "bytes": 7788,
+        "triangles": 1900
+      }
+    },
+    {
+      "slug": "weather-mount",
+      "size": 9832,
+      "lod1": {
+        "file": "weather-mount.lod1.glb",
+        "bytes": 9832,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "wheel-hub",
+      "size": 10184,
+      "lod1": {
+        "file": "wheel-hub.lod1.glb",
+        "bytes": 10184,
+        "triangles": 2498
+      }
+    },
+    {
+      "slug": "wheelchair-cup",
+      "size": 7524,
+      "lod1": {
+        "file": "wheelchair-cup.lod1.glb",
+        "bytes": 7524,
+        "triangles": 1786
+      }
+    },
+    {
+      "slug": "worm-gear",
+      "size": 4572,
+      "lod1": {
+        "file": "worm-gear.lod1.glb",
+        "bytes": 4572,
+        "triangles": 1008
+      },
+      "frames": [
+        {
+          "animation": "ratio-sweep",
+          "index": 0,
+          "file": "worm-gear.ratio-sweep.0.glb",
+          "bytes": 9624,
+          "triangles": 2312
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 1,
+          "file": "worm-gear.ratio-sweep.1.glb",
+          "bytes": 13176,
+          "triangles": 3352
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 2,
+          "file": "worm-gear.ratio-sweep.2.glb",
+          "bytes": 16868,
+          "triangles": 4392
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 3,
+          "file": "worm-gear.ratio-sweep.3.glb",
+          "bytes": 18856,
+          "triangles": 5040
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 4,
+          "file": "worm-gear.ratio-sweep.4.glb",
+          "bytes": 21496,
+          "triangles": 5904
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 5,
+          "file": "worm-gear.ratio-sweep.5.glb",
+          "bytes": 24336,
+          "triangles": 6840
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 6,
+          "file": "worm-gear.ratio-sweep.6.glb",
+          "bytes": 27524,
+          "triangles": 7776
+        },
+        {
+          "animation": "ratio-sweep",
+          "index": 7,
+          "file": "worm-gear.ratio-sweep.7.glb",
+          "bytes": 30548,
+          "triangles": 8712
+        },
+        {
+          "animation": "start-sweep",
+          "index": 0,
+          "file": "worm-gear.start-sweep.0.glb",
+          "bytes": 14172,
+          "triangles": 3912
+        },
+        {
+          "animation": "start-sweep",
+          "index": 1,
+          "file": "worm-gear.start-sweep.1.glb",
+          "bytes": 14992,
+          "triangles": 3912
+        },
+        {
+          "animation": "start-sweep",
+          "index": 2,
+          "file": "worm-gear.start-sweep.2.glb",
+          "bytes": 32184,
+          "triangles": 9327
+        }
+      ]
+    },
+    {
+      "slug": "worm-wheel",
+      "size": 11380,
+      "lod1": {
+        "file": "worm-wheel.lod1.glb",
+        "bytes": 11380,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "yarn-guide",
+      "size": 10104,
+      "lod1": {
+        "file": "yarn-guide.lod1.glb",
+        "bytes": 10104,
+        "triangles": 2500
+      }
+    },
+    {
+      "slug": "zipper",
+      "size": 9524,
+      "lod1": {
+        "file": "zipper.lod1.glb",
+        "bytes": 9524,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "zipper.lod0.glb",
+        "bytes": 56540,
+        "triangles": 18064
+      },
+      "frames": [
+        {
+          "animation": "gauge-sweep",
+          "index": 0,
+          "file": "zipper.gauge-sweep.0.glb",
+          "bytes": 56300,
+          "triangles": 18194
+        },
+        {
+          "animation": "gauge-sweep",
+          "index": 1,
+          "file": "zipper.gauge-sweep.1.glb",
+          "bytes": 56416,
+          "triangles": 18080
+        },
+        {
+          "animation": "gauge-sweep",
+          "index": 2,
+          "file": "zipper.gauge-sweep.2.glb",
+          "bytes": 56480,
+          "triangles": 18046
+        },
+        {
+          "animation": "gauge-sweep",
+          "index": 3,
+          "file": "zipper.gauge-sweep.3.glb",
+          "bytes": 56648,
+          "triangles": 18104
+        },
+        {
+          "animation": "gauge-sweep",
+          "index": 4,
+          "file": "zipper.gauge-sweep.4.glb",
+          "bytes": 56484,
+          "triangles": 18100
+        },
+        {
+          "animation": "length-sweep",
+          "index": 0,
+          "file": "zipper.length-sweep.0.glb",
+          "bytes": 14432,
+          "triangles": 4092
+        },
+        {
+          "animation": "length-sweep",
+          "index": 1,
+          "file": "zipper.length-sweep.1.glb",
+          "bytes": 56476,
+          "triangles": 18066
+        },
+        {
+          "animation": "length-sweep",
+          "index": 2,
+          "file": "zipper.length-sweep.2.glb",
+          "bytes": 56428,
+          "triangles": 18854
+        },
+        {
+          "animation": "length-sweep",
+          "index": 3,
+          "file": "zipper.length-sweep.3.glb",
+          "bytes": 56652,
+          "triangles": 19022
+        },
+        {
+          "animation": "length-sweep",
+          "index": 4,
+          "file": "zipper.length-sweep.4.glb",
+          "bytes": 56608,
+          "triangles": 19044
+        },
+        {
+          "animation": "length-sweep",
+          "index": 5,
+          "file": "zipper.length-sweep.5.glb",
+          "bytes": 56708,
+          "triangles": 18994
+        },
+        {
+          "animation": "length-sweep",
+          "index": 6,
+          "file": "zipper.length-sweep.6.glb",
+          "bytes": 56748,
+          "triangles": 18948
+        },
+        {
+          "animation": "length-sweep",
+          "index": 7,
+          "file": "zipper.length-sweep.7.glb",
+          "bytes": 56768,
+          "triangles": 19600
+        }
+      ]
+    },
+    {
+      "slug": "zipper-loop-aid",
+      "size": 9812,
+      "lod1": {
+        "file": "zipper-loop-aid.lod1.glb",
+        "bytes": 9812,
+        "triangles": 2436
+      }
+    },
+    {
+      "slug": "zipper-pull",
+      "size": 5728,
+      "lod1": {
+        "file": "zipper-pull.lod1.glb",
+        "bytes": 5728,
+        "triangles": 1352
+      }
+    },
+    {
+      "slug": "zipper-pull-assist",
+      "size": 5980,
+      "lod1": {
+        "file": "zipper-pull-assist.lod1.glb",
+        "bytes": 5980,
+        "triangles": 1452
       }
     }
   ]

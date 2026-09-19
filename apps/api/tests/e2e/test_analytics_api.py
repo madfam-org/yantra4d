@@ -45,6 +45,22 @@ def client(app):
 
 
 class TestTrackEvent:
+    def test_track_landing_tier_keeps_only_allowlisted_keys(self, client):
+        """The landing's tier beacon (apps/landing/src/lib/rum.ts) is accepted and
+        anything beyond tier/source/lang/path — an email, say — never reaches the row."""
+        res = client.post("/api/analytics/track", json={
+            "project": "landing",
+            "event": "landing_tier",
+            "data": {"tier": "lite", "source": "signals", "lang": "es", "path": "/", "email": "nobody@example.com"},
+        })
+        assert res.status_code == 201
+        from extensions import db
+        from models.analytics import AnalyticsEvent
+        with client.application.app_context():
+            row = db.session.query(AnalyticsEvent).filter_by(event_type="landing_tier").one()
+            assert row.project == "landing"
+            assert json.loads(row.event_data) == {"tier": "lite", "source": "signals", "lang": "es", "path": "/"}
+
     def test_track_render(self, client):
         res = client.post("/api/analytics/track", json={
             "project": "test-project",

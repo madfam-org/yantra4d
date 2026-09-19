@@ -211,9 +211,11 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      # Blocking: anything that reaches a user's browser.
+      # Blocking: anything that reaches a user's browser. Through the gate
+      # script so a registry outage (retried, then a loud warning) is told
+      # apart from a finding (fails closed) — see scripts/ci/npm_audit_gate.sh.
       - name: Audit runtime dependencies
-        run: npm audit --audit-level=high --omit=dev
+        run: bash "$GITHUB_WORKSPACE/scripts/ci/npm_audit_gate.sh" --audit-level=high --omit=dev
       # Advisory: build-time tooling (vite, vitest, astro) never ships, so a CVE
       # there must not block a deploy — but it stays visible in the log.
       - name: Audit build tooling (advisory)
@@ -280,9 +282,11 @@ jobs:
           cache: npm
           cache-dependency-path: apps/landing/package-lock.json
       - run: npm ci
-      # Blocking: anything that reaches a user's browser.
+      # Blocking: anything that reaches a user's browser. Through the gate
+      # script so a registry outage (retried, then a loud warning) is told
+      # apart from a finding (fails closed) — see scripts/ci/npm_audit_gate.sh.
       - name: Audit runtime dependencies
-        run: npm audit --audit-level=high --omit=dev
+        run: bash "$GITHUB_WORKSPACE/scripts/ci/npm_audit_gate.sh" --audit-level=high --omit=dev
       # Advisory: build-time tooling (astro, sharp) never ships, so a CVE there
       # must not block a deploy — but it stays visible in the log.
       - name: Audit build tooling (advisory)
@@ -434,9 +438,11 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      # Blocking: anything that reaches a user's browser.
+      # Blocking: anything that reaches a user's browser. Through the gate
+      # script so a registry outage (retried, then a loud warning) is told
+      # apart from a finding (fails closed) — see scripts/ci/npm_audit_gate.sh.
       - name: Audit runtime dependencies
-        run: npm audit --audit-level=high --omit=dev --legacy-peer-deps
+        run: bash "$GITHUB_WORKSPACE/scripts/ci/npm_audit_gate.sh" --audit-level=high --omit=dev --legacy-peer-deps
       # Advisory: build-time tooling (vite, vitest) never ships, so a CVE there
       # must not block a deploy — but it stays visible in the log.
       - name: Audit build tooling (advisory)
@@ -808,6 +814,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Deploy change-detection base resolver
         run: ./scripts/ci/tests/test_last_successful_deploy_sha.sh
+      # The npm audit gate: an outage of the registry's advisory endpoint must
+      # retry and then warn, a finding must still fail the job.
+      - name: npm audit gate
+        run: ./scripts/ci/tests/test_npm_audit_gate.sh
       # The registry login is the other piece of deploy.yml that is a shell
       # script rather than an action, and for the same reason: an action that
       # cannot retry loses a whole build job — and with it the deploy — to one

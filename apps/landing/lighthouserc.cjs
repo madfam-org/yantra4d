@@ -36,6 +36,12 @@ const KIB = 1024;
 /** Category scores are 0–1 in assertions, percentages in the budgets file. */
 const score = (percent) => percent / 100;
 
+/** From scripts/ci/landing-lighthouse-cpu.mjs via `npm run lhci`; a bare `lhci autorun` leaves it unset. */
+const cpuSlowdownMultiplier = (() => {
+  const value = Number(process.env.LH_CPU_MULTIPLIER);
+  return Number.isFinite(value) && value > 0 ? value : undefined;
+})();
+
 function playwrightChromium() {
   try {
     return require('@playwright/test').chromium.executablePath();
@@ -111,6 +117,17 @@ module.exports = {
         // first CI run, 2026-09-19. Playwright passes the same flag by default,
         // which is why the e2e suite never hit it.
         chromeFlags: process.env.CI ? '--no-sandbox --disable-dev-shm-usage' : undefined,
+        // CPU throttling calibrated to the host. Lighthouse's default 4× is
+        // written for a high-end desktop (BenchmarkIndex 1500–2000); the ARC
+        // pod measured 937–1782 within ONE job (ci run 35460027219,
+        // 2026-09-19) and TBT tracked it run by run — 985 → 974 ms, 1504 →
+        // 123 ms, 1782 → 91 ms — for the same build. `npm run lhci` measures
+        // the BenchmarkIndex first (scripts/ci/landing-lighthouse-cpu.mjs) and
+        // sets LH_CPU_MULTIPLIER so the emulated phone stays the same on a
+        // laptop and on the runner. Unset means Lighthouse's own 4×. Only the
+        // multiplier is given: Lighthouse merges it into its mobile network
+        // preset, which stays untouched.
+        ...(cpuSlowdownMultiplier ? { throttling: { cpuSlowdownMultiplier } } : {}),
       },
     },
     assert: {

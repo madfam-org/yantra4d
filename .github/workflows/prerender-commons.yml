@@ -376,8 +376,14 @@ jobs:
 
       # Everything above uploaded and (optionally) opened the PR first, so a
       # red run still leaves the operator with the models and the summary.
+      # !cancelled(): without a status function GitHub adds success() to this
+      # condition, and success() is already false when a LATER step has failed
+      # (the PR step, on 2026-09-19, run 35460054814) — so the optimizer's
+      # --strict verdict (exit 1, one lod1 at 28 KB against 12 KB) was recorded
+      # as the step's outcome and this report was skipped; the breach reached
+      # the branch without a red verdict of its own.
       - name: Report render and optimize failures
-        if: steps.render.outcome == 'failure' || steps.optimize.outcome == 'failure'
+        if: ${{ !cancelled() && (steps.render.outcome == 'failure' || steps.optimize.outcome == 'failure') }}
         run: |
           {
             echo "## Prerender finished with failures"

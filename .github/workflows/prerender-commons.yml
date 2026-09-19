@@ -1,0 +1,376 @@
+name: Prerender commons models
+
+# Renders every public cartridge in docs/commons-catalog.json (default mode,
+# manifest defaults) plus the keyframes of every manifest that declares
+# `animations`, through a LOCAL API started on the runner, then runs the
+# landing's mesh optimizer (scripts/dev/optimize-commons-models.mjs) to produce
+# the meshopt-compressed LOD files + manifest.json (v2) the landing streams.
+# Guide: docs/guides/landing-models-pipeline.md.
+#
+# Nothing here talks to api.yantra4d.com. The API, Redis and the render worker
+# run on this runner exactly the way the nightly browser audit runs them
+# (.github/workflows/e2e-audit.yml): the API never renders inline — /api/render
+# enqueues to Redis and answers 503 "Render worker unavailable" unless the
+# worker's heartbeat is there — so a backend without the worker would render
+# nothing at all.
+#
+# Incremental: the raw renders live in an actions/cache keyed on a digest of
+# every cartridge directory plus the render-engine fingerprint. A restored
+# cache lets scripts/dev/render_commons_models.py re-render only the cartridges
+# whose hash moved (see its .render-index.json).
+#
+# The models are deliberately NOT pushed to main: a refresh changes what the
+# page ships, so it goes through a PR (open_pr) and CI like any other change.
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'  # Monthly, the 1st at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      open_pr:
+        description: Commit the refreshed models to a chore/commons-models-<run> branch and open a PR.
+        type: boolean
+        default: false
+      slugs:
+        description: >-
+          Comma-separated cartridge slugs to (re-)render, e.g. gridfinity,motor-mount.
+          Empty renders the whole catalog. A limited run never passes --clean to
+          the optimizer, so the other cartridges' LODs are left alone.
+        type: string
+        default: ''
+      lod0:
+        description: >-
+          Which cartridges also get a lod0 (full-detail) file: all, hero, none or a
+          comma-separated list. hero = apps/landing/models.hero.json if present, else
+          every manifest with an `animations` array.
+        type: string
+        default: hero
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# One render at a time: two runs racing on the same cache key would both
+# render everything, and the second PR would only conflict with the first.
+concurrency:
+  group: prerender-commons
+  cancel-in-progress: false
+
+jobs:
+  prerender:
+    # ADR-010: every job runs on MADFAM-operated runners; there is no
+    # GitHub-hosted arm.
+    runs-on: madfam-runners-blue
+    timeout-minutes: 120
+    steps:
+      # One level of submodules + the PAT brings the public commons in; the
+      # client-private cartridges are `update = none`, so git skips them and
+      # they never reach a public artifact (same shape as deploy.yml's
+      # build-landing, and never `recursive` — see "Submodule depth" at the
+      # top of .github/workflows/ci.yml).
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.MADFAM_BOT_PAT }}
+
+      - name: Confirm the commons submodule is populated
+        run: |
+          set -euo pipefail
+          count=$(find projects -mindepth 2 -maxdepth 2 -name project.json | wc -l | tr -d ' ')
+          echo "cartridge manifests: $count"
+          test "$count" -gt 0 || {
+            echo "::error title=Prerender setup failed::the projects commons submodule is empty after checkout"
+            exit 1
+          }
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/landing/package-lock.json
+
+      # ── Backend, directly on the runner (mirrors ci.yml › e2e and e2e-audit.yml) ──
+      - name: Install OpenSCAD, Redis and backend dependencies
+        working-directory: apps/api
+        run: |
+          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad redis-server
+          pip install -r requirements.txt
+          pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
+
+      - name: Start Redis
+        run: |
+          redis-server --daemonize yes --port 6379 --save "" --appendonly no
+          for _ in 1 2 3 4 5; do redis-cli ping 2>/dev/null | grep -q PONG && break; sleep 1; done
+          redis-cli ping
+
+      - name: Start backend
+        working-directory: apps/api
+        env:
+          PORT: "5000"
+          FLASK_DEBUG: "false"
+          AUTH_ENABLED: "false"
+          # ~800 renders from one client in one hour: the per-tier render quota
+          # would otherwise trip for a reason unrelated to the cartridges.
+          RATE_LIMIT_ENABLED: "false"
+          # Gate this auth-off harness as the top tier. AUTH_ENABLED=false alone
+          # does NOT unlock the render path: the render routes resolve the
+          # caller's tier through middleware.auth.effective_tier(), which grants
+          # the top tier only when Flask debug is on, and otherwise gates the
+          # request as `guest` — and guest may not use the CadQuery engine
+          # (apps/api/tiers.json), which is what 480 of the 502 catalog
+          # cartridges' default modes are. HARNESS_TIER is the opt-in knob for
+          # exactly this: apps/api/config.py line 94 reads it, and it is only
+          # ever honoured while AUTH_ENABLED is false (services/core/tier_service
+          # .harness_tier_override(), docs/AUTH.md § Harness tier), so it can
+          # widen nothing in a real deployment.
+          #
+          # The value must be a tier tiers.json knows: an unknown one is dropped
+          # with a log line and the run silently renders as `guest` again
+          # (apps/api/tests/unit/test_harness_tier.py::TestHarnessTierOverride
+          # ::test_unknown_tier_ignored, line 101). `premium` is the canonical
+          # top tier (TOP_TIER, services/core/tier_service.py line 28) and the
+          # literal that test_honoured_when_auth_disabled (line 66) pins.
+          HARNESS_TIER: "premium"
+          REDIS_URL: redis://localhost:6379
+          PROJECTS_DIR: ${{ github.workspace }}/projects
+        run: |
+          set -uo pipefail
+          python app.py > "$RUNNER_TEMP/backend.log" 2>&1 &
+          backend_pid=$!
+          deadline=$(( SECONDS + 180 ))
+          delay=1
+          until curl -fsS http://localhost:5000/api/health > /dev/null 2>&1; do
+            if ! kill -0 "$backend_pid" 2>/dev/null; then
+              echo "::error title=Prerender setup failed::backend process exited before serving /api/health"
+              echo "--- backend.log ---"; cat "$RUNNER_TEMP/backend.log"
+              exit 1
+            fi
+            if (( SECONDS >= deadline )); then
+              echo "::error title=Prerender setup failed::backend did not serve /api/health within 180s"
+              echo "--- backend.log ---"; cat "$RUNNER_TEMP/backend.log"
+              kill "$backend_pid" 2>/dev/null || true
+              exit 1
+            fi
+            sleep "$delay"
+            (( delay < 5 )) && delay=$(( delay + 1 ))
+          done
+          echo "backend healthy after ${SECONDS}s"
+          curl -fsS http://localhost:5000/api/health | python3 -c 'import sys,json; d=json.load(sys.stdin); print("openscad:", d.get("checks",{}).get("openscad"))'
+          curl -fsS http://localhost:5000/api/projects | python3 -c 'import sys,json; d=json.load(sys.stdin); ps=d.get("projects", d) if isinstance(d, dict) else d; print("projects served:", len(ps))'
+
+      # One worker, as the nightly audit runs it: the worker's startup
+      # reconciliation assumes a single replica. The render script keeps four
+      # requests in flight so the queue never drains between renders and the
+      # download/merge work overlaps the next render; a timed-out request is
+      # retried by the script.
+      - name: Start render worker
+        working-directory: apps/api
+        env:
+          FLASK_DEBUG: "false"
+          AUTH_ENABLED: "false"
+          RATE_LIMIT_ENABLED: "false"
+          REDIS_URL: redis://localhost:6379
+          PROJECTS_DIR: ${{ github.workspace }}/projects
+          # The worker imports the API package from here (default is the
+          # container path /app/backend).
+          YANTRA4D_BACKEND_PATH: ${{ github.workspace }}/apps/api
+        run: |
+          set -uo pipefail
+          stamp="import sys,time;[sys.stdout.write(time.strftime('%Y-%m-%dT%H:%M:%SZ ',time.gmtime())+l) for l in sys.stdin]"
+          python -u ../worker/render_worker.py > >(python3 -u -c "$stamp" > "$RUNNER_TEMP/worker.log") 2>&1 &
+          worker_pid=$!
+          deadline=$(( SECONDS + 120 ))
+          until curl -fsS http://localhost:5000/api/health | python3 -c 'import sys,json; sys.exit(0 if json.load(sys.stdin)["checks"]["render_worker"]["ok"] else 1)' 2>/dev/null; do
+            if ! kill -0 "$worker_pid" 2>/dev/null; then
+              echo "::error title=Prerender setup failed::render worker exited before publishing a heartbeat"
+              echo "--- worker.log ---"; cat "$RUNNER_TEMP/worker.log"
+              exit 1
+            fi
+            if (( SECONDS >= deadline )); then
+              echo "::error title=Prerender setup failed::render worker heartbeat not seen by the API within 120s"
+              echo "--- worker.log ---"; cat "$RUNNER_TEMP/worker.log"
+              kill "$worker_pid" 2>/dev/null || true
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "render worker heartbeat seen after ${SECONDS}s"
+
+      # ── Incremental raw renders ─────────────────────────────────────────────
+      # The engine fingerprint is everything that changes a rendered mesh besides
+      # the cartridge itself: the OpenSCAD build, the CadQuery release, the
+      # engine/worker code and the sandbox lock. It is folded into every
+      # cartridge hash, so a kernel bump re-renders the whole commons once.
+      - name: Compute the render cache key
+        id: key
+        env:
+          ENGINE_CODE_HASH: ${{ hashFiles('apps/api/requirements.txt', 'packages/commons-sandbox/sandbox.lock.json', 'apps/api/services/engine/**', 'apps/worker/**') }}
+        run: |
+          set -euo pipefail
+          openscad_version=$(openscad --version 2>&1 | head -n1 | tr -s ' ' '_')
+          fingerprint="${openscad_version}|code=${ENGINE_CODE_HASH}"
+          digest=$(python3 scripts/dev/render_commons_models.py --hash-only --engine-fingerprint "$fingerprint")
+          echo "fingerprint=$fingerprint" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+          echo "engine fingerprint: $fingerprint"
+          echo "cartridge digest:   $digest"
+
+      # restore + explicit save (below, if: always()) rather than actions/cache:
+      # a run where one cartridge failed to render must still save the other
+      # 500, or every retry starts from zero.
+      - name: Restore raw renders
+        id: raw-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: apps/landing/public/models/raw
+          key: commons-raw-v1-${{ steps.key.outputs.digest }}
+          restore-keys: |
+            commons-raw-v1-
+
+      # Four requests in flight (--jobs 4). A cartridge that fails keeps its
+      # previous raw file when the cache had one; one that never rendered gets
+      # no LODs, and the summary says which. The step continues on error so a
+      # single broken cartridge does not block refreshing the other 501 — the
+      # job is still failed at the end (see "Report render and optimize
+      # failures").
+      - name: Render the cartridges
+        id: render
+        continue-on-error: true
+        env:
+          SLUGS: ${{ inputs.slugs }}
+        run: |
+          set -uo pipefail
+          args=(--api http://localhost:5000 --jobs 4 --engine-fingerprint "${{ steps.key.outputs.fingerprint }}")
+          if [ -n "${SLUGS// /}" ]; then
+            # A dispatch naming slugs wants them rendered now, cache or not.
+            args+=(--slugs "${SLUGS// /}" --force)
+          fi
+          python3 scripts/dev/render_commons_models.py "${args[@]}"
+
+      - name: Save raw renders
+        if: always() && steps.raw-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: apps/landing/public/models/raw
+          key: commons-raw-v1-${{ steps.key.outputs.digest }}
+
+      # ── Optimize ────────────────────────────────────────────────────────────
+      - name: Install landing dependencies
+        working-directory: apps/landing
+        run: npm ci
+
+      # --strict: any file over its byte budget (apps/landing/perf-budgets.json
+      # `meshes`) fails the step, after writing it, so the artifact and the PR
+      # still carry everything for a reviewer to look at. --clean only on a full
+      # run: on a limited one it would retire the LODs of every cartridge that
+      # was not asked for, because their raw inputs are simply absent.
+      - name: Optimize the models
+        id: optimize
+        continue-on-error: true
+        working-directory: apps/landing
+        env:
+          SLUGS: ${{ inputs.slugs }}
+          LOD0: ${{ inputs.lod0 || 'hero' }}
+        run: |
+          set -uo pipefail
+          args=(--strict --lod0 "$LOD0")
+          if [ -z "${SLUGS// /}" ]; then
+            args+=(--clean)
+          fi
+          npm run models:optimize -- "${args[@]}"
+
+      - name: Upload the optimized models
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: commons-models-${{ github.run_id }}
+          path: |
+            apps/landing/public/models
+            !apps/landing/public/models/raw/**
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Upload backend and worker logs
+        uses: actions/upload-artifact@v4
+        if: failure() || steps.render.outcome == 'failure'
+        with:
+          name: commons-models-logs-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/backend.log
+            ${{ runner.temp }}/worker.log
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # ── Pull request ────────────────────────────────────────────────────────
+      - name: Create PR
+        id: create-pr
+        if: github.event_name == 'workflow_dispatch' && inputs.open_pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # The org setting "Allow GitHub Actions to create and approve pull
+          # requests" is OFF, so the default GITHUB_TOKEN is refused here no
+          # matter what `permissions:` grants — which is why every run of the
+          # retired update-submodules.yml died at this step. DISPATCH_TOKEN is
+          # the estate's PAT convention (issue #69 tracked provisioning it once
+          # at org level). An unprovisioned secret is the empty string, so this
+          # falls back to today's behaviour until it exists, and the step below
+          # says so loudly rather than failing silently.
+          token: ${{ secrets.DISPATCH_TOKEN || github.token }}
+          add-paths: apps/landing/public/models
+          commit-message: "chore(landing): refresh the commons models (run ${{ github.run_number }})"
+          title: "chore(landing): refresh the commons models"
+          body: |
+            Rendered through a local API on the runner and optimized with
+            `scripts/dev/optimize-commons-models.mjs` (`--strict --lod0 ${{ inputs.lod0 || 'hero' }}`${{ inputs.slugs == '' && ' --clean' || '' }}).
+
+            - slugs: `${{ inputs.slugs == '' && 'whole catalog' || inputs.slugs }}`
+            - render step: `${{ steps.render.outcome }}` · optimize step: `${{ steps.optimize.outcome }}`
+            - commons pin and per-file budgets: see `apps/landing/public/models/manifest.json`
+
+            The run's job summary carries the before/after table and any
+            cartridge that failed to render. Opened by
+            `.github/workflows/prerender-commons.yml`
+            ([run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})).
+          branch: chore/commons-models-${{ github.run_id }}
+          delete-branch: true
+
+      - name: Explain PR creation failure
+        if: failure() && steps.create-pr.outcome == 'failure'
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ### Commons models could not open a PR
+
+          The branch was pushed, but the PR could not be created. The org
+          setting **"Allow GitHub Actions to create and approve pull requests"
+          is OFF**, so the default `GITHUB_TOKEN` cannot open one.
+
+          Permanent fix: provision `DISPATCH_TOKEN` (org level recommended) — the
+          same operator item issue #69 tracked for the retired satellite loop.
+          Until then, open the PR by hand from the pushed branch, or download the
+          `commons-models-<run>` artifact and commit it locally.
+          EOF
+          exit 1
+
+      # Everything above uploaded and (optionally) opened the PR first, so a
+      # red run still leaves the operator with the models and the summary.
+      - name: Report render and optimize failures
+        if: steps.render.outcome == 'failure' || steps.optimize.outcome == 'failure'
+        run: |
+          {
+            echo "## Prerender finished with failures"
+            echo
+            echo "- render step: ${{ steps.render.outcome }} (a cartridge that failed to render is listed above)"
+            echo "- optimize step: ${{ steps.optimize.outcome }} (exit 1 = a file over its byte budget under --strict; exit 4 = an input could not be processed)"
+            echo
+            echo "The artifact and the PR (if requested) carry everything that did get produced."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error title=Prerender finished with failures::render=${{ steps.render.outcome }} optimize=${{ steps.optimize.outcome }} — see the job summary"
+          exit 1

@@ -23,18 +23,19 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
 **Pillar**: Fabrication / CAD + Commons
 **Type**: service
 **Status**: production
+**Registry product**: Yantra4D (`yantra4d`, live, front door yantra4d.com).
 
 ### Deployed services
 
-| Service | Public domain | Container port |
-|---|---|---|
-| `yantra4d-landing` | yantra4d.com | 3000 |
-| `yantra4d-studio` | app.yantra4d.com | 3001 |
-| `yantra4d-backend` | api.yantra4d.com | 8000 |
-| `yantra4d-admin` | admin.yantra4d.com | 3002 |
+| Service            | Public domain      | Container port |
+| ------------------ | ------------------ | -------------- |
+| `yantra4d-landing` | yantra4d.com       | 3000           |
+| `yantra4d-studio`  | app.yantra4d.com   | 3001           |
+| `yantra4d-backend` | api.yantra4d.com   | 8000           |
+| `yantra4d-admin`   | admin.yantra4d.com | 3002           |
 
 **Kubernetes namespace**: `yantra4d`
-**Cluster**: bare-metal k3s on Hetzner (see topology section below).
+**Cluster**: bare-metal k3s (see topology section below).
 
 ### Upstream dependencies (this repo consumes)
 
@@ -68,70 +69,133 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
 
 ## MADFAM Ecosystem Map
 
-MADFAM runs ~40 services on sovereign bare-metal infrastructure. Everything
-below is embedded here so this document stands alone.
+Everything below is embedded here so this document stands alone. The product
+tables are rendered from the public projection of the MADFAM product registry
+(`madfam-org/solarpunk-foundry` → `packages/core/src/products/projection.public.json`,
+generated from the registry in `madfam-org/internal-devops`). To change a row,
+change the registry and re-render — never hand-edit a rendered copy.
 
-### The platforms every repo should know about
+Estate counts (services, ArgoCD applications, namespaces) are deliberately not
+typed here: they move weekly. The dated figures live in the private operations
+record, `madfam-org/internal-devops` (`infrastructure/topology.md`).
 
-| Platform | Repo | Role |
-|---|---|---|
-| **Enclii** | `madfam-org/enclii` | PaaS control plane — all deploys go through this |
-| **Janua** | `madfam-org/janua` | OIDC/OAuth 2.0 provider — RS256 JWKS at `auth.madfam.io/.well-known/jwks.json` |
-| **Dhanam** | `madfam-org/dhanam` | Billing + payment gateways (Stripe, Mercado Pago, SPEI, etc.) |
-| **Selva** | `madfam-org/selva-office` | LLM inference routing + agent orchestration |
-| **Karafiel** | `madfam-org/karafiel` | Operational compliance — CFDI, NOM-151, e.firma, SAT-adjacent. Owns legal-ops / contract templates |
-| **Tezca** | `madfam-org/tezca` | Mexican law oracle (informational only — feeds Karafiel) |
-| **Cotiza** | `madfam-org/digifab-quoting` | MADFAM's quoting engine (fabrication + services) |
-| **Forgesight** | `madfam-org/forgesight` | Digital fabrication industry intelligence (pricing/vendor feed to Cotiza) |
-| **Pravara MES** | `madfam-org/pravara-mes` | Fabrication-node routing and dispatch (physical jobs) |
-| **PhyndCRM** | `madfam-org/phynd-crm` | Client-facing deliverables portal (single pane of glass per engagement) |
-| **Fortuna** | `madfam-org/fortuna` | Problem intelligence / zeitgeist analysis |
-| **Avala** | `madfam-org/avala` | Learning verification platform |
+### Products in the registry
+
+32 customer-facing products, grouped by the registry's category and listed in registry order. `—` means the registry records no public front door yet.
+
+#### Infrastructure
+
+| Product          | Repo                      | Front door | Lifecycle  | Role                                                                                    |
+| ---------------- | ------------------------- | ---------- | ---------- | --------------------------------------------------------------------------------------- |
+| **Enclii**       | `madfam-org/enclii`       | enclii.dev | live       | PaaS control plane — every deploy goes through it                                       |
+| **Janua**        | `madfam-org/janua`        | janua.dev  | live       | OIDC/OAuth 2.0 identity provider — RS256 JWKS at `auth.madfam.io/.well-known/jwks.json` |
+| **Selva**        | `madfam-org/selva-office` | selva.town | live       | LLM inference gateway (OpenAI-compatible `/v1`) + agent orchestration                   |
+| **Fragua**       | `madfam-org/enclii`       | —          | incubating | —                                                                                       |
+| **Enclii Depot** | `madfam-org/enclii`       | —          | incubating | —                                                                                       |
+
+#### Intelligence
+
+| Product        | Repo                    | Front door         | Lifecycle  | Role                                                                      |
+| -------------- | ----------------------- | ------------------ | ---------- | ------------------------------------------------------------------------- |
+| **Forgesight** | `madfam-org/forgesight` | forgesight.app     | live       | Digital-fabrication industry intelligence (pricing/vendor feed to Cotiza) |
+| **Dhanam**     | `madfam-org/dhanam`     | dhan.am            | live       | Billing, entitlements and payment gateways (Stripe, Mercado Pago, SPEI)   |
+| **Fortuna**    | `madfam-org/fortuna`    | fortuna.tube       | live       | Problem intelligence / zeitgeist analysis                                 |
+| **Rondelio**   | `madfam-org/rondelio`   | rondel.io          | live       | Games                                                                     |
+| **Factlas**    | `madfam-org/factlas`    | factl.as           | live       | Geospatial facts                                                          |
+| **Tlacuilo**   | `madfam-org/tlacuilo`   | tlacuilo.madfam.io | beta       | Document intelligence (OCR)                                               |
+| **LexiDrop**   | `madfam-org/lexidrop`   | ld.madfam.io       | incubating | —                                                                         |
+
+#### Standards
+
+| Product       | Repo                   | Front door         | Lifecycle  | Role                                                                      |
+| ------------- | ---------------------- | ------------------ | ---------- | ------------------------------------------------------------------------- |
+| **Karafiel**  | `madfam-org/karafiel`  | karafiel.mx        | live       | Operational compliance — CFDI, NOM-151, e.firma; owns legal-ops templates |
+| **Tezca**     | `madfam-org/tezca`     | tezca.mx           | live       | Mexican law oracle (informational only — feeds Karafiel)                  |
+| **Avala**     | `madfam-org/avala`     | avala.studio       | live       | Learning and competency verification                                      |
+| **Meridian**  | `madfam-org/meridian`  | meridian.madfam.io | degraded   | —                                                                         |
+| **geom-core** | `madfam-org/geom-core` | —                  | incubating | —                                                                         |
+
+#### Applications
+
+| Product             | Repo                         | Front door       | Lifecycle  | Role                                                                  |
+| ------------------- | ---------------------------- | ---------------- | ---------- | --------------------------------------------------------------------- |
+| **Yantra4D**        | `madfam-org/yantra4d`        | yantra4d.com     | live       | Phygital fabrication                                                  |
+| **Cotiza**          | `madfam-org/digifab-quoting` | cotiza.studio    | live       | Quoting engine (fabrication + services)                               |
+| **Pravara MES**     | `madfam-org/pravara-mes`     | mes.madfam.io    | live       | Fabrication routing and dispatch (physical jobs)                      |
+| **Voxa**            | `madfam-org/voxa`            | voxa.madfam.io   | live       | Assistive communication                                               |
+| **PhyndCRM**        | `madfam-org/phynd-crm`       | phynd.app        | live       | CRM — consent, campaigns, attribution                                 |
+| **CEQ**             | `madfam-org/ceq`             | ceq.lol          | degraded   | Generative asset pipeline — ComfyUI wrapper behind `/v1/render`       |
+| **Acervo**          | `madfam-org/acervo`          | acervo.madfam.io | live       | Records engine                                                        |
+| **Kalya**           | `madfam-org/kalya`           | kalya.app        | live       | Booking and scheduling                                                |
+| **Symbiosis HCM**   | `madfam-org/symbiosis-hcm`   | hcm.madfam.io    | live       | Human capital management — Mexican payroll                            |
+| **Nauta**           | `madfam-org/nauta`           | nauta.quest      | live       | Fractional CTO practice — staff cockpit and per-client ERP workspaces |
+| **Fashion Cabinet** | `madfam-org/fashion-cabinet` | fashioncabi.net  | live       | Parametric fashion                                                    |
+| **Periplo**         | `madfam-org/periplo`         | —                | incubating | —                                                                     |
+| **RouteCraft**      | `madfam-org/routecraft`      | routecraft.app   | live       | Trip planning                                                         |
+| **Telesia**         | `madfam-org/telesia`         | telesia.quest    | incubating | Completion                                                            |
+| **Marca**           | `madfam-org/marca`           | madf.am          | incubating | —                                                                     |
+
+### Retired products — never present as live
+
+| Product | Retired on | Successor | Redirect |
+| ------- | ---------- | --------- | -------- |
+| PENNY   | 2026-07-25 | Selva     | none     |
+| Sim4D   | 2026-08-30 | Yantra4D  | none     |
+| SPARK   | 2026-04-08 | —         | none     |
 
 ### Cross-repo conventions
 
 - **Auth**: every authenticated service verifies Janua JWTs via JWKS at
   `https://auth.madfam.io/.well-known/jwks.json`. RS256 only — HS256 is
-  fail-closed after the 2026-04-23 audit (H3/H4).
+  banned on any path that verifies a Janua token (audit 2026-04-23 H3/H4);
+  an app's own session cookie needs its own secret.
 - **Billing**: credit metering + entitlements flow through Dhanam. See
   `madfam-org/dhanam` for the meter/entitlement/invoice APIs.
 - **Inference**: every LLM call should route through Selva
   (`selva-office`) at `/v1` (OpenAI-compatible). Do not talk directly
   to OpenAI / Anthropic from service code.
+- **Agent SaaS tools**: end-user delegated tool calls (Slack, Gmail, etc.)
+  route through Coupler (`madfam-org/coupler`, the Agent Tool Plane), not the
+  Enclii Provider Hub.
+  Operator infra actions stay on Enclii `providers.*` / `ops.*` (proxied as
+  `madfam.ops.*` from Coupler for admin agents only).
+- **Third-party messages**: email/SMS/chat to people outside MADFAM go out
+  through Angelia Courier (`madfam-org/angelia`). Carve-outs: Janua's
+  customer-configured alert notifier and Selva agent tools.
 - **CORS**: explicit allowlist per service. Wildcards are banned
   (audit 2026-04-23 H2/H5/H6).
-- **Images**: `@sha256:`-pinned in every manifest. Kyverno fail-closes on
-  `:latest` or mutable tags.
-- **Onboarding**: `POST /v1/admin/onboard` on switchyard-api creates
-  namespace, ArgoCD app, Cloudflare tunnel routes, Janua client, and
-  NetworkPolicies in one shot. See `enclii/docs/guides/ONBOARDING_GUIDE.md`.
+- **Images**: `@sha256:`-pinned in every manifest; mutable tags such as
+  `:latest` are a Kyverno policy violation.
+- **Onboarding**: `enclii onboard` (`POST /v1/admin/onboard` on
+  switchyard-api) creates namespace, ArgoCD app, Cloudflare tunnel routes,
+  Janua client, and NetworkPolicies in one shot. See
+  `enclii/docs/guides/ONBOARDING_GUIDE.md`.
 
 ### Production topology
 
-Bare-metal k3s (v1.33+), 3 nodes. Roles only — this generator emits node
-ROLES and never node hostnames, IPs or hardware SKUs, because every repo it
-writes into is public and `ECOSYSTEM.md` is copied verbatim across all of
-them (2026-07-16 exposure class 1). Node identity lives only in
-`madfam-org/internal-devops`.
+Bare-metal k3s (v1.33+), 4 nodes, described by ROLE only. This file is
+generated and copied into public repos, so it never carries node hostnames,
+IP addresses or hardware SKUs (2026-07-16 exposure class 1). Node identity
+lives only in `madfam-org/internal-devops`.
 
-- control-plane node (dedicated bare-metal) — control-plane + primary workload
-- worker node (dedicated bare-metal) — worker + Longhorn 2nd replica
-- builder node (cloud compute instance, labelled `role=builder`, tainted
+- control-plane node — control plane + primary workload
+- worker node — workloads + Longhorn second replica
+- two builder nodes (labelled `role=builder`, tainted
   `builder=true:NoSchedule`) — ARC runners only
 
-**Ingress**: Cloudflare Tunnel → 2× cloudflared pods → K8s ClusterIP → container port.
+**Ingress**: Cloudflare Tunnel → cloudflared pods → K8s ClusterIP → container port.
 Zero exposed node ports. TLS terminated at Cloudflare edge.
 
-**Storage**: Longhorn CSI v1.7+ in 2-replica mode across dedicated nodes.
-Object storage: Cloudflare R2 (zero egress).
+**Storage**: Longhorn CSI in 2-replica mode across the control-plane and
+worker nodes. Object storage: Cloudflare R2 (zero egress).
 
-**GitOps**: ArgoCD App-of-Apps (~28 apps across ~22 namespaces) with self-heal.
-Push to `main` → CI builds → GHCR → `kustomize edit set image` commits digest →
+**GitOps**: ArgoCD App-of-Apps with self-heal. Push to `main` → CI builds →
+GHCR → `kustomize edit set image` commits the digest →
 ArgoCD syncs → Switchyard tracks lifecycle events.
 
-**Operational access** (SSH, kubeconfigs, node hostnames, server IPs, hardware
-SKUs, cost ledger): private repo
-`madfam-org/internal-devops`. Not in any public repo.
+**Operational access** (SSH, kubeconfigs, node identity, estate counts, cost
+ledger): private repo `madfam-org/internal-devops`. Not in any public repo.
+Policy: the repo-boundary contract, `internal-devops/docs/repo-boundary-contract.md`.
 
 ---
 
@@ -144,16 +208,15 @@ to kubectl only for the gaps listed at the end of this section.
 
 ### Install
 
+GitHub Releases are the verified binary channel (Linux, macOS and Windows
+archives with checksums): `https://github.com/madfam-org/enclii/releases`.
+Homebrew, Scoop and `get.enclii.dev` are convenience targets, not yet
+monitored.
+
 ```bash
-# macOS
-brew install enclii/tap/enclii
-
-# Linux / from source (any OS with Go 1.22+)
+# From source (any OS with Go)
 git clone https://github.com/madfam-org/enclii.git
-cd enclii && make install-cli
-
-# Build only (no install)
-make build-cli && ./bin/enclii version
+cd enclii && make build-cli && ./bin/enclii --version
 ```
 
 ### Auth
@@ -164,60 +227,61 @@ enclii whoami                 # verify active session
 enclii logout                 # clear local creds
 ```
 
-Env vars: `ENCLII_API_URL` (default `https://api.enclii.dev`),
-`ENCLII_TOKEN` (alternative to interactive login),
-`ENCLII_PROJECT`, `ENCLII_ENV`.
+Global flags: `--api-endpoint` (or `ENCLII_API_ENDPOINT`, default
+`https://api.enclii.dev`) and `--api-token` (or `ENCLII_API_TOKEN`; legacy
+`ENCLII_TOKEN` is still read) for non-interactive use. Set
+`ENCLII_PROJECT=<project-slug>` (or pass `--project`) when a command has to
+resolve a service name.
 
 ### Day-to-day for yantra4d-backend
 
 The commands below default to `yantra4d-backend` — the primary service name for
 this repo as registered in Switchyard. For any other service in the
-ecosystem, swap the name.
+ecosystem, swap the name. Environments are `dev`, `staging` and `prod`;
+most commands default to `dev`, so pass `--env prod` for production.
 
 ```bash
-# Status + where the pods are running
-enclii ps --wide
-enclii ps yantra4d-backend --env production
+# Status
+enclii ps --env prod
 
-# Logs (tail, filter, history)
-enclii logs yantra4d-backend -f                          # live tail
-enclii logs yantra4d-backend --since 1h --level error    # last hour, errors only
-enclii logs yantra4d-backend --env staging -f
+# Logs
+enclii logs yantra4d-backend --env prod -f                    # live tail
+enclii logs yantra4d-backend --env prod --since 1h -n 200     # last hour
 
-# Deploy (preview, staging, production)
-enclii deploy --env preview                       # from current branch
-enclii deploy --env staging
-enclii deploy --env production --strategy canary --canary-percent 10
+# Deploy (reads service.yaml)
+enclii deploy --env staging --wait
+enclii deploy --env prod --canary 10% --change-ticket <url>
 
 # Rollback
-enclii rollback yantra4d-backend                         # previous release
-enclii rollback yantra4d-backend --to-revision 5
+enclii rollback yantra4d-backend --env prod                   # previous release
+enclii rollback yantra4d-backend v42 --env prod
 
-# Releases + history
-enclii releases yantra4d-backend                          # list builds
-enclii releases yantra4d-backend --latest --output json
+# Releases + deployment history
+enclii releases yantra4d-backend -n 20
+enclii deployments list
 
-# Secrets (routed through Lockbox -> Vault -> ESO -> K8s)
-enclii secrets list yantra4d-backend
-enclii secrets set MY_KEY=value --service yantra4d-backend --secret
-enclii secrets rm MY_KEY --service yantra4d-backend
+# Secrets (routed through Lockbox → Vault → ESO → K8s)
+enclii secrets list --env prod
+enclii secrets set MY_KEY=value --secret --env prod
+
+# Chat-safe operator intake (values never pass through agent chat)
+enclii secrets intake submit <target> --reason "<audit reason>" --stdin
+enclii secrets intake status <intake-id>
 
 # Domains, tunnel routes, DNS
-enclii domains list yantra4d-backend
-enclii domains add yantra4d-backend my.example.com       # auto-provisions tunnel route + DNS
+enclii domains list --service yantra4d-backend
+enclii domains add my.example.com --service yantra4d-backend   # auto-provisions tunnel route + DNS
 
-# Scheduled jobs (cron + one-off)
-enclii jobs list
-enclii jobs run <job-name>                         # trigger one-off
-
-# Routing (ingress + TLS)
-enclii junctions list yantra4d-backend
-
-# Serverless (scale-to-zero functions)
+# Scheduled jobs, routing, serverless
+enclii jobs list --project <project-slug>
+enclii junctions list --project <project-slug>
 enclii functions list
 
+# Observability
+enclii observe health --service <service-id>
+
 # Local dev environment
-enclii local up         # spin up dependent services (postgres, redis, ...)
+enclii local up         # spin up dependent services (postgres, redis, …)
 enclii local logs
 enclii local down
 ```
@@ -259,20 +323,22 @@ go through Enclii web, API, or CLI.
 
 ### Exit codes (scripting against the CLI)
 
-| Code | Meaning |
-|---|---|
-| 0  | success |
-| 10 | validation error |
-| 20 | build failed |
-| 30 | deploy failed |
-| 40 | timeout |
-| 50 | auth error |
+| Code | Meaning          |
+| ---- | ---------------- |
+| 0    | success          |
+| 10   | validation error |
+| 20   | build failed     |
+| 30   | deploy failed    |
+| 40   | timeout          |
+| 50   | auth error       |
 
 ---
 
 ## Document provenance
 
-Generated 2026-04-23 as part of the "each repo stands alone" docs sweep. The
-generator and per-repo metadata live at `madfam-org/enclii/docs/templates/ecosystem/`.
-Re-render (don't hand-edit per-repo copies) when the ecosystem map or CLI
-reference needs to update across the fleet.
+Rendered by `madfam-org/enclii/docs/templates/ecosystem/generator.py` from this
+repo's metadata entry (plus any private overlay kept in this repo) and the
+public product-registry projection. First generated 2026-04-23 for the "each
+repo stands alone" docs sweep. Do not hand-edit this file: change the metadata,
+overlay or registry and re-render. `generator.py --check <repo-path>` fails when
+this file differs from what the generator would write.

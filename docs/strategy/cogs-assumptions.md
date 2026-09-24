@@ -25,10 +25,10 @@ primitives render faster, the heaviest commons cartridges slower.
 
 ## What the compute costs
 
-Node basis: a bare-metal AX41-class box at **$69/month**, 12 hardware threads.
+Node basis: a dedicated bare-metal node (hardware class: see the private operations record) at **$69/month**, 12 hardware threads.
 
 **Correction on provenance (2026-08-13):** that rate is what MADFAM pays for
-the *builder-03 CI node*, and an earlier version of this document presented it
+the *CI builder node*, and an earlier version of this document presented it
 as the render worker's node cost. It has not been verified that the render
 worker runs on the same class of machine. Treat $69/month as a *proxy rate for
 MADFAM bare metal*, not as this workload's billed cost. The conclusion below

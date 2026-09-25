@@ -5,3 +5,9 @@ metadata:
   labels:
     app.kubernetes.io/part-of: yantra4d
     enclii.dev/type: project
+    # Prometheus egress (monitoring/prometheus-egress and rules-eval-egress,
+    # enclii #637) reaches only namespaces carrying this label, so without it
+    # the /metrics scrape is refused before it leaves `monitoring`. It also
+    # admits this namespace to the shared `data` services (pgbouncer, postgres,
+    # redis, kafka) at the network layer -- credentials are still required.
+    enclii.dev/data-access: "true"

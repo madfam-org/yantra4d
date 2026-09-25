@@ -2,6 +2,10 @@
 flask~=3.0
 flask-cors~=4.0
 flask-sqlalchemy~=3.1
+# SQLAlchemy 2.1 makes psycopg (v3) the default driver for plain postgresql://
+# URLs; this image ships psycopg2 only, so DATABASE_URL=postgresql://... would
+# fail at startup with "No module named 'psycopg'". Cap until a deliberate upgrade.
+sqlalchemy>=2.0.16,<2.1
 flask-migrate~=4.0
 psycopg2-binary~=2.9
 gunicorn~=21.0

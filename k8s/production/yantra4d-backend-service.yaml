@@ -5,6 +5,15 @@ metadata:
   labels:
     app.kubernetes.io/name: yantra4d-backend
     app.kubernetes.io/part-of: yantra4d
+  # In-cluster Prometheus scrape (job kubernetes-services, both instances in
+  # namespace `monitoring`). prometheus.io/port is the POD port, not the
+  # Service port: the scrape goes to <podIP>:5000/metrics. /metrics answers only
+  # in-cluster callers (pod-IP Host, no Cloudflare edge headers) and 404s the
+  # public api.yantra4d.com -- see apps/api/utils/metrics.py.
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5000"
+    prometheus.io/path: "/metrics"
 spec:
   type: ClusterIP
   selector:

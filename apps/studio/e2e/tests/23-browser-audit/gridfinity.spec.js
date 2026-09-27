@@ -17,12 +17,9 @@ test.describe.configure({ mode: 'serial' })
 
 // projects/gridfinity/project.json declares project.name "Gridfinity".
 //
-// Rewritten 2026-09-04: the cartridge is CadQuery-only now. Its OpenSCAD side
-// (modes `cup`, `baseplate_scad`, `lid`, the "(OpenSCAD Extended)" labels, the
-// width_units/depth_units/height_units trio, bp_corner_radius,
-// bp_enable_magnets and the duplicated preset labels) left the commons with
-// the gridfinity_extended gitlink. What remains is 2 modes, 10 parameters and
-// 3 presets — every assertion below is read from that manifest.
+// The commons may add modes without changing this platform test. The loading
+// contract reads the pinned manifest; the interaction cases below target bin
+// and baseplate explicitly.
 const PROJECT_NAME = 'Gridfinity'
 
 test.describe('Gridfinity — Browser Audit', () => {
@@ -53,15 +50,21 @@ test.describe('Gridfinity — Browser Audit', () => {
 
   // ── A. Project Loading & Navigation ──────────────────────────────
 
-  test('loads gridfinity and shows manifest data', async ({ page }) => {
+  test('loads gridfinity and shows manifest data', async ({ page, request }) => {
+    const manifest = await fetchManifest(request, 'gridfinity')
+    expect(manifest).not.toBeNull()
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
     await expect(page.locator('header h1')).toContainText(PROJECT_NAME)
-    // 2 modes in project.json: bin and baseplate, both cadquery.
+    // The pinned commons owns the mode list, including restored OpenSCAD modes.
     // Scoped to the mode tablist and to what is on screen: the sidebar's
     // section tabs (Design/View/BOM/Export) are a [role="tablist"] too.
     const tabs = page.locator('[role="tablist"][aria-label="Mode selection"] [role="tab"]')
       .filter({ visible: true })
-    await expect(tabs).toHaveCount(2)
+    expect(manifest.modes.length).toBeGreaterThan(0)
+    await expect(tabs).toHaveCount(manifest.modes.length)
+    for (const mode of manifest.modes) {
+      await expect(tabs.getByText(mode.label.en, { exact: true })).toBeVisible()
+    }
   })
 
   // modes[0] is `bin`.
@@ -80,9 +83,8 @@ test.describe('Gridfinity — Browser Audit', () => {
     expect(page.url()).toContain('baseplate')
   })
 
-  // Was "switches to lid mode". Mode `lid` was OpenSCAD-only and left the
-  // cartridge; `bin` and `baseplate` are the only modes now, so switching back
-  // to bin is the remaining round-trip worth asserting.
+  // Exercise the CadQuery bin/baseplate round-trip independently of the
+  // additional OpenSCAD modes declared by the commons.
   test('switches back to bin mode', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
     await sidebar.selectMode('baseplate')

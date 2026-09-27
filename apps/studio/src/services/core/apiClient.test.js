@@ -93,6 +93,21 @@ describe('apiFetch', () => {
 })
 
 describe('useRateLimit', () => {
+  it('releases its subscription when the consumer unmounts', async () => {
+    const { renderHook } = await import('@testing-library/react')
+    const mod = await import('./apiClient')
+    const add = vi.spyOn(Set.prototype, 'add')
+    const { unmount } = renderHook(() => mod.useRateLimit())
+    const index = add.mock.calls.findIndex(([value]) =>
+      typeof value === 'function' && value.name === 'listener')
+    expect(index).toBeGreaterThanOrEqual(0)
+    const listeners = add.mock.contexts[index]
+    const listener = add.mock.calls[index][0]
+    expect(listeners.has(listener)).toBe(true)
+    unmount()
+    expect(listeners.has(listener)).toBe(false)
+  })
+
   it('returns initial rate limit state', async () => {
     const { renderHook } = await import('@testing-library/react')
     const mod = await import('./apiClient')

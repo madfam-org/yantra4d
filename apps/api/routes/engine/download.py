@@ -15,6 +15,7 @@ from middleware.auth import (
 from services.core.project_access import check_project_access
 from services.core.tier_service import export_format_allowed
 from services.engine.render_orchestrator import ALLOWED_EXPORT_FORMATS
+from services.storage.base import guess_content_type
 from services.storage.serving import send_artifact_download
 from utils.project_resolver import find_project_dir
 from utils.route_helpers import error_response, handle_exceptions, safe_join_path
@@ -112,7 +113,7 @@ def _download_render_file(slug: str, filename: str, file_format: str, claims) ->
     exports_dir = project_dir / "exports"
     safe_path = safe_join_path(str(exports_dir), filename)
     if safe_path and safe_path.exists() and safe_path.suffix.lower() == f".{normalized_format}":
-        return send_file(safe_path, as_attachment=True, download_name=filename)
+        return send_file(safe_path, as_attachment=True, download_name=filename, mimetype=guess_content_type(filename))
 
     return error_response("File not found", 404)
 
@@ -168,6 +169,6 @@ def download_scad(slug: str, filename: str) -> Response | tuple[Response, int]:
 
     safe_path = safe_join_path(str(project_dir), filename)
     if safe_path and safe_path.exists() and safe_path.suffix.lower() == '.scad':
-        return send_file(safe_path, as_attachment=True, download_name=filename)
+        return send_file(safe_path, as_attachment=True, download_name=filename, mimetype=guess_content_type(filename))
 
     return error_response("File not found", 404)

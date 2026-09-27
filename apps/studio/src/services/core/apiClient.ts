@@ -2,7 +2,7 @@
  * Shared API client that injects Authorization header when a token is available.
  * Tracks rate limit headers from render responses.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type TokenGetter = () => Promise<string | null>
 
@@ -114,14 +114,11 @@ export function isRateLimitExhausted(): boolean {
 export function useRateLimit(): RateLimitState {
   const [state, setState] = useState<RateLimitState>({ ..._rateLimitState })
 
-  // Subscribe on first call via module-level set
-  // Using useState initializer to register only once
-  useState(() => {
+  useEffect(() => {
     const listener: RateLimitListener = (newState) => setState(newState)
     _rateLimitListeners.add(listener)
-    // Return cleanup (not used by useState, but we store ref)
-    return () => _rateLimitListeners.delete(listener)
-  })
+    return () => { _rateLimitListeners.delete(listener) }
+  }, [])
 
   return state
 }

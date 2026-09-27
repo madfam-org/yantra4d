@@ -24,3 +24,8 @@ export function isLogWorthy(line: string): boolean {
     line.includes('Rendering') || line.includes('Total') ||
     line.includes('Simple:')
 }
+
+/** A kernel assertion can recover on the server; model syntax errors cannot. */
+export function isKernelFailureDiagnostic(line: string): boolean {
+  return /CGAL.*(?:assertion|precondition).*violat|Assertion.*SNC_|SNC_FM_decorator\.h/i.test(line)
+}

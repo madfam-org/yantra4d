@@ -73,8 +73,11 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
 
   const response = await fetch(url, { ...options, headers })
 
-  // Extract rate limit headers if present
-  if (response.headers?.get) {
+  // Catalog, estimates and artifacts have separate Flask rate-limit buckets.
+  // They must not replace the render allowance or alter render placement.
+  const path = new URL(url, 'http://localhost').pathname.replace(/\/$/, '')
+  const isRenderResponse = path === '/api/render' || path === '/api/render-stream'
+  if (isRenderResponse && response.headers?.get) {
     const rlLimit = response.headers.get('X-RateLimit-Limit')
     const rlRemaining = response.headers.get('X-RateLimit-Remaining')
     const rlTier = response.headers.get('X-RateLimit-Tier')

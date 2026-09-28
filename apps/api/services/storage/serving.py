@@ -58,8 +58,6 @@ from werkzeug.http import (
     parse_range_header,
 )
 
-from services.storage.base import guess_content_type
-
 from services.storage import (
     ArtifactInfo,
     ArtifactNotFound,

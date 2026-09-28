@@ -509,8 +509,8 @@ jobs:
       # The same pin is in apps/api/requirements-dev.txt so a developer's local
       # ruff is the one CI runs, and scripts/tests/test_ruff_pin.py fails if the
       # two ever disagree. Bump both together.
-      - run: pip install "ruff==0.16.5" pip-audit
-      - run: pip-audit --desc || true
+      - run: pip install "ruff==0.16.5" "pip-audit==2.10.1"
+      - run: pip-audit --desc
       - run: ruff check .
       # apps/worker was never linted by anything: this job's `ruff check .` runs
       # under `working-directory: apps/api`, and no other job installs ruff, so

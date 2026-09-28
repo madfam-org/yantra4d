@@ -1,5 +1,7 @@
 # Yantra4D Agent Operating Guide
 
+> Last Updated: 2026-09-28
+
 > [!IMPORTANT]
 > MADFAM-ENCLII-FIRST-LEGACY-RAW v1: This document contains legacy raw infrastructure command examples.
 > Routine production operations must use Enclii web, API, or CLI. Treat raw
@@ -576,3 +578,8 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 Per-project docs live in `projects/{slug}/docs/`.
 
 <!-- END LEGACY_CLAUDE_IMPORT -->
+
+## Repository boundary
+
+Read [the public repository boundary](./docs/PUBLIC_REPO_BOUNDARY.md).
+Owns the solid-model Studio, render API, render worker and model configuration experience. Solid cartridges are consumed from the pinned solid-hyperobjects commons; schemas and validators belong to hyperobjects-spec.

@@ -135,12 +135,11 @@ test.describe('Gridfinity — Browser Audit', () => {
     expect(isAfter).toBe(!wasBefore)
   })
 
-  // Preset labels are unique again: the OpenSCAD duplicates ("Small Parts Bin"
-  // and "Standard Baseplate" once per engine) left with their modes, so the
-  // three remaining presets each match exactly one button.
+  // CadQuery and OpenSCAD intentionally share translated preset labels.
+  // Select the manifest identity so this verifies the intended engine/mode.
   test('applies Small Parts Bin preset', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
-    await sidebar.applyPreset('Small Parts Bin')
+    await sidebar.applyPresetById('small_parts_bin')
     await expect(sidebar.sliderValue('grid_x')).toHaveText('2', { timeout: 10000 })
     await expect(sidebar.sliderValue('grid_y')).toHaveText('1', { timeout: 10000 })
     await expect(sidebar.sliderValue('grid_z')).toHaveText('3', { timeout: 10000 })
@@ -161,7 +160,7 @@ test.describe('Gridfinity — Browser Audit', () => {
 
   test('cross-mode preset switches to baseplate', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
-    await sidebar.applyPreset('Standard Baseplate')
+    await sidebar.applyPresetById('standard_baseplate')
     await page.waitForTimeout(1000)
     const active = await sidebar.getActiveMode()
     expect(active).toMatch(/baseplate|placa/i)

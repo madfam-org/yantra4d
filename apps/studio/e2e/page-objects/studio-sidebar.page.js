@@ -211,6 +211,11 @@ export class StudioSidebarPage extends BasePage {
     await this.presetButton(label).click()
   }
 
+  /** Apply a specific preset when localized labels overlap across engines. */
+  async applyPresetById(id) {
+    await this.sidebar.getByTestId(`preset-${id}`).click()
+  }
+
   /** Get slider by param id. */
   slider(paramId) {
     return this.sidebar.locator(`[aria-labelledby="param-label-${paramId}"]`)

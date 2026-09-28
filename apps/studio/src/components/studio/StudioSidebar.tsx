@@ -111,7 +111,7 @@ function ModeTabs({ className }: ModeTabsProps) {
     <div className={`w-full mt-2 ${className || ''}`} role="tablist" aria-label="Mode selection">
       <div
         className="grid w-full h-auto min-h-10 bg-transparent gap-1 rounded-md p-1"
-        style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}
+        style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 7rem), 1fr))' }}
       >
         {manifest.modes.map((m: Record<string, unknown>) => (
           <button
@@ -119,7 +119,7 @@ function ModeTabs({ className }: ModeTabsProps) {
             role="tab"
             aria-selected={mode === m.id}
             onClick={() => setMode(m.id as string)}
-            className={`min-h-[40px] whitespace-normal break-words leading-tight flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-md transition-all border ${
+            className={`min-w-0 min-h-[40px] whitespace-normal [overflow-wrap:anywhere] leading-tight flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-md transition-all border ${
               mode === m.id
                 ? 'bg-primary/10 text-primary border-primary/20'
                 : 'border-transparent text-muted-foreground hover:bg-muted/50'
@@ -131,7 +131,7 @@ function ModeTabs({ className }: ModeTabsProps) {
                 <span className="hidden md:inline-block font-medium">{getLabel(m as never, 'label', language)}</span>
               </>
             ) : (
-              <span className="font-medium">{getLabel(m as never, 'label', language)}</span>
+              <span className="min-w-0 font-medium">{getLabel(m as never, 'label', language)}</span>
             )}
           </button>
         ))}
@@ -422,9 +422,9 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
           </Sheet>
           {/* Quick mode tabs visible on mobile bar */}
           <Tabs value={mode} onValueChange={setMode} className="flex-1">
-            <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${manifest.modes.length}, minmax(0, 1fr))` }}>
+            <TabsList className="grid h-auto w-full" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 7rem), 1fr))' }}>
               {manifest.modes.map((m: Record<string, unknown>) => (
-                <TabsTrigger key={m.id as string} value={m.id as string} className="min-h-[44px] text-xs" title={getLabel(m as never, 'label', language)}>
+                <TabsTrigger key={m.id as string} value={m.id as string} className="min-w-0 min-h-[44px] whitespace-normal [overflow-wrap:anywhere] text-xs" title={getLabel(m as never, 'label', language)}>
                   {getLabel(m as never, 'label', language)}
                 </TabsTrigger>
               ))}

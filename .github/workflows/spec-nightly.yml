@@ -83,14 +83,22 @@ jobs:
 
       - name: Full render sweep
         id: sweep
+        shell: bash
         if: inputs.report_fixture == ''
         run: |
-          # default shell is bash -e -o pipefail: don't abort before the summary
+          # Explicit bash enables pipefail; an implicit shell only uses -e.
+          dirs=()
+          for manifest in projects/*/project.json; do
+            [ -f "$manifest" ] && dirs+=("${manifest%/project.json}")
+          done
+          [ "${#dirs[@]}" -gt 0 ] || { echo "::error::No cartridges found"; exit 1; }
           status=0
-          y4d-spec check --render --parity projects/*/ | tee sweep-report.txt || status=$?
+          y4d-spec check --render --parity --require-openscad \
+            --openscad-path "$PWD/libs" --openscad-path "$PWD/projects/commons-lib" \
+            "${dirs[@]}" 2>&1 | tee sweep-report.txt || status=$?
           echo "### y4d-spec nightly render sweep" >> "$GITHUB_STEP_SUMMARY"
           tail -1 sweep-report.txt >> "$GITHUB_STEP_SUMMARY"
-          grep "FAIL" sweep-report.txt | head -40 >> "$GITHUB_STEP_SUMMARY" || true
+          awk '/FAIL/ && shown++ < 40' sweep-report.txt >> "$GITHUB_STEP_SUMMARY" || true
           exit $status
 
       # A red sweep opens or updates the ONE tracking issue labelled

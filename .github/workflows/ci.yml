@@ -944,9 +944,15 @@ jobs:
         # public (2026-09-05), so no token is needed to fetch it.
         run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@38df6b49424f41def96a84168d78b5ed7e868e87"
       - name: Structural conformance (full commons)
+        shell: bash
         run: |
           status=0
-          y4d-spec check projects/*/ | tee spec-report.txt || status=$?
+          dirs=()
+          for manifest in projects/*/project.json; do
+            [ -f "$manifest" ] && dirs+=("${manifest%/project.json}")
+          done
+          [ "${#dirs[@]}" -gt 0 ] || { echo "::error::No cartridges found"; exit 1; }
+          y4d-spec check "${dirs[@]}" 2>&1 | tee spec-report.txt || status=$?
           echo "### y4d-spec structural" >> "$GITHUB_STEP_SUMMARY"
           tail -1 spec-report.txt >> "$GITHUB_STEP_SUMMARY"
           exit $status
@@ -955,6 +961,7 @@ jobs:
       # the strongest check per second spent (it caught hook-and-eye's dead
       # bra_tape dispatch, invisible in every structural lane).
       - name: Render conformance (changed cartridges)
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE="${{ github.event.pull_request.base.sha }}"
@@ -972,7 +979,9 @@ jobs:
             exit 0
           fi
           status=0
-          y4d-spec check --render --parity -v $dirs | tee render-report.txt || status=$?
+          y4d-spec check --render --parity --require-openscad \
+            --openscad-path "$PWD/libs" --openscad-path "$PWD/projects/commons-lib" \
+            -v $dirs 2>&1 | tee render-report.txt || status=$?
           echo "### y4d-spec renders (changed)" >> "$GITHUB_STEP_SUMMARY"
           tail -1 render-report.txt >> "$GITHUB_STEP_SUMMARY"
           exit $status

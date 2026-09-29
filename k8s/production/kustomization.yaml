@@ -31,3 +31,18 @@ images:
 - digest: sha256:78132e13155a942d15ccd1f13d0b75eb5ea986390f1adcf8cfdf90ceba1b0256
   name: ghcr.io/madfam-org/yantra4d/studio
   newName: ghcr.io/madfam-org/yantra4d/studio
+- digest: sha256:8b81dd37ff027bec4e516d41acfbe9fe2460070dc6d4a4570a2ac5b9d59df065
+  name: docker.io/library/redis
+  newName: docker.io/library/redis
+
+# A singleton Redis must release its writable PVC before its replacement starts.
+patches:
+- target:
+    kind: Deployment
+    name: yantra4d-redis
+  patch: |-
+    - op: add
+      path: /spec/strategy
+      value:
+        type: Recreate
+        rollingUpdate: null

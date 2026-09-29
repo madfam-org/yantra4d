@@ -124,3 +124,12 @@ def test_empty_checkout_is_not_a_skip(tmp_path):
     base = commit(repo)
     with pytest.raises(ValueError, match="No commons"):
         lane.select(repo, base)
+
+
+def test_line_break_cannot_inject_another_render_argument(tmp_path):
+    repo = tmp_path / "line-break"
+    init(repo)
+    write(repo / "projects/unsafe\n--version/project.json")
+    base = commit(repo)
+    with pytest.raises(ValueError, match="line breaks"):
+        lane.select(repo, base)

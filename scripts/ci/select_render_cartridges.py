@@ -33,6 +33,8 @@ def select(repo, base, head="HEAD"):
     available = sorted(p.parent for p in commons.glob("*/project.json") if p.is_file())
     if not available:
         raise ValueError("No commons cartridges found; initialise the pinned checkout")
+    if any("\n" in p.name or "\r" in p.name for p in available):
+        raise ValueError("Cartridge names cannot contain line breaks")
     old, new = tree_entry(repo, base), tree_entry(repo, head)
     if new is None:
         raise ValueError("Target revision contains no commons tree or gitlink")

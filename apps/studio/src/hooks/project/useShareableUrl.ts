@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { buildHash } from '../system/useHashNavigation'
 
 /**
  * Encode parameter state into a compact URL-safe string.
@@ -67,7 +68,7 @@ export function useShareableUrl({ params, mode, projectSlug, defaultParams }: Us
     url.search = ''
     url.hash = ''
     // Set pathname to current project/mode
-    url.pathname = `/project/${projectSlug}/share/${mode}`
+    url.pathname = buildHash(projectSlug, mode)
     if (encoded) {
       url.searchParams.set('p', encoded)
     }

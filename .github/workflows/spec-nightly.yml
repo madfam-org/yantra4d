@@ -24,6 +24,10 @@ on:
           Leave blank for a real sweep.
         required: false
         default: ""
+      report_to_issue:
+        description: "Update the tracking issue after this manual run"
+        type: boolean
+        default: false
 
 jobs:
   full-render-sweep:
@@ -44,17 +48,22 @@ jobs:
       # the issue open/update/close path can be exercised without spending hours
       # of kernel time — and without inventing a fake failure in a real
       # cartridge. Every heavy step below is skipped on a fixture run.
+      # Manual runs report only when report_to_issue is explicitly enabled.
       - name: Reporter dry run (fixture, no rendering)
         if: inputs.report_fixture != ''
         env:
           GH_TOKEN: ${{ github.token }}
           GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}
+          REPORT_FIXTURE: ${{ inputs.report_fixture }}
+          REPORT_TO_ISSUE: ${{ inputs.report_to_issue }}
         run: |
-          fixture="${{ inputs.report_fixture }}"
+          fixture="$REPORT_FIXTURE"
           test -f "$fixture" || { echo "::error::fixture $fixture not found"; exit 1; }
           python3 .github/scripts/nightly_report.py --selftest "$fixture"
-          python3 .github/scripts/nightly_report.py \
-            --log "$fixture" --workflow "spec-nightly full render sweep (FIXTURE)"
+          if [ "$REPORT_TO_ISSUE" = "true" ]; then
+            python3 .github/scripts/nightly_report.py \
+              --log "$fixture" --workflow "spec-nightly full render sweep (FIXTURE)"
+          fi
 
       - uses: actions/setup-python@v5
         if: inputs.report_fixture == ''
@@ -107,7 +116,7 @@ jobs:
       # Reporting never fails the sweep: the script exits 0 after an
       # `::error::` annotation if it cannot reach the API.
       - name: Report the red sweep to its tracking issue
-        if: failure() && steps.sweep.outcome == 'failure'
+        if: failure() && steps.sweep.outcome == 'failure' && (github.event_name != 'workflow_dispatch' || inputs.report_to_issue)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}
@@ -123,7 +132,7 @@ jobs:
         # a job whose sweep step never ran (a fixture dispatch, or any future
         # skip) must not clear an alert it did not re-verify. "Did not run" and
         # "passed" must never look the same.
-        if: success() && steps.sweep.outcome == 'success'
+        if: success() && steps.sweep.outcome == 'success' && (github.event_name != 'workflow_dispatch' || inputs.report_to_issue)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}

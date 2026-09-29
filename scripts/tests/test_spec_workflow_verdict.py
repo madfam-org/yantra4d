@@ -34,8 +34,15 @@ def run_step(tmp_path, case, exit_code, populated=True):
     )
     checker.chmod(0o755)
     git = bin_dir / "git"
-    git.write_text("#!/bin/sh\n[ \"$1\" != diff ] || echo projects/example/main.py\nexit 0\n")
+    git.write_text("#!/bin/sh\n"
+                   "[ \"$1\" != -C ] || shift 2\n"
+                   "[ \"$1\" != diff ] || echo projects/example/main.py\n"
+                   "[ \"$1\" != rev-parse ] || echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+                   "exit 0\n")
     git.chmod(0o755)
+    selector = tmp_path / "scripts/ci/select_render_cartridges.py"
+    selector.parent.mkdir(parents=True)
+    selector.write_text((ROOT / "scripts/ci/select_render_cartridges.py").read_text())
     (tmp_path / "projects/libs").mkdir(parents=True)
     (tmp_path / "projects/commons-lib").mkdir()
     if populated:

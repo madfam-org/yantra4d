@@ -924,7 +924,8 @@ jobs:
   # not backlog.
   spec-conformance:
     runs-on: madfam-runners-blue
-    timeout-minutes: 25
+    # A shared-library pin can legitimately select the complete commons.
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
         with:
@@ -968,20 +969,19 @@ jobs:
           else
             BASE="${{ github.event.before }}"
           fi
-          git cat-file -e "$BASE" 2>/dev/null || BASE=$(git rev-parse HEAD~1)
-          changed=$(git diff --name-only "$BASE"...HEAD -- projects/ | cut -d/ -f1,2 | sort -u)
-          dirs=""
-          for d in $changed; do
-            [ -f "$d/project.json" ] && dirs="$dirs $d"
-          done
-          if [ -z "$dirs" ]; then
+          python3 scripts/ci/select_render_cartridges.py "$BASE" > changed-cartridges.txt
+          dirs=()
+          while IFS= read -r directory; do
+            dirs+=("$directory")
+          done < changed-cartridges.txt
+          if [ "${#dirs[@]}" -eq 0 ]; then
             echo "no cartridges changed — skipping renders"
             exit 0
           fi
           status=0
           y4d-spec check --render --parity --require-openscad \
             --openscad-path "$PWD/libs" --openscad-path "$PWD/projects/commons-lib" \
-            -v $dirs 2>&1 | tee render-report.txt || status=$?
+            -v "${dirs[@]}" 2>&1 | tee render-report.txt || status=$?
           echo "### y4d-spec renders (changed)" >> "$GITHUB_STEP_SUMMARY"
           tail -1 render-report.txt >> "$GITHUB_STEP_SUMMARY"
           exit $status

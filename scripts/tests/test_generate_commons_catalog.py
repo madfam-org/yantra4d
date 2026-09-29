@@ -280,6 +280,13 @@ def test_parameter_contract_preserves_select_types_and_numeric_bounds(commons):
     }
 
 
+def test_mode_ids_preserve_the_studio_default_order(commons):
+    cartridge(commons, "hardware", {"modes": [{"id": "buckle"}, {"id": "slider"}]})
+    entry = lane.build_catalog()["cartridges"][0]
+    assert entry["mode_ids"] == ["buckle", "slider"]
+    assert entry["modes"] == 2
+
+
 # --- clone instructions ----------------------------------------------------
 
 def test_every_cartridge_clones_from_the_commons_repo(commons):

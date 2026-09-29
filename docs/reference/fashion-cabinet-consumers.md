@@ -218,5 +218,8 @@ today's membership of the bridge.
   Consumers must validate mapped values against this contract: a numeric width
   and a string option such as `"38mm"` are distinct values. Missing constraints
   do not authorize guessing an enum or rounding to a nearby hardware size.
+  `mode_ids` preserves declaration order; Studio's default is the first mode.
+  Handoffs can name that mode explicitly and reject mappings outside its declared
+  parameter modes rather than inheriting a recipient's previous Studio mode.
 - Fashion Cabinet's `docs/spec/v1/hardware-ref.md` — the normative contract for
   both directions, including the `yantra4d_consumers_v1` guarantees.

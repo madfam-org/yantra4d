@@ -151,6 +151,22 @@ def _engine_support(manifest: dict, directory: Path) -> tuple[list[str], bool]:
     return sorted(engines) or ["openscad"], dual
 
 
+def parameter_contracts(manifest: dict) -> dict:
+    """Publish target constraints without UI labels or implementation bindings."""
+    contracts = {}
+    for parameter in manifest.get("parameters") or []:
+        if not isinstance(parameter, dict) or not isinstance(parameter.get("id"), str):
+            continue
+        contract = {key: parameter[key] for key in (
+            "type", "min", "max", "step", "maxlength", "modes", "visible_in_modes"
+        ) if key in parameter}
+        if "options" in parameter:
+            contract["options"] = [option["value"] for option in parameter["options"]
+                                   if isinstance(option, dict) and "value" in option]
+        contracts[parameter["id"]] = contract
+    return contracts
+
+
 def build_entry(manifest_path: Path) -> dict:
     slug = manifest_path.parent.name
     m = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -196,6 +212,7 @@ def build_entry(manifest_path: Path) -> dict:
             p["id"] for p in (m.get("parameters") or [])
             if isinstance(p, dict) and isinstance(p.get("id"), str)
         ],
+        "parameter_contracts": parameter_contracts(m),
         "export_formats": m.get("export_formats") or [],
         "commons_license": commons_license,
         # Documented NC exposure from vendored upstream files, if any.

@@ -98,6 +98,14 @@ def test_missing_platform_history_is_not_a_skip(tmp_path):
         lane.select(repo, "0" * 40)
 
 
+def test_removed_commons_cannot_use_stale_checkout(tmp_path):
+    repo, base, _ = history(tmp_path)
+    git(repo, "update-index", "--force-remove", "projects")
+    git(repo, "commit", "-qm", "remove commons")
+    with pytest.raises(ValueError, match="no commons tree"):
+        lane.select(repo, base)
+
+
 def test_legacy_tracked_cartridge_selection(tmp_path):
     repo = tmp_path / "legacy"
     init(repo)

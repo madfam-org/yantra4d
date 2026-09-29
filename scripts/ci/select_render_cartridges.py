@@ -34,6 +34,8 @@ def select(repo, base, head="HEAD"):
     if not available:
         raise ValueError("No commons cartridges found; initialise the pinned checkout")
     old, new = tree_entry(repo, base), tree_entry(repo, head)
+    if new is None:
+        raise ValueError("Target revision contains no commons tree or gitlink")
     if new and new[0] == "160000":
         actual = git(commons, "rev-parse", "HEAD").decode().strip()
         if actual != new[1]:

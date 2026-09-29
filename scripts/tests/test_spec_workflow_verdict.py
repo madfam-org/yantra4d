@@ -38,6 +38,7 @@ def run_step(tmp_path, case, exit_code, populated=True):
                    "[ \"$1\" != -C ] || shift 2\n"
                    "[ \"$1\" != diff ] || echo projects/example/main.py\n"
                    "[ \"$1\" != rev-parse ] || echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+                   "[ \"$1\" != ls-tree ] || printf '040000 tree aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\tprojects\\000'\n"
                    "exit 0\n")
     git.chmod(0o755)
     selector = tmp_path / "scripts/ci/select_render_cartridges.py"

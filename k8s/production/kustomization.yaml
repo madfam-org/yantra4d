@@ -46,3 +46,12 @@ patches:
       value:
         type: Recreate
         rollingUpdate: null
+# Server-side apply retains rollingUpdate owned by the legacy field manager.
+# Replace only this complete Deployment so Recreate can remove those fields.
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: yantra4d-redis
+      annotations:
+        argocd.argoproj.io/sync-options: Replace=true

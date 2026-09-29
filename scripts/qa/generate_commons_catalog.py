@@ -203,6 +203,9 @@ def build_entry(manifest_path: Path) -> dict:
         "engines": engines,
         "dual_engine": dual_engine,
         "modes": _len(m.get("modes")),
+        # Order is significant: Studio defaults to the first declared mode.
+        "mode_ids": [mode["id"] for mode in (m.get("modes") or [])
+                     if isinstance(mode, dict) and isinstance(mode.get("id"), str)],
         "parts": _len(m.get("parts")),
         "parameters": _len(m.get("parameters")),
         # The parameter ids themselves — the contract surface a downstream

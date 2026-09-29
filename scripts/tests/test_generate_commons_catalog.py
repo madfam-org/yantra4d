@@ -262,6 +262,24 @@ def test_parameter_ids_are_published_alongside_the_count(commons):
     assert entry["parameters"] == 4
 
 
+def test_parameter_contract_preserves_select_types_and_numeric_bounds(commons):
+    cartridge(commons, "hardware", {"parameters": [
+        {"id": "webbing", "type": "select", "default": "25mm",
+         "options": [{"value": "20mm", "label": "20 mm"}, {"value": "38mm"}],
+         "modes": ["buckle"], "binding": {"internal": "implementation"}},
+        {"id": "width", "type": "slider", "min": 10, "max": 50, "step": 0.5},
+        {"id": "count", "type": "select", "options": [{"value": 1}, {"value": 2}]},
+        {"id": "enabled", "type": "checkbox"},
+    ]})
+    contracts = lane.build_catalog()["cartridges"][0]["parameter_contracts"]
+    assert contracts == {
+        "webbing": {"type": "select", "options": ["20mm", "38mm"], "modes": ["buckle"]},
+        "width": {"type": "slider", "min": 10, "max": 50, "step": 0.5},
+        "count": {"type": "select", "options": [1, 2]},
+        "enabled": {"type": "checkbox"},
+    }
+
+
 # --- clone instructions ----------------------------------------------------
 
 def test_every_cartridge_clones_from_the_commons_repo(commons):

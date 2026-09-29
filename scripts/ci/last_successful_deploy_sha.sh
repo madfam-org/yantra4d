@@ -81,7 +81,10 @@ main() {
     fail_closed "neither jq nor python3 is available to parse the API response"
   fi
 
-  local url="${api_url%/}/repos/${repo}/actions/workflows/${workflow}/runs?branch=${branch}&status=success&per_page=1"
+  # GitHub's branch-filtered history can omit recent runs even while the
+  # unfiltered workflow history and exact run reads expose them. Select locally
+  # from a bounded recent page. No matching run means build everything.
+  local url="${api_url%/}/repos/${repo}/actions/workflows/${workflow}/runs?per_page=100"
 
   # --write-out appends "\n<http_code>" after the body; the body is everything
   # except that last line. No -f/--fail: a non-2xx body is still worth reading
@@ -112,7 +115,7 @@ main() {
   local sha=""
   case "${json_tool}" in
     jq)
-      sha="$(printf '%s' "${body}" | jq -r '.workflow_runs[0].head_sha // empty' 2>/dev/null)" || sha=""
+      sha="$(printf '%s' "${body}" | jq -r --arg branch "${branch}" '[.workflow_runs[]? | select(.head_branch == $branch and .status == "completed" and .conclusion == "success")] | max_by(.id // 0) | .head_sha // empty' 2>/dev/null)" || sha=""
       ;;
     python3)
       sha="$(
@@ -127,11 +130,17 @@ except Exception:
 runs = doc.get("workflow_runs") if isinstance(doc, dict) else None
 if not isinstance(runs, list) or not runs:
     sys.exit(0)
-first = runs[0]
-sha = first.get("head_sha") if isinstance(first, dict) else None
+matches = [run for run in runs if isinstance(run, dict)
+           and run.get("head_branch") == sys.argv[1]
+           and run.get("status") == "completed"
+           and run.get("conclusion") == "success"]
+if not matches:
+    sys.exit(0)
+first = max(matches, key=lambda run: run.get("id", 0))
+sha = first.get("head_sha")
 if isinstance(sha, str):
     sys.stdout.write(sha)
-' 2>/dev/null
+' "${branch}" 2>/dev/null
       )" || sha=""
       ;;
   esac

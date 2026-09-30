@@ -66,3 +66,70 @@ def test_timeout_still_stops_a_verbose_child(engine, monkeypatch):
     assert not success
     manager = engine._cq_process_manager if engine is cadquery_engine else engine._process_manager
     assert manager._active_process is None
+
+
+def _invoke_render(engine, command, is_cancelled, streaming):
+    if not streaming:
+        return tuple(engine.run_render(command, is_cancelled=is_cancelled))
+    events = [json.loads(event) for event in engine.stream_render(
+        command, 'fixture', 0, 100, 1, 1, is_cancelled=is_cancelled,
+    )]
+    return events[-1]['event'] == 'part_done', events
+
+
+@pytest.mark.parametrize('streaming', [False, True], ids=['sync', 'stream'])
+def test_cancelling_one_overlapping_render_does_not_kill_another(engine, tmp_path, streaming):
+    import threading
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+
+    cancel_first = threading.Event()
+    first_ready = tmp_path / "first-ready"
+    second_ready = tmp_path / "second-ready"
+    def command(marker, seconds):
+        return [sys.executable, '-c',
+                f"from pathlib import Path; import time; Path({str(marker)!r}).touch(); time.sleep({seconds})"]
+    def wait_ready(marker):
+        deadline = time.monotonic() + 1.5
+        while not marker.exists() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert marker.exists(), 'fixture process did not start'
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(_invoke_render, engine, command(first_ready, 30), cancel_first.is_set, streaming)
+        wait_ready(first_ready)
+        second = pool.submit(_invoke_render, engine, command(second_ready, 0.5), lambda: False, streaming)
+        wait_ready(second_ready)
+        cancel_first.set()
+        assert second.result(timeout=3)[0], 'cancelling the first render killed the second render'
+        assert not first.result(timeout=3)[0]
+
+
+@pytest.mark.parametrize('streaming', [False, True], ids=['sync', 'stream'])
+def test_completed_render_does_not_forget_another_active_render(engine, tmp_path, streaming):
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+
+    first_ready = tmp_path / "first-ready"
+    second_ready = tmp_path / "second-ready"
+    release_first = tmp_path / "release-first"
+    first_command = [sys.executable, '-c',
+        (f"from pathlib import Path; import time; Path({str(first_ready)!r}).touch()\n"
+         f"while not Path({str(release_first)!r}).exists(): time.sleep(0.01)")]
+    second_command = [sys.executable, '-c',
+        f"from pathlib import Path; import time; Path({str(second_ready)!r}).touch(); time.sleep(30)"]
+    def wait_ready(marker):
+        deadline = time.monotonic() + 1.5
+        while not marker.exists() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert marker.exists(), 'fixture process did not start'
+    manager = engine._cq_process_manager if engine is cadquery_engine else engine._process_manager
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(_invoke_render, engine, first_command, lambda: False, streaming)
+        wait_ready(first_ready)
+        second = pool.submit(_invoke_render, engine, second_command, lambda: False, streaming)
+        wait_ready(second_ready)
+        release_first.touch()
+        assert first.result(timeout=3)[0]
+        assert manager.cancel(), 'first completion erased the still-active second render'
+        assert not second.result(timeout=3)[0]

@@ -33,7 +33,7 @@ The vision: apply simulated energy to any hyperobject and watch the continuous S
 
 Render caches are scoped to published renderer builds; see [release cache identity](docs/operations/render-artifact-storage.md#cache-identity-across-releases) for invalidation, missing-identity behavior and remaining limits.
 
-[Native renderer output and cancellation](docs/guides/troubleshooting.md#native-renderer-stalls-after-substantial-output) explains pipe draining, deadlines and remaining isolation limits.
+[Native renderer output and cancellation](docs/guides/troubleshooting.md#native-renderer-stalls-after-substantial-output) explains pipe draining, per-request process ownership, deadlines and remaining isolation limits.
 
 [Mode-specific controls](docs/guides/troubleshooting.md#controls-that-do-not-affect-the-selected-mode) documents the commons-owned visibility contract and actual-pin fastener regression.
 

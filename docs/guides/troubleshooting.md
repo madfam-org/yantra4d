@@ -344,6 +344,13 @@ existing render deadline and cleanup remain in force. OpenSCAD streaming discard
 unused stdout instead of creating an unread pipe; its stderr progress stream
 and output geometry file remain unchanged.
 
+Overlapping native requests retain separate process ownership. A cancellation
+callback terminates its own registered subprocess, and finishing one request
+does not deregister another. Both synchronous and streamed paths pass the
+process identity through cancellation and cleanup. The legacy argument-free
+engine cancellation helper still targets the most recently active process;
+request handlers must use their scoped cancellation signal instead.
+
 [Real subprocess regressions](../../apps/api/tests/unit/test_native_render_pipe_drain.py)
 write more than pipe capacity and exercise cancellation and timeout. This repair
 does not establish process-tree isolation, a diagnostic-output memory budget,

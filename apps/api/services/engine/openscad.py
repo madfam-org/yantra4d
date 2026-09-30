@@ -438,12 +438,12 @@ def run_render(
         kill_timer.start()
         try:
             _, stderr = communicate_cancellable(
-                process, is_cancelled, _process_manager.cancel,
+                process, is_cancelled, lambda: _process_manager.cancel(process),
             )
         finally:
             duration_ms = (time.monotonic() - t0) * 1000
             kill_timer.cancel()
-            _process_manager.clear()
+            _process_manager.clear(process)
 
         if is_cancelled():
             return RenderResult(
@@ -533,7 +533,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
 
         while True:
             if is_cancelled and is_cancelled():
-                _process_manager.cancel()
+                _process_manager.cancel(process)
                 yield json.dumps({
                     'event': 'error',
                     'part': part,
@@ -567,7 +567,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
                 })
             except queue.Empty:
                 if is_cancelled and is_cancelled():
-                    _process_manager.cancel()
+                    _process_manager.cancel(process)
                     yield json.dumps({
                         'event': 'error',
                         'part': part,
@@ -584,7 +584,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         process.wait()
     finally:
         kill_timer.cancel()
-        _process_manager.clear()
+        _process_manager.clear(process)
 
     if process.returncode == 0:
         final_progress = part_base + part_weight

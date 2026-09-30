@@ -1,34 +1,12 @@
 name: Deploy to K8s (GHCR)
 
 on:
-  push:
+  # Start only after main CI finishes; a source gate below also validates the
+  # triggering repository, event, exact SHA and required aggregate via the API.
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
-    paths:
-      - 'apps/api/**'
-      # The render worker ships inside the backend image
-      # (apps/api/Dockerfile: `COPY apps/worker/ /app/worker/`), so a
-      # worker-only change is a backend image change. Without this the
-      # workflow never starts and the new worker code never reaches the
-      # cluster.
-      - 'apps/worker/**'
-      - 'apps/studio/**'
-      - 'apps/landing/**'
-      - 'apps/admin/**'
-      # `projects` is ONE submodule since RFC 0038 P2, so a commons bump shows
-      # up as the bare gitlink path `projects`, not as a file under it. Both
-      # forms are listed: picomatch (which both this `paths:` filter and
-      # dorny/paths-filter use) does match the bare path with `projects/**`,
-      # but nothing about the deploy trigger should depend on that subtlety.
-      - 'projects'
-      - 'projects/**'
-      # The client-private cartridges mount here and ship inside the backend
-      # image (see "Init client-private cartridges" below), so a bump to one of
-      # them is a backend image change.
-      - 'private-projects'
-      - 'private-projects/**'
-      - 'libs/**'
-      - 'packages/**'
-      - '!k8s/production/kustomization.yaml'
   workflow_dispatch:
     inputs:
       force_deploy:
@@ -98,15 +76,16 @@ concurrency:
 # workflow_dispatch with force_deploy=true still builds everything and skips the
 # lookup entirely.
 #
-# Digest commits do not loop: `deploy(yantra4d): update digests` touches only
-# k8s/production/kustomization.yaml, which matches no trigger path above (so the
-# workflow does not start) and no filter below (so even when it rides along
-# inside a later diff it builds nothing).
+# Digest commits trigger lightweight CI and then this workflow, but do not loop:
+# k8s/production/kustomization.yaml matches no filter below, so the resulting
+# no-op publication builds nothing and creates no new digest commit.
 # ---------------------------------------------------------------------------
 
 jobs:
   detect-changes:
     name: Detect Changes
+    # Reject bad/failed triggers inside the gate, rather than skipping this job:
+    # a green all-skipped workflow must never become the successful-deploy base.
     runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     permissions:
       contents: read
@@ -130,6 +109,11 @@ jobs:
           # middle of a deploy. Full history keeps the diff a local operation.
           # No submodules are checked out here — this job only reads paths.
           fetch-depth: 0
+
+      - name: Require successful exact-source main CI
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/ci/require_source_ci.py
 
       - name: Resolve the change-detection base
         id: base
@@ -851,6 +835,10 @@ jobs:
 
           for ATTEMPT in 1 2 3; do
             git fetch origin main
+            if [ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]; then
+              echo "Main changed during publication; refusing stale-source image pins"
+              exit 1
+            fi
             git reset --hard origin/main
 
             cd k8s/production

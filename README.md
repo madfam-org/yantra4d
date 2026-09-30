@@ -33,6 +33,8 @@ The vision: apply simulated energy to any hyperobject and watch the continuous S
 
 Render caches are scoped to published renderer builds; see [release cache identity](docs/operations/render-artifact-storage.md#cache-identity-across-releases) for invalidation, missing-identity behavior and remaining limits.
 
+[Publication source acceptance](docs/operations/release-source-gate.md) describes the exact-main CI gate, stale-source pin refusal and runtime verification boundary.
+
 ## 🛠️ The Stack
 - **CAD Engines**: Four-kernel execution via [OpenSCAD](https://openscad.org/) (CSG), [CadQuery](https://cadquery.readthedocs.io/) (B-Rep), a native **Implicit SDF Engine** (TPMS/Lattice), and a **Graph Engine** that transpiles `.graph.json` node graphs into sandboxed CadQuery (see [authoring guide](docs/guides/graph-cartridges.md)).
 - **The Studio**: React 19 + Three.js + Manifold-3d for blisteringly fast volumetric browser rendering.

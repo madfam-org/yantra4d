@@ -38,8 +38,17 @@ This loader change does not introduce an artifact-size limit or a concurrency
 admission policy.
 
 The animated assembly grid uses a separate
-[assembly fetcher](../../apps/studio/src/services/domain/assemblyFetcher.ts), whose
-parameter cache is not covered by this budget and still needs an eviction policy.
+[assembly fetcher](../../apps/studio/src/services/domain/assemblyFetcher.ts). Its
+[CPU source cache](../../apps/studio/src/services/domain/assemblyGeometryCache.ts)
+has a separate least-recently-used limit of 16 assemblies and 32 MiB of backing
+buffers. It counts positions, normals, indices, interleaved and morph attributes,
+deduplicating shared buffers across parts within an assembly. Oversized results
+can be displayed but are not retained. Cache eviction drops its source references
+without mutating arrays that an active grid still borrows. Already cancelled
+requests reject before cache lookup. The artifact-loader and assembly budgets
+are independent: they can retain up to 64 MiB combined, excluding active and
+pending work. Assembly cache identity remains parameter/project based; session
+partitioning and concurrent work admission require separate follow-up.
 The [grid](../../apps/studio/src/components/viewer/AnimatedGrid.tsx) owns one clone
 per cell and part, reuses it across color/wireframe changes, and disposes it when
 the assembly changes or the grid unmounts. Starting a replacement fetch clears
@@ -48,6 +57,10 @@ belongs to that cache and is not disposed by the grid. Active grid allocations
 still scale with the number of cells and parts; this is not an application-wide
 memory bound. [Grid regressions](../../apps/studio/src/components/viewer/AnimatedGrid.test.jsx)
 cover rerender reuse, replacement cleanup and unmount cleanup.
+[Assembly cache regressions](../../apps/studio/src/services/domain/assemblyGeometryCache.test.js)
+cover a thousand parameter sets, byte/entry limits and backing-buffer accounting;
+[fetcher tests](../../apps/studio/src/services/domain/assemblyFetcher.test.js)
+verify real eviction/refetch behavior and cancellation on a cache hit.
 
 Regression evidence lives in the [loader lifecycle tests](../../apps/studio/src/hooks/render/useWorkerLoader.test.js),
 [cache-budget tests](../../apps/studio/src/lib/stlPayloadCache.test.js) and

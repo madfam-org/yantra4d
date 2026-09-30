@@ -6,11 +6,7 @@
 import { BufferGeometry, BufferAttribute } from 'three'
 import { getApiBase } from '../core/backendDetection'
 import { apiFetch } from '../core/apiClient'
-
-interface AssemblyGeometry {
-  type: string
-  geometry: BufferGeometry
-}
+import { AssemblyGeometryCache, type AssemblyGeometry } from './assemblyGeometryCache'
 
 interface RenderResponsePart {
   type: string
@@ -34,7 +30,7 @@ interface WorkerMessage {
 }
 
 const API_BASE: string = getApiBase()
-const cache = new Map<string, AssemblyGeometry[]>()
+const cache = new AssemblyGeometryCache()
 
 // Singleton worker to avoid thread explosion
 let stlWorkerInstance: Worker | null = null
@@ -168,8 +164,9 @@ export async function fetchAssemblyGeometries(
 ): Promise<AssemblyGeometry[]> {
   const { signal } = options
   const hash = paramHash(params, geometryKeys) + (project ? '|' + project : '')
-  if (cache.has(hash)) return cache.get(hash)!
   if (signal?.aborted) throw abortError('Assembly fetch aborted')
+  const cached = cache.get(hash)
+  if (cached) return cached
 
   // Documented /api/render contract: {mode, parameters, parts, export_format?, project?}
   // — render parameters NESTED under 'parameters'. The previous flattened form

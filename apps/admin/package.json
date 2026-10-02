@@ -43,7 +43,7 @@
         "vitest": "^4.1.10"
     },
     "overrides": {
-        "axios": "^1.16.1",
+        "axios": "^1.20.0",
         "protobufjs": "^7.5.8",
         "dompurify": "^3.4.3",
         "follow-redirects": "^1.16.0",

@@ -78,10 +78,21 @@ _CARTRIDGE_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 # Digests (GOC-1 §3)
 # ──────────────────────────────────────────────
 
+def normalise_numbers(obj: Any) -> Any:
+    """GOC-1 v1.0.1 §3.1: an integral finite float with |x| < 2^53 becomes an int (12.0 → 12, -0.0 → 0)."""
+    if isinstance(obj, float) and math.isfinite(obj) and obj.is_integer() and abs(obj) < 2 ** 53:
+        return int(obj)
+    if isinstance(obj, dict):
+        return {key: normalise_numbers(value) for key, value in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [normalise_numbers(value) for value in obj]
+    return obj
+
+
 def canonical_json(obj: Any) -> bytes:
-    """GOC-1 §3.1 canonical JSON, UTF-8 encoded. Raises on NaN/Infinity."""
+    """GOC-1 §3.1 canonical JSON (numbers normalised first), UTF-8 encoded. Raises on NaN/Infinity."""
     return json.dumps(
-        obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False,
+        normalise_numbers(obj), sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False,
     ).encode("utf-8")
 
 
@@ -205,21 +216,6 @@ class ResolvedParameters(NamedTuple):
     legacy_physical_inputs: dict
 
 
-def parameter_applies_to_mode(defn: dict, mode_id: str | None) -> bool:
-    """Whether a parameter is scoped to *mode_id* (``modes`` and ``visible_in_modes``).
-
-    When both are declared the parameter applies only where both agree. With
-    neither, or for a legacy ``scad_file`` render (no mode), it applies.
-    """
-    if not mode_id or mode_id == "legacy":
-        return True
-    for key in ("modes", "visible_in_modes"):
-        scope = defn.get(key)
-        if isinstance(scope, list) and mode_id not in scope:
-            return False
-    return True
-
-
 def _json_type(value: Any) -> str:
     if isinstance(value, bool):
         return "boolean"
@@ -268,15 +264,15 @@ def resolve_effective_parameters(manifest, mode_id: str | None, raw_params: dict
 
     Validation is ``validate_params`` itself (clamping, select membership,
     checkbox → 0/1, text sanitisation), so the document records exactly what
-    the engine is given. With ``inject_full`` every in-scope manifest default
-    is injected too (``source: manifest_default``) and the instance is
+    the engine is given. With ``inject_full`` every declared manifest default
+    (bar physical and engine-control keys) is injected too (``source: manifest_default``) and the instance is
     complete; without it a parameter the caller did not send is recorded as
     ``source_default`` with value ``null`` — the kernel falls back to its own
     source literal, which this platform does not guess at.
 
-    A declared parameter outside the mode's scope that the caller sent anyway
-    still reaches the engine, so it is recorded as well: ``variables`` lists
-    what was injected, never less.
+    ``variables`` lists every declared parameter with no mode scoping (GOC-1
+    v1.0.1 §4.1: ``modes`` / ``visible_in_modes`` are UI hints, not engine
+    relevance); *mode_id* does not narrow it.
 
     *validate* defaults to ``validate_params`` for this manifest's slug.
     """
@@ -285,7 +281,6 @@ def resolve_effective_parameters(manifest, mode_id: str | None, raw_params: dict
             return validate_params(params, manifest.slug)
     raw = raw_params if isinstance(raw_params, dict) else {}
     defs = {p["id"]: p for p in (getattr(manifest, "parameters", None) or []) if isinstance(p, dict) and "id" in p}
-    in_scope = {pid for pid, defn in defs.items() if parameter_applies_to_mode(defn, mode_id)}
 
     requested = validate(raw)
     _drop_non_finite(requested)
@@ -293,8 +288,9 @@ def resolve_effective_parameters(manifest, mode_id: str | None, raw_params: dict
     sources = {key: "request" for key in requested}
 
     if inject_full:
-        defaults = {pid: defs[pid]["default"] for pid in in_scope
-                    if pid not in requested and "default" in defs[pid] and not is_physical_key(pid)}
+        defaults = {pid: defn["default"] for pid, defn in defs.items()
+                    if pid not in requested and "default" in defn
+                    and not is_physical_key(pid) and pid not in ENGINE_CONTROL_KEYS}
         resolved_defaults = validate(defaults)
         _drop_non_finite(resolved_defaults)
         for key, value in resolved_defaults.items():
@@ -303,7 +299,7 @@ def resolve_effective_parameters(manifest, mode_id: str | None, raw_params: dict
 
     variables: list[dict] = []
     physical: dict = {}
-    for pid in sorted(in_scope | set(engine_params), key=_bytewise):
+    for pid in sorted(set(defs) | set(engine_params), key=_bytewise):
         if pid in ENGINE_CONTROL_KEYS or pid not in defs:
             continue
         injected = pid in engine_params

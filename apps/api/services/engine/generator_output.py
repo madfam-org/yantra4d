@@ -1,25 +1,17 @@
 """Generator Output Contract v1 (GOC-1): the ``variables.json`` sidecar.
 
-A generator instance is the geometry file(s) of one rendered part plus one
-``variables.json`` document saying exactly which cartridge, mode and part
-produced them, with which inputs, on which engine, and the digest of every
-file. The document carries no material, process, slicer or printer settings.
-The schema is owned by ``hyperobjects-spec``
-(``hyperobjects_schemas/schemas/generator-output.schema.json``); this module
-never keeps a copy of it.
+A generator instance is the geometry of one rendered part plus one document
+saying which cartridge, mode and part produced it, with which inputs, on which
+engine, and the digest of every file — and no material, process, slicer or
+printer settings. The schema lives in ``hyperobjects-spec``
+(``generator-output.schema.json``); no copy is kept here.
 
-Everything here is deterministic and shared by both sides of the render queue:
-
-* The API resolves the effective parameters once
-  (:func:`resolve_render_inputs`, called from ``extract_render_payload``) and
-  ships the GOC-1 ``variables`` with the queued payload.
-* The render worker digests the files it produced, writes
-  ``<artifact>.variables.json`` next to them (:func:`prepare_part_output`) and
-  publishes it through the same artifact store, under the same gates.
-
-The digest algorithms (canonical JSON, ``variables_sha256``,
-``hyperobjects-tree-v1``, ``instance_id``) must match the contract byte for
-byte: every producer and the keystone checker recompute them independently.
+The API resolves the effective parameters once (:func:`resolve_render_inputs`,
+from ``extract_render_payload``) and queues the GOC-1 ``variables`` with the
+payload; the worker digests what it produced and writes the sidecar
+(:func:`prepare_part_output`), published through the same artifact store and
+gates. The digests must match the contract byte for byte: every producer and
+the keystone checker recompute them independently.
 """
 from __future__ import annotations
 
@@ -39,6 +31,7 @@ from typing import Any, NamedTuple
 
 from config import Config
 from services.engine.openscad import validate_params
+from services.engine.render_cache import GENERATOR_FIELDS as CACHE_FIELDS
 
 logger = logging.getLogger(__name__)
 
@@ -72,17 +65,9 @@ _TREE_EXCLUDED_SEGMENTS = frozenset({".git", "__pycache__", "node_modules"})
 _TREE_EXCLUDED_SUFFIXES = frozenset({".md", ".txt", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".pdf"})
 
 #: Media types for geometry files. IANA-registered where one exists.
-_MEDIA_TYPES = {
-    ".stl": "model/stl",
-    ".3mf": "model/3mf",
-    ".glb": "model/gltf-binary",
-    ".gltf": "model/gltf+json",
-    ".step": "model/step",
-    ".stp": "model/step",
-    ".obj": "model/obj",
-    ".wrl": "model/vrml",
-    ".vrml": "model/vrml",
-}
+_MEDIA_TYPES = {".stl": "model/stl", ".3mf": "model/3mf", ".glb": "model/gltf-binary",
+                ".gltf": "model/gltf+json", ".step": "model/step", ".stp": "model/step",
+                ".obj": "model/obj", ".wrl": "model/vrml", ".vrml": "model/vrml"}
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _COMMONS_SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
@@ -116,13 +101,8 @@ def variables_sha256(variables: list[dict]) -> str:
 
 def instance_id(cartridge: str, mode: str, part: str | None, tree_sha256: str, variables_sha: str) -> str:
     """GOC-1 §3.4: deploy-independent identity of one generator instance."""
-    return sha256_hex(canonical_json({
-        "cartridge": cartridge,
-        "mode": mode,
-        "part": part,
-        "tree_sha256": tree_sha256,
-        "variables_sha256": variables_sha,
-    }))
+    return sha256_hex(canonical_json({"cartridge": cartridge, "mode": mode, "part": part,
+                                      "tree_sha256": tree_sha256, "variables_sha256": variables_sha}))
 
 
 def file_digest(path: str | os.PathLike) -> tuple[str, int]:
@@ -145,12 +125,10 @@ def _tree_included(rel_parts: tuple[str, ...]) -> bool:
 
 
 def _tree_files(root: Path) -> list[tuple[str, Path]]:
-    """(relative POSIX path, absolute path) of every file the tree digest covers.
+    """(relative POSIX path, path) of every covered file, sorted bytewise.
 
-    ``os.walk`` with ``followlinks=False`` never descends into a directory
-    symlink; a file symlink is followed by ``isfile`` and by the read. Anything
-    that is not a regular file once followed (a dangling link, a socket) is
-    skipped.
+    ``followlinks=False`` never descends into a directory symlink; a file
+    symlink is followed. Anything not a regular file once followed is skipped.
     """
     files: list[tuple[str, Path]] = []
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
@@ -176,19 +154,13 @@ _tree_cache_lock = threading.Lock()
 
 
 def tree_sha256(directory: str | os.PathLike) -> str:
-    """Cached :func:`compute_tree_sha256`, keyed per cartridge directory.
+    """Cached :func:`compute_tree_sha256`, per cartridge directory.
 
-    The cache is invalidated by a stat fingerprint (path, size, mtime of every
-    covered file), so a cartridge edited through the editor routes is digested
-    again on its next render. A stat walk is cheap; re-hashing every source on
-    every part render is not.
+    Invalidated by a stat fingerprint (path, size, mtime of each covered
+    file), so a cartridge edited through the editor routes is digested again.
     """
     root = Path(directory).resolve()
-    fingerprint = tuple(
-        (rel, stat.st_size, stat.st_mtime_ns)
-        for rel, full in _tree_files(root)
-        for stat in (full.stat(),)
-    )
+    fingerprint = tuple((rel, st.st_size, st.st_mtime_ns) for rel, full in _tree_files(root) for st in (full.stat(),))
     key = str(root)
     with _tree_cache_lock:
         cached = _tree_cache.get(key)
@@ -234,12 +206,10 @@ class ResolvedParameters(NamedTuple):
 
 
 def parameter_applies_to_mode(defn: dict, mode_id: str | None) -> bool:
-    """Whether a manifest parameter is scoped to *mode_id*.
+    """Whether a parameter is scoped to *mode_id* (``modes`` and ``visible_in_modes``).
 
-    ``modes`` and ``visible_in_modes`` both scope a parameter; when a manifest
-    declares both, the parameter applies only where both agree. A parameter
-    with neither applies everywhere, and so does every parameter of a legacy
-    ``scad_file`` render, which has no mode to scope by.
+    When both are declared the parameter applies only where both agree. With
+    neither, or for a legacy ``scad_file`` render (no mode), it applies.
     """
     if not mode_id or mode_id == "legacy":
         return True
@@ -250,8 +220,14 @@ def parameter_applies_to_mode(defn: dict, mode_id: str | None) -> bool:
     return True
 
 
-def _variable_value(defn: dict, engine_value: Any) -> tuple[Any, str]:
-    """Manifest-typed value and GOC-1 ``type`` for an injected engine value.
+def _json_type(value: Any) -> str:
+    if isinstance(value, bool):
+        return "boolean"
+    return "number" if isinstance(value, (int, float)) else "string"
+
+
+def _variable_value(defn: dict, engine_value: Any = None, *, injected: bool = True) -> tuple[Any, str]:
+    """Manifest-typed value and GOC-1 ``type`` (value ``None`` when not injected).
 
     The engine receives a checkbox as 0/1 (OpenSCAD has no other boolean
     spelling on the command line); the document records the boolean. A select
@@ -259,11 +235,14 @@ def _variable_value(defn: dict, engine_value: Any) -> tuple[Any, str]:
     """
     param_type = defn.get("type", "slider")
     if param_type == "checkbox":
-        return bool(engine_value), "boolean"
-    if isinstance(engine_value, bool):
-        return engine_value, "boolean"
-    if isinstance(engine_value, (int, float)):
-        return engine_value, "number"
+        return (bool(engine_value) if injected else None), "boolean"
+    if not injected:
+        if param_type == "slider":
+            return None, "number"
+        options = [o.get("value") for o in defn.get("options") or [] if isinstance(o, dict)]
+        return None, _json_type(defn.get("default", options[0] if options else ""))
+    if isinstance(engine_value, (bool, int, float)):
+        return engine_value, _json_type(engine_value)
     return str(engine_value), "string"
 
 
@@ -277,11 +256,7 @@ def _measurement_code(defn: dict) -> str | None:
 
 
 def _drop_non_finite(params: dict) -> None:
-    """Refuse NaN and Infinity, which ``float()`` accepts from a string.
-
-    Neither is a value a kernel can be given meaningfully, and neither can be
-    written to a JSON document, so the parameter is treated as not sent.
-    """
+    """Treat NaN/Infinity (``float()`` accepts them from a string) as not sent: no JSON spelling."""
     for key in [k for k, v in params.items() if isinstance(v, float) and not math.isfinite(v)]:
         logger.warning("Rejecting non-finite value for %s", key)
         params.pop(key)
@@ -303,9 +278,7 @@ def resolve_effective_parameters(manifest, mode_id: str | None, raw_params: dict
     still reaches the engine, so it is recorded as well: ``variables`` lists
     what was injected, never less.
 
-    *validate* defaults to ``validate_params`` for this manifest; the
-    orchestrator passes its own binding so the slug it resolves is the one
-    validated against.
+    *validate* defaults to ``validate_params`` for this manifest's slug.
     """
     if validate is None:
         def validate(params):
@@ -321,7 +294,7 @@ def resolve_effective_parameters(manifest, mode_id: str | None, raw_params: dict
 
     if inject_full:
         defaults = {pid: defs[pid]["default"] for pid in in_scope
-                    if pid not in requested and "default" in defs[pid]}
+                    if pid not in requested and "default" in defs[pid] and not is_physical_key(pid)}
         resolved_defaults = validate(defaults)
         _drop_non_finite(resolved_defaults)
         for key, value in resolved_defaults.items():
@@ -339,12 +312,9 @@ def resolve_effective_parameters(manifest, mode_id: str | None, raw_params: dict
                 physical[pid] = engine_params[pid]
             continue
         defn = defs[pid]
-        if injected:
-            value, value_type = _variable_value(defn, engine_params[pid])
-            entry = {"id": pid, "value": value, "type": value_type, "source": sources[pid]}
-        else:
-            _, value_type = _variable_value(defn, defn.get("default", ""))
-            entry = {"id": pid, "value": None, "type": value_type, "source": "source_default"}
+        value, value_type = _variable_value(defn, engine_params.get(pid), injected=injected)
+        entry = {"id": pid, "value": value, "type": value_type,
+                 "source": sources[pid] if injected else "source_default"}
         code = _measurement_code(defn)
         if code:
             entry["measurement"] = code
@@ -414,6 +384,12 @@ def output_summary(generator_inputs: dict | None) -> dict | None:
         "complete": bool(generator_inputs.get("complete")),
         "variables_sha256": generator_inputs.get("variables_sha256"),
     }
+
+
+def envelope_fields(payload: dict) -> dict:
+    """``{"generator_output": {...}}`` for a render envelope or SSE event; {} when disabled."""
+    summary = output_summary((payload or {}).get("generator_inputs"))
+    return {"generator_output": summary} if summary else {}
 
 
 # ──────────────────────────────────────────────
@@ -541,10 +517,9 @@ def build_generator_output(manifest, generator_inputs: dict, *, mode: str, part:
 # Worker and cache seams
 # ──────────────────────────────────────────────
 
-#: Part fields every generated part carries, on both cache paths.
+#: Part fields every generated part carries, on both cache paths. A render-cache
+#: entry stores ``CACHE_FIELDS`` instead: the URL is rebuilt from the key.
 PART_FIELDS = ("sha256", "media_type", "instance_id", "variables_url")
-#: The same, as stored in a render-cache entry (the URL is rebuilt from the key).
-CACHE_FIELDS = ("sha256", "media_type", "instance_id", "variables_key")
 
 
 @dataclass
@@ -568,14 +543,11 @@ class PartOutput:
 def prepare_part_output(task: dict, manifest, serve_path: str, viewer_path: str | None) -> PartOutput | None:
     """Digest a finished part and write its sidecar next to the served file.
 
-    Must run before the files are published: under an object store the local
-    copies are scratch and are removed once stored. Returns ``None`` when the
-    payload carries no generator inputs (flag off, or a task queued by an API
-    that predates GOC-1). Any failure is logged at ERROR and also yields
-    ``None``: the geometry is still good, the part is served without the
-    GOC-1 fields, and its cache entry is a miss next time (see
-    :func:`cache_entry_usable`), so it is regenerated rather than served
-    without provenance for a day.
+    Runs before publishing: under an object store the local copies are removed
+    once stored. ``None`` when the payload carries no generator inputs (flag
+    off, or a task from an API predating GOC-1). A failure is logged at ERROR
+    and also yields ``None``: the geometry is still served, without the GOC-1
+    fields, and its cache entry is a miss next time (:func:`cache_entry_usable`).
     """
     payload = task.get("payload") or {}
     generator_inputs = payload.get("generator_inputs")

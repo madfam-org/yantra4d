@@ -13,6 +13,7 @@ import redis
 
 from config import Config
 from manifest import get_manifest
+from services.engine import generator_output
 from services.engine.format_converter import convert_mesh, stl_to_glb
 from services.engine.openscad import compute_scad_hash, validate_params
 from services.engine.render_cache import entry_key as cache_entry_key
@@ -219,13 +220,14 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         )
         raw_params = data
 
-    params = validate_params(raw_params, project_slug or None)
-
-    # Inject Material Hyperobject Compensations. Read from the resolved parameter
-    # container so a flattened legacy payload no longer silently loses this field.
-    target_mat = raw_params.get('target_material') if isinstance(raw_params, dict) else None
-    if target_mat:
-        _inject_material_compensations(params, target_mat)
+    # Validation, optional full-default injection, the legacy target_material
+    # compensation injection (read from the resolved container, so a flattened
+    # payload keeps it) and the GOC-1 variables: services/engine/generator_output.py.
+    params, generator_inputs = generator_output.resolve_render_inputs(
+        get_manifest(project_slug or None), mode_id, raw_params,
+        validate=lambda raw: validate_params(raw, project_slug or None),
+        material_injector=_inject_material_compensations,
+    )
 
     scad_content_hash = compute_scad_hash(scad_path)
     # URLs must change along with cache identity: retaining an old URL must not
@@ -254,6 +256,7 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         'ignore_cache': data.get('ignore_cache', False),
         'scad_content_hash': scad_content_hash,
         'render_revision': render_revision(),
+        'generator_inputs': generator_inputs,
     }
 
 
@@ -379,11 +382,12 @@ def _check_cache(payload, part, export_format):
     """Check render cache for a part. Returns cached entry dict or None."""
     if payload.get('ignore_cache', False):
         return None
-    return render_cache.get(
+    cached = render_cache.get(
         payload['project_slug'], payload['scad_filename'],
         payload['params'], part, export_format,
         scad_content_hash=payload.get('scad_content_hash'),
     )
+    return cached if generator_output.cache_entry_usable(cached, payload) else None
 
 
 def _post_render_convert(output_path, output_filename, part, stl_prefix,
@@ -524,6 +528,7 @@ def _sanitize_terminal_payload(payload: dict | None) -> dict:
             clean = merged
     clean.pop("event", None)
     clean.pop("stream_protocol", None)
+    clean.pop("generator_output", None)  # envelope-level, never per part
     return clean
 
 
@@ -564,7 +569,8 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
         if cached:
             cache_hits += 1
             combined_log += f"[{part}] cache HIT\n"
-            generated_parts.append({"type": part, "url": f"/static/{cache_entry_key(cached)}", "size_bytes": cached["size_bytes"]})
+            generated_parts.append({"type": part, "url": f"/static/{cache_entry_key(cached)}", "size_bytes": cached["size_bytes"],
+                                    **generator_output.part_fields_from_cache(cached)})
             continue
 
         if not is_render_worker_available():
@@ -695,13 +701,13 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
 
         cached = _check_cache(payload, part, export_format)
         if cached:
-            generated_parts.append(
-                {
-                    "type": part,
-                    "url": f"/static/{cache_entry_key(cached)}",
-                    "size_bytes": cached["size_bytes"],
-                }
-            )
+            part_entry = {
+                "type": part,
+                "url": f"/static/{cache_entry_key(cached)}",
+                "size_bytes": cached["size_bytes"],
+                **generator_output.part_fields_from_cache(cached),
+            }
+            generated_parts.append(part_entry)
             progress = ((i + 1) / num_parts) * 100
             yield _sse_event(build_render_event(
                     RENDER_EVENT_PART_DONE,
@@ -710,6 +716,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                     part_index=i,
                     total_parts=num_parts,
                     cached=True,
+                    **part_entry, **generator_output.envelope_fields(payload),
                 )
             )
             continue
@@ -836,6 +843,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             RENDER_EVENT_COMPLETE,
             parts=generated_parts,
             progress=100,
+            **generator_output.envelope_fields(payload),
         )
     )
 

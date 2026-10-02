@@ -5,6 +5,7 @@ Focuses on the _post_render_convert helper which was fixed to return
 separate url (download) and viewer_url (GLB) fields rather than replacing
 the STL path with the GLB path unconditionally.
 """
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -579,7 +580,11 @@ class TestReleaseArtifactNames:
         source = tmp_path / "main.scad"
         source.write_text("cube(10);")
         context = ("main.scad", str(source), ["main"], {}, {}, "default")
+        # extract_render_payload reads the manifest's parameter declarations for
+        # the GOC-1 variables; a parameterless stand-in keeps this test about names.
+        stub_manifest = SimpleNamespace(slug="test", parameters=[])
         with patch("services.engine.render_orchestrator.resolve_render_context", return_value=context), \
+             patch("services.engine.render_orchestrator.get_manifest", return_value=stub_manifest), \
              patch("services.engine.render_orchestrator.validate_params", side_effect=lambda p, _: p):
             monkeypatch.setenv("RENDER_BUILD_ID", "release-one")
             first = extract_render_payload({"project": "test", "parameters": {"size": 10}})

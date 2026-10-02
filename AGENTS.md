@@ -562,6 +562,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`docs/architecture/sim4d-extraction.md`](docs/architecture/sim4d-extraction.md) -- What was taken from sim4d and what was left
 - [`docs/operations/cross-ecosystem-interventions.md`](docs/operations/cross-ecosystem-interventions.md) -- Items owed to Yantra4D from other platforms
 - [`docs/operations/render-artifact-storage.md`](docs/operations/render-artifact-storage.md) -- Render artifact store: filesystem default, S3 backend, operator flip runbook and rollback
+- [`docs/reference/generator-output.md`](docs/reference/generator-output.md) -- GOC-1 `variables.json` sidecars: the per-part `instance_id`/`variables_url` render fields, their gates, and the `RENDER_GENERATOR_OUTPUT` / `RENDER_INJECT_FULL_PARAMS` / `RENDER_MATERIAL_INJECTION` flags
 - [`docs/reference/fashion-cabinet-consumers.md`](docs/reference/fashion-cabinet-consumers.md) -- The Fashion Cabinet bridge back-edge: who consumes our cartridges, and what breaks CI
 - [`docs/guides/ai-features.md`](docs/guides/ai-features.md) -- AI Configurator and Code Editor
 - [`docs/guides/verification.md`](docs/guides/verification.md) -- STL quality verification system

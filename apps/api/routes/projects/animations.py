@@ -56,11 +56,52 @@ def _ease(t: float, easing: str) -> float:
     return t  # linear
 
 
-def _interpolate_params(from_state: dict, to_state: dict, t: float) -> dict:
+def _is_number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _snap_to_parameter_grid(params: dict, definitions) -> dict:
+    """Snap interpolated numeric values onto each parameter's declared grid.
+
+    A slider declares min/max/step; the Studio can only ever send
+    ``min + k * step`` (clamped), so a frame holding any other value asks the
+    cartridge for a state its own control cannot produce. motor-mount's
+    ``nema_size`` (min 17, step 6) interpolated linearly to 21, 26, 30 came out
+    as the default geometry — four of five frames identical (prerender run
+    35460054814, 2026-09-19). Snapping gives 17 → 23 → 29 → 29 → 34 (round-half-even
+    at the middle frame).
+
+    Mirror of ``snap_to_parameter_grid`` in scripts/dev/render_commons_models.py
+    (the landing's prerender), so the Studio flipbook and the landing agree.
+    Values already on the grid keep their type; parameters without a numeric
+    step/min, and non-numeric values, pass through untouched.
+    """
+    defs = {d.get("id"): d for d in (definitions or []) if isinstance(d, dict) and d.get("id")}
+    out = dict(params)
+    for key, value in params.items():
+        definition = defs.get(key)
+        if definition is None or not _is_number(value):
+            continue
+        step, lo, hi = definition.get("step"), definition.get("min"), definition.get("max")
+        if not (_is_number(step) and step > 0 and _is_number(lo)):
+            continue
+        snapped = lo + round((value - lo) / step) * step
+        if _is_number(hi):
+            snapped = min(snapped, hi)
+        snapped = max(snapped, lo)
+        if snapped == value:
+            continue
+        out[key] = int(snapped) if isinstance(value, int) and float(snapped).is_integer() else snapped
+    return out
+
+
+def _interpolate_params(from_state: dict, to_state: dict, t: float, parameter_definitions=None) -> dict:
     """
     Interpolate between from_state and to_state at progress t ∈ [0, 1].
 
-    - Numeric params: linearly interpolated
+    - Numeric params: linearly interpolated, then snapped onto the parameter's
+      declared min/step grid when ``parameter_definitions`` (the manifest's
+      ``parameters`` list) is given — see ``_snap_to_parameter_grid``
     - Boolean/string params: snap to to_state at t >= 0.5
     """
     result = {}
@@ -82,7 +123,7 @@ def _interpolate_params(from_state: dict, to_state: dict, t: float) -> dict:
             # Non-numeric: snap halfway
             result[key] = to_val if t >= 0.5 else from_val
 
-    return result
+    return _snap_to_parameter_grid(result, parameter_definitions)
 
 
 def _render_frame(engine: str, manifest, output_path: str, params: dict,
@@ -160,7 +201,7 @@ def render_animation(slug: str, animation_id: str):
             t_eased = _ease(t_linear, easing)
 
             # Interpolate over animation states, then apply base_params as defaults
-            anim_params = _interpolate_params(from_state, to_state, t_eased)
+            anim_params = _interpolate_params(from_state, to_state, t_eased, manifest._data.get("parameters"))
             frame_params = {**base_params, **anim_params}
 
             frame_glbs = []

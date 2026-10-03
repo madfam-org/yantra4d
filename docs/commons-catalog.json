@@ -47433,7 +47433,7 @@
         "cabinet_drawer"
       ],
       "parts": 10,
-      "parameters": 28,
+      "parameters": 29,
       "parameter_ids": [
         "slide_standard",
         "custom_slide_length",
@@ -47443,6 +47443,7 @@
         "wall",
         "tolerance_xy",
         "tolerance_z",
+        "fit_clearance_slide",
         "density",
         "lid_snap",
         "tray_columns",
@@ -47554,6 +47555,17 @@
             "slide_box",
             "slide_tray",
             "staining_rack_cq"
+          ]
+        },
+        "fit_clearance_slide": {
+          "type": "slider",
+          "min": 0.0,
+          "max": 1.0,
+          "step": 0.01,
+          "visible_in_modes": [
+            "box",
+            "staining_rack",
+            "cabinet_drawer"
           ]
         },
         "density": {
@@ -47809,12 +47821,15 @@
         "main"
       ],
       "parts": 1,
-      "parameters": 4,
+      "parameters": 7,
       "parameter_ids": [
         "slide_standard",
         "custom_slide_length",
         "custom_slide_width",
-        "custom_slide_thickness"
+        "custom_slide_thickness",
+        "scale_comp_x",
+        "scale_comp_y",
+        "scale_comp_z"
       ],
       "parameter_contracts": {
         "slide_standard": {
@@ -47840,6 +47855,24 @@
           "min": 0.1,
           "max": 3.0,
           "step": 0.01
+        },
+        "scale_comp_x": {
+          "type": "slider",
+          "min": 0.9,
+          "max": 1.1,
+          "step": 0.001
+        },
+        "scale_comp_y": {
+          "type": "slider",
+          "min": 0.9,
+          "max": 1.1,
+          "step": 0.001
+        },
+        "scale_comp_z": {
+          "type": "slider",
+          "min": 0.9,
+          "max": 1.1,
+          "step": 0.001
         }
       },
       "export_formats": [

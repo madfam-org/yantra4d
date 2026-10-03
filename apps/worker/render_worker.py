@@ -22,7 +22,7 @@ from config import Config
 from manifest import get_manifest
 from services.core.implicit_engine import run_render as run_implicit_render
 from services.core.implicit_engine import stream_render as stream_implicit_render
-from services.engine import render_orchestrator
+from services.engine import generator_output, render_orchestrator
 from services.engine.cadquery_engine import build_cadquery_command
 from services.engine.cadquery_engine import run_render as run_cadquery_render
 from services.engine.cadquery_engine import stream_render as stream_cadquery_render
@@ -392,15 +392,20 @@ def process_sync_task(task):
             size_bytes = None
 
         viewer_path = _viewer_path(viewer_filename)
+        # GOC-1 sidecar: digested and written before publishing (an object
+        # store removes the local copies), then published with the geometry.
+        gen = generator_output.prepare_part_output(task, manifest, serve_path, viewer_path)
         published = _publish_part_artifacts(
-            (serve_path, viewer_path), discard=_intermediates(output_path, serve_path)
+            (serve_path, viewer_path, gen and gen.sidecar_path), discard=_intermediates(output_path, serve_path)
         )
         serve_key = published[serve_path]
         viewer_key = published.get(viewer_path) if viewer_path else None
+        gen_fields = gen.part_fields(published) if gen else {}
 
         render_cache.put(
             project_slug, payload['scad_filename'], params, part, export_format,
-            serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash')
+            serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
+            generator_fields=gen.cache_fields(published) if gen else None,
         )
 
         part_entry = {
@@ -419,6 +424,7 @@ def process_sync_task(task):
             url=f"/static/{serve_key}",
             size_bytes=size_bytes,
             log=f"[{part}] {stderr}\n",
+            **gen_fields, **generator_output.envelope_fields(payload),
         )
         if viewer_key:
             final_payload["viewer_url"] = f"/static/{viewer_key}"
@@ -523,8 +529,9 @@ def process_stream_task(task):
                         size_bytes = None
 
                     viewer_path = _viewer_path(viewer_filename)
+                    gen = generator_output.prepare_part_output(task, manifest, serve_path, viewer_path)
                     published = _publish_part_artifacts(
-                        (serve_path, viewer_path),
+                        (serve_path, viewer_path, gen and gen.sidecar_path),
                         discard=_intermediates(output_path, serve_path),
                     )
                     serve_key = published[serve_path]
@@ -532,12 +539,14 @@ def process_stream_task(task):
 
                     render_cache.put(
                         project_slug, payload['scad_filename'], params, part, export_format,
-                        serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash')
+                        serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
+                        generator_fields=gen.cache_fields(published) if gen else None,
                     )
                     part_entry = {
                         "type": part,
                         "url": f"/static/{serve_key}",
                         "size_bytes": size_bytes,
+                        **(gen.part_fields(published) if gen else {}),
                     }
                     if viewer_key:
                         part_entry["viewer_url"] = f"/static/{viewer_key}"
@@ -549,6 +558,7 @@ def process_stream_task(task):
                             RENDER_EVENT_PART_DONE,
                             part=part,
                             **part_entry,
+                            **generator_output.envelope_fields(payload),
                         ),
                         emit_final=True,
                     )

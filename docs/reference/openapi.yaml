@@ -474,11 +474,60 @@ components:
                 format: uri
               size_bytes:
                 type: integer
+              viewer_url:
+                type: string
+                description: |
+                  GLB companion for the 3D viewer, present when an STL render
+                  was converted for display. `url` stays the requested format.
+              sha256:
+                type: string
+                pattern: "^[0-9a-f]{64}$"
+                description: sha256 of the bytes served at `url` (GOC-1).
+              media_type:
+                type: string
+                example: model/stl
+                description: Media type of the file at `url` (GOC-1).
+              instance_id:
+                type: string
+                pattern: "^[0-9a-f]{64}$"
+                description: |
+                  GOC-1 generator instance id: sha256 of cartridge, mode, part,
+                  cartridge tree digest and variables digest. Deploy-independent;
+                  identical inputs on identical cartridge sources share it.
+              variables_url:
+                type: string
+                description: |
+                  The part's GOC-1 `variables.json` sidecar
+                  (`/static/<artifact>.variables.json`, served as
+                  application/json under the same gates as the artifact; also
+                  at `/api/projects/{slug}/download/{format}/<artifact>.variables.json`).
+                  Schema: hyperobjects-spec `generator-output.schema.json`.
+            description: |
+              The four GOC-1 fields (`sha256`, `media_type`, `instance_id`,
+              `variables_url`) are present for every generated part on both the
+              cache-miss and cache-hit paths while RENDER_GENERATOR_OUTPUT is on;
+              static parts shipped with a cartridge carry none of them.
         log:
           type: string
         request_id:
           type: string
           description: The request_id this render ran under (echoed for correlation)
+        generator_output:
+          type: object
+          description: |
+            GOC-1 summary for this render's inputs (additive; absent when
+            RENDER_GENERATOR_OUTPUT is off). `complete` is false when a declared
+            parameter was not injected and the kernel used its source default.
+          required: [format_version, complete, variables_sha256]
+          properties:
+            format_version:
+              type: string
+              example: "1.0.0"
+            complete:
+              type: boolean
+            variables_sha256:
+              type: string
+              pattern: "^[0-9a-f]{64}$"
 
     EstimateRequest:
       type: object
@@ -970,7 +1019,14 @@ paths:
                 description: |
                   SSE events: job, part_start, output, part_done, cancelled,
                   error, complete. Each `data:` line is a JSON object with an
-                  `event` field and a `stream_protocol` version (1.1.0).
+                  `event` field and a `stream_protocol` version (1.2.0).
+
+                  1.2.0 (additive): `part_done` for a generated part — rendered
+                  or served from the cache — carries the GOC-1 part fields
+                  `sha256`, `media_type`, `instance_id` and `variables_url`
+                  plus `generator_output`; `complete` carries
+                  `generator_output: {format_version, complete, variables_sha256}`
+                  (see `RenderResponse`).
 
                   `job` carries `{request_id, job_ids}` — the render's
                   cancellation identity. It is sent once when the stream opens

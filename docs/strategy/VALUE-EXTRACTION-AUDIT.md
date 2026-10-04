@@ -40,7 +40,7 @@ exposure was partial and worse for being partial: 34 of the 500 cartridges were
 separate satellite repos and every dual-engine cartridge was among them. (Two
 earlier statements of that figure disagreed — this doc said 34 and the script's
 docstring said 35; 34 was right. `.gitmodules` declared 37 paths under
-`projects/`, of which two were the client-private `tablaco*` entries and one the
+`projects/`, of which two were the client-private entries and one the
 `cq-hyperobject-test` fixture the catalog excludes.) Second, the cartridges the Commons catalog does not publish are
 excluded by importing the generator's own exclusion set rather than restating it, so this
 audit and `COMMONS.md` can never describe different commons.
@@ -216,8 +216,8 @@ landing gallery.** When this section was first written 326 were: the static
 `scripts/dev/generate-landing-projects.mjs`, and it had gone 328 entries against a
 501-cartridge commons because the generator silently emits a short list in a checkout
 without the submodules. Two of those 328 entries were cartridges the Commons catalog
-deliberately does not publish, one of them the client-private `tablaco`. #100 regenerated
-the file from a complete checkout (501 entries, `tablaco` dropped on both the signals the
+deliberately does not publish, one of them a client-private cartridge. #100 regenerated
+the file from a complete checkout (501 entries, the private one dropped on both the signals the
 backend uses — `access_control.view == "private"` and `PRIVATE_PROJECTS`), and closed the
 hole that let it rot: `--check` blocks a stale commit in `manifest-validation`, the only
 lane whose checkout is complete enough to judge it, and `build-landing` **regenerates** at

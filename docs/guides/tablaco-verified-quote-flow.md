@@ -1,6 +1,6 @@
-# Tablaco Verified Quote Flow
+# Private-Cartridge Verified Quote Flow
 
-This runbook covers the Yantra4D side of the Selva -> Yantra4D -> Cotiza -> ForgeSight flow for `tablaco`.
+This runbook covers the Yantra4D side of the Selva -> Yantra4D -> Cotiza -> ForgeSight flow for a client-private cartridge. `<private-slug>` below is that cartridge's slug, as listed in `PRIVATE_PROJECTS`.
 
 ## Contract
 
@@ -10,7 +10,7 @@ The supported flow is:
 
 ```text
 Selva agent
-  -> POST /api/projects/tablaco/cotiza-quote-request
+  -> POST /api/projects/<private-slug>/cotiza-quote-request
   -> Cotiza POST /api/v1/quotes/from-yantra4d
   -> ForgeSight verified market pricing
   -> Cotiza response relayed by Yantra4D
@@ -38,7 +38,7 @@ Requests that need a client-ready quote must send:
 }
 ```
 
-Yantra4D forwards `require_market_verified` as a top-level Cotiza field and preserves Tablaco mode/parameters in `item.options`.
+Yantra4D forwards `require_market_verified` as a top-level Cotiza field and preserves the cartridge's mode/parameters in `item.options`.
 
 ## Success response
 
@@ -47,7 +47,7 @@ A client-ready response must include:
 ```json
 {
   "status": "success",
-  "project": "tablaco",
+  "project": "<private-slug>",
   "source": "cotiza",
   "market_verified": true,
   "pricing_source": "forgesight",
@@ -74,7 +74,7 @@ Use Enclii first for production diagnostics and verification. Direct raw infrast
 Recommended Enclii-side checks:
 
 ```text
-enclii quote-flow verify --project tablaco --agent selva --require-market-verified
+enclii quote-flow verify --project <private-slug> --agent selva --require-market-verified
 enclii ops pods diagnose yantra4d-backend -n yantra4d --json
 enclii ops apps status yantra4d -n argocd --json
 ```
@@ -83,4 +83,4 @@ Record missing Enclii adapters as platform gaps instead of normalizing raw produ
 
 ## Remaining gate
 
-The authenticated smoke path is not complete until a pro-tier Selva/Janua token can render and request a Tablaco quote in production without bypassing access control.
+The authenticated smoke path is not complete until a pro-tier Selva/Janua token can render and request a quote for the private cartridge in production without bypassing access control.

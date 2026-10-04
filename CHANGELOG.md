@@ -94,7 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `madfam-org/cq-hyperobject-test@c970dbc`. **The API now serves exactly the
   commons count** — 495 today, plus whatever mounts under `private-projects/`.
   (Verified: `ManifestService.discover_projects()` returns 496 = 495 commons +
-  `tablaco`.)
+  one client-private cartridge.)
 
   **Every submodule-aware gate re-based.** The "submodule-backed vs vendored"
   distinction (34 cartridges) no longer exists, and four gates would have gone
@@ -600,7 +600,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   run in a checkout without them, silently emitted the shorter list and overwrote
   the good one — no lane could see it, since the `landing` CI job checks out no
   submodules and the deploy's Build Landing job did not either. It also carried
-  `tablaco`, a client-private cartridge the API has hidden from `/api/projects`
+  a client-private cartridge the API has hidden from `/api/projects`
   since access control landed, with its description and a link to a Studio page
   that refuses to load. The generator now skips private cartridges on both signals
   the backend uses (`access_control.view == "private"` and the `PRIVATE_PROJECTS`
@@ -611,7 +611,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stale commit in `manifest-validation`, the only job whose checkout is complete
   enough to judge the file, and `build-landing` now regenerates at deploy so the
   shipped gallery is correct by construction. Regenerated: **328 → 501 entries**,
-  `tablaco` removed. `project.unlisted` is untouched — unlisted means "not in API
+  the private entry removed. `project.unlisted` is untouched — unlisted means "not in API
   listings but reachable by URL", which is not private.
 - **Active Render Jobs Have a Lease, So the Count Stays Truthful** —
   `yantra_render_active_jobs` was a plain Redis set with no expiry: the worker adds
@@ -758,7 +758,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Per-Project CI Propagation** — `scripts/ci/propagate_project_ci.sh`: GitHub
   CLI script that installs the reusable Yantra4D CI workflow into all 33
   federated `madfam-org/*` repos, sets `DISPATCH_TOKEN` secrets, and skips
-  the private `tablaco` repo automatically.
+  the client-private repo automatically.
 - **MQTT Dev Infrastructure** — `eclipse-mosquitto` service added to
   `docker-compose.dev.yml`; `scripts/dev/mock_telemetry_publisher.py` lets
   developers publish synthetic 4D telemetry locally; integration tests added
@@ -807,7 +807,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/fonts/…` with `OPENSCADPATH` and `FONTCONFIG_FILE` set in Emscripten's
   `preRun`. A `/scad/` fallback survives **dev builds only**, refuses a body
   beginning with `<!doctype`, and warns that it carries no libraries or fonts.
-- **Gitmodules Configuration** — Appended `update = none` instruction to the `projects/tablaco` submodule to automatically exclude it from causing checkout failures during anonymous or unauthed public clones of the overarching application.
+- **Gitmodules Configuration** — Appended `update = none` instruction to the client-private cartridge submodule (then under `projects/`) to automatically exclude it from causing checkout failures during anonymous or unauthed public clones of the overarching application.
 - **Project Manifest Schema** — `project.engine` enum extended to include
   `"implicit"` alongside `"openscad"` and `"cadquery"`.
 - **CHANGELOG** — Retroactively versioned from `v0.1.0` through `v0.10.0`.

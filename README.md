@@ -129,10 +129,10 @@ declared license ever diverges from the one a cartridge actually ships, if a
 manifest declares two conflicting licenses, or if an excluded cartridge appears
 in the published catalog (`scripts/qa/check_licenses.py --strict-all`).
 
-Two cartridges are deliberately **excluded** from the published Commons:
-`tablaco` and `tablaco-v2` are client engagements whose client retains all
-private rights, so they live outside the commons repo entirely and mount at
-`private-projects/`. (`cq-hyperobject-test` used to be a third exclusion; since
+Two cartridges are deliberately **excluded** from the published Commons: they
+are client-owned private cartridges, so they live outside the commons repo
+entirely, mount at `private-projects/`, and are served only to authorized
+identities. (`cq-hyperobject-test` used to be a third exclusion; since
 RFC 0038 P2 it is an engine test fixture vendored under
 `apps/api/tests/fixtures/cartridges/` and is not a cartridge at all.)
 

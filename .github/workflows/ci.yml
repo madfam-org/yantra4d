@@ -949,7 +949,7 @@ jobs:
         # solid-hyperobjects / soft-hyperobjects), never a floating tag: the bar
         # the platform clears must be the bar the commons cleared. The repo is
         # public (2026-09-05), so no token is needed to fetch it.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@f7e1947d74135191c0e4c4531c7210e222002ff9"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@113e2dcb9d903bbd2e3bb01162f3a1b53e0c0f82"
       - name: Structural conformance (full commons)
         shell: bash
         run: |

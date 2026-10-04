@@ -73,7 +73,7 @@ jobs:
         if: inputs.report_fixture == ''
         # Same keystone SHA as ci.yml's spec-conformance job and both commons'
         # SPEC_PIN — never a floating tag; the repo is public, no token needed.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@2f5374b8e8d83acf9fe3b958b39458572c4262b9"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@073cb0f2b0b69c76f84939c8445f5c1d3966ad22"
       - name: Keystone's vendored graph engine matches this repo's
         # The reverse half of the graph-engine drift guard (Wave D / G-SPEC). The
         # keystone renders `.graph.json` cartridges by transpiling them with a

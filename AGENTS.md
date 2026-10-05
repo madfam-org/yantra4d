@@ -382,7 +382,8 @@ POST `/api/verify` with `{mode}` -- runs `apps/api/tests/verify_design.py` on re
 | GET | `/api/projects/<slug>/share/<preset_id>` | -- | Shareable preset configuration URL |
 | GET | `/api/catalog/nopscadlib` | -- | NopSCADlib catalog categories |
 | GET | `/api/catalog/nopscadlib/<category>` | -- | Components for catalog category |
-| POST | `/api/projects/<slug>/git/render-head` | `{file}` | Render HEAD version of SCAD file (pro+) |
+| POST | `/api/projects/<slug>/git/render-head` | `{mode, parameters, export_format?}` | Render the committed HEAD of the cartridge (pro+); each part is a render-worker job that checks HEAD out into its own temp dir |
+| POST | `/api/projects/<slug>/animations/<id>/render` | `{parameters?, request_id?}` | SSE flipbook (pro+): `job`, `frame_done` per frame, `complete`; every frame part is a render-worker job |
 | POST | `/api/ai/synthesize` | `{prompt, ...}` | SSE streaming AI project synthesis (pro+) |
 | POST | `/api/projects/<slug>/analyze/thickness` | `{sample_count?}` | Wall thickness analysis on latest render (pro+) |
 | POST | `/api/projects/<slug>/analyze/overhang` | `{threshold_deg?, sample_count?}` | Overhang angle analysis on latest render (pro+) |
@@ -482,6 +483,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Tests | Co-located (`*.test.js`/`*.test.jsx`), Vitest + RTL |
 | Linting | ESLint + jsx-a11y (studio), ruff (backend) -- **pinned to `0.16.5` in two places**, `ci.yml`'s `backend` job and `apps/api/requirements-dev.txt`, so a developer's ruff is the one CI runs; `scripts/tests/test_ruff_pin.py` fails when the two disagree, so bump both together (#111). `apps/api/pyproject.toml` pins the RULES, the version pins the ENGINE that reads them |
 | Naming | `camelCase` JS, `snake_case` Python/SCAD |
+| Render engines | Engines (OpenSCAD, CadQuery, graph, implicit) run on the **render worker only**. A route that renders queues the job -- `render_orchestrator` for `/api/render*`, `services/engine/worker_dispatch.py` for single-part jobs (animations, git `render-head`) -- and relays its events; it never calls an engine. `tests/unit/test_engine_guard.py` fails if any API module imports the CadQuery engine or its pool, or if `create_app()` loads them, and `engine_guard.worker_only` makes the CadQuery entry points raise inside a request |
 
 ## Testing Standards
 

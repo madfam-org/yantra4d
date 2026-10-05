@@ -1,0 +1,60 @@
+{
+  "version": "1.1.0",
+  "units": "mm",
+  "meta": {
+    "title": "A/B Front Idler (graph twin)",
+    "notes": "Golden twin of main.py (graph format 1.1): the same parameters, the same derivations and the same operations in the same order. main.py stays the oracle; y4d-spec --parity compares the two at the defaults and at every preset. Clamps are min/max pairs spelled as ternaries; the right (A) idler is the script's body.mirror('YZ') as reflect YZ chosen by select on mirrored. Cited facts and labelled conventions as main.py: PROFILE 20, SLOT_LIP_T 2, PILOT_D 4.2 (MISUMI HFS5-2020), RAIL_SETBACK 25 (guide p. 88), M5_HEAD 9.5 (ISO 7380-1); conventions Z_LOW 54 / Z_HIGH 70, U_IDLER 15.372, STATION 10, GRIP 4.5, BLOCK_T 8, BOSS_D 9, ROOF_T 3, POST_X0/X1 -29.5/-25.5, WEB_Y0/Y1 17/29.5, HOLE_CLEAR 0.25."
+  },
+  "parameters": {
+    "idler_y": {"default": 26.0},
+    "idler_width": {"default": 9.0},
+    "mirrored": {"default": false}
+  },
+  "derived": [
+    {"id": "iy_cap", "expr": "idler_y < 27 ? idler_y : 27"},
+    {"id": "iy", "expr": "25.5 > iy_cap ? 25.5 : iy_cap"},
+    {"id": "iw_cap", "expr": "idler_width < 10 ? idler_width : 10"},
+    {"id": "iw", "expr": "6 > iw_cap ? 6 : iw_cap"},
+    {"id": "z_belt", "expr": "mirrored ? 70 : 54"},
+    {"id": "z_floor", "expr": "z_belt - iw / 2"},
+    {"id": "z_roof", "expr": "z_belt + iw / 2"},
+    {"id": "tip", "expr": "z_roof + 3 - 16"}
+  ],
+  "nodes": [
+    {"id": "block_blank", "type": "box", "params": {"w": 20.0, "d": 23.5, "h": 8.0}},
+    {"id": "block", "type": "translate", "inputs": {"shape": "block_blank"}, "params": {"y": 12.25, "z": 4.0}},
+    {"id": "tongue_blank", "type": "box", "params": {"w": 5.8, "d": 22.0, "h": 2.5}},
+    {"id": "tongue", "type": "translate", "inputs": {"shape": "tongue_blank"}, "params": {"y": 12.0, "z": -0.75}},
+    {"id": "body_1", "type": "union", "inputs": {"a": "block", "b": "tongue"}},
+    {"id": "web_blank", "type": "box", "params": {"w": 23.5, "d": 12.5, "h": {"expr": "z_floor - 1.5 - (0.0)"}}},
+    {"id": "web", "type": "translate", "inputs": {"shape": "web_blank"}, "params": {"x": -17.75, "y": 23.25, "z": {"expr": "((0.0) + (z_floor - 1.5)) / 2"}}},
+    {"id": "body_2", "type": "union", "inputs": {"a": "body_1", "b": "web"}},
+    {"id": "boss_blank", "type": "cylinder", "params": {"r": 4.5, "h": {"expr": "z_floor"}}},
+    {"id": "boss", "type": "translate", "inputs": {"shape": "boss_blank"}, "params": {"x": -15.372, "y": {"expr": "iy"}, "z": {"expr": "(0.0) + (z_floor) / 2"}}},
+    {"id": "body_3", "type": "union", "inputs": {"a": "body_2", "b": "boss"}},
+    {"id": "post_blank", "type": "box", "params": {"w": 4.0, "d": 11.5, "h": {"expr": "z_roof + 3 - (0.0)"}}},
+    {"id": "post", "type": "translate", "inputs": {"shape": "post_blank"}, "params": {"x": -27.5, "y": 23.75, "z": {"expr": "((0.0) + (z_roof + 3)) / 2"}}},
+    {"id": "body_4", "type": "union", "inputs": {"a": "body_3", "b": "post"}},
+    {"id": "roof_arm_blank", "type": "box", "params": {"w": 13.628, "d": {"expr": "iy + 3 - (iy - 3)"}, "h": {"expr": "z_roof + 3 - (z_roof)"}}},
+    {"id": "roof_arm", "type": "translate", "inputs": {"shape": "roof_arm_blank"}, "params": {"x": -22.186, "y": {"expr": "((iy - 3) + (iy + 3)) / 2"}, "z": {"expr": "((z_roof) + (z_roof + 3)) / 2"}}},
+    {"id": "body_5", "type": "union", "inputs": {"a": "body_4", "b": "roof_arm"}},
+    {"id": "roof_pad_blank", "type": "cylinder", "params": {"r": 5.0, "h": 3.0}},
+    {"id": "roof_pad", "type": "translate", "inputs": {"shape": "roof_pad_blank"}, "params": {"x": -15.372, "y": {"expr": "iy"}, "z": {"expr": "(z_roof) + (3.0) / 2"}}},
+    {"id": "body_6", "type": "union", "inputs": {"a": "body_5", "b": "roof_pad"}},
+    {"id": "c_screw_blank", "type": "cylinder", "params": {"r": 2.75, "h": 7.5}},
+    {"id": "c_screw", "type": "translate", "inputs": {"shape": "c_screw_blank"}, "params": {"y": 10.0, "z": 0.75}},
+    {"id": "body_7", "type": "cut", "inputs": {"a": "body_6", "b": "c_screw"}},
+    {"id": "c_counterbore_blank", "type": "cylinder", "params": {"r": 5.25, "h": 8.0}},
+    {"id": "c_counterbore", "type": "translate", "inputs": {"shape": "c_counterbore_blank"}, "params": {"y": 10.0, "z": 8.5}},
+    {"id": "body_8", "type": "cut", "inputs": {"a": "body_7", "b": "c_counterbore"}},
+    {"id": "axle_clear_blank", "type": "cylinder", "params": {"r": 2.75, "h": 4.0}},
+    {"id": "axle_clear", "type": "translate", "inputs": {"shape": "axle_clear_blank"}, "params": {"x": -15.372, "y": {"expr": "iy"}, "z": {"expr": "(z_roof - 0.5) + (4.0) / 2"}}},
+    {"id": "body_9", "type": "cut", "inputs": {"a": "body_8", "b": "axle_clear"}},
+    {"id": "axle_pilot_blank", "type": "cylinder", "params": {"r": 2.1, "h": {"expr": "z_floor - tip + 1"}}},
+    {"id": "axle_pilot", "type": "translate", "inputs": {"shape": "axle_pilot_blank"}, "params": {"x": -15.372, "y": {"expr": "iy"}, "z": {"expr": "(tip - 0.5) + (z_floor - tip + 1) / 2"}}},
+    {"id": "left_b", "type": "cut", "inputs": {"a": "body_9", "b": "axle_pilot"}},
+    {"id": "right_a", "type": "reflect", "inputs": {"shape": "left_b"}, "params": {"plane": "YZ"}},
+    {"id": "front_idler_part", "type": "select", "inputs": {"if_true": "right_a", "if_false": "left_b"}, "params": {"when": {"expr": "mirrored"}}}
+  ],
+  "outputs": {"front_idler": "front_idler_part"}
+}

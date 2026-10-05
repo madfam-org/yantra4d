@@ -119,7 +119,7 @@ function GraphEditorInner(props: GraphEditorProps) {
   )
 
   const emit = useCallback((next: GraphDoc, layoutOnly = false, bindings?: BindingMap) => {
-    props.onDocumentChange(serializeGraph(next), bindings ? { layoutOnly, bindings } : { layoutOnly })
+    props.onDocumentChange(serializeGraph(next, props.content), bindings ? { layoutOnly, bindings } : { layoutOnly })
   }, [props])
 
   // ── Canvas nodes: derived from the document, with React Flow's own changes
@@ -256,7 +256,7 @@ function GraphEditorInner(props: GraphEditorProps) {
 
   const exportGraph = useCallback(() => {
     if (!doc) return
-    const blob = new Blob([serializeGraph(doc)], { type: 'application/json' })
+    const blob = new Blob([serializeGraph(doc, props.content)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -265,7 +265,7 @@ function GraphEditorInner(props: GraphEditorProps) {
     a.click()
     a.remove()
     URL.revokeObjectURL(url)
-  }, [doc, props.fileName])
+  }, [doc, props.content, props.fileName])
 
   if (!doc) {
     return (

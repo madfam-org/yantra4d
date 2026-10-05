@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "units": "mm",
+  "meta": {
+    "title": "Bolt-Circle Flange Plate",
+    "notes": "Exercises the profile→extrude and pattern_polar vocabulary. bolt_count and bolt_spacing_deg are independent params by design — the graph format has no expressions, so the author sets both (spacing = 360 / count)."
+  },
+  "nodes": [
+    { "id": "outline", "type": "profile_circle", "params": { "r": 45 } },
+    { "id": "plate", "type": "extrude", "inputs": { "profile": "outline" }, "params": { "height": 8 } },
+
+    { "id": "bore", "type": "cylinder", "params": { "r": 12, "h": 400 } },
+    { "id": "plate_bored", "type": "cut", "inputs": { "a": "plate", "b": "bore" } },
+
+    { "id": "boltcut", "type": "cylinder", "params": { "r": 4.25, "h": 400 } },
+    { "id": "boltpos", "type": "translate", "inputs": { "shape": "boltcut" }, "params": { "x": 32 } },
+    { "id": "boltring", "type": "pattern_polar", "inputs": { "shape": "boltpos" }, "params": { "count": 6, "angle": 60 } },
+
+    { "id": "drilled", "type": "cut", "inputs": { "a": "plate_bored", "b": "boltring" } },
+    { "id": "flange", "type": "chamfer", "inputs": { "shape": "drilled" }, "params": { "edges": ">Z", "distance": 0.8 } },
+
+    { "id": "blank", "type": "chamfer", "inputs": { "shape": "plate_bored" }, "params": { "edges": ">Z", "distance": 0.8 } }
+  ],
+  "outputs": {
+    "flange": "flange",
+    "blank": "blank"
+  }
+}

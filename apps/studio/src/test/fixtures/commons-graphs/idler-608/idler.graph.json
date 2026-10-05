@@ -1,0 +1,79 @@
+{
+  "version": "1.1.0",
+  "units": "mm",
+  "meta": {
+    "title": "608 Bearing Idler Pulley (graph twin)",
+    "notes": "Golden twin of main.py: same parameters, same derivations, same operations in the same order. main.py stays the oracle; y4d-spec --parity compares the two at the defaults and at every preset. The bearing table is the script's BEARING_TABLE (ID x OD x width: 608 8x22x7, 623 3x10x4, 625 5x16x5, 6900 10x22x6), read as nested ternaries over the numeric option value; an unknown designation falls back to 608 as bearing_spec() does. Clamps are min/max pairs spelled as ternaries, because the expression dialect has no function calls."
+  },
+  "parameters": {
+    "bearing": { "default": "608" },
+    "od": { "default": 30.0 },
+    "width": { "default": 10.0 },
+    "flange_h": { "default": 2.5 },
+    "flange_t": { "default": 2.0 },
+    "groove_dia": { "default": 5.0 },
+    "press_fit": { "default": 0.0 }
+  },
+  "derived": [
+    { "id": "b_id", "expr": "bearing == 623 ? 3 : bearing == 625 ? 5 : bearing == 6900 ? 10 : 8" },
+    { "id": "b_od", "expr": "bearing == 623 ? 10 : bearing == 625 ? 16 : 22" },
+    { "id": "b_w", "expr": "bearing == 623 ? 4 : bearing == 625 ? 5 : bearing == 6900 ? 6 : 7" },
+    { "id": "seat_r", "expr": "b_od / 2 + press_fit / 2" },
+    { "id": "bore_r", "expr": "b_id / 2 + 0.2" },
+    { "id": "width_cap", "expr": "width < 30 ? width : 30" },
+    { "id": "w", "expr": "b_w + 1 > width_cap ? b_w + 1 : width_cap" },
+    { "id": "od_cap", "expr": "od < 120 ? od : 120" },
+    { "id": "d", "expr": "b_od + 6 > od_cap ? b_od + 6 : od_cap" },
+    { "id": "flange_h_cap", "expr": "flange_h < 12 ? flange_h : 12" },
+    { "id": "fh", "expr": "0 > flange_h_cap ? 0 : flange_h_cap" },
+    { "id": "flange_t_cap", "expr": "flange_t < 6 ? flange_t : 6" },
+    { "id": "ft", "expr": "1.2 > flange_t_cap ? 1.2 : flange_t_cap" },
+    { "id": "groove_cap", "expr": "groove_dia < d * 0.4 ? groove_dia : d * 0.4" },
+    { "id": "gd", "expr": "2 > groove_cap ? 2 : groove_cap" },
+    { "id": "axle_r", "expr": "b_id / 2 + 0.3" }
+  ],
+  "nodes": [
+    { "id": "barrel_outline", "type": "profile_circle", "params": { "r": { "expr": "d / 2" } } },
+    { "id": "barrel", "type": "extrude", "inputs": { "profile": "barrel_outline" }, "params": { "height": { "expr": "w" } } },
+
+    { "id": "flange_bot_outline", "type": "profile_circle", "params": { "r": { "expr": "d / 2 + fh" } } },
+    { "id": "flange_bot", "type": "extrude", "inputs": { "profile": "flange_bot_outline" }, "params": { "height": { "expr": "ft" } } },
+    { "id": "flange_top_outline", "type": "profile_circle", "params": { "r": { "expr": "d / 2 + fh" } } },
+    { "id": "flange_top_blank", "type": "extrude", "inputs": { "profile": "flange_top_outline" }, "params": { "height": { "expr": "ft" } } },
+    { "id": "flange_top", "type": "translate", "inputs": { "shape": "flange_top_blank" }, "params": { "z": { "expr": "w - ft" } } },
+    { "id": "barrel_bot", "type": "union", "inputs": { "a": "barrel", "b": "flange_bot" } },
+    { "id": "flanged", "type": "union", "inputs": { "a": "barrel_bot", "b": "flange_top" } },
+    { "id": "flat_body", "type": "select", "inputs": { "if_true": "flanged", "if_false": "barrel" }, "params": { "when": { "expr": "fh > 0.05" } } },
+
+    { "id": "axle_outline", "type": "profile_circle", "params": { "r": { "expr": "bore_r" } } },
+    { "id": "axle_blank", "type": "extrude", "inputs": { "profile": "axle_outline" }, "params": { "height": { "expr": "w + 2" } } },
+    { "id": "axle", "type": "translate", "inputs": { "shape": "axle_blank" }, "params": { "z": -1.0 } },
+    { "id": "seat_outline", "type": "profile_circle", "params": { "r": { "expr": "seat_r" } } },
+    { "id": "seat_blank", "type": "extrude", "inputs": { "profile": "seat_outline" }, "params": { "height": { "expr": "-(b_w + 0.01)" } } },
+    { "id": "seat", "type": "translate", "inputs": { "shape": "seat_blank" }, "params": { "z": { "expr": "w + 0.005" } } },
+
+    { "id": "flat_bored", "type": "cut", "inputs": { "a": "flat_body", "b": "axle" } },
+    { "id": "flat_idler", "type": "cut", "inputs": { "a": "flat_bored", "b": "seat" } },
+
+    { "id": "groove_outline", "type": "profile_circle", "params": { "plane": "XZ", "x": { "expr": "d / 2" }, "y": { "expr": "w / 2" }, "r": { "expr": "gd / 2" } } },
+    { "id": "groove", "type": "revolve", "inputs": { "profile": "groove_outline" }, "params": { "angle": 360.0, "axis": "z" } },
+    { "id": "round_body", "type": "cut", "inputs": { "a": "barrel", "b": "groove" } },
+    { "id": "round_bored", "type": "cut", "inputs": { "a": "round_body", "b": "axle" } },
+    { "id": "round_idler", "type": "cut", "inputs": { "a": "round_bored", "b": "seat" } },
+
+    { "id": "sleeve_outline", "type": "profile_circle", "params": { "r": { "expr": "axle_r + 1.6" } } },
+    { "id": "sleeve", "type": "extrude", "inputs": { "profile": "sleeve_outline" }, "params": { "height": { "expr": "b_w + 2" } } },
+    { "id": "washer_outline", "type": "profile_circle", "params": { "r": { "expr": "b_od / 2 - 1" } } },
+    { "id": "washer", "type": "extrude", "inputs": { "profile": "washer_outline" }, "params": { "height": { "expr": "ft" } } },
+    { "id": "stack_blank", "type": "union", "inputs": { "a": "sleeve", "b": "washer" } },
+    { "id": "bolt_outline", "type": "profile_circle", "params": { "r": { "expr": "axle_r" } } },
+    { "id": "bolt_blank", "type": "extrude", "inputs": { "profile": "bolt_outline" }, "params": { "height": { "expr": "b_w + 4" } } },
+    { "id": "bolt", "type": "translate", "inputs": { "shape": "bolt_blank" }, "params": { "z": -1.0 } },
+    { "id": "washer_stack", "type": "cut", "inputs": { "a": "stack_blank", "b": "bolt" } }
+  ],
+  "outputs": {
+    "flat_idler": "flat_idler",
+    "round_idler": "round_idler",
+    "washer_stack": "washer_stack"
+  }
+}

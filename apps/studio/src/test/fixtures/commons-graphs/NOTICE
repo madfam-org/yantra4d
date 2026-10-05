@@ -1,0 +1,30 @@
+Graph documents vendored for tests only
+
+Source:  https://github.com/madfam-org/solid-hyperobjects @ 7de3a32e3d3c1e153f15fc763a653eb7c6536457
+Licence: CERN-OHL-W-2.0 (CERN Open Hardware Licence Version 2 - Weakly
+         Reciprocal), the licence of that repository. The files are
+         unmodified copies, byte-identical to the git blobs at that commit.
+
+Purpose: src/lib/graph/graphFormat.test.js loads these files with
+import.meta.glob to prove that the Studio graph editor writes an unedited
+document back byte-identical and that an edit changes only the lines it
+touches. Nothing outside *.test.* files imports them, so they never reach a
+build. Refresh them from a newer commons commit by copying the files again
+and updating the commit above.
+
+Files:
+  ab-drive/ab-drive.graph.json
+  ab-front-idler/front-idler.graph.json
+  bed-extrusion-mount/bed-mount.graph.json
+  book-fold-phone/bookfold.graph.json
+  clamshell-dual-screen-handheld/clamshell.graph.json
+  corner-idler-bracket/corner-idler.graph.json
+  flange-plate/flange.graph.json
+  idler-608/idler.graph.json
+  spacer-block/spacer.graph.json
+  toolhead-proxy/toolhead.graph.json
+  x-carriage/x-carriage.graph.json
+  xy-joint/xy-joint.graph.json
+  z-belt-clamp/z-belt-clamp.graph.json
+  z-drive-housing/z-drive.graph.json
+  z-joint/z-joint.graph.json

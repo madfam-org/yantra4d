@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "units": "mm",
+  "meta": {
+    "title": "Book-Fold Phone",
+    "notes": "Graph twin of main.py. Same components, same order, same operations, so the two engines' bounding boxes and volumes agree exactly. COMPOSITION: node ids carry the component slug as a prefix (framehalf_, foldabledisplay_, displaypanel_, hingefold_, lenswindow_, systembuttons_, port_, cardslot_, speaker_) so a reader can see where one hyperobject ends and the next begins; the assembly's own chain is prefixed asm_. The literal spelling `component:<slug>` is not available — the transpiler's node-id grammar is ^[A-Za-z][A-Za-z0-9_]*$, so a colon fails validation before the graph ever renders. Sub-graph reuse (yantra4d lane G-CLUSTERS) is what would let this twin REFERENCE a component cartridge rather than inline its nodes; until it lands the nodes are duplicated here. GEOMETRY NOTE: the fold axis IS the X axis through the origin, in the MIDDLE OF THE GAP between the two half-frames, which is why the fold is one `rotate` about x with no compensating translate (`rotate` turns about the origin and nothing else) and why the gap vanishes when the device opens — a turn about that axis lands the camera half in the cover half's own z band. The crease relief is a cylinder ON that axis, so it is invariant under the fold and can be cut before the rotate. NO EXPRESSIONS (lane G-EXPR): every derived dimension is its own parameter — hingefold_leaf_cyl.r is the relief radius less the archetype's 0.3 mm running clearance, and every *_center_* value places a solid the engine cannot compute. Worse here than in the clamshell: the HINGE GAP, the one dimension that defines this family, cannot be a control at all, because the only things that carry it are the two halves' frozen centre-Z constants. Telesia's scripts/device-presets.py emits them together from one registry entry, so they cannot drift. TWO THINGS THIS TWIN CANNOT SAY and main.py can: a port or card tray that is absent on a device (no branching — the twin always cuts both), and a feature count of zero (pattern counts clamp to 1).",
+    "frame": "X = hinge_axis_length, the long axis, and the fold axis through the origin. Y = the folding axis: the cover half runs from y=0 to +cover_half_width, the camera half the same and then turns. Z: the gap mid-plane is z=0; closed depth is 2 x half_thickness + the gap, open depth is half_thickness."
+  },
+  "nodes": [
+    { "id": "hingefold_relief_cyl", "type": "cylinder", "params": { "r": 2.415, "h": 146.64 } },
+    { "id": "hingefold_relief", "type": "rotate", "inputs": { "shape": "hingefold_relief_cyl" }, "params": { "axis": "y", "angle": 90 } },
+
+    { "id": "framehalf_cover_box", "type": "box", "params": { "w": 156, "d": 74, "h": 4.7 } },
+    { "id": "framehalf_cover_place", "type": "translate", "inputs": { "shape": "framehalf_cover_box" }, "params": { "x": 0, "y": 37, "z": -2.65 } },
+    { "id": "framehalf_cover_round", "type": "fillet", "inputs": { "shape": "framehalf_cover_place" }, "params": { "edges": "|Z and >Y", "radius": 6 } },
+    { "id": "asm_cover_relief", "type": "cut", "inputs": { "a": "framehalf_cover_round", "b": "hingefold_relief" } },
+
+    { "id": "foldabledisplay_cover_box", "type": "box", "params": { "w": 151, "d": 71.5, "h": 0.8 } },
+    { "id": "foldabledisplay_cover_place", "type": "translate", "inputs": { "shape": "foldabledisplay_cover_box" }, "params": { "x": 0, "y": 35.75, "z": -0.7 } },
+    { "id": "asm_cover_inner", "type": "cut", "inputs": { "a": "asm_cover_relief", "b": "foldabledisplay_cover_place" } },
+
+    { "id": "displaypanel_box", "type": "box", "params": { "w": 151, "d": 69, "h": 0.8 } },
+    { "id": "displaypanel_place", "type": "translate", "inputs": { "shape": "displaypanel_box" }, "params": { "x": 0, "y": 37, "z": -4.6 } },
+    { "id": "asm_cover_display", "type": "cut", "inputs": { "a": "asm_cover_inner", "b": "displaypanel_place" } },
+
+    { "id": "systembuttons_seat", "type": "box", "params": { "w": 14, "d": 2, "h": 2 } },
+    { "id": "systembuttons_place", "type": "translate", "inputs": { "shape": "systembuttons_seat" }, "params": { "x": 7.72, "y": 74, "z": -2.65 } },
+    { "id": "systembuttons_row", "type": "pattern_linear", "inputs": { "shape": "systembuttons_place" }, "params": { "count": 2, "dx": 22, "dy": 0, "dz": 0 } },
+    { "id": "asm_cover_buttons", "type": "cut", "inputs": { "a": "asm_cover_display", "b": "systembuttons_row" } },
+
+    { "id": "port_usb_box", "type": "box", "params": { "w": 10, "d": 8.6, "h": 2.8 } },
+    { "id": "port_usb_place", "type": "translate", "inputs": { "shape": "port_usb_box" }, "params": { "x": -78, "y": 37, "z": -2.65 } },
+    { "id": "asm_cover_usb", "type": "cut", "inputs": { "a": "asm_cover_buttons", "b": "port_usb_place" } },
+
+    { "id": "cardslot_box", "type": "box", "params": { "w": 8, "d": 12.5, "h": 2 } },
+    { "id": "cardslot_place", "type": "translate", "inputs": { "shape": "cardslot_box" }, "params": { "x": -78, "y": 16.28, "z": -2.65 } },
+    { "id": "asm_cover_card", "type": "cut", "inputs": { "a": "asm_cover_usb", "b": "cardslot_place" } },
+
+    { "id": "speaker_hole_cyl", "type": "cylinder", "params": { "r": 0.7, "h": 6 } },
+    { "id": "speaker_hole_rot", "type": "rotate", "inputs": { "shape": "speaker_hole_cyl" }, "params": { "axis": "y", "angle": 90 } },
+    { "id": "speaker_place", "type": "translate", "inputs": { "shape": "speaker_hole_rot" }, "params": { "x": -78, "y": 54.3, "z": -2.65 } },
+    { "id": "speaker_run", "type": "pattern_linear", "inputs": { "shape": "speaker_place" }, "params": { "count": 5, "dx": 0, "dy": 3, "dz": 0 } },
+    { "id": "asm_cover_half", "type": "cut", "inputs": { "a": "asm_cover_card", "b": "speaker_run" } },
+
+    { "id": "framehalf_camera_box", "type": "box", "params": { "w": 156, "d": 72, "h": 4.7 } },
+    { "id": "framehalf_camera_place", "type": "translate", "inputs": { "shape": "framehalf_camera_box" }, "params": { "x": 0, "y": 36, "z": 2.65 } },
+    { "id": "framehalf_camera_round", "type": "fillet", "inputs": { "shape": "framehalf_camera_place" }, "params": { "edges": "|Z and >Y", "radius": 6 } },
+    { "id": "asm_camera_relief", "type": "cut", "inputs": { "a": "framehalf_camera_round", "b": "hingefold_relief" } },
+
+    { "id": "foldabledisplay_camera_box", "type": "box", "params": { "w": 151, "d": 69.5, "h": 0.8 } },
+    { "id": "foldabledisplay_camera_place", "type": "translate", "inputs": { "shape": "foldabledisplay_camera_box" }, "params": { "x": 0, "y": 34.75, "z": 0.7 } },
+    { "id": "asm_camera_inner", "type": "cut", "inputs": { "a": "asm_camera_relief", "b": "foldabledisplay_camera_place" } },
+
+    { "id": "lenswindow_island_box", "type": "box", "params": { "w": 30.24, "d": 30.24, "h": 0.6 } },
+    { "id": "lenswindow_island_place", "type": "translate", "inputs": { "shape": "lenswindow_island_box" }, "params": { "x": 56.88, "y": 21.12, "z": 4.7 } },
+    { "id": "lenswindow_lens_cyl", "type": "cylinder", "params": { "r": 3.9312, "h": 1.8 } },
+    { "id": "lenswindow_lens_place", "type": "translate", "inputs": { "shape": "lenswindow_lens_cyl" }, "params": { "x": 47.808, "y": 21.12, "z": 4.1 } },
+    { "id": "lenswindow_row", "type": "pattern_linear", "inputs": { "shape": "lenswindow_lens_place" }, "params": { "count": 3, "dx": 9.072, "dy": 0, "dz": 0 } },
+    { "id": "lenswindow_tool", "type": "union", "inputs": { "a": "lenswindow_island_place", "b": "lenswindow_row" } },
+    { "id": "asm_camera_flat", "type": "cut", "inputs": { "a": "asm_camera_inner", "b": "lenswindow_tool" } },
+    { "id": "asm_camera_half", "type": "rotate", "inputs": { "shape": "asm_camera_flat" }, "params": { "axis": "x", "angle": 135 } },
+
+    { "id": "hingefold_leaf_cyl", "type": "cylinder", "params": { "r": 2.115, "h": 146.04 } },
+    { "id": "hingefold_leaf_rot", "type": "rotate", "inputs": { "shape": "hingefold_leaf_cyl" }, "params": { "axis": "y", "angle": 90 } },
+    { "id": "hingefold_clip_box", "type": "box", "params": { "w": 400, "d": 400, "h": 400 } },
+    { "id": "hingefold_clip_place", "type": "translate", "inputs": { "shape": "hingefold_clip_box" }, "params": { "x": 0, "y": -200, "z": 0 } },
+    { "id": "hingefold_leaf_keep", "type": "cut", "inputs": { "a": "hingefold_leaf_rot", "b": "hingefold_clip_place" } },
+    { "id": "hingefold_band_box", "type": "box", "params": { "w": 156, "d": 400, "h": 4.7 } },
+    { "id": "hingefold_band_place", "type": "translate", "inputs": { "shape": "hingefold_band_box" }, "params": { "x": 0, "y": 0, "z": -2.65 } },
+    { "id": "hingefold_leaf", "type": "intersect", "inputs": { "a": "hingefold_leaf_keep", "b": "hingefold_band_place" } }
+  ],
+  "outputs": {
+    "cover_half": "asm_cover_half",
+    "camera_half": "asm_camera_half",
+    "hinge": "hingefold_leaf"
+  }
+}

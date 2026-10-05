@@ -10,6 +10,7 @@ import threading
 from collections.abc import Callable
 
 from services.engine.cq_pool import cq_pool
+from services.engine.engine_guard import worker_only
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, communicate_cancellable
 from utils.project_resolver import project_roots
 
@@ -86,6 +87,7 @@ def _try_warm_pool(
         return None
 
 
+@worker_only
 def run_render(
     cmd: list, scad_path: str | None = None, is_cancelled: Callable[[], bool] | None = None
 ) -> tuple[bool, str]:
@@ -148,6 +150,7 @@ def run_render(
         return False, "CadQuery render error"
 
 
+@worker_only
 def stream_render(
     cmd: list, part: str, part_base: float, part_weight: float,
     index: int, total: int, scad_path: str | None = None,

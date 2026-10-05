@@ -65,6 +65,12 @@ read-write at `/app/user-projects` in **both** containers of the
   storage class supports online expansion. A PVC can't shrink.
 - **Storage class:** `longhorn`, set explicitly because the backup below
   depends on it.
+- **Never pruned:** the PVC is annotated
+  `argocd.argoproj.io/sync-options: Prune=false`. The GitOps application
+  prunes, and the class reclaims with `Delete`, so without the annotation,
+  removing or renaming the manifest would delete the data. To roll back the
+  mounts, revert the Deployment change only and keep the PVC. Retire the PVC
+  by hand, after a backup.
 
 ## Backup
 

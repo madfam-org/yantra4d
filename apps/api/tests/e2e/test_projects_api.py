@@ -35,6 +35,13 @@ def client(app):
     return app.test_client()
 
 
+@pytest.fixture
+def as_fork(tmp_path):
+    """Make test-project a fork: only forks and imported repos accept writes."""
+    meta = {"source": {"type": "fork", "forked_from": "x"}}
+    (tmp_path / "test-project" / "project.meta.json").write_text(json.dumps(meta))
+
+
 class TestProjectsAPI:
     def test_list_projects(self, client):
         res = client.get("/api/projects")
@@ -53,7 +60,7 @@ class TestProjectsAPI:
         res = client.get("/api/projects/nonexistent/manifest")
         assert res.status_code == 404
 
-    def test_update_assembly_steps(self, client, tmp_path):
+    def test_update_assembly_steps(self, client, tmp_path, as_fork):
         steps = [{"step": 1, "label": {"en": "Print"}, "visible_parts": ["main"]}]
         res = client.put(
             "/api/projects/test-project/manifest/assembly-steps",
@@ -65,7 +72,7 @@ class TestProjectsAPI:
         res2 = client.get("/api/projects/test-project/manifest")
         assert res2.get_json()["assembly_steps"] == steps
 
-    def test_update_assembly_steps_missing_body(self, client):
+    def test_update_assembly_steps_missing_body(self, client, as_fork):
         res = client.put(
             "/api/projects/test-project/manifest/assembly-steps",
             json={},
@@ -172,7 +179,7 @@ class TestProjectsAPI:
         assert res.status_code == 500
 
     @patch("routes.projects.projects.json.dump")
-    def test_update_assembly_steps_fails(self, mock_dump, client):
+    def test_update_assembly_steps_fails(self, mock_dump, client, as_fork):
         mock_dump.side_effect = Exception("dump failed")
         res = client.put("/api/projects/test-project/manifest/assembly-steps", json={"assembly_steps": []})
         assert res.status_code == 500

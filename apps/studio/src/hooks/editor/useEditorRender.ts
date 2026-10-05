@@ -4,6 +4,9 @@
  * When a file is edited, it saves via PUT /files/<path>, then triggers
  * the existing handleGenerate() from the render flow. The backend reads
  * the updated .scad from disk on next render — no render pipeline changes needed.
+ *
+ * A failed autosave (a refused write, a conflict, a server error) is reported
+ * through `onSaveError`, so the editor can say so: the buffer stays unsaved.
  */
 import { useRef, useCallback } from 'react'
 import { writeFile } from '../../services/domain/editorService'
@@ -13,6 +16,10 @@ const DEBOUNCE_MS = 800
 interface EditorRenderOptions {
   slug: string
   handleGenerate: () => void
+  /** Called when a debounced autosave fails; the error is the request's (editorService). */
+  onSaveError?: (error: unknown) => void
+  /** Called after a debounced autosave succeeded, with what was written. */
+  onSaved?: (path: string, content: string) => void
 }
 
 interface EditorRenderResult {
@@ -21,7 +28,7 @@ interface EditorRenderResult {
   cancel: () => void
 }
 
-export function useEditorRender({ slug, handleGenerate }: EditorRenderOptions): EditorRenderResult {
+export function useEditorRender({ slug, handleGenerate, onSaveError, onSaved }: EditorRenderOptions): EditorRenderResult {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingRef = useRef<{ path: string; content: string } | null>(null)
 
@@ -36,12 +43,15 @@ export function useEditorRender({ slug, handleGenerate }: EditorRenderOptions): 
       const { path: p, content: c } = pendingRef.current!
       try {
         await writeFile(slug, p, c)
-        handleGenerate()
       } catch (e) {
         console.error('Editor save-and-render failed:', e)
+        onSaveError?.(e)
+        return
       }
+      onSaved?.(p, c)
+      handleGenerate()
     }, DEBOUNCE_MS)
-  }, [slug, handleGenerate])
+  }, [slug, handleGenerate, onSaveError, onSaved])
 
   const saveImmediate = useCallback(async (path: string, content: string) => {
     if (timerRef.current) clearTimeout(timerRef.current)

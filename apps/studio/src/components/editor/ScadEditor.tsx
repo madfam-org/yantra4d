@@ -23,6 +23,7 @@ import { listFiles, readFile, createFile, deleteFile } from '../../services/doma
 import type { GraphBindingsResponse } from '../../services/domain/editorService'
 import { registerScadLanguage, SCAD_LANGUAGE_ID } from '../../lib/scad-language'
 import { useEditorRender } from '../../hooks/editor/useEditorRender'
+import { editorSaveFailure } from '../../lib/editorSaveMessage'
 import { useGraphPersistence } from '../../hooks/editor/useGraphPersistence'
 import { useProjectMeta } from '../../hooks/project/useProjectMeta'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
@@ -79,13 +80,27 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Set when the last failure was a refused write that forking would fix.
+  const [errorForkable, setErrorForkable] = useState(false)
   const [aiOpen, setAiOpen] = useState(false)
   const [showNewFileDialog, setShowNewFileDialog] = useState(false)
   const [newFileName, setNewFileName] = useState('')
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null)
   const monacoRef = useRef<Parameters<OnMount>[1] | null>(null)
 
-  const { saveAndRender, saveImmediate } = useEditorRender({ slug, handleGenerate })
+  // A failed save says why, in words, where the author is looking: a refused
+  // write to a commons cartridge or someone else's fork offers the fork.
+  const showSaveFailure = useCallback((e: unknown) => {
+    const failure = editorSaveFailure(e, t)
+    setError(failure.message)
+    setErrorForkable(failure.forkable)
+  }, [t])
+  const onAutosaved = useCallback((path: string, content: string) => {
+    setOpenTabs(prev => prev.map(tab =>
+      tab.path === path ? { ...tab, originalContent: content, dirty: tab.content !== content } : tab
+    ))
+  }, [])
+  const { saveAndRender, saveImmediate } = useEditorRender({ slug, handleGenerate, onSaveError: showSaveFailure, onSaved: onAutosaved })
 
   // ── Graph editing: where saves may go, and the manifest bindings ──────────
   // A project with no `source.type` in project.meta.json is a commons
@@ -141,7 +156,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
     let cancelled = false
     listFiles(slug)
       .then((f: unknown) => { if (!cancelled) { setFiles(f as FileEntry[]); setError(null); setLoading(false) } })
-      .catch((e: Error) => { if (!cancelled) { setError(e.message); setLoading(false) } })
+      .catch((e: Error) => { if (!cancelled) { setError(e.message); setErrorForkable(false); setLoading(false) } })
     return () => { cancelled = true }
   }, [slug])
 
@@ -164,6 +179,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       setActiveTab(path)
     } catch (e) {
       setError((e as Error).message)
+      setErrorForkable(false)
     }
   }, [slug, openTabs])
 
@@ -193,7 +209,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
     if (tab && tab.path.endsWith('.graph.json')) {
       // Graph documents save through the graph path: never into a commons
       // cartridge, and together with any binding the author changed.
-      if (graphSaveBlocked) { setError(graphSaveBlocked); return }
+      if (graphSaveBlocked) { setError(graphSaveBlocked); setErrorForkable(true); return }
       const changes = bindBlocked ? null : pendingBindings
       if (!tab.dirty && (!changes || Object.keys(changes).length === 0)) return
       setSaving(true)
@@ -209,10 +225,10 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
         t.path === activeTab ? { ...t, originalContent: t.content, dirty: false } : t
       ))
     } catch (e) {
-      setError((e as Error).message)
+      showSaveFailure(e)
     }
     setSaving(false)
-  }, [activeTab, openTabs, saveImmediate, graphSaveBlocked, bindBlocked, pendingBindings, graphPersistence])
+  }, [activeTab, openTabs, saveImmediate, graphSaveBlocked, bindBlocked, pendingBindings, graphPersistence, showSaveFailure])
 
   // Ctrl+S handler
   useEffect(() => {
@@ -234,9 +250,9 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       setFiles(updated as unknown as FileEntry[])
       openFile(name)
     } catch (e) {
-      setError((e as Error).message)
+      showSaveFailure(e)
     }
-  }, [slug, openFile])
+  }, [slug, openFile, showSaveFailure])
 
   const handleNewFileConfirm = useCallback(() => {
     const name = newFileName.trim()
@@ -256,9 +272,9 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       const updated = await listFiles(slug)
       setFiles(updated as unknown as FileEntry[])
     } catch (err) {
-      setError((err as Error).message)
+      showSaveFailure(err)
     }
-  }, [slug, closeTab])
+  }, [slug, closeTab, showSaveFailure])
 
   const activeContent = openTabs.find(t => t.path === activeTab)?.content || ''
   // Graph documents are JSON, not OpenSCAD — highlight them as such and run the
@@ -326,9 +342,12 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
   return (
     <div className="flex flex-col h-full border-r border-border">
       {error && (
-        <div className="px-3 py-1.5 text-xs bg-destructive/15 text-destructive">
+        <div role="alert" className="px-3 py-1.5 text-xs bg-destructive/15 text-destructive">
           {error}
-          <button type="button" onClick={() => setError(null)} className="ml-2 underline">dismiss</button>
+          {errorForkable && onForkRequest && (
+            <button type="button" onClick={onForkRequest} className="ml-2 underline font-medium">{t('editor.fork_to_save')}</button>
+          )}
+          <button type="button" onClick={() => { setError(null); setErrorForkable(false) }} className="ml-2 underline">{t('editor.dismiss')}</button>
         </div>
       )}
 

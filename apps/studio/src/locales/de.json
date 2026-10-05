@@ -445,5 +445,14 @@
   "graph.point_coordinate": "Punkt {n} {axis}",
   "graph.point_remove": "Punkt {n} entfernen",
   "graph.point_add": "Punkt hinzufügen",
-  "graph.limit_reached": "Grenze erreicht ({limit})."
+  "graph.limit_reached": "Grenze erreicht ({limit}).",
+  "editor.save_refused_read_only": "Nicht gespeichert: Diese Commons-Kartusche ist schreibgeschützt. Forke sie, um deine Änderungen zu speichern.",
+  "editor.save_refused_not_owner": "Nicht gespeichert: Diese Kartusche gehört einem anderen Konto. Forke sie, um deine eigene Kopie zu speichern.",
+  "editor.save_conflict": "Nicht gespeichert: Die Datei hat sich auf dem Server geändert oder der Name ist vergeben. Lade die Datei neu und versuche es erneut.",
+  "editor.save_server_error": "Nicht gespeichert: Der Server konnte die Datei nicht speichern. Deine Änderungen sind noch da; versuche es gleich noch einmal.",
+  "editor.save_failed": "Nicht gespeichert.",
+  "editor.save_failed_reason": "Nicht gespeichert: {reason}",
+  "editor.fork_to_save": "Zum Speichern forken",
+  "editor.dismiss": "Schließen",
+  "editor.read_only_panel": "Schreibgeschützt: In diese Kartusche kannst du nicht speichern. Forke sie, um deine eigene Kopie zu bearbeiten."
 }

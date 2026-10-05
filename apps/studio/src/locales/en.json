@@ -445,5 +445,14 @@
   "graph.point_coordinate": "Point {n} {axis}",
   "graph.point_remove": "Remove point {n}",
   "graph.point_add": "Add point",
-  "graph.limit_reached": "Limit reached ({limit})."
+  "graph.limit_reached": "Limit reached ({limit}).",
+  "editor.save_refused_read_only": "Not saved: this is a commons cartridge, which is read-only. Fork it to save your changes.",
+  "editor.save_refused_not_owner": "Not saved: this cartridge belongs to another account. Fork it to save your own copy.",
+  "editor.save_conflict": "Not saved: the file changed on the server or the name is taken. Reload the file and try again.",
+  "editor.save_server_error": "Not saved: the server could not store the file. Your edits are still here; try again in a moment.",
+  "editor.save_failed": "Not saved.",
+  "editor.save_failed_reason": "Not saved: {reason}",
+  "editor.fork_to_save": "Fork to save",
+  "editor.dismiss": "Dismiss",
+  "editor.read_only_panel": "Read-only: you can't save to this cartridge. Fork it to edit your own copy."
 }

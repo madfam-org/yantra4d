@@ -49,7 +49,12 @@ vi.mock('../../contexts/system/LanguageProvider', () => ({
 }))
 
 // The graph save path is covered by ScadEditor.graph.test.jsx.
-vi.mock('../../hooks/project/useProjectMeta', () => ({ useProjectMeta: () => null }))
+// These tests drive the editor on a cartridge the caller may write (their own
+// fork); ScadEditor.writeAccess.test.jsx covers the cartridges they may not.
+vi.mock('../../hooks/project/useProjectMeta', () => ({
+  useProjectMeta: () => ({ source: { type: 'fork' }, can_write: true, is_owner: true }),
+  canWriteCartridge: (meta) => meta?.can_write === true,
+}))
 vi.mock('../../hooks/editor/useGraphPersistence', () => ({
   useGraphPersistence: () => ({ status: 'idle', error: null, schedule: vi.fn(), saveNow: vi.fn(), cancel: vi.fn() }),
 }))
@@ -163,9 +168,9 @@ describe('ScadEditor', () => {
     mockListFiles.mockRejectedValue(new Error('Test error'))
     render(<ScadEditor {...defaultProps} />)
     await waitFor(() => {
-      expect(screen.getByText('dismiss')).toBeInTheDocument()
+      expect(screen.getByText('editor.dismiss')).toBeInTheDocument()
     })
-    fireEvent.click(screen.getByText('dismiss'))
+    fireEvent.click(screen.getByText('editor.dismiss'))
     expect(screen.queryByText('Test error')).not.toBeInTheDocument()
   })
 
@@ -270,10 +275,11 @@ describe('ScadEditor', () => {
     fireEvent.click(fileButtons[1].querySelector('div[role="button"]'))
     await waitFor(() => expect(mockReadFile).toHaveBeenCalledTimes(2))
 
-    // Close active tab (parts.scad) via the close button
+    // Close active tab (parts.scad) via its close button, a sibling of the tab:
+    // a button nested in a button is invalid HTML and a hydration warning.
     const tabs = screen.getAllByRole('tab')
-    const closeBtn = tabs[1].querySelector('button')
-    fireEvent.click(closeBtn)
+    for (const tab of tabs) expect(tab.querySelector('button')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Close parts.scad' }))
 
     // Should switch to remaining tab
     await waitFor(() => {

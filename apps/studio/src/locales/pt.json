@@ -445,5 +445,14 @@
   "graph.point_coordinate": "Ponto {n} {axis}",
   "graph.point_remove": "Remover o ponto {n}",
   "graph.point_add": "Adicionar ponto",
-  "graph.limit_reached": "Limite atingido ({limit})."
+  "graph.limit_reached": "Limite atingido ({limit}).",
+  "editor.save_refused_read_only": "Não salvo: este é um cartucho do commons, somente leitura. Faça um fork para salvar suas alterações.",
+  "editor.save_refused_not_owner": "Não salvo: este cartucho pertence a outra conta. Faça um fork para salvar sua própria cópia.",
+  "editor.save_conflict": "Não salvo: o arquivo mudou no servidor ou o nome já existe. Recarregue o arquivo e tente novamente.",
+  "editor.save_server_error": "Não salvo: o servidor não conseguiu armazenar o arquivo. Suas edições continuam aqui; tente novamente em instantes.",
+  "editor.save_failed": "Não salvo.",
+  "editor.save_failed_reason": "Não salvo: {reason}",
+  "editor.fork_to_save": "Fork para salvar",
+  "editor.dismiss": "Dispensar",
+  "editor.read_only_panel": "Somente leitura: você não pode salvar neste cartucho. Faça um fork para editar sua própria cópia."
 }

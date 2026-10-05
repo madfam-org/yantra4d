@@ -138,3 +138,20 @@ describe('updateGraphBindings', () => {
     await expect(updateGraphBindings('commons', { r: null })).rejects.toThrow('Failed to save bindings')
   })
 })
+
+describe('EditorRequestError', () => {
+  it('carries the status and the server error_code of a refused write', async () => {
+    const { EditorRequestError } = await import('./editorService')
+    apiFetch.mockResolvedValue({ ok: false, status: 403, json: () => Promise.resolve({ error: 'Fork it', error_code: 'not_cartridge_owner' }) })
+    const err = await writeFile('fork', 'main.scad', 'x').catch((e) => e)
+    expect(err).toBeInstanceOf(EditorRequestError)
+    expect(err).toMatchObject({ status: 403, code: 'not_cartridge_owner', message: 'Fork it' })
+  })
+
+  it('still reports a non-JSON error page (a proxy 502) by status', async () => {
+    apiFetch.mockResolvedValue({ ok: false, status: 502, json: () => Promise.reject(new SyntaxError('Unexpected token <')) })
+    const err = await writeFile('fork', 'main.scad', 'x').catch((e) => e)
+    expect(err).toMatchObject({ status: 502, code: null, message: 'Failed to write file' })
+    await expect(deleteFile('fork', 'main.scad')).rejects.toMatchObject({ status: 502, message: 'Failed to delete file' })
+  })
+})

@@ -4,6 +4,7 @@ import { GitBranch, GitCommit, ArrowUp, ArrowDown, RefreshCw, Loader2, Check, Li
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { getStatus, getDiff, commit, push, pull, connectRemote, renderHead } from '../../services/domain/gitService'
 import VersionHistory from './VersionHistory'
+import { canWriteCartridge, useProjectMeta } from '../../hooks/project/useProjectMeta'
 
 const SUCCESS_TOAST_DURATION_MS = 2000
 
@@ -24,7 +25,19 @@ interface GitPanelProps {
   slug: string
 }
 
+/**
+ * Version control for a cartridge this caller may write. Every action here
+ * (commit, push, pull, connect a remote) is a write, and a commons cartridge
+ * has no history to show, so on any other cartridge — or until the API has
+ * said this caller may write it — the panel is not rendered at all.
+ */
 export default function GitPanel({ slug }: GitPanelProps) {
+  const meta = useProjectMeta(slug)
+  if (!canWriteCartridge(meta)) return null
+  return <GitPanelBody slug={slug} />
+}
+
+function GitPanelBody({ slug }: GitPanelProps) {
   const [status, setStatus] = useState<GitStatus | null>(null)
   const [diff, setDiff] = useState('')
   const [loading, setLoading] = useState(false)

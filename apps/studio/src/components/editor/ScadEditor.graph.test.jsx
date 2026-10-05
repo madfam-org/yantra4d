@@ -40,7 +40,10 @@ vi.mock('../../hooks/editor/useGraphPersistence', () => ({
 }))
 
 let projectMeta = null
-vi.mock('../../hooks/project/useProjectMeta', () => ({ useProjectMeta: () => projectMeta }))
+vi.mock('../../hooks/project/useProjectMeta', () => ({
+  useProjectMeta: () => projectMeta,
+  canWriteCartridge: (meta) => meta?.can_write === true,
+}))
 vi.mock('../../contexts/system/ThemeProvider', () => ({ useTheme: () => ({ theme: 'light' }) }))
 vi.mock('../../contexts/system/LanguageProvider', () => ({ useLanguage: () => ({ t: (key) => key }) }))
 vi.mock('../../lib/scad-language', () => ({ registerScadLanguage: vi.fn(), SCAD_LANGUAGE_ID: 'openscad' }))
@@ -94,7 +97,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   editorProps = null
   persistenceOptions = null
-  projectMeta = { source: { type: 'fork', forked_from: 'flange-plate' } }
+  projectMeta = { source: { type: 'fork', forked_from: 'flange-plate' }, can_write: true, is_owner: true }
   mockListFiles.mockResolvedValue([{ path: 'flange.graph.json' }])
   mockReadFile.mockResolvedValue({ content: json(VALID) })
   mockSaveNow.mockResolvedValue(true)
@@ -226,7 +229,7 @@ describe('ScadEditor graph save path', () => {
   })
 
   it('an imported repository saves the graph but cannot change manifest bindings', async () => {
-    projectMeta = { source: { type: 'github' } }
+    projectMeta = { source: { type: 'github' }, can_write: true, is_owner: true }
     await openGraph()
     expect(screen.getByTestId('graph-editor-mock').dataset.saveBlocked).toBe('')
     expect(screen.getByTestId('graph-editor-mock').dataset.bindBlocked).toBe('graph.bind_blocked_not_fork')

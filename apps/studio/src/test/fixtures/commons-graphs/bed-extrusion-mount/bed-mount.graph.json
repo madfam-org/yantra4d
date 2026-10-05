@@ -1,0 +1,61 @@
+{
+  "version": "1.1.0",
+  "units": "mm",
+  "meta": {
+    "title": "Bed Extrusion Mount (graph twin)",
+    "notes": "Golden twin of main.py (graph format 1.1): the same parameters, the same derivations and the same operations in the same order. main.py stays the oracle; y4d-spec --parity compares the two at the defaults and at every preset. Constants keep main.py's names and values, and their sources are main.py's: ISO 7380-1 M5x10 (SCREW_D 5, HEAD_DK 9.5), MISUMI HFS5 2020 (SLOT_LIP_T 2, PROFILE 20), MISUMI HNTAP5-5 (TNUT_L 15); HOLE_CLEAR, TAB_W, EDGE, BED_SCREW_Y and CROSS_IN are main.py's labelled conventions. Clamps max(lo, min(x, hi)) are ternary pairs, because the expression dialect has no function calls. _box(x0..z1) is a centred box translated to its centre; _cyl_z is an XY circle extruded and translated to z0."
+  },
+  "parameters": {
+    "screw_offset": {"default": 14.0},
+    "stem_length": {"default": 17.5},
+    "plate_t": {"default": 4.5}
+  },
+  "derived": [
+    {"id": "SCREW_D", "expr": "5.0"},
+    {"id": "HEAD_DK", "expr": "9.5"},
+    {"id": "SLOT_LIP_T", "expr": "2.0"},
+    {"id": "PROFILE", "expr": "20.0"},
+    {"id": "TNUT_L", "expr": "15.0"},
+    {"id": "HOLE_CLEAR", "expr": "0.25"},
+    {"id": "TAB_W", "expr": "5.8"},
+    {"id": "EDGE", "expr": "3.5"},
+    {"id": "BED_SCREW_Y", "expr": "10.0"},
+    {"id": "CROSS_IN", "expr": "2.0"},
+    {"id": "so_cap", "expr": "screw_offset < 30 ? screw_offset : 30"},
+    {"id": "so", "expr": "(TNUT_L / 2 + 0.5) > so_cap ? (TNUT_L / 2 + 0.5) : so_cap"},
+    {"id": "sl_cap", "expr": "stem_length < 40 ? stem_length : 40"},
+    {"id": "sl", "expr": "(BED_SCREW_Y + HEAD_DK / 2 + 1) > sl_cap ? (BED_SCREW_Y + HEAD_DK / 2 + 1) : sl_cap"},
+    {"id": "pt_cap", "expr": "plate_t < 5 ? plate_t : 5"},
+    {"id": "pt", "expr": "4 > pt_cap ? 4 : pt_cap"},
+    {"id": "half_cross", "expr": "so + HEAD_DK / 2 + EDGE"},
+    {"id": "hole_d", "expr": "SCREW_D + 2 * HOLE_CLEAR"}
+  ],
+  "nodes": [
+    {"id": "crossbar_blank", "type": "box", "params": {"w": {"expr": "half_cross - -half_cross"}, "d": {"expr": "0 - (-PROFILE + CROSS_IN)"}, "h": {"expr": "pt - 0"}}},
+    {"id": "crossbar", "type": "translate", "inputs": {"shape": "crossbar_blank"}, "params": {"x": {"expr": "(-half_cross + half_cross) / 2"}, "y": {"expr": "(-PROFILE + CROSS_IN + 0) / 2"}, "z": {"expr": "(0 + pt) / 2"}}},
+    {"id": "stem_blank", "type": "box", "params": {"w": {"expr": "PROFILE / 2 - (-PROFILE / 2)"}, "d": {"expr": "sl - -0.5"}, "h": {"expr": "pt - 0"}}},
+    {"id": "stem", "type": "translate", "inputs": {"shape": "stem_blank"}, "params": {"x": {"expr": "(-PROFILE / 2 + (PROFILE / 2)) / 2"}, "y": {"expr": "(-0.5 + sl) / 2"}, "z": {"expr": "(0 + pt) / 2"}}},
+    {"id": "body_1", "type": "union", "inputs": {"a": "crossbar", "b": "stem"}},
+    {"id": "cross_tongue_blank", "type": "box", "params": {"w": {"expr": "half_cross - 2 - (-half_cross + 2)"}, "d": {"expr": "-PROFILE / 2 + TAB_W / 2 - (-PROFILE / 2 - TAB_W / 2)"}, "h": {"expr": "0.5 - -SLOT_LIP_T"}}},
+    {"id": "cross_tongue", "type": "translate", "inputs": {"shape": "cross_tongue_blank"}, "params": {"x": {"expr": "(-half_cross + 2 + (half_cross - 2)) / 2"}, "y": {"expr": "(-PROFILE / 2 - TAB_W / 2 + (-PROFILE / 2 + TAB_W / 2)) / 2"}, "z": {"expr": "(-SLOT_LIP_T + 0.5) / 2"}}},
+    {"id": "body_2", "type": "union", "inputs": {"a": "body_1", "b": "cross_tongue"}},
+    {"id": "stem_tongue_blank", "type": "box", "params": {"w": {"expr": "TAB_W / 2 - (-TAB_W / 2)"}, "d": {"expr": "sl - 1 - 1"}, "h": {"expr": "0.5 - -SLOT_LIP_T"}}},
+    {"id": "stem_tongue", "type": "translate", "inputs": {"shape": "stem_tongue_blank"}, "params": {"x": {"expr": "(-TAB_W / 2 + (TAB_W / 2)) / 2"}, "y": {"expr": "(1 + (sl - 1)) / 2"}, "z": {"expr": "(-SLOT_LIP_T + 0.5) / 2"}}},
+    {"id": "body_3", "type": "union", "inputs": {"a": "body_2", "b": "stem_tongue"}},
+    {"id": "screw_1_outline", "type": "profile_circle", "params": {"r": {"expr": "hole_d / 2"}, "x": {"expr": "-so"}, "y": {"expr": "-PROFILE / 2"}}},
+    {"id": "screw_1_blank", "type": "extrude", "inputs": {"profile": "screw_1_outline"}, "params": {"height": {"expr": "pt + 1 - (-SLOT_LIP_T - 1)"}}},
+    {"id": "screw_1", "type": "translate", "inputs": {"shape": "screw_1_blank"}, "params": {"z": {"expr": "-SLOT_LIP_T - 1"}}},
+    {"id": "body_4", "type": "cut", "inputs": {"a": "body_3", "b": "screw_1"}},
+    {"id": "screw_2_outline", "type": "profile_circle", "params": {"r": {"expr": "hole_d / 2"}, "x": {"expr": "so"}, "y": {"expr": "-PROFILE / 2"}}},
+    {"id": "screw_2_blank", "type": "extrude", "inputs": {"profile": "screw_2_outline"}, "params": {"height": {"expr": "pt + 1 - (-SLOT_LIP_T - 1)"}}},
+    {"id": "screw_2", "type": "translate", "inputs": {"shape": "screw_2_blank"}, "params": {"z": {"expr": "-SLOT_LIP_T - 1"}}},
+    {"id": "body_5", "type": "cut", "inputs": {"a": "body_4", "b": "screw_2"}},
+    {"id": "screw_3_outline", "type": "profile_circle", "params": {"r": {"expr": "hole_d / 2"}, "y": {"expr": "BED_SCREW_Y"}}},
+    {"id": "screw_3_blank", "type": "extrude", "inputs": {"profile": "screw_3_outline"}, "params": {"height": {"expr": "pt + 1 - (-SLOT_LIP_T - 1)"}}},
+    {"id": "screw_3", "type": "translate", "inputs": {"shape": "screw_3_blank"}, "params": {"z": {"expr": "-SLOT_LIP_T - 1"}}},
+    {"id": "body_6", "type": "cut", "inputs": {"a": "body_5", "b": "screw_3"}}
+  ],
+  "outputs": {
+    "bed_mount": "body_6"
+  }
+}

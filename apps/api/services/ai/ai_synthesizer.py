@@ -78,12 +78,23 @@ def parse_synthesis(raw: str) -> dict:
     explanation = re.sub(r"```json\s*\n?.*?\n?```", "", raw, flags=re.DOTALL).strip()
     return {"explanation": explanation, "cartridge": validated}
 
+# The synthesizer is specified to emit OpenSCAD cartridges only (build_synthesis_prompt),
+# so it may write only OpenSCAD source and manifest files. It must never write an
+# executable CadQuery cartridge script (.py / .cq): that is code the render runner
+# would later execute, and nothing here authors it.
+_SYNTH_ALLOWED_SUFFIXES = frozenset({".scad"})
+_SYNTH_ALLOWED_NAMES = frozenset({"project.json", "project.meta.json"})
+
+
 def _safe_cartridge(cartridge: dict) -> bool:
     """Whether a model-proposed cartridge may be written to disk as-is.
 
     The slug and file names come from model output, so they are checked like
-    any other user input before they become paths: a valid slug, and plain
-    file names that stay inside the new cartridge directory.
+    any other user input before they become paths: a valid slug, plain file
+    names that stay inside the new cartridge directory, and only the file types
+    the synthesizer is designed to emit (OpenSCAD source and manifest). A
+    model-proposed CadQuery script is refused — synthesis never authors
+    executable cartridge code.
     """
     slug = cartridge.get("slug")
     if not isinstance(slug, str) or validate_project_slug(slug):
@@ -97,6 +108,12 @@ def _safe_cartridge(cartridge: dict) -> bool:
         if (not isinstance(name, str) or not isinstance(content, str)
                 or Path(name).name != name or name.startswith(".")):
             logger.warning("Discarding synthesised cartridge %s: unsafe file name %r", slug, name)
+            return False
+        if name not in _SYNTH_ALLOWED_NAMES and Path(name).suffix.lower() not in _SYNTH_ALLOWED_SUFFIXES:
+            logger.warning(
+                "Discarding synthesised cartridge %s: disallowed file type %r "
+                "(synthesis emits OpenSCAD only)", slug, name,
+            )
             return False
     return True
 

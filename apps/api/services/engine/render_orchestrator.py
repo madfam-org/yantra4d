@@ -12,7 +12,7 @@ import uuid
 import redis
 
 from config import Config
-from manifest import get_manifest
+from manifest import get_manifest, resolve_within_dir
 from services.engine import generator_output
 from services.engine.format_converter import convert_mesh, stl_to_glb
 from services.engine.openscad import compute_scad_hash, validate_params
@@ -313,8 +313,19 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     if mode_id and engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
         mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
         if mode_config and mode_config.get('cq_file'):
+            # cq_file comes from editable project.json; resolve it within the
+            # cartridge directory so a manifest cannot point the runner at a file
+            # outside the cartridge.
+            # The join is relative to the primary file's directory, as before; the
+            # containment root is the cartridge directory.
+            scad_dir = os.path.dirname(scad_path)
+            root = getattr(manifest, "project_dir", None) or scad_dir
+            try:
+                cq_path = resolve_within_dir(root, mode_config['cq_file'], start=scad_dir)
+            except ValueError as exc:
+                return engine, scad_path, None, (str(exc), 400)
             engine = "cadquery"
-            scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
+            scad_path = str(cq_path)
 
     # Validate engine+format compatibility
     if engine == "cadquery":

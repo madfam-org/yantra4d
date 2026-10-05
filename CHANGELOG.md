@@ -38,6 +38,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     moves, and only then does this change go green on `spec-conformance`.
 
 ### Changed
+- **Tighter CadQuery render environment** — the CadQuery render subprocess (and
+  the warm pool) now runs with a minimal environment rather than a full copy of
+  the parent's: only the Python, locale, fontconfig and OCCT/CadQuery variables
+  it needs, a writable `HOME`, and `PYTHONPATH` limited to the curated cartridge
+  roots. The render runner enforces an import **allowlist** (known-safe packages
+  plus sibling cartridges on the curated roots) as defence in depth over the
+  shared sandbox's denylist, in Yantra4D's runner layer so the vendored
+  `commons_sandbox` core is untouched. The processes that spawn CadQuery children
+  (render worker, API) are set non-dumpable on Linux so a same-UID child cannot
+  read the parent's `/proc` memory. The render log returned to clients is bounded
+  in size and scrubbed of credential-shaped content (the full log still reaches
+  the server's own logs). AI synthesis now writes only the file types it is
+  designed to emit (OpenSCAD source and manifest), and a manifest's `scad_file` /
+  `cq_file` is resolved within the cartridge directory. New scan derived the
+  allowlist from every commons CadQuery script; all of them still render.
+
 - **Persistent writable storage for user projects** — user-authored cartridges
   (forks, GitHub imports, onboarding, AI synthesis) now live in their own root,
   `USER_PROJECTS_DIR` (`/app/user-projects` in the image, a gitignored

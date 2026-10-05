@@ -295,7 +295,7 @@ class TestRenderPayloadValidation:
 class TestDualEngineRouting:
     """Tests for the dual-engine fallback: OpenSCAD -> CadQuery when format requires it."""
 
-    def _setup_dual_engine_mocks(self, monkeypatch, export_format, has_cq_file=True):
+    def _setup_dual_engine_mocks(self, monkeypatch, export_format, has_cq_file=True, cq_file="main.py"):
         """Wire up monkeypatches for dual-engine fallback tests.
 
         Returns the list used to track which engine actually rendered (populated
@@ -307,7 +307,7 @@ class TestDualEngineRouting:
             "estimate": {"base_units": 1, "formula": "constant"},
         }
         if has_cq_file:
-            mode_config["cq_file"] = "main.py"
+            mode_config["cq_file"] = cq_file
 
         # _extract_render_payload is mocked so no real file I/O is needed
         monkeypatch.setattr("routes.engine.render.extract_render_payload", lambda *args: {
@@ -343,6 +343,18 @@ class TestDualEngineRouting:
 
         monkeypatch.setattr("routes.engine.render.render_parts_sync", fake_render_parts_sync)
         return engine_calls
+
+    # -- A cq_file outside the cartridge is refused ---------------------------
+
+    @pytest.mark.parametrize("cq_file", ["../other/main.py", "/etc/evil.py"])
+    def test_cq_file_outside_cartridge_is_refused(self, client, monkeypatch, cq_file):
+        engine_calls = self._setup_dual_engine_mocks(monkeypatch, "step", cq_file=cq_file)
+        res = client.post("/api/render", json={
+            "project": "dual-test", "mode": "unit", "export_format": "step",
+        })
+        assert res.status_code == 400
+        assert "outside the cartridge directory" in res.get_json()["error"]
+        assert engine_calls == []
 
     # -- Fallback activates when cq_file is present --------------------------
 

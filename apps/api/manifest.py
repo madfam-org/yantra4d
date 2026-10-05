@@ -16,6 +16,20 @@ logger = logging.getLogger(__name__)
 _manifest_cache: dict[str, "ProjectManifest"] = {}
 
 
+def resolve_within_dir(base: Path | str, relative: str, start: Path | str | None = None) -> Path:
+    """Resolve *relative* (from *start*, default *base*) and require it to stay in *base*.
+
+    A name with ``..`` segments, an absolute path, or a symlink that leaves
+    *base* raises ``ValueError``; it would otherwise let a manifest point the
+    renderer, or the CadQuery runner, at a file outside the cartridge.
+    """
+    root = Path(base).resolve()
+    candidate = (Path(start if start is not None else base) / relative).resolve()
+    if candidate != root and root not in candidate.parents:
+        raise ValueError(f"File '{relative}' is outside the cartridge directory")
+    return candidate
+
+
 class ProjectManifest:
     """Typed wrapper around project.json data."""
 
@@ -120,12 +134,32 @@ class ProjectManifest:
 
     # --- Derived maps ---
 
+    def resolve_within_project(self, relative: str) -> Path:
+        """Resolve a manifest-declared file name inside this cartridge directory.
+
+        ``project.json`` is editable content (a fork or GitHub import can supply
+        one), so a file name it declares must stay within the cartridge
+        directory. See ``resolve_within_dir``.
+        """
+        return resolve_within_dir(self.project_dir, relative)
+
     def get_allowed_files(self) -> dict:
-        """Returns {filename: Path} for all SCAD files referenced by modes."""
+        """Returns {filename: Path} for all SCAD files referenced by modes.
+
+        Each path is contained within the cartridge directory; a mode whose
+        ``scad_file`` escapes it is dropped (and logged) rather than offered as a
+        renderable file.
+        """
         result = {}
         for mode in self.modes:
             fname = mode["scad_file"]
-            result[fname] = self.project_dir / fname
+            try:
+                result[fname] = self.resolve_within_project(fname)
+            except ValueError:
+                logger.warning(
+                    "Dropping mode scad_file '%s' in %s: outside cartridge directory",
+                    fname, self.slug,
+                )
         return result
 
     def get_parts_map(self) -> dict:

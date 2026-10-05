@@ -10,11 +10,22 @@ on:
 # the e2e matrix alone is ten shards. Without a concurrency group, each push to
 # an open PR stacked a full new run on the pool while the superseded run kept
 # going — on 2026-09-02 four open PRs queued 20–60 min per job for that reason.
-# One group per PR (or per ref for pushes): a new PR head cancels the run it
-# supersedes; pushes to main never cancel each other, so every merged commit
-# still gets its own complete run. deploy.yml has the same shape.
+# One group per PR: a new PR head cancels the run it supersedes.
+#
+# One group per COMMIT for pushes, never one per ref. `cancel-in-progress:
+# false` alone does not stop a group from cancelling: GitHub keeps one running
+# and ONE pending run per group, and a newer run REPLACES the pending one, which
+# then ends `cancelled` with no jobs. With a single `ci-refs/heads/main` group,
+# every merge that landed while a main run was in progress cancelled the
+# previous merge's queued run. On 2026-10-05 that dropped four main runs before
+# a single job started (37281285346, 37281782300, 37301695719, 37304680865),
+# and deploy.yml publishes only after a successful exact-source main run, so
+# publication that day was refused until main sat still.
+# A per-SHA group gives each merged commit its own complete run, started at
+# merge time rather than behind the previous run. deploy.yml's own group keeps
+# publication serial; see docs/operations/release-source-gate.md.
 concurrency:
-  group: ci-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.event_name == 'pull_request' && format('ci-pr-{0}', github.event.pull_request.number) || format('ci-{0}-{1}', github.ref, github.sha) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # The actions cache client waits SEGMENT_DOWNLOAD_TIMEOUT_MINS (default 10) for a stalled
@@ -582,7 +593,14 @@ jobs:
           - { project: webkit,   shard: 3, shards: 3 }
           - { project: mobile,   shard: 1, shards: 1 }
     runs-on: madfam-runners-blue
-    timeout-minutes: 30
+    # 30 -> 45. On 2026-10-05 seven webkit shards hit the 30-minute cap
+    # (runs 37265641908 x2, 37278944344, 37279842200 x2, 37288551026,
+    # 37302209810), while the slowest passing webkit shards that day and the
+    # day before took 28.6-29.5 min (37261114649, 37283246574, 37284540955,
+    # 37307493003, 37288551026) and chromium 25.4 min (37305941676). A cap
+    # inside the normal spread cancels green shards under pool load; 45 min is
+    # 1.5x the slowest pass.
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: apps/studio

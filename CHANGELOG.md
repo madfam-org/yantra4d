@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Changed
+- **CI and publication under rapid merges** — main CI runs get one concurrency
+  group per commit, so a merge no longer replaces the previous merge's queued
+  run; a CI completion for a commit that is no longer main HEAD runs the
+  publisher's source gate in its own group and cannot replace the pending
+  publication of the newest source; the post-deploy readiness window is 12
+  minutes (measured runs cited in `scripts/ci/wait_for_render_release.py`) and
+  its progress lines are flushed with elapsed time; the e2e shard cap is 45
+  minutes. Behaviour documented in `docs/operations/release-source-gate.md`.
+
 ### Added
 - **Graph Engine Wave D: Expressions, Select, Reflect, Polyline And Bounded Revolve**
   — graph format 1.1, built as far as the Voron 2.4 assembly A printed parts need

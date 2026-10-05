@@ -35,6 +35,11 @@ CURATED_ROOTS_ENV = "YANTRA4D_CURATED_ROOTS"
 # without enumerating each release's variables.
 _CQ_ENV_ALLOW_EXACT = frozenset({
     "PATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ", "TMPDIR",
+    # Dynamic-linker search path: a shared-library Python build (e.g. a
+    # setup-python toolcache interpreter) cannot even start without it. It is
+    # runtime linkage, not configuration. LD_PRELOAD and PYTHONHOME are
+    # deliberately NOT passed.
+    "LD_LIBRARY_PATH",
     "PYTHONUNBUFFERED", "PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE",
     "FONTCONFIG_FILE", "FONTCONFIG_PATH",
     "YANTRA4D_CQ_POOL_ENABLED", "YANTRA4D_CQ_WORKERS",

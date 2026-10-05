@@ -164,3 +164,26 @@ def test_cadquery_env_pythonpath_is_only_curated_roots(monkeypatch):
     parts = env["PYTHONPATH"].split(os.pathsep)
     assert "/app/backend" not in parts
     assert parts == ["/fake/proj", "/fake/private"]
+
+
+def test_cadquery_env_passes_linker_path_but_never_secrets(monkeypatch):
+    # A shared-library interpreter needs LD_LIBRARY_PATH to start; passing it
+    # through must not open the door to anything secret-shaped or to loader
+    # injection.
+    monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")
+    monkeypatch.setattr("config.Config.PRIVATE_PROJECTS_DIR", "/fake/private")
+    monkeypatch.setenv("LD_LIBRARY_PATH", "/opt/hostedtoolcache/Python/3.12/x64/lib")
+    monkeypatch.setenv("LANG", "C.UTF-8")
+    monkeypatch.setenv("TZ", "UTC")
+    for name in ("LD_PRELOAD", "PYTHONHOME", "PYTHONSTARTUP", "AWS_SECRET_ACCESS_KEY",
+                 "AWS_ACCESS_KEY_ID", "AI_API_KEY", "COTIZA_WEBHOOK_SECRET",
+                 "FORGESIGHT_WEBHOOK_SECRET", "SOME_SERVICE_TOKEN", "DB_PASSWORD"):
+        monkeypatch.setenv(name, "should-not-pass")
+    env = _cadquery_env()
+    assert env["LD_LIBRARY_PATH"] == "/opt/hostedtoolcache/Python/3.12/x64/lib"
+    assert env["LANG"] == "C.UTF-8" and env["TZ"] == "UTC"
+    for name in ("LD_PRELOAD", "PYTHONHOME", "PYTHONSTARTUP"):
+        assert name not in env
+    secretish = ("SECRET", "TOKEN", "PASSWORD", "KEY", "CREDENTIAL", "AUTH")
+    leaked = [k for k in env if any(m in k.upper() for m in secretish)]
+    assert leaked == [], f"secret-shaped variables reached the child: {leaked}"

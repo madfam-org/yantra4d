@@ -8,6 +8,7 @@ import datetime
 import json
 import logging
 import re
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -159,11 +160,22 @@ def import_repo(repo_url: str, slug: str, manifest: dict, github_token: str | No
     # existence check spans every root so an import can never shadow a curated
     # slug.
     if slug_in_use(slug) is not None:
-        return {"success": False, "error": f"Project '{slug}' already exists"}
+        return {"success": False, "error": f"Project '{slug}' already exists", "error_code": "slug_in_use"}
     project_dir = project_write_root() / slug
+
+    # Reserve the slug atomically (exclusive mkdir; git clones into an empty
+    # directory). A concurrent import or fork of the same slug gets
+    # slug_in_use and never touches this directory; a failed clone removes
+    # only the directory this call created.
+    try:
+        project_dir.parent.mkdir(parents=True, exist_ok=True)
+        project_dir.mkdir()
+    except FileExistsError:
+        return {"success": False, "error": f"Project '{slug}' already exists", "error_code": "slug_in_use"}
 
     # Full clone (no --depth 1) directly into <user-projects>/{slug}/
     if not clone_repo(repo_url, project_dir, github_token, shallow=False):
+        shutil.rmtree(project_dir, ignore_errors=True)
         return {"success": False, "error": "Failed to clone repository"}
 
     # Write manifest into the repo

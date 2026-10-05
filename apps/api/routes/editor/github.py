@@ -89,6 +89,8 @@ def import_github_repo():
 
     result = import_repo(repo_url, slug, manifest, github_token=_get_token())
     if not result["success"]:
+        if result.get("error_code") == "slug_in_use":
+            return error_response(result["error"], 409, error_code="slug_in_use")
         return error_response(result["error"], 400)
 
     # The importing account becomes the only non-admin that may write it. A

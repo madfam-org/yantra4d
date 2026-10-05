@@ -243,13 +243,27 @@ def fork_project(slug):
     # The new slug must be free in every root; the fork itself is written
     # into the user-projects root, never next to its source.
     if slug_in_use(new_slug) is not None:
-        return error_response(f"Project '{new_slug}' already exists", 409)
+        return error_response(f"Project '{new_slug}' already exists", 409, error_code="slug_in_use")
     dest_dir = project_write_root() / new_slug
+
+    # Reserve the slug atomically: an exclusive mkdir. Of two concurrent forks
+    # to the same slug only one creates the directory; the other answers 409
+    # and never touches it — so the cleanup below only ever removes a
+    # directory this request created.
+    try:
+        dest_dir.parent.mkdir(parents=True, exist_ok=True)
+        dest_dir.mkdir()
+    except FileExistsError:
+        return error_response(f"Project '{new_slug}' already exists", 409, error_code="slug_in_use")
+    except OSError as e:
+        logger.error("Fork failed %s -> %s: %s", slug, new_slug, e)
+        return error_response(f"Fork failed: {e}", 500)
 
     try:
         shutil.copytree(
             src_dir, dest_dir,
             ignore=shutil.ignore_patterns(".git", ".analytics.db", "__pycache__"),
+            dirs_exist_ok=True,
         )
         _make_owner_writable(dest_dir)
         # Write fork metadata

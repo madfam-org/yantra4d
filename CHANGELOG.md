@@ -38,6 +38,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     moves, and only then does this change go green on `spec-conformance`.
 
 ### Changed
+- **Forks And Imports Are Written By Their Creator** — the account that forks a
+  cartridge or imports a repository is recorded at creation (its token `sub`
+  and a timestamp, kept outside the cartridge in `<write root>/.owners/`, so it
+  never enters git, a push or a download). The write routes now accept that
+  account or an `admin`; anyone else gets 403 `not_cartridge_owner`. A fork or
+  import made before this change has no recorded creator and is admin-only.
+  With auth disabled, forks and imports are writable only in local development
+  mode (Flask debugger on), the same rule private projects follow. `git/pull`
+  and `POST /api/github/sync` are now guarded too, and admin flags apply only to
+  writable cartridges (a commons cartridge answers `read_only_cartridge`).
+  `GET /api/projects/<slug>/meta` reports the caller's `can_write` and
+  `is_owner`. Studio: "Fork to edit" replaces the editor on cartridges you
+  cannot write, and assembly editing is shown only on cartridges you can write.
 - **Image: include git for the editor's version-control features; degrade
   cleanly without it** — the API image (used by both the API and the render
   worker) and the dev image now install `git`, which history on first save,

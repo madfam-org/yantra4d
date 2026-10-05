@@ -2,16 +2,20 @@
 GitHub Import Blueprint — validate, import, and sync repos.
 """
 import logging
+import shutil
 
 from flask import Blueprint, jsonify, request
 
 import rate_limits
 from config import Config
 from extensions import limiter
-from middleware.auth import require_tier
+from middleware.auth import ensure_optional_auth, require_tier
+from routes.editor.editor import check_writable_cartridge
+from services.core.cartridge_ownership import forget_owner, record_owner
 from services.core.tier_service import TOP_TIER
 from services.editor.github_import import import_repo, sync_repo, validate_repo
 from services.editor.github_token import get_github_token
+from utils.project_resolver import project_write_root
 from utils.route_helpers import error_response, require_json_body
 from utils.validators import validate_project_slug
 
@@ -87,6 +91,16 @@ def import_github_repo():
     if not result["success"]:
         return error_response(result["error"], 400)
 
+    # The importing account becomes the only non-admin that may write it. A
+    # cartridge whose record could not be written is not left behind.
+    try:
+        record_owner(slug, ensure_optional_auth())
+    except OSError as e:
+        logger.error("Import of %s: could not record its creator: %s", slug, e)
+        forget_owner(slug)
+        shutil.rmtree(project_write_root() / slug, ignore_errors=True)
+        return error_response("Import failed: could not record the project's owner", 500)
+
     return jsonify(result), 201
 
 
@@ -100,6 +114,10 @@ def sync_github_repo():
     slug = data.get("slug", "").strip()
     if not slug:
         return error_response("slug is required", 400)
+    if validate_project_slug(slug) is None:
+        refused = check_writable_cartridge(slug)
+        if refused is not None:
+            return refused
 
     result = sync_repo(slug, github_token=_get_token())
     if not result["success"]:

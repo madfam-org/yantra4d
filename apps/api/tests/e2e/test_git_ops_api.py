@@ -30,6 +30,11 @@ def app(tmp_path, monkeypatch):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): the same unlock that
+    # opens private projects lets any caller write forks and imports, so these
+    # tests exercise write mechanics without minting identities. Ownership is
+    # covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 

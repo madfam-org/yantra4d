@@ -105,6 +105,10 @@ def app(tmp_path):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): forks and imports are
+    # writable by any caller, so these tests isolate the read-only rule.
+    # Ownership is covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 
@@ -319,6 +323,8 @@ class TestAccessOrderIsUnchanged:
         assert not (tmp_path / PRIVATE_FORK / ".git").exists()
 
     def test_the_entitled_caller_writes_the_private_fork(self, auth_client, tmp_path):
+        from services.core.cartridge_ownership import record_owner
+        record_owner(PRIVATE_FORK, TOKENS["tok-pro-granted"])
         res = self._autosave(auth_client, PRIVATE_FORK, "tok-pro-granted")
         assert res.status_code == 200
         assert (tmp_path / PRIVATE_FORK / "main.scad").read_text() == "cube(20);"

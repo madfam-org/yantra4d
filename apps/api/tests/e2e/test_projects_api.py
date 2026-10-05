@@ -27,6 +27,11 @@ def app(tmp_path):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): the same unlock that
+    # opens private projects lets any caller write forks and imports, so these
+    # tests exercise write mechanics without minting identities. Ownership is
+    # covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 
@@ -131,7 +136,9 @@ class TestProjectsAPI:
 
     def test_get_project_meta_missing(self, client):
         res = client.get("/api/projects/test-project/meta")
-        assert res.get_json() == {}
+        # No source metadata: a built-in cartridge, read-only for everyone.
+        assert res.get_json() == {"can_write": False, "is_owner": False}
+        assert res.headers["Cache-Control"] == "private, no-store"
 
     def test_get_project_meta_found(self, client, tmp_path):
         import json
@@ -139,6 +146,8 @@ class TestProjectsAPI:
         meta_path.write_text(json.dumps({"source": {"type": "github"}}))
         res = client.get("/api/projects/test-project/meta")
         assert res.get_json()["source"]["type"] == "github"
+        # Local dev mode (this fixture) unlocks imports for any caller.
+        assert res.get_json()["can_write"] is True
 
     def test_get_project_meta_unknown(self, client):
         res = client.get("/api/projects/unknown/meta")

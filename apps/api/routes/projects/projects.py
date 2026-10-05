@@ -18,13 +18,15 @@ import rate_limits
 from config import Config
 from extensions import limiter
 from manifest import discover_projects, get_manifest, invalidate_cache
-from middleware.auth import require_tier
-from routes.editor.editor import require_writable_cartridge
+from middleware.auth import ensure_optional_auth, require_tier
+from routes.editor.editor import cartridge_write_refusal, require_writable_cartridge
+from services.core.cartridge_ownership import claims_sub, forget_owner, owner_sub, record_owner
 from services.core.project_access import (
     filter_visible_projects,
     is_private_project,
     require_project_access,
 )
+from services.core.tier_service import has_tier, resolve_tier
 from services.engine.render_revision import render_revision
 from utils.project_resolver import project_write_root, slug_in_use
 from utils.route_helpers import error_response, handle_exceptions
@@ -139,20 +141,39 @@ def get_project_manifest(slug):
 @require_valid_slug
 @require_project_access
 def get_project_meta(slug):
-    """Return project.meta.json if it exists."""
+    """Return project.meta.json if it exists, plus what THIS caller may do with it.
+
+    ``can_write`` answers whether the write routes (editor, assembly steps, git)
+    would accept this caller for this cartridge: the same decision the write
+    guard makes, plus the ``pro`` tier those routes require. ``is_owner`` is
+    whether the caller created it. Neither reveals who else did, and the answer
+    depends on the caller, so it is never shared-cached.
+    """
     try:
         manifest = get_manifest(slug)
     except RuntimeError:
         return error_response("Project not found", 404)
-    
+
     meta_path = manifest.project_dir / "project.meta.json"
-    if not meta_path.is_file():
-        return jsonify({})
-    try:
-        with open(meta_path) as f:
-            return jsonify(json.load(f))
-    except (json.JSONDecodeError, OSError):
-        return jsonify(None)
+    body = {}
+    if meta_path.is_file():
+        try:
+            with open(meta_path) as f:
+                loaded = json.load(f)
+            body = loaded if isinstance(loaded, dict) else {}
+        except (json.JSONDecodeError, OSError):
+            body = {}
+
+    claims = ensure_optional_auth()
+    tier_ok = (not Config.AUTH_ENABLED) or has_tier(resolve_tier(claims), "pro")
+    refusal = cartridge_write_refusal(slug, manifest.project_dir, claims)
+    sub = claims_sub(claims)
+    body["can_write"] = bool(tier_ok and refusal is None)
+    body["is_owner"] = bool(sub and sub == owner_sub(slug, manifest.project_dir))
+
+    resp = jsonify(body)
+    resp.headers["Cache-Control"] = "private, no-store"
+    return resp
 
 
 @projects_bp.route('/api/projects/<slug>/parts/<path:filename>', methods=['GET'])
@@ -241,10 +262,13 @@ def fork_project(slug):
         with open(dest_dir / "project.meta.json", "w") as f:
             json.dump(meta, f, indent=2)
             f.write("\n")
+        # The forking account becomes the only non-admin that may write it.
+        record_owner(new_slug, ensure_optional_auth())
     except Exception as e:
         # Clean up partial copy
         if dest_dir.exists():
             shutil.rmtree(dest_dir, ignore_errors=True)
+        forget_owner(new_slug)
         logger.error("Fork failed %s -> %s: %s", slug, new_slug, e)
         return error_response(f"Fork failed: {e}", 500)
 

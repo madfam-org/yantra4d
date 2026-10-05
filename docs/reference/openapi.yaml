@@ -119,12 +119,14 @@ components:
         Refusal returned with HTTP 403 by every route that writes into an
         existing cartridge — the editor file routes (`PUT`/`POST`/`DELETE`
         `/files`, which the SCAD editor autosave uses), both assembly-steps
-        writes, `git/connect-remote`, `git/commit` and `PUT /manifest/bindings` — when the cartridge is
-        not one the API may write. Only a fork (`project.meta.json`
+        writes, `git/connect-remote`, `git/commit`, `git/pull`,
+        `PUT /manifest/bindings`, `POST /api/github/sync` and the admin flags
+        `PATCH` — when the cartridge is not one the API may write. Only a fork (`project.meta.json`
         `source.type` = `fork`) or an imported repository (`github`) is
         writable; a built-in commons cartridge (no `project.meta.json`) and any
-        missing, unreadable or unknown source type are read-only. Fork the
-        cartridge to edit a copy. Nothing is written into a refused cartridge.
+        missing, unreadable or unknown source type are read-only, for admins
+        too. Fork the cartridge to edit a copy. Nothing is written into a
+        refused cartridge.
 
         Privacy and tier are checked first, so a private project the caller may
         not view still answers `project_locked`. Branch on `error_code`.
@@ -138,6 +140,31 @@ components:
         error_code:
           type: string
           enum: [read_only_cartridge]
+        request_id:
+          type: string
+      required: [status, error, error_code]
+
+    NotCartridgeOwner:
+      type: object
+      description: |
+        Refusal returned with HTTP 403 by the same write routes as
+        `ReadOnlyCartridge` when the cartridge is a fork or an import that the
+        caller did not create. The creating account is recorded when the fork or
+        import is made; it, and holders of the `admin` role, may write it. A fork
+        or import with no recorded creator is writable by admins only. With auth
+        disabled, only local development mode (the Flask debugger on) unlocks
+        these writes. Fork the cartridge to edit your own copy. The response
+        never names the creating account.
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: string
+          example: This cartridge belongs to another account. Fork it to edit your own copy.
+        error_code:
+          type: string
+          enum: [not_cartridge_owner]
         request_id:
           type: string
       required: [status, error, error_code]
@@ -821,13 +848,26 @@ paths:
             type: string
       responses:
         "200":
-          description: Project metadata or null
+          description: >-
+            The cartridge's project.meta.json (empty when it has none), plus two
+            flags for THIS caller. Sent with `Cache-Control: private, no-store`.
           content:
             application/json:
               schema:
-                oneOf:
-                  - type: object
-                  - type: "null"
+                type: object
+                properties:
+                  source:
+                    type: object
+                    description: Provenance (`type` = `fork` or `github`); absent on built-in cartridges.
+                  can_write:
+                    type: boolean
+                    description: >-
+                      Whether the write routes (editor, assembly steps, git)
+                      would accept this caller for this cartridge, tier included.
+                  is_owner:
+                    type: boolean
+                    description: Whether this caller created the fork or import.
+                required: [can_write, is_owner]
 
   /api/projects/{slug}/parts/{filename}:
     get:
@@ -928,11 +968,13 @@ paths:
         "200":
           description: Steps saved
         "403":
-          description: Read-only cartridge — fork it to edit
+          description: Not writable by this caller — fork it to edit
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReadOnlyCartridge"
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
         "400":
           description: Missing assembly_steps
         "404":
@@ -1001,13 +1043,15 @@ paths:
           description: Malformed body, unknown parameter, no graph source, or a binding the graph engine rejects
         "403":
           description: >-
-            A commons cartridge (`read_only_cartridge`, see the schema), an imported
+            A commons cartridge (`read_only_cartridge`, see the schema), a fork
+            created by another account (`not_cartridge_owner`), an imported
             repository (`not_a_fork`), or the tier or project access check refused the caller
           content:
             application/json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
                   - type: object
                     properties:
                       status:
@@ -1451,11 +1495,13 @@ paths:
         "400":
           description: Invalid path
         "403":
-          description: Read-only cartridge — fork it to edit
+          description: Not writable by this caller — fork it to edit
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReadOnlyCartridge"
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
         "409":
           description: File already exists
 
@@ -1522,11 +1568,13 @@ paths:
         "400":
           description: Invalid path
         "403":
-          description: Read-only cartridge — fork it to edit
+          description: Not writable by this caller — fork it to edit
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReadOnlyCartridge"
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
     delete:
       tags: [editor]
       summary: Delete a file
@@ -1548,11 +1596,13 @@ paths:
         "200":
           description: File deleted
         "403":
-          description: Read-only cartridge — fork it to edit
+          description: Not writable by this caller — fork it to edit
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReadOnlyCartridge"
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
         "404":
           description: File not found
 
@@ -1587,11 +1637,13 @@ paths:
         "400":
           description: Invalid repository URL
         "403":
-          description: Read-only cartridge — fork it to edit
+          description: Not writable by this caller — fork it to edit
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReadOnlyCartridge"
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
 
   /api/projects/{slug}/git/status:
     get:
@@ -1680,11 +1732,13 @@ paths:
         "400":
           description: Missing message or nothing to commit
         "403":
-          description: Read-only cartridge — fork it to edit
+          description: Not writable by this caller — fork it to edit
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReadOnlyCartridge"
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
 
   /api/projects/{slug}/git/push:
     post:
@@ -1723,6 +1777,14 @@ paths:
           description: Pulled successfully
         "400":
           description: No remote configured
+        "403":
+          description: Not writable by this caller — fork it to edit
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
 
   # ── GitHub ──────────────────────────────────────────────
   /api/github/validate:
@@ -1810,6 +1872,14 @@ paths:
       responses:
         "200":
           description: Sync result
+        "403":
+          description: Not writable by this caller — fork it to edit
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
 
   # ── AI ──────────────────────────────────────────────────
   /api/ai/session:
@@ -2475,6 +2545,14 @@ paths:
       responses:
         "200":
           description: Flags updated
+        "403":
+          description: Not writable by this caller — fork it to edit
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
         "404":
           description: Project not found
 
@@ -2540,10 +2618,12 @@ paths:
         "200":
           description: Assembly steps written to manifest
         "403":
-          description: Read-only cartridge — fork it to edit
+          description: Not writable by this caller — fork it to edit
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReadOnlyCartridge"
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - $ref: "#/components/schemas/NotCartridgeOwner"
         "404":
           description: Project not found

@@ -18,8 +18,9 @@ from flask import Blueprint, jsonify, request
 import rate_limits
 from extensions import limiter
 from manifest import invalidate_cache
-from middleware.auth import require_tier
-from services.core.project_access import require_project_access
+from middleware.auth import claim_roles, ensure_optional_auth, require_tier
+from services.core.cartridge_ownership import claims_sub, owner_sub
+from services.core.project_access import dev_unlock_active, require_project_access
 from utils.project_resolver import find_project_dir, require_project
 from utils.route_helpers import error_response, safe_join_path
 from utils.validators import require_valid_slug
@@ -67,21 +68,33 @@ def _graph_rejection(resolved: Path, content: str) -> str | None:
     return None
 
 
-# ── Read-only commons cartridges ──────────────────────────────────────────────
+# ── Who may write a cartridge ─────────────────────────────────────────────────
 #
 # The API writes only into a cartridge it created for someone: a fork
 # (POST /api/projects/<slug>/fork) or an imported repository
 # (POST /api/github/import). Both record that in project.meta.json
 # `source.type`. A built-in commons cartridge has no project.meta.json; it, and
 # any cartridge whose source type is missing, unreadable or unknown, is
-# read-only through the API — fork it to edit a copy. The Studio offers
-# "Fork to edit" for exactly these; this is the same rule on the server.
+# read-only through the API — fork it to edit a copy.
+#
+# A fork or import is writable only by the account that created it (its `sub`
+# is recorded at creation, see services/core/cartridge_ownership.py) or by an
+# admin (the `admin` app role, the same one require_role("admin") checks). A
+# fork or import with no recorded creator is writable by admins only. With auth
+# disabled, the local-development unlock that opens private projects
+# (auth off AND the Flask debugger on) opens these too; nothing else does.
 
 #: `source.type` values whose cartridges the API may write.
 WRITABLE_SOURCE_TYPES = frozenset({"fork", "github"})
 
-#: Error code the Studio branches on. Stable API surface — do not rename.
+#: Error codes the Studio branches on. Stable API surface — do not rename.
 READ_ONLY_ERROR_CODE = "read_only_cartridge"
+NOT_OWNER_ERROR_CODE = "not_cartridge_owner"
+
+_REFUSAL_MESSAGES = {
+    READ_ONLY_ERROR_CODE: "This is a built-in cartridge and is read-only. Fork it to edit your own copy.",
+    NOT_OWNER_ERROR_CODE: "This cartridge belongs to another account. Fork it to edit your own copy.",
+}
 
 
 def _project_source_type(project_dir: Path) -> str | None:
@@ -98,14 +111,41 @@ def _project_source_type(project_dir: Path) -> str | None:
     return kind if isinstance(kind, str) else None
 
 
-def read_only_cartridge_response(project_dir: Path):
-    """403 `read_only_cartridge` unless the API may write this cartridge, else None."""
-    if _project_source_type(project_dir) in WRITABLE_SOURCE_TYPES:
+def cartridge_write_refusal(slug: str, project_dir: Path, claims: dict | None) -> str | None:
+    """Why this caller may not write this cartridge (an error code), or None if they may.
+
+    The one decision behind the write guard and the `can_write` flag the API
+    reports, so the two cannot disagree.
+    """
+    if _project_source_type(project_dir) not in WRITABLE_SOURCE_TYPES:
+        return READ_ONLY_ERROR_CODE
+    if dev_unlock_active():
         return None
-    return error_response(
-        "This is a built-in cartridge and is read-only. Fork it to edit your own copy.",
-        403, error_code=READ_ONLY_ERROR_CODE,
-    )
+    if "admin" in claim_roles(claims):
+        return None
+    sub = claims_sub(claims)
+    owner = owner_sub(slug, project_dir)
+    if sub is not None and owner is not None and sub == owner:
+        return None
+    return NOT_OWNER_ERROR_CODE
+
+
+def cartridge_write_refusal_response(code: str):
+    """The 403 for a refusal code from :func:`cartridge_write_refusal`."""
+    return error_response(_REFUSAL_MESSAGES[code], 403, error_code=code)
+
+
+def check_writable_cartridge(slug: str):
+    """The 403 when the caller may not write ``slug``, else None (unknown slug → None).
+
+    For routes that take the slug in the request body; path-parameter routes
+    use :func:`require_writable_cartridge`.
+    """
+    project_dir = find_project_dir(slug)
+    if project_dir is None:
+        return None
+    code = cartridge_write_refusal(slug, project_dir, ensure_optional_auth())
+    return cartridge_write_refusal_response(code) if code else None
 
 
 def require_writable_cartridge(fn):
@@ -114,16 +154,14 @@ def require_writable_cartridge(fn):
     Place it below ``require_project_access`` (privacy is settled first, so a
     private project still answers ``project_locked``) and above
     ``require_project(auto_git=True)`` (so nothing — not even the ``.git`` that
-    auto_git creates — is written into a read-only cartridge). An unknown slug
-    passes through to the route's own 404.
+    auto_git creates — is written into a cartridge the caller may not write).
+    An unknown slug passes through to the route's own 404.
     """
     @functools.wraps(fn)
     def wrapper(*args, slug: str, **kwargs):
-        project_dir = find_project_dir(slug)
-        if project_dir is not None:
-            refused = read_only_cartridge_response(project_dir)
-            if refused is not None:
-                return refused
+        refused = check_writable_cartridge(slug)
+        if refused is not None:
+            return refused
         return fn(*args, slug=slug, **kwargs)
     return wrapper
 

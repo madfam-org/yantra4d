@@ -598,3 +598,28 @@ class TestReleaseArtifactNames:
             monkeypatch.setattr("services.engine.render_orchestrator.render_cache._engine_signature", lambda: "another-kernel")
             fourth = extract_render_payload({"project": "test", "parameters": {"size": 10}})
             assert fourth["stl_prefix"] != third["stl_prefix"]
+
+
+def test_mode_whose_file_is_not_a_plain_relative_path_is_a_payload_error(tmp_path, monkeypatch):
+    """A manifest mode naming a file with a newline (or any non-plain name) is
+    never resolved to a path: the render request gets a payload error (400)."""
+    import json as _json
+
+    from manifest import ProjectManifest
+    from services.engine import render_orchestrator as ro
+
+    project = tmp_path / "cart"
+    project.mkdir()
+    (project / "main.scad").write_text("cube(1);")
+    data = {
+        "project": {"name": "C", "slug": "cart", "version": "1.0.0"},
+        "modes": [{"id": "bad", "scad_file": "x.graph.json\nimport os", "parts": ["p"]}],
+        "parts": [{"id": "p"}],
+        "parameters": [],
+    }
+    (project / "project.json").write_text(_json.dumps(data))
+    monkeypatch.setattr(ro, "get_manifest", lambda *_: ProjectManifest(data, project))
+
+    result = ro.resolve_render_context({"project": "cart", "mode": "bad"})
+    assert isinstance(result, ro.RenderPayloadError)
+    assert "Invalid SCAD file" in result.message

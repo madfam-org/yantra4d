@@ -346,14 +346,16 @@ class TestDualEngineRouting:
 
     # -- A cq_file outside the cartridge is refused ---------------------------
 
-    @pytest.mark.parametrize("cq_file", ["../other/main.py", "/etc/evil.py"])
+    @pytest.mark.parametrize("cq_file", [
+        "../other/main.py", "/etc/evil.py", "main.py\nimport os", "main\x01.py",
+    ])
     def test_cq_file_outside_cartridge_is_refused(self, client, monkeypatch, cq_file):
         engine_calls = self._setup_dual_engine_mocks(monkeypatch, "step", cq_file=cq_file)
         res = client.post("/api/render", json={
             "project": "dual-test", "mode": "unit", "export_format": "step",
         })
         assert res.status_code == 400
-        assert "outside the cartridge directory" in res.get_json()["error"]
+        assert "cartridge directory" in res.get_json()["error"]
         assert engine_calls == []
 
     # -- Fallback activates when cq_file is present --------------------------

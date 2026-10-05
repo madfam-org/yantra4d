@@ -51,6 +51,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a new in-cluster destination needs its own rule. That includes an in-cluster
   bucket endpoint before `RENDER_ARTIFACT_STORE` flips to `s3`. Redis now
   accepts connections only from the backend pod.
+- **Forks And Imports Are Written By Their Creator** — the account that forks a
+  cartridge or imports a repository is recorded at creation (its token `sub`
+  and a timestamp, kept outside the cartridge in `<write root>/.owners/`, so it
+  never enters git, a push or a download). The write routes now accept that
+  account or an `admin`; anyone else gets 403 `not_cartridge_owner`. A fork or
+  import made before this change has no recorded creator and is admin-only.
+  With auth disabled, forks and imports are writable only in local development
+  mode (Flask debugger on), the same rule private projects follow. `git/pull`,
+  `git/push` and `POST /api/github/sync` are now guarded too, and admin flags apply only to
+  writable cartridges (a commons cartridge answers `read_only_cartridge`).
+  `GET /api/projects/<slug>/meta` reports the caller's `can_write` and
+  `is_owner`. Studio: "Fork to edit" replaces the editor on cartridges you
+  cannot write, and assembly editing is shown only on cartridges you can write.
+- **A Fork's Manifest Names The Fork** — forking copied `project.json`
+  verbatim, so the fork kept its source's `project.slug`: the project listing
+  (which keys on that slug) hid the fork, and the Studio, which waits for a
+  manifest whose slug matches the URL, stayed on "Loading project..." after
+  "Fork & Edit". The fork route now sets `project.slug` to the new slug. A
+  GitHub import likewise stores the manifest under the slug it was imported
+  as, whatever slug the submitted manifest carried.
+- **Fork And Import Reserve Their Slug Atomically** — the new cartridge's
+  directory is created with an exclusive `mkdir` before copying or cloning. Of
+  two concurrent forks or imports to the same slug, one succeeds and the other
+  gets 409 `slug_in_use` without touching the first one's directory (previously
+  the failing request's cleanup could remove it). A failed clone removes only
+  the directory its own request created.
+- **Image: include git for the editor's version-control features; degrade
+  cleanly without it** — the API image (used by both the API and the render
+  worker) and the dev image now install `git`, which history on first save,
+  commit/diff/log, GitHub import/sync and render-HEAD shell out to. On a host
+  without it, saves proceed untracked instead of failing, and the git and
+  GitHub routes answer 503 `git_unavailable`.
+- **Tighter CadQuery render environment** — the CadQuery render subprocess (and
+  the warm pool) now runs with a minimal environment rather than a full copy of
+  the parent's: only the Python, locale, fontconfig and OCCT/CadQuery variables
+  it needs, a writable `HOME`, and `PYTHONPATH` limited to the curated cartridge
+  roots. The render runner enforces an import **allowlist** (known-safe packages
+  plus sibling cartridges on the curated roots) as defence in depth over the
+  shared sandbox's denylist, in Yantra4D's runner layer so the vendored
+  `commons_sandbox` core is untouched. The processes that spawn CadQuery children
+  (render worker, API) are set non-dumpable on Linux so a same-UID child cannot
+  read the parent's `/proc` memory. The render log returned to clients is bounded
+  in size and scrubbed of credential-shaped content (the full log still reaches
+  the server's own logs). AI synthesis now writes only the file types it is
+  designed to emit (OpenSCAD source and manifest). Manifest file references
+  (`scad_file`, `cq_file`, `graph_file`, `static_stl`) must be relative paths
+  without control characters or `..` segments that resolve inside the cartridge
+  directory; in user-authored cartridges they must also use `[A-Za-z0-9_./-]`.
+  A mode with any other reference is not renderable (400). New scan derived the
+  allowlist from every commons CadQuery script; all of them still render.
+
+- **Persistent writable storage for user projects** — user-authored cartridges
+  (forks, GitHub imports, onboarding, AI synthesis) now live in their own root,
+  `USER_PROJECTS_DIR` (`/app/user-projects` in the image, a gitignored
+  `user-projects/` locally), separate from the release-shipped commons and
+  private roots, which stay read-only. It resolves after the curated roots, a
+  new slug must be free in every root, and it is kept off `OPENSCADPATH` and the
+  CadQuery `PYTHONPATH`. A fork of a read-only source is now itself writable.
+  The API logs user cartridges hidden by a later curated slug at startup.
+  `docker-compose*.yml` mount a `user_projects` volume. Operator note:
+  `docs/operations/user-projects-storage.md`.
 - **Read-Only Commons Cartridges, Enforced On The Server** — the API now writes
   only into a cartridge it created for someone: a fork or an imported repository
   (`project.meta.json` `source.type` `fork` or `github`). A built-in commons
@@ -222,6 +283,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   customer in `essentials` with no error anywhere).
 
 ### Added
+- **A Writable Graph Editor In Studio (G-EDITOR)** — the Graph view of a
+  `.graph.json` source is now an editor, not a picture: a palette driven by
+  `graph-node-catalog.json`; drag-to-connect with socket type and loop checks;
+  add, delete and disconnect; an inspector where each numeric param is a literal,
+  a manifest binding or (when the catalog marks it `"expr": true`) a safeFormula
+  expression; a panel for graph 1.1 declared parameters (with option → number
+  maps the author enters) and ordered derived values; validation on every edit,
+  linked to the node, socket or param at fault; render preview through the
+  existing render path; and `.graph.json` export. **Saves go to a fork only** (or
+  an imported repository); a commons cartridge is edited in the buffer and offers
+  "Fork to save". New route `PUT /api/projects/<slug>/manifest/bindings` sets or
+  clears `binding` on existing manifest parameters of a fork, validated against
+  every graph source and written atomically. The read-only `GraphCanvas` is
+  replaced by `components/editor/graph/`.
 - **Derived CDG Mating-Rule Candidates (PROPOSED)** — `scripts/qa/derive_mating_candidates.py`
   reads the CDG interfaces the cartridges already declare, derives the mating rules
   those declarations imply, scores each candidate against the author-written answer

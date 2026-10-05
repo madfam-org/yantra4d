@@ -141,6 +141,20 @@ describe('useAssemblyEditor', () => {
     expect(result.current.isDirty).toBe(true)
   })
 
+  it('save on a cartridge owned by another account reports it, never as saved', async () => {
+    apiFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve({ error: 'This cartridge belongs to another account. Fork it to edit your own copy.', error_code: 'not_cartridge_owner' }),
+    })
+    const { result } = renderHook(() => useAssemblyEditor(baseManifest, 'test', vi.fn(), { current: null }))
+    act(() => result.current.addStep())
+    await act(async () => result.current.save())
+    expect(toast.success).not.toHaveBeenCalled()
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Fork it'))
+    expect(result.current.isDirty).toBe(true)
+  })
+
   it('discard restores original steps', () => {
     const { result } = renderHook(() => useAssemblyEditor(baseManifest, 'test', vi.fn(), { current: null }))
     act(() => result.current.addStep())

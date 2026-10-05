@@ -15,6 +15,7 @@ from extensions import db
 from manifest import discover_projects, get_manifest
 from middleware.auth import optional_auth, require_role
 from models.analytics import AnalyticsEvent
+from routes.editor.editor import require_writable_cartridge
 from services.engine.render_orchestrator import (
     ACTIVE_RENDER_META_PREFIX,
     RENDER_QUEUE,
@@ -306,6 +307,7 @@ def admin_project_detail(slug: str) -> Response | tuple[Response, int]:
 @admin_bp.route('/api/admin/projects/<slug>/flags', methods=['PATCH'])
 @require_valid_slug
 @require_role("admin")
+@require_writable_cartridge
 def patch_project_flags(slug: str) -> Response | tuple[Response, int]:
     """
     Toggle is_demo and/or is_hyperobject flags for a project.
@@ -314,7 +316,10 @@ def patch_project_flags(slug: str) -> Response | tuple[Response, int]:
       { "is_demo": true, "is_hyperobject": false }
 
     Only keys present in the body are updated; others are left unchanged.
-    Writes directly to projects/<slug>/project.json.
+    Writes the cartridge's own project.json, so it applies only to cartridges
+    the API may write (forks and imports; admins may write any of those). A
+    built-in commons cartridge answers 403 ``read_only_cartridge``, as every
+    other write route does.
     """
     raw = _load_raw_manifest(slug)
     if raw is None:

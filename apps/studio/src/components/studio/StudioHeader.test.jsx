@@ -32,7 +32,7 @@ vi.mock('../project/ProjectSelector', () => ({
 }))
 
 vi.mock('../../hooks/project/useProjectMeta', () => ({
-  useProjectMeta: () => ({ source: { type: 'github' } }),
+  useProjectMeta: vi.fn(() => ({ source: { type: 'github' } })),
 }))
 
 vi.mock('react-router-dom', () => ({
@@ -50,6 +50,7 @@ import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useTheme } from '../../contexts/system/ThemeProvider'
 import { usePlatform } from '../../contexts/system/PlatformProvider'
 import { useProject } from '../../contexts/project/ProjectProvider'
+import { useProjectMeta } from '../../hooks/project/useProjectMeta'
 
 const baseProjectContext = {
   manifest: { project: { name: 'Test Project' } },
@@ -90,6 +91,7 @@ const defaultProps = {
 beforeEach(() => {
   vi.clearAllMocks()
   useProject.mockReturnValue(baseProjectContext)
+  useProjectMeta.mockReturnValue({ source: { type: 'github' } })
   useTheme.mockReturnValue(baseThemeContext)
   useLanguage.mockReturnValue(baseLanguageContext)
   usePlatform.mockReturnValue(basePlatformContext)
@@ -276,6 +278,29 @@ describe('StudioHeader', () => {
     // Let's just verify the title reflects editorOpen state
     render(<StudioHeader {...defaultProps} editorOpen={true} />)
     expect(screen.getByTitle('btn.editor_close')).toBeInTheDocument()
+  })
+
+  describe('code button follows can_write', () => {
+    it("offers Fork to edit on someone else's fork", () => {
+      const onForkRequest = vi.fn()
+      useProjectMeta.mockReturnValue({ source: { type: 'fork' }, can_write: false, is_owner: false })
+      render(<StudioHeader {...defaultProps} onForkRequest={onForkRequest} />)
+      fireEvent.click(screen.getByTitle('btn.fork_edit'))
+      expect(onForkRequest).toHaveBeenCalled()
+    })
+
+    it('opens the editor on your own fork', () => {
+      useProjectMeta.mockReturnValue({ source: { type: 'fork' }, can_write: true, is_owner: true })
+      render(<StudioHeader {...defaultProps} />)
+      expect(screen.getByTitle('btn.editor_open')).toBeInTheDocument()
+      expect(screen.queryByTitle('btn.fork_edit')).not.toBeInTheDocument()
+    })
+
+    it('offers Fork to edit on a built-in cartridge', () => {
+      useProjectMeta.mockReturnValue({ can_write: false, is_owner: false })
+      render(<StudioHeader {...defaultProps} />)
+      expect(screen.getByTitle('btn.fork_edit')).toBeInTheDocument()
+    })
   })
 
   it('shows AI configurator title when panel is open', () => {

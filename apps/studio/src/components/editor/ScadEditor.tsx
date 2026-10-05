@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react'
 import Editor from '@monaco-editor/react'
 import type { OnMount, OnChange } from '@monaco-editor/react'
 import { Button } from '@/components/ui/button'
@@ -18,10 +18,18 @@ import { FileCode, Plus, X, Loader2, Sparkles } from 'lucide-react'
 const AiChatPanel = lazy(() => import('../ai/AiChatPanel'))
 import { useTheme } from '../../contexts/system/ThemeProvider'
 import GraphIssues from './GraphIssues'
-const GraphCanvas = lazy(() => import('./GraphCanvas'))
+const GraphEditor = lazy(() => import('./graph/GraphEditor'))
 import { listFiles, readFile, createFile, deleteFile } from '../../services/domain/editorService'
+import type { GraphBindingsResponse } from '../../services/domain/editorService'
 import { registerScadLanguage, SCAD_LANGUAGE_ID } from '../../lib/scad-language'
 import { useEditorRender } from '../../hooks/editor/useEditorRender'
+import { useGraphPersistence } from '../../hooks/editor/useGraphPersistence'
+import { useProjectMeta } from '../../hooks/project/useProjectMeta'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { validateGraph } from '../../lib/graph/graphDocument'
+import { bindableParameters, bindingChanges, bindingConflicts, bindingsFromManifest } from '../../lib/graph/graphBindings'
+import type { BindingMap } from '../../lib/graph/graphBindings'
+import type { ManifestParameterLike } from '../../lib/graph/graphExpressions'
 
 interface FileEntry {
   path: string
@@ -45,10 +53,26 @@ interface ScadEditorProps {
   slug: string
   handleGenerate: () => void
   manifest: Record<string, unknown>
+  /** Opens the fork dialog — how a commons cartridge becomes something this editor may save. */
+  onForkRequest?: () => void
 }
 
-export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEditorProps) {
+/**
+ * Whether a graph buffer, with the binding map it would be saved with, would
+ * pass the transpiler's rules (an expression-valued param cannot also be bound).
+ */
+function isSavableGraph(content: string, bindings: BindingMap = {}): boolean {
+  try {
+    const doc = JSON.parse(content)
+    return validateGraph(doc).length === 0 && bindingConflicts(doc, bindings).length === 0
+  } catch {
+    return false
+  }
+}
+
+export default function ScadEditor({ slug, handleGenerate, manifest, onForkRequest }: ScadEditorProps) {
   const { theme } = useTheme()
+  const { t } = useLanguage()
   const [files, setFiles] = useState<FileEntry[]>([])
   const [openTabs, setOpenTabs] = useState<OpenTab[]>([])
   const [activeTab, setActiveTab] = useState<string | null>(null)
@@ -62,6 +86,55 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
   const monacoRef = useRef<Parameters<OnMount>[1] | null>(null)
 
   const { saveAndRender, saveImmediate } = useEditorRender({ slug, handleGenerate })
+
+  // ── Graph editing: where saves may go, and the manifest bindings ──────────
+  // A project with no `source.type` in project.meta.json is a commons
+  // cartridge (the header offers "Fork & Edit" instead of the editor). The
+  // graph editor never writes one: edits stay in the buffer, export works,
+  // and saving means forking first. Bindings live in the manifest and the
+  // server only accepts binding edits on a fork.
+  // A fork or import is saved only by the account that created it (or an
+  // admin): the API reports that as `can_write`, and one it says no to is
+  // treated like a commons cartridge here — buffer, export, "Fork to save".
+  const projectMeta = useProjectMeta(slug)
+  const sourceType = ((projectMeta?.source as Record<string, unknown> | undefined)?.type as string | undefined) ?? null
+  const writableSource = sourceType === 'fork' || sourceType === 'github'
+  const notOwner = writableSource && projectMeta?.can_write === false
+  const graphSaveBlocked = !writableSource
+    ? t('graph.save_blocked_commons')
+    : notOwner ? t('graph.save_blocked_not_owner') : null
+  const bindBlocked = notOwner
+    ? t('graph.save_blocked_not_owner')
+    : sourceType === 'fork' ? null : t('graph.bind_blocked_not_fork')
+  const manifestParameters = useMemo(
+    () => ((manifest?.parameters as ManifestParameterLike[] | undefined) ?? []).filter((p) => p && typeof p.id === 'string'),
+    [manifest],
+  )
+  const partIds = useMemo(
+    () => ((manifest?.parts as Array<{ id?: unknown }> | undefined) ?? []).map((p) => p?.id).filter((id): id is string => typeof id === 'string'),
+    [manifest],
+  )
+  const bindable = useMemo(() => bindableParameters(manifestParameters), [manifestParameters])
+  const manifestBindings = useMemo(() => bindingsFromManifest(manifestParameters), [manifestParameters])
+  const [bindingState, setBindingState] = useState<{ source: BindingMap; saved: BindingMap; draft: BindingMap }>(
+    () => ({ source: manifestBindings, saved: manifestBindings, draft: manifestBindings }),
+  )
+  if (bindingState.source !== manifestBindings) {
+    setBindingState({ source: manifestBindings, saved: manifestBindings, draft: manifestBindings })
+  }
+  const { saved: savedBindings, draft: draftBindings } = bindingState
+  const pendingBindings = useMemo(() => bindingChanges(savedBindings, draftBindings), [savedBindings, draftBindings])
+  const onBindingsSaved = useCallback((response: GraphBindingsResponse) => {
+    const saved: BindingMap = {}
+    for (const [pid, value] of Object.entries(response.bindings)) saved[pid] = Array.isArray(value) ? value : [value]
+    setBindingState((prev) => ({ ...prev, saved }))
+  }, [])
+  const onGraphSaved = useCallback((path: string, content: string) => {
+    setOpenTabs(prev => prev.map(t =>
+      t.path === path ? { ...t, originalContent: content, dirty: t.content !== content } : t
+    ))
+  }, [])
+  const graphPersistence = useGraphPersistence({ slug, handleGenerate, onBindingsSaved, onSaved: onGraphSaved })
 
   // Load file list
   useEffect(() => {
@@ -110,11 +183,24 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
         ? { ...t, content: value ?? '', dirty: (value ?? '') !== t.originalContent }
         : t
     ))
+    // A graph document in a commons cartridge is never written: edit, export, or fork it.
+    if (activeTab.endsWith('.graph.json') && graphSaveBlocked) return
     saveAndRender(activeTab, value ?? '')
-  }, [activeTab, saveAndRender])
+  }, [activeTab, saveAndRender, graphSaveBlocked])
 
   const handleSave = useCallback(async () => {
     const tab = openTabs.find(t => t.path === activeTab)
+    if (tab && tab.path.endsWith('.graph.json')) {
+      // Graph documents save through the graph path: never into a commons
+      // cartridge, and together with any binding the author changed.
+      if (graphSaveBlocked) { setError(graphSaveBlocked); return }
+      const changes = bindBlocked ? null : pendingBindings
+      if (!tab.dirty && (!changes || Object.keys(changes).length === 0)) return
+      setSaving(true)
+      await graphPersistence.saveNow(tab.path, tab.content, changes)
+      setSaving(false)
+      return
+    }
     if (!tab || !tab.dirty) return
     setSaving(true)
     try {
@@ -126,7 +212,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
       setError((e as Error).message)
     }
     setSaving(false)
-  }, [activeTab, openTabs, saveImmediate])
+  }, [activeTab, openTabs, saveImmediate, graphSaveBlocked, bindBlocked, pendingBindings, graphPersistence])
 
   // Ctrl+S handler
   useEffect(() => {
@@ -180,6 +266,38 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
   const isGraphFile = (activeTab ?? '').endsWith('.graph.json')
   const [graphView, setGraphView] = useState(false)
   const showCanvas = isGraphFile && graphView
+  const [graphSelection, setGraphSelection] = useState<string | null>(null)
+
+  const handleGraphChange = useCallback((
+    content: string,
+    { layoutOnly, bindings }: { layoutOnly: boolean; bindings?: BindingMap },
+  ) => {
+    if (!activeTab) return
+    setOpenTabs(prev => prev.map(t =>
+      t.path === activeTab ? { ...t, content, dirty: content !== t.originalContent } : t
+    ))
+    if (bindings) setBindingState(prev => ({ ...prev, draft: bindings }))
+    const changes = bindings ? bindingChanges(savedBindings, bindings) : pendingBindings
+    // Geometry edits preview through the existing render, but only where a
+    // save is allowed and only once the transpiler would accept the document;
+    // moving a node changes no geometry, so it waits for an explicit save.
+    if (layoutOnly || graphSaveBlocked || !isSavableGraph(content, bindings ?? draftBindings)) return
+    graphPersistence.schedule(activeTab, content, bindBlocked ? null : changes)
+  }, [activeTab, graphSaveBlocked, bindBlocked, savedBindings, draftBindings, pendingBindings, graphPersistence])
+
+  const handleGraphBindingsChange = useCallback((draft: BindingMap) => {
+    setBindingState(prev => ({ ...prev, draft }))
+    // A binding changes what the render reads, so it previews like a geometry edit.
+    const tab = openTabs.find(t => t.path === activeTab)
+    if (!tab || graphSaveBlocked || bindBlocked || !isSavableGraph(tab.content, draft)) return
+    graphPersistence.schedule(tab.path, tab.content, bindingChanges(savedBindings, draft))
+  }, [openTabs, activeTab, graphSaveBlocked, bindBlocked, savedBindings, graphPersistence])
+
+  const activeGraphTab = openTabs.find(t => t.path === activeTab)
+  const graphSaveStatus = graphPersistence.status === 'saving' ? 'saving'
+    : graphPersistence.status === 'error' ? 'error'
+      : (activeGraphTab?.dirty || Object.keys(pendingBindings).length > 0) ? 'dirty'
+        : graphPersistence.status === 'saved' ? 'saved' : 'clean'
 
   // Build file contents map for AI code editor
   const getFileContents = useCallback(() => {
@@ -325,10 +443,27 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
       )}
 
       {/* Editor */}
-      <div className="flex-1 min-h-[200px]">
+      <div className={showCanvas ? 'flex-1 min-h-[200px] overflow-hidden' : 'flex-1 min-h-[200px]'}>
         {showCanvas ? (
           <Suspense fallback={<div className="flex h-full items-center justify-center text-xs text-muted-foreground">Loading graph view…</div>}>
-            <GraphCanvas content={activeContent} />
+            <GraphEditor
+              content={activeContent}
+              fileName={(activeTab ?? 'graph.graph.json').split('/').pop() ?? 'graph.graph.json'}
+              onDocumentChange={handleGraphChange}
+              manifestParameters={manifestParameters}
+              partIds={partIds}
+              bindings={draftBindings}
+              bindable={bindable}
+              onBindingsChange={handleGraphBindingsChange}
+              bindBlockedReason={bindBlocked}
+              saveBlockedReason={graphSaveBlocked}
+              saveStatus={graphSaveStatus}
+              saveError={graphPersistence.error}
+              onSave={handleSave}
+              onForkRequest={onForkRequest}
+              selectedId={graphSelection}
+              onSelect={setGraphSelection}
+            />
           </Suspense>
         ) : activeTab ? (
           <Editor
@@ -354,7 +489,9 @@ export default function ScadEditor({ slug, handleGenerate, manifest }: ScadEdito
         )}
       </div>
 
-      {activeTab && isGraphFile && <GraphIssues content={activeContent} />}
+      {activeTab && isGraphFile && (
+        <GraphIssues content={activeContent} onSelectNode={showCanvas ? setGraphSelection : undefined} />
+      )}
 
       {/* AI Code Editor panel */}
       {aiOpen && (

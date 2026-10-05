@@ -93,3 +93,7 @@ apps/api/dump.rdb
 # Rendered by .github/workflows/prerender-commons.yml into an actions/cache; only the
 # optimized *.lod*.glb + manifest.json under apps/landing/public/models are committed.
 apps/landing/public/models/raw/
+
+# User-authored cartridges (forks, imports, onboarding) written by a local
+# API run. Config.USER_PROJECTS_DIR defaults here outside a container.
+/user-projects/

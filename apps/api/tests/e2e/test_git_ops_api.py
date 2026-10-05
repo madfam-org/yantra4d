@@ -30,6 +30,11 @@ def app(tmp_path, monkeypatch):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): the same unlock that
+    # opens private projects lets any caller write forks and imports, so these
+    # tests exercise write mechanics without minting identities. Ownership is
+    # covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 
@@ -198,7 +203,16 @@ class TestGitPush:
         assert res.status_code == 401
 
     def test_push_no_meta(self, client, tmp_path):
+        # No project.meta.json: not a fork or import, so not writable through
+        # the API — the write guard refuses before the route looks for a remote.
         _init_git(tmp_path / "my-project")
+        res = client.post("/api/projects/my-project/git/push")
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == "read_only_cartridge"
+
+    @patch("routes.editor.git_ops.get_github_token", return_value="tok")
+    def test_push_fork_without_remote(self, mock_token, client, tmp_path):
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/push")
         assert res.status_code == 400
 

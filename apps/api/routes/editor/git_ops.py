@@ -17,7 +17,10 @@ from middleware.auth import require_tier
 from routes.editor.editor import require_writable_cartridge
 from services.core.project_access import require_project_access
 from services.editor.git_operations import (
+    GIT_UNAVAILABLE,
+    GitUnavailableError,
     git_archive_head,
+    git_available,
     git_commit,
     git_diff,
     git_log,
@@ -48,6 +51,31 @@ from utils.validators import require_valid_slug
 logger = logging.getLogger(__name__)
 
 git_ops_bp = Blueprint("git_ops", __name__)
+
+#: Machine-readable code for "this deployment has no git binary".
+GIT_UNAVAILABLE_ERROR_CODE = "git_unavailable"
+
+
+def git_unavailable_response():
+    """503: the version-control features need a ``git`` binary this host lacks."""
+    return error_response(
+        "Version control is unavailable on this server (git is not installed)",
+        503, error_code=GIT_UNAVAILABLE_ERROR_CODE,
+    )
+
+
+@git_ops_bp.before_request
+def _require_git_binary():
+    """Every route here shells out to git; answer 503 up front without it."""
+    if not git_available():
+        return git_unavailable_response()
+    return None
+
+
+@git_ops_bp.errorhandler(GitUnavailableError)
+def _git_vanished(_exc):
+    """Backstop for git disappearing between the check above and the call."""
+    return git_unavailable_response()
 
 
 def _get_github_project(slug: str) -> tuple[Path | None, str | None]:
@@ -238,6 +266,7 @@ def commit(slug):
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_PUSH)
 @require_project_access
+@require_writable_cartridge
 def push(slug):
     """Push commits to origin."""
     project_dir, err = _get_github_project(slug)
@@ -260,6 +289,7 @@ def push(slug):
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_PULL)
 @require_project_access
+@require_writable_cartridge
 def pull(slug):
     """Pull latest from origin."""
     project_dir, err = _get_github_project(slug)
@@ -313,6 +343,8 @@ def render_head(slug):
     with tempfile.TemporaryDirectory(prefix="yantra_head_") as tmpdir_name:
         target_dir = Path(tmpdir_name)
         archive_res = git_archive_head(project_dir, target_dir)
+        if archive_res.get("error") == GIT_UNAVAILABLE:
+            return git_unavailable_response()
         if not archive_res["success"]:
             return error_response(archive_res["error"], 500)
             

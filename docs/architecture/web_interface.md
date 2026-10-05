@@ -127,6 +127,7 @@ backend/
 | `/api/projects/<slug>/fork` | POST | 10/hr | Fork a project (copies files to new slug, pro+) |
 | `/api/projects/<slug>/files` | GET | 120/hr | List SCAD files in a project (pro+) |
 | `/api/projects/<slug>/files/<path>` | GET/PUT/DELETE | 120/hr | Read/write/delete SCAD files (pro+) |
+| `/api/projects/<slug>/manifest/bindings` | PUT | 120/hr | Set/clear graph `binding` on existing manifest parameters; fork only, validated against the graph sources (pro+) |
 | `/api/projects/<slug>/git/status` | GET | 60/hr | Git working tree status (pro+) |
 | `/api/projects/<slug>/git/diff` | GET | 60/hr | Unified diff (pro+) |
 | `/api/projects/<slug>/git/log` | GET | 60/hr | Recent commit history (pro+) |

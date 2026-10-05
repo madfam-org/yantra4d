@@ -11,22 +11,92 @@ from collections.abc import Callable
 
 from services.engine.cq_pool import cq_pool
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, communicate_cancellable
-from utils.project_resolver import project_roots
+from services.engine.render_log import sanitize_render_log, scrub_render_log
+from utils.project_resolver import curated_project_roots
 
 logger = logging.getLogger(__name__)
 
 _cq_process_manager = ProcessManager()
 
+# Env var name the runner reads to learn which cartridge roots are curated, so a
+# sibling-cartridge import resolves against trusted content only. Kept here as the
+# single source of the name shared with cq_runner.
+CURATED_ROOTS_ENV = "YANTRA4D_CURATED_ROOTS"
+
+# Environment variables a CadQuery subprocess legitimately needs: the Python
+# machinery, a writable HOME for libraries that touch it (fontconfig, matplotlib
+# caches, OCCT temp), and the kernel's own knobs. Everything else — the render
+# artifact object-store credentials, app secrets, webhook secrets, tier
+# overrides — is deliberately left out of the child's environment. A cartridge
+# that reaches its own environment therefore finds nothing worth exfiltrating.
+#
+# Names are matched exactly or by prefix (see ``_cq_allowed_env``). The OCCT /
+# CadQuery prefixes cover the kernel's casroot, memory-manager and font settings
+# without enumerating each release's variables.
+_CQ_ENV_ALLOW_EXACT = frozenset({
+    "PATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ", "TMPDIR",
+    # Dynamic-linker search path: a shared-library Python build (e.g. a
+    # setup-python toolcache interpreter) cannot even start without it. It is
+    # runtime linkage, not configuration. LD_PRELOAD and PYTHONHOME are
+    # deliberately NOT passed.
+    "LD_LIBRARY_PATH",
+    "PYTHONUNBUFFERED", "PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE",
+    "FONTCONFIG_FILE", "FONTCONFIG_PATH",
+    "YANTRA4D_CQ_POOL_ENABLED", "YANTRA4D_CQ_WORKERS",
+    "YANTRA4D_CQ_WORKER_MAX_JOBS", "YANTRA4D_CQ_WORKER_START_TIMEOUT_S",
+})
+_CQ_ENV_ALLOW_PREFIX = (
+    "CSF_",     # OCCT resource / casroot variables
+    "CASROOT",  # OCCT resource root
+    "MMGT_",    # OCCT memory manager
+    "OCCT_",
+    "OCP_",
+)
+
+
+def _cq_allowed_env(parent_env: dict) -> dict:
+    """The subset of *parent_env* a CadQuery subprocess may inherit.
+
+    Allowlisted by exact name or prefix. The render-artifact object-store
+    credentials and every app/webhook secret the parent carries are excluded, so
+    they are never present in the child's ``os.environ`` or ``/proc/self/environ``.
+    """
+    child: dict[str, str] = {}
+    for key, value in parent_env.items():
+        if key in _CQ_ENV_ALLOW_EXACT or key.startswith(_CQ_ENV_ALLOW_PREFIX):
+            child[key] = value
+    return child
+
 
 def _cadquery_env():
-    env = os.environ.copy()
-    pythonpath = env.get("PYTHONPATH", "")
-    # Every cartridge root, not just the public commons: a CadQuery script in
-    # a client-private cartridge imports its siblings the same way a public one
-    # does.
-    roots = [str(r) for r in project_roots()]
-    parts = roots + ([pythonpath] if pythonpath else [])
-    env["PYTHONPATH"] = os.pathsep.join(parts)
+    # Start from a minimal environment rather than a full copy of the parent's:
+    # the render worker and API carry object-store credentials and app secrets
+    # that a cartridge has no need for and must not be able to read.
+    env = _cq_allowed_env(os.environ)
+
+    # A writable, private HOME so libraries that cache under it (fontconfig,
+    # OCCT) do not fail on the read-only root filesystem or leak into a shared
+    # location. /tmp is writable in every deployment (the pod mounts an emptyDir
+    # there).
+    env.setdefault("HOME", os.environ.get("TMPDIR", "/tmp"))
+
+    # The curated cartridge roots, not just the public commons: a CadQuery
+    # script in a client-private cartridge imports its siblings the same way a
+    # public one does. The user-projects root is deliberately NOT on this path:
+    # its directories are named by users (a fork or GitHub import can take any
+    # free slug), and a directory there named like a module the runner imports
+    # itself -- `cadquery`, say -- would be imported outside the sandbox. A
+    # fork's script still runs (it is executed by path); only imports by
+    # cartridge name resolve against curated content.
+    roots = [str(r) for r in curated_project_roots()]
+    # Only the curated roots on PYTHONPATH — not the parent's PYTHONPATH, which
+    # in the worker container points at the application package (/app/backend).
+    # The runner imports commons_sandbox from the installed package, not from
+    # PYTHONPATH, so the child does not need the app on its path.
+    env["PYTHONPATH"] = os.pathsep.join(roots)
+    # Hand the runner the curated roots so its import allowlist can admit a
+    # sibling cartridge by name while refusing anything else.
+    env[CURATED_ROOTS_ENV] = os.pathsep.join(roots)
     return env
 
 
@@ -101,6 +171,17 @@ def run_render(
     that callback, so gating the pool on its absence would have left this lever
     unused in production.
     """
+    success, output = _run_render(cmd, is_cancelled)
+    # The log leaves the server from here (render `log` field, error events), so
+    # bound and redact it. The full, unredacted output already reached the
+    # server's own logs via the logger calls below.
+    return success, sanitize_render_log(output)
+
+
+def _run_render(
+    cmd: list, is_cancelled: Callable[[], bool] | None = None
+) -> tuple[bool, str]:
+    """The render itself; its raw output is sanitized by ``run_render``."""
     pooled = _try_warm_pool(cmd, is_cancelled)
     if pooled is not None:
         success, output = pooled
@@ -221,7 +302,10 @@ def stream_render(
                 yield json.dumps({
                     'event': 'output',
                     'part': part,
-                    'line': line,
+                    # Streamed cartridge output leaves the server here; redact
+                    # credential-shaped content per line (each line is already
+                    # small, so no truncation is needed).
+                    'line': scrub_render_log(line),
                     'progress': round(overall_progress)
                 })
             except queue.Empty:

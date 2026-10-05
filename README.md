@@ -210,6 +210,9 @@ Each link goes to the document that defines the contract on the other side.
 
 Platform-side: [render artifact storage and the render worker](docs/operations/render-artifact-storage.md),
 [GOC-1 generator output](docs/reference/generator-output.md).
+Where the digital twins programme stands here (what landed, open PRs in merge order, next
+steps) is in [ROADMAP.md](ROADMAP.md#digital-twins-programme-status-as-of-2026-10-05); the
+open-PR list on GitHub is authoritative.
 
 ---
 

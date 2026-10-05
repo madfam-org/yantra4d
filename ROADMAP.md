@@ -508,3 +508,74 @@ nodes (natural on a dataflow, impossible on an opaque script), AI-assisted autho
 is exactly what an assistant can propose, explain node by node, and have verified by the same
 bar), and the CDG standard itself, where a mating interface becomes a node with typed sockets
 and "does A mate with B" becomes a graph-level check.
+
+---
+
+## Digital twins programme: status as of 2026-10-05
+
+A dated snapshot for someone resuming from a fresh clone. **The
+[open-PR list](https://github.com/madfam-org/yantra4d/pulls) is authoritative**;
+when this section and GitHub disagree, GitHub wins. Operator runbooks are kept
+privately.
+
+**Where it stands.** `main` is `89f50025` (#227). Production runs the build of
+#226; #227's deploy publishes after `main`'s CI run completes. Every yantra4d
+merge that touches `CHANGELOG.md` conflicts with the other open PRs there:
+resolve by keeping both entries. Let `main` finish one full CI run after each
+code merge so its deploy publishes.
+
+**Landed recently:**
+
+| PR | What it did |
+|---|---|
+| [#213](https://github.com/madfam-org/yantra4d/pull/213) | Graph engine Wave D: expressions, select, reflect, polyline, bounded revolve (graph format 1.1) |
+| [#214](https://github.com/madfam-org/yantra4d/pull/214) | Writable graph editor in Studio: palette, connect, parameters, fork-only save |
+| [#216](https://github.com/madfam-org/yantra4d/pull/216), [#217](https://github.com/madfam-org/yantra4d/pull/217) | Commons cartridges are read-only on the server; persistent writable storage for user projects |
+| [#221](https://github.com/madfam-org/yantra4d/pull/221) | Keystone pin `142db18`, the commons' `SPEC_PIN` |
+| [#222](https://github.com/madfam-org/yantra4d/pull/222), [#224](https://github.com/madfam-org/yantra4d/pull/224), [#225](https://github.com/madfam-org/yantra4d/pull/225) | Backend pod and image settings; a tighter CadQuery render environment |
+| [#226](https://github.com/madfam-org/yantra4d/pull/226) | Forks and imports are written by, and writable only by, their creator |
+| [#227](https://github.com/madfam-org/yantra4d/pull/227) | Animation and git-head renders run on the render worker |
+
+**Open PRs, in merge order.**
+
+| PR | Purpose | Precondition | Deploys |
+|---|---|---|---|
+| [#233](https://github.com/madfam-org/yantra4d/pull/233) | User cartridges render their declared graph | After #227's deploy publishes | Yes |
+| [#228](https://github.com/madfam-org/yantra4d/pull/228) | Sandboxed cartridge scripts refuse relative imports (render core 1.1.0) | After #233, before the commons bump; a CadQuery render smoke after its deploy | Yes |
+| [#229](https://github.com/madfam-org/yantra4d/pull/229) | CI: `main` runs and publications stop replacing each other; longer readiness and e2e budgets | CI green; may jump the queue, since it reduces deploy starvation for everything after it | No |
+| commons bump (branch `chore/bump-commons-pin`, PR not opened yet) | `projects/` to solid-hyperobjects `7de3a32e`: assembly A and the ten graph twins | After #228 | Yes |
+| [#231](https://github.com/madfam-org/yantra4d/pull/231) | Studio write experience: refused-save messages, layout-preserving graph saves, `can_write`-gated controls | After the commons bump | Yes |
+| keystone pin bump (PR not opened yet) | `ci.yml` and `spec-nightly.yml` to the keystone with #57 and #58, in the same PR as the matching graph-engine change | After hyperobjects-spec#57 and #58 | Yes |
+| [#230](https://github.com/madfam-org/yantra4d/pull/230) | Phase 7: forward kinematics on the keystone's compiled model, with golden parity | After the keystone pin bump and the commons bump; its parity check is red until then | Yes |
+| [#223](https://github.com/madfam-org/yantra4d/pull/223) | Default-deny NetworkPolicy for the backend pod | Approved; lands before #218 | Yes |
+| [#218](https://github.com/madfam-org/yantra4d/pull/218) | Persistent user-projects volume for the backend pod; until it lands, forks do not persist across restarts | Approved; after #223 | Yes |
+| [#232](https://github.com/madfam-org/yantra4d/pull/232) | Docs: related contracts, and this status section | While `main` has no queued CI run, or after #229 | No |
+
+Older open PRs (#88, the render-worker design record; #108; #163–#174; #202)
+predate this programme and are not part of the queue.
+
+**Next steps:**
+
+1. Work the queue above in order.
+2. After the commons bump, re-run the graph round trip on the ten Voron-class
+   parts. When it passes, Phase 8 is complete: the parts are authored as visual
+   node graphs.
+3. Studio: the SCAD editor re-renders after a save (unblocked by #233).
+4. Phase 7 viewer: a live-twin view on `/twin/:slug` after #230. Still to
+   decide: where production serves the compiled kinematic model from.
+5. Queued work that touches this repository:
+   - a dedicated CadQuery runner Deployment (re-scoping the #88 design record);
+   - the type-shell publisher that fills asset-shells;
+   - origin and owner recorded for generated and onboarded cartridges, so they
+     become owner-writable like forks;
+   - generator flag 1 (`RENDER_INJECT_FULL_PARAMS`) after the commons
+     default-drift fix, with Studio's cabinet wall default raised to the
+     cartridge minimum;
+   - backend configuration adopted from the secret store (pairs with
+     enclii#694);
+   - dependency-update triage, Studio included.
+6. Flaky, not quarantined: e2e `09-keyboard/keyboard.spec.js` (undo) stalls
+   under CI load; it passes locally. The root cause is still open.
+
+**Cross-repo contracts:** see the README's
+[Related repositories and contracts](README.md#-related-repositories-and-contracts).

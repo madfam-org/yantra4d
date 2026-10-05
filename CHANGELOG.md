@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   schema and ASSEMBLIES.md, the solid commons' assemblies README, asset-shells' README
   and pravara-mes' Sparkplug package. `docs/operations/user-projects-storage.md` notes
   that the backend pod does not mount its ServiceAccount token.
+- **Programme status.** `ROADMAP.md` gains a dated section, *Digital twins programme:
+  status as of 2026-10-05*: what landed, the open PRs in merge order with their
+  preconditions and whether they deploy, and the next steps.
 
 ### Added
 - **Graph Engine Wave D: Expressions, Select, Reflect, Polyline And Bounded Revolve**

@@ -37,6 +37,7 @@ Viewer artifact loading has independent completion and lifecycle guarantees. See
 - solid-hyperobjects: [assemblies](https://github.com/madfam-org/solid-hyperobjects/blob/main/assemblies/README.md), mounted at `projects/`; forks are written to [user-projects storage](docs/operations/user-projects-storage.md). [Graph cartridges](docs/guides/graph-cartridges.md) covers the Studio graph editor.
 - asset-shells: [README](https://github.com/madfam-org/asset-shells/blob/main/README.md) (shell store, twin graph).
 - pravara-mes: [Sparkplug package](https://github.com/madfam-org/pravara-mes/blob/main/packages/sparkplug/README.md) (machine telemetry).
+- Status: [ROADMAP.md, Digital twins programme](ROADMAP.md#digital-twins-programme-status-as-of-2026-10-05) (dated 2026-10-05; open PRs in merge order, next steps).
 
 ## Publication source acceptance
 

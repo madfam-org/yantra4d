@@ -29,6 +29,7 @@ describe('node catalog', () => {
     expect(G.nodeTypesByOutput('profile')).toEqual([
       'profile_circle',
       'profile_polygon',
+      'profile_polyline',
       'profile_rect',
     ])
     expect(G.nodeTypesByOutput('solid')).toContain('box')

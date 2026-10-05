@@ -27,7 +27,7 @@ import { useGraphPersistence } from '../../hooks/editor/useGraphPersistence'
 import { useProjectMeta } from '../../hooks/project/useProjectMeta'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { validateGraph } from '../../lib/graph/graphDocument'
-import { bindableParameters, bindingChanges, bindingsFromManifest } from '../../lib/graph/graphBindings'
+import { bindableParameters, bindingChanges, bindingConflicts, bindingsFromManifest } from '../../lib/graph/graphBindings'
 import type { BindingMap } from '../../lib/graph/graphBindings'
 import type { ManifestParameterLike } from '../../lib/graph/graphExpressions'
 
@@ -57,10 +57,14 @@ interface ScadEditorProps {
   onForkRequest?: () => void
 }
 
-/** Whether a graph buffer would pass the transpiler's structural rules. */
-function isSavableGraph(content: string): boolean {
+/**
+ * Whether a graph buffer, with the binding map it would be saved with, would
+ * pass the transpiler's rules (an expression-valued param cannot also be bound).
+ */
+function isSavableGraph(content: string, bindings: BindingMap = {}): boolean {
   try {
-    return validateGraph(JSON.parse(content)).length === 0
+    const doc = JSON.parse(content)
+    return validateGraph(doc).length === 0 && bindingConflicts(doc, bindings).length === 0
   } catch {
     return false
   }
@@ -268,15 +272,15 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
     // Geometry edits preview through the existing render, but only where a
     // save is allowed and only once the transpiler would accept the document;
     // moving a node changes no geometry, so it waits for an explicit save.
-    if (layoutOnly || graphSaveBlocked || !isSavableGraph(content)) return
+    if (layoutOnly || graphSaveBlocked || !isSavableGraph(content, bindings ?? draftBindings)) return
     graphPersistence.schedule(activeTab, content, bindBlocked ? null : changes)
-  }, [activeTab, graphSaveBlocked, bindBlocked, savedBindings, pendingBindings, graphPersistence])
+  }, [activeTab, graphSaveBlocked, bindBlocked, savedBindings, draftBindings, pendingBindings, graphPersistence])
 
   const handleGraphBindingsChange = useCallback((draft: BindingMap) => {
     setBindingState(prev => ({ ...prev, draft }))
     // A binding changes what the render reads, so it previews like a geometry edit.
     const tab = openTabs.find(t => t.path === activeTab)
-    if (!tab || graphSaveBlocked || bindBlocked || !isSavableGraph(tab.content)) return
+    if (!tab || graphSaveBlocked || bindBlocked || !isSavableGraph(tab.content, draft)) return
     graphPersistence.schedule(tab.path, tab.content, bindingChanges(savedBindings, draft))
   }, [openTabs, activeTab, graphSaveBlocked, bindBlocked, savedBindings, graphPersistence])
 

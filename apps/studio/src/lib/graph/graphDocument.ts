@@ -17,7 +17,7 @@
  * a bad edit immediately instead of round-tripping to a render that will fail.
  */
 import catalog from '../../config/graph-node-catalog.json'
-import { buildScope, checkExpression, requiredVersion, versionAtLeast11 } from './graphExpressions'
+import { buildScope, checkExpression, expressionIdentifiers, requiredVersion, versionAtLeast11 } from './graphExpressions'
 
 /**
  * Socket types come from the catalog, not from this file: today `solid` and
@@ -370,6 +370,12 @@ export function validateGraph(doc: unknown): GraphIssue[] {
   const { scope, issues: scopeIssues } = buildScope(g)
   issues.push(...scopeIssues)
   const declared = g.parameters ?? {}
+  // Names some expression reads — a derived value's or a node param's. The
+  // engine refuses a declaration nothing reads (G-DEADPARAM).
+  const read = new Set<string>()
+  for (const entry of Array.isArray(g.derived) ? g.derived : []) {
+    if (typeof entry?.expr === 'string') for (const id of expressionIdentifiers(entry.expr)) read.add(id)
+  }
   const derivedIds = (Array.isArray(g.derived) ? g.derived : []).map((d) => d?.id).filter((d): d is string => typeof d === 'string')
   for (const node of byId.values()) {
     const spec = NODE_TYPES[node.type]
@@ -388,9 +394,19 @@ export function validateGraph(doc: unknown): GraphIssue[] {
         })
       }
       for (const { expr, label, numeric } of expressions) {
+        for (const id of expressionIdentifiers(expr)) read.add(id)
         const problem = expressionProblem(expr, declared, scope, derivedIds, numeric)
         if (problem) issues.push({ message: `${label}: ${problem}.`, nodeId: node.id, param: name })
       }
+    }
+  }
+
+  for (const id of Object.keys(declared)) {
+    if (!read.has(id)) push(`Declared parameter "${id}" is never read by any expression.`)
+  }
+  for (const entry of Array.isArray(g.derived) ? g.derived : []) {
+    if (typeof entry?.id === 'string' && !read.has(entry.id)) {
+      issues.push({ message: `Derived value "${entry.id}" is never read by any expression.`, derivedId: entry.id })
     }
   }
 

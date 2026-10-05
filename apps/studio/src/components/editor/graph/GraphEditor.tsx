@@ -26,7 +26,7 @@ import {
   validateGraph,
 } from '../../../lib/graph/graphDocument'
 import type { GraphDoc, GraphIssue, NodePosition } from '../../../lib/graph/graphDocument'
-import { bindingChanges, bindingKey, dropNodeBindings } from '../../../lib/graph/graphBindings'
+import { bindingChanges, bindingConflicts, bindingKey, dropNodeBindings } from '../../../lib/graph/graphBindings'
 import type { BindingMap } from '../../../lib/graph/graphBindings'
 import { buildScope, checkExpression } from '../../../lib/graph/graphExpressions'
 import type { ManifestParameterLike } from '../../../lib/graph/graphExpressions'
@@ -103,7 +103,10 @@ function GraphEditorInner(props: GraphEditorProps) {
   const [declarationsOpen, setDeclarationsOpen] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
 
-  const issues = useMemo<GraphIssue[]>(() => (doc ? validateGraph(doc) : []), [doc])
+  const issues = useMemo<GraphIssue[]>(
+    () => (doc ? [...validateGraph(doc), ...bindingConflicts(doc, props.bindings)] : []),
+    [doc, props.bindings],
+  )
   const manifestDefaults = useMemo(
     () => Object.fromEntries(props.manifestParameters.map((p) => [p.id, p.default])),
     [props.manifestParameters],

@@ -21,7 +21,7 @@ function doc() {
   return {
     version: '1.1.0',
     units: 'mm',
-    parameters: { width: { default: 40 }, wall: { default: 2 }, mirrored: { default: false } },
+    parameters: { width: { default: 40 }, wall: { default: 2 } },
     derived: [{ id: 'inner', expr: 'width - 2 * wall' }],
     nodes: [{ id: 'body', type: 'box', params: { w: { expr: 'inner / 2' }, d: 10, h: 10 } }],
     outputs: { part: 'body' },
@@ -42,9 +42,9 @@ describe('expression-valued params', () => {
   it('refuses an identifier the graph has not declared', () => {
     const d = doc()
     d.nodes[0].params.w = { expr: 'height / 2' }
-    expect(G.validateGraph(d)).toEqual([
+    expect(G.validateGraph(d)).toContainEqual(
       { message: '"w": reads "height", which is not declared.', nodeId: 'body', param: 'w' },
-    ])
+    )
   })
 
   it('refuses an expression that gives a boolean for a number', () => {

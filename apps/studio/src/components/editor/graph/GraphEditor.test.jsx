@@ -125,6 +125,15 @@ describe('GraphEditor canvas', () => {
     expect(screen.getByTestId('graph-socket-drilled-b').querySelector('.text-destructive')).not.toBeNull()
   })
 
+  it('marks a param that is both bound and an expression', () => {
+    const doc = structuredClone(FLANGE)
+    doc.version = '1.1.0'
+    doc.parameters = { plate_radius: { default: 45 } }
+    doc.nodes[0].params.r = { expr: 'plate_radius' }
+    render(<Harness initial={doc} />)
+    expect(screen.getByTestId('graph-node-outline').dataset.hasIssue).toBe('true')
+  })
+
   it('explains itself when the buffer is not a graph', () => {
     render(<Harness initial="{nope" />)
     expect(screen.getByText('graph.unparseable')).toBeInTheDocument()

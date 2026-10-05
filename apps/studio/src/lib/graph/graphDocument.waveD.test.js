@@ -62,9 +62,9 @@ describe('Wave D catalog', () => {
   it('checks every expression coordinate, and says which one', () => {
     const doc = ring()
     doc.nodes[0].params.points[2][1] = { expr: 'id / 3' }
-    expect(G.validateGraph(doc)).toEqual([
+    expect(G.validateGraph(doc)).toEqual(expect.arrayContaining([
       expect.objectContaining({ nodeId: 'section', param: 'points', message: expect.stringMatching(/point 3 y.*"id"/) }),
-    ])
+    ]))
   })
 
   it('enforces the polyline point count', () => {
@@ -115,7 +115,7 @@ describe('Wave D catalog', () => {
   it('a select reads a boolean or an expression, numbers included', () => {
     const doc = {
       version: '1.1.0',
-      parameters: { mirrored: { default: false }, count: { default: 2 } },
+      parameters: { mirrored: { default: false } },
       nodes: [
         { id: 'a', type: 'box' },
         { id: 'b', type: 'reflect', inputs: { shape: 'a' } },
@@ -124,6 +124,7 @@ describe('Wave D catalog', () => {
       outputs: { part: 'pick' },
     }
     expect(G.validateGraph(doc)).toEqual([])
+    doc.parameters = { count: { default: 2 } }
     doc.nodes[2].params.when = { expr: 'count - 2' }
     expect(G.validateGraph(doc)).toEqual([])
     doc.nodes[2].params.when = 1

@@ -9,6 +9,8 @@
  * validates against the graph on disk.
  */
 import type { ManifestParameterLike } from './graphExpressions'
+import { isExpressionValue } from './graphDocument'
+import type { GraphDoc, GraphIssue } from './graphDocument'
 
 /** Manifest parameter id → the node params it drives ("nodeId.param"). */
 export type BindingMap = Record<string, string[]>
@@ -89,4 +91,26 @@ export function bindableParameters(parameters: ManifestParameterLike[] | undefin
     const values = (p.options ?? []).map((o) => o.value)
     return values.length > 0 && values.every((v) => typeof v === 'number' || (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))))
   })
+}
+
+/**
+ * A node param takes an expression or a manifest binding, never both — the
+ * engine refuses the pair. Returns one issue per such param.
+ */
+export function bindingConflicts(doc: GraphDoc, map: BindingMap): GraphIssue[] {
+  const issues: GraphIssue[] = []
+  for (const [pid, targets] of Object.entries(map)) {
+    for (const target of targets) {
+      const [nodeId, param] = target.split('.')
+      const node = doc.nodes.find((n) => n.id === nodeId)
+      if (node && isExpressionValue(node.params?.[param])) {
+        issues.push({
+          message: `"${param}" is bound to manifest parameter "${pid}" and also carries an expression; use one or the other.`,
+          nodeId,
+          param,
+        })
+      }
+    }
+  }
+  return issues
 }

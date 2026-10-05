@@ -126,6 +126,20 @@ describe('ScadEditor graph save path', () => {
     expect(mockSchedule).not.toHaveBeenCalled()
   })
 
+  it('does not write a param that is both bound and an expression', async () => {
+    await openGraph()
+    const edited = structuredClone(VALID)
+    edited.version = '1.1.0'
+    edited.parameters = { plate_radius: { default: 45 } }
+    edited.nodes[0].params.r = { expr: 'plate_radius' }
+    // plate_radius still binds outline.r in the manifest
+    act(() => editorProps.onDocumentChange(json(edited), { layoutOnly: false }))
+    expect(mockSchedule).not.toHaveBeenCalled()
+    // unbinding it makes the same document savable
+    act(() => editorProps.onDocumentChange(json(edited), { layoutOnly: false, bindings: {} }))
+    expect(mockSchedule).toHaveBeenCalledWith('flange.graph.json', json(edited), { plate_radius: null })
+  })
+
   it('does not save or render when only node positions moved', async () => {
     await openGraph()
     const moved = structuredClone(VALID)

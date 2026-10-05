@@ -81,6 +81,19 @@ describe('bindableParameters', () => {
   })
 })
 
+describe('bindingConflicts', () => {
+  it('flags a param that is both bound and an expression', () => {
+    const doc = {
+      version: '1.1.0',
+      nodes: [{ id: 'body', type: 'box', params: { w: { expr: 'width' }, h: 3 } }],
+      outputs: { part: 'body' },
+    }
+    expect(B.bindingConflicts(doc, { width: ['body.w'], height: ['body.h', 'ghost.r'] })).toEqual([
+      expect.objectContaining({ nodeId: 'body', param: 'w', message: expect.stringMatching(/"width".*one or the other/) }),
+    ])
+  })
+})
+
 describe('bindingKey', () => {
   it('joins node and param the way the manifest writes them', () => {
     expect(B.bindingKey('outline', 'r')).toBe('outline.r')

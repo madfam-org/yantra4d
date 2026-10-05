@@ -408,17 +408,27 @@ as a graph passes the same bar as its script. Effort ≈ 6 lanes._
   `.graph.json` and the renderer transpiles through the same `graph_engine` code (shared as
   a package or vendored with a pinned catalog), judged exactly like a script. **This comes
   first: until it exists, growing graph coverage grows _unverified_ surface.**
-- [ ] **G-EXPR:** `{"expr": "..."}` socket inputs evaluated at transpile time against the
+- [x] **G-EXPR:** `{"expr": "..."}` socket inputs evaluated at transpile time against the
   bound parameters, on the same dialect the constraints use
   (`apps/studio/src/lib/safeFormula.ts`). Without it a graph is a *frozen* script — every
   derived dimension becomes a constant and parametricity is lost.
+  _Landed 2026-10-04 (Voron programme, lane P8-ENGINE), as graph format 1.1: top-level
+  `parameters` (manifest ids with defaults and an option `map`) and ordered `derived`
+  values; float/count/condition inputs take `{"expr"}`. Expressions are parsed at
+  transpile time and re-emitted from the syntax tree; a 3,068-formula differential run
+  against safeFormula.ts found no disagreement._
 - [ ] **G-LIST:** a `list`/`points` socket type plus range/series/repeat nodes —
   Grasshopper's data trees, deliberately scoped to one level.
 - [ ] **G-NODES-1:** free-form profile path (line/arc/spline segments) — the 218-cartridge
-  unlock — plus the point-array socket.
+  unlock — plus the point-array socket. _Partial 2026-10-04: `profile_polyline` (closed
+  line segments, coordinates may be expressions) and the `select`/`reflect` nodes, built
+  as far as the Voron assembly A parts need. Arcs, splines and the point-array socket remain._
 - [ ] **G-NODES-2:** loft, sweep, **bounded** revolve, and text with `fontPath`. Revolve
   needs a memory-bounded design: an unbounded revolve OOM-killed the render worker during
-  bring-up, which is why it is absent today.
+  bring-up, which is why it is absent today. _Partial 2026-10-04: bounded `revolve`
+  landed (angle in (0, 360], axis in the profile plane, no axis crossing, 1000 mm reach,
+  valid positive-volume result; see `docs/guides/graph-cartridges.md`). Loft, sweep and
+  text remain._
 - [ ] **G-DEADPARAM:** keystone rule — a declared parameter must be referenced by every
   source that lists it. OpenSCAD silently accepts unknown `-D` parameters, so three manifest
   parameters were never consumed by their sources; a graph cannot have that bug (an unbound

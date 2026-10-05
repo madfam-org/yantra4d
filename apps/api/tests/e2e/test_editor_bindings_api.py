@@ -125,23 +125,51 @@ class TestSetAndClear:
         assert leftovers == []
 
 
+def _tree_snapshot(root: Path) -> dict:
+    """Every file under `root` (dotfiles included) mapped to its bytes."""
+    return {str(p.relative_to(root)): p.read_bytes() for p in sorted(root.rglob("*")) if p.is_file()}
+
+
 class TestRefusesNonForks:
-    def test_refuses_a_commons_cartridge(self, client, tmp_path):
-        before = (tmp_path / "flange-plate" / "project.json").read_text()
+    def test_refuses_a_commons_cartridge_and_leaves_it_byte_identical(self, client, tmp_path):
+        cartridge = tmp_path / "flange-plate"
+        before = _tree_snapshot(cartridge)
+        assert not (cartridge / ".git").exists()
         res = _put(client, "flange-plate", {"bindings": {"plate_height": "plate.height"}})
         assert res.status_code == 403
-        assert res.get_json()["error_code"] == "not_a_fork"
-        assert (tmp_path / "flange-plate" / "project.json").read_text() == before
+        assert res.get_json()["error_code"] == "read_only_cartridge"
+        # The guard runs before auto_git: no .git, no file touched.
+        assert not (cartridge / ".git").exists()
+        assert _tree_snapshot(cartridge) == before
 
-    def test_refuses_an_imported_repository(self, client):
+    def test_refuses_an_imported_repository(self, client, tmp_path):
+        """An import passes the read-only guard (it is writable) but bindings are fork-only."""
+        before = (tmp_path / "imported-flange" / "project.json").read_text()
         res = _put(client, "imported-flange", {"bindings": {"plate_height": "plate.height"}})
         assert res.status_code == 403
         assert res.get_json()["error_code"] == "not_a_fork"
+        assert (tmp_path / "imported-flange" / "project.json").read_text() == before
+
+    @pytest.mark.parametrize("meta", [None, '{"source": {"type": "upstream"}}', '{"source": {}}', "[]"])
+    def test_refuses_every_non_writable_source_type_before_auto_git(self, client, tmp_path, meta):
+        cartridge = tmp_path / "my-flange"
+        meta_path = cartridge / "project.meta.json"
+        if meta is None:
+            meta_path.unlink()
+        else:
+            meta_path.write_text(meta)
+        before = _tree_snapshot(cartridge)
+        res = _put(client, "my-flange", {"bindings": {"plate_height": "plate.height"}})
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == "read_only_cartridge"
+        assert not (cartridge / ".git").exists()
+        assert _tree_snapshot(cartridge) == before
 
     def test_refuses_an_unreadable_meta_file(self, client, tmp_path):
         (tmp_path / "my-flange" / "project.meta.json").write_text("{not json")
         res = _put(client, "my-flange", {"bindings": {"plate_height": "plate.height"}})
         assert res.status_code == 403
+        assert res.get_json()["error_code"] == "read_only_cartridge"
 
     def test_unknown_project_is_404(self, client):
         res = _put(client, "no-such-project", {"bindings": {"x": None}})

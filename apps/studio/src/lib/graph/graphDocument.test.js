@@ -29,6 +29,7 @@ describe('node catalog', () => {
     expect(G.nodeTypesByOutput('profile')).toEqual([
       'profile_circle',
       'profile_polygon',
+      'profile_polyline',
       'profile_rect',
     ])
     expect(G.nodeTypesByOutput('solid')).toContain('box')
@@ -474,6 +475,7 @@ describe('param values (the checks the server makes before it emits a literal)',
 
   it('requires version 1.1 once the graph declares parameters', () => {
     const doc = { ...makeDoc(), parameters: { od: { default: 30 } } }
+    doc.nodes[0].params.w = { expr: 'od' }
     expect(G.validateGraph(doc).map((i) => i.message)).toContain(
       'A graph that declares parameters or derived values must be version 1.1.',
     )
@@ -482,7 +484,35 @@ describe('param values (the checks the server makes before it emits a literal)',
 
   it('surfaces a broken derived value', () => {
     const doc = { ...makeDoc(), version: '1.1.0', derived: [{ id: 'x', expr: 'ghost * 2' }] }
-    expect(G.validateGraph(doc)).toEqual([expect.objectContaining({ derivedId: 'x' })])
+    doc.nodes[0].params.w = { expr: 'x' }
+    expect(G.validateGraph(doc)).toContainEqual(expect.objectContaining({ derivedId: 'x', message: expect.stringMatching(/ghost/) }))
+  })
+
+  it('refuses a declared parameter or derived value nothing reads (G-DEADPARAM)', () => {
+    const doc = {
+      ...makeDoc(),
+      version: '1.1.0',
+      parameters: { od: { default: 30 }, spare: { default: 1 } },
+      derived: [{ id: 'half', expr: 'od / 2' }, { id: 'unused', expr: 'od' }],
+    }
+    doc.nodes[0].params.w = { expr: 'half' }
+    expect(G.validateGraph(doc)).toEqual([
+      { message: 'Declared parameter "spare" is never read by any expression.', nodeId: undefined },
+      { message: 'Derived value "unused" is never read by any expression.', derivedId: 'unused' },
+    ])
+  })
+
+  it('counts a read inside a polyline coordinate', () => {
+    const doc = {
+      version: '1.1.0',
+      parameters: { h: { default: 10 } },
+      nodes: [
+        { id: 'p', type: 'profile_polyline', params: { points: [[0, 0], [10, 0], [0, { expr: 'h' }]] } },
+        { id: 's', type: 'extrude', inputs: { profile: 'p' } },
+      ],
+      outputs: { part: 's' },
+    }
+    expect(G.validateGraph(doc)).toEqual([])
   })
 })
 

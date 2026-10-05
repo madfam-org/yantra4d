@@ -5,6 +5,7 @@ Handles OpenSCAD scripts and node-graph documents. A graph document is
 validated against the transpiler's own rules before it is written, so the
 editor cannot leave a cartridge in a state that fails at render time.
 """
+import functools
 import json
 import logging
 import os
@@ -19,7 +20,7 @@ from extensions import limiter
 from manifest import invalidate_cache
 from middleware.auth import require_tier
 from services.core.project_access import require_project_access
-from utils.project_resolver import require_project
+from utils.project_resolver import find_project_dir, require_project
 from utils.route_helpers import error_response, safe_join_path
 from utils.validators import require_valid_slug
 
@@ -64,6 +65,67 @@ def _graph_rejection(resolved: Path, content: str) -> str | None:
     except GraphError as exc:
         return str(exc)
     return None
+
+
+# ── Read-only commons cartridges ──────────────────────────────────────────────
+#
+# The API writes only into a cartridge it created for someone: a fork
+# (POST /api/projects/<slug>/fork) or an imported repository
+# (POST /api/github/import). Both record that in project.meta.json
+# `source.type`. A built-in commons cartridge has no project.meta.json; it, and
+# any cartridge whose source type is missing, unreadable or unknown, is
+# read-only through the API — fork it to edit a copy. The Studio offers
+# "Fork to edit" for exactly these; this is the same rule on the server.
+
+#: `source.type` values whose cartridges the API may write.
+WRITABLE_SOURCE_TYPES = frozenset({"fork", "github"})
+
+#: Error code the Studio branches on. Stable API surface — do not rename.
+READ_ONLY_ERROR_CODE = "read_only_cartridge"
+
+
+def _project_source_type(project_dir: Path) -> str | None:
+    """`source.type` from project.meta.json, or None when there is none."""
+    meta_path = project_dir / "project.meta.json"
+    if not meta_path.is_file():
+        return None
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    source = meta.get("source") if isinstance(meta, dict) else None
+    kind = source.get("type") if isinstance(source, dict) else None
+    return kind if isinstance(kind, str) else None
+
+
+def read_only_cartridge_response(project_dir: Path):
+    """403 `read_only_cartridge` unless the API may write this cartridge, else None."""
+    if _project_source_type(project_dir) in WRITABLE_SOURCE_TYPES:
+        return None
+    return error_response(
+        "This is a built-in cartridge and is read-only. Fork it to edit your own copy.",
+        403, error_code=READ_ONLY_ERROR_CODE,
+    )
+
+
+def require_writable_cartridge(fn):
+    """Decorator for every route that writes into an existing ``<slug>`` cartridge.
+
+    Place it below ``require_project_access`` (privacy is settled first, so a
+    private project still answers ``project_locked``) and above
+    ``require_project(auto_git=True)`` (so nothing — not even the ``.git`` that
+    auto_git creates — is written into a read-only cartridge). An unknown slug
+    passes through to the route's own 404.
+    """
+    @functools.wraps(fn)
+    def wrapper(*args, slug: str, **kwargs):
+        project_dir = find_project_dir(slug)
+        if project_dir is not None:
+            refused = read_only_cartridge_response(project_dir)
+            if refused is not None:
+                return refused
+        return fn(*args, slug=slug, **kwargs)
+    return wrapper
 
 
 @editor_bp.route("/api/projects/<slug>/files", methods=["GET"])
@@ -115,8 +177,9 @@ def read_file(slug, filepath, project_dir):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_WRITE)
-@require_project(auto_git=True)
 @require_project_access
+@require_writable_cartridge
+@require_project(auto_git=True)
 def write_file(slug, filepath, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)
@@ -149,8 +212,9 @@ def write_file(slug, filepath, project_dir):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_CREATE)
-@require_project(auto_git=True)
 @require_project_access
+@require_writable_cartridge
+@require_project(auto_git=True)
 def create_file(slug, project_dir):
 
     data = request.json
@@ -186,8 +250,9 @@ def create_file(slug, project_dir):
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_DELETE)
-@require_project(auto_git=True)
 @require_project_access
+@require_writable_cartridge
+@require_project(auto_git=True)
 def delete_file(slug, filepath, project_dir):
 
     resolved = _validate_filepath(project_dir, filepath)
@@ -212,7 +277,9 @@ def delete_file(slug, filepath, project_dir):
 # the manifest. This route is deliberately narrow:
 #
 #   * it only writes a FORK (project.meta.json source.type == "fork"): a commons
-#     cartridge or an imported repo is never written here;
+#     cartridge is refused by `require_writable_cartridge` (403
+#     `read_only_cartridge`) before `auto_git` runs, and an imported repo is
+#     refused by the route itself (403 `not_a_fork`);
 #   * it can only set or clear `binding` on parameters that already exist;
 #   * the merged binding map must transpile against every graph source of the
 #     project, so a binding can never point at a node or param that is not there;
@@ -222,20 +289,6 @@ def delete_file(slug, filepath, project_dir):
 MAX_BINDINGS_BODY = 16 * 1024  # bytes
 MAX_TARGETS_PER_PARAMETER = 50
 _BINDING_TARGET_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*\.[A-Za-z_][A-Za-z0-9_]*$")
-
-
-def _project_source_type(project_dir: Path) -> str | None:
-    """`source.type` from project.meta.json, or None when there is none."""
-    meta_path = project_dir / "project.meta.json"
-    if not meta_path.is_file():
-        return None
-    try:
-        meta = json.loads(meta_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None
-    source = meta.get("source") if isinstance(meta, dict) else None
-    kind = source.get("type") if isinstance(source, dict) else None
-    return kind if isinstance(kind, str) else None
 
 
 def _parse_bindings_body(raw: bytes) -> tuple[dict | None, str | None]:
@@ -296,10 +349,16 @@ def _write_json_atomic(path: Path, data: dict) -> None:
 @require_valid_slug
 @require_tier("pro")
 @limiter.limit(rate_limits.EDITOR_WRITE)
-@require_project(auto_git=True)
 @require_project_access
+@require_writable_cartridge
+@require_project(auto_git=True)
 def update_graph_bindings(slug, project_dir):
-    """Set or clear `binding` on existing manifest parameters of a forked graph project."""
+    """Set or clear `binding` on existing manifest parameters of a forked graph project.
+
+    A commons cartridge is refused by `require_writable_cartridge` (403
+    `read_only_cartridge`) before `auto_git` can touch it. An imported repository
+    passes that guard but is still refused here: binding edits are fork-only.
+    """
     if _project_source_type(project_dir) != "fork":
         return error_response(
             "Bindings can only be edited on your fork of a project. Fork it first.",

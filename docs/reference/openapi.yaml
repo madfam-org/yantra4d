@@ -113,6 +113,35 @@ components:
           type: string
       required: [status, error, error_code, auth_required]
 
+    ReadOnlyCartridge:
+      type: object
+      description: |
+        Refusal returned with HTTP 403 by every route that writes into an
+        existing cartridge — the editor file routes (`PUT`/`POST`/`DELETE`
+        `/files`, which the SCAD editor autosave uses), both assembly-steps
+        writes, `git/connect-remote`, `git/commit` and `PUT /manifest/bindings` — when the cartridge is
+        not one the API may write. Only a fork (`project.meta.json`
+        `source.type` = `fork`) or an imported repository (`github`) is
+        writable; a built-in commons cartridge (no `project.meta.json`) and any
+        missing, unreadable or unknown source type are read-only. Fork the
+        cartridge to edit a copy. Nothing is written into a refused cartridge.
+
+        Privacy and tier are checked first, so a private project the caller may
+        not view still answers `project_locked`. Branch on `error_code`.
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: string
+          example: This is a built-in cartridge and is read-only. Fork it to edit your own copy.
+        error_code:
+          type: string
+          enum: [read_only_cartridge]
+        request_id:
+          type: string
+      required: [status, error, error_code]
+
     WasmBundle:
       type: object
       description: |
@@ -898,6 +927,12 @@ paths:
       responses:
         "200":
           description: Steps saved
+        "403":
+          description: Read-only cartridge — fork it to edit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadOnlyCartridge"
         "400":
           description: Missing assembly_steps
         "404":
@@ -911,8 +946,9 @@ paths:
         Used by the Studio graph editor. Sets or clears the `binding` field
         ("nodeId.param", or a list of them) on parameters that already exist in
         the project's manifest; nothing else in the manifest can change. Only a
-        fork (project.meta.json `source.type` = "fork") is writable here — a
-        commons cartridge or an imported repository is refused with 403
+        fork (project.meta.json `source.type` = "fork") is writable here: a
+        commons cartridge is refused with 403 `read_only_cartridge` (nothing is
+        written, not even a `.git`), and an imported repository with 403
         `not_a_fork`. The merged binding map must transpile against every graph
         source of the project. The manifest is written atomically.
       operationId: updateGraphBindings
@@ -964,7 +1000,24 @@ paths:
         "400":
           description: Malformed body, unknown parameter, no graph source, or a binding the graph engine rejects
         "403":
-          description: The project is not a fork (`not_a_fork`), or the tier or project access check refused the caller
+          description: >-
+            A commons cartridge (`read_only_cartridge`, see the schema), an imported
+            repository (`not_a_fork`), or the tier or project access check refused the caller
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ReadOnlyCartridge"
+                  - type: object
+                    properties:
+                      status:
+                        type: string
+                      error:
+                        type: string
+                      error_code:
+                        type: string
+                        enum: [not_a_fork]
+                    required: [status, error, error_code]
         "404":
           description: Project not found
         "413":
@@ -1397,6 +1450,12 @@ paths:
           description: File created
         "400":
           description: Invalid path
+        "403":
+          description: Read-only cartridge — fork it to edit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadOnlyCartridge"
         "409":
           description: File already exists
 
@@ -1462,6 +1521,12 @@ paths:
           description: File written
         "400":
           description: Invalid path
+        "403":
+          description: Read-only cartridge — fork it to edit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadOnlyCartridge"
     delete:
       tags: [editor]
       summary: Delete a file
@@ -1482,6 +1547,12 @@ paths:
       responses:
         "200":
           description: File deleted
+        "403":
+          description: Read-only cartridge — fork it to edit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadOnlyCartridge"
         "404":
           description: File not found
 
@@ -1515,6 +1586,12 @@ paths:
           description: Remote connected
         "400":
           description: Invalid repository URL
+        "403":
+          description: Read-only cartridge — fork it to edit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadOnlyCartridge"
 
   /api/projects/{slug}/git/status:
     get:
@@ -1602,6 +1679,12 @@ paths:
           description: Commit created
         "400":
           description: Missing message or nothing to commit
+        "403":
+          description: Read-only cartridge — fork it to edit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadOnlyCartridge"
 
   /api/projects/{slug}/git/push:
     post:
@@ -2456,5 +2539,11 @@ paths:
       responses:
         "200":
           description: Assembly steps written to manifest
+        "403":
+          description: Read-only cartridge — fork it to edit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadOnlyCartridge"
         "404":
           description: Project not found

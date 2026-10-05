@@ -21,15 +21,45 @@ interface FileWriteResponse {
 
 const base = (): string => getApiBase()
 
+/**
+ * A refused or failed editor request: the HTTP status and the server's
+ * machine-readable `error_code` (e.g. `read_only_cartridge`,
+ * `not_cartridge_owner`), so callers can say why in the user's language.
+ */
+export class EditorRequestError extends Error {
+  readonly status: number
+  readonly code: string | null
+
+  constructor(message: string, status: number, code: string | null) {
+    super(message)
+    this.name = 'EditorRequestError'
+    this.status = status
+    this.code = code
+  }
+}
+
+/** Build the error for a non-2xx response; a body that is not JSON (a proxy's 502 page) still yields one. */
+async function requestFailure(res: Response, fallback: string): Promise<EditorRequestError> {
+  let body: { error?: unknown; error_code?: unknown } = {}
+  try {
+    body = await res.json()
+  } catch {
+    // Not JSON: keep the fallback message and the status.
+  }
+  const message = typeof body?.error === 'string' && body.error ? body.error : fallback
+  const code = typeof body?.error_code === 'string' ? body.error_code : null
+  return new EditorRequestError(message, res.status, code)
+}
+
 export async function listFiles(slug: string): Promise<FileListResponse> {
   const res = await apiFetch(`${base()}/api/projects/${slug}/files`)
-  if (!res.ok) throw new Error((await res.json()).error || 'Failed to list files')
+  if (!res.ok) throw await requestFailure(res, 'Failed to list files')
   return res.json()
 }
 
 export async function readFile(slug: string, path: string): Promise<FileContentResponse> {
   const res = await apiFetch(`${base()}/api/projects/${slug}/files/${path}`)
-  if (!res.ok) throw new Error((await res.json()).error || 'Failed to read file')
+  if (!res.ok) throw await requestFailure(res, 'Failed to read file')
   return res.json()
 }
 
@@ -39,7 +69,7 @@ export async function writeFile(slug: string, path: string, content: string): Pr
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content }),
   })
-  if (!res.ok) throw new Error((await res.json()).error || 'Failed to write file')
+  if (!res.ok) throw await requestFailure(res, 'Failed to write file')
   return res.json()
 }
 
@@ -49,7 +79,7 @@ export async function createFile(slug: string, path: string, content: string = '
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ path, content }),
   })
-  if (!res.ok) throw new Error((await res.json()).error || 'Failed to create file')
+  if (!res.ok) throw await requestFailure(res, 'Failed to create file')
   return res.json()
 }
 
@@ -57,7 +87,7 @@ export async function deleteFile(slug: string, path: string): Promise<FileWriteR
   const res = await apiFetch(`${base()}/api/projects/${slug}/files/${path}`, {
     method: 'DELETE',
   })
-  if (!res.ok) throw new Error((await res.json()).error || 'Failed to delete file')
+  if (!res.ok) throw await requestFailure(res, 'Failed to delete file')
   return res.json()
 }
 

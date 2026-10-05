@@ -53,6 +53,25 @@ describe('useProjectMeta', () => {
   })
 })
 
+describe('useProjectMeta across a navigation', () => {
+  it('never answers for the new slug with the previous slug\'s meta', async () => {
+    let release
+    apiFetch.mockImplementation((url) => (url.includes('/own-fork/')
+      ? Promise.resolve({ ok: true, json: () => Promise.resolve({ source: { type: 'fork' }, can_write: true }) })
+      : new Promise((resolve) => { release = () => resolve({ ok: true, json: () => Promise.resolve({ can_write: false }) }) })))
+
+    const { result, rerender } = renderHook(({ slug }) => useProjectMeta(slug), { initialProps: { slug: 'own-fork' } })
+    await waitFor(() => expect(result.current?.can_write).toBe(true))
+
+    rerender({ slug: 'bed-extrusion-mount' })
+    expect(result.current).toBeNull()
+    expect(canWriteCartridge(result.current)).toBe(false)
+
+    release()
+    await waitFor(() => expect(result.current).toEqual({ can_write: false }))
+  })
+})
+
 describe('canWriteCartridge', () => {
   it('is true only when the API said so', () => {
     expect(canWriteCartridge({ can_write: true })).toBe(true)

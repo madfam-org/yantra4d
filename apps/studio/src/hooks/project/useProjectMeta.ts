@@ -24,7 +24,10 @@ export function canWriteCartridge(meta: ProjectMeta | null): boolean {
 }
 
 export function useProjectMeta(slug: string | null): ProjectMeta | null {
-  const [meta, setMeta] = useState<ProjectMeta | null>(null)
+  // The answer is kept with the slug it is for: after navigating from your own
+  // fork to another cartridge, the previous cartridge's `can_write` must not
+  // stand in for this one's while its meta loads.
+  const [state, setState] = useState<{ slug: string | null; meta: ProjectMeta | null }>({ slug: null, meta: null })
   const { isAuthenticated } = useAuth()
 
   useEffect(() => {
@@ -33,11 +36,11 @@ export function useProjectMeta(slug: string | null): ProjectMeta | null {
 
     apiFetch(`${getApiBase()}/api/projects/${slug}/meta`)
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (!cancelled) setMeta(data) })
-      .catch(() => { if (!cancelled) setMeta(null) })
+      .then(data => { if (!cancelled) setState({ slug, meta: data }) })
+      .catch(() => { if (!cancelled) setState({ slug, meta: null }) })
 
     return () => { cancelled = true }
   }, [slug, isAuthenticated])
 
-  return meta
+  return slug && state.slug === slug ? state.meta : null
 }

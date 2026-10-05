@@ -1,0 +1,207 @@
+# NetworkPolicies for the backend pod (containers `backend` and
+# `render-worker`) and for Redis.
+#
+# The backend pod is default-deny in both directions. Only the traffic listed
+# below is allowed. NetworkPolicies are additive: a pod selected by several
+# policies gets the union of their rules. So the deny baseline lives in its own
+# object, and every allowance is a separate, named rule.
+#
+# Enforcement is k3s's embedded kube-router. It matches traffic after Service
+# DNAT, so in-cluster rules select the destination POD and its container
+# port, not the Service port. For example, the backend is matched on 5000,
+# not on its Service port 80.
+#
+# Probes need no rule. kube-router accepts traffic from the pod's own node,
+# which is where the kubelet's httpGet probes come from. The render-worker's
+# exec readiness probe runs inside the pod and dials Redis, which the egress
+# rule below allows.
+#
+# ADDING A DESTINATION
+#   * Internet, HTTPS or HTTP: already allowed. The external rule admits any
+#     public IPv4 address on TCP 443 and 80. A NetworkPolicy cannot match a
+#     hostname, so there is nothing to add per vendor.
+#   * Another port on the internet: add it to the external rule's `ports`.
+#   * Anything in the cluster (another namespace's Service): add a rule to
+#     `yantra4d-backend-egress` selecting the namespace and the pod labels,
+#     with the container port. Private ranges are excluded from the external
+#     rule on purpose, so in-cluster traffic only works through such a rule.
+#     The S3-compatible artifact store is the known case: today
+#     RENDER_ARTIFACT_STORE=fs uses no network, but if the bucket endpoint is
+#     in-cluster, flipping to `s3` needs a rule here first. See
+#     docs/operations/render-artifact-storage.md.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: yantra4d-backend-default-deny
+  labels:
+    app.kubernetes.io/name: yantra4d-backend
+    app.kubernetes.io/part-of: yantra4d
+    app.kubernetes.io/component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: yantra4d-backend
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: yantra4d-backend-ingress
+  labels:
+    app.kubernetes.io/name: yantra4d-backend
+    app.kubernetes.io/part-of: yantra4d
+    app.kubernetes.io/component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: yantra4d-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    # Public traffic: api.yantra4d.com arrives through the Cloudflare tunnel.
+    # Partner webhooks also come this way, because they call the public
+    # hostname.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cloudflare-tunnel
+      ports:
+        - protocol: TCP
+          port: 5000
+    # Prometheus scrapes <podIP>:5000/metrics (see the scrape annotations on
+    # yantra4d-backend-service.yaml). Both scraping instances live in
+    # `monitoring`, and their egress policies already admit this port.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 5000
+    # The Studio and Admin nginx proxy /api/ (and the Studio /static/) to
+    # http://yantra4d-backend inside the cluster: apps/studio/nginx.conf and
+    # apps/admin/nginx.conf. The landing page does not proxy.
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: yantra4d-studio
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: yantra4d-admin
+      ports:
+        - protocol: TCP
+          port: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: yantra4d-backend-egress
+  labels:
+    app.kubernetes.io/name: yantra4d-backend
+    app.kubernetes.io/part-of: yantra4d
+    app.kubernetes.io/component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: yantra4d-backend
+  policyTypes:
+    - Egress
+  egress:
+    # DNS, to the cluster resolver only.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Redis: the render queue, job state, the worker heartbeat and the rate
+    # limiter (REDIS_URL and RATE_LIMIT_STORAGE).
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: yantra4d-redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # The Selva inference gateway (AI_BASE_URL), allowed in case it is
+    # configured with its in-cluster address. If it is configured with the
+    # public hostname instead, the external rule below covers it.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: selva
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: nexus-api
+      ports:
+        - protocol: TCP
+          port: 4300
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: selva
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: inference-gateway
+      ports:
+        - protocol: TCP
+          port: 4306
+    # The internet, over HTTPS and HTTP: Janua (JWKS), GitHub (import,
+    # ls-remote, push-back, token check) and any public vendor endpoint. Only
+    # public IPv4 is allowed; this matches the namespace policy Enclii's
+    # reconciler generates. Excluded:
+    #   10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16  private ranges, which
+    #     include the cluster's pod (10.42.0.0/16) and Service (10.43.0.0/16)
+    #     networks
+    #   100.64.0.0/10   shared address space (carrier-grade NAT / overlays)
+    #   169.254.0.0/16  link-local, including cloud instance metadata
+    # The cluster is single-stack IPv4, so there is no ::/0 rule.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 100.64.0.0/10
+              - 169.254.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+---
+# Redis accepts connections only from the backend pod. Its own probes are
+# `redis-cli ping` inside the container and need no rule. Redis makes no
+# outbound connections, so its egress is left as it is.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: yantra4d-redis-ingress
+  labels:
+    app.kubernetes.io/name: yantra4d-redis
+    app.kubernetes.io/part-of: yantra4d
+    app.kubernetes.io/component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: yantra4d-redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: yantra4d-backend
+      ports:
+        - protocol: TCP
+          port: 6379

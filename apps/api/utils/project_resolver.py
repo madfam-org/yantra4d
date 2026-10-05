@@ -178,8 +178,18 @@ def resolve_project_dir(
         return None, "Project does not have a git repository"
 
     if auto_git and not (project_dir / ".git").is_dir():
+        # Version control is a convenience, never a precondition: if git is
+        # missing or init fails, the caller (a save) still proceeds.
         from services.editor.git_operations import git_init
-        git_init(project_dir)
+        try:
+            result = git_init(project_dir)
+        except Exception:  # a save must not fail because of git
+            logger.warning("git init failed for %s; continuing without version control",
+                           project_dir.name, exc_info=True)
+        else:
+            if isinstance(result, dict) and not result.get("success"):
+                logger.warning("git init failed for %s (%s); continuing without version control",
+                               project_dir.name, result.get("error"))
 
     return project_dir, None
 

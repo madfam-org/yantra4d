@@ -37,9 +37,11 @@ RUN wget -q "https://files.openscad.org/snapshots/OpenSCAD-${OPENSCAD_VERSION}-x
 # ── Stage 2: dev server ────────────────────────────────────────────────────
 FROM python:3.12-slim
 
-# Runtime libs required by OpenSCAD
+# Runtime libs required by OpenSCAD, plus git for the editor's
+# version-control features (see the same note in apps/api/Dockerfile).
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    git \
     fonts-liberation \
     fontconfig \
     libgl1 \

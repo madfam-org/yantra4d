@@ -43,6 +43,13 @@ The code is in `apps/api/utils/project_resolver.py`.
   mount the volume at the same `mountPath`, because a render job carries the
   absolute source path.
 
+## Version control
+
+On a cartridge's first save, the editor starts a git history for it inside the
+cartridge, so a fork's `.git` lives on this volume too. The image installs
+`git`. On a host without it, saves still succeed (untracked) and the
+version-control and GitHub routes answer `503 git_unavailable`.
+
 ## Kubernetes
 
 The PVC is `k8s/production/yantra4d-user-projects-pvc.yaml`. It is mounted

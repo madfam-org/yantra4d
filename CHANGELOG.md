@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Changed
+- **Image: include git for the editor's version-control features; degrade
+  cleanly without it** — the API image (used by both the API and the render
+  worker) and the dev image now install `git`, which history on first save,
+  commit/diff/log, GitHub import/sync and render-HEAD shell out to. On a host
+  without it, saves proceed untracked instead of failing, and the git and
+  GitHub routes answer 503 `git_unavailable`.
 - **Persistent writable storage for user projects** — user-authored cartridges
   (forks, GitHub imports, onboarding, AI synthesis) now live in their own root,
   `USER_PROJECTS_DIR` (`/app/user-projects` in the image, a gitignored

@@ -57,6 +57,9 @@ export default function StudioHeader({
   const langRef = useRef<HTMLDivElement>(null)
   const projectMeta = useProjectMeta(projectSlug)
   const isBuiltIn = !(projectMeta as Record<string, unknown> | null)?.source || !(((projectMeta as Record<string, unknown> | null)?.source) as Record<string, unknown> | undefined)?.type
+  // A cartridge this caller may not write (built-in, or someone else's fork or
+  // import) offers "Fork to edit" instead of the editor.
+  const isReadOnly = isBuiltIn || projectMeta?.can_write === false
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
@@ -146,8 +149,8 @@ export default function StudioHeader({
                 variant={editorOpen ? 'secondary' : 'ghost'}
                 size="icon"
                 className="min-h-[44px] min-w-[44px]"
-                onClick={isBuiltIn ? onForkRequest : toggleEditor}
-                title={isBuiltIn ? t('btn.fork_edit') : editorOpen ? t('btn.editor_close') : t('btn.editor_open')}
+                onClick={isReadOnly ? onForkRequest : toggleEditor}
+                title={isReadOnly ? t('btn.fork_edit') : editorOpen ? t('btn.editor_close') : t('btn.editor_open')}
               >
                 <Code2 className="h-4 w-4" />
                 <span className="sr-only">{editorOpen ? t('btn.editor_close') : t('btn.editor_open')}</span>
@@ -221,9 +224,9 @@ export default function StudioHeader({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-[180px]">
-              <DropdownMenuItem className="min-h-[44px]" onClick={isBuiltIn ? onForkRequest : toggleEditor}>
+              <DropdownMenuItem className="min-h-[44px]" onClick={isReadOnly ? onForkRequest : toggleEditor}>
                 <Code2 className="h-4 w-4 mr-2" />
-                {isBuiltIn ? t('btn.fork_edit') : editorOpen ? t('btn.editor_close') : t('btn.editor_open')}
+                {isReadOnly ? t('btn.fork_edit') : editorOpen ? t('btn.editor_close') : t('btn.editor_open')}
               </DropdownMenuItem>
               <DropdownMenuItem className="min-h-[44px]" onClick={() => setSynthesisModalOpen(true)}>
                 <Sparkles className="h-4 w-4 mr-2 text-purple-500" />

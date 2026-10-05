@@ -234,3 +234,15 @@ class TestGraphAuthority:
         res = _put(client, "my-scad-fork", {"bindings": {"plate_height": "plate.height"}})
         assert res.status_code == 400
         assert res.get_json()["error_code"] == "no_graph_source"
+
+
+def test_bindings_save_into_a_fork_without_git_succeeds_untracked(client, tmp_path, tmp_path_factory, monkeypatch):
+    """The route auto-initialises history; a host without git must still save."""
+    import shutil
+    monkeypatch.setenv("PATH", str(tmp_path_factory.mktemp("empty-path")))
+    assert shutil.which("git") is None
+
+    res = _put(client, "my-flange", {"bindings": {"plate_height": "plate.height"}})
+
+    assert res.status_code == 200, res.get_json()
+    assert not (tmp_path / "my-flange" / ".git").exists()

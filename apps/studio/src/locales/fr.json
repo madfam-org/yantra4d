@@ -445,5 +445,14 @@
   "graph.point_coordinate": "Point {n} {axis}",
   "graph.point_remove": "Retirer le point {n}",
   "graph.point_add": "Ajouter un point",
-  "graph.limit_reached": "Limite atteinte ({limit})."
+  "graph.limit_reached": "Limite atteinte ({limit}).",
+  "editor.save_refused_read_only": "Non enregistré : cette cartouche du commons est en lecture seule. Forkez-la pour enregistrer vos modifications.",
+  "editor.save_refused_not_owner": "Non enregistré : cette cartouche appartient à un autre compte. Forkez-la pour enregistrer votre propre copie.",
+  "editor.save_conflict": "Non enregistré : le fichier a changé sur le serveur ou le nom est déjà pris. Rechargez le fichier et réessayez.",
+  "editor.save_server_error": "Non enregistré : le serveur n'a pas pu stocker le fichier. Vos modifications sont toujours là ; réessayez dans un instant.",
+  "editor.save_failed": "Non enregistré.",
+  "editor.save_failed_reason": "Non enregistré : {reason}",
+  "editor.fork_to_save": "Forker pour enregistrer",
+  "editor.dismiss": "Fermer",
+  "editor.read_only_panel": "Lecture seule : vous ne pouvez pas enregistrer dans cette cartouche. Forkez-la pour modifier votre propre copie."
 }

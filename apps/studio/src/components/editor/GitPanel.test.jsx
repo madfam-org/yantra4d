@@ -33,7 +33,31 @@ vi.mock('../../contexts/project/ProjectProvider', () => ({
   })
 }))
 
+// The panel is for a cartridge the caller may write; most tests drive one.
+const { metaState } = vi.hoisted(() => ({ metaState: { meta: null } }))
+vi.mock('../../hooks/project/useProjectMeta', () => ({
+  useProjectMeta: () => metaState.meta,
+  canWriteCartridge: (meta) => meta?.can_write === true,
+}))
+
 import GitPanel from './GitPanel'
+
+beforeEach(() => {
+  metaState.meta = { source: { type: 'fork' }, can_write: true, is_owner: true }
+})
+
+describe('GitPanel on a cartridge the caller may not write', () => {
+  it.each([
+    ['a commons cartridge', { can_write: false, is_owner: false }],
+    ['another account\'s fork', { source: { type: 'fork' }, can_write: false, is_owner: false }],
+    ['a cartridge whose meta has not loaded', null],
+  ])('%s: renders nothing and asks the API nothing', (_label, meta) => {
+    metaState.meta = meta
+    const { container } = render(<GitPanel slug="test-project" />)
+    expect(container).toBeEmptyDOMElement()
+    expect(mockGetStatus).not.toHaveBeenCalled()
+  })
+})
 
 const cleanStatus = {
   branch: 'main',

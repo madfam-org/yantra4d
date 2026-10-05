@@ -533,7 +533,7 @@ code merge so its deploy publishes.
 | [#216](https://github.com/madfam-org/yantra4d/pull/216), [#217](https://github.com/madfam-org/yantra4d/pull/217) | Commons cartridges are read-only on the server; persistent writable storage for user projects |
 | [#221](https://github.com/madfam-org/yantra4d/pull/221) | Keystone pin `142db18`, the commons' `SPEC_PIN` |
 | [#222](https://github.com/madfam-org/yantra4d/pull/222), [#224](https://github.com/madfam-org/yantra4d/pull/224), [#225](https://github.com/madfam-org/yantra4d/pull/225) | Backend pod and image settings; a tighter CadQuery render environment |
-| [#226](https://github.com/madfam-org/yantra4d/pull/226) | Forks and imports are written by, and writable only by, their creator |
+| [#226](https://github.com/madfam-org/yantra4d/pull/226) | Forks and imports are written by their creator and owned by them; other users cannot write them |
 | [#227](https://github.com/madfam-org/yantra4d/pull/227) | Animation and git-head renders run on the render worker |
 
 **Open PRs, in merge order.**

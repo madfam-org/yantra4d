@@ -13,6 +13,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Added
+- **Graph Engine Wave D: Expressions, Select, Reflect, Polyline And Bounded Revolve**
+  — graph format 1.1, built as far as the Voron 2.4 assembly A printed parts need
+  (lane P8-ENGINE, 2026-10-04).
+  - **G-EXPR.** Float, count and condition inputs take `{"expr": "..."}` in the
+    safeFormula dialect (`apps/studio/src/lib/safeFormula.ts`), mirrored exactly
+    (strict `==`, truncating `%`, eager `&&`/`||`/`?:`). A top-level `parameters`
+    object declares the manifest ids a graph reads (default plus an optional
+    string→number `map`), and an ordered `derived` list names intermediate values.
+    Undeclared or unread names are transpile errors. Expressions are re-emitted from
+    their syntax tree, so no document text reaches the generated script.
+  - **Nodes:** `select` (a solid chosen by a boolean expression), `reflect` (a pure
+    mirror; `mirror` keeps the original), `profile_polyline` (closed line profile,
+    expression coordinates) and a **bounded** `revolve`: angle in (0, 360], axis in
+    the profile's plane, no axis crossing, reach within 1000 mm, and a valid
+    positive-volume result, all checked before or right after the kernel call.
+  - **A profile now feeds exactly one node.** A second consumer used to fail at
+    render ("No pending wires present"); it is now a validation error.
+  - The node catalog gains per-param `expr` flags, `param_kinds`, the `expression`
+    contract and the new limits; `graph.schema.json` gains the 1.1 shapes. A 1.0
+    graph transpiles byte-for-byte as before.
+  - **Landing order:** the keystone re-vendors this engine first, then the pin
+    moves, and only then does this change go green on `spec-conformance`.
+
 ### Changed
 - **Persistent writable storage for user projects** — user-authored cartridges
   (forks, GitHub imports, onboarding, AI synthesis) now live in their own root,

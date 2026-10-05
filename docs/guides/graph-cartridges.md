@@ -35,6 +35,30 @@ the oracle; it retires only after parity holds (owner decision D5, 2026-10-04).
 The first golden twin is `solid-hyperobjects/idler-608/idler.graph.json` (three modes,
 exact parity at the defaults and all presets).
 
+### Which source renders
+
+One resolver decides what a mode renders (`apps/api/services/engine/render_source.py`),
+and every render path asks it: `/api/render`, `/api/render-stream`, the git HEAD
+preview and animation frames.
+
+| Cartridge | Mode declares `graph_file` | Renders |
+|-----------|----------------------------|---------|
+| **User cartridge**: `project.meta.json` `source.type` is `fork` or `github` | yes | the graph, with the `graph` engine (and its `graph_engine` tier gate) |
+| User cartridge | no | `scad_file` |
+| Commons or private cartridge (no user source type) | either | `scad_file` (the twin renders only once parity retires the script) |
+
+In a fork the graph is the only editable source (the Studio editor saves `.scad` and
+`.graph.json`), so this is what makes a graph edit show up in the fork's renders. A
+user cartridge whose `graph_file` is not a plain relative `*.graph.json` path inside
+the cartridge, or does not exist, gets a 400. It never falls back to the script: that
+would render the geometry the user did not edit.
+
+The render cache keys on the resolved source's content, plus the manifest's binding
+map for a graph, so saving a graph or changing a binding is a new render. For a user
+cartridge the manifest route's `X-Render-Revision` also carries a digest of its
+sources, and the Studio bumps a per-project source revision on every graph save, so
+neither the in-memory nor the IndexedDB render cache can answer with pre-edit parts.
+
 ## The shape of a graph
 
 ```json

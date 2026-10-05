@@ -147,6 +147,16 @@ describe('renderCache', () => {
       expect(a).not.toBe(b)
     })
 
+    it('moves when the project\'s sources are saved, and only for that project', async () => {
+      const { makeCacheKey } = await loadModule()
+      const { bumpSourceRevision } = await import('./sourceRevision')
+      const before = await makeCacheKey('fork', 'm', { h: 1 }, 'glb', 'rev')
+      const other = await makeCacheKey('other', 'm', { h: 1 }, 'glb', 'rev')
+      bumpSourceRevision('fork')
+      expect(await makeCacheKey('fork', 'm', { h: 1 }, 'glb', 'rev')).not.toBe(before)
+      expect(await makeCacheKey('other', 'm', { h: 1 }, 'glb', 'rev')).toBe(other)
+    })
+
     it('defaults format to stl', async () => {
       const { makeCacheKey } = await loadModule()
       const a = await makeCacheKey('p', 'm', {})

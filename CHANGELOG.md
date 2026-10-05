@@ -38,6 +38,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     moves, and only then does this change go green on `spec-conformance`.
 
 ### Changed
+- **Render: User Cartridges Render Their Declared Graph** — in a fork or a
+  GitHub import (`project.meta.json` `source.type` `fork`/`github`), a mode that
+  declares `graph_file` now renders that graph with the `graph` engine instead of
+  its `scad_file` script. A fork's graph is its only editable source, so until
+  now a graph edit saved in the Studio was rendered from the unchanged script.
+  Commons and private cartridges keep rendering their script (D5: a twin's
+  script retires only once parity holds).
+  - One resolver, `apps/api/services/engine/render_source.py`, decides the
+    render source and engine for every path: `/api/render`, `/api/render-stream`,
+    the git HEAD preview and animation frames. The graph executes on the render
+    worker through the existing graph → sandboxed CadQuery path; nothing new
+    runs in the API process.
+  - A user cartridge whose `graph_file` is not a plain relative `*.graph.json`
+    path inside the cartridge, or is missing, answers 400 — never a silent
+    fallback to the script.
+  - The render cache keys on the resolved source's content; for a graph also on
+    the manifest's binding map, so a binding-only edit is a new render (this
+    closes the graph engine's documented binding cache gap). The worker re-reads
+    the manifest for graph tasks, so it renders with the bindings the key was
+    computed from.
+  - `PUT .../manifest/bindings` validates against a user cartridge's
+    `graph_file` graphs too, so binding edits work in a twin's fork.
+  - The manifest route's `X-Render-Revision` carries a digest of a user
+    cartridge's render sources (`<release>+src.<digest>`).
+  - Studio: a graph save bumps a per-project source revision that every client
+    render cache key includes, and forces the post-save render, so the preview
+    shows the edited geometry instead of cached pre-edit parts.
 - **Animation And Git HEAD Renders Run On The Render Worker** — `POST
   /api/projects/<slug>/animations/<id>/render` and `POST
   /api/projects/<slug>/git/render-head` no longer call the render engines from

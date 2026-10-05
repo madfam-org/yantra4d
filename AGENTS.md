@@ -102,6 +102,10 @@ projects/              ONE git submodule -- madfam-org/solid-hyperobjects
 private-projects/      the client-private cartridges, their own root
   <slug>/              (two git submodules -- `update = none`, access-controlled)
 
+user-projects/         user-authored cartridges: forks, imports, onboarding
+  <slug>/              (gitignored; a persistent volume in a container --
+                        docs/operations/user-projects-storage.md)
+
 libs/
   BOSL2/               (git submodule -- BSD-2 -- attachments, rounding, math)
   NopSCADlib/          (git submodule -- GPL-3 -- real-world hardware models)
@@ -129,9 +133,14 @@ packages/
   COMMONS.md, mating candidates, the value-extraction table and the landing
   gallery are all derived from the cartridge manifests, and their `--check`
   gates are fail-closed in CI.
-- **Both cartridge roots resolve.** `Config.PROJECTS_DIR` +
-  `Config.PRIVATE_PROJECTS_DIR`, searched in that order by
-  `utils/project_resolver`. Writes always target the public root.
+- **Three cartridge roots resolve.** `Config.PROJECTS_DIR` +
+  `Config.PRIVATE_PROJECTS_DIR` + `Config.USER_PROJECTS_DIR`, searched in that
+  order by `utils/project_resolver`. The first two are curated and treated as
+  read-only; every new cartridge (fork, GitHub import, onboarding, AI
+  synthesis) is written into the user root (`project_write_root()`), and a new
+  slug must be free in every root (`slug_in_use()`). The user root is never on
+  `OPENSCADPATH` or the CadQuery `PYTHONPATH` (`curated_project_roots()`).
+  Operator note: `docs/operations/user-projects-storage.md`.
 
 **Domains**: `yantra4d.com` (landing), `app.yantra4d.com` (studio), `api.yantra4d.com` (api), `admin.yantra4d.com` (admin)
 
@@ -325,7 +334,7 @@ POST `/api/verify` with `{mode}` -- runs `apps/api/tests/verify_design.py` on re
 | GET | `/api/projects/<slug>/manifest` | -- | Fetch manifest for specific project |
 | POST | `/api/projects/<slug>/fork` | -- | Fork project to editable copy (pro+) |
 | POST | `/api/projects/analyze` | multipart `.scad` files | Analyze SCAD files, return draft manifest |
-| POST | `/api/projects/create` | multipart manifest + files | Create new project in PROJECTS_DIR |
+| POST | `/api/projects/create` | multipart manifest + files | Create new project in USER_PROJECTS_DIR |
 | POST | `/api/estimate` | `{mode, parameters, project?}` | Estimate render time |
 | POST | `/api/render` | `{mode, parameters, parts, export_format?, project?}` | Synchronous render (format validated per engine; STL auto-converts to GLB) |
 | POST | `/api/render-stream` | `{mode, parameters, parts, export_format?, project?}` | SSE streaming render |

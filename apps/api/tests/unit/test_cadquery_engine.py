@@ -40,6 +40,19 @@ def test_cadquery_env_single_root_when_private_is_unset(monkeypatch):
     monkeypatch.delenv("PYTHONPATH", raising=False)
     assert _cadquery_env()["PYTHONPATH"] == "/fake/proj"
 
+def test_cadquery_env_never_includes_the_user_projects_root(monkeypatch):
+    # User-named directories must not be importable by name from the runner:
+    # a fork or import called `cadquery` would otherwise be imported by
+    # cq_runner itself, outside the sandbox. Only curated roots are on the path.
+    monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")
+    monkeypatch.setattr("config.Config.PRIVATE_PROJECTS_DIR", "/fake/private")
+    monkeypatch.setattr("config.Config.USER_PROJECTS_DIR", "/fake/user")
+    monkeypatch.delenv("PYTHONPATH", raising=False)
+    parts = _cadquery_env()["PYTHONPATH"].split(os.pathsep)
+    assert parts == ["/fake/proj", "/fake/private"]
+    assert "/fake/user" not in parts
+
+
 def test_build_cadquery_command():
     cmd = build_cadquery_command("out.stl", "script.py", {"p": 1}, "STL")
     assert cmd[0] == "python"

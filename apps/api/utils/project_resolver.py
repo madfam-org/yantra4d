@@ -11,8 +11,15 @@ client-private cartridges mount separately at ``Config.PRIVATE_PROJECTS_DIR``.
 ``resolve_project_dir()`` is the single function that searches it -- so the
 path-traversal guard is written once and applies to every root.
 
-Writes (onboarding a new cartridge, forking to a new slug) are NOT resolution:
-they always target ``Config.PROJECTS_DIR`` via ``project_write_root()``.
+User-authored cartridges (forks, GitHub imports, onboarding, AI synthesis)
+live in a third root, ``Config.USER_PROJECTS_DIR``. It is searched LAST, so a
+user cartridge can never shadow a curated one, and it is the only root new
+cartridges are written into: ``project_write_root()`` returns it. The commons
+and private roots ship with the release and are treated as read-only content.
+
+A new slug must be free in EVERY root (``slug_in_use()``), not just the one it
+is written into, so a write can never create a cartridge that a curated root
+would hide or that would hide a curated one.
 """
 import functools
 import logging
@@ -24,30 +31,65 @@ from utils.route_helpers import error_response
 logger = logging.getLogger(__name__)
 
 
+def _unique_roots(*roots) -> list[Path]:
+    """``roots`` as ``Path`` objects, in order, without repeats or ``None``."""
+    seen: list[Path] = []
+    for root in roots:
+        if root is None:
+            continue
+        path = Path(root)
+        if path not in seen:
+            seen.append(path)
+    return seen
+
+
+def curated_project_roots() -> list[Path]:
+    """The release-shipped roots: public commons first, then private.
+
+    These hold curated content. They are never written by a route that creates
+    a cartridge, and they are the only roots trusted on interpreter and include
+    search paths (see ``services.engine.cadquery_engine``).
+    """
+    return _unique_roots(
+        Config.PROJECTS_DIR, getattr(Config, "PRIVATE_PROJECTS_DIR", None),
+    )
+
+
 def project_roots() -> list[Path]:
-    """Cartridge roots in resolution order: public commons first, then private.
+    """Cartridge roots in resolution order: commons, private, then user.
 
     A root that does not exist on disk is still returned -- callers test for
     the cartridge, not the root, and a public clone simply has no
-    ``private-projects/``. ``PRIVATE_PROJECTS_DIR`` is skipped when it is
-    configured to the same path as ``PROJECTS_DIR`` so a single-root
-    deployment (or a test that monkeypatches only ``PROJECTS_DIR``) does not
-    search the same directory twice.
+    ``private-projects/``. A root configured to the same path as an earlier
+    one is skipped, so a single-root deployment (or a test that monkeypatches
+    only ``PROJECTS_DIR``) does not search the same directory twice.
     """
-    roots = [Path(Config.PROJECTS_DIR)]
-    private = getattr(Config, "PRIVATE_PROJECTS_DIR", None)
-    if private is not None and Path(private) != Path(Config.PROJECTS_DIR):
-        roots.append(Path(private))
-    return roots
+    return _unique_roots(
+        *curated_project_roots(), getattr(Config, "USER_PROJECTS_DIR", None),
+    )
 
 
 def project_write_root() -> Path:
-    """The root new cartridges are written into. Always the public commons.
+    """The root new cartridges are written into: the user-projects root.
 
-    Coerced to ``Path``: ``Config.PROJECTS_DIR`` is a ``Path`` in production but
-    tests monkeypatch it with a plain string, and callers do ``root / slug``.
+    Never the commons or the private root. Coerced to ``Path`` because tests
+    monkeypatch Config paths with plain strings and callers do ``root / slug``.
+    The directory may not exist yet; writers create it with their first
+    cartridge (``mkdir(parents=True)`` / ``copytree`` / ``git clone``).
     """
-    return Path(Config.PROJECTS_DIR)
+    return Path(getattr(Config, "USER_PROJECTS_DIR", None) or Config.PROJECTS_DIR)
+
+
+def _candidate(root: Path, slug: str) -> Path | None:
+    """``<root>/<slug>`` resolved, or None when the slug escapes ``root``."""
+    try:
+        root_resolved = Path(root).resolve()
+    except OSError:  # pragma: no cover - unreadable root
+        return None
+    candidate = (root_resolved / slug).resolve()
+    if not candidate.is_relative_to(root_resolved):
+        return None
+    return candidate
 
 
 def find_project_dir(slug: str) -> Path | None:
@@ -58,16 +100,52 @@ def find_project_dir(slug: str) -> Path | None:
     be answered by any root.
     """
     for root in project_roots():
-        try:
-            root_resolved = Path(root).resolve()
-        except OSError:  # pragma: no cover - unreadable root
-            continue
-        candidate = (root_resolved / slug).resolve()
-        if not candidate.is_relative_to(root_resolved):
-            continue
-        if candidate.is_dir():
+        candidate = _candidate(root, slug)
+        if candidate is not None and candidate.is_dir():
             return candidate
     return None
+
+
+def slug_in_use(slug: str) -> Path | None:
+    """The existing directory that already claims ``slug`` in ANY root, or None.
+
+    Wider than ``find_project_dir``: it also covers the extra manifest roots in
+    ``Config.CARTRIDGES_DIRS`` (bundled npm cartridges, ``CARTRIDGES_DIRS``
+    from the environment), which the manifest service searches BEFORE the user
+    root. Every writer that creates a new slug checks this first, so a new
+    cartridge can neither shadow nor be shadowed by an existing one.
+    """
+    roots = _unique_roots(*project_roots(), *getattr(Config, "CARTRIDGES_DIRS", []))
+    for root in roots:
+        candidate = _candidate(root, slug)
+        if candidate is not None and candidate.is_dir():
+            return candidate
+    return None
+
+
+def shadowed_user_slugs() -> list[str]:
+    """User-root slugs hidden by a cartridge of the same slug in an earlier root.
+
+    ``slug_in_use`` keeps writes from creating such a pair, but a release can
+    still add a commons cartridge whose slug a user already took. Resolution
+    then answers with the commons one and the user cartridge is unreachable
+    (still on disk, never deleted). The app logs these at startup so an
+    operator can rename the user cartridge.
+    """
+    user_root = Path(getattr(Config, "USER_PROJECTS_DIR", None) or Config.PROJECTS_DIR)
+    earlier = [
+        root for root in _unique_roots(*getattr(Config, "CARTRIDGES_DIRS", []), *curated_project_roots())
+        if root != user_root
+    ]
+    if user_root in curated_project_roots() or not user_root.is_dir():
+        return []
+    shadowed = []
+    for child in sorted(user_root.iterdir()):
+        if not child.is_dir():
+            continue
+        if any((Path(root) / child.name).is_dir() for root in earlier):
+            shadowed.append(child.name)
+    return shadowed
 
 
 def resolve_project_dir(

@@ -396,7 +396,7 @@ verified scripts to use as oracles.**
 | Coverage | **2 of 500** cartridges are graphs (`flange-plate`, `spacer-block`), hand-authored as references |
 | Expressibility | **134 / 494 (27 %)** mechanically expressible today; six more node types (revolve, loft, sweep, text, point array, free-form profile) reach **369 (75 %)**; seven more reach 390 (79 %); **104** need low-level `Solid`/`Wire`/`Face` (86) or `Assembly` (21) work and are not node-expressible without an escape hatch. The single biggest unlock is the free-form profile node — **218** cartridges use polyline/arc paths |
 | Verification hole | the keystone is **blind to graphs**: `y4d-spec` renders `.py`/`.cq`/`.scad` only, so the two graph cartridges have no render bar, no watertight/body-count check and no nightly row |
-| Studio | the graph view is **read-only** (`ScadEditor.tsx` Text/Graph toggle + validation panel); the mutation model exists, but no palette, drag-to-connect, parameter editing or save path calls it |
+| Studio | ~~the graph view is **read-only**~~ — **writable since 2026-10-04 (P8-STUDIO, G-EDITOR):** catalog-driven palette, drag-to-connect with socket type and loop checks, literal / manifest-binding / expression params, declarations panel, live validation linked to nodes, render preview, export, and fork-only save (`PUT .../manifest/bindings` for bindings). See `docs/guides/graph-cartridges.md` › Editing a graph in Studio |
 | Expressions | **none.** A node input is a literal or a bound manifest parameter, never `width / 2 - wall` — see `docs/guides/graph-cartridges.md` |
 
 ### Wave D — foundation
@@ -408,17 +408,27 @@ as a graph passes the same bar as its script. Effort ≈ 6 lanes._
   `.graph.json` and the renderer transpiles through the same `graph_engine` code (shared as
   a package or vendored with a pinned catalog), judged exactly like a script. **This comes
   first: until it exists, growing graph coverage grows _unverified_ surface.**
-- [ ] **G-EXPR:** `{"expr": "..."}` socket inputs evaluated at transpile time against the
+- [x] **G-EXPR:** `{"expr": "..."}` socket inputs evaluated at transpile time against the
   bound parameters, on the same dialect the constraints use
   (`apps/studio/src/lib/safeFormula.ts`). Without it a graph is a *frozen* script — every
   derived dimension becomes a constant and parametricity is lost.
+  _Landed 2026-10-04 (Voron programme, lane P8-ENGINE), as graph format 1.1: top-level
+  `parameters` (manifest ids with defaults and an option `map`) and ordered `derived`
+  values; float/count/condition inputs take `{"expr"}`. Expressions are parsed at
+  transpile time and re-emitted from the syntax tree; a 3,068-formula differential run
+  against safeFormula.ts found no disagreement._
 - [ ] **G-LIST:** a `list`/`points` socket type plus range/series/repeat nodes —
   Grasshopper's data trees, deliberately scoped to one level.
 - [ ] **G-NODES-1:** free-form profile path (line/arc/spline segments) — the 218-cartridge
-  unlock — plus the point-array socket.
+  unlock — plus the point-array socket. _Partial 2026-10-04: `profile_polyline` (closed
+  line segments, coordinates may be expressions) and the `select`/`reflect` nodes, built
+  as far as the Voron assembly A parts need. Arcs, splines and the point-array socket remain._
 - [ ] **G-NODES-2:** loft, sweep, **bounded** revolve, and text with `fontPath`. Revolve
   needs a memory-bounded design: an unbounded revolve OOM-killed the render worker during
-  bring-up, which is why it is absent today.
+  bring-up, which is why it is absent today. _Partial 2026-10-04: bounded `revolve`
+  landed (angle in (0, 360], axis in the profile plane, no axis crossing, 1000 mm reach,
+  valid positive-volume result; see `docs/guides/graph-cartridges.md`). Loft, sweep and
+  text remain._
 - [ ] **G-DEADPARAM:** keystone rule — a declared parameter must be referenced by every
   source that lists it. OpenSCAD silently accepts unknown `-D` parameters, so three manifest
   parameters were never consumed by their sources; a graph cannot have that bug (an unbound
@@ -448,9 +458,13 @@ _Exit criterion: a designer builds a new Tier-A hyperobject in the Studio withou
 script, and it passes the bar. Effort ≈ 6 lanes. G-EDITOR can start after Wave D — it only
 needs the schema stable._
 
-- [ ] **G-EDITOR:** palette, drag-to-connect through the existing `connect()` (which already
+- [x] **G-EDITOR:** palette, drag-to-connect through the existing `connect()` (which already
   refuses type mismatches and cycles), node-parameter editing, node positions in `meta`, and
-  a save path. React Flow is MIT and already a dependency.
+  a save path. React Flow is MIT and already a dependency. _Done 2026-10-04 (P8-STUDIO): saves
+  only to a fork (or an imported repo), never a commons cartridge; manifest bindings through
+  the fork-only `PUT /api/projects/<slug>/manifest/bindings`; expression inputs render when
+  the catalog marks a param `"expr": true` (G-EXPR). Not built: an in-Studio "propose to the
+  commons as a PR" flow — export the `.graph.json` or fork instead._
 - [ ] **G-PREVIEW:** per-node preview by rendering the sub-graph up to the selected node —
   the transpiler already emits in topological order, so cutting emission at node N is
   cheap, and the render queue already exists. Server round-trips first; OCCT-wasm only if

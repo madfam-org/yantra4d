@@ -15,6 +15,7 @@ import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkl
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useTier } from '../../hooks/system/useTier'
+import { canWriteCartridge, useProjectMeta } from '../../hooks/project/useProjectMeta'
 
 interface ActionDockProps {
   compareMode?: boolean
@@ -171,6 +172,8 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
     setHoveredParamId,
   } = useProject()
   const { tier } = useTier()
+  // Assembly editing writes the cartridge: offer it only where this caller may.
+  const canWrite = canWriteCartridge(useProjectMeta(projectSlug ?? null))
 
   const { t } = useLanguage()
 
@@ -309,7 +312,7 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
           {showAssemblyGuide && <AssemblyView onStepChange={handleAssemblyStepChange} />}
 
           {/* Assembly editor toggle */}
-          {(hasAssemblySteps || mode === 'assembly') && (
+          {canWrite && (hasAssemblySteps || mode === 'assembly') && (
             <Button
               variant="outline"
               size="sm"

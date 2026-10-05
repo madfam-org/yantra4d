@@ -46,6 +46,7 @@ from services.storage import (
     get_artifact_store,
     publish_artifact,
 )
+from utils.process_hardening import set_process_nondumpable
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -603,6 +604,13 @@ def _reconcile_active_jobs_on_start() -> list[str]:
 
 
 def run_worker():
+    # This process spawns CadQuery render subprocesses under the same UID, so
+    # make it non-dumpable before any render runs: a same-UID child then cannot
+    # read this parent's /proc/<pid>/environ or /proc/<pid>/mem. The child's own
+    # environment is already minimised; this closes the parent side. No-op off
+    # Linux (local development); production is Linux, where it matters.
+    set_process_nondumpable()
+
     # Fail closed before the first BLPOP. A worker that cannot reach its
     # artifact store would render happily and publish nowhere, and every
     # resulting URL would 404 — so it must not start at all.

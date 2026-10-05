@@ -109,6 +109,32 @@ describe('ManifestProvider', () => {
       expect.stringContaining('/api/projects/other/manifest'))
   })
 
+  describe('ready waits for the manifest of the requested slug (fork after "Fork & Edit")', () => {
+    const serve = (manifestSlug) => vi.stubGlobal('fetch', vi.fn((url) => Promise.resolve({ ok: true, json: async () =>
+      url.endsWith('/api/projects') ? [] : ({
+        ...fallbackManifest, project: { ...fallbackManifest.project, slug: manifestSlug },
+      }) })))
+
+    it('becomes ready when the fork manifest names the fork slug', async () => {
+      route.pathname = '/project/my-gridfinity-fork'
+      serve('my-gridfinity-fork')
+      render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+      await waitFor(() => expect(screen.getByTestId('ready')).toHaveTextContent('true'))
+      expect(fetch.mock.calls.map(([url]) => url)).toContainEqual(
+        expect.stringContaining('/api/projects/my-gridfinity-fork/manifest'))
+    })
+
+    it("never becomes ready on a manifest that still names its source's slug", async () => {
+      route.pathname = '/project/my-gridfinity-fork'
+      serve('gridfinity')
+      render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+      await waitFor(() => expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/projects/my-gridfinity-fork/manifest'), expect.anything()))
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(screen.queryByTestId('ready')?.textContent ?? 'false').toBe('false')
+    })
+  })
+
   it('loads the new manifest after cross-project navigation', async () => {
     vi.stubGlobal('fetch', vi.fn((url) => Promise.resolve({ ok: true, json: async () =>
       url.endsWith('/api/projects') ? [] : ({

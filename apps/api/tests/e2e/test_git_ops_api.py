@@ -30,6 +30,11 @@ def app(tmp_path, monkeypatch):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): the same unlock that
+    # opens private projects lets any caller write forks and imports, so these
+    # tests exercise write mechanics without minting identities. Ownership is
+    # covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 
@@ -42,6 +47,15 @@ def _init_git(project_dir):
     """Initialize git repo in project dir."""
     from services.editor.git_operations import git_init
     git_init(project_dir)
+
+
+def _as_fork(project_dir, *, git=True):
+    """Make the project a fork: commit and connect-remote write only forks and imports."""
+    if git:
+        _init_git(project_dir)
+    meta = {"source": {"type": "fork", "forked_from": "x"}}
+    (project_dir / "project.meta.json").write_text(json.dumps(meta))
+    return project_dir
 
 
 def _make_github_project(tmp_path, slug="my-project"):
@@ -134,7 +148,7 @@ class TestGitLog:
 class TestGitCommit:
     def test_commit_success(self, client, tmp_path):
         project_dir = tmp_path / "my-project"
-        _init_git(project_dir)
+        _as_fork(project_dir)
         (project_dir / "main.scad").write_text("cube(20);")
 
         res = client.post("/api/projects/my-project/git/commit", json={
@@ -146,7 +160,7 @@ class TestGitCommit:
         assert data["success"] is True
 
     def test_commit_missing_message(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/commit", json={
             "message": "",
             "files": ["main.scad"],
@@ -154,7 +168,7 @@ class TestGitCommit:
         assert res.status_code == 400
 
     def test_commit_missing_files(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/commit", json={
             "message": "msg",
             "files": [],
@@ -162,11 +176,12 @@ class TestGitCommit:
         assert res.status_code == 400
 
     def test_commit_no_body(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/commit", content_type="application/json")
         assert res.status_code == 400
 
-    def test_commit_no_git(self, client):
+    def test_commit_no_git(self, client, tmp_path):
+        _as_fork(tmp_path / "my-project", git=False)
         res = client.post("/api/projects/my-project/git/commit", json={
             "message": "msg", "files": ["main.scad"],
         })
@@ -188,7 +203,16 @@ class TestGitPush:
         assert res.status_code == 401
 
     def test_push_no_meta(self, client, tmp_path):
+        # No project.meta.json: not a fork or import, so not writable through
+        # the API — the write guard refuses before the route looks for a remote.
         _init_git(tmp_path / "my-project")
+        res = client.post("/api/projects/my-project/git/push")
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == "read_only_cartridge"
+
+    @patch("routes.editor.git_ops.get_github_token", return_value="tok")
+    def test_push_fork_without_remote(self, mock_token, client, tmp_path):
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/push")
         assert res.status_code == 400
 
@@ -214,7 +238,7 @@ class TestGitPull:
 
 class TestConnectRemote:
     def test_connect_success(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "https://github.com/user/repo.git",
         })
@@ -223,27 +247,28 @@ class TestConnectRemote:
         assert data["success"] is True
 
     def test_connect_invalid_url(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "not-a-url",
         })
         assert res.status_code == 400
 
     def test_connect_empty_url(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "",
         })
         assert res.status_code == 400
 
-    def test_connect_no_git(self, client):
+    def test_connect_no_git(self, client, tmp_path):
+        _as_fork(tmp_path / "my-project", git=False)
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "https://github.com/user/repo.git",
         })
         assert res.status_code == 400
 
-    def test_connect_creates_meta(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+    def test_connect_turns_a_fork_into_a_github_project(self, client, tmp_path):
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "https://github.com/user/repo.git",
         })
@@ -254,7 +279,7 @@ class TestConnectRemote:
 
     def test_connect_update_existing_remote(self, client, tmp_path):
         project_dir = tmp_path / "my-project"
-        _init_git(project_dir)
+        _as_fork(project_dir)
         # First connect
         client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "https://github.com/user/repo.git",
@@ -303,7 +328,7 @@ class TestGitRenderHead:
 
 class TestGitOpsErrors:
     def test_commit_message_too_long(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/commit", json={"message": "x"*1001, "files": ["ab"]})
         assert res.status_code == 400
 

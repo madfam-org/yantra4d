@@ -27,12 +27,24 @@ def app(tmp_path):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): the same unlock that
+    # opens private projects lets any caller write forks and imports, so these
+    # tests exercise write mechanics without minting identities. Ownership is
+    # covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture
+def as_fork(tmp_path):
+    """Make test-project a fork: only forks and imported repos accept writes."""
+    meta = {"source": {"type": "fork", "forked_from": "x"}}
+    (tmp_path / "test-project" / "project.meta.json").write_text(json.dumps(meta))
 
 
 class TestProjectsAPI:
@@ -53,7 +65,7 @@ class TestProjectsAPI:
         res = client.get("/api/projects/nonexistent/manifest")
         assert res.status_code == 404
 
-    def test_update_assembly_steps(self, client, tmp_path):
+    def test_update_assembly_steps(self, client, tmp_path, as_fork):
         steps = [{"step": 1, "label": {"en": "Print"}, "visible_parts": ["main"]}]
         res = client.put(
             "/api/projects/test-project/manifest/assembly-steps",
@@ -65,7 +77,7 @@ class TestProjectsAPI:
         res2 = client.get("/api/projects/test-project/manifest")
         assert res2.get_json()["assembly_steps"] == steps
 
-    def test_update_assembly_steps_missing_body(self, client):
+    def test_update_assembly_steps_missing_body(self, client, as_fork):
         res = client.put(
             "/api/projects/test-project/manifest/assembly-steps",
             json={},
@@ -124,7 +136,9 @@ class TestProjectsAPI:
 
     def test_get_project_meta_missing(self, client):
         res = client.get("/api/projects/test-project/meta")
-        assert res.get_json() == {}
+        # No source metadata: a built-in cartridge, read-only for everyone.
+        assert res.get_json() == {"can_write": False, "is_owner": False}
+        assert res.headers["Cache-Control"] == "private, no-store"
 
     def test_get_project_meta_found(self, client, tmp_path):
         import json
@@ -132,6 +146,8 @@ class TestProjectsAPI:
         meta_path.write_text(json.dumps({"source": {"type": "github"}}))
         res = client.get("/api/projects/test-project/meta")
         assert res.get_json()["source"]["type"] == "github"
+        # Local dev mode (this fixture) unlocks imports for any caller.
+        assert res.get_json()["can_write"] is True
 
     def test_get_project_meta_unknown(self, client):
         res = client.get("/api/projects/unknown/meta")
@@ -172,7 +188,7 @@ class TestProjectsAPI:
         assert res.status_code == 500
 
     @patch("routes.projects.projects.json.dump")
-    def test_update_assembly_steps_fails(self, mock_dump, client):
+    def test_update_assembly_steps_fails(self, mock_dump, client, as_fork):
         mock_dump.side_effect = Exception("dump failed")
         res = client.put("/api/projects/test-project/manifest/assembly-steps", json={"assembly_steps": []})
         assert res.status_code == 500

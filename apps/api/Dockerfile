@@ -100,6 +100,10 @@ ENV PORT=5000
 ENV HOST=0.0.0.0
 ENV PROJECTS_DIR=/app/projects
 ENV PRIVATE_PROJECTS_DIR=/app/private-projects
+# User-authored cartridges (forks, imports, onboarding). Mount a persistent
+# volume here; without one, writes land in the container layer and are lost
+# with it. See docs/operations/user-projects-storage.md.
+ENV USER_PROJECTS_DIR=/app/user-projects
 ENV OPENSCADPATH=/app/libs:/app/libs/dotSCAD/src:/app/projects
 ENV VERIFY_SCRIPT=/app/tests/verify_design.py
 
@@ -115,7 +119,7 @@ WORKDIR /app/backend
 
 # Create non-root user
 # UID 1001 must match K8s deployment runAsUser
-RUN mkdir -p /app/backend/data && \
+RUN mkdir -p /app/backend/data /app/user-projects && \
     useradd -r -u 1001 -s /bin/false yantra4d && chown -R yantra4d:yantra4d /app
 USER yantra4d
 

@@ -11,7 +11,7 @@ from collections.abc import Callable
 
 from services.engine.cq_pool import cq_pool
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, communicate_cancellable
-from utils.project_resolver import project_roots
+from utils.project_resolver import curated_project_roots
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +21,15 @@ _cq_process_manager = ProcessManager()
 def _cadquery_env():
     env = os.environ.copy()
     pythonpath = env.get("PYTHONPATH", "")
-    # Every cartridge root, not just the public commons: a CadQuery script in
-    # a client-private cartridge imports its siblings the same way a public one
-    # does.
-    roots = [str(r) for r in project_roots()]
+    # The curated cartridge roots, not just the public commons: a CadQuery
+    # script in a client-private cartridge imports its siblings the same way a
+    # public one does. The user-projects root is deliberately NOT on this path:
+    # its directories are named by users (a fork or GitHub import can take any
+    # free slug), and a directory there named like a module the runner imports
+    # itself -- `cadquery`, say -- would be imported outside the sandbox. A
+    # fork's script still runs (it is executed by path); only imports by
+    # cartridge name resolve against curated content.
+    roots = [str(r) for r in curated_project_roots()]
     parts = roots + ([pythonpath] if pythonpath else [])
     env["PYTHONPATH"] = os.pathsep.join(parts)
     return env

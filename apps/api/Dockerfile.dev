@@ -64,7 +64,7 @@ RUN pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir python-dotenv
 
 # Writable directories for bind-mount + rendered files
-RUN mkdir -p /app/backend/static /app/projects /app/libs && \
+RUN mkdir -p /app/backend/static /app/projects /app/libs /app/user-projects && \
     useradd -r -u 1001 -s /bin/false yantra4d && \
     chown -R yantra4d:yantra4d /app
 

@@ -67,6 +67,7 @@ from services.storage.serving import send_static_artifact
 
 # Configure logging
 from utils.logging_config import setup_logging
+from utils.project_resolver import shadowed_user_slugs
 
 setup_logging(Config.DEBUG)
 logger = logging.getLogger(__name__)
@@ -154,6 +155,26 @@ def _check_capabilities():
         capabilities["ai"] = {"status": "disabled", "provider": Config.AI_PROVIDER, "note": "AI_API_KEY not configured"}
 
     return capabilities
+
+
+def _warn_shadowed_user_projects() -> None:
+    """Log user cartridges hidden by a curated cartridge of the same slug.
+
+    Writers refuse a slug that is taken in any root, so this only happens when
+    a release adds a curated cartridge whose slug a user already took. The
+    user cartridge stays on disk but no longer resolves; an operator renames
+    it. Failing to list the root must never stop the app from starting.
+    """
+    try:
+        shadowed = shadowed_user_slugs()
+    except OSError as exc:
+        logger.warning("Could not check the user-projects root for shadowed slugs: %s", exc)
+        return
+    if shadowed:
+        logger.warning(
+            "User cartridges hidden by a curated cartridge with the same slug "
+            "(rename them in %s): %s", Config.USER_PROJECTS_DIR, ", ".join(shadowed),
+        )
 
 
 def create_app():
@@ -358,6 +379,8 @@ def create_app():
     logger.info(f"Yantra4D Backend initialized - Debug: {Config.DEBUG}")
     logger.info(f"SCAD Directory: {Config.SCAD_DIR}")
     logger.info(f"Projects Directory: {Config.PROJECTS_DIR}")
+    logger.info(f"User Projects Directory: {Config.USER_PROJECTS_DIR}")
+    _warn_shadowed_user_projects()
     logger.info(f"Multi-project mode: {Config.MULTI_PROJECT}")
     logger.info(f"Render artifact store: {get_artifact_store().describe()}")
     logger.info(f"OpenSCAD Path: {Config.OPENSCAD_PATH}")

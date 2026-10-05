@@ -97,11 +97,11 @@ def stream_synthesis_response(session_id: str, message: str) -> Iterator[dict]:
         manifest = cartridge["manifest"]
         files = cartridge["files"]
         
-        from utils.project_resolver import find_project_dir, project_write_root
+        from utils.project_resolver import project_write_root, slug_in_use
         projects_dir = project_write_root()
 
         new_project_dir = projects_dir / slug
-        if find_project_dir(slug) is not None:
+        if slug_in_use(slug) is not None:
             # append salt to avoid overwriting existing projects
             import uuid
             slug = f"{slug}-{str(uuid.uuid4())[:4]}"

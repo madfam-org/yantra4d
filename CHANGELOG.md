@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Changed
+- **Persistent writable storage for user projects** — user-authored cartridges
+  (forks, GitHub imports, onboarding, AI synthesis) now live in their own root,
+  `USER_PROJECTS_DIR` (`/app/user-projects` in the image, a gitignored
+  `user-projects/` locally), separate from the release-shipped commons and
+  private roots, which stay read-only. It resolves after the curated roots, a
+  new slug must be free in every root, and it is kept off `OPENSCADPATH` and the
+  CadQuery `PYTHONPATH`. A fork of a read-only source is now itself writable.
+  The API logs user cartridges hidden by a later curated slug at startup.
+  `docker-compose*.yml` mount a `user_projects` volume. Operator note:
+  `docs/operations/user-projects-storage.md`.
 - **The Commons Pin Lands At `solid-hyperobjects@b0fa7147` — 500 → 495 Cartridges**
   — the `projects` submodule, verified against a stand-in until now, is pinned at
   the real commons. The content differs from the stand-in in two ruled ways, and

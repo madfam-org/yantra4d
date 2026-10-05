@@ -11,8 +11,9 @@ from services.ai.ai_synthesizer import build_synthesis_prompt, parse_synthesis
 
 @pytest.fixture
 def mock_projects_dir(monkeypatch):
+    """The root a synthesised cartridge is written into: the user-projects root."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        monkeypatch.setattr(Config, "PROJECTS_DIR", temp_dir)
+        monkeypatch.setattr(Config, "USER_PROJECTS_DIR", temp_dir)
         yield Path(temp_dir)
 
 

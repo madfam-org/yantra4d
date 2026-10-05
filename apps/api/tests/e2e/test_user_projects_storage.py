@@ -290,3 +290,53 @@ class TestSlugsAreUniqueAcrossRoots:
         res = client.get(f"/api/projects/{SOURCE_SLUG}/files/main.scad")
         assert res.status_code == 200
         assert res.get_json()["content"] == ORIGINAL_SCAD
+
+
+class TestReadOnlyGuardInterplay:
+    """With the server-side read-only guard: commons refused, user root writable."""
+
+    def test_commons_save_is_refused_and_the_fork_save_lands_in_the_user_root(self, client, layout):
+        from routes.editor.editor import READ_ONLY_ERROR_CODE
+
+        commons, user, _static = layout
+        before = _snapshot(commons)
+
+        res = client.put(f"/api/projects/{SOURCE_SLUG}/files/main.scad", json={"content": EDITED_SCAD})
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == READ_ONLY_ERROR_CODE
+
+        assert _fork(client).status_code == 200
+        res = client.put(f"/api/projects/{FORK_SLUG}/files/main.scad", json={"content": EDITED_SCAD})
+        assert res.status_code == 200, res.get_json()
+        assert (user / FORK_SLUG / "main.scad").read_text() == EDITED_SCAD
+        # auto_git initialised the fork, in the user root, and nothing in the commons.
+        assert (user / FORK_SLUG / ".git").is_dir()
+        assert _snapshot(commons) == before
+
+    def test_an_import_in_the_user_root_is_writable(self, client, layout):
+        _commons, user, _static = layout
+        imported = user / "imported-repo"
+        imported.mkdir(parents=True)
+        (imported / "project.json").write_text(json.dumps({**MANIFEST, "project": {**MANIFEST["project"], "slug": "imported-repo"}}))
+        (imported / "main.scad").write_text(ORIGINAL_SCAD)
+        (imported / "project.meta.json").write_text(json.dumps({"source": {"type": "github", "repo_url": "https://github.com/example/repo"}}))
+
+        res = client.put("/api/projects/imported-repo/files/main.scad", json={"content": EDITED_SCAD})
+        assert res.status_code == 200, res.get_json()
+        assert (imported / "main.scad").read_text() == EDITED_SCAD
+
+    def test_a_meta_less_cartridge_in_the_user_root_is_still_read_only(self, client, layout):
+        """The guard keys on provenance, not on the root: an onboarded or
+        synthesised cartridge (no project.meta.json) stays read-only through
+        the editor wherever it lives."""
+        from routes.editor.editor import READ_ONLY_ERROR_CODE
+
+        _commons, user, _static = layout
+        cart = user / "onboarded"
+        cart.mkdir(parents=True)
+        (cart / "project.json").write_text(json.dumps({**MANIFEST, "project": {**MANIFEST["project"], "slug": "onboarded"}}))
+        (cart / "main.scad").write_text(ORIGINAL_SCAD)
+
+        res = client.put("/api/projects/onboarded/files/main.scad", json={"content": EDITED_SCAD})
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == READ_ONLY_ERROR_CODE

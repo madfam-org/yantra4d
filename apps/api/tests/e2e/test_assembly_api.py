@@ -14,6 +14,9 @@ def app(tmp_path):
     }
     (project_dir / "project.json").write_text(json.dumps(manifest))
     (project_dir / "main.scad").write_text("cube();")
+    # A fork: assembly steps are written into only forks and imported repos (a built-in
+    # commons cartridge is read-only — see test_read_only_cartridges_api.py).
+    (project_dir / "project.meta.json").write_text(json.dumps({"source": {"type": "fork", "forked_from": "x"}}))
     
     from app import create_app
     flask_app = create_app()

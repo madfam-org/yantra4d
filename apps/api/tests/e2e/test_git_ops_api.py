@@ -44,6 +44,15 @@ def _init_git(project_dir):
     git_init(project_dir)
 
 
+def _as_fork(project_dir, *, git=True):
+    """Make the project a fork: commit and connect-remote write only forks and imports."""
+    if git:
+        _init_git(project_dir)
+    meta = {"source": {"type": "fork", "forked_from": "x"}}
+    (project_dir / "project.meta.json").write_text(json.dumps(meta))
+    return project_dir
+
+
 def _make_github_project(tmp_path, slug="my-project"):
     """Add project.meta.json and .git to make it a GitHub project."""
     project_dir = tmp_path / slug
@@ -134,7 +143,7 @@ class TestGitLog:
 class TestGitCommit:
     def test_commit_success(self, client, tmp_path):
         project_dir = tmp_path / "my-project"
-        _init_git(project_dir)
+        _as_fork(project_dir)
         (project_dir / "main.scad").write_text("cube(20);")
 
         res = client.post("/api/projects/my-project/git/commit", json={
@@ -146,7 +155,7 @@ class TestGitCommit:
         assert data["success"] is True
 
     def test_commit_missing_message(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/commit", json={
             "message": "",
             "files": ["main.scad"],
@@ -154,7 +163,7 @@ class TestGitCommit:
         assert res.status_code == 400
 
     def test_commit_missing_files(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/commit", json={
             "message": "msg",
             "files": [],
@@ -162,11 +171,12 @@ class TestGitCommit:
         assert res.status_code == 400
 
     def test_commit_no_body(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/commit", content_type="application/json")
         assert res.status_code == 400
 
-    def test_commit_no_git(self, client):
+    def test_commit_no_git(self, client, tmp_path):
+        _as_fork(tmp_path / "my-project", git=False)
         res = client.post("/api/projects/my-project/git/commit", json={
             "message": "msg", "files": ["main.scad"],
         })
@@ -214,7 +224,7 @@ class TestGitPull:
 
 class TestConnectRemote:
     def test_connect_success(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "https://github.com/user/repo.git",
         })
@@ -223,27 +233,28 @@ class TestConnectRemote:
         assert data["success"] is True
 
     def test_connect_invalid_url(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "not-a-url",
         })
         assert res.status_code == 400
 
     def test_connect_empty_url(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "",
         })
         assert res.status_code == 400
 
-    def test_connect_no_git(self, client):
+    def test_connect_no_git(self, client, tmp_path):
+        _as_fork(tmp_path / "my-project", git=False)
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "https://github.com/user/repo.git",
         })
         assert res.status_code == 400
 
-    def test_connect_creates_meta(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+    def test_connect_turns_a_fork_into_a_github_project(self, client, tmp_path):
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "https://github.com/user/repo.git",
         })
@@ -254,7 +265,7 @@ class TestConnectRemote:
 
     def test_connect_update_existing_remote(self, client, tmp_path):
         project_dir = tmp_path / "my-project"
-        _init_git(project_dir)
+        _as_fork(project_dir)
         # First connect
         client.post("/api/projects/my-project/git/connect-remote", json={
             "remote_url": "https://github.com/user/repo.git",
@@ -303,7 +314,7 @@ class TestGitRenderHead:
 
 class TestGitOpsErrors:
     def test_commit_message_too_long(self, client, tmp_path):
-        _init_git(tmp_path / "my-project")
+        _as_fork(tmp_path / "my-project")
         res = client.post("/api/projects/my-project/git/commit", json={"message": "x"*1001, "files": ["ab"]})
         assert res.status_code == 400
 

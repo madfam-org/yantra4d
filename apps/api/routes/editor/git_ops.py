@@ -14,6 +14,7 @@ import rate_limits
 from extensions import limiter
 from manifest import get_manifest
 from middleware.auth import require_tier
+from routes.editor.editor import require_writable_cartridge
 from services.core.project_access import require_project_access
 from services.editor.git_operations import (
     git_archive_head,
@@ -97,6 +98,7 @@ GITHUB_URL_PATTERN = re.compile(r"^https://github\.com/[\w.-]+/[\w.-]+(\.git)?$"
 @limiter.limit(rate_limits.GIT_CONNECT)
 @require_json_body
 @require_project_access
+@require_writable_cartridge
 def connect_remote(slug):
     """Add or update origin remote URL and update project metadata."""
     project_dir, err = _get_git_project(slug)
@@ -202,6 +204,7 @@ def get_log(slug):
 @limiter.limit(rate_limits.GIT_COMMIT)
 @require_json_body
 @require_project_access
+@require_writable_cartridge
 def commit(slug):
     """Stage files and commit."""
     project_dir, err = _get_git_project(slug)

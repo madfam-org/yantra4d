@@ -235,3 +235,38 @@ class TestStreamSynthesisResponse:
         assert mock_append.call_count == 2
         mock_append.assert_any_call("sess-4", "user", "prompt text")
         mock_append.assert_any_call("sess-4", "assistant", "response")
+
+
+class TestSynthesisedCartridgeIsWrittenSafely:
+    """Slug and file names come from model output; they never escape the root."""
+
+    @staticmethod
+    def _run(mock_get, mock_stream, cartridge):
+        from services.ai.ai_synthesizer import stream_synthesis_response
+
+        mock_get.return_value = []
+        mock_stream.return_value = iter([f"```json\n{json.dumps(cartridge)}\n```"])
+        return list(stream_synthesis_response("sess-x", "make something"))
+
+    @pytest.mark.parametrize("slug", ["../escape", "Bad Slug", "a", "x/../../y"])
+    @patch("services.ai.ai_synthesizer.stream_chat")
+    @patch("services.ai.ai_synthesizer.append_message")
+    @patch("services.ai.ai_synthesizer.get_messages")
+    def test_invalid_slug_writes_nothing(self, mock_get, mock_append, mock_stream, slug, mock_projects_dir):
+        events = self._run(mock_get, mock_stream, {
+            "slug": slug, "manifest": {"project": {"name": "T"}}, "files": {"main.scad": "cube(1);"},
+        })
+        assert "cartridge" not in [e["event"] for e in events]
+        assert list(mock_projects_dir.iterdir()) == []
+
+    @pytest.mark.parametrize("name", ["../evil.scad", "sub/dir.scad", ".hidden", "/abs.scad"])
+    @patch("services.ai.ai_synthesizer.stream_chat")
+    @patch("services.ai.ai_synthesizer.append_message")
+    @patch("services.ai.ai_synthesizer.get_messages")
+    def test_unsafe_file_name_writes_nothing(self, mock_get, mock_append, mock_stream, name, mock_projects_dir):
+        events = self._run(mock_get, mock_stream, {
+            "slug": "safe-slug", "manifest": {"project": {"name": "T"}}, "files": {name: "cube(1);"},
+        })
+        assert "cartridge" not in [e["event"] for e in events]
+        assert list(mock_projects_dir.iterdir()) == []
+        assert not (mock_projects_dir.parent / "evil.scad").exists()

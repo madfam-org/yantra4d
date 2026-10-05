@@ -15,7 +15,7 @@ from config import Config
 from manifest import get_manifest
 from services.engine import generator_output
 from services.engine.format_converter import convert_mesh, stl_to_glb
-from services.engine.openscad import compute_scad_hash, validate_params
+from services.engine.openscad import validate_params
 from services.engine.render_cache import entry_key as cache_entry_key
 from services.engine.render_cache import render_cache
 from services.engine.render_contract import (
@@ -32,6 +32,12 @@ from services.engine.render_contract import (
 )
 from services.engine.render_engine import RENDER_TIMEOUT_S
 from services.engine.render_revision import cache_revision, render_revision
+from services.engine.render_source import (
+    RenderSourceError,
+    render_engine_for_mode,
+    render_source_for_mode,
+    source_content_hash,
+)
 from services.storage import publish_artifact_best_effort
 
 r = redis.Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
@@ -121,58 +127,69 @@ def _request_origin() -> str:
 
 
 def resolve_render_context(data: dict):
-    """Resolve scad_file, parts, and mode_map from request payload.
+    """Resolve the render source, parts, and mode_map from request payload.
 
     Returns (scad_filename, scad_path, parts, mode_map, static_stl_map, mode_id)
-    or RenderPayloadError on failure.
+    or RenderPayloadError on failure. ``scad_filename``/``scad_path`` name the
+    mode's RENDER SOURCE as `services.engine.render_source` resolves it: the
+    mode's ``scad_file``, or — in a user cartridge — its declared ``graph_file``.
     """
     project_slug = data.get('project')
     manifest = get_manifest(project_slug)
     mode_id = data.get('mode')
     scad_filename = data.get('scad_file')
 
-    if mode_id:
-        scad_filename = manifest.get_scad_file_for_mode(mode_id)
-        if scad_filename is None:
-            return RenderPayloadError(f"Invalid mode id: {mode_id}", bad_name=mode_id)
-        parts = manifest.get_parts_for_mode(mode_id)
-    else:
-        if scad_filename:
-            logger.warning("Deprecated: 'scad_file' parameter used instead of 'mode'. Update client to use 'mode'.")
-            mode_id = "legacy"
-        else:
-            # No 'mode' in the payload. The documented contract requires one; we
-            # silently fall through to modes[0] and return HTTP 200, which has
-            # masked client bugs (wrong geometry rendered, never surfaced).
-            fallback_mode = manifest.modes[0]["id"]
-            if _strict_payload_enabled():
-                return RenderPayloadError(
-                    "Missing required 'mode' in render payload. The documented "
-                    "contract is {mode, parameters, parts, export_format?, project?}. "
-                    f"Refusing to silently render the first manifest mode "
-                    f"('{fallback_mode}') under RENDER_STRICT_PAYLOAD."
-                )
-            logger.warning(
-                "Deprecated render payload: no 'mode' supplied; silently rendering "
-                "first manifest mode '%s'. project=%s origin=%s. "
-                "Send an explicit 'mode' — this will 400 once RENDER_STRICT_PAYLOAD is on.",
-                fallback_mode,
-                project_slug or "<default>",
-                _request_origin(),
-            )
-            mode_id = fallback_mode
-            scad_filename = manifest.modes[0]["scad_file"]
+    if not mode_id and scad_filename:
+        logger.warning("Deprecated: 'scad_file' parameter used instead of 'mode'. Update client to use 'mode'.")
         parts_map = manifest.get_parts_map()
         parts = parts_map.get(scad_filename, manifest.modes[0]["parts"])
+        allowed = manifest.get_allowed_files()
+        if scad_filename not in allowed:
+            return RenderPayloadError(f"Invalid SCAD file: {scad_filename}", bad_name=scad_filename)
+        return (scad_filename, str(allowed[scad_filename]), parts, manifest.get_mode_map(),
+                manifest.get_static_stl_map(), "legacy")
 
-    allowed = manifest.get_allowed_files()
-    if scad_filename not in allowed:
-        return RenderPayloadError(f"Invalid SCAD file: {scad_filename}", bad_name=scad_filename)
+    if not mode_id:
+        # No 'mode' in the payload. The documented contract requires one; we
+        # silently fall through to modes[0] and return HTTP 200, which has
+        # masked client bugs (wrong geometry rendered, never surfaced).
+        fallback_mode = manifest.modes[0]["id"]
+        if _strict_payload_enabled():
+            return RenderPayloadError(
+                "Missing required 'mode' in render payload. The documented "
+                "contract is {mode, parameters, parts, export_format?, project?}. "
+                f"Refusing to silently render the first manifest mode "
+                f"('{fallback_mode}') under RENDER_STRICT_PAYLOAD."
+            )
+        logger.warning(
+            "Deprecated render payload: no 'mode' supplied; silently rendering "
+            "first manifest mode '%s'. project=%s origin=%s. "
+            "Send an explicit 'mode' — this will 400 once RENDER_STRICT_PAYLOAD is on.",
+            fallback_mode,
+            project_slug or "<default>",
+            _request_origin(),
+        )
+        mode_id = fallback_mode
 
-    scad_path = str(allowed[scad_filename])
-    mode_map = manifest.get_mode_map()
-    static_stl_map = manifest.get_static_stl_map()
-    return scad_filename, scad_path, parts, mode_map, static_stl_map, mode_id
+    try:
+        source = render_source_for_mode(manifest, mode_id)
+    except RenderSourceError as exc:
+        return RenderPayloadError(str(exc), bad_name=mode_id)
+    if source is None:
+        return RenderPayloadError(f"Invalid mode id: {mode_id}", bad_name=mode_id)
+
+    source_path = str(source.path)
+    if not source.is_graph:
+        # A script source is one of the manifest's declared mode files; the
+        # allow-list is what keeps a manifest from naming anything else.
+        allowed = manifest.get_allowed_files()
+        if source.filename not in allowed:
+            return RenderPayloadError(f"Invalid SCAD file: {source.filename}", bad_name=source.filename)
+        source_path = str(allowed[source.filename])
+
+    parts = manifest.get_parts_for_mode(mode_id)
+    return (source.filename, source_path, parts, manifest.get_mode_map(),
+            manifest.get_static_stl_map(), mode_id)
 
 
 def extract_render_payload(data: dict) -> dict | RenderPayloadError:
@@ -229,7 +246,7 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         material_injector=_inject_material_compensations,
     )
 
-    scad_content_hash = compute_scad_hash(scad_path)
+    scad_content_hash = source_content_hash(scad_path, get_manifest(project_slug or None))
     # URLs must change along with cache identity: retaining an old URL must not
     # silently replace its bytes after a deployment or a source edit.
     raw_hash = json.dumps({
@@ -305,9 +322,13 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     manifest = get_manifest(project_slug)
     # Per-mode engine resolution enables dual-engine cartridges (e.g. legacy
     # OpenSCAD modes alongside CadQuery modes). `scad_path` already points at the
-    # active mode's primary file, so a per-mode engine routes each mode correctly.
-    mode_id = data.get('mode')
-    engine = manifest.mode_engine(mode_id)
+    # active mode's render source, and the engine comes from the same resolver
+    # (services/engine/render_source.py), so the two always agree — a user
+    # cartridge's graph source renders with the graph engine.
+    mode_id = payload.get('mode') or data.get('mode')
+    if mode_id == "legacy":
+        mode_id = data.get('mode')
+    engine = render_engine_for_mode(manifest, mode_id)
 
     # Dual-engine fallback: CadQuery for formats the primary engine can't produce
     if mode_id and engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):

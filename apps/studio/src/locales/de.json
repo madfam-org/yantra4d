@@ -389,6 +389,7 @@
   "graph.save": "Speichern",
   "graph.fork_to_save": "Zum Speichern forken",
   "graph.save_blocked_commons": "Commons-Kartusche: Änderungen bleiben hier, bis du sie forkst. Export funktioniert.",
+  "graph.save_blocked_not_owner": "Kartusche eines anderen Kontos: Änderungen bleiben hier, bis du sie forkst. Export funktioniert.",
   "graph.bind_blocked_not_fork": "Manifest-Bindungen lassen sich nur in deinem Fork ändern.",
   "graph.status_clean": "Keine Änderungen",
   "graph.status_dirty": "Ungespeicherte Änderungen",

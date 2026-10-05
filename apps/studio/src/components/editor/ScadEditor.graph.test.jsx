@@ -200,6 +200,31 @@ describe('ScadEditor graph save path', () => {
     expect(mockSaveAndRender).not.toHaveBeenCalled()
   })
 
+  it("never writes another account's fork: Fork to save instead, no autosave", async () => {
+    projectMeta = { source: { type: 'fork', forked_from: 'flange-plate' }, can_write: false, is_owner: false }
+    await openGraph()
+    const mock = screen.getByTestId('graph-editor-mock')
+    expect(mock.dataset.saveBlocked).toBe('graph.save_blocked_not_owner')
+    expect(mock.dataset.bindBlocked).toBe('graph.save_blocked_not_owner')
+
+    const edited = structuredClone(VALID)
+    edited.nodes[1].params.height = 12
+    act(() => editorProps.onDocumentChange(json(edited), { layoutOnly: false }))
+    act(() => editorProps.onBindingsChange({ plate_radius: ['outline.r'] }))
+    fireEvent.keyDown(window, { key: 's', ctrlKey: true })
+    expect(mockSchedule).not.toHaveBeenCalled()
+    expect(mockSaveNow).not.toHaveBeenCalled()
+    expect(await screen.findByText('graph.save_blocked_not_owner')).toBeInTheDocument()
+  })
+
+  it('your own fork saves as before', async () => {
+    projectMeta = { source: { type: 'fork', forked_from: 'flange-plate' }, can_write: true, is_owner: true }
+    await openGraph()
+    const mock = screen.getByTestId('graph-editor-mock')
+    expect(mock.dataset.saveBlocked).toBe('')
+    expect(mock.dataset.bindBlocked).toBe('')
+  })
+
   it('an imported repository saves the graph but cannot change manifest bindings', async () => {
     projectMeta = { source: { type: 'github' } }
     await openGraph()

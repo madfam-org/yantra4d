@@ -389,6 +389,7 @@
   "graph.save": "Enregistrer",
   "graph.fork_to_save": "Forker pour enregistrer",
   "graph.save_blocked_commons": "Cartouche du commons : les modifications restent ici jusqu'à ce que vous la forkiez. L'export fonctionne.",
+  "graph.save_blocked_not_owner": "Cartouche d'un autre compte : les modifications restent ici jusqu'à ce que vous la forkiez. L'export fonctionne.",
   "graph.bind_blocked_not_fork": "Les liaisons du manifeste ne peuvent être modifiées que sur votre fork.",
   "graph.status_clean": "Aucune modification",
   "graph.status_dirty": "Modifications non enregistrées",

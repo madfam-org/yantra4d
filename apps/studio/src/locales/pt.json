@@ -389,6 +389,7 @@
   "graph.save": "Salvar",
   "graph.fork_to_save": "Fazer fork para salvar",
   "graph.save_blocked_commons": "Cartucho do commons: as edições ficam aqui até você fazer um fork. Exportar funciona.",
+  "graph.save_blocked_not_owner": "Cartucho de outra conta: as edições ficam aqui até você fazer um fork. Exportar funciona.",
   "graph.bind_blocked_not_fork": "As vinculações do manifesto só podem ser alteradas no seu fork.",
   "graph.status_clean": "Sem alterações",
   "graph.status_dirty": "Alterações não salvas",

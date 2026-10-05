@@ -217,6 +217,78 @@ An author who wants an explicit, readable pin should write the HARD key
 `render.server_only: true` instead; see
 [Render placement](../reference/manifest.md#render-placement-renderserver_only-vs-projectforce_backend).
 
+## Editing a graph in Studio
+
+Open a `.graph.json` source in the Studio editor and switch the **Text / Graph**
+toggle to **Graph**. The text view and the graph view edit the same buffer: every
+graph edit is written back as JSON, and the validation panel under the editor
+runs the transpiler's rules on every change.
+
+| You want to | Do this |
+|---|---|
+| Add a node | **Nodes** opens the palette (built from `graph-node-catalog.json`, so a node the engine adds appears with no Studio change). Click a node type, or drag it onto the canvas. |
+| Connect | Drag from a node's output handle (right) to an input socket (left). A socket of the wrong type, or a connection that would make a loop, is refused while you drag; the model's `connect()` refuses it again if anything slips through. |
+| Disconnect / delete | Select an edge or node and press Delete or Backspace, or use the inspector's unplug and **Delete** buttons. Deleting a bound node also drops its bindings. |
+| Edit a node | Select it. The inspector lists its sockets and params. Each numeric param is a **Value** (a literal, checked against its kind as the server checks it), a **Manifest parameter** (a `binding`), or — once the catalog marks it `"expr": true` — an **Expression**. Structural params (selectors, axes, planes) are literal only. |
+| Make it a part | In the inspector, **Output part** maps a manifest part id to the selected solid. |
+| Find a problem | Nodes with problems are outlined; the socket or param at fault is red. Click an address such as `cut_1.a:` in the validation panel to select that node. |
+
+Node positions are stored in each node's `meta.position`, which the renderer
+ignores; moving a node never triggers a render.
+
+### Expressions, declared parameters and derived values (graph 1.1)
+
+When the node catalog marks a param `"expr": true`, the inspector offers an
+**Expression** mode: `{"expr": "width / 2 - wall"}` in the
+`apps/studio/src/lib/safeFormula.ts` dialect (at most 256 characters / 128
+tokens, or whatever the catalog's `expression` block says). The editor evaluates
+it with that same function and shows the value as you type.
+
+- Identifiers are **manifest parameter ids**, and a graph must declare each one it
+  reads in its top-level `parameters` object. When an expression reads an
+  undeclared manifest parameter, the editor offers **Declare**; the declaration's
+  fallback default is the manifest's default.
+- A **select** parameter with named options (`NEMA17`, `NEMA23`) has no number
+  until its declaration has a `map`. The **Parameters** panel asks for one number
+  per option; the editor never guesses them.
+- **Derived values** are an ordered list of named intermediates
+  (`seat_r = b_od / 2 + press_fit / 2`). Each may read declared parameters and the
+  derived values above it; the panel lets you add, edit, reorder and remove them.
+- A document that uses `parameters` or `derived` is version **1.1**; the editor
+  bumps the version when you add the first declaration. A declared id that is not
+  in the manifest is shown as a warning.
+- As in the engine, a declared parameter or derived value that no expression reads
+  is an error, and a node param cannot carry an expression while a manifest
+  parameter also binds it; the editor flags both and does not save until they are
+  resolved.
+
+### Saving: a fork, never the commons
+
+Graph saves go through the same `PUT /api/projects/<slug>/files/<path>` the text
+editor uses, and the server re-validates the document before writing it. The
+editor writes only a project whose `project.meta.json` has a `source.type`, and
+the server enforces the same rule: every write route, the bindings route
+included, answers a commons cartridge with 403 `read_only_cartridge` and writes
+nothing into it.
+
+| Project | Graph edits | Manifest bindings | How to keep your work |
+|---|---|---|---|
+| Your **fork** (`source.type: "fork"`) | Saved and rendered as you edit (debounced), once the document is valid | Saved with the graph through `PUT /api/projects/<slug>/manifest/bindings` | Save (or Ctrl/Cmd+S) |
+| An **imported repository** (`"github"`) | Saved and rendered as you edit | Not editable (the route is fork-only) | Save, then commit and push with the Git panel |
+| A **commons cartridge** (no `project.meta.json`) | Kept in the editor only — never written | Not editable | **Export .graph.json**, or **Fork to save** (the existing Fork & Edit flow), then propose it to `solid-hyperobjects` as a pull request yourself |
+
+The bindings route is fork-only (an imported repository gets 403 `not_a_fork`)
+and can only set or clear `binding` on parameters the fork's
+manifest already has; it rejects unknown parameters, unknown body keys and bodies
+over 16 KB, checks the merged binding map against every graph source of the
+project with the transpiler, and writes the manifest atomically. The graph is
+always written before the bindings that point into it.
+
+Preview is the normal render: after a save, the Studio renders the current mode,
+so a fork shows the edited part as soon as the save lands. There is no per-node
+preview yet (roadmap item G-PREVIEW), and no in-Studio "propose to the commons as
+a pull request" flow.
+
 ## Checking your work
 
 Render both variants through the real pipeline before committing:

@@ -335,6 +335,7 @@ POST `/api/verify` with `{mode}` -- runs `apps/api/tests/verify_design.py` on re
 | GET | `/api/projects/<slug>/files/<path>` | -- | Read SCAD file content (pro+) |
 | PUT | `/api/projects/<slug>/files/<path>` | `{content}` | Write SCAD file (pro+) |
 | DELETE | `/api/projects/<slug>/files/<path>` | -- | Delete SCAD file (pro+) |
+| PUT | `/api/projects/<slug>/manifest/bindings` | `{bindings: {param_id: "node.param" \| ["node.param", ...] \| null}}` | Set/clear graph `binding` on existing manifest parameters. **Fork only**: a commons cartridge gets 403 `read_only_cartridge` (guard), an imported repo 403 `not_a_fork`; validated against every graph source; atomic write (pro+) |
 | GET | `/api/projects/<slug>/git/status` | -- | Git working tree status (pro+) |
 | GET | `/api/projects/<slug>/git/diff` | -- | Unified diff (pro+) |
 | GET | `/api/projects/<slug>/git/log` | `?limit=20` | Recent commit history (pro+) |
@@ -454,10 +455,11 @@ GitHub features are tier-gated:
 | `/api/github/sync` | POST | premium | Sync imported project with upstream |
 | `/api/projects/<slug>/git/*` | GET/POST | pro+ | Git status, diff, commit, push, pull, connect-remote |
 | `/api/projects/<slug>/files/*` | GET/PUT/DELETE | pro+ | SCAD file CRUD with auto git-init |
+| `/api/projects/<slug>/manifest/bindings` | PUT | pro+ | Graph editor: manifest `binding` edits, fork only |
 
 Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `services/github_import.py`, `services/github_token.py`, `services/git_operations.py`. Frontend: `GitPanel.tsx`, `ForkDialog.tsx`, `ScadEditor.tsx`.
 
-**Built-in commons cartridges are read-only through the API.** Every route that writes into an existing cartridge -- `PUT`/`POST`/`DELETE` `/files` (the SCAD editor autosave), `PUT /manifest/assembly-steps`, `POST /assembly-steps/write`, `git/connect-remote`, `git/commit` -- carries `@require_writable_cartridge` (`routes/editor/editor.py`): only a fork (`project.meta.json` `source.type` = `fork`) or an imported repository (`github`) is written; anything else answers 403 `read_only_cartridge` and nothing is written into it, not even the `.git` that `auto_git` creates. Decorator order: below `@require_project_access` (privacy answers first), above `@require_project(auto_git=True)`. A new route that writes into a cartridge must carry it.
+**Built-in commons cartridges are read-only through the API.** Every route that writes into an existing cartridge -- `PUT`/`POST`/`DELETE` `/files` (the SCAD editor autosave), `PUT /manifest/assembly-steps`, `POST /assembly-steps/write`, `git/connect-remote`, `git/commit`, `PUT /manifest/bindings` -- carries `@require_writable_cartridge` (`routes/editor/editor.py`): only a fork (`project.meta.json` `source.type` = `fork`) or an imported repository (`github`) is written; anything else answers 403 `read_only_cartridge` and nothing is written into it, not even the `.git` that `auto_git` creates. Decorator order: below `@require_project_access` (privacy answers first), above `@require_project(auto_git=True)`. A new route that writes into a cartridge must carry it.
 
 ## Code Conventions
 

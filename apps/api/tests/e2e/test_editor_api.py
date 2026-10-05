@@ -26,6 +26,9 @@ def app(tmp_path, monkeypatch):
     (project_dir / "project.json").write_text(json.dumps(manifest))
     (project_dir / "main.scad").write_text("cube(10);")
     (project_dir / "helper.scad").write_text("module base() { cube(5); }")
+    # A fork: the editor writes only forks and imported repos (a built-in
+    # commons cartridge is read-only — see test_read_only_cartridges_api.py).
+    (project_dir / "project.meta.json").write_text(json.dumps({"source": {"type": "fork", "forked_from": "x"}}))
 
     from app import create_app
     flask_app = create_app()

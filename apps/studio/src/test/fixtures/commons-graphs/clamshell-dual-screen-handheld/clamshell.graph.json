@@ -1,0 +1,88 @@
+{
+  "version": "1.0.0",
+  "units": "mm",
+  "meta": {
+    "title": "Clamshell Dual-Screen Handheld",
+    "notes": "Graph twin of main.py. Same components, same order, same operations, so the two engines' bounding boxes and volumes agree exactly. COMPOSITION: node ids carry the component slug as a prefix (deckshell_, display_, hingebarrel_, hingerelief_, dpad_, facebtn_, buttonrow_, stick_, trigger_, speaker_, port_, slot_) so a reader can see where one hyperobject ends and the next begins; the assembly's own chain is prefixed asm_. The literal spelling `component:<slug>` is not available — the transpiler's node-id grammar is ^[A-Za-z][A-Za-z0-9_]*$, so a colon fails validation before the graph ever renders. Sub-graph reuse (yantra4d lane G-CLUSTERS) is what would let this twin REFERENCE a component cartridge rather than inline its nodes; until it lands the nodes are duplicated here. GEOMETRY NOTE: the hinge axis IS the X axis through the origin, which is why the fold is one `rotate` about x with no compensating translate — `rotate` turns about the origin and nothing else. NO EXPRESSIONS (lane G-EXPR): every derived dimension is its own parameter — hingerelief_cyl.r is the barrel radius plus the archetype's 0.4 mm running clearance, hingebarrel_run.dx is (hinge run minus one knuckle) over (count minus 1), facebtn_ring.angle is 360 over the count, and every *_center_* value places a solid the engine cannot compute. Telesia's scripts/device-presets.py emits them together from one registry entry, so they cannot drift. TWO THINGS THIS TWIN CANNOT SAY and main.py can: a port or slot that is absent on a device (no branching), and a control count of zero (pattern counts clamp to 1)."
+  },
+  "nodes": [
+    { "id": "hingerelief_cyl", "type": "cylinder", "params": { "r": 5.845, "h": 75.8 } },
+    { "id": "hingerelief_tool", "type": "rotate", "inputs": { "shape": "hingerelief_cyl" }, "params": { "axis": "y", "angle": 90 } },
+
+    { "id": "deckshell_lower_box", "type": "box", "params": { "w": 150, "d": 90, "h": 12.1 } },
+    { "id": "deckshell_lower_place", "type": "translate", "inputs": { "shape": "deckshell_lower_box" }, "params": { "x": 0, "y": 45, "z": -6.05 } },
+    { "id": "deckshell_lower_round", "type": "fillet", "inputs": { "shape": "deckshell_lower_place" }, "params": { "edges": "|Z", "radius": 5 } },
+    { "id": "asm_lower_hinge", "type": "cut", "inputs": { "a": "deckshell_lower_round", "b": "hingerelief_tool" } },
+
+    { "id": "display_sec_cut", "type": "box", "params": { "w": 80, "d": 50, "h": 0.8 } },
+    { "id": "display_sec_place", "type": "translate", "inputs": { "shape": "display_sec_cut" }, "params": { "x": 0, "y": 45, "z": -0.4 } },
+    { "id": "asm_lower_screen", "type": "cut", "inputs": { "a": "asm_lower_hinge", "b": "display_sec_place" } },
+
+    { "id": "dpad_arm_a", "type": "box", "params": { "w": 22, "d": 8, "h": 1.2 } },
+    { "id": "dpad_arm_b", "type": "box", "params": { "w": 8, "d": 22, "h": 1.2 } },
+    { "id": "dpad_cross", "type": "union", "inputs": { "a": "dpad_arm_a", "b": "dpad_arm_b" } },
+    { "id": "dpad_place", "type": "translate", "inputs": { "shape": "dpad_cross" }, "params": { "x": -58, "y": 45, "z": -0.6 } },
+    { "id": "asm_lower_dpad", "type": "cut", "inputs": { "a": "asm_lower_screen", "b": "dpad_place" } },
+
+    { "id": "facebtn_seat", "type": "cylinder", "params": { "r": 4.5, "h": 1.2 } },
+    { "id": "facebtn_offset", "type": "translate", "inputs": { "shape": "facebtn_seat" }, "params": { "x": 11, "y": 0, "z": 0 } },
+    { "id": "facebtn_ring", "type": "pattern_polar", "inputs": { "shape": "facebtn_offset" }, "params": { "count": 4, "angle": 90 } },
+    { "id": "facebtn_place", "type": "translate", "inputs": { "shape": "facebtn_ring" }, "params": { "x": 58, "y": 45, "z": -0.6 } },
+    { "id": "asm_lower_face", "type": "cut", "inputs": { "a": "asm_lower_dpad", "b": "facebtn_place" } },
+
+    { "id": "stick_seat", "type": "cylinder", "params": { "r": 8, "h": 1.2 } },
+    { "id": "stick_place", "type": "translate", "inputs": { "shape": "stick_seat" }, "params": { "x": -58, "y": 27, "z": -0.6 } },
+    { "id": "stick_row", "type": "pattern_linear", "inputs": { "shape": "stick_place" }, "params": { "count": 2, "dx": 116, "dy": 0, "dz": 0 } },
+    { "id": "asm_lower_stick", "type": "cut", "inputs": { "a": "asm_lower_face", "b": "stick_row" } },
+
+    { "id": "buttonrow_seat", "type": "cylinder", "params": { "r": 2.5, "h": 1.2 } },
+    { "id": "buttonrow_place", "type": "translate", "inputs": { "shape": "buttonrow_seat" }, "params": { "x": 52, "y": 78, "z": -0.6 } },
+    { "id": "buttonrow_run", "type": "pattern_linear", "inputs": { "shape": "buttonrow_place" }, "params": { "count": 2, "dx": 12, "dy": 0, "dz": 0 } },
+    { "id": "asm_lower_menu", "type": "cut", "inputs": { "a": "asm_lower_stick", "b": "buttonrow_run" } },
+
+    { "id": "speaker_hole", "type": "cylinder", "params": { "r": 0.9, "h": 1.2 } },
+    { "id": "speaker_place", "type": "translate", "inputs": { "shape": "speaker_hole" }, "params": { "x": -66.75, "y": 78, "z": -0.6 } },
+    { "id": "speaker_run", "type": "pattern_linear", "inputs": { "shape": "speaker_place" }, "params": { "count": 6, "dx": 3.5, "dy": 0, "dz": 0 } },
+    { "id": "asm_lower_speaker", "type": "cut", "inputs": { "a": "asm_lower_menu", "b": "speaker_run" } },
+
+    { "id": "trigger_box", "type": "box", "params": { "w": 26, "d": 6, "h": 4 } },
+    { "id": "trigger_place", "type": "translate", "inputs": { "shape": "trigger_box" }, "params": { "x": -54.5, "y": 0, "z": -6.05 } },
+    { "id": "trigger_run", "type": "pattern_linear", "inputs": { "shape": "trigger_place" }, "params": { "count": 2, "dx": 109, "dy": 0, "dz": 0 } },
+    { "id": "asm_lower_trigger", "type": "cut", "inputs": { "a": "asm_lower_speaker", "b": "trigger_run" } },
+
+    { "id": "port_usb_box", "type": "box", "params": { "w": 9, "d": 12, "h": 3.2 } },
+    { "id": "port_usb_place", "type": "translate", "inputs": { "shape": "port_usb_box" }, "params": { "x": 0, "y": 90, "z": -6.05 } },
+    { "id": "asm_lower_usb", "type": "cut", "inputs": { "a": "asm_lower_trigger", "b": "port_usb_place" } },
+
+    { "id": "port_jack_cyl", "type": "cylinder", "params": { "r": 1.75, "h": 12 } },
+    { "id": "port_jack_rot", "type": "rotate", "inputs": { "shape": "port_jack_cyl" }, "params": { "axis": "x", "angle": 90 } },
+    { "id": "port_jack_place", "type": "translate", "inputs": { "shape": "port_jack_rot" }, "params": { "x": -45, "y": 90, "z": -6.05 } },
+    { "id": "asm_lower_jack", "type": "cut", "inputs": { "a": "asm_lower_usb", "b": "port_jack_place" } },
+
+    { "id": "slot_box", "type": "box", "params": { "w": 35, "d": 10, "h": 4 } },
+    { "id": "slot_place", "type": "translate", "inputs": { "shape": "slot_box" }, "params": { "x": 45, "y": 90, "z": -6.05 } },
+    { "id": "asm_lower_deck", "type": "cut", "inputs": { "a": "asm_lower_jack", "b": "slot_place" } },
+
+    { "id": "deckshell_upper_box", "type": "box", "params": { "w": 150, "d": 90, "h": 9.9 } },
+    { "id": "deckshell_upper_place", "type": "translate", "inputs": { "shape": "deckshell_upper_box" }, "params": { "x": 0, "y": 45, "z": 4.95 } },
+    { "id": "deckshell_upper_round", "type": "fillet", "inputs": { "shape": "deckshell_upper_place" }, "params": { "edges": "|Z", "radius": 5 } },
+    { "id": "asm_upper_hinge", "type": "cut", "inputs": { "a": "deckshell_upper_round", "b": "hingerelief_tool" } },
+    { "id": "display_pri_cut", "type": "box", "params": { "w": 100, "d": 60, "h": 0.8 } },
+    { "id": "display_pri_place", "type": "translate", "inputs": { "shape": "display_pri_cut" }, "params": { "x": 0, "y": 45, "z": 0.4 } },
+    { "id": "asm_upper_flat", "type": "cut", "inputs": { "a": "asm_upper_hinge", "b": "display_pri_place" } },
+    { "id": "asm_upper_deck", "type": "rotate", "inputs": { "shape": "asm_upper_flat" }, "params": { "axis": "x", "angle": 120 } },
+
+    { "id": "hingebarrel_cyl", "type": "cylinder", "params": { "r": 5.445, "h": 21 } },
+    { "id": "hingebarrel_rot", "type": "rotate", "inputs": { "shape": "hingebarrel_cyl" }, "params": { "axis": "y", "angle": 90 } },
+    { "id": "hingebarrel_place", "type": "translate", "inputs": { "shape": "hingebarrel_rot" }, "params": { "x": -27, "y": 0, "z": 0 } },
+    { "id": "hingebarrel_run", "type": "pattern_linear", "inputs": { "shape": "hingebarrel_place" }, "params": { "count": 3, "dx": 27, "dy": 0, "dz": 0 } },
+    { "id": "hingebarrel_clip", "type": "box", "params": { "w": 400, "d": 400, "h": 400 } },
+    { "id": "hingebarrel_clip_place", "type": "translate", "inputs": { "shape": "hingebarrel_clip" }, "params": { "x": 0, "y": -200, "z": 0 } },
+    { "id": "hingebarrel_half", "type": "cut", "inputs": { "a": "hingebarrel_run", "b": "hingebarrel_clip_place" } }
+  ],
+  "outputs": {
+    "lower_deck": "asm_lower_deck",
+    "upper_deck": "asm_upper_deck",
+    "hinge": "hingebarrel_half"
+  }
+}

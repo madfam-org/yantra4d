@@ -18,6 +18,7 @@
  */
 import catalog from '../../config/graph-node-catalog.json'
 import { buildScope, checkExpression, expressionIdentifiers, requiredVersion, versionAtLeast11 } from './graphExpressions'
+import { formatLike } from './graphFormat'
 
 /**
  * Socket types come from the catalog, not from this file: today `solid` and
@@ -758,6 +759,12 @@ export function parseGraph(text: string): GraphDoc {
   return parsed as GraphDoc
 }
 
-export function serializeGraph(doc: GraphDoc): string {
-  return `${JSON.stringify(doc, null, 2)}\n`
+/**
+ * The document as text. Given the `source` text it was read from, the source's
+ * layout and number spelling are kept wherever the document did not change
+ * (graphFormat.ts): an unedited document comes back byte-identical, and an
+ * edit changes only the lines it touches. Without one, two-space JSON.
+ */
+export function serializeGraph(doc: GraphDoc, source?: string | null): string {
+  return formatLike(doc, source)
 }

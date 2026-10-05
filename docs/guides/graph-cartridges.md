@@ -14,26 +14,26 @@ Contract: [`packages/schemas/graph.schema.json`](../../packages/schemas/graph.sc
 Generated node catalog (params, defaults, socket types, limits):
 [`packages/schemas/graph-node-catalog.json`](../../packages/schemas/graph-node-catalog.json).
 
-## What is NOT verified yet
+## How a graph is verified
 
-**The keystone cannot render a graph.** `y4d-spec`'s `mode_sources()` recognises `.py`,
-`.cq` and `.scad` only, so a `.graph.json` mode gets **no render bar**: no watertight
-check, no body-count check, no cross-kernel parity, no B-Rep validity gate, and no row in
-the nightly sweep. Every other cartridge in the commons clears that bar; the two graph
-cartridges do not, and the nightly completeness check now *names* them rather than passing
-over them silently.
+The keystone (`y4d-spec`) renders a `.graph.json` mode by transpiling it with a
+byte-identical vendored copy of this engine (`y4d_spec/graph/`, guarded on both sides:
+the keystone's `check_graph_sync.py` and this repo's `check_spec_graph_vendor.py`), then
+judging the script on the CadQuery path: watertight, body count, B-Rep validity, presets
+and frames — the same bar every script cartridge clears.
 
-Concretely, this is why 498 of 500 cartridges carry a `verification` block and the two
-missing ones are exactly `flange-plate` and `spacer-block`. The structural gates below
-(`compliance_audit.py`, `validate_manifests.py`, the generated node catalog, the
-transpiler's own cycle/socket/dangling-ref validation) do run on graphs, so a graph cannot
-be malformed — but nothing yet proves the *geometry it emits* is sound.
+A graph authored for a cartridge that already has a script is a **golden twin**: declare
+it with `graph_file` next to the script, and `y4d-spec check --render --parity` compares
+the two at the defaults and at every preset, at the cross-kernel parity bar. The script is
+the oracle; it retires only after parity holds (owner decision D5, 2026-10-04).
 
-Closing this is lane **G-SPEC**, the first lane of Wave D in
-[`ROADMAP.md`](../../ROADMAP.md#the-node-based-geometry-programme-waves-df-s): until it
-lands, authoring more graph cartridges grows unverified surface. Treat the render probe in
-"Checking your work" below as mandatory rather than advisory for now — it is currently the
-only geometric check a graph cartridge gets.
+```json
+{ "id": "flat_idler", "scad_file": "main.py", "cq_file": "main.py",
+  "graph_file": "idler.graph.json", "parts": ["flat_idler"] }
+```
+
+The first golden twin is `solid-hyperobjects/idler-608/idler.graph.json` (three modes,
+exact parity at the defaults and all presets).
 
 ## The shape of a graph
 
@@ -67,11 +67,22 @@ where a solid belongs fails at validation rather than at render.
 | Group | Nodes |
 |-------|-------|
 | Solids | `box`, `cylinder`, `sphere` |
-| Profiles | `profile_rect`, `profile_circle`, `profile_polygon` → `extrude` |
+| Profiles | `profile_rect`, `profile_circle`, `profile_polygon`, `profile_polyline` → `extrude` or `revolve` |
 | Booleans | `union`, `cut`, `intersect` |
-| Transforms | `translate`, `rotate`, `mirror` |
+| Transforms | `translate`, `rotate`, `mirror` (keeps the original), `reflect` (the reflection alone) |
+| Selection | `select` (a solid chosen by a boolean `when`) |
 | Patterns | `pattern_linear`, `pattern_polar` |
 | Finishing | `fillet`, `chamfer`, `shell`, `hole` |
+
+A profile feeds exactly **one** node: CadQuery keeps a profile's wires as pending state
+that the first `extrude`/`revolve` consumes, so a second consumer would fail at render.
+The transpiler refuses it; duplicate the profile node instead.
+
+`profile_polyline` takes `points`, a closed list of 3–256 `[x, y]` pairs on its `plane`
+(lines only; arcs and splines are not in the vocabulary yet).
+
+`select` builds **both** inputs and passes one on: a branch that cannot be built fails the
+render even when it is not chosen.
 
 The catalog file is generated from the engine itself, so it is always the
 accurate list — including each param's kind, default and whether it can be
@@ -108,25 +119,60 @@ both variants:
 
 Each node param may be driven by at most one manifest parameter.
 
+### Expressions (graph format 1.1)
+
+A float, count or condition input may be an expression instead of a literal:
+
+```json
+{
+  "version": "1.1.0",
+  "parameters": {
+    "width":  { "default": 10 },
+    "nema":   { "default": "NEMA17", "map": { "NEMA17": 42.3, "NEMA23": 57 } },
+    "gusset": { "default": true }
+  },
+  "derived": [
+    { "id": "body_w", "expr": "nema" },
+    { "id": "half",   "expr": "width / 2" }
+  ],
+  "nodes": [
+    { "id": "plate", "type": "box", "params": { "w": { "expr": "body_w + 4" }, "h": { "expr": "half" } } }
+  ]
+}
+```
+
+- **The dialect** is the one the manifest constraints already use
+  (`apps/studio/src/lib/safeFormula.ts`): numbers, identifiers, `+ - * / %`, comparisons,
+  `&& || !`, `?:` and parentheses; no strings, no function calls; at most 256 characters
+  and 128 tokens. It has no `min`/`max`, so a clamp is a ternary pair
+  (`x < hi ? x : hi`, then `lo > that ? lo : that`). Semantics are JavaScript's and the
+  engine mirrors them exactly: `==` is strict, `%` truncates, `&&`/`||` return booleans,
+  both sides of `&&`/`||`/`?:` are evaluated, and `/` or `%` by zero is an error.
+- **`parameters`** declares, by manifest parameter id, every value an expression reads.
+  The render injects the manifest value; `default` is used when nothing is injected. A
+  numeric option string such as `"608"` reads as a number; a non-numeric one needs a `map`.
+  A declared parameter that no expression reads is an error.
+- **`derived`** is an ordered list of named intermediates; each may read parameters and
+  earlier derived ids. An unread derived id is an error.
+- A node param takes an expression **or** a manifest `binding`, never both. Selector, axis
+  and plane params stay literal.
+- Expressions are parsed and validated at transpile time and re-emitted from their syntax
+  tree; the generated script contains validated literals, variable reads and a fixed set
+  of helpers — never the expression's text.
+
+The node catalog marks which params take an expression (`"expr": true`) and publishes the
+dialect limits under `expression`.
+
 ## Two rules that follow from the security model
 
 The transpiler emits **only** validated literals and bound-parameter reads;
 it never interpolates text into code. Two consequences shape authoring:
 
-**There are no expressions** — today. A derived value must be its own parameter. A
-polar pattern therefore exposes both `count` and `angle` rather than computing
-`360 / count`, and the cartridge documents that an even circle wants
-`spacing = 360 / count`. This was a deliberate trade: no expression evaluator meant no
-evaluator to escape.
-
-The cost of that trade is now understood to be parametricity itself — without
-`width / 2 - wall` in a socket, a graph is a *frozen* script and every derived dimension is
-a constant. Lane **G-EXPR** (Wave D) reverses it the safe way: `{"expr": "..."}` inputs
-evaluated **at transpile time**, on the same restricted dialect the manifest constraints
-already use (`apps/studio/src/lib/safeFormula.ts` — arithmetic, comparison, boolean and
-ternary over parameter identifiers and numeric literals; no string literals, no function
-calls, capped at 256 characters and 128 tokens). The transpiler would still emit only
-validated numbers, so the security property above is preserved.
+**Expressions never become code.** Format 1.0 had no expressions at all, so a derived
+value had to be its own parameter (the flange's `count` and `angle`). Format 1.1 adds
+them (see "Expressions" above) without giving up the property: an expression is parsed
+into a syntax tree at transpile time and re-spelled from that tree, so only validated
+numbers, declared variable reads and the engine's own helper calls reach the script.
 
 **Structural params are not bindable.** Selectors (`edges`, `face`), `axis` and
 `plane` stay literal, so a render-time value can never change the *shape* of
@@ -134,10 +180,14 @@ the emitted code — only its numbers. Numeric params bind freely. Pattern
 counts are additionally clamped in the generated script, so a slider wired to a
 count cannot detonate a boolean loop inside the render worker.
 
-`revolve` is deliberately absent: an unbounded revolve exhausted memory during
-bring-up, and the render worker must not host an operation that can hang a job. A
-**bounded** revolve is scheduled in lane G-NODES-2, alongside loft, sweep and text — the
-memory bound is the design work, not the operation.
+**`revolve` is bounded.** An unbounded revolve exhausted memory during bring-up, so the
+node only accepts inputs whose cost and validity are known before the kernel is called:
+the angle is in (0, 360] (OCC silently wraps larger angles); the axis (`x`, `y` or `z`,
+through the origin) must lie in the profile's plane, checked at transpile time (an axis
+normal to the plane yields a zero-volume solid that still reports itself valid); the
+profile may not cross the axis; and it may reach at most 1000 mm from the origin (an
+engine convention). The result must be a valid solid with positive volume before
+anything consumes it. Loft, sweep and text are still absent.
 
 ## Wiring the manifest
 

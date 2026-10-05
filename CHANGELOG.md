@@ -14,6 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Studio editor: write experience.**
+  - A refused or failed save (read-only cartridge, another account's
+    cartridge, conflict, server error) now shows an accessible message in the
+    editor, with "Fork to save" where forking is the way forward. Autosave
+    marks a tab saved only after the server accepted it.
+  - Graph saves keep the document's layout and number spelling: an unedited
+    document is written back byte-identical, an edit changes only its lines
+    (`lib/graph/graphFormat.ts`).
+  - Delete, new file and version control are offered only where the API says
+    the caller may write (`can_write`). An editor panel restored on any other
+    cartridge opens read-only.
+  - A fork or import no longer shows the "Commons" badge.
+  - The editor tab bar no longer nests a button inside a button.
 - **Graph Engine Wave D: Expressions, Select, Reflect, Polyline And Bounded Revolve**
   — graph format 1.1, built as far as the Voron 2.4 assembly A printed parts need
   (lane P8-ENGINE, 2026-10-04).

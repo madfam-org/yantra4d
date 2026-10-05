@@ -445,5 +445,14 @@
   "graph.point_coordinate": "点 {n} {axis}",
   "graph.point_remove": "移除点 {n}",
   "graph.point_add": "添加点",
-  "graph.limit_reached": "已达上限（{limit}）。"
+  "graph.limit_reached": "已达上限（{limit}）。",
+  "editor.save_refused_read_only": "未保存：这是公共库中的只读卡匣。请先派生（fork）后再保存更改。",
+  "editor.save_refused_not_owner": "未保存：此卡匣属于其他账户。请先派生（fork）以保存你自己的副本。",
+  "editor.save_conflict": "未保存：文件已在服务器上更改，或名称已被占用。请重新加载文件后再试。",
+  "editor.save_server_error": "未保存：服务器无法存储该文件。你的编辑仍保留在此；请稍后再试。",
+  "editor.save_failed": "未保存。",
+  "editor.save_failed_reason": "未保存：{reason}",
+  "editor.fork_to_save": "派生以保存",
+  "editor.dismiss": "关闭",
+  "editor.read_only_panel": "只读：你无法保存到此卡匣。请先派生（fork）以编辑你自己的副本。"
 }

@@ -60,6 +60,11 @@ export default function StudioHeader({
   // A cartridge this caller may not write (built-in, or someone else's fork or
   // import) offers "Fork to edit" instead of the editor.
   const isReadOnly = isBuiltIn || projectMeta?.can_write === false
+  // "Commons" names provenance, not content: a fork or import keeps the
+  // source's hyperobject tags but is a user cartridge. Until the meta has
+  // loaded the provenance is unknown, so the badge waits for it.
+  const showCommonsBadge = Boolean((manifest.project.hyperobject as Record<string, unknown> | undefined)?.is_hyperobject)
+    && projectMeta !== null && isBuiltIn
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
@@ -100,7 +105,7 @@ export default function StudioHeader({
               <img src={platformLogo} alt="Logo" className="h-4 w-auto rounded-sm shrink-0" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
             )}
             <h1 className="text-lg font-bold tracking-tight truncate max-w-[8rem] xs:max-w-[10rem] sm:max-w-none" title={manifest.project.name as string}>{manifest.project.name as React.ReactNode}</h1>
-            {(manifest.project.hyperobject as Record<string, unknown> | undefined)?.is_hyperobject && (
+            {showCommonsBadge && (
               <span className="hidden xs:inline-flex items-center rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-500 ring-1 ring-inset ring-blue-500/20 shrink-0" title={`Domain: ${(manifest.project.hyperobject as Record<string, unknown>).domain}`}>
                 Commons
               </span>

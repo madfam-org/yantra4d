@@ -219,6 +219,7 @@ describe('StudioHeader', () => {
   })
 
   it('shows hyperobject commons badge when manifest has hyperobject', () => {
+    useProjectMeta.mockReturnValue({ can_write: false, is_owner: false })
     useProject.mockReturnValue({
       ...baseProjectContext,
       manifest: {
@@ -230,6 +231,31 @@ describe('StudioHeader', () => {
     })
     render(<StudioHeader {...defaultProps} />)
     expect(screen.getByText('Commons')).toBeInTheDocument()
+  })
+
+  describe('commons badge follows provenance', () => {
+    const hyperobjectManifest = {
+      ...baseProjectContext,
+      manifest: { project: { name: 'Fork', hyperobject: { is_hyperobject: true, domain: 'hardware' } } },
+    }
+
+    it.each([
+      ['a fork', { source: { type: 'fork', forked_from: 'bed-extrusion-mount' }, can_write: true, is_owner: true }],
+      ['another account\'s fork', { source: { type: 'fork' }, can_write: false, is_owner: false }],
+      ['a GitHub import', { source: { type: 'github' }, can_write: true, is_owner: true }],
+    ])('is not shown on %s, even with the source\'s hyperobject tags', (_label, meta) => {
+      useProjectMeta.mockReturnValue(meta)
+      useProject.mockReturnValue(hyperobjectManifest)
+      render(<StudioHeader {...defaultProps} />)
+      expect(screen.queryByText('Commons')).not.toBeInTheDocument()
+    })
+
+    it('waits for the meta before claiming commons provenance', () => {
+      useProjectMeta.mockReturnValue(null)
+      useProject.mockReturnValue(hyperobjectManifest)
+      render(<StudioHeader {...defaultProps} />)
+      expect(screen.queryByText('Commons')).not.toBeInTheDocument()
+    })
   })
 
   it('does not show commons badge when hyperobject is false', () => {

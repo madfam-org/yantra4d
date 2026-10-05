@@ -11,6 +11,7 @@ test_private_projects_api.py), so each request travels the real middleware.
 import json
 import subprocess
 import sys
+import threading
 from pathlib import Path
 from unittest.mock import patch
 
@@ -120,6 +121,7 @@ def _stub_side_effects():
                return_value=[{"step": 1, "label": "auto", "_auto_generated": True}]), \
          patch("routes.editor.git_ops.get_github_token", return_value="gh-token"), \
          patch("routes.editor.git_ops.git_pull", return_value={"success": True}), \
+         patch("routes.editor.git_ops.git_push", return_value={"success": True}), \
          patch("routes.editor.github._get_token", return_value="gh-token"), \
          patch("routes.editor.github.sync_repo", return_value={"success": True, "updated_files": []}):
         yield
@@ -167,6 +169,8 @@ WRITE_ROUTES = [
     ("git-commit", "post", "/api/projects/{slug}/git/commit",
      {"json": {"message": "edit", "files": ["pending.scad"]}}, False),
     ("git-pull", "post", "/api/projects/{slug}/git/pull", {}, True),
+    # Writes nothing locally, but acts on the cartridge's remote: owner-only too.
+    ("git-push", "post", "/api/projects/{slug}/git/push", {}, True),
     ("github-sync", "post", "/api/github/sync", {"json": {"slug": "{slug}"}}, True),
 ]
 ROUTE_IDS = [r[0] for r in WRITE_ROUTES]
@@ -286,7 +290,7 @@ class TestCreationRecordsTheCreator:
 
     def test_github_import_records_the_importing_account(self, client):
         def fake_clone(repo_url, dest, github_token=None, shallow=False):
-            dest.mkdir(parents=True)
+            dest.mkdir(parents=True, exist_ok=True)
             (dest / "main.scad").write_text("cube(5);")
             return True
 
@@ -308,7 +312,7 @@ class TestCreationRecordsTheCreator:
 
     def test_an_import_whose_record_cannot_be_written_is_rolled_back(self, client):
         def fake_clone(repo_url, dest, github_token=None, shallow=False):
-            dest.mkdir(parents=True)
+            dest.mkdir(parents=True, exist_ok=True)
             (dest / "main.scad").write_text("cube(5);")
             return True
 
@@ -483,3 +487,104 @@ class TestAdminFlags:
             assert res.status_code == 403
             assert res.get_json()["error"] == "Insufficient permissions"
             assert _snapshot(cartridges[slug]) == before
+
+
+class TestAtomicCreation:
+    """Two creations of the same new slug: exactly one wins; the loser touches nothing."""
+
+    def _dev_client(self, monkeypatch):
+        # Auth off + debugger: no token decoding or user upsert in the threads,
+        # so the only shared state is the filesystem under test.
+        return _app(monkeypatch, auth_enabled=False, debug=True)
+
+    def test_concurrent_forks_leave_exactly_one_intact_fork(self, monkeypatch, cartridges):
+        flask_app = self._dev_client(monkeypatch)
+        import routes.projects.projects as projects_mod
+        real_copytree = projects_mod.shutil.copytree
+        first_is_copying = threading.Event()
+        release_first = threading.Event()
+
+        def slow_copytree(*args, **kwargs):
+            # The winner pauses mid-copy so the loser arrives while the
+            # winner's directory exists but is still being filled.
+            first_is_copying.set()
+            assert release_first.wait(10)
+            return real_copytree(*args, **kwargs)
+
+        results = {}
+
+        def fork(name):
+            res = flask_app.test_client().post(f"/api/projects/{COMMONS}/fork", json={"new_slug": "raced-fork"})
+            results[name] = (res.status_code, res.get_json())
+
+        # Both requests pass the cheap existence check, as in a real race.
+        with patch.object(projects_mod, "slug_in_use", return_value=None), \
+             patch.object(projects_mod.shutil, "copytree", side_effect=slow_copytree):
+            winner = threading.Thread(target=fork, args=("winner",))
+            winner.start()
+            assert first_is_copying.wait(10)
+            loser = threading.Thread(target=fork, args=("loser",))
+            loser.start()
+            loser.join(10)
+            release_first.set()
+            winner.join(10)
+
+        assert results["winner"][0] == 200, results
+        assert results["loser"][0] == 409, results
+        assert results["loser"][1]["error_code"] == "slug_in_use"
+        fork_dir = project_write_root() / "raced-fork"
+        assert (fork_dir / "main.scad").read_text() == "cube(10);"
+        assert json.loads((fork_dir / "project.meta.json").read_text())["source"]["type"] == "fork"
+
+    def test_free_running_forks_of_one_slug(self, monkeypatch, cartridges):
+        flask_app = self._dev_client(monkeypatch)
+        import routes.projects.projects as projects_mod
+        for round_no in range(5):
+            slug = f"free-race-{round_no}"
+            start = threading.Barrier(4)
+            codes = []
+
+            def fork(slug=slug, start=start, codes=codes):
+                client = flask_app.test_client()
+                start.wait(10)
+                codes.append(client.post(f"/api/projects/{COMMONS}/fork", json={"new_slug": slug}).status_code)
+
+            with patch.object(projects_mod, "slug_in_use", return_value=None):
+                threads = [threading.Thread(target=fork) for _ in range(4)]
+                for t in threads:
+                    t.start()
+                for t in threads:
+                    t.join(20)
+            assert sorted(codes) == [200, 409, 409, 409], (slug, codes)
+            assert (project_write_root() / slug / "main.scad").read_text() == "cube(10);"
+
+    def test_a_losing_import_never_touches_the_winner(self, monkeypatch, cartridges):
+        flask_app = self._dev_client(monkeypatch)
+        import services.editor.github_import as gi
+
+        def fake_clone(repo_url, dest, github_token=None, shallow=False):
+            (dest / "main.scad").write_text("cube(5);")
+            return True
+
+        winner_dir = project_write_root() / "raced-import"
+        winner_dir.mkdir()
+        (winner_dir / "keep.scad").write_text("cube(1);")
+        with patch.object(gi, "slug_in_use", return_value=None), \
+             patch.object(gi, "clone_repo", side_effect=fake_clone):
+            res = flask_app.test_client().post("/api/github/import", json={
+                "repo_url": "https://github.com/example/w", "slug": "raced-import",
+                "manifest": _manifest("raced-import"),
+            })
+        assert res.status_code == 409
+        assert res.get_json()["error_code"] == "slug_in_use"
+        assert sorted(p.name for p in winner_dir.iterdir()) == ["keep.scad"]
+
+    def test_a_failed_clone_removes_only_its_own_reservation(self, monkeypatch, cartridges):
+        flask_app = self._dev_client(monkeypatch)
+        with patch("services.editor.github_import.clone_repo", return_value=False):
+            res = flask_app.test_client().post("/api/github/import", json={
+                "repo_url": "https://github.com/example/w", "slug": "failed-import",
+                "manifest": _manifest("failed-import"),
+            })
+        assert res.status_code == 400
+        assert not (project_write_root() / "failed-import").exists()

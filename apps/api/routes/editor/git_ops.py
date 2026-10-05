@@ -266,6 +266,7 @@ def commit(slug):
 @require_tier("pro")
 @limiter.limit(rate_limits.GIT_PUSH)
 @require_project_access
+@require_writable_cartridge
 def push(slug):
     """Push commits to origin."""
     project_dir, err = _get_github_project(slug)

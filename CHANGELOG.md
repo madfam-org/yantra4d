@@ -50,8 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   read the parent's `/proc` memory. The render log returned to clients is bounded
   in size and scrubbed of credential-shaped content (the full log still reaches
   the server's own logs). AI synthesis now writes only the file types it is
-  designed to emit (OpenSCAD source and manifest), and a manifest's `scad_file` /
-  `cq_file` is resolved within the cartridge directory. New scan derived the
+  designed to emit (OpenSCAD source and manifest). Manifest file references
+  (`scad_file`, `cq_file`, `graph_file`, `static_stl`) must be relative paths
+  without control characters or `..` segments that resolve inside the cartridge
+  directory; in user-authored cartridges they must also use `[A-Za-z0-9_./-]`.
+  A mode with any other reference is not renderable (400). New scan derived the
   allowlist from every commons CadQuery script; all of them still render.
 
 - **Persistent writable storage for user projects** — user-authored cartridges

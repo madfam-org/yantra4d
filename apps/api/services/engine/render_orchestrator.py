@@ -321,7 +321,10 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
             scad_dir = os.path.dirname(scad_path)
             root = getattr(manifest, "project_dir", None) or scad_dir
             try:
-                cq_path = resolve_within_dir(root, mode_config['cq_file'], start=scad_dir)
+                cq_path = resolve_within_dir(
+                    root, mode_config['cq_file'], start=scad_dir,
+                    strict=getattr(manifest, "user_authored", True),
+                )
             except ValueError as exc:
                 return engine, scad_path, None, (str(exc), 400)
             engine = "cadquery"

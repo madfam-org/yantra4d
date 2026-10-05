@@ -24,7 +24,20 @@ The code is in `apps/api/utils/project_resolver.py`.
   user root is the last entry.
 - **Writes:** `project_write_root()` returns the user root, and nothing else
   creates cartridges. Edits to an existing cartridge are written wherever it
-  resolves. The editor's write routes allow only forks and imports.
+  resolves. The editor's write routes allow only forks and imports, and only
+  for the account that created them (or an `admin`). The creating account's
+  `sub` is recorded in `.owners/<slug>.json` in this same root, so back it up
+  and restore it together with the cartridges.
+- **Authentication off:** with `AUTH_ENABLED=false`, forks and imports are
+  writable only in local development mode, meaning auth off **and** the Flask
+  debugger on (`FLASK_DEBUG=true`, as `docker-compose.dev.yml` sets it). That is
+  the same rule private projects follow. An instance that runs without auth and
+  without the debugger can still fork, but its forks read as not writable: the
+  Studio offers "Fork to edit" and writes answer `not_cartridge_owner`. Enable
+  authentication to edit forks there.
+- **Atomic creation:** a fork or import reserves its directory with an
+  exclusive `mkdir` before copying or cloning, so two concurrent creations of
+  the same slug end with one cartridge and a 409 `slug_in_use` for the other.
 - **Slug uniqueness:** `slug_in_use()` checks every root, including the extra
   `CARTRIDGES_DIRS`, before any fork, import, onboarding or synthesis, so a new
   slug never collides.

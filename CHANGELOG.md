@@ -222,6 +222,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   customer in `essentials` with no error anywhere).
 
 ### Added
+- **A Writable Graph Editor In Studio (G-EDITOR)** — the Graph view of a
+  `.graph.json` source is now an editor, not a picture: a palette driven by
+  `graph-node-catalog.json`; drag-to-connect with socket type and loop checks;
+  add, delete and disconnect; an inspector where each numeric param is a literal,
+  a manifest binding or (when the catalog marks it `"expr": true`) a safeFormula
+  expression; a panel for graph 1.1 declared parameters (with option → number
+  maps the author enters) and ordered derived values; validation on every edit,
+  linked to the node, socket or param at fault; render preview through the
+  existing render path; and `.graph.json` export. **Saves go to a fork only** (or
+  an imported repository); a commons cartridge is edited in the buffer and offers
+  "Fork to save". New route `PUT /api/projects/<slug>/manifest/bindings` sets or
+  clears `binding` on existing manifest parameters of a fork, validated against
+  every graph source and written atomically. The read-only `GraphCanvas` is
+  replaced by `components/editor/graph/`.
 - **Derived CDG Mating-Rule Candidates (PROPOSED)** — `scripts/qa/derive_mating_candidates.py`
   reads the CDG interfaces the cartridges already declare, derives the mating rules
   those declarations imply, scores each candidate against the author-written answer

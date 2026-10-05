@@ -396,3 +396,135 @@ describe('serialization', () => {
     expect(G.validateGraph(built)).toEqual([])
   })
 })
+
+describe('param values (the checks the server makes before it emits a literal)', () => {
+  it('knows which params take expressions from the catalog alone', () => {
+    expect(G.paramSpec('box', 'w')).toMatchObject({ kind: 'float' })
+    expect(G.paramSpec('box', 'nope')).toBeUndefined()
+    expect(G.isExpressible('box', 'w')).toBe(G.NODE_TYPES.box.params.w.expr === true)
+    expect(G.isExpressible('ghost', 'w')).toBe(false)
+  })
+
+  it('recognises an expression value and nothing else', () => {
+    expect(G.isExpressionValue({ expr: 'a + 1' })).toBe(true)
+    expect(G.isExpressionValue({ expr: 3 })).toBe(false)
+    expect(G.isExpressionValue({ expr: 'a', extra: 1 })).toBe(false)
+    expect(G.isExpressionValue(['a'])).toBe(false)
+    expect(G.isExpressionValue(null)).toBe(false)
+    expect(G.isExpressionValue(4)).toBe(false)
+  })
+
+  it.each([
+    ['float', 2.5, null],
+    ['float', Number.NaN, /finite/],
+    ['float', '2', /finite/],
+    ['count', 3, null],
+    ['count', 2.5, /whole/],
+    ['count', 0, /between 1 and/],
+    ['count', 201, /between 1 and/],
+    ['selector', '|Z', null],
+    ['selector', 4, /selector/],
+    ['selector', 'x'.repeat(121), /120/],
+    ['axis', 'z', null],
+    ['axis', 'w', /one of/],
+    ['plane', 'XY', null],
+    ['plane', 'AB', /one of/],
+    ['points', [[0, 0], [10, 0], [0, { expr: 'h' }]], null],
+    ['points', [[0, 0]], /3 to 256/],
+    ['points', 'square', /3 to 256/],
+    ['points', [[0, 0], [1, 0], [1]], /point 3 must be an \[x, y\] pair/],
+    ['points', [[0, 0], [1, 0], [1, 'y']], /point 3 needs finite numbers/],
+    ['condition', true, null],
+    ['condition', 1, /true or false/],
+    ['unknown_kind', { anything: 1 }, null],
+  ])('%s %j', (kind, value, problem) => {
+    const result = G.literalProblem(kind, value)
+    if (problem === null) expect(result).toBeNull()
+    else expect(result).toMatch(problem)
+  })
+
+  it('reports a bad literal on the param it belongs to', () => {
+    const doc = makeDoc()
+    doc.nodes[0].params.w = 'wide'
+    expect(G.validateGraph(doc)).toEqual([{ message: '"w" needs a finite number.', nodeId: 'base', param: 'w' }])
+  })
+
+  it('refuses an expression where the catalog does not allow one', () => {
+    const doc = makeDoc()
+    doc.nodes[3].params.edges = { expr: '1' }
+    const issues = G.validateGraph(doc)
+    expect(issues).toEqual([{ message: '"edges" does not accept an expression.', nodeId: 'soft', param: 'edges' }])
+  })
+
+  it('reports an unknown param on that param', () => {
+    const doc = makeDoc()
+    doc.nodes[0].params.nope = 1
+    expect(G.validateGraph(doc)[0]).toMatchObject({ nodeId: 'base', param: 'nope' })
+  })
+
+  it('reports socket problems on the socket', () => {
+    const doc = makeDoc()
+    delete doc.nodes[2].inputs.b
+    doc.nodes[3].inputs.shape = 'ghost'
+    const issues = G.validateGraph(doc)
+    expect(issues).toEqual(expect.arrayContaining([
+      expect.objectContaining({ nodeId: 'body', socket: 'b' }),
+      expect.objectContaining({ nodeId: 'soft', socket: 'shape' }),
+    ]))
+  })
+
+  it('requires version 1.1 once the graph declares parameters', () => {
+    const doc = { ...makeDoc(), parameters: { od: { default: 30 } } }
+    expect(G.validateGraph(doc).map((i) => i.message)).toContain(
+      'A graph that declares parameters or derived values must be version 1.1.',
+    )
+    expect(G.validateGraph({ ...doc, version: '1.1.0' })).toEqual([])
+  })
+
+  it('surfaces a broken derived value', () => {
+    const doc = { ...makeDoc(), version: '1.1.0', derived: [{ id: 'x', expr: 'ghost * 2' }] }
+    expect(G.validateGraph(doc)).toEqual([expect.objectContaining({ derivedId: 'x' })])
+  })
+})
+
+describe('editor edits', () => {
+  it('reverts a param to the catalog default by removing it', () => {
+    const doc = G.clearNodeParam(makeDoc(), 'base', 'w')
+    expect(doc.nodes[0].params).toEqual({ d: 40, h: 8 })
+    const same = makeDoc()
+    expect(G.clearNodeParam(same, 'base', 'nope').nodes[0]).toBe(same.nodes[0])
+  })
+
+  it('stores a rounded position in meta and reads it back', () => {
+    const doc = G.setNodePosition(makeDoc(), 'base', { x: 10.6, y: -3.2 })
+    expect(doc.nodes[0].meta).toEqual({ position: { x: 11, y: -3 } })
+    expect(G.nodePosition(doc.nodes[0])).toEqual({ x: 11, y: -3 })
+    expect(G.nodePosition(makeDoc().nodes[0])).toBeNull()
+  })
+
+  it('keeps other meta when moving a node', () => {
+    const doc = makeDoc()
+    doc.nodes[0].meta = { note: 'keep me' }
+    expect(G.setNodePosition(doc, 'base', { x: 1, y: 2 }).nodes[0].meta).toEqual({ note: 'keep me', position: { x: 1, y: 2 } })
+  })
+
+  it('removes an output part', () => {
+    expect(G.removeOutput(makeDoc(), 'part').outputs).toEqual({})
+  })
+
+  it('answers whether a connection is allowed before it is made', () => {
+    let doc = G.addNode(makeDoc(), 'profile_rect', 'sketch')
+    doc = G.addNode(doc, 'extrude', 'slab')
+    expect(G.connectionProblem(doc, 'slab', 'profile', 'sketch')).toBeNull()
+    expect(G.connectionProblem(doc, 'body', 'a', 'sketch')).toMatch(/needs a solid/)
+    expect(G.connectionProblem(doc, 'base', 'shape', 'bore')).toMatch(/has no input/)
+    expect(G.connectionProblem(doc, 'ghost', 'a', 'bore')).toMatch(/Unknown node "ghost"/)
+    expect(G.connectionProblem(doc, 'body', 'a', 'ghost')).toMatch(/Unknown node "ghost"/)
+    expect(G.connectionProblem(doc, 'body', 'a', 'soft')).toMatch(/loop/)
+  })
+
+  it('stores an expression value as given', () => {
+    const doc = G.setNodeParam(makeDoc(), 'base', 'w', { expr: 'width / 2' })
+    expect(doc.nodes[0].params.w).toEqual({ expr: 'width / 2' })
+  })
+})

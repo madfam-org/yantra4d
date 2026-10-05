@@ -5,15 +5,22 @@ Handles OpenSCAD scripts and node-graph documents. A graph document is
 validated against the transpiler's own rules before it is written, so the
 editor cannot leave a cartridge in a state that fails at render time.
 """
+<<<<<<< dbbf80bfe23616cd09db990e867771e6dd1bb16f
 import functools
+=======
+>>>>>>> refs/sim/214
 import json
 import logging
+import os
+import re
+import tempfile
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
 import rate_limits
 from extensions import limiter
+from manifest import invalidate_cache
 from middleware.auth import require_tier
 from services.core.project_access import require_project_access
 from utils.project_resolver import find_project_dir, require_project
@@ -263,3 +270,161 @@ def delete_file(slug, filepath, project_dir):
         return error_response(f"Failed to delete file: {e}", 500)
 
     return jsonify({"deleted": filepath})
+
+
+# ── Graph bindings (fork-only manifest write) ─────────────────────────────────
+#
+# A graph node param is driven by a manifest parameter through that parameter's
+# `binding` ("nodeId.param", or a list of them). The Studio graph editor binds
+# and unbinds params, so it needs to change `binding` — and nothing else — in
+# the manifest. This route is deliberately narrow:
+#
+#   * it only writes a FORK (project.meta.json source.type == "fork"): a commons
+#     cartridge or an imported repo is never written here;
+#   * it can only set or clear `binding` on parameters that already exist;
+#   * the merged binding map must transpile against every graph source of the
+#     project, so a binding can never point at a node or param that is not there;
+#   * the write is atomic (temp file + rename), so a crash cannot truncate the
+#     manifest.
+
+MAX_BINDINGS_BODY = 16 * 1024  # bytes
+MAX_TARGETS_PER_PARAMETER = 50
+_BINDING_TARGET_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*\.[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _project_source_type(project_dir: Path) -> str | None:
+    """`source.type` from project.meta.json, or None when there is none."""
+    meta_path = project_dir / "project.meta.json"
+    if not meta_path.is_file():
+        return None
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    source = meta.get("source") if isinstance(meta, dict) else None
+    kind = source.get("type") if isinstance(source, dict) else None
+    return kind if isinstance(kind, str) else None
+
+
+def _parse_bindings_body(raw: bytes) -> tuple[dict | None, str | None]:
+    """Strictly parse {"bindings": {param_id: target | [targets] | null}}."""
+    try:
+        data = json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return None, "Body must be JSON"
+    if not isinstance(data, dict) or set(data) != {"bindings"}:
+        return None, 'Body must be exactly {"bindings": {...}}'
+    changes = data["bindings"]
+    if not isinstance(changes, dict) or not changes:
+        return None, "bindings must be a non-empty object of parameter id to binding"
+    for pid, value in changes.items():
+        if value is None:
+            continue
+        targets = value if isinstance(value, list) else [value]
+        if not targets or len(targets) > MAX_TARGETS_PER_PARAMETER:
+            return None, f"parameter '{pid}': a binding needs 1 to {MAX_TARGETS_PER_PARAMETER} targets"
+        for target in targets:
+            if not isinstance(target, str) or not _BINDING_TARGET_RE.match(target):
+                return None, f"parameter '{pid}': invalid binding {target!r} (want 'nodeId.param')"
+        if len(set(targets)) != len(targets):
+            return None, f"parameter '{pid}': duplicate binding target"
+    return changes, None
+
+
+def _graph_sources(project_dir: Path, manifest_data: dict) -> list[Path]:
+    """Every graph document the manifest's modes render, path-guarded."""
+    sources = []
+    for mode in manifest_data.get("modes") or []:
+        name = mode.get("scad_file") if isinstance(mode, dict) else None
+        if not isinstance(name, str) or not name.endswith(GRAPH_SUFFIX):
+            continue
+        resolved = safe_join_path(str(project_dir), name)
+        if resolved is not None and resolved not in sources:
+            sources.append(resolved)
+    return sources
+
+
+def _write_json_atomic(path: Path, data: dict) -> None:
+    """Write JSON to `path` through a temp file in the same directory + rename."""
+    fd, tmp_name = tempfile.mkstemp(dir=str(path.parent), prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(data, handle, indent=2, ensure_ascii=False)
+            handle.write("\n")
+        os.replace(tmp_name, path)
+    except BaseException:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
+
+
+@editor_bp.route("/api/projects/<slug>/manifest/bindings", methods=["PUT"])
+@require_valid_slug
+@require_tier("pro")
+@limiter.limit(rate_limits.EDITOR_WRITE)
+@require_project(auto_git=True)
+@require_project_access
+def update_graph_bindings(slug, project_dir):
+    """Set or clear `binding` on existing manifest parameters of a forked graph project."""
+    if _project_source_type(project_dir) != "fork":
+        return error_response(
+            "Bindings can only be edited on your fork of a project. Fork it first.",
+            403, error_code="not_a_fork",
+        )
+
+    if (request.content_length or 0) > MAX_BINDINGS_BODY:
+        return error_response(f"Body exceeds {MAX_BINDINGS_BODY // 1024}KB", 413, error_code="body_too_large")
+    raw = request.get_data(cache=False)
+    if len(raw) > MAX_BINDINGS_BODY:
+        return error_response(f"Body exceeds {MAX_BINDINGS_BODY // 1024}KB", 413, error_code="body_too_large")
+    changes, err = _parse_bindings_body(raw)
+    if err:
+        return error_response(err, 400, error_code="invalid_bindings")
+
+    manifest_path = project_dir / "project.json"
+    try:
+        manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return error_response(f"Cannot read the project manifest: {exc}", 500)
+    parameters = manifest_data.get("parameters")
+    if not isinstance(parameters, list):
+        return error_response("The manifest has no parameters to bind", 400, error_code="invalid_bindings")
+
+    by_id = {p.get("id"): p for p in parameters if isinstance(p, dict)}
+    unknown = sorted(pid for pid in changes if pid not in by_id)
+    if unknown:
+        return error_response(
+            f"Unknown parameter(s): {', '.join(unknown)}. Only existing parameters can be bound.",
+            400, error_code="unknown_parameter",
+        )
+
+    sources = _graph_sources(project_dir, manifest_data)
+    if not sources:
+        return error_response("This project has no graph source to bind", 400, error_code="no_graph_source")
+
+    for pid, value in changes.items():
+        if value is None:
+            by_id[pid].pop("binding", None)
+        else:
+            by_id[pid]["binding"] = value
+
+    from services.engine.graph_engine import GraphError, extract_bindings, load_graph_document, transpile
+
+    try:
+        bindings = extract_bindings(parameters)
+        for source in sources:
+            document, _raw = load_graph_document(str(source))
+            transpile(document, bindings, source.name)
+    except GraphError as exc:
+        return error_response(str(exc), 400, error_code="invalid_bindings")
+
+    try:
+        _write_json_atomic(manifest_path, manifest_data)
+    except OSError as exc:
+        return error_response(f"Failed to write the manifest: {exc}", 500)
+    invalidate_cache(slug)
+
+    current = {p["id"]: p["binding"] for p in parameters if isinstance(p, dict) and p.get("binding")}
+    return jsonify({"bindings": current})

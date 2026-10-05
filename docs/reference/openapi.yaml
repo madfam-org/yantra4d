@@ -938,6 +938,73 @@ paths:
         "404":
           description: Project not found
 
+  /api/projects/{slug}/manifest/bindings:
+    put:
+      tags: [editor]
+      summary: Set or clear graph bindings on a fork's manifest parameters
+      description: >-
+        Used by the Studio graph editor. Sets or clears the `binding` field
+        ("nodeId.param", or a list of them) on parameters that already exist in
+        the project's manifest; nothing else in the manifest can change. Only a
+        fork (project.meta.json `source.type` = "fork") is writable here — a
+        commons cartridge or an imported repository is refused with 403
+        `not_a_fork`. The merged binding map must transpile against every graph
+        source of the project. The manifest is written atomically.
+      operationId: updateGraphBindings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: At most 16 KB. Unknown keys are rejected.
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [bindings]
+              properties:
+                bindings:
+                  type: object
+                  minProperties: 1
+                  description: Manifest parameter id to its new binding; null clears it.
+                  additionalProperties:
+                    oneOf:
+                      - type: "null"
+                      - type: string
+                        pattern: "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z_][A-Za-z0-9_]*$"
+                      - type: array
+                        minItems: 1
+                        maxItems: 50
+                        uniqueItems: true
+                        items:
+                          type: string
+                          pattern: "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z_][A-Za-z0-9_]*$"
+      responses:
+        "200":
+          description: Bindings saved; the response lists every bound parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bindings:
+                    type: object
+                    additionalProperties: true
+        "400":
+          description: Malformed body, unknown parameter, no graph source, or a binding the graph engine rejects
+        "403":
+          description: The project is not a fork (`not_a_fork`), or the tier or project access check refused the caller
+        "404":
+          description: Project not found
+        "413":
+          description: Body larger than 16 KB
+
   # ── Legacy Manifest ────────────────────────────────────
   /api/manifest:
     get:

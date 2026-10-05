@@ -1,10 +1,18 @@
 import { useMemo } from 'react'
 import { validateGraph, topologicalOrder, NODE_TYPES } from '../../lib/graph/graphDocument'
-import type { GraphDoc } from '../../lib/graph/graphDocument'
+import type { GraphDoc, GraphIssue } from '../../lib/graph/graphDocument'
+
+/** "node", "node.socket" or "node.param": where on the graph the problem is. */
+function issueAddress(issue: GraphIssue): string {
+  const where = issue.socket ?? issue.param
+  return where ? `${issue.nodeId}.${where}` : `${issue.nodeId}`
+}
 
 interface GraphIssuesProps {
   /** Current editor buffer for a .graph.json file. */
   content: string
+  /** When the graph editor is showing, an issue on a node selects that node. */
+  onSelectNode?: (nodeId: string) => void
 }
 
 /**
@@ -16,7 +24,7 @@ interface GraphIssuesProps {
  * immediately — and when the document is valid, it shows the evaluation order
  * the transpiler will emit, which is the thing a node graph otherwise hides.
  */
-export default function GraphIssues({ content }: GraphIssuesProps) {
+export default function GraphIssues({ content, onSelectNode }: GraphIssuesProps) {
   const result = useMemo(() => {
     const trimmed = content.trim()
     if (!trimmed) return { kind: 'empty' as const }
@@ -60,7 +68,17 @@ export default function GraphIssues({ content }: GraphIssuesProps) {
         <ul className="space-y-0.5 max-h-32 overflow-y-auto">
           {result.issues.map((issue, i) => (
             <li key={`${issue.nodeId ?? ''}-${i}`} className="text-muted-foreground">
-              {issue.nodeId && <span className="font-mono text-foreground">{issue.nodeId}: </span>}
+              {issue.nodeId && onSelectNode ? (
+                <button
+                  type="button"
+                  className="font-mono text-foreground underline decoration-dotted"
+                  onClick={() => onSelectNode(issue.nodeId as string)}
+                >
+                  {issueAddress(issue)}:
+                </button>
+              ) : (
+                issue.nodeId && <span className="font-mono text-foreground">{issueAddress(issue)}: </span>
+              )}{' '}
               {issue.message}
             </li>
           ))}

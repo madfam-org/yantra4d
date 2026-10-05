@@ -9,6 +9,7 @@ import os
 import re
 import shutil
 import sqlite3
+import stat
 import time
 
 from flask import Blueprint, abort, jsonify, make_response, request, send_from_directory
@@ -25,7 +26,7 @@ from services.core.project_access import (
     require_project_access,
 )
 from services.engine.render_revision import render_revision
-from utils.project_resolver import find_project_dir, project_write_root
+from utils.project_resolver import project_write_root, slug_in_use
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
@@ -180,6 +181,24 @@ def serve_static_part(slug, filename):
     return resp
 
 
+def _make_owner_writable(root) -> None:
+    """Give the owner write permission on a freshly copied tree.
+
+    ``copytree`` copies permission bits along with the content, so a fork of a
+    cartridge whose files are read-only (a read-only commons, an image built
+    with restrictive modes) would itself be read-only, and the very next write
+    -- ``project.meta.json`` below, then every save -- would fail. The fork is
+    the user's own copy: it must be writable whatever its source was.
+    """
+    for dirpath, _dirnames, filenames in os.walk(root):
+        for name in (dirpath, *(os.path.join(dirpath, n) for n in filenames)):
+            if os.path.islink(name):
+                continue
+            mode = os.stat(name).st_mode
+            if not mode & stat.S_IWUSR:
+                os.chmod(name, mode | stat.S_IWUSR)
+
+
 @projects_bp.route('/api/projects/<slug>/fork', methods=['POST'])
 @require_valid_slug
 @require_tier("pro")
@@ -200,7 +219,9 @@ def fork_project(slug):
         return error_response("Invalid slug (lowercase alphanumeric, hyphens, 3-50 chars)", 400)
 
     # A fork is a new public cartridge even when its source is private.
-    if find_project_dir(new_slug) is not None:
+    # The new slug must be free in every root; the fork itself is written
+    # into the user-projects root, never next to its source.
+    if slug_in_use(new_slug) is not None:
         return error_response(f"Project '{new_slug}' already exists", 409)
     dest_dir = project_write_root() / new_slug
 
@@ -209,6 +230,7 @@ def fork_project(slug):
             src_dir, dest_dir,
             ignore=shutil.ignore_patterns(".git", ".analytics.db", "__pycache__"),
         )
+        _make_owner_writable(dest_dir)
         # Write fork metadata
         meta = {
             "source": {

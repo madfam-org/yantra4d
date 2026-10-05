@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 @pytest.fixture(autouse=True)
-def _isolate_config(tmp_path, monkeypatch):
+def _isolate_config(tmp_path, tmp_path_factory, monkeypatch):
     """Ensure Config paths point to tmp_path and manifest cache is cleared for every test."""
     from config import Config
     monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
@@ -19,7 +19,15 @@ def _isolate_config(tmp_path, monkeypatch):
     # inside tmp_path too, or a test would resolve slugs out of the developer's
     # real private mount and pass or fail depending on who is running it.
     monkeypatch.setattr(Config, "PRIVATE_PROJECTS_DIR", tmp_path / "private-projects")
-    monkeypatch.setattr(Config, "CARTRIDGES_DIRS", [tmp_path])
+    # The user-projects root is where every new cartridge is written (fork,
+    # import, onboarding). It is a SIBLING of the commons here, as in the
+    # image (/app/projects vs /app/user-projects), not nested inside it, so a
+    # test sees the same layout production does: a fork never lands in the
+    # commons, and nothing under the commons root is mistaken for a fork.
+    # Not created up front -- writers must cope with a missing root.
+    user_root = tmp_path_factory.mktemp("user-projects") / "root"
+    monkeypatch.setattr(Config, "USER_PROJECTS_DIR", user_root)
+    monkeypatch.setattr(Config, "CARTRIDGES_DIRS", [tmp_path, user_root])
     monkeypatch.setattr(Config, "SCAD_DIR", tmp_path)
     monkeypatch.setattr(Config, "MULTI_PROJECT", True)
     monkeypatch.setattr(Config, "AUTH_ENABLED", False)
@@ -37,6 +45,13 @@ def _isolate_config(tmp_path, monkeypatch):
     yield
     manifest_mod.manifest_service._manifest_cache.clear()
     reset_artifact_store()
+
+
+@pytest.fixture
+def user_projects_dir():
+    """The isolated user-projects root ``_isolate_config`` pinned for this test."""
+    from config import Config
+    return Path(Config.USER_PROJECTS_DIR)
 
 
 @pytest.fixture(autouse=True)

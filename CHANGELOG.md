@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Changed
+<<<<<<< d403268c72dd7d92e4fb8aea80a8089fb7142dab
 - **Read-Only Commons Cartridges, Enforced On The Server** — the API now writes
   only into a cartridge it created for someone: a fork or an imported repository
   (`project.meta.json` `source.type` `fork` or `github`). A built-in commons
@@ -27,6 +28,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Forks and imports behave exactly as before, and privacy (`project_locked`)
   and tier checks still answer first. The Studio assembly-steps editor now
   reports a refused save (any non-2xx) instead of toasting "saved".
+=======
+- **Persistent writable storage for user projects** — user-authored cartridges
+  (forks, GitHub imports, onboarding, AI synthesis) now live in their own root,
+  `USER_PROJECTS_DIR` (`/app/user-projects` in the image, a gitignored
+  `user-projects/` locally), separate from the release-shipped commons and
+  private roots, which stay read-only. It resolves after the curated roots, a
+  new slug must be free in every root, and it is kept off `OPENSCADPATH` and the
+  CadQuery `PYTHONPATH`. A fork of a read-only source is now itself writable.
+  The API logs user cartridges hidden by a later curated slug at startup.
+  `docker-compose*.yml` mount a `user_projects` volume. Operator note:
+  `docs/operations/user-projects-storage.md`.
+>>>>>>> refs/sim/217
 - **The Commons Pin Lands At `solid-hyperobjects@b0fa7147` — 500 → 495 Cartridges**
   — the `projects` submodule, verified against a stand-in until now, is pinned at
   the real commons. The content differs from the stand-in in two ruled ways, and

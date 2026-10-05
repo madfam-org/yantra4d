@@ -38,15 +38,16 @@ def client(app):
 
 
 class TestForkProject:
-    def test_fork_success(self, client, tmp_path):
+    def test_fork_success(self, client, tmp_path, user_projects_dir):
         res = client.post("/api/projects/test-project/fork", json={"new_slug": "my-test-project"})
         assert res.status_code == 200
         data = res.get_json()
         assert data["success"] is True
         assert data["slug"] == "my-test-project"
 
-        # Verify files copied
-        forked = tmp_path / "my-test-project"
+        # Verify files copied into the user-projects root, not the commons
+        forked = user_projects_dir / "my-test-project"
+        assert not (tmp_path / "my-test-project").exists()
         assert (forked / "project.json").is_file()
         assert (forked / "main.scad").is_file()
 

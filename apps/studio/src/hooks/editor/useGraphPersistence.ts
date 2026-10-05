@@ -5,13 +5,17 @@
  * the text editor uses (the server re-validates it with the transpiler), and
  * changed manifest bindings follow through `PUT .../manifest/bindings` — in
  * that order, because the server checks bindings against the graph ON DISK.
- * Then the existing render runs, which is the preview.
+ * Then the existing render runs, which is the preview. It is forced: the
+ * parameters did not change, so the client render caches would otherwise hand
+ * back the pre-edit parts without asking the API. The project's source revision
+ * is bumped too, so no later render can be answered by a pre-edit cache entry.
  *
  * Callers decide whether a project may be written at all: this hook is only
  * ever handed a fork or an imported repository, never a commons cartridge.
  */
 import { useCallback, useRef, useState } from 'react'
 import { updateGraphBindings, writeFile } from '../../services/domain/editorService'
+import { bumpSourceRevision } from '../../services/cache/sourceRevision'
 import type { GraphBindingsResponse } from '../../services/domain/editorService'
 
 const DEBOUNCE_MS = 800
@@ -20,7 +24,8 @@ export type BindingChanges = Record<string, string | string[] | null>
 
 export interface GraphPersistOptions {
   slug: string
-  handleGenerate: () => void
+  /** The render flow's generate; called with `true` (force) after a save. */
+  handleGenerate: (forceRender?: boolean) => void
   /** Called with the server's binding map after bindings were saved. */
   onBindingsSaved?: (response: GraphBindingsResponse) => void
   /** Called with what was written, so the caller can mark that buffer clean. */
@@ -51,9 +56,10 @@ export function useGraphPersistence({ slug, handleGenerate, onBindingsSaved, onS
         const saved = await updateGraphBindings(slug, bindings)
         onBindingsSaved?.(saved)
       }
+      bumpSourceRevision(slug)
       setStatus('saved')
       onSaved?.(path, content)
-      handleGenerate()
+      handleGenerate(true)
       return true
     } catch (e) {
       setStatus('error')

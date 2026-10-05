@@ -9,6 +9,7 @@ vi.mock('../../services/domain/editorService', () => ({
 
 import { useGraphPersistence } from './useGraphPersistence'
 import { writeFile, updateGraphBindings } from '../../services/domain/editorService'
+import { sourceRevision } from '../../services/cache/sourceRevision'
 
 beforeEach(() => {
   calls.length = 0
@@ -41,6 +42,18 @@ describe('useGraphPersistence', () => {
     expect(onSaved).toHaveBeenCalledWith('part.graph.json', '{}')
     expect(handleGenerate).toHaveBeenCalledTimes(1)
     expect(hook.result.current.status).toBe('saved')
+  })
+
+  it('forces the post-save render past the client caches and moves the source revision', async () => {
+    const { hook, handleGenerate } = setup()
+    const before = sourceRevision('fork')
+    await act(async () => {
+      await hook.result.current.saveNow('part.graph.json', '{"edited": true}', null)
+    })
+    // The parameters did not change, so an unforced render would be answered by
+    // the L1 / IndexedDB cache with the pre-edit parts.
+    expect(handleGenerate).toHaveBeenCalledWith(true)
+    expect(sourceRevision('fork')).toBe(before + 1)
   })
 
   it('skips the bindings call when nothing changed', async () => {
@@ -95,5 +108,15 @@ describe('useGraphPersistence', () => {
     expect(hook.result.current.error).toBe('parameter binds unknown node')
     expect(handleGenerate).not.toHaveBeenCalled()
     expect(onSaved).not.toHaveBeenCalled()
+  })
+
+  it('a failed write leaves the source revision alone', async () => {
+    writeFile.mockRejectedValueOnce(new Error('HTTP 403'))
+    const { hook } = setup()
+    const before = sourceRevision('fork')
+    await act(async () => {
+      await hook.result.current.saveNow('part.graph.json', '{}', null)
+    })
+    expect(sourceRevision('fork')).toBe(before)
   })
 })

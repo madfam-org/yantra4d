@@ -38,6 +38,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     moves, and only then does this change go green on `spec-conformance`.
 
 ### Changed
+- **Forks And Imports Are Written By Their Creator** — the account that forks a
+  cartridge or imports a repository is recorded at creation (its token `sub`
+  and a timestamp, kept outside the cartridge in `<write root>/.owners/`, so it
+  never enters git, a push or a download). The write routes now accept that
+  account or an `admin`; anyone else gets 403 `not_cartridge_owner`. A fork or
+  import made before this change has no recorded creator and is admin-only.
+  With auth disabled, forks and imports are writable only in local development
+  mode (Flask debugger on), the same rule private projects follow. `git/pull`,
+  `git/push` and `POST /api/github/sync` are now guarded too, and admin flags apply only to
+  writable cartridges (a commons cartridge answers `read_only_cartridge`).
+  `GET /api/projects/<slug>/meta` reports the caller's `can_write` and
+  `is_owner`. Studio: "Fork to edit" replaces the editor on cartridges you
+  cannot write, and assembly editing is shown only on cartridges you can write.
+- **A Fork's Manifest Names The Fork** — forking copied `project.json`
+  verbatim, so the fork kept its source's `project.slug`: the project listing
+  (which keys on that slug) hid the fork, and the Studio, which waits for a
+  manifest whose slug matches the URL, stayed on "Loading project..." after
+  "Fork & Edit". The fork route now sets `project.slug` to the new slug. A
+  GitHub import likewise stores the manifest under the slug it was imported
+  as, whatever slug the submitted manifest carried.
+- **Fork And Import Reserve Their Slug Atomically** — the new cartridge's
+  directory is created with an exclusive `mkdir` before copying or cloning. Of
+  two concurrent forks or imports to the same slug, one succeeds and the other
+  gets 409 `slug_in_use` without touching the first one's directory (previously
+  the failing request's cleanup could remove it). A failed clone removes only
+  the directory its own request created.
 - **Image: include git for the editor's version-control features; degrade
   cleanly without it** — the API image (used by both the API and the render
   worker) and the dev image now install `git`, which history on first save,

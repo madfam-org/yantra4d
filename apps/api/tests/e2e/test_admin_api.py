@@ -42,9 +42,24 @@ def app(tmp_path):
     exports_dir.mkdir()
     (exports_dir / "sample.stl").write_bytes(b"\x00" * 100)
 
+    # A fork: admin flags write the cartridge's project.json, which the API
+    # does only for forks and imports (a commons cartridge is read-only).
+    fork_dir = tmp_path / "test-fork"
+    fork_dir.mkdir()
+    fork_manifest = json.loads(json.dumps(manifest))
+    fork_manifest["project"]["slug"] = "test-fork"
+    (fork_dir / "project.json").write_text(json.dumps(fork_manifest))
+    (fork_dir / "main.scad").write_text("cube(10);")
+    (fork_dir / "grid.scad").write_text("cube(5);")
+    (fork_dir / "project.meta.json").write_text(json.dumps({"source": {"type": "fork", "forked_from": "test-project"}}))
+
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on), where the write guard
+    # lets any caller write forks. Admin-vs-owner rules with auth on are in
+    # test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 
@@ -59,8 +74,7 @@ class TestAdminAPI:
         assert res.status_code == 200
         data = res.get_json()
         assert len(data) >= 1
-        proj = data[0]
-        assert proj["slug"] == "test-project"
+        proj = next(p for p in data if p["slug"] == "test-project")
         assert proj["has_manifest"] is True
         assert proj["scad_file_count"] == 2
         assert proj["has_exports"] is True
@@ -84,18 +98,18 @@ class TestAdminAPI:
     def test_patch_flags_set_is_demo(self, client):
         """PATCH /api/admin/projects/<slug>/flags sets is_demo in project.json."""
         res = client.patch(
-            "/api/admin/projects/test-project/flags",
+            "/api/admin/projects/test-fork/flags",
             json={"is_demo": True},
         )
         assert res.status_code == 200
         data = res.get_json()
-        assert data["slug"] == "test-project"
+        assert data["slug"] == "test-fork"
         assert data["updated"]["is_demo"] is True
 
     def test_patch_flags_set_is_hyperobject(self, client):
         """PATCH sets is_hyperobject inside project.hyperobject."""
         res = client.patch(
-            "/api/admin/projects/test-project/flags",
+            "/api/admin/projects/test-fork/flags",
             json={"is_hyperobject": True},
         )
         assert res.status_code == 200
@@ -104,7 +118,7 @@ class TestAdminAPI:
     def test_patch_flags_unknown_flag_rejected(self, client):
         """Unknown flags in body return 400."""
         res = client.patch(
-            "/api/admin/projects/test-project/flags",
+            "/api/admin/projects/test-fork/flags",
             json={"bad_flag": True},
         )
         assert res.status_code == 400
@@ -113,11 +127,21 @@ class TestAdminAPI:
     def test_patch_flags_empty_body(self, client):
         """Empty JSON body returns 400 — no valid flags provided."""
         res = client.patch(
-            "/api/admin/projects/test-project/flags",
+            "/api/admin/projects/test-fork/flags",
             json={},
         )
         assert res.status_code == 400
         assert "No valid flags" in res.get_json()["error"]
+
+    def test_patch_flags_refuses_a_commons_cartridge(self, client, tmp_path):
+        """Commons cartridges are read-only for everyone, admins included."""
+        manifest_path = tmp_path / "test-project" / "project.json"
+        before = manifest_path.read_bytes()
+        res = client.patch("/api/admin/projects/test-project/flags", json={"is_demo": True})
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == "read_only_cartridge"
+        assert manifest_path.read_bytes() == before
+        assert not (tmp_path / "test-project" / ".git").exists()
 
     def test_patch_flags_nonexistent_project(self, client):
         """PATCH on missing project returns 404."""
@@ -149,19 +173,19 @@ class TestAdminAPI:
     def test_patch_flags_set_unlisted(self, client):
         """PATCH /api/admin/projects/<slug>/flags sets unlisted in project.json."""
         res = client.patch(
-            "/api/admin/projects/test-project/flags",
+            "/api/admin/projects/test-fork/flags",
             json={"unlisted": True},
         )
         assert res.status_code == 200
         data = res.get_json()
-        assert data["slug"] == "test-project"
+        assert data["slug"] == "test-fork"
         assert data["updated"]["unlisted"] is True
 
     def test_unlisted_project_hidden_from_list(self, client, tmp_path):
         """After setting unlisted, project is excluded from GET /api/projects."""
         # Set the project as unlisted via the flags endpoint
         res = client.patch(
-            "/api/admin/projects/test-project/flags",
+            "/api/admin/projects/test-fork/flags",
             json={"unlisted": True},
         )
         assert res.status_code == 200
@@ -174,13 +198,13 @@ class TestAdminAPI:
         res = client.get("/api/projects")
         assert res.status_code == 200
         slugs = [p["slug"] for p in res.get_json()]
-        assert "test-project" not in slugs
+        assert "test-fork" not in slugs
 
     def test_unlisted_project_still_accessible_directly(self, client, tmp_path):
         """An unlisted project's manifest is still accessible via direct slug."""
         # Set the project as unlisted
         client.patch(
-            "/api/admin/projects/test-project/flags",
+            "/api/admin/projects/test-fork/flags",
             json={"unlisted": True},
         )
 
@@ -189,9 +213,9 @@ class TestAdminAPI:
         manifest_mod.manifest_service._manifest_cache.clear()
 
         # Direct access still works
-        res = client.get("/api/projects/test-project/manifest")
+        res = client.get("/api/projects/test-fork/manifest")
         assert res.status_code == 200
-        assert res.get_json()["project"]["slug"] == "test-project"
+        assert res.get_json()["project"]["slug"] == "test-fork"
 
 
 class TestTablacoPublicLink:

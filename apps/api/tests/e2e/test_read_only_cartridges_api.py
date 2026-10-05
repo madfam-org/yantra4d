@@ -29,6 +29,7 @@ from services.core.project_access import (
     project_access_grants,
 )
 from services.core.tier_service import TIER_OVERRIDES_ENV, load_tier_overrides
+from utils.project_resolver import project_write_root
 
 COMMONS = "commons-widget"        # built-in: no project.meta.json
 TYPELESS = "typeless-widget"      # project.meta.json without source.type
@@ -105,6 +106,10 @@ def app(tmp_path):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): forks and imports are
+    # writable by any caller, so these tests isolate the read-only rule.
+    # Ownership is covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 
@@ -280,9 +285,12 @@ def auth_client(tmp_path, monkeypatch):
     project_access_grants()
     load_tier_overrides()
 
-    private_fork = _make_cartridge(tmp_path, FORK)
-    private_fork.rename(tmp_path / PRIVATE_FORK)
-    (tmp_path / PRIVATE_FORK / "project.json").write_text(json.dumps(_manifest(PRIVATE_FORK, private=True)))
+    # A fork lives in the write root, where its creator is recorded.
+    write_root = project_write_root()
+    write_root.mkdir(parents=True, exist_ok=True)
+    private_fork = _make_cartridge(write_root, FORK)
+    private_fork.rename(write_root / PRIVATE_FORK)
+    (write_root / PRIVATE_FORK / "project.json").write_text(json.dumps(_manifest(PRIVATE_FORK, private=True)))
     _make_cartridge(tmp_path, COMMONS).rename(tmp_path / PRIVATE_COMMONS)
     (tmp_path / PRIVATE_COMMONS / "project.json").write_text(json.dumps(_manifest(PRIVATE_COMMONS, private=True)))
 
@@ -315,13 +323,16 @@ class TestAccessOrderIsUnchanged:
         res = self._autosave(auth_client, PRIVATE_FORK, "tok-pro")
         assert res.status_code == 403
         assert res.get_json()["error_code"] == LOCKED_ERROR_CODE
-        assert (tmp_path / PRIVATE_FORK / "main.scad").read_text() == "cube(10);"
-        assert not (tmp_path / PRIVATE_FORK / ".git").exists()
+        fork_dir = project_write_root() / PRIVATE_FORK
+        assert (fork_dir / "main.scad").read_text() == "cube(10);"
+        assert not (fork_dir / ".git").exists()
 
     def test_the_entitled_caller_writes_the_private_fork(self, auth_client, tmp_path):
+        from services.core.cartridge_ownership import record_owner
+        record_owner(PRIVATE_FORK, TOKENS["tok-pro-granted"])
         res = self._autosave(auth_client, PRIVATE_FORK, "tok-pro-granted")
         assert res.status_code == 200
-        assert (tmp_path / PRIVATE_FORK / "main.scad").read_text() == "cube(20);"
+        assert (project_write_root() / PRIVATE_FORK / "main.scad").read_text() == "cube(20);"
 
     def test_private_commons_answers_locked_not_read_only(self, auth_client):
         """Privacy is settled first, so the refusal reveals nothing new about it."""

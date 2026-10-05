@@ -99,6 +99,10 @@ def client(layout):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): the write guard lets any
+    # caller write forks and imports, so this exercises storage, not identity.
+    # Who may write a fork is covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app.test_client()
 
 

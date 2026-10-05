@@ -389,6 +389,7 @@
   "graph.save": "Save",
   "graph.fork_to_save": "Fork to save",
   "graph.save_blocked_commons": "Commons cartridge: edits stay here until you fork it. Export works.",
+  "graph.save_blocked_not_owner": "Another account's cartridge: edits stay here until you fork it. Export works.",
   "graph.bind_blocked_not_fork": "Manifest bindings can only be changed on your fork.",
   "graph.status_clean": "No changes",
   "graph.status_dirty": "Unsaved changes",

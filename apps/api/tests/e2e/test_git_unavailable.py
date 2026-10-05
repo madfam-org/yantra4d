@@ -51,6 +51,10 @@ def client(tmp_path):
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): forks are writable by
+    # any caller, so these tests exercise git availability, not identity.
+    # Who may write a fork is covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app.test_client()
 
 

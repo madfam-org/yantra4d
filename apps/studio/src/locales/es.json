@@ -389,6 +389,7 @@
   "graph.save": "Guardar",
   "graph.fork_to_save": "Bifurcar para guardar",
   "graph.save_blocked_commons": "Cartucho del commons: los cambios se quedan aquí hasta que lo bifurques. Puedes exportar.",
+  "graph.save_blocked_not_owner": "Cartucho de otra cuenta: los cambios se quedan aquí hasta que lo bifurques. Puedes exportar.",
   "graph.bind_blocked_not_fork": "Las vinculaciones del manifiesto solo se pueden cambiar en tu bifurcación.",
   "graph.status_clean": "Sin cambios",
   "graph.status_dirty": "Cambios sin guardar",

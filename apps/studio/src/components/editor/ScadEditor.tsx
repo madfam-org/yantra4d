@@ -93,10 +93,19 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
   // graph editor never writes one: edits stay in the buffer, export works,
   // and saving means forking first. Bindings live in the manifest and the
   // server only accepts binding edits on a fork.
+  // A fork or import is saved only by the account that created it (or an
+  // admin): the API reports that as `can_write`, and one it says no to is
+  // treated like a commons cartridge here — buffer, export, "Fork to save".
   const projectMeta = useProjectMeta(slug)
   const sourceType = ((projectMeta?.source as Record<string, unknown> | undefined)?.type as string | undefined) ?? null
-  const graphSaveBlocked = sourceType === 'fork' || sourceType === 'github' ? null : t('graph.save_blocked_commons')
-  const bindBlocked = sourceType === 'fork' ? null : t('graph.bind_blocked_not_fork')
+  const writableSource = sourceType === 'fork' || sourceType === 'github'
+  const notOwner = writableSource && projectMeta?.can_write === false
+  const graphSaveBlocked = !writableSource
+    ? t('graph.save_blocked_commons')
+    : notOwner ? t('graph.save_blocked_not_owner') : null
+  const bindBlocked = notOwner
+    ? t('graph.save_blocked_not_owner')
+    : sourceType === 'fork' ? null : t('graph.bind_blocked_not_fork')
   const manifestParameters = useMemo(
     () => ((manifest?.parameters as ManifestParameterLike[] | undefined) ?? []).filter((p) => p && typeof p.id === 'string'),
     [manifest],

@@ -389,6 +389,7 @@
   "graph.save": "保存",
   "graph.fork_to_save": "派生后保存",
   "graph.save_blocked_commons": "公共库组件：在派生之前，修改只保存在此处。可以导出。",
+  "graph.save_blocked_not_owner": "其他账户的组件：在派生之前，修改只保存在此处。可以导出。",
   "graph.bind_blocked_not_fork": "清单绑定只能在你的派生项目中修改。",
   "graph.status_clean": "无更改",
   "graph.status_dirty": "有未保存的更改",

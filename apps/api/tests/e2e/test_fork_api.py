@@ -60,6 +60,30 @@ class TestForkProject:
         assert meta["source"]["type"] == "fork"
         assert meta["source"]["forked_from"] == "test-project"
 
+    def test_fork_manifest_names_the_new_slug(self, client, user_projects_dir):
+        """The copy is its own cartridge: discovery and the Studio key on project.slug."""
+        res = client.post("/api/projects/test-project/fork", json={"new_slug": "my-test-project"})
+        assert res.status_code == 200
+
+        forked = json.loads((user_projects_dir / "my-test-project" / "project.json").read_text())
+        assert forked["project"]["slug"] == "my-test-project"
+        # Everything else in the manifest is copied as it was.
+        assert forked["project"]["name"] == "Test Project"
+        assert forked["modes"][0]["scad_file"] == "main.scad"
+
+        manifest = client.get("/api/projects/my-test-project/manifest")
+        assert manifest.status_code == 200
+        assert manifest.get_json()["project"]["slug"] == "my-test-project"
+
+        import manifest as manifest_mod
+        manifest_mod.manifest_service._manifest_cache.clear()
+        listed = {p["slug"] for p in client.get("/api/projects").get_json()}
+        assert {"test-project", "my-test-project"} <= listed
+
+        # The source is untouched.
+        source = client.get("/api/projects/test-project/manifest").get_json()
+        assert source["project"]["slug"] == "test-project"
+
     def test_fork_invalid_slug(self, client):
         res = client.post("/api/projects/test-project/fork", json={"new_slug": "A B"})
         assert res.status_code == 400

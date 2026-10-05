@@ -35,16 +35,23 @@ def build_catalog() -> dict:
     from services.engine.graph_engine import (
         _PLANES,
         GRAPH_FILE_SUFFIX,
+        MAX_DERIVED,
+        MAX_EXPR_LENGTH,
+        MAX_EXPR_TOKENS,
+        MAX_GRAPH_PARAMETERS,
+        MAX_MAP_ENTRIES,
         MAX_NODES,
         MAX_OUTPUTS,
         MAX_PATTERN_COUNT,
+        MAX_POLYLINE_POINTS,
+        MAX_REVOLVE_EXTENT,
         NODE_TYPES,
+        PARAM_KINDS,
     )
 
-    # Kinds that a manifest parameter may bind to. Structural kinds stay literal
-    # so a render-time value can never reshape the emitted script.
-    bindable_kinds = {"float", "count"}
-
+    # Whether a kind binds to a manifest parameter, or takes an {"expr": ...}, is
+    # the engine's PARAM_KINDS contract: structural kinds stay literal so a
+    # render-time value can never reshape the emitted script.
     nodes = {}
     for type_name in sorted(NODE_TYPES):
         spec = NODE_TYPES[type_name]
@@ -54,7 +61,8 @@ def build_catalog() -> dict:
             params[param_name] = {
                 "kind": kind,
                 "default": default,
-                "bindable": kind in bindable_kinds,
+                "bindable": PARAM_KINDS[kind]["bindable"],
+                "expr": PARAM_KINDS[kind]["expr"],
             }
         nodes[type_name] = {
             "output": spec["output"],
@@ -70,7 +78,23 @@ def build_catalog() -> dict:
             "max_nodes": MAX_NODES,
             "max_outputs": MAX_OUTPUTS,
             "max_pattern_count": MAX_PATTERN_COUNT,
+            "max_parameters": MAX_GRAPH_PARAMETERS,
+            "max_derived": MAX_DERIVED,
+            "max_map_entries": MAX_MAP_ENTRIES,
+            "max_polyline_points": MAX_POLYLINE_POINTS,
+            "max_revolve_extent_mm": MAX_REVOLVE_EXTENT,
         },
+        # The {"expr": ...} input contract (G-EXPR). Identifiers are manifest
+        # parameter ids the graph declares in its top-level `parameters`, or names
+        # from its ordered top-level `derived` list.
+        "expression": {
+            "dialect": "safeFormula",
+            "dialect_source": "apps/studio/src/lib/safeFormula.ts",
+            "max_length": MAX_EXPR_LENGTH,
+            "max_tokens": MAX_EXPR_TOKENS,
+            "identifiers": ["parameters", "derived"],
+        },
+        "param_kinds": {kind: dict(PARAM_KINDS[kind]) for kind in sorted(PARAM_KINDS)},
         "planes": sorted(_PLANES),
         "nodes": nodes,
     }

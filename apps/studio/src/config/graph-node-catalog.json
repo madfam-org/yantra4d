@@ -5,7 +5,59 @@
   "limits": {
     "max_nodes": 500,
     "max_outputs": 50,
-    "max_pattern_count": 200
+    "max_pattern_count": 200,
+    "max_parameters": 128,
+    "max_derived": 256,
+    "max_map_entries": 64,
+    "max_polyline_points": 256,
+    "max_revolve_extent_mm": 1000.0
+  },
+  "expression": {
+    "dialect": "safeFormula",
+    "dialect_source": "apps/studio/src/lib/safeFormula.ts",
+    "max_length": 256,
+    "max_tokens": 128,
+    "identifiers": [
+      "parameters",
+      "derived"
+    ]
+  },
+  "param_kinds": {
+    "axis": {
+      "bindable": false,
+      "expr": false,
+      "literal": "x | y | z"
+    },
+    "condition": {
+      "bindable": false,
+      "expr": true,
+      "literal": "boolean"
+    },
+    "count": {
+      "bindable": true,
+      "expr": true,
+      "literal": "integer"
+    },
+    "float": {
+      "bindable": true,
+      "expr": true,
+      "literal": "number"
+    },
+    "plane": {
+      "bindable": false,
+      "expr": false,
+      "literal": "XY | XZ | YZ"
+    },
+    "points": {
+      "bindable": false,
+      "expr": true,
+      "literal": "array of [x, y] number pairs"
+    },
+    "selector": {
+      "bindable": false,
+      "expr": false,
+      "literal": "string"
+    }
   },
   "planes": [
     "XY",
@@ -20,17 +72,20 @@
         "d": {
           "kind": "float",
           "default": 10.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "h": {
           "kind": "float",
           "default": 10.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "w": {
           "kind": "float",
           "default": 10.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -43,12 +98,14 @@
         "distance": {
           "kind": "float",
           "default": 1.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "edges": {
           "kind": "selector",
           "default": "",
-          "bindable": false
+          "bindable": false,
+          "expr": false
         }
       }
     },
@@ -67,12 +124,14 @@
         "h": {
           "kind": "float",
           "default": 10.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "r": {
           "kind": "float",
           "default": 5.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -85,7 +144,8 @@
         "height": {
           "kind": "float",
           "default": 10.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -98,12 +158,14 @@
         "edges": {
           "kind": "selector",
           "default": "",
-          "bindable": false
+          "bindable": false,
+          "expr": false
         },
         "radius": {
           "kind": "float",
           "default": 1.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -116,7 +178,8 @@
         "diameter": {
           "kind": "float",
           "default": 5.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -137,7 +200,8 @@
         "plane": {
           "kind": "plane",
           "default": "YZ",
-          "bindable": false
+          "bindable": false,
+          "expr": false
         }
       }
     },
@@ -150,22 +214,26 @@
         "count": {
           "kind": "count",
           "default": 3,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "dx": {
           "kind": "float",
           "default": 10.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "dy": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "dz": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -178,12 +246,14 @@
         "angle": {
           "kind": "float",
           "default": 90.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "count": {
           "kind": "count",
           "default": 4,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -194,22 +264,26 @@
         "plane": {
           "kind": "plane",
           "default": "XY",
-          "bindable": false
+          "bindable": false,
+          "expr": false
         },
         "r": {
           "kind": "float",
           "default": 5.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "x": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "y": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -220,27 +294,63 @@
         "diameter": {
           "kind": "float",
           "default": 20.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "plane": {
           "kind": "plane",
           "default": "XY",
-          "bindable": false
+          "bindable": false,
+          "expr": false
         },
         "sides": {
           "kind": "count",
           "default": 6,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "x": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "y": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
+        }
+      }
+    },
+    "profile_polyline": {
+      "output": "profile",
+      "inputs": {},
+      "params": {
+        "plane": {
+          "kind": "plane",
+          "default": "XY",
+          "bindable": false,
+          "expr": false
+        },
+        "points": {
+          "kind": "points",
+          "default": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              10.0,
+              0.0
+            ],
+            [
+              0.0,
+              10.0
+            ]
+          ],
+          "bindable": false,
+          "expr": true
         }
       }
     },
@@ -251,27 +361,66 @@
         "d": {
           "kind": "float",
           "default": 10.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "plane": {
           "kind": "plane",
           "default": "XY",
-          "bindable": false
+          "bindable": false,
+          "expr": false
         },
         "w": {
           "kind": "float",
           "default": 10.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "x": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "y": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
+        }
+      }
+    },
+    "reflect": {
+      "output": "solid",
+      "inputs": {
+        "shape": "solid"
+      },
+      "params": {
+        "plane": {
+          "kind": "plane",
+          "default": "YZ",
+          "bindable": false,
+          "expr": false
+        }
+      }
+    },
+    "revolve": {
+      "output": "solid",
+      "inputs": {
+        "profile": "profile"
+      },
+      "params": {
+        "angle": {
+          "kind": "float",
+          "default": 360.0,
+          "bindable": true,
+          "expr": true
+        },
+        "axis": {
+          "kind": "axis",
+          "default": "z",
+          "bindable": false,
+          "expr": false
         }
       }
     },
@@ -284,12 +433,29 @@
         "angle": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "axis": {
           "kind": "axis",
           "default": "z",
-          "bindable": false
+          "bindable": false,
+          "expr": false
+        }
+      }
+    },
+    "select": {
+      "output": "solid",
+      "inputs": {
+        "if_false": "solid",
+        "if_true": "solid"
+      },
+      "params": {
+        "when": {
+          "kind": "condition",
+          "default": true,
+          "bindable": false,
+          "expr": true
         }
       }
     },
@@ -302,12 +468,14 @@
         "face": {
           "kind": "selector",
           "default": ">Z",
-          "bindable": false
+          "bindable": false,
+          "expr": false
         },
         "thickness": {
           "kind": "float",
           "default": 2.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -318,7 +486,8 @@
         "r": {
           "kind": "float",
           "default": 5.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },
@@ -331,17 +500,20 @@
         "x": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "y": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         },
         "z": {
           "kind": "float",
           "default": 0.0,
-          "bindable": true
+          "bindable": true,
+          "expr": true
         }
       }
     },

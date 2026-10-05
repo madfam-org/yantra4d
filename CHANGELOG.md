@@ -25,7 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `POST /git/connect-remote` and `POST /git/commit`. The Studio already offered
   "Fork to edit" for these cartridges; the server now applies the same rule.
   Forks and imports behave exactly as before, and privacy (`project_locked`)
-  and tier checks still answer first.
+  and tier checks still answer first. The Studio assembly-steps editor now
+  reports a refused save (any non-2xx) instead of toasting "saved".
 - **The Commons Pin Lands At `solid-hyperobjects@b0fa7147` — 500 → 495 Cartridges**
   — the `projects` submodule, verified against a stand-in until now, is pinned at
   the real commons. The content differs from the stand-in in two ruled ways, and

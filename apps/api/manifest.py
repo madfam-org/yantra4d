@@ -6,6 +6,7 @@ Supports multi-project mode via PROJECTS_DIR.
 import copy
 import json
 import logging
+import re
 from pathlib import Path
 from typing import ClassVar
 
@@ -16,17 +17,41 @@ logger = logging.getLogger(__name__)
 _manifest_cache: dict[str, "ProjectManifest"] = {}
 
 
+# A manifest file reference (``scad_file``, ``cq_file``, ``static_stl``) must be a
+# plain relative path: a conservative character class, slash-separated segments,
+# no ``.``/``..`` segments, no leading slash, no whitespace or control characters.
+# Names flow into generated programs, logs and command lines, so anything else is
+# refused rather than escaped.
+_PLAIN_REL_PATH_CHARS = re.compile(r"[A-Za-z0-9_./-]{1,255}")
+
+
+def validate_manifest_file_name(name: object) -> str:
+    """Return *name* if it is a plain relative path, else raise ``ValueError``."""
+    if not isinstance(name, str) or not _PLAIN_REL_PATH_CHARS.fullmatch(name):
+        raise ValueError(
+            f"File {name!r} must be a plain relative path inside the cartridge directory"
+        )
+    segments = name.split("/")
+    if any(seg in ("", ".", "..") for seg in segments):
+        raise ValueError(
+            f"File {name!r} must be a plain relative path inside the cartridge directory"
+        )
+    return name
+
+
 def resolve_within_dir(base: Path | str, relative: str, start: Path | str | None = None) -> Path:
     """Resolve *relative* (from *start*, default *base*) and require it to stay in *base*.
 
-    A name with ``..`` segments, an absolute path, or a symlink that leaves
-    *base* raises ``ValueError``; it would otherwise let a manifest point the
-    renderer, or the CadQuery runner, at a file outside the cartridge.
+    *relative* must first be a plain relative path (``validate_manifest_file_name``);
+    then a symlink that leaves *base* still raises ``ValueError``. Either would
+    otherwise let a manifest point the renderer, or the CadQuery runner, at a file
+    outside the cartridge, or carry unexpected characters into generated code.
     """
+    validate_manifest_file_name(relative)
     root = Path(base).resolve()
     candidate = (Path(start if start is not None else base) / relative).resolve()
     if candidate != root and root not in candidate.parents:
-        raise ValueError(f"File '{relative}' is outside the cartridge directory")
+        raise ValueError(f"File {relative!r} is outside the cartridge directory")
     return candidate
 
 
@@ -157,8 +182,8 @@ class ProjectManifest:
                 result[fname] = self.resolve_within_project(fname)
             except ValueError:
                 logger.warning(
-                    "Dropping mode scad_file '%s' in %s: outside cartridge directory",
-                    fname, self.slug,
+                    "Dropping mode scad_file %r in %s: not a plain relative path "
+                    "inside the cartridge directory", fname, self.slug,
                 )
         return result
 
@@ -184,7 +209,13 @@ class ProjectManifest:
         result = {}
         for p in self.parts:
             if p.get("static_stl"):
-                result[p["id"]] = self.project_dir / p["static_stl"]
+                try:
+                    result[p["id"]] = self.resolve_within_project(p["static_stl"])
+                except ValueError:
+                    logger.warning(
+                        "Dropping static_stl %r of part %r in %s: not a plain relative "
+                        "path inside the cartridge", p["static_stl"], p.get("id"), self.slug,
+                    )
         return result
 
     def get_scad_file_for_mode(self, mode_id: str) -> str | None:

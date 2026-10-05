@@ -318,7 +318,7 @@ class TestResolveWithinProject:
     ])
     def test_escaping_name_is_refused(self, tmp_path, bad):
         m = self._manifest(tmp_path)
-        with pytest.raises(ValueError, match="outside the cartridge directory"):
+        with pytest.raises(ValueError, match="cartridge directory"):
             m.resolve_within_project(bad)
 
     def test_symlink_escaping_is_refused(self, tmp_path):
@@ -346,14 +346,70 @@ class TestResolveWithinProject:
 class TestResolveWithinDir:
     """The type-agnostic containment helper used by the render orchestrator."""
 
-    def test_relative_start_inside_root(self, tmp_path):
+    def test_plain_name_from_start_dir(self, tmp_path):
         from manifest import resolve_within_dir
         (tmp_path / "sub").mkdir()
-        got = resolve_within_dir(tmp_path, "../part.py", start=tmp_path / "sub")
-        assert got == (tmp_path / "part.py").resolve()
+        got = resolve_within_dir(tmp_path, "part.py", start=tmp_path / "sub")
+        assert got == (tmp_path / "sub" / "part.py").resolve()
 
     @pytest.mark.parametrize("bad", ["../x.py", "/etc/hosts", "a/../../x.py"])
     def test_escape_refused(self, tmp_path, bad):
         from manifest import resolve_within_dir
-        with pytest.raises(ValueError, match="outside the cartridge directory"):
+        with pytest.raises(ValueError, match="cartridge directory"):
             resolve_within_dir(tmp_path, bad)
+
+
+class TestManifestFileNamesArePlainRelativePaths:
+    """Manifest file references must be plain relative paths, nothing else."""
+
+    @pytest.mark.parametrize("bad", [
+        "main.py\nimport os",          # newline (would break out of a comment)
+        "main\r.py",                   # carriage return
+        "main\x00.py",                 # NUL
+        "main\x1b.py",                 # other control character
+        "main\t.py",                   # tab
+        "../escape.py",                # parent segment
+        "sub/../main.py",              # parent segment mid-path
+        "./main.py",                   # current-dir segment
+        "/abs/main.py",                # absolute
+        "sub//main.py",                # empty segment
+        "main file.py",                # space
+        "main\\file.py",               # backslash
+        "mäin.py",                     # non-ASCII
+        "",                            # empty
+        "a" * 256,                     # over length
+        None, 42, ["main.py"],         # not a string
+    ])
+    def test_refused(self, bad):
+        from manifest import validate_manifest_file_name
+        with pytest.raises(ValueError, match="plain relative path"):
+            validate_manifest_file_name(bad)
+
+    @pytest.mark.parametrize("good", [
+        "main.py", "main.scad", "sub/part.py", "model.graph.json", "parts/a-b_c.stl",
+    ])
+    def test_accepted(self, good):
+        from manifest import validate_manifest_file_name
+        assert validate_manifest_file_name(good) == good
+
+    def test_mode_with_newline_in_scad_file_is_not_renderable(self, tmp_path):
+        d = _write_manifest(tmp_path, extra={
+            "modes": [
+                {"id": "ok", "scad_file": "main.scad", "parts": ["body"]},
+                {"id": "bad", "scad_file": "x.graph.json\nimport os", "parts": ["body"]},
+            ],
+        })
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        allowed = m.get_allowed_files()
+        assert list(allowed) == ["main.scad"]
+
+    def test_static_stl_must_be_plain_relative(self, tmp_path):
+        d = _write_manifest(tmp_path, extra={
+            "parts": [
+                {"id": "ok", "static_stl": "parts/ok.stl"},
+                {"id": "bad", "static_stl": "../../etc/passwd"},
+            ],
+        })
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        stl = m.get_static_stl_map()
+        assert "ok" in stl and "bad" not in stl

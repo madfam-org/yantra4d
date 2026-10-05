@@ -194,6 +194,25 @@ For peak Developer Experience and Agentic Discovery, consult our interconnected 
 
 ---
 
+## 🔗 Related repositories and contracts
+
+Each link goes to the document that defines the contract on the other side.
+
+| Contract | Defined in | What Yantra4D does with it |
+| :-- | :-- | :-- |
+| Cartridge checks, parity and the golden-twin rule | hyperobjects-spec [`README.md`](https://github.com/madfam-org/hyperobjects-spec/blob/main/README.md) | CI runs the pinned keystone; the graph transpiler there is a byte-identical copy of `apps/api/services/engine/graph_engine.py` |
+| Graph format 1.x | hyperobjects-spec [`graph.schema.json`](https://github.com/madfam-org/hyperobjects-spec/blob/main/src/y4d_spec/graph/graph.schema.json) | the format the Studio graph editor writes ([authoring guide](docs/guides/graph-cartridges.md)) |
+| Assemblies and kinematics (ASM-1, §9) | hyperobjects-spec [`docs/ASSEMBLIES.md`](https://github.com/madfam-org/hyperobjects-spec/blob/main/docs/ASSEMBLIES.md) | joints, machine bindings and golden poses that a viewer reproduces |
+| The solid commons | solid-hyperobjects [`README.md`](https://github.com/madfam-org/solid-hyperobjects/blob/main/README.md) and [`assemblies/README.md`](https://github.com/madfam-org/solid-hyperobjects/blob/main/assemblies/README.md) | mounted read-only at `projects/`; forks go to user storage ([user-projects storage](docs/operations/user-projects-storage.md)) |
+| The soft commons | soft-hyperobjects [`README.md`](https://github.com/madfam-org/soft-hyperobjects/blob/main/README.md) | linked through `hardware_ref` bridges ([Fashion Cabinet consumers](docs/reference/fashion-cabinet-consumers.md)) |
+| Type and assembly shells, the twin graph | asset-shells [`README.md`](https://github.com/madfam-org/asset-shells/blob/main/README.md) (*Publish API*, *Twin graph*) | the store for the AAS shells of commons releases |
+| Machine telemetry (Sparkplug 3.0) | pravara-mes [`packages/sparkplug/README.md`](https://github.com/madfam-org/pravara-mes/blob/main/packages/sparkplug/README.md) | raw axis values, which a viewer maps through an assembly's machine bindings |
+
+Platform-side: [render artifact storage and the render worker](docs/operations/render-artifact-storage.md),
+[GOC-1 generator output](docs/reference/generator-output.md).
+
+---
+
 ## 🚀 Quick Start
 
 ### Clone (with all project submodules)

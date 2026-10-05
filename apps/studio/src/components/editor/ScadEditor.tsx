@@ -23,8 +23,9 @@ import { listFiles, readFile, createFile, deleteFile } from '../../services/doma
 import type { GraphBindingsResponse } from '../../services/domain/editorService'
 import { registerScadLanguage, SCAD_LANGUAGE_ID } from '../../lib/scad-language'
 import { useEditorRender } from '../../hooks/editor/useEditorRender'
+import { editorSaveFailure } from '../../lib/editorSaveMessage'
 import { useGraphPersistence } from '../../hooks/editor/useGraphPersistence'
-import { useProjectMeta } from '../../hooks/project/useProjectMeta'
+import { canWriteCartridge, useProjectMeta } from '../../hooks/project/useProjectMeta'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { validateGraph } from '../../lib/graph/graphDocument'
 import { bindableParameters, bindingChanges, bindingConflicts, bindingsFromManifest } from '../../lib/graph/graphBindings'
@@ -79,13 +80,27 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Set when the last failure was a refused write that forking would fix.
+  const [errorForkable, setErrorForkable] = useState(false)
   const [aiOpen, setAiOpen] = useState(false)
   const [showNewFileDialog, setShowNewFileDialog] = useState(false)
   const [newFileName, setNewFileName] = useState('')
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null)
   const monacoRef = useRef<Parameters<OnMount>[1] | null>(null)
 
-  const { saveAndRender, saveImmediate } = useEditorRender({ slug, handleGenerate })
+  // A failed save says why, in words, where the author is looking: a refused
+  // write to a commons cartridge or someone else's fork offers the fork.
+  const showSaveFailure = useCallback((e: unknown) => {
+    const failure = editorSaveFailure(e, t)
+    setError(failure.message)
+    setErrorForkable(failure.forkable)
+  }, [t])
+  const onAutosaved = useCallback((path: string, content: string) => {
+    setOpenTabs(prev => prev.map(tab =>
+      tab.path === path ? { ...tab, originalContent: content, dirty: tab.content !== content } : tab
+    ))
+  }, [])
+  const { saveAndRender, saveImmediate } = useEditorRender({ slug, handleGenerate, onSaveError: showSaveFailure, onSaved: onAutosaved })
 
   // ── Graph editing: where saves may go, and the manifest bindings ──────────
   // A project with no `source.type` in project.meta.json is a commons
@@ -103,6 +118,13 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
   const graphSaveBlocked = !writableSource
     ? t('graph.save_blocked_commons')
     : notOwner ? t('graph.save_blocked_not_owner') : null
+  // Whether this caller may write this cartridge at all (the API's answer;
+  // false until it has answered). A panel opened on a cartridge it may not
+  // write — restored from the session after leaving your own fork, say —
+  // stays open read-only: files can be read, graph edits stay in the buffer
+  // with "Fork to save", and nothing offers a write the server would refuse.
+  const canWrite = canWriteCartridge(projectMeta)
+  const readOnlyPanel = projectMeta !== null && !canWrite
   const bindBlocked = notOwner
     ? t('graph.save_blocked_not_owner')
     : sourceType === 'fork' ? null : t('graph.bind_blocked_not_fork')
@@ -141,7 +163,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
     let cancelled = false
     listFiles(slug)
       .then((f: unknown) => { if (!cancelled) { setFiles(f as FileEntry[]); setError(null); setLoading(false) } })
-      .catch((e: Error) => { if (!cancelled) { setError(e.message); setLoading(false) } })
+      .catch((e: Error) => { if (!cancelled) { setError(e.message); setErrorForkable(false); setLoading(false) } })
     return () => { cancelled = true }
   }, [slug])
 
@@ -164,6 +186,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       setActiveTab(path)
     } catch (e) {
       setError((e as Error).message)
+      setErrorForkable(false)
     }
   }, [slug, openTabs])
 
@@ -185,15 +208,16 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
     ))
     // A graph document in a commons cartridge is never written: edit, export, or fork it.
     if (activeTab.endsWith('.graph.json') && graphSaveBlocked) return
+    if (!canWrite) return
     saveAndRender(activeTab, value ?? '')
-  }, [activeTab, saveAndRender, graphSaveBlocked])
+  }, [activeTab, saveAndRender, graphSaveBlocked, canWrite])
 
   const handleSave = useCallback(async () => {
     const tab = openTabs.find(t => t.path === activeTab)
     if (tab && tab.path.endsWith('.graph.json')) {
       // Graph documents save through the graph path: never into a commons
       // cartridge, and together with any binding the author changed.
-      if (graphSaveBlocked) { setError(graphSaveBlocked); return }
+      if (graphSaveBlocked) { setError(graphSaveBlocked); setErrorForkable(true); return }
       const changes = bindBlocked ? null : pendingBindings
       if (!tab.dirty && (!changes || Object.keys(changes).length === 0)) return
       setSaving(true)
@@ -202,6 +226,7 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       return
     }
     if (!tab || !tab.dirty) return
+    if (!canWrite) { setError(t('editor.read_only_panel')); setErrorForkable(true); return }
     setSaving(true)
     try {
       await saveImmediate(tab.path, tab.content)
@@ -209,10 +234,10 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
         t.path === activeTab ? { ...t, originalContent: t.content, dirty: false } : t
       ))
     } catch (e) {
-      setError((e as Error).message)
+      showSaveFailure(e)
     }
     setSaving(false)
-  }, [activeTab, openTabs, saveImmediate, graphSaveBlocked, bindBlocked, pendingBindings, graphPersistence])
+  }, [activeTab, openTabs, saveImmediate, graphSaveBlocked, bindBlocked, pendingBindings, graphPersistence, showSaveFailure, canWrite, t])
 
   // Ctrl+S handler
   useEffect(() => {
@@ -234,9 +259,9 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       setFiles(updated as unknown as FileEntry[])
       openFile(name)
     } catch (e) {
-      setError((e as Error).message)
+      showSaveFailure(e)
     }
-  }, [slug, openFile])
+  }, [slug, openFile, showSaveFailure])
 
   const handleNewFileConfirm = useCallback(() => {
     const name = newFileName.trim()
@@ -256,9 +281,9 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       const updated = await listFiles(slug)
       setFiles(updated as unknown as FileEntry[])
     } catch (err) {
-      setError((err as Error).message)
+      showSaveFailure(err)
     }
-  }, [slug, closeTab])
+  }, [slug, closeTab, showSaveFailure])
 
   const activeContent = openTabs.find(t => t.path === activeTab)?.content || ''
   // Graph documents are JSON, not OpenSCAD — highlight them as such and run the
@@ -314,21 +339,33 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
         if (t.path === edit.file) {
           const newContent = t.content.replace(edit.search, edit.replace)
           if (newContent !== t.content) {
-            saveAndRender(t.path, newContent)
+            if (canWrite) saveAndRender(t.path, newContent)
             return { ...t, content: newContent, dirty: newContent !== t.originalContent }
           }
         }
         return t
       }))
     }
-  }, [saveAndRender])
+  }, [saveAndRender, canWrite])
 
   return (
     <div className="flex flex-col h-full border-r border-border">
       {error && (
-        <div className="px-3 py-1.5 text-xs bg-destructive/15 text-destructive">
+        <div role="alert" className="px-3 py-1.5 text-xs bg-destructive/15 text-destructive">
           {error}
-          <button type="button" onClick={() => setError(null)} className="ml-2 underline">dismiss</button>
+          {errorForkable && onForkRequest && (
+            <button type="button" onClick={onForkRequest} className="ml-2 underline font-medium">{t('editor.fork_to_save')}</button>
+          )}
+          <button type="button" onClick={() => { setError(null); setErrorForkable(false) }} className="ml-2 underline">{t('editor.dismiss')}</button>
+        </div>
+      )}
+
+      {readOnlyPanel && (
+        <div role="status" className="px-3 py-1.5 text-xs bg-muted text-muted-foreground border-b border-border">
+          {t('editor.read_only_panel')}
+          {onForkRequest && (
+            <button type="button" onClick={onForkRequest} className="ml-2 underline font-medium text-foreground">{t('editor.fork_to_save')}</button>
+          )}
         </div>
       )}
 
@@ -336,10 +373,12 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       <div className="flex-none border-b border-border">
         <div className="flex items-center justify-between px-3 py-1.5">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Files</span>
-          <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-0 md:min-w-0" onClick={() => { setNewFileName(''); setShowNewFileDialog(true) }} title="New file">
-            <Plus className="h-3.5 w-3.5" />
-            <span className="sr-only">New file</span>
-          </Button>
+          {canWrite && (
+            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-0 md:min-w-0" onClick={() => { setNewFileName(''); setShowNewFileDialog(true) }} title="New file">
+              <Plus className="h-3.5 w-3.5" />
+              <span className="sr-only">New file</span>
+            </Button>
+          )}
         </div>
         {loading ? (
           <div className="px-3 py-2 text-xs text-muted-foreground flex items-center gap-1">
@@ -358,15 +397,17 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
                 >
                   <FileCode className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                   <span className="truncate flex-1">{f.path}</span>
-                  <button
-                    type="button"
-                    className="opacity-100 md:opacity-0 md:group-hover:opacity-100 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center text-muted-foreground hover:text-destructive focus-visible:opacity-100"
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteFile(f.path, e)}
-                    title="Delete file"
-                  >
-                    <X className="h-3 w-3" />
-                    <span className="sr-only">Delete {f.path}</span>
-                  </button>
+                  {canWrite && (
+                    <button
+                      type="button"
+                      className="opacity-100 md:opacity-0 md:group-hover:opacity-100 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center text-muted-foreground hover:text-destructive focus-visible:opacity-100"
+                      onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteFile(f.path, e)}
+                      title="Delete file"
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Delete {f.path}</span>
+                    </button>
+                  )}
                 </div>
               </li>
             ))}
@@ -377,27 +418,33 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
       {/* Tabs */}
       {openTabs.length > 0 && (
         <div className="flex-none flex items-center border-b border-border overflow-x-auto" role="tablist">
+          {/* The tab and its close control are siblings: a <button> may not
+              contain another (invalid HTML, and React reports it on hydration). */}
           {openTabs.map(t => (
-            <button
+            <div
               key={t.path}
-              type="button"
-              role="tab"
-              aria-selected={t.path === activeTab}
-              className={`flex items-center gap-1 px-3 py-1.5 text-xs border-r border-border whitespace-nowrap ${t.path === activeTab ? 'bg-background text-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-                }`}
-              onClick={() => setActiveTab(t.path)}
+              role="presentation"
+              className={`flex items-center border-r border-border ${t.path === activeTab ? 'bg-background text-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}
             >
-              {t.dirty && <span className="w-1.5 h-1.5 rounded-full bg-primary" title="Unsaved changes" />}
-              {t.path.split('/').pop()}
               <button
                 type="button"
-                className="ml-1 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                role="tab"
+                aria-selected={t.path === activeTab}
+                className="flex items-center gap-1 pl-3 py-1.5 text-xs whitespace-nowrap"
+                onClick={() => setActiveTab(t.path)}
+              >
+                {t.dirty && <span className="w-1.5 h-1.5 rounded-full bg-primary" title="Unsaved changes" />}
+                {t.path.split('/').pop()}
+              </button>
+              <button
+                type="button"
+                className="ml-1 mr-2 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center text-muted-foreground hover:text-foreground"
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => closeTab(t.path, e)}
               >
                 <X className="h-3 w-3" />
                 <span className="sr-only">Close {t.path}</span>
               </button>
-            </button>
+            </div>
           ))}
           {saving && <Loader2 className="h-3 w-3 animate-spin ml-2 text-muted-foreground" />}
         </div>
@@ -480,6 +527,8 @@ export default function ScadEditor({ slug, handleGenerate, manifest, onForkReque
               wordWrap: 'on',
               tabSize: 2,
               automaticLayout: true,
+              // Text the server would refuse to save is shown, not edited.
+              readOnly: !canWrite && !isGraphFile,
             }}
           />
         ) : (

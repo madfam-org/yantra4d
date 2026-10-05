@@ -23,7 +23,7 @@ from manifest import get_manifest
 from middleware.auth import optional_auth
 from services.core.project_access import require_project_access
 from services.core.tier_service import check_feature, resolve_tier
-from services.engine.openscad import compute_scad_hash, validate_params
+from services.engine.openscad import validate_params
 from services.engine.render_contract import (
     RENDER_EVENT_JOB,
     RENDER_EVENT_PART_DONE,
@@ -36,6 +36,7 @@ from services.engine.render_orchestrator import (
     resolve_engine_config,
 )
 from services.engine.render_revision import cache_revision, render_revision
+from services.engine.render_source import RenderSourceError, render_source_for_mode, source_content_hash
 from services.engine.worker_dispatch import (
     WORKER_UNAVAILABLE,
     queue_worker_part,
@@ -149,14 +150,23 @@ def render_animation(slug: str, animation_id: str):
     easing = anim.get("easing", "ease-in-out")
     mode_id = anim.get("mode") or manifest.modes[0]["id"]
 
-    # Resolve render context
-    scad_filename = manifest.get_scad_file_for_mode(mode_id)
+    # Resolve render context: the mode's render source, as every render path
+    # resolves it (services/engine/render_source.py).
+    try:
+        source = render_source_for_mode(manifest, mode_id)
+    except RenderSourceError as exc:
+        return error_response(str(exc), 400)
     parts = manifest.get_parts_for_mode(mode_id)
-    allowed = manifest.get_allowed_files()
-    if scad_filename not in allowed:
+    if source is None:
         return error_response(f"Mode '{mode_id}' references an invalid SCAD file.", 400)
-
-    scad_path = str(allowed[scad_filename])
+    scad_filename = source.filename
+    if source.is_graph:
+        scad_path = str(source.path)
+    else:
+        allowed = manifest.get_allowed_files()
+        if scad_filename not in allowed:
+            return error_response(f"Mode '{mode_id}' references an invalid SCAD file.", 400)
+        scad_path = str(allowed[scad_filename])
     mode_map = manifest.get_mode_map()
 
     # Frames are served as GLB from an STL render, whatever the engine; the
@@ -182,7 +192,7 @@ def render_animation(slug: str, animation_id: str):
 
     request_id = data.get("request_id") if isinstance(data, dict) and isinstance(data.get("request_id"), str) else None
     request_id = request_id or str(uuid.uuid4())
-    scad_hash = compute_scad_hash(scad_path)
+    scad_hash = source_content_hash(scad_path, manifest)
     revision = render_revision()
 
     def generate():

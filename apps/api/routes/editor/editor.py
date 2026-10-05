@@ -20,6 +20,7 @@ from extensions import limiter
 from manifest import invalidate_cache
 from middleware.auth import require_tier
 from services.core.project_access import require_project_access
+from services.engine.render_source import graph_sources
 from utils.project_resolver import find_project_dir, require_project
 from utils.route_helpers import error_response, safe_join_path
 from utils.validators import require_valid_slug
@@ -317,16 +318,12 @@ def _parse_bindings_body(raw: bytes) -> tuple[dict | None, str | None]:
 
 
 def _graph_sources(project_dir: Path, manifest_data: dict) -> list[Path]:
-    """Every graph document the manifest's modes render, path-guarded."""
-    sources = []
-    for mode in manifest_data.get("modes") or []:
-        name = mode.get("scad_file") if isinstance(mode, dict) else None
-        if not isinstance(name, str) or not name.endswith(GRAPH_SUFFIX):
-            continue
-        resolved = safe_join_path(str(project_dir), name)
-        if resolved is not None and resolved not in sources:
-            sources.append(resolved)
-    return sources
+    """Every graph document the manifest's modes render, path-guarded.
+
+    Graph-engine modes and, in a user cartridge, each mode's declared
+    ``graph_file`` (its render source): services/engine/render_source.py.
+    """
+    return graph_sources(project_dir, manifest_data)
 
 
 def _write_json_atomic(path: Path, data: dict) -> None:

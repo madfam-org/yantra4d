@@ -51,7 +51,7 @@ interface CodeEdit {
 
 interface ScadEditorProps {
   slug: string
-  handleGenerate: () => void
+  handleGenerate: (forceRender?: boolean) => void
   manifest: Record<string, unknown>
   /** Opens the fork dialog — how a commons cartridge becomes something this editor may save. */
   onForkRequest?: () => void

@@ -21,7 +21,7 @@ if BACKEND_PATH not in sys.path:
 
 # Use the same imports as the orchestrator to run the actual engines
 from config import Config
-from manifest import get_manifest
+from manifest import get_manifest, invalidate_cache
 from services.core.implicit_engine import run_render as run_implicit_render
 from services.core.implicit_engine import stream_render as stream_implicit_render
 from services.editor.git_operations import git_archive_head
@@ -402,6 +402,20 @@ def process_sync_task(task):
     _render_sync_task(task)
 
 
+def _task_manifest(project_slug, engine: str):
+    """The manifest a task renders against.
+
+    A graph render reads its parameter bindings from the manifest, and a fork's
+    bindings change on disk through the API (PUT .../manifest/bindings), which
+    invalidates only the API process's manifest cache. The API keys the render
+    on the binding map, so a graph task re-reads the manifest here: the render
+    must use the bindings its cache key was computed from.
+    """
+    if engine == "graph":
+        invalidate_cache(project_slug)
+    return get_manifest(project_slug)
+
+
 def _render_sync_task(task):
     """Render one sync task's part from ``task['scad_path']`` and publish it."""
     job_id = task['job_id']
@@ -415,7 +429,7 @@ def _render_sync_task(task):
     params = payload['params']
     mode_map = payload['mode_map']
 
-    manifest = get_manifest(project_slug)
+    manifest = _task_manifest(project_slug, engine)
     
     logger.info(f"Worker processing sync render for part {part} using {engine}")
 
@@ -550,7 +564,7 @@ def process_stream_task(task):
     project_slug = payload['project_slug']
     params = payload['params']
     mode_map = payload['mode_map']
-    manifest = get_manifest(project_slug)
+    manifest = _task_manifest(project_slug, engine)
 
     logger.info(f"Worker streaming render for part {part} using {engine}")
     if _is_cancelled(job_id):

@@ -14,6 +14,7 @@ import { useRender } from '../render/useRender'
 import { useKeyboardShortcuts } from '../editor/useKeyboardShortcuts'
 import { inferPreviewHint } from '../../lib/previewHintInference'
 import { useParameterPreviewCache } from '../render/useParameterPreviewCache'
+import { sourceRevision } from '../../services/cache/sourceRevision'
 
 const RENDER_DEBOUNCE_MS = 500
 
@@ -334,7 +335,9 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
     for (const param of manifest.parameters) {
       if (p[param.id] !== undefined) keyObj[param.id] = p[param.id]
     }
-    return JSON.stringify({ project: projectSlug, revision: renderRevision, format: exportFormat, mode: m, params: keyObj })
+    // `source` is read at call time: a saved source edit (sourceRevision.ts)
+    // must miss this cache without re-running the auto-render effect below.
+    return JSON.stringify({ project: projectSlug, revision: renderRevision, source: sourceRevision(projectSlug), format: exportFormat, mode: m, params: keyObj })
   }, [manifest, projectSlug, renderRevision, exportFormat])
 
   // Render hook

@@ -13,19 +13,20 @@ from services.engine.cadquery_engine import (
 
 def test_cadquery_env(monkeypatch):
     # Both cartridge roots land on PYTHONPATH (RFC 0038 P2): a CadQuery script
-    # in a client-private cartridge imports its siblings like a public one.
+    # in a client-private cartridge imports its siblings like a public one. The
+    # child's PYTHONPATH is ONLY the curated roots — the parent's PYTHONPATH (the
+    # app package) is deliberately not inherited.
     monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")
     monkeypatch.setattr("config.Config.PRIVATE_PROJECTS_DIR", "/fake/private")
-    # if it had pre-existing pythonpath, we ensure it prepend
     monkeypatch.setenv("PYTHONPATH", "/old/path")
     env = _cadquery_env()
     assert "/fake/proj" in env["PYTHONPATH"]
     assert "/fake/private" in env["PYTHONPATH"]
-    assert "/old/path" in env["PYTHONPATH"]
+    # The parent's pre-existing PYTHONPATH is not carried into the child.
+    assert "/old/path" not in env["PYTHONPATH"]
     # The public commons is searched first.
     parts = env["PYTHONPATH"].split(os.pathsep)
     assert parts.index("/fake/proj") < parts.index("/fake/private")
-    assert parts[-1] == "/old/path"
 
     monkeypatch.delenv("PYTHONPATH", raising=False)
     env2 = _cadquery_env()
@@ -121,3 +122,45 @@ def test_stream_render_failure(mock_timer_cls, mock_popen):
 def test_cancel_render(mock_mgr):
     mock_mgr.cancel.return_value = True
     assert cancel_render() is True
+
+
+# ── minimal child environment (no app/object-store secrets reach the child) ─────
+def test_cadquery_env_excludes_object_store_and_app_secrets(monkeypatch):
+    monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")
+    monkeypatch.setattr("config.Config.PRIVATE_PROJECTS_DIR", "/fake/private")
+    for leaky in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AI_API_KEY",
+                  "COTIZA_WEBHOOK_SECRET", "TIER_OVERRIDES", "JANUA_ISSUER",
+                  "RENDER_ARTIFACT_S3_SECRET_ACCESS_KEY"):
+        monkeypatch.setenv(leaky, "should-not-leak")
+    env = _cadquery_env()
+    for leaky in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AI_API_KEY",
+                  "COTIZA_WEBHOOK_SECRET", "TIER_OVERRIDES", "JANUA_ISSUER",
+                  "RENDER_ARTIFACT_S3_SECRET_ACCESS_KEY"):
+        assert leaky not in env, f"{leaky} leaked into the CadQuery child env"
+
+
+def test_cadquery_env_keeps_needed_vars(monkeypatch):
+    monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")
+    monkeypatch.setattr("config.Config.PRIVATE_PROJECTS_DIR", "/fake/private")
+    monkeypatch.setenv("PATH", "/usr/bin:/bin")
+    monkeypatch.setenv("CASROOT", "/opt/occt")
+    monkeypatch.setenv("FONTCONFIG_FILE", "/etc/fonts/fonts.conf")
+    env = _cadquery_env()
+    assert env["PATH"] == "/usr/bin:/bin"
+    assert env["CASROOT"] == "/opt/occt"
+    assert env["FONTCONFIG_FILE"] == "/etc/fonts/fonts.conf"
+    # HOME is set to a writable location for libraries that cache under it.
+    assert env.get("HOME")
+    # The curated roots are handed to the runner for its import allowlist.
+    assert "/fake/proj" in env["YANTRA4D_CURATED_ROOTS"]
+
+
+def test_cadquery_env_pythonpath_is_only_curated_roots(monkeypatch):
+    # The parent's PYTHONPATH (the app package) must not be inherited by the child.
+    monkeypatch.setattr("config.Config.PROJECTS_DIR", "/fake/proj")
+    monkeypatch.setattr("config.Config.PRIVATE_PROJECTS_DIR", "/fake/private")
+    monkeypatch.setenv("PYTHONPATH", "/app/backend")
+    env = _cadquery_env()
+    parts = env["PYTHONPATH"].split(os.pathsep)
+    assert "/app/backend" not in parts
+    assert parts == ["/fake/proj", "/fake/private"]

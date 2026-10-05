@@ -299,3 +299,45 @@ class TestInvalidateCache:
         invalidate_cache("cached")
         m2 = load_manifest("cached")
         assert m1 is not m2
+
+
+class TestResolveWithinProject:
+    """A manifest-declared file name must stay inside the cartridge directory."""
+
+    def _manifest(self, tmp_path):
+        d = _write_manifest(tmp_path)
+        return ProjectManifest(json.loads((d / "project.json").read_text()), d)
+
+    def test_plain_name_resolves(self, tmp_path):
+        m = self._manifest(tmp_path)
+        resolved = m.resolve_within_project("main.scad")
+        assert resolved == (m.project_dir / "main.scad").resolve()
+
+    @pytest.mark.parametrize("bad", [
+        "../escape.scad", "../../etc/passwd", "sub/../../escape.py", "/abs/path.scad",
+    ])
+    def test_escaping_name_is_refused(self, tmp_path, bad):
+        m = self._manifest(tmp_path)
+        with pytest.raises(ValueError, match="outside the cartridge directory"):
+            m.resolve_within_project(bad)
+
+    def test_symlink_escaping_is_refused(self, tmp_path):
+        m = self._manifest(tmp_path)
+        outside = tmp_path.parent / "outside.scad"
+        outside.write_text("cube(1);")
+        link = m.project_dir / "link.scad"
+        link.symlink_to(outside)
+        with pytest.raises(ValueError, match="outside the cartridge directory"):
+            m.resolve_within_project("link.scad")
+
+    def test_get_allowed_files_drops_escaping_mode(self, tmp_path):
+        d = _write_manifest(tmp_path, extra={
+            "modes": [
+                {"id": "ok", "scad_file": "main.scad", "parts": ["body"]},
+                {"id": "evil", "scad_file": "../../evil.scad", "parts": ["body"]},
+            ],
+        })
+        m = ProjectManifest(json.loads((d / "project.json").read_text()), d)
+        allowed = m.get_allowed_files()
+        assert "main.scad" in allowed
+        assert "../../evil.scad" not in allowed

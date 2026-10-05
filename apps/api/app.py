@@ -179,6 +179,14 @@ def _warn_shadowed_user_projects() -> None:
 
 def create_app():
     """Application factory for Flask app."""
+    # Two render routes (animation frames, git render-head) run CadQuery
+    # subprocesses in this process under the same UID. Make this process
+    # non-dumpable so such a child cannot read this parent's /proc/<pid>/environ
+    # or /proc/<pid>/mem, where the broader app secrets live. Runs once per
+    # gunicorn worker (the app is imported after fork); no-op off Linux.
+    from utils.process_hardening import set_process_nondumpable
+    set_process_nondumpable()
+
     from posthog_analytics import init_posthog
     from posthog_analytics import shutdown as posthog_shutdown
     init_posthog()

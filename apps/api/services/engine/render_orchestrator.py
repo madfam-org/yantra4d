@@ -313,8 +313,15 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     if mode_id and engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
         mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
         if mode_config and mode_config.get('cq_file'):
+            # cq_file comes from editable project.json; resolve it within the
+            # cartridge directory so a manifest cannot point the runner at a file
+            # outside the cartridge.
+            try:
+                cq_path = manifest.resolve_within_project(mode_config['cq_file'])
+            except ValueError as exc:
+                return engine, scad_path, None, (str(exc), 400)
             engine = "cadquery"
-            scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
+            scad_path = str(cq_path)
 
     # Validate engine+format compatibility
     if engine == "cadquery":

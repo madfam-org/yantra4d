@@ -120,12 +120,41 @@ class ProjectManifest:
 
     # --- Derived maps ---
 
+    def resolve_within_project(self, relative: str) -> Path:
+        """Resolve a manifest-declared file name inside this cartridge directory.
+
+        ``project.json`` is editable content (a fork or GitHub import can supply
+        one), so a file name it declares is resolved and then required to stay
+        within the cartridge directory. A name with ``..`` segments, an absolute
+        path, or a symlink escaping the directory is refused — it would otherwise
+        let a manifest point the renderer, or the CadQuery runner's PYTHONPATH,
+        at a file outside the cartridge.
+        """
+        base = self.project_dir.resolve()
+        candidate = (self.project_dir / relative).resolve()
+        if candidate != base and base not in candidate.parents:
+            raise ValueError(
+                f"File '{relative}' is outside the cartridge directory"
+            )
+        return candidate
+
     def get_allowed_files(self) -> dict:
-        """Returns {filename: Path} for all SCAD files referenced by modes."""
+        """Returns {filename: Path} for all SCAD files referenced by modes.
+
+        Each path is contained within the cartridge directory; a mode whose
+        ``scad_file`` escapes it is dropped (and logged) rather than offered as a
+        renderable file.
+        """
         result = {}
         for mode in self.modes:
             fname = mode["scad_file"]
-            result[fname] = self.project_dir / fname
+            try:
+                result[fname] = self.resolve_within_project(fname)
+            except ValueError:
+                logger.warning(
+                    "Dropping mode scad_file '%s' in %s: outside cartridge directory",
+                    fname, self.slug,
+                )
         return result
 
     def get_parts_map(self) -> dict:

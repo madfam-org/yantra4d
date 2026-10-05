@@ -52,6 +52,12 @@ RUN apt-get update && \
     xvfb && \
     rm -rf /var/lib/apt/lists/*
 
+# Platform tool for the editor's version control, kept apart from the render
+# environment (see the same note in apps/api/Dockerfile).
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy extracted OpenSCAD from stage 1
 COPY --from=openscad-builder /opt/squashfs-root /opt/squashfs-root
 RUN ln -sf /opt/squashfs-root/AppRun /usr/local/bin/openscad

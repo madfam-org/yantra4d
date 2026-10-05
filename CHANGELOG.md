@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Changed
+- **Graph engine: the source name is written as an escaped literal.** The
+  transpiled script's `# Source:` header writes the graph file's base name with a
+  backslash and every character `str.isprintable()` rejects (line terminators,
+  form feed, NUL, U+2028/U+2029, other control, format, separator and surrogate
+  characters) as its Python escape sequence, so the header is always one line. A
+  plain printable name is written unchanged, so every existing transpilation is
+  byte-identical (all 15 graph files at solid-hyperobjects `7de3a32e`). The
+  keystone re-vendors the file (hyperobjects-spec branch
+  `fix/graph-source-name-literal`); the spec-graph-vendor guard passes once
+  `SPEC_PIN` moves to a keystone carrying it. Tests:
+  `apps/api/tests/unit/test_graph_engine_source_name.py`.
+
 ### Added
 - **Graph Engine Wave D: Expressions, Select, Reflect, Polyline And Bounded Revolve**
   — graph format 1.1, built as far as the Voron 2.4 assembly A printed parts need

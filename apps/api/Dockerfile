@@ -32,14 +32,8 @@ ARG OPENSCAD_SHA256=01e4bdeb00518b20ba00d5acc1d3df9c62813d9f64bb68a1fd0a546c7e46
 # Install OpenSCAD snapshot (2026+) for Gridfinity extended syntax support
 # AppImages require FUSE which isn't available in containers, so we extract
 # the AppImage at build time and run the binary directly.
-#
-# git: the editor's version-control features (auto-initialised history on a
-# cartridge's first save, commit/diff/log, GitHub import/sync, render-HEAD)
-# shell out to it. Both the API and the render-worker container run this
-# image. Without it those features answer 503 and saves proceed untracked.
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-  git \
   wget \
   fonts-liberation \
   fontconfig \
@@ -58,6 +52,17 @@ RUN apt-get update && \
   cd /opt && /tmp/openscad.AppImage --appimage-extract && \
   rm /tmp/openscad.AppImage && \
   ln -sf /opt/squashfs-root/AppRun /usr/local/bin/openscad && \
+  rm -rf /var/lib/apt/lists/*
+
+# Platform tool for the editor's version control, deliberately OUTSIDE the
+# render environment: it does not affect geometry, and check_render_env.py
+# compares only the render install above with y4d_spec.render_environment.
+# The editor's history on a cartridge's first save, commit/diff/log, GitHub
+# import/sync and render-HEAD shell out to it. Both the API and the
+# render-worker container run this image; without it those features answer
+# 503 and saves proceed untracked.
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends git && \
   rm -rf /var/lib/apt/lists/*
 
 # Set working directory

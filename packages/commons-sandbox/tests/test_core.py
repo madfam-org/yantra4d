@@ -7,6 +7,8 @@ restricted, and the path validator normalizes real paths.
 """
 
 import os
+import subprocess
+import sys
 
 import commons_sandbox as cs
 import pytest
@@ -123,3 +125,127 @@ def test_sandboxed_exec_has_no_open():
     g = {"__builtins__": b}
     with pytest.raises(NameError):
         exec("open('/etc/passwd')", g)  # noqa: S102 — open is not whitelisted
+
+
+# ── relative imports are refused ─────────────────────────────────────────────
+@pytest.mark.parametrize("builder", [
+    lambda: cs.build_sandbox_builtins("Test"),
+    lambda: cs.build_sandbox_builtins("Test", allowed_imports={"math"}),
+], ids=["denylist", "allowlist"])
+def test_a_relative_import_is_refused_whatever_the_script_sets(builder):
+    # A sandboxed script runs as __main__ with no package; a relative import
+    # resolves against the script's own __package__, which it controls.
+    for package in ("os", "math", "commons_sandbox"):
+        g = {"__builtins__": builder(), "__name__": "__main__"}
+        with pytest.raises(ImportError) as exc:
+            exec(f"__package__ = {package!r}\nfrom . import x", g)  # noqa: S102
+        assert "Relative import is not allowed in Test" in str(exc.value)
+
+
+def test_the_guards_refuse_a_nonzero_level_directly():
+    for guard in (cs.make_restricted_import("Test"),
+                  cs.make_allowlist_import("Test", {"math"})):
+        with pytest.raises(ImportError):
+            guard("", {"__package__": "os"}, None, ("getcwd",), 1)
+        with pytest.raises(ImportError):
+            guard("path", {"__package__": "os"}, None, (), 2)
+
+
+# ── the allowlist guard ──────────────────────────────────────────────────────
+def test_allowlist_admits_only_named_packages():
+    guard = cs.make_allowlist_import("Test scripts", {"math", "json"})
+    assert guard("math") is not None
+    assert guard("json.decoder") is not None          # by top-level package
+    for name in ("io", "codecs", "pathlib", "random", "os", "os.path"):
+        with pytest.raises(ImportError) as exc:
+            guard(name)
+        assert f"Import of '{name}' is not allowed in Test scripts" in str(exc.value)
+
+
+def test_allowlist_never_admits_a_blocked_module():
+    guard = cs.make_allowlist_import("Test", {"os", "subprocess", "math"},
+                                     allow=lambda top: True)
+    for name in ("os", "subprocess", "socket"):
+        with pytest.raises(ImportError):
+            guard(name)
+    assert guard("math") is not None
+
+
+def test_allowlist_predicate_extends_the_list():
+    seen = []
+
+    def allow(top):
+        seen.append(top)
+        return top == "json"
+
+    guard = cs.make_allowlist_import("Test", {"math"}, allow=allow)
+    assert guard("json") is not None
+    with pytest.raises(ImportError):
+        guard("re")
+    assert seen == ["json", "re"]
+
+
+def test_build_sandbox_builtins_installs_the_allowlist_when_given():
+    b = cs.build_sandbox_builtins("Test", allowed_imports={"math"})
+    g = {"__builtins__": b}
+    exec("import math\nr = math.sqrt(4)", g)  # noqa: S102
+    assert g["r"] == 2.0
+    with pytest.raises(ImportError):
+        exec("import io", {"__builtins__": b})  # noqa: S102
+    # The default stays the denylist guard (io is not on the blocklist).
+    exec("import io", {"__builtins__": cs.build_sandbox_builtins("Test")})  # noqa: S102
+
+
+# ── the subprocess environment ───────────────────────────────────────────────
+def test_minimal_child_env_keeps_only_allowlisted_names():
+    parent = {
+        "PATH": "/usr/bin", "LANG": "C.UTF-8", "TMPDIR": "/tmp",
+        "LD_LIBRARY_PATH": "/opt/lib", "PYTHONUNBUFFERED": "1",
+        "SOME_CLIENT_SECRET": "x", "SOME_API_KEY": "x", "AWS_ACCESS_KEY_ID": "x",
+        "LD_PRELOAD": "/x.so", "PYTHONHOME": "/x", "PYTHONPATH": "/app",
+        "FC_ROOT": "/app", "KERNEL_FONT_DIR": "/f",
+    }
+    child = cs.minimal_child_env(parent)
+    assert child == {"PATH": "/usr/bin", "LANG": "C.UTF-8", "TMPDIR": "/tmp",
+                     "LD_LIBRARY_PATH": "/opt/lib", "PYTHONUNBUFFERED": "1"}
+    child = cs.minimal_child_env(parent, extra_names={"FC_ROOT"},
+                                 extra_prefixes=("KERNEL_",))
+    assert child["FC_ROOT"] == "/app" and child["KERNEL_FONT_DIR"] == "/f"
+    for name in ("SOME_CLIENT_SECRET", "SOME_API_KEY", "AWS_ACCESS_KEY_ID",
+                 "LD_PRELOAD", "PYTHONHOME", "PYTHONPATH"):
+        assert name not in child
+
+
+def test_child_env_names_exclude_loader_and_interpreter_overrides():
+    for name in ("LD_PRELOAD", "PYTHONHOME", "PYTHONPATH", "PYTHONSTARTUP"):
+        assert name not in cs.CHILD_ENV_NAMES
+
+
+# ── the non-dumpable parent ──────────────────────────────────────────────────
+def test_set_process_nondumpable_is_a_safe_noop_off_linux(monkeypatch):
+    import commons_sandbox.core as core
+
+    monkeypatch.setattr(core.platform, "system", lambda: "Darwin")
+    assert cs.set_process_nondumpable() is False
+
+
+@pytest.mark.skipif(sys.platform != "linux", reason="prctl is Linux-only")
+def test_set_process_nondumpable_hides_the_parent_environ_from_a_child():
+    # In a throwaway process, so the test runner itself is left dumpable.
+    code = (
+        "import os, subprocess, sys\n"
+        "import commons_sandbox as cs\n"
+        "assert cs.set_process_nondumpable() is True\n"
+        "child = ('import os, sys\\n'\n"
+        "         'try:\\n'\n"
+        "         '    open(f\"/proc/{os.getppid()}/environ\", \"rb\").read()\\n'\n"
+        "         '    print(\"READ\")\\n'\n"
+        "         'except PermissionError:\\n'\n"
+        "         '    print(\"DENIED\")\\n')\n"
+        "out = subprocess.run([sys.executable, '-c', child], capture_output=True,\n"
+        "                     text=True, check=True).stdout.strip()\n"
+        "print(out)\n"
+    )
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+                         check=True).stdout.strip()
+    assert out == "DENIED"

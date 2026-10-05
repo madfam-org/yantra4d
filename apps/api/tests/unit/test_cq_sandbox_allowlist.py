@@ -123,3 +123,9 @@ def test_documented_introspection_escape_is_not_claimed_blocked():
         g,
     )
     assert g["reached"] is True
+
+
+@pytest.mark.parametrize("package", ["os", "cadquery", "math"])
+def test_relative_import_is_refused_whatever_the_script_sets(package):
+    with pytest.raises(ImportError, match="Relative import is not allowed"):
+        _exec(f"__package__ = {package!r}\nfrom . import x")

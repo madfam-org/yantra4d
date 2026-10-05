@@ -178,7 +178,12 @@ def import_repo(repo_url: str, slug: str, manifest: dict, github_token: str | No
         shutil.rmtree(project_dir, ignore_errors=True)
         return {"success": False, "error": "Failed to clone repository"}
 
-    # Write manifest into the repo
+    # Write manifest into the repo. The cartridge is known by the slug it was
+    # imported under, so the manifest names that slug whatever the submitted
+    # manifest said (discovery and the Studio both key on project.slug).
+    manifest = dict(manifest)
+    project = manifest.get("project")
+    manifest["project"] = {**project, "slug": slug} if isinstance(project, dict) else {"slug": slug}
     with open(project_dir / "project.json", "w") as f:
         json.dump(manifest, f, indent=2)
 

@@ -220,6 +220,22 @@ def _make_owner_writable(root) -> None:
                 os.chmod(name, mode | stat.S_IWUSR)
 
 
+def _rename_manifest_slug(manifest_path, new_slug: str) -> None:
+    """Set ``project.slug`` in a copied ``project.json`` to the cartridge's own slug."""
+    with open(manifest_path, encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, dict):
+        raise TypeError("project.json is not a JSON object")
+    project = data.get("project")
+    if not isinstance(project, dict):
+        project = {}
+        data["project"] = project
+    project["slug"] = new_slug
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+
 @projects_bp.route('/api/projects/<slug>/fork', methods=['POST'])
 @require_valid_slug
 @require_tier("pro")
@@ -266,6 +282,10 @@ def fork_project(slug):
             dirs_exist_ok=True,
         )
         _make_owner_writable(dest_dir)
+        # The copy is a new cartridge: its manifest names the new slug, or
+        # discovery (which keys on project.slug) hides it behind its source and
+        # the Studio waits forever for a manifest whose slug matches the URL.
+        _rename_manifest_slug(dest_dir / "project.json", new_slug)
         # Write fork metadata
         meta = {
             "source": {

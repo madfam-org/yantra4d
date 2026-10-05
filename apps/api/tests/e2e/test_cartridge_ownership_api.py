@@ -629,3 +629,30 @@ class TestGraphBindings:
     def test_owner_and_admin_may_bind(self, client, graph_fork):
         assert self._put(client, "tok-owner").status_code == 200
         assert self._put(client, "tok-admin").status_code == 200
+
+
+class TestImportedManifestSlug:
+    def test_import_manifest_names_the_import_slug(self, monkeypatch, cartridges):
+        """A submitted manifest naming another slug is stored under the slug it was imported as."""
+        flask_app = _app(monkeypatch, auth_enabled=False, debug=True)
+        client = flask_app.test_client()
+
+        def fake_clone(repo_url, dest, github_token=None, shallow=False):
+            (dest / "main.scad").write_text("cube(5);")
+            return True
+
+        submitted = _manifest("upstream-name")
+        with patch("services.editor.github_import.clone_repo", side_effect=fake_clone):
+            res = client.post("/api/github/import", json={
+                "repo_url": "https://github.com/example/upstream-name",
+                "slug": "my-import-slug",
+                "manifest": submitted,
+            })
+        assert res.status_code == 201, res.get_json()
+        stored = json.loads((project_write_root() / "my-import-slug" / "project.json").read_text())
+        assert stored["project"]["slug"] == "my-import-slug"
+        assert stored["project"]["name"] == "upstream-name"
+        assert client.get("/api/projects/my-import-slug/manifest").get_json()["project"]["slug"] == "my-import-slug"
+        import manifest as manifest_mod
+        manifest_mod.manifest_service._manifest_cache.clear()
+        assert "my-import-slug" in {p["slug"] for p in client.get("/api/projects").get_json()}

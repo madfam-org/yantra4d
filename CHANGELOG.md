@@ -51,6 +51,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `GET /api/projects/<slug>/meta` reports the caller's `can_write` and
   `is_owner`. Studio: "Fork to edit" replaces the editor on cartridges you
   cannot write, and assembly editing is shown only on cartridges you can write.
+- **A Fork's Manifest Names The Fork** — forking copied `project.json`
+  verbatim, so the fork kept its source's `project.slug`: the project listing
+  (which keys on that slug) hid the fork, and the Studio, which waits for a
+  manifest whose slug matches the URL, stayed on "Loading project..." after
+  "Fork & Edit". The fork route now sets `project.slug` to the new slug. A
+  GitHub import likewise stores the manifest under the slug it was imported
+  as, whatever slug the submitted manifest carried.
 - **Fork And Import Reserve Their Slug Atomically** — the new cartridge's
   directory is created with an exclusive `mkdir` before copying or cloning. Of
   two concurrent forks or imports to the same slug, one succeeds and the other

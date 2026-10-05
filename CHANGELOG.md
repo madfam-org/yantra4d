@@ -38,6 +38,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     moves, and only then does this change go green on `spec-conformance`.
 
 ### Changed
+- **Animation And Git HEAD Renders Run On The Render Worker** — `POST
+  /api/projects/<slug>/animations/<id>/render` and `POST
+  /api/projects/<slug>/git/render-head` no longer call the render engines from
+  the API process. Each frame part, and each HEAD part, is now an ordinary job
+  on the render queue, waited on through the same `render:<job_id>` channels as
+  `/api/render`. So there is one render path: the worker's cancellation,
+  leases, release check and artifact publishing apply, and a gunicorn worker no
+  longer runs a kernel for minutes at a time. Both routes keep their request
+  and response shapes. Additive: the flipbook stream opens with the `job` event
+  (`request_id` + `job_ids`, cancellable with `POST /api/render-cancel`), a
+  client that disconnects mid-flipbook cancels its remaining frames, and HEAD
+  parts may carry `viewer_url`. Both routes answer 503
+  `render_worker_unavailable` without a worker heartbeat, as `/api/render`
+  does. Behaviour fixes that come with the worker path:
+  - a CadQuery animation renders each part with its own `target_part`;
+  - frame base parameters pass the same validation as `/api/render`;
+  - a frame's file name carries a digest of its parameters, so two requests no
+    longer overwrite each other's frames;
+  - the HEAD route renders the cartridge named in its URL, not a `project`
+    field in the body;
+  - neither route writes the render cache.
+
+  The worker checks HEAD out into a private temporary directory per job and
+  removes it when the job ends. The project is resolved from the slug, and the
+  entry file must resolve inside the checkout. New task fields:
+  `source: {kind: "git_head", entry}` and `payload.cache_write`; see
+  `apps/api/services/engine/worker_dispatch.py`. A guard keeps it this way:
+  `tests/unit/test_engine_guard.py` fails if an API module imports the CadQuery
+  engine or its pool, or if `create_app()` loads them, and
+  `services/engine/engine_guard.worker_only` makes the CadQuery entry points
+  raise inside a request.
 - **Forks And Imports Are Written By Their Creator** — the account that forks a
   cartridge or imports a repository is recorded at creation (its token `sub`
   and a timestamp, kept outside the cartridge in `<write root>/.owners/`, so it

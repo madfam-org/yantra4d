@@ -20,6 +20,20 @@ logger = logging.getLogger(__name__)
 github_bp = Blueprint("github", __name__)
 
 
+@github_bp.before_request
+def _require_git_binary():
+    """Validate (ls-remote), import (clone) and sync (pull/clone) all need git.
+
+    Without it ls-remote and clone fail in ways that read as "repository not
+    accessible" or "failed to clone"; say what is actually wrong instead.
+    """
+    from routes.editor.git_ops import git_unavailable_response
+    from services.editor.git_operations import git_available
+    if not git_available():
+        return git_unavailable_response()
+    return None
+
+
 def _get_token():
     """Extract GitHub token from current request's auth claims."""
     claims = getattr(request, "auth_claims", None)

@@ -1797,6 +1797,82 @@ paths:
                   - $ref: "#/components/schemas/ReadOnlyCartridge"
                   - $ref: "#/components/schemas/NotCartridgeOwner"
 
+  /api/projects/{slug}/git/render-head:
+    post:
+      tags: [git]
+      summary: Render the committed HEAD of the cartridge
+      description: >-
+        Renders the selected mode's parts from the cartridge's committed HEAD,
+        for a HEAD-versus-working-tree comparison. Each part is a job on the
+        render worker, which checks HEAD out into a private temporary directory
+        and removes it when the job ends. The cartridge rendered is the one in
+        the path; a `project` field in the body is ignored. A part that fails
+        to render is reported in `log` and left out of `parts`. Results are not
+        written to the render cache.
+      operationId: gitRenderHead
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode:
+                  type: string
+                parameters:
+                  type: object
+                export_format:
+                  type: string
+                request_id:
+                  type: string
+                  description: Optional; cancels the render via POST /api/render-cancel.
+      responses:
+        "200":
+          description: Rendered parts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  parts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        url:
+                          type: string
+                        viewer_url:
+                          type: string
+                          description: GLB companion of an STL part, when one was produced.
+                        size_bytes:
+                          type: integer
+                          nullable: true
+                  log:
+                    type: string
+                  request_id:
+                    type: string
+        "400":
+          description: Not a git cartridge, or an invalid render payload
+        "404":
+          description: Project not found, or the render file does not exist in HEAD
+        "500":
+          description: HEAD could not be checked out
+        "503":
+          description: "Render worker unavailable (`error_code: render_worker_unavailable`), or no git binary on the API or the worker (`error_code: git_unavailable`)"
+
   # ── GitHub ──────────────────────────────────────────────
   /api/github/validate:
     post:
@@ -2404,6 +2480,14 @@ paths:
     post:
       tags: [animations]
       summary: Render animation frames (SSE stream)
+      description: >-
+        Interpolates the animation's keyframes and renders every frame part as
+        a job on the render worker. Events: `job` (`request_id`, `job_ids`;
+        first, and again as each part is queued; cancel with POST
+        /api/render-cancel), `frame_done` (`frame`, `progress`,
+        `total_frames`), then `complete` (`frames[]` with GLB URLs per part),
+        or `error` (`frame`, `error`). A client that disconnects cancels the
+        remaining frames.
       operationId: renderAnimation
       security:
         - bearerAuth: []
@@ -2426,17 +2510,22 @@ paths:
               properties:
                 parameters:
                   type: object
-                export_format:
+                  description: Base parameters, validated like /api/render's; the keyframes override them.
+                request_id:
                   type: string
       responses:
         "200":
-          description: SSE stream with frame_done and complete events
+          description: SSE stream with job, frame_done and complete events
           content:
             text/event-stream:
               schema:
                 type: string
+        "403":
+          description: Tier lacks animation (or the mode's engine)
         "404":
           description: Animation not found
+        "503":
+          description: "Render worker unavailable (`error_code: render_worker_unavailable`)"
 
   # ── Materials ──────────────────────────────────────────
   /api/materials:

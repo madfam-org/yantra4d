@@ -280,7 +280,8 @@ conditional revalidation work on both, and a private project's artifact is
 | `routes/engine/verify.py`, `routes/engine/analysis.py`, `routes/engine/simulate.py`, `routes/integrations/cotiza_export.py`, `routes/integrations/printer.py` | Locate the artifact through the store and materialise it with `local_artifact()` — the artifact's own path under `fs`, a temporary download under `s3`. |
 | `routes/engine/download.py` | Render artifacts come from the store (streamed, never redirected); a project's checked-in `exports/` files still come from the project directory. |
 | `routes/core/health.py` | Reports the store kind and whether it answers. |
-| `routes/editor/git_ops.py`, `routes/projects/animations.py`, `_render_static_part` | Also publish through the store — they render in the API process but serve from `/static`, so they would otherwise 404 under `s3`. |
+| `routes/editor/git_ops.py`, `routes/projects/animations.py` | Render on the worker (`services/engine/worker_dispatch.py`), so their artifacts are published by the worker like every other part. |
+| `_render_static_part` | Also publishes through the store — a converted static part is produced in the API process but served from `/static`, so it would otherwise 404 under `s3`. |
 
 ## What this leaves of the worker Deployment split (ADR-014, #88)
 

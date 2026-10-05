@@ -335,6 +335,7 @@ POST `/api/verify` with `{mode}` -- runs `apps/api/tests/verify_design.py` on re
 | GET | `/api/projects/<slug>/files/<path>` | -- | Read SCAD file content (pro+) |
 | PUT | `/api/projects/<slug>/files/<path>` | `{content}` | Write SCAD file (pro+) |
 | DELETE | `/api/projects/<slug>/files/<path>` | -- | Delete SCAD file (pro+) |
+| PUT | `/api/projects/<slug>/manifest/bindings` | `{bindings: {param_id: "node.param" \| ["node.param", ...] \| null}}` | Set/clear graph `binding` on existing manifest parameters. **Fork only** (403 `not_a_fork` otherwise); validated against every graph source; atomic write (pro+) |
 | GET | `/api/projects/<slug>/git/status` | -- | Git working tree status (pro+) |
 | GET | `/api/projects/<slug>/git/diff` | -- | Unified diff (pro+) |
 | GET | `/api/projects/<slug>/git/log` | `?limit=20` | Recent commit history (pro+) |
@@ -454,6 +455,7 @@ GitHub features are tier-gated:
 | `/api/github/sync` | POST | premium | Sync imported project with upstream |
 | `/api/projects/<slug>/git/*` | GET/POST | pro+ | Git status, diff, commit, push, pull, connect-remote |
 | `/api/projects/<slug>/files/*` | GET/PUT/DELETE | pro+ | SCAD file CRUD with auto git-init |
+| `/api/projects/<slug>/manifest/bindings` | PUT | pro+ | Graph editor: manifest `binding` edits, fork only |
 
 Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `services/github_import.py`, `services/github_token.py`, `services/git_operations.py`. Frontend: `GitPanel.tsx`, `ForkDialog.tsx`, `ScadEditor.tsx`.
 

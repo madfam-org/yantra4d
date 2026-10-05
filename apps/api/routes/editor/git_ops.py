@@ -5,21 +5,18 @@ import json
 import logging
 import os
 import re
-import tempfile
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
 import rate_limits
 from extensions import limiter
-from manifest import get_manifest
 from middleware.auth import require_tier
 from routes.editor.editor import require_writable_cartridge
 from services.core.project_access import require_project_access
+from services.core.tier_service import resolve_tier
 from services.editor.git_operations import (
-    GIT_UNAVAILABLE,
     GitUnavailableError,
-    git_archive_head,
     git_available,
     git_commit,
     git_diff,
@@ -29,17 +26,24 @@ from services.editor.git_operations import (
     git_status,
 )
 from services.editor.github_token import get_github_token
-from services.engine.cadquery_engine import build_cadquery_command
-from services.engine.cadquery_engine import run_render as run_cadquery_render
-from services.engine.openscad import build_openscad_command
-from services.engine.openscad import run_render as run_openscad_render
 from services.engine.render_artifacts import discard_render_artifacts
+from services.engine.render_contract import RENDER_EVENT_PART_DONE
 from services.engine.render_orchestrator import (
     STATIC_FOLDER,
     RenderPayloadError,
+    clear_request_cancel,
     extract_render_payload,
+    is_render_worker_available,
+    resolve_engine_config,
 )
-from services.storage import publish_artifact_best_effort
+from services.engine.worker_dispatch import (
+    SOURCE_ERROR_GIT_UNAVAILABLE,
+    SOURCE_ERROR_MISSING,
+    SOURCE_ERROR_OUTSIDE,
+    SOURCE_GIT_HEAD,
+    WORKER_UNAVAILABLE,
+    render_part_on_worker,
+)
 from utils.project_resolver import find_project_dir, resolve_project_dir
 from utils.route_helpers import (
     error_response,
@@ -76,6 +80,12 @@ def _require_git_binary():
 def _git_vanished(_exc):
     """Backstop for git disappearing between the check above and the call."""
     return git_unavailable_response()
+
+
+# HTTP status for a HEAD checkout the worker could not produce. Every part of a
+# request renders from the same commit, so a source failure answers the whole
+# request, with the status this route has always used for it.
+_SOURCE_ERROR_STATUS = {SOURCE_ERROR_MISSING: 404, SOURCE_ERROR_OUTSIDE: 400}
 
 
 def _get_github_project(slug: str) -> tuple[Path | None, str | None]:
@@ -314,74 +324,103 @@ def pull(slug):
 @handle_exceptions
 @require_project_access
 def render_head(slug):
-    """Render the HEAD version of the selected SCAD file's parts."""
+    """Render the HEAD version of the selected SCAD file's parts.
+
+    Each part is a job on the render worker. The worker checks out the
+    committed tree into a private temporary directory, renders from it, and
+    removes it when the job ends; this handler queues the parts and collects
+    their results into the same response shape as before.
+    """
     project_dir, err = _get_git_project(slug)
     if err:
         return error_response(err, 404 if "not found" in err.lower() else 400)
 
-    data = request.json
+    # The URL slug is the cartridge that passed the access check; render that
+    # one, whatever the body says.
+    data = {**request.json, "project": slug}
     payload = extract_render_payload(data)
-    
+
     if isinstance(payload, RenderPayloadError):
         return error_response(payload.message, 400)
-    
+
+    # The tier @require_tier already admitted this caller at (the top tier
+    # when auth is off), so the engine gate agrees with the route gate.
+    tier = getattr(request, "user_tier", None) or resolve_tier(getattr(request, "auth_claims", None))
+    engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)
+    if engine_error:
+        return error_response(engine_error[0], engine_error[1])
+
+    # The worker renders this path inside its own HEAD checkout, so it travels
+    # relative to the cartridge, never as an absolute working-tree path.
+    try:
+        entry = Path(scad_path).resolve().relative_to(Path(project_dir).resolve()).as_posix()
+    except ValueError:
+        return error_response("Render file is outside the project", 400)
+
+    if not is_render_worker_available():
+        return error_response(WORKER_UNAVAILABLE, 503, error_code="render_worker_unavailable")
+
     parts_to_render = payload['parts']
-    stl_prefix = payload['stl_prefix'] + "head_"
     export_format = payload['export_format']
-    params = payload['params']
-    mode_map = payload['mode_map']
-    
+    stl_prefix = payload['stl_prefix'] + "head_"
+    head_payload = {
+        **payload,
+        "stl_prefix": stl_prefix,
+        # A HEAD render must never answer a later /api/render for the working
+        # tree's file of the same name, and its provenance is not the working
+        # tree's, so it is neither cached nor given a generator-output sidecar.
+        "cache_write": False,
+        "generator_inputs": None,
+    }
+
     generated_parts = []
     combined_log = ""
-    
+
     discard_render_artifacts(parts_to_render, stl_prefix, export_format)
-    
-    manifest = get_manifest(slug)
-    engine = manifest.mode_engine(payload.get('mode'))
+    clear_request_cancel(payload.get("request_id"))
 
-    # Extract HEAD to a temp dir
-    with tempfile.TemporaryDirectory(prefix="yantra_head_") as tmpdir_name:
-        target_dir = Path(tmpdir_name)
-        archive_res = git_archive_head(project_dir, target_dir)
-        if archive_res.get("error") == GIT_UNAVAILABLE:
+    for part in parts_to_render:
+        if not is_render_worker_available():
+            combined_log += f"[{part}] HEAD render failed: {WORKER_UNAVAILABLE}\n"
+            break
+        result = render_part_on_worker(
+            head_payload,
+            engine=engine,
+            part=part,
+            scad_path=entry,
+            output_path=os.path.join(STATIC_FOLDER, f"{stl_prefix}{part}.{actual_format}"),
+            export_format=export_format,
+            source={"kind": SOURCE_GIT_HEAD, "entry": entry},
+        )
+        if result.get("source_error") == SOURCE_ERROR_GIT_UNAVAILABLE:
+            # The worker checks HEAD out, so it needs git as much as this route does.
             return git_unavailable_response()
-        if not archive_res["success"]:
-            return error_response(archive_res["error"], 500)
-            
-        head_scad_path = str(target_dir / payload['scad_filename'])
-        if not os.path.exists(head_scad_path):
-            return error_response("SCAD file does not exist in HEAD", 404)
-            
-        for part in parts_to_render:
-            output_filename = f"{stl_prefix}{part}.{export_format}"
-            output_path = os.path.join(STATIC_FOLDER, output_filename)
+        if result.get("source_error"):
+            return error_response(
+                result.get("error") or "Failed to extract HEAD archive",
+                _SOURCE_ERROR_STATUS.get(result["source_error"], 500),
+            )
+        if result.get("event") != RENDER_EVENT_PART_DONE:
+            # A part that does not exist in HEAD, or does not compile there,
+            # is reported in the log and skipped, as before.
+            error = result.get("error") or result.get("message") or "Render failed"
+            combined_log += f"[{part}] HEAD render failed: {error}\n"
+            continue
 
-            if engine == "cadquery":
-                cmd = build_cadquery_command(output_path, head_scad_path, params, export_format)
-                success, stderr = run_cadquery_render(cmd, scad_path=head_scad_path)
-            else:
-                render_mode = mode_map.get(part, 0)
-                cmd = build_openscad_command(output_path, head_scad_path, params, render_mode)
-                success, stderr = run_openscad_render(cmd, scad_path=head_scad_path)
+        log = result.get("log") or f"[{part}] \n"
+        combined_log += log
+        part_entry = {
+            "type": result.get("type") or part,
+            "url": result.get("url"),
+            "size_bytes": result.get("size_bytes"),
+        }
+        if result.get("viewer_url"):
+            part_entry["viewer_url"] = result["viewer_url"]
+        generated_parts.append(part_entry)
 
-            if not success:
-                # Ignore failures if the part simply didn't exist in HEAD or failed to compile
-                combined_log += f"[{part}] HEAD render failed: {stderr}\n"
-                continue
-
-            combined_log += f"[{part}] {stderr}\n"
-            size_bytes = os.path.getsize(output_path) if os.path.exists(output_path) else None
-            # This render happens in the API process, not the worker, but it is
-            # still served from /static — so it is published through the store
-            # like any other artifact. A no-op under the filesystem default.
-            generated_parts.append({
-                "type": part,
-                "url": f"/static/{publish_artifact_best_effort(output_path)}",
-                "size_bytes": size_bytes,
-            })
-
-        return jsonify({
-            "status": "success",
-            "parts": generated_parts,
-            "log": combined_log
-        })
+    return jsonify({
+        "status": "success",
+        "parts": generated_parts,
+        "log": combined_log,
+        "request_id": payload.get("request_id"),
+    })

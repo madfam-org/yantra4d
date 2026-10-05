@@ -9,9 +9,11 @@ import json
 import logging
 import re
 from collections.abc import Iterator
+from pathlib import Path
 
 from services.ai.ai_provider import stream_chat
 from services.ai.ai_session import append_message, get_messages
+from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +78,29 @@ def parse_synthesis(raw: str) -> dict:
     explanation = re.sub(r"```json\s*\n?.*?\n?```", "", raw, flags=re.DOTALL).strip()
     return {"explanation": explanation, "cartridge": validated}
 
+def _safe_cartridge(cartridge: dict) -> bool:
+    """Whether a model-proposed cartridge may be written to disk as-is.
+
+    The slug and file names come from model output, so they are checked like
+    any other user input before they become paths: a valid slug, and plain
+    file names that stay inside the new cartridge directory.
+    """
+    slug = cartridge.get("slug")
+    if not isinstance(slug, str) or validate_project_slug(slug):
+        logger.warning("Discarding synthesised cartridge: invalid slug %r", slug)
+        return False
+    files = cartridge.get("files")
+    if not isinstance(files, dict):
+        logger.warning("Discarding synthesised cartridge %s: files is not a mapping", slug)
+        return False
+    for name, content in files.items():
+        if (not isinstance(name, str) or not isinstance(content, str)
+                or Path(name).name != name or name.startswith(".")):
+            logger.warning("Discarding synthesised cartridge %s: unsafe file name %r", slug, name)
+            return False
+    return True
+
+
 def stream_synthesis_response(session_id: str, message: str) -> Iterator[dict]:
     """Yield SSE events for project synthesis."""
     system = build_synthesis_prompt()
@@ -90,6 +115,8 @@ def stream_synthesis_response(session_id: str, message: str) -> Iterator[dict]:
     append_message(session_id, "assistant", full_text)
 
     parsed = parse_synthesis(full_text)
+    if parsed["cartridge"] and not _safe_cartridge(parsed["cartridge"]):
+        parsed["cartridge"] = None
     if parsed["cartridge"]:
         # Save to disk to create the Yantra4D Cartridge structure
         cartridge = parsed["cartridge"]
@@ -97,11 +124,11 @@ def stream_synthesis_response(session_id: str, message: str) -> Iterator[dict]:
         manifest = cartridge["manifest"]
         files = cartridge["files"]
         
-        from utils.project_resolver import find_project_dir, project_write_root
+        from utils.project_resolver import project_write_root, slug_in_use
         projects_dir = project_write_root()
 
         new_project_dir = projects_dir / slug
-        if find_project_dir(slug) is not None:
+        if slug_in_use(slug) is not None:
             # append salt to avoid overwriting existing projects
             import uuid
             slug = f"{slug}-{str(uuid.uuid4())[:4]}"

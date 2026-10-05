@@ -588,3 +588,44 @@ class TestAtomicCreation:
             })
         assert res.status_code == 400
         assert not (project_write_root() / "failed-import").exists()
+
+
+BINDINGS_GRAPH = {
+    "version": "1.0.0", "units": "mm",
+    "nodes": [
+        {"id": "outline", "type": "profile_circle", "params": {"r": 45}},
+        {"id": "plate", "type": "extrude", "inputs": {"profile": "outline"}, "params": {"height": 8}},
+    ],
+    "outputs": {"flange": "plate"},
+}
+
+
+class TestGraphBindings:
+    """PUT /manifest/bindings follows the same rule (and stays fork-only by its own check)."""
+
+
+    @pytest.fixture
+    def graph_fork(self, cartridges):
+        fork_dir = cartridges[FORK]
+        manifest = json.loads((fork_dir / "project.json").read_text())
+        manifest["modes"][0]["scad_file"] = "part.graph.json"
+        manifest["parameters"] = [{"id": "plate_height", "type": "slider", "default": 8, "min": 2,
+                                   "max": 30, "step": 1, "label": {"en": "Height"}}]
+        (fork_dir / "project.json").write_text(json.dumps(manifest))
+        (fork_dir / "part.graph.json").write_text(json.dumps(BINDINGS_GRAPH))
+        return fork_dir
+
+    def _put(self, client, token):
+        return client.put(f"/api/projects/{FORK}/manifest/bindings",
+                          json={"bindings": {"plate_height": "plate.height"}}, headers=_auth(token))
+
+    def test_non_owner_gets_not_cartridge_owner_and_nothing_is_written(self, client, graph_fork):
+        before = _snapshot(graph_fork)
+        res = self._put(client, "tok-other")
+        assert res.status_code == 403
+        assert res.get_json()["error_code"] == NOT_OWNER_ERROR_CODE
+        assert _snapshot(graph_fork) == before
+
+    def test_owner_and_admin_may_bind(self, client, graph_fork):
+        assert self._put(client, "tok-owner").status_code == 200
+        assert self._put(client, "tok-admin").status_code == 200

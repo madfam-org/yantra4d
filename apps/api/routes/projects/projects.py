@@ -19,6 +19,7 @@ from config import Config
 from extensions import limiter
 from manifest import discover_projects, get_manifest, invalidate_cache
 from middleware.auth import require_tier
+from routes.editor.editor import require_writable_cartridge
 from services.core.project_access import (
     filter_visible_projects,
     is_private_project,
@@ -255,6 +256,7 @@ def fork_project(slug):
 @require_tier("pro")
 @handle_exceptions
 @require_project_access
+@require_writable_cartridge
 def update_assembly_steps(slug):
     """Update assembly_steps in a project's project.json."""
     try:

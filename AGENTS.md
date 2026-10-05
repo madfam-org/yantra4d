@@ -457,6 +457,8 @@ GitHub features are tier-gated:
 
 Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `services/github_import.py`, `services/github_token.py`, `services/git_operations.py`. Frontend: `GitPanel.tsx`, `ForkDialog.tsx`, `ScadEditor.tsx`.
 
+**Built-in commons cartridges are read-only through the API.** Every route that writes into an existing cartridge -- `PUT`/`POST`/`DELETE` `/files` (the SCAD editor autosave), `PUT /manifest/assembly-steps`, `POST /assembly-steps/write`, `git/connect-remote`, `git/commit` -- carries `@require_writable_cartridge` (`routes/editor/editor.py`): only a fork (`project.meta.json` `source.type` = `fork`) or an imported repository (`github`) is written; anything else answers 403 `read_only_cartridge` and nothing is written into it, not even the `.git` that `auto_git` creates. Decorator order: below `@require_project_access` (privacy answers first), above `@require_project(auto_git=True)`. A new route that writes into a cartridge must carry it.
+
 ## Code Conventions
 
 | Area | Convention |

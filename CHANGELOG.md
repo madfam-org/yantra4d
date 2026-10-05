@@ -38,6 +38,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     moves, and only then does this change go green on `spec-conformance`.
 
 ### Changed
+- **Read-Only Commons Cartridges, Enforced On The Server** — the API now writes
+  only into a cartridge it created for someone: a fork or an imported repository
+  (`project.meta.json` `source.type` `fork` or `github`). A built-in commons
+  cartridge, or any cartridge with a missing, unreadable or unknown source type,
+  answers every write with 403 `read_only_cartridge` and is left untouched — no
+  file, no manifest edit, no `.git`. Covered routes: `PUT`/`POST`/`DELETE`
+  `/api/projects/<slug>/files` (including the SCAD editor autosave),
+  `PUT /manifest/assembly-steps`, `POST /assembly-steps/write`,
+  `POST /git/connect-remote` and `POST /git/commit`. The Studio already offered
+  "Fork to edit" for these cartridges; the server now applies the same rule.
+  Forks and imports behave exactly as before, and privacy (`project_locked`)
+  and tier checks still answer first. The Studio assembly-steps editor now
+  reports a refused save (any non-2xx) instead of toasting "saved".
 - **The Commons Pin Lands At `solid-hyperobjects@b0fa7147` — 500 → 495 Cartridges**
   — the `projects` submodule, verified against a stand-in until now, is pinned at
   the real commons. The content differs from the stand-in in two ruled ways, and

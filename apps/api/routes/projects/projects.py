@@ -28,6 +28,7 @@ from services.core.project_access import (
 )
 from services.core.tier_service import has_tier, resolve_tier
 from services.engine.render_revision import render_revision
+from services.engine.render_source import user_source_revision
 from utils.project_resolver import project_write_root, slug_in_use
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
@@ -109,6 +110,11 @@ def get_project_manifest(slug):
     try:
         body = json.dumps(manifest.as_json(), sort_keys=True)
         revision = render_revision()
+        # A user cartridge's sources change on every save, not with a release:
+        # its revision carries their digest, so clients' render caches follow.
+        source_revision = user_source_revision(manifest) if revision else None
+        if source_revision:
+            revision = f"{revision}+src.{source_revision}"
 
         if is_private_project(slug, manifest):
             # A private manifest gets neither a shared cache nor an ETag: the

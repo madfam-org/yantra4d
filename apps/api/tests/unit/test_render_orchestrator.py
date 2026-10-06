@@ -348,7 +348,7 @@ def contract_env(monkeypatch):
         lambda raw, *args: dict(raw),
     )
     monkeypatch.setattr(
-        "services.engine.render_orchestrator.compute_scad_hash",
+        "services.engine.render_orchestrator.source_content_hash",
         lambda *args: "deadbeef",
     )
     # Default state: strict mode off, regardless of the ambient environment.

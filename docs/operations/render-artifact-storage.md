@@ -168,6 +168,15 @@ are created through Enclii; this repository contains no MinIO or bucket
 manifest, by design. Give the bucket a lifecycle rule expiring objects at
 24 hours, matching `RENDER_GC_TTL`.
 
+**Prerequisite: network.** The backend pod is default-deny
+(`k8s/production/yantra4d-network-policies.yaml`). Its egress rule allows
+public IPv4 on TCP 443 and 80, so a public HTTPS endpoint works as it is. An
+endpoint **inside the cluster** (a Service in another namespace), or one on a
+private address or a non-standard port, is refused until `yantra4d-backend-egress`
+has a rule for it. That rule names the endpoint pod's namespace and labels and
+its container port. Merge that rule before step 3. Otherwise the startup
+`HeadBucket` fails and both containers exit.
+
 **Step 1 — put the credentials in the Secret.** The `yantra4d-secrets` Secret
 takes two keys, referenced by name only; their values live in Enclii and are
 never written here or in any manifest:

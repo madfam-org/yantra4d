@@ -38,6 +38,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     moves, and only then does this change go green on `spec-conformance`.
 
 ### Changed
+- **Default-deny NetworkPolicy for the backend pod** (`k8s/production/yantra4d-network-policies.yaml`).
+  The pod that runs `backend` and `render-worker` now accepts traffic only on
+  port 5000, and only from the Cloudflare tunnel, Prometheus in `monitoring`,
+  and the Studio and Admin nginx proxies. It sends traffic only to:
+  - the cluster DNS;
+  - Redis;
+  - the Selva gateway's in-cluster pods;
+  - public IPv4 on TCP 443 and 80.
+
+  Private, shared and link-local ranges are excluded from the public rule, so
+  a new in-cluster destination needs its own rule. That includes an in-cluster
+  bucket endpoint before `RENDER_ARTIFACT_STORE` flips to `s3`. Redis now
+  accepts connections only from the backend pod.
 - **Render: User Cartridges Render Their Declared Graph** — in a fork or a
   GitHub import (`project.meta.json` `source.type` `fork`/`github`), a mode that
   declares `graph_file` now renders that graph with the `graph` engine instead of

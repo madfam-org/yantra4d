@@ -8,7 +8,9 @@ Endpoints:
       Cotiza (digifab-quoting) API.
 
 Environment:
-  COTIZA_API_URL    -- Base URL of the Cotiza API (default: http://localhost:4000)
+  COTIZA_API_URL    -- Bare origin of the Cotiza API, with no /api/v1 suffix
+                       (default: http://localhost:4000). Quote requests go to
+                       {COTIZA_API_URL}/quotes/from-yantra4d.
   COTIZA_API_KEY    -- API key for authenticating with Cotiza
 """
 
@@ -39,6 +41,8 @@ cotiza_export_bp = Blueprint("cotiza_export", __name__)
 COTIZA_API_URL = os.getenv("COTIZA_API_URL", "http://localhost:4000")
 COTIZA_API_KEY = os.getenv("COTIZA_API_KEY", "")
 COTIZA_TIMEOUT_SECONDS = int(os.getenv("COTIZA_TIMEOUT_SECONDS", "30"))
+# The path Cotiza serves the import on, relative to the bare API origin.
+COTIZA_QUOTE_PATH = "/quotes/from-yantra4d"
 
 # Supported mesh extensions in preference order — one definition, in
 # services.engine.render_artifacts, now that the lookup is shared.
@@ -236,7 +240,7 @@ def _build_quote_request_payload(
 ) -> dict:
     """Assemble the quote request payload for the Cotiza API.
 
-    The payload is structured to match what ``POST /api/v1/quotes/from-yantra4d``
+    The payload is structured to match what ``POST /quotes/from-yantra4d``
     expects on the Cotiza side.
     """
     # Extract material from request body, fall back to manifest defaults
@@ -301,7 +305,7 @@ def _send_to_cotiza(payload: dict, auth_token: str | None = None) -> dict:
     Returns the JSON response body on success.
     Raises RuntimeError on network or HTTP errors.
     """
-    url = f"{COTIZA_API_URL}/api/v1/quotes/from-yantra4d"
+    url = f"{COTIZA_API_URL.rstrip('/')}{COTIZA_QUOTE_PATH}"
     headers = {"Content-Type": "application/json"}
 
     if COTIZA_API_KEY:
@@ -360,7 +364,7 @@ def create_cotiza_quote_request(slug: str):
       2. Finds the latest rendered mesh (or triggers a render if needed).
       3. Extracts volume, surface area, and bounding box from the mesh.
       4. Assembles a structured quote request payload.
-      5. Sends the payload to Cotiza's ``POST /api/v1/quotes/from-yantra4d``.
+      5. Sends the payload to Cotiza's ``POST /quotes/from-yantra4d``.
       6. Returns the Cotiza response (created quote details).
 
     Returns 201 on successful quote creation with the Cotiza response.

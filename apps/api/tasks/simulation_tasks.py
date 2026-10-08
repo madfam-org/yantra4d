@@ -1,21 +1,45 @@
 """
 Simulation Tasks
 Background job execution for the PPF Contact Solver pipeline.
-If migrating to full cloud cluster, decorate these with @celery.task(queue="gpu_tasks").
+
+No physics solver ships with the API. A job can only be created once a solver
+backend has been registered with ``configure_physics_solver``; until then
+``queue_simulation`` raises ``PhysicsSolverUnavailable`` and the route answers
+501. A job never reports frames that a solver did not return.
+If migrating to a cloud cluster, decorate the worker with @celery.task(queue="gpu_tasks").
 """
 import hashlib
 import logging
 import threading
 import time
 import uuid
+from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
-# In-memory distributed task mimic
+# A solver backend runs the generated PPF script for ``part_count`` parts and
+# returns the frame sequence it computed (for example, URLs of exported frames).
+PhysicsSolver = Callable[[str, int], list]
+
+_SOLVER: PhysicsSolver | None = None
+
+# In-memory job store (single process; jobs do not survive a restart).
 _JOB_STORE: dict[str, dict] = {}
 _JOB_LOCK = threading.Lock()
-_TOTAL_FRAMES = 100
-_FRAME_DELAY = 0.03
+
+
+class PhysicsSolverUnavailable(RuntimeError):
+    """No physics solver backend is configured on this server."""
+
+
+def configure_physics_solver(solver: PhysicsSolver | None) -> None:
+    """Register the backend that executes PPF scripts; ``None`` removes it."""
+    global _SOLVER
+    _SOLVER = solver
+
+
+def physics_solver_available() -> bool:
+    return _SOLVER is not None
 
 
 def _new_job_record(slug: str) -> dict:
@@ -36,17 +60,23 @@ def _new_job_record(slug: str) -> dict:
 
 
 def queue_simulation(slug: str, parts: list, kinematics: dict) -> str:
+    solver = _SOLVER
+    if solver is None:
+        raise PhysicsSolverUnavailable("No physics solver is configured on this server.")
+
     from services.simulation.script_generator import generate_ppf_script
+
+    # The generated script is the solver's input.
+    script = generate_ppf_script(slug, parts, kinematics)
 
     job_id = str(uuid.uuid4())
     with _JOB_LOCK:
         _JOB_STORE[job_id] = _new_job_record(slug)
+    logger.info("Queued physics simulation %s for project %s.", job_id, slug)
 
-    # Pre-compile the GPU instruction script
-    script = generate_ppf_script(slug, parts, kinematics)
-    logger.info(f"Queued physics simulation {job_id} for project {slug}.")
-
-    thread = threading.Thread(target=_run_worker_simulation, args=(job_id, slug, script, len(parts)))
+    thread = threading.Thread(
+        target=_run_worker_simulation, args=(job_id, slug, script, len(parts), solver)
+    )
     thread.daemon = True
     thread.start()
 
@@ -61,59 +91,39 @@ def get_job_status(job_id: str) -> dict | None:
         return state.copy()
 
 
-def _run_worker_simulation(job_id: str, slug: str, built_script: str, part_count: int = 0):
-    logger.info(f"Worker claimed physics simulation {job_id}")
-
+def _run_worker_simulation(
+    job_id: str, slug: str, built_script: str, part_count: int, solver: PhysicsSolver
+):
+    script_signature = hashlib.sha1(built_script.encode("utf-8")).hexdigest()[:12]
     with _JOB_LOCK:
         state = _JOB_STORE.setdefault(job_id, _new_job_record(slug))
         state["status"] = "running"
         state["started_at"] = time.time()
-        state["metadata"] = {
-            "parts": part_count,
-            "frame_count": _TOTAL_FRAMES,
-            "frame_delay_s": _FRAME_DELAY,
-        }
-
-    script_signature = hashlib.sha1(built_script.encode("utf-8")).hexdigest()[:12]
-    logger.info("Physics simulation %s script_signature=%s", job_id, script_signature)
+        state["metadata"] = {"parts": part_count, "script_signature": script_signature}
+    logger.info("Physics simulation %s running, script_signature=%s", job_id, script_signature)
 
     try:
-        frames = []
-        # Simulate ~3 seconds of GPU compute generating 100 frames
-        for i in range(1, _TOTAL_FRAMES + 1):
-            time.sleep(_FRAME_DELAY)
-            with _JOB_LOCK:
-                state = _JOB_STORE.get(job_id)
-                if state is None:
-                    return
-                state["progress"] = (i / float(_TOTAL_FRAMES)) * 100.0
-
-            frames.append(True)
-
-        with _JOB_LOCK:
-            state = _JOB_STORE.get(job_id)
-            if state is None:
-                return
-            state["status"] = "success"
-            state["frames"] = frames
-            state["frames_generated"] = len(frames)
-            state["finished_at"] = time.time()
-            state["duration_ms"] = int((state["finished_at"] - state["started_at"]) * 1000)
-            metadata = state.get("metadata") or {}
-            metadata["script_signature"] = script_signature
-            state["metadata"] = metadata
-        logger.info(f"Simulation Job {job_id} successfully baked 100 physics frames.")
-
+        frames = list(solver(built_script, part_count))
     except Exception as e:
-        logger.exception("Simulation crashed at solver level.")
+        logger.exception("Physics solver failed for simulation %s.", job_id)
         with _JOB_LOCK:
             state = _JOB_STORE.get(job_id)
             if state is None:
                 return
             state["status"] = "failed"
             state["error"] = str(e)
-            if state.get("started_at"):
-                state["duration_ms"] = int((time.time() - state["started_at"]) * 1000)
-            else:
-                state["duration_ms"] = 0
             state["finished_at"] = time.time()
+            state["duration_ms"] = int((state["finished_at"] - state["started_at"]) * 1000)
+        return
+
+    with _JOB_LOCK:
+        state = _JOB_STORE.get(job_id)
+        if state is None:
+            return
+        state["status"] = "success"
+        state["progress"] = 100.0
+        state["frames"] = frames
+        state["frames_generated"] = len(frames)
+        state["finished_at"] = time.time()
+        state["duration_ms"] = int((state["finished_at"] - state["started_at"]) * 1000)
+    logger.info("Physics simulation %s finished with %d solver frames.", job_id, len(frames))

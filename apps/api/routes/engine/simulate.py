@@ -1,6 +1,12 @@
 """
 Simulate Blueprint
-Provides foundational FEA stress simulation endpoints.
+
+What each endpoint computes today:
+- stress: a geometry-derived stress ESTIMATE (``stress_proxy_v1``), not a
+  finite-element solve.
+- physics: needs a physics solver backend; without one it answers 501
+  ``physics_solver_unavailable`` and creates no job.
+- optimize: a deterministic heuristic parameter estimate; no stress solver runs.
 """
 import logging
 
@@ -13,14 +19,32 @@ from services.core.project_access import require_project_access
 from services.engine.render_artifacts import find_latest_render_key
 from services.geometry.stress_analyzer import compute_stress_field
 from services.storage import local_artifact
+from tasks.optimization_tasks import METHOD as OPTIMIZE_METHOD
 from tasks.optimization_tasks import get_opt_status, queue_optimization
-from tasks.simulation_tasks import get_job_status, queue_simulation
+from tasks.simulation_tasks import (
+    PhysicsSolverUnavailable,
+    get_job_status,
+    physics_solver_available,
+    queue_simulation,
+)
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
 
 logger = logging.getLogger(__name__)
 
 simulate_bp = Blueprint('simulate', __name__)
+
+STRESS_METHOD = "geometry_proxy"
+PHYSICS_SOLVER_UNAVAILABLE = "physics_solver_unavailable"
+
+
+def _physics_unavailable_response():
+    return error_response(
+        "Physics simulation is not available: no physics solver is configured on this server.",
+        501,
+        error_code=PHYSICS_SOLVER_UNAVAILABLE,
+    )
+
 
 @simulate_bp.route('/api/projects/<slug>/simulate/stress', methods=['POST'])
 @require_valid_slug
@@ -29,7 +53,7 @@ simulate_bp = Blueprint('simulate', __name__)
 @handle_exceptions
 @require_project_access
 def simulate_stress(slug: str):
-    """Run FEA Stress simulation overlay on latest render."""
+    """Estimate a stress field for the latest render from its geometry (not FEA)."""
     data = request.get_json(silent=True) or {}
     
     mesh_key = find_latest_render_key(slug)
@@ -50,13 +74,15 @@ def simulate_stress(slug: str):
                 str(mesh_path), force_vector=(force_x, force_y, force_z)
             )
     except FileNotFoundError:
-        return error_response("Render file disappeared during simulation", 404)
+        return error_response("Render file disappeared during the stress estimate", 404)
     except Exception as e:
-        logger.exception("FEA simulation failed for %s", slug)
-        return error_response(f"Simulation failed: {e!s}", 500)
+        logger.exception("Stress estimate failed for %s", slug)
+        return error_response(f"Stress estimate failed: {e!s}", 500)
 
     return jsonify({
         "status": "success",
+        "method": STRESS_METHOD,
+        "approximation": True,
         "project": slug,
         "mesh_file": mesh_key.rsplit("/", 1)[-1],
         "simulation": result,
@@ -74,7 +100,14 @@ def simulate_stress(slug: str):
 @handle_exceptions
 @require_project_access
 def start_physics_simulation(slug: str):
-    """Trigges a full GPU-bound PPF Physics simulation returning sequence frames."""
+    """Queue a PPF physics simulation on the configured solver backend.
+
+    Fails closed: without a solver backend it answers 501
+    ``physics_solver_unavailable`` and creates no job.
+    """
+    if not physics_solver_available():
+        return _physics_unavailable_response()
+
     data = request.get_json(silent=True) or {}
     
     parts = data.get("parts", [])
@@ -84,8 +117,9 @@ def start_physics_simulation(slug: str):
         return error_response("Missing parts or kinematics manifest payload.", 400)
         
     try:
-        # Dispatch the simulation job to GPU worker queue
         job_id = queue_simulation(slug, parts, kinematics)
+    except PhysicsSolverUnavailable:
+        return _physics_unavailable_response()
     except Exception as e:
         logger.exception("Failed to dispatch simulation job")
         return error_response(f"Job dispatch failed: {e!s}", 500)
@@ -129,7 +163,7 @@ def get_physics_simulation_status(slug: str, job_id: str):
 @handle_exceptions
 @require_project_access
 def start_optimization(slug: str):
-    """Trigges a generative topology optimization task."""
+    """Start a heuristic parameter estimate (deterministic rule; no stress solver runs)."""
     data = request.get_json(silent=True) or {}
     original_params = data.get("params", {})
     
@@ -139,12 +173,14 @@ def start_optimization(slug: str):
     try:
         job_id = queue_optimization(slug, original_params)
     except Exception as e:
-        logger.exception("Failed to dispatch topology optimizer")
+        logger.exception("Failed to dispatch the heuristic parameter estimate")
         return error_response(f"Job dispatch failed: {e!s}", 500)
-        
+
     return jsonify({
         "status": "success",
-        "job_id": job_id
+        "job_id": job_id,
+        "method": OPTIMIZE_METHOD,
+        "approximation": True,
     }), 202
 
 @simulate_bp.route('/api/projects/<slug>/simulate/optimize/<job_id>', methods=['GET'])
@@ -152,7 +188,7 @@ def start_optimization(slug: str):
 @handle_exceptions
 @require_project_access
 def get_optimization_status(slug: str, job_id: str):
-    """Polls the multi-generation optimization track."""
+    """Poll a heuristic parameter estimate job."""
     status_data = get_opt_status(job_id)
     
     if not status_data:
@@ -163,12 +199,14 @@ def get_optimization_status(slug: str, job_id: str):
         
     response = {
         "status": status_data["status"],
+        "method": status_data.get("method", OPTIMIZE_METHOD),
+        "approximation": True,
         "progress": status_data["progress"],
         "best_params": status_data["best_params"],
         "logs": status_data["logs"],
         "error": status_data["error"],
     }
-    for key in ["duration_ms", "current_sigma", "best_iteration", "current_params", "cancel_requested", "created_at", "started_at", "finished_at"]:
+    for key in ["duration_ms", "current_score", "best_iteration", "current_params", "cancel_requested", "created_at", "started_at", "finished_at"]:
         if key in status_data:
             response[key] = status_data[key]
 

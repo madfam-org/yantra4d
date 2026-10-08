@@ -445,5 +445,15 @@
   "graph.point_coordinate": "点 {n} {axis}",
   "graph.point_remove": "移除点 {n}",
   "graph.point_add": "添加点",
-  "graph.limit_reached": "已达上限（{limit}）。"
+  "graph.limit_reached": "已达上限（{limit}）。",
+  "sim.physics_run": "运行物理仿真",
+  "sim.physics_running": "正在进行物理仿真... {progress}%",
+  "sim.physics_done": "物理帧已就绪",
+  "sim.physics_unavailable": "物理仿真不可用：此服务器未配置物理求解器。",
+  "sim.stress_run": "应力图（估算）",
+  "sim.stress_active": "正在显示应力估算",
+  "sim.stress_note": "根据几何形状推导的近似应力图，并非有限元分析。",
+  "sim.optimize_run": "参数估算（启发式）",
+  "sim.optimize_running": "启发式估算... {progress}%",
+  "sim.optimize_note": "启发式估算：按固定规则调整一个数值参数。未运行应力求解器，因此结果并非优化后的设计。"
 }

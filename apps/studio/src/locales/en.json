@@ -445,5 +445,15 @@
   "graph.point_coordinate": "Point {n} {axis}",
   "graph.point_remove": "Remove point {n}",
   "graph.point_add": "Add point",
-  "graph.limit_reached": "Limit reached ({limit})."
+  "graph.limit_reached": "Limit reached ({limit}).",
+  "sim.physics_run": "Run physics simulation",
+  "sim.physics_running": "Simulating physics... {progress}%",
+  "sim.physics_done": "Physics frames ready",
+  "sim.physics_unavailable": "Physics simulation is not available: this server has no physics solver configured.",
+  "sim.stress_run": "Stress map (estimate)",
+  "sim.stress_active": "Showing stress estimate",
+  "sim.stress_note": "Approximate stress map derived from the geometry. It is not a finite-element analysis.",
+  "sim.optimize_run": "Parameter estimate (heuristic)",
+  "sim.optimize_running": "Heuristic estimate... {progress}%",
+  "sim.optimize_note": "Heuristic estimate: a fixed rule adjusts one numeric parameter. No stress solver runs, so the result is not an optimized design."
 }

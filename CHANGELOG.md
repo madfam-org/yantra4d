@@ -38,6 +38,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     moves, and only then does this change go green on `spec-conformance`.
 
 ### Changed
+- **Simulation endpoints report only what they computed** (Pro tier).
+  - `POST /api/projects/<slug>/simulate/physics` answers **501** with
+    `error_code: "physics_solver_unavailable"` and creates no job unless a physics
+    solver backend is registered (`configure_physics_solver` in
+    `apps/api/tasks/simulation_tasks.py`). Before, it queued a job that waited
+    about 3 s and reported 100 frames without running a solver. The PPF script
+    generator stays as the solver's input, and a job's frames are now exactly
+    what the solver returned.
+  - `POST /simulate/optimize` and its status route carry `method: "heuristic"`
+    and `approximation: true`. The status field `current_sigma` is renamed
+    `current_score` and the log lines read "heuristic score": the number comes
+    from a deterministic rule, not from a stress solve.
+  - `POST /simulate/stress` carries `method: "geometry_proxy"` and
+    `approximation: true` next to the existing `stress_proxy_v1` summary.
+  - Studio: the physics button disables itself and shows the reason once the
+    server refuses; the stress map and the parameter search are labelled as
+    estimates (the "FEA" and "AI Topo Optimization" copy is gone), in all six
+    locales. The physics request is now actually sent: the handler read a
+    `manifest` that was not in scope and threw before the request.
 - **Render: User Cartridges Render Their Declared Graph** — in a fork or a
   GitHub import (`project.meta.json` `source.type` `fork`/`github`), a mode that
   declares `graph_file` now renders that graph with the `graph` engine instead of

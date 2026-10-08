@@ -100,10 +100,40 @@ def test_optimize_is_labelled_a_heuristic_estimate(client):
     assert status["status"] == "success"
     assert status["method"] == "heuristic"
     assert status["approximation"] is True
-    assert "current_sigma" not in status
     assert isinstance(status["current_score"], float)
+    assert status["current_sigma"] == status["current_score"]
     assert status["logs"] and all("heuristic score" in line for line in status["logs"])
     assert not any("sigma" in line for line in status["logs"])
+
+
+def test_optimize_status_keeps_current_sigma_as_a_deprecated_alias(client, monkeypatch):
+    from routes.engine import simulate
+
+    record = {
+        "slug": SLUG, "status": "running", "method": "heuristic", "progress": 40.0,
+        "best_params": None, "logs": [], "error": None, "current_score": 31.5,
+    }
+    monkeypatch.setattr(simulate, "get_opt_status", lambda job_id: record)
+
+    body = client.get(f"/api/projects/{SLUG}/simulate/optimize/job-1").get_json()
+    assert body["current_score"] == 31.5
+    assert body["current_sigma"] == body["current_score"]
+    assert body["method"] == "heuristic"
+    assert body["approximation"] is True
+
+
+def test_optimize_status_omits_both_scores_before_the_first_generation(client, monkeypatch):
+    from routes.engine import simulate
+
+    record = {
+        "slug": SLUG, "status": "queued", "method": "heuristic", "progress": 0.0,
+        "best_params": None, "logs": [], "error": None,
+    }
+    monkeypatch.setattr(simulate, "get_opt_status", lambda job_id: record)
+
+    body = client.get(f"/api/projects/{SLUG}/simulate/optimize/job-1").get_json()
+    assert "current_score" not in body
+    assert "current_sigma" not in body
 
 
 def test_stress_is_labelled_a_geometry_estimate(client, monkeypatch):

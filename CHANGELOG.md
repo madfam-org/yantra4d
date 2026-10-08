@@ -47,9 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     generator stays as the solver's input, and a job's frames are now exactly
     what the solver returned.
   - `POST /simulate/optimize` and its status route carry `method: "heuristic"`
-    and `approximation: true`. The status field `current_sigma` is renamed
-    `current_score` and the log lines read "heuristic score": the number comes
-    from a deterministic rule, not from a stress solve.
+    and `approximation: true`. The status route adds `current_score` and the
+    log lines read "heuristic score": the number comes from a deterministic
+    rule, not from a stress solve. **Deprecated:** `current_sigma` stays in the
+    status response for one release as an alias with the same value as
+    `current_score`; read `current_score`.
   - `POST /simulate/stress` carries `method: "geometry_proxy"` and
     `approximation: true` next to the existing `stress_proxy_v1` summary.
   - Studio: the physics button disables itself and shows the reason once the

@@ -188,7 +188,12 @@ def start_optimization(slug: str):
 @handle_exceptions
 @require_project_access
 def get_optimization_status(slug: str, job_id: str):
-    """Poll a heuristic parameter estimate job."""
+    """Poll a heuristic parameter estimate job.
+
+    ``current_sigma`` is a deprecated alias of ``current_score``, kept for one
+    release so existing clients keep working. Both hold a heuristic score from
+    a deterministic rule, not a computed stress; read ``current_score``.
+    """
     status_data = get_opt_status(job_id)
     
     if not status_data:
@@ -209,5 +214,8 @@ def get_optimization_status(slug: str, job_id: str):
     for key in ["duration_ms", "current_score", "best_iteration", "current_params", "cancel_requested", "created_at", "started_at", "finished_at"]:
         if key in status_data:
             response[key] = status_data[key]
+    if "current_score" in response:
+        # Deprecated alias for one release; same value as current_score.
+        response["current_sigma"] = response["current_score"]
 
     return jsonify(response)

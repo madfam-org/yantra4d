@@ -59,6 +59,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     estimates (the "FEA" and "AI Topo Optimization" copy is gone), in all six
     locales. The physics request is now actually sent: the handler read a
     `manifest` that was not in scope and threw before the request.
+  - Docs: `README.md`, `docs/guides/physics-simulation.md`, `docs/index.md`,
+    `docs/cartridges/hyperobject_candidates.md` and `ROADMAP.md` now describe
+    this behaviour.
 - **Render: User Cartridges Render Their Declared Graph** — in a fork or a
   GitHub import (`project.meta.json` `source.type` `fork`/`github`), a mode that
   declares `graph_file` now renders that graph with the `graph` engine instead of

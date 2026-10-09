@@ -115,6 +115,53 @@ class TestValidateParams:
 # ---------------------------------------------------------------------------
 # build_openscad_command
 # ---------------------------------------------------------------------------
+class TestSelectParameterIdentity:
+    @pytest.mark.parametrize("value", [1, "1", 1.0])
+    def test_numeric_select_retains_declared_number(self, value):
+        from services.engine.openscad import build_openscad_command, validate_params
+        manifest = SimpleNamespace(parameters=[{"id": "standard", "type": "select", "options": [{"value": 0}, {"value": 1}]}])
+        with patch("services.engine.openscad.get_manifest", return_value=manifest):
+            cleaned = validate_params({"standard": value})
+        assert cleaned == {"standard": 1}
+        assert "standard=1" in build_openscad_command("/out.stl", "/in.scad", cleaned)
+
+    @pytest.mark.parametrize("value", [True, None, [], 99, "missing"])
+    def test_undeclared_select_is_rejected(self, value):
+        from services.engine.openscad import validate_params
+        manifest = SimpleNamespace(parameters=[{"id": "standard", "type": "select", "options": [{"value": 0}, {"value": 1}]}])
+        with patch("services.engine.openscad.get_manifest", return_value=manifest):
+            assert "standard" not in validate_params({"standard": value})
+
+    def test_numeric_looking_string_option_stays_a_string(self):
+        from services.engine.openscad import validate_params
+        manifest = SimpleNamespace(parameters=[{"id": "code", "type": "select", "options": [{"value": "01"}, {"value": "02"}]}])
+        with patch("services.engine.openscad.get_manifest", return_value=manifest):
+            assert validate_params({"code": "01"}) == {"code": "01"}
+
+    def test_select_string_is_escaped_as_one_scad_literal(self):
+        from services.engine.openscad import build_openscad_command, validate_params
+        value = 'Quoted "label"\\path'
+        manifest = SimpleNamespace(parameters=[{"id": "code", "type": "select", "options": [{"value": value}]}])
+        with patch("services.engine.openscad.get_manifest", return_value=manifest):
+            cleaned = validate_params({"code": value})
+        assert cleaned == {"code": value}
+        assert "code=" + json.dumps(value, ensure_ascii=False) in build_openscad_command("/out.stl", "/in.scad", cleaned)
+
+    def test_actual_microscope_defaults_preserve_numeric_selection(self):
+        from pathlib import Path
+
+        from services.engine.openscad import validate_params
+        source = Path(__file__).resolve().parents[4] / "projects/microscope-slide-holder/project.json"
+        manifest = json.loads(source.read_text())
+        defaults = {p["id"]: p["default"] for p in manifest["parameters"] if "default" in p}
+        with patch("services.engine.openscad.get_manifest", return_value=SimpleNamespace(parameters=manifest["parameters"])):
+            cleaned = validate_params(defaults)
+        for definition in manifest["parameters"]:
+            if definition["type"] == "select":
+                assert cleaned[definition["id"]] == defaults[definition["id"]]
+                assert type(cleaned[definition["id"]]) is type(defaults[definition["id"]])
+
+
 class TestBuildOpenscadCommand:
     """Tests for OpenSCAD CLI command construction."""
 

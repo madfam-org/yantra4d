@@ -12,6 +12,8 @@ platform/architecture documentation for contributors lives in
 > site is live. No CI job builds this app, so a change here is checked by review
 > rather than by a lane.
 
+Requires Node 22.12 or later (Astro 7).
+
 ```bash
 npm install
 npm run dev       # Starlight dev server on http://localhost:4321

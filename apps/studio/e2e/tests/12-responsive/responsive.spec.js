@@ -1,6 +1,7 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
 import {
   goToStudio,
+  forceBackendRender,
   goToProjects,
   setLanguage,
   waitForRenderSettled,
@@ -21,7 +22,7 @@ import {
  * about to be replaced. waitForHeaderReady is the same wait, un-swallowed.
  */
 async function goToStudioMobile(page, slug = 'test') {
-  await page.goto(`/project/${slug}`)
+  await page.goto(`/project/${slug}?render=backend`)
   await waitForHeaderReady(page)
   // Ensure a mode tab is active (click first tab if needed)
   const activeTab = page.locator('[role="tab"][data-state="active"]')
@@ -37,6 +38,9 @@ async function goToStudioMobile(page, slug = 'test') {
 test.describe('Responsive Design', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
+    // Layout tests use the fixture's SSE mocks. Browser placement would fetch
+    // an unmocked WASM bundle first and can open an unrelated upgrade dialog.
+    await forceBackendRender(page)
   })
 
   // Mobile (375px)
@@ -262,13 +266,10 @@ test.describe('Responsive Design', () => {
   test('mobile: export panel is accessible via scroll', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 })
     await goToStudioMobile(page)
-    // On mobile, the export panel is inside the bottom sheet. Opening it is the
-    // same lost-click hazard as the overflow menu — SheetTrigger is a Radix
-    // Dialog Trigger — so gate on its data-state rather than on the portalled
-    // dialog appearing within a fixed 5s. (SidebarContent is mounted once, in
-    // the Sheet portal — the desktop sidebar that used to hold a second copy is
-    // not in the DOM at this width — but the assertions stay scoped to the
-    // dialog because the sheet is what this test is about.)
+    // On mobile, the export panel is inside the bottom sheet. The
+    // helper waits for the named Controls dialog after one trigger click.
+    // SidebarContent is mounted once in its portal, so keep assertions scoped
+    // to that dialog.
     const sheet = await openMobileSheet(page)
     const controls = sheet.locator('button, [role="slider"], input, select')
     await expect(controls.first()).toBeVisible({ timeout: 15_000 })

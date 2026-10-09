@@ -1,3 +1,4 @@
+import { webcrypto } from 'node:crypto'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // ---------------------------------------------------------------------------
@@ -106,22 +107,6 @@ function createFailingIndexedDB() {
 // ---------------------------------------------------------------------------
 // crypto.subtle mock
 // ---------------------------------------------------------------------------
-function createMockCrypto() {
-  return {
-    subtle: {
-      async digest(_algo, buffer) {
-        const bytes = new Uint8Array(buffer)
-        let sum = 0
-        for (const b of bytes) sum = (sum + b) % 256
-        const out = new Uint8Array(32)
-        for (let i = 0; i < 32; i++) out[i] = (sum + i) % 256
-        return out.buffer
-      },
-    },
-    getRandomValues: (arr) => arr,
-  }
-}
-
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -130,7 +115,7 @@ describe('renderCache', () => {
     storeData = {}
     activeTx = null
     vi.stubGlobal('indexedDB', createMockIndexedDB())
-    vi.stubGlobal('crypto', createMockCrypto())
+    vi.stubGlobal('crypto', webcrypto)
     vi.resetModules()
   })
 
@@ -160,6 +145,16 @@ describe('renderCache', () => {
       const a = await makeCacheKey('p', 'm', {}, 'stl')
       const b = await makeCacheKey('p', 'm', {}, '3mf')
       expect(a).not.toBe(b)
+    })
+
+    it('moves when the project\'s sources are saved, and only for that project', async () => {
+      const { makeCacheKey } = await loadModule()
+      const { bumpSourceRevision } = await import('./sourceRevision')
+      const before = await makeCacheKey('fork', 'm', { h: 1 }, 'glb', 'rev')
+      const other = await makeCacheKey('other', 'm', { h: 1 }, 'glb', 'rev')
+      bumpSourceRevision('fork')
+      expect(await makeCacheKey('fork', 'm', { h: 1 }, 'glb', 'rev')).not.toBe(before)
+      expect(await makeCacheKey('other', 'm', { h: 1 }, 'glb', 'rev')).toBe(other)
     })
 
     it('defaults format to stl', async () => {
@@ -507,5 +502,46 @@ describe('renderCache', () => {
       const { clear } = await import('./renderCache.js')
       await expect(clear()).resolves.toBeUndefined()
     })
+  })
+})
+
+
+describe('release cache identity', () => {
+  beforeEach(() => {
+    storeData = {}
+    activeTx = null
+    vi.stubGlobal('indexedDB', createMockIndexedDB())
+    vi.stubGlobal('crypto', webcrypto)
+    vi.resetModules()
+  })
+
+  it('invalidates geometry when only the Studio renderer changes', async () => {
+    const { makeCacheKey } = await import('./renderCache.js')
+    vi.stubEnv('VITE_RENDER_BUILD_ID', 'client-one')
+    const first = await makeCacheKey('p', 'm', {}, 'stl', 'server-one')
+    vi.stubEnv('VITE_RENDER_BUILD_ID', 'client-two')
+    expect(await makeCacheKey('p', 'm', {}, 'stl', 'server-one')).not.toBe(first)
+    vi.unstubAllEnvs()
+  })
+  it('misses old persistent geometry after a release', async () => {
+    const { makeCacheKey, get } = await import('./renderCache.js')
+    const oldKey = await makeCacheKey('p', 'm', { h: 10 }, 'stl', 'release-one')
+    storeData[oldKey] = { timestamp: Date.now(), parts: [] }
+    const newKey = await makeCacheKey('p', 'm', { h: 10 }, 'stl', 'release-two')
+    expect(newKey).not.toBe(oldKey)
+    expect(await get(newKey)).toBeNull()
+  })
+
+  it('cannot overwrite project or mode identity through parameter names', async () => {
+    const { makeCacheKey } = await import('./renderCache.js')
+    expect(await makeCacheKey('a', 'one', { project: 'b', mode: 'two' }))
+      .not.toBe(await makeCacheKey('b', 'two', { project: 'b', mode: 'two' }))
+  })
+
+  it('preserves nested values and ignores object insertion order', async () => {
+    const { makeCacheKey } = await import('./renderCache.js')
+    const first = await makeCacheKey('p', 'm', { shape: { width: 1, height: 2 }, a: 4 })
+    expect(first).toBe(await makeCacheKey('p', 'm', { a: 4, shape: { height: 2, width: 1 } }))
+    expect(first).not.toBe(await makeCacheKey('p', 'm', { shape: { width: 2, height: 1 }, a: 4 }))
   })
 })

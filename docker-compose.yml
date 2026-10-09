@@ -24,6 +24,7 @@ services:
       - "5000:5000"
     volumes:
       - ./projects:/app/projects:ro
+      - user_projects:/app/user-projects
       - render_output:/app/backend/static
       - analytics_data:/app/backend/data
     environment:
@@ -92,6 +93,7 @@ services:
       - REDIS_URL=redis://:${REDIS_PASSWORD:-yantra4d_dev}@redis:6379
     volumes:
       - ./projects:/app/projects:ro
+      - user_projects:/app/user-projects
       - render_output:/app/backend/static
 
   landing:
@@ -133,3 +135,4 @@ volumes:
   redis_data:
   analytics_data:
   render_output:
+  user_projects:

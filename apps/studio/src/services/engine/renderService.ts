@@ -464,6 +464,7 @@ const SERVER_RETRYABLE_KINDS: ReadonlySet<RenderFailureKind> = new Set([
   'init-error',
   'oom',
   'timeout',
+  'kernel-error',
 ])
 
 /** Default ceiling on one browser render. `estimate_constants` may override. */

@@ -11,7 +11,7 @@ The supported flow is:
 ```text
 Selva agent
   -> POST /api/projects/<private-slug>/cotiza-quote-request
-  -> Cotiza POST /api/v1/quotes/from-yantra4d
+  -> Cotiza POST /quotes/from-yantra4d
   -> ForgeSight verified market pricing
   -> Cotiza response relayed by Yantra4D
 ```

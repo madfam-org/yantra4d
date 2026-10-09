@@ -25,10 +25,17 @@ def app(tmp_path, monkeypatch):
         "estimate_constants": {"base_time": 5, "per_unit": 2, "per_part": 8},
     }
     (project_dir / "project.json").write_text(json.dumps(manifest))
+    # An imported repository: sync writes into it, so it must be one the API may write.
+    (project_dir / "project.meta.json").write_text(json.dumps({"source": {"type": "github", "repo_url": "https://github.com/u/r"}}))
 
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): the same unlock that
+    # opens private projects lets any caller write forks and imports, so these
+    # tests exercise write mechanics without minting identities. Ownership is
+    # covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     return flask_app
 
 

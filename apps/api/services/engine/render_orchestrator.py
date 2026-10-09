@@ -12,9 +12,10 @@ import uuid
 import redis
 
 from config import Config
-from manifest import get_manifest
+from manifest import get_manifest, resolve_within_dir
+from services.engine import generator_output
 from services.engine.format_converter import convert_mesh, stl_to_glb
-from services.engine.openscad import compute_scad_hash, validate_params
+from services.engine.openscad import validate_params
 from services.engine.render_cache import entry_key as cache_entry_key
 from services.engine.render_cache import render_cache
 from services.engine.render_contract import (
@@ -30,6 +31,13 @@ from services.engine.render_contract import (
     render_final_channel_for_job,
 )
 from services.engine.render_engine import RENDER_TIMEOUT_S
+from services.engine.render_revision import cache_revision, render_revision
+from services.engine.render_source import (
+    RenderSourceError,
+    render_engine_for_mode,
+    render_source_for_mode,
+    source_content_hash,
+)
 from services.storage import publish_artifact_best_effort
 
 r = redis.Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
@@ -119,58 +127,69 @@ def _request_origin() -> str:
 
 
 def resolve_render_context(data: dict):
-    """Resolve scad_file, parts, and mode_map from request payload.
+    """Resolve the render source, parts, and mode_map from request payload.
 
     Returns (scad_filename, scad_path, parts, mode_map, static_stl_map, mode_id)
-    or RenderPayloadError on failure.
+    or RenderPayloadError on failure. ``scad_filename``/``scad_path`` name the
+    mode's RENDER SOURCE as `services.engine.render_source` resolves it: the
+    mode's ``scad_file``, or — in a user cartridge — its declared ``graph_file``.
     """
     project_slug = data.get('project')
     manifest = get_manifest(project_slug)
     mode_id = data.get('mode')
     scad_filename = data.get('scad_file')
 
-    if mode_id:
-        scad_filename = manifest.get_scad_file_for_mode(mode_id)
-        if scad_filename is None:
-            return RenderPayloadError(f"Invalid mode id: {mode_id}", bad_name=mode_id)
-        parts = manifest.get_parts_for_mode(mode_id)
-    else:
-        if scad_filename:
-            logger.warning("Deprecated: 'scad_file' parameter used instead of 'mode'. Update client to use 'mode'.")
-            mode_id = "legacy"
-        else:
-            # No 'mode' in the payload. The documented contract requires one; we
-            # silently fall through to modes[0] and return HTTP 200, which has
-            # masked client bugs (wrong geometry rendered, never surfaced).
-            fallback_mode = manifest.modes[0]["id"]
-            if _strict_payload_enabled():
-                return RenderPayloadError(
-                    "Missing required 'mode' in render payload. The documented "
-                    "contract is {mode, parameters, parts, export_format?, project?}. "
-                    f"Refusing to silently render the first manifest mode "
-                    f"('{fallback_mode}') under RENDER_STRICT_PAYLOAD."
-                )
-            logger.warning(
-                "Deprecated render payload: no 'mode' supplied; silently rendering "
-                "first manifest mode '%s'. project=%s origin=%s. "
-                "Send an explicit 'mode' — this will 400 once RENDER_STRICT_PAYLOAD is on.",
-                fallback_mode,
-                project_slug or "<default>",
-                _request_origin(),
-            )
-            mode_id = fallback_mode
-            scad_filename = manifest.modes[0]["scad_file"]
+    if not mode_id and scad_filename:
+        logger.warning("Deprecated: 'scad_file' parameter used instead of 'mode'. Update client to use 'mode'.")
         parts_map = manifest.get_parts_map()
         parts = parts_map.get(scad_filename, manifest.modes[0]["parts"])
+        allowed = manifest.get_allowed_files()
+        if scad_filename not in allowed:
+            return RenderPayloadError(f"Invalid SCAD file: {scad_filename}", bad_name=scad_filename)
+        return (scad_filename, str(allowed[scad_filename]), parts, manifest.get_mode_map(),
+                manifest.get_static_stl_map(), "legacy")
 
-    allowed = manifest.get_allowed_files()
-    if scad_filename not in allowed:
-        return RenderPayloadError(f"Invalid SCAD file: {scad_filename}", bad_name=scad_filename)
+    if not mode_id:
+        # No 'mode' in the payload. The documented contract requires one; we
+        # silently fall through to modes[0] and return HTTP 200, which has
+        # masked client bugs (wrong geometry rendered, never surfaced).
+        fallback_mode = manifest.modes[0]["id"]
+        if _strict_payload_enabled():
+            return RenderPayloadError(
+                "Missing required 'mode' in render payload. The documented "
+                "contract is {mode, parameters, parts, export_format?, project?}. "
+                f"Refusing to silently render the first manifest mode "
+                f"('{fallback_mode}') under RENDER_STRICT_PAYLOAD."
+            )
+        logger.warning(
+            "Deprecated render payload: no 'mode' supplied; silently rendering "
+            "first manifest mode '%s'. project=%s origin=%s. "
+            "Send an explicit 'mode' — this will 400 once RENDER_STRICT_PAYLOAD is on.",
+            fallback_mode,
+            project_slug or "<default>",
+            _request_origin(),
+        )
+        mode_id = fallback_mode
 
-    scad_path = str(allowed[scad_filename])
-    mode_map = manifest.get_mode_map()
-    static_stl_map = manifest.get_static_stl_map()
-    return scad_filename, scad_path, parts, mode_map, static_stl_map, mode_id
+    try:
+        source = render_source_for_mode(manifest, mode_id)
+    except RenderSourceError as exc:
+        return RenderPayloadError(str(exc), bad_name=mode_id)
+    if source is None:
+        return RenderPayloadError(f"Invalid mode id: {mode_id}", bad_name=mode_id)
+
+    source_path = str(source.path)
+    if not source.is_graph:
+        # A script source is one of the manifest's declared mode files; the
+        # allow-list is what keeps a manifest from naming anything else.
+        allowed = manifest.get_allowed_files()
+        if source.filename not in allowed:
+            return RenderPayloadError(f"Invalid SCAD file: {source.filename}", bad_name=source.filename)
+        source_path = str(allowed[source.filename])
+
+    parts = next((m.get("parts", []) for m in manifest.modes if m.get("id") == mode_id), [])
+    return (source.filename, source_path, parts, manifest.get_mode_map(),
+            manifest.get_static_stl_map(), mode_id)
 
 
 def extract_render_payload(data: dict) -> dict | RenderPayloadError:
@@ -218,21 +237,26 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         )
         raw_params = data
 
-    params = validate_params(raw_params, project_slug or None)
+    # Validation, optional full-default injection, the legacy target_material
+    # compensation injection (read from the resolved container, so a flattened
+    # payload keeps it) and the GOC-1 variables: services/engine/generator_output.py.
+    params, generator_inputs = generator_output.resolve_render_inputs(
+        get_manifest(project_slug or None), mode_id, raw_params,
+        validate=lambda raw: validate_params(raw, project_slug or None),
+        material_injector=_inject_material_compensations,
+    )
 
-    raw_hash = json.dumps({"s": scad_filename, "p": params}, sort_keys=True)
+    scad_content_hash = source_content_hash(scad_path, get_manifest(project_slug or None))
+    # URLs must change along with cache identity: retaining an old URL must not
+    # silently replace its bytes after a deployment or a source edit.
+    raw_hash = json.dumps({
+        "s": scad_filename, "p": params, "mode": mode_id,
+        "source": scad_content_hash, "revision": cache_revision(),
+        "kernel": render_cache._engine_signature(),
+    }, sort_keys=True)
     param_hash = hashlib.sha256(raw_hash.encode()).hexdigest()[:10]
-
     base_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
     stl_prefix = f"{base_prefix}{param_hash}_"
-
-    # Inject Material Hyperobject Compensations. Read from the resolved parameter
-    # container so a flattened legacy payload no longer silently loses this field.
-    target_mat = raw_params.get('target_material') if isinstance(raw_params, dict) else None
-    if target_mat:
-        _inject_material_compensations(params, target_mat)
-
-    scad_content_hash = compute_scad_hash(scad_path)
 
     return {
         'scad_filename': scad_filename,
@@ -248,6 +272,8 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         'project_slug': project_slug,
         'ignore_cache': data.get('ignore_cache', False),
         'scad_content_hash': scad_content_hash,
+        'render_revision': render_revision(),
+        'generator_inputs': generator_inputs,
     }
 
 
@@ -296,16 +322,34 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     manifest = get_manifest(project_slug)
     # Per-mode engine resolution enables dual-engine cartridges (e.g. legacy
     # OpenSCAD modes alongside CadQuery modes). `scad_path` already points at the
-    # active mode's primary file, so a per-mode engine routes each mode correctly.
-    mode_id = data.get('mode')
-    engine = manifest.mode_engine(mode_id)
+    # active mode's render source, and the engine comes from the same resolver
+    # (services/engine/render_source.py), so the two always agree — a user
+    # cartridge's graph source renders with the graph engine.
+    mode_id = payload.get('mode') or data.get('mode')
+    if mode_id == "legacy":
+        mode_id = data.get('mode')
+    engine = render_engine_for_mode(manifest, mode_id)
 
     # Dual-engine fallback: CadQuery for formats the primary engine can't produce
     if mode_id and engine in ("openscad", "implicit") and export_format in ('step', 'glb', 'gltf'):
         mode_config = next((m for m in manifest.modes if m['id'] == mode_id), None)
         if mode_config and mode_config.get('cq_file'):
+            # cq_file comes from editable project.json; resolve it within the
+            # cartridge directory so a manifest cannot point the runner at a file
+            # outside the cartridge.
+            # The join is relative to the primary file's directory, as before; the
+            # containment root is the cartridge directory.
+            scad_dir = os.path.dirname(scad_path)
+            root = getattr(manifest, "project_dir", None) or scad_dir
+            try:
+                cq_path = resolve_within_dir(
+                    root, mode_config['cq_file'], start=scad_dir,
+                    strict=getattr(manifest, "user_authored", True),
+                )
+            except ValueError as exc:
+                return engine, scad_path, None, (str(exc), 400)
             engine = "cadquery"
-            scad_path = os.path.join(os.path.dirname(scad_path), mode_config['cq_file'])
+            scad_path = str(cq_path)
 
     # Validate engine+format compatibility
     if engine == "cadquery":
@@ -373,11 +417,12 @@ def _check_cache(payload, part, export_format):
     """Check render cache for a part. Returns cached entry dict or None."""
     if payload.get('ignore_cache', False):
         return None
-    return render_cache.get(
+    cached = render_cache.get(
         payload['project_slug'], payload['scad_filename'],
         payload['params'], part, export_format,
         scad_content_hash=payload.get('scad_content_hash'),
     )
+    return cached if generator_output.cache_entry_usable(cached, payload) else None
 
 
 def _post_render_convert(output_path, output_filename, part, stl_prefix,
@@ -518,6 +563,7 @@ def _sanitize_terminal_payload(payload: dict | None) -> dict:
             clean = merged
     clean.pop("event", None)
     clean.pop("stream_protocol", None)
+    clean.pop("generator_output", None)  # envelope-level, never per part
     return clean
 
 
@@ -558,7 +604,8 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
         if cached:
             cache_hits += 1
             combined_log += f"[{part}] cache HIT\n"
-            generated_parts.append({"type": part, "url": f"/static/{cache_entry_key(cached)}", "size_bytes": cached["size_bytes"]})
+            generated_parts.append({"type": part, "url": f"/static/{cache_entry_key(cached)}", "size_bytes": cached["size_bytes"],
+                                    **generator_output.part_fields_from_cache(cached)})
             continue
 
         if not is_render_worker_available():
@@ -689,13 +736,13 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
 
         cached = _check_cache(payload, part, export_format)
         if cached:
-            generated_parts.append(
-                {
-                    "type": part,
-                    "url": f"/static/{cache_entry_key(cached)}",
-                    "size_bytes": cached["size_bytes"],
-                }
-            )
+            part_entry = {
+                "type": part,
+                "url": f"/static/{cache_entry_key(cached)}",
+                "size_bytes": cached["size_bytes"],
+                **generator_output.part_fields_from_cache(cached),
+            }
+            generated_parts.append(part_entry)
             progress = ((i + 1) / num_parts) * 100
             yield _sse_event(build_render_event(
                     RENDER_EVENT_PART_DONE,
@@ -704,6 +751,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                     part_index=i,
                     total_parts=num_parts,
                     cached=True,
+                    **part_entry, **generator_output.envelope_fields(payload),
                 )
             )
             continue
@@ -830,6 +878,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             RENDER_EVENT_COMPLETE,
             parts=generated_parts,
             progress=100,
+            **generator_output.envelope_fields(payload),
         )
     )
 

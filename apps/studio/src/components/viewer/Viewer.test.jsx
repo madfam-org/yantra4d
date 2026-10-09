@@ -61,6 +61,15 @@ vi.mock('@react-three/drei', () => ({
   Html: ({ children }) => <div data-testid="html-label">{children}</div>,
 }))
 
+vi.mock('./ViewerPerformance', () => ({
+  default: () => null,
+  KeepRendering: () => null,
+  InvalidateOnCommit: () => null,
+  CompileGate: ({ children }) => <>{children}</>,
+}))
+
+vi.mock('./AsyncEdges', () => ({ default: () => null }))
+
 vi.mock('three/examples/jsm/loaders/STLLoader', () => ({
   STLLoader: class { },
 }))

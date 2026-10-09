@@ -315,56 +315,24 @@ export async function openDropdownMenu(trigger, timeout = 15_000) {
 /**
  * Open the mobile bottom Sheet (Radix Dialog) and wait for its dialog to mount.
  *
- * Same contract as openDropdownMenu — SheetTrigger is a Radix Dialog Trigger and
- * mirrors `data-state="open"` the same way — kept separate only because the
- * thing it waits for afterwards is a `[role="dialog"]`, not a `[role="menu"]`.
+ * Wait for the named Controls dialog after one toggle action; preserve the
+ * underlying click/locator error if another modal blocks the trigger.
  *
  * @param {import('@playwright/test').Page} page
  * @param {number} [timeout]
  * @returns {import('@playwright/test').Locator} the opened dialog
  */
 export async function openMobileSheet(page, timeout = 15_000) {
-  // There is exactly one hamburger in the DOM. App.tsx mounts a single layout
-  // tree, picked by useIsDesktop() — `(min-width: 1024px)` — so StudioSidebar
-  // gets variant="mobile" below lg and variant="desktop" at or above it, and
-  // this trigger is rendered only by the mobile bar. The `:visible` filter this
-  // selector used to carry existed to skip the hidden desktop copy that WebKit
-  // kept resolving to; there is no hidden copy left to skip. With a single
-  // match the filtered and unfiltered selectors resolve to the same element at
-  // every width, so the filter is dropped and the assertion below gets to say
-  // "not visible" instead of "matched 0 elements". `.first()` stays only as a
-  // strict-mode guard.
-  const menuBtn = page.locator('button:has(.lucide-menu)').first()
+  // Target the controls sheet, not every dialog (welcome/help dialogs may also
+  // be mounted). Do not swallow strict-mode or click failures as "not visible".
+  const menuBtn = page.getByRole('button', { name: /^(Open controls|Abrir controles)$/ })
+  const sheet = page.getByRole('dialog', { name: 'Controls', exact: true })
+  if (await sheet.isVisible()) return sheet
   await expect(menuBtn).toBeVisible({ timeout })
-  const sheet = page.locator('[role="dialog"]')
 
-  // Gate on the DIALOG being open, not on the trigger's data-state.
-  //
-  // data-state is the right signal for the overflow DropdownMenu, whose trigger
-  // is unique and never remounts. It is the wrong one here. The failure that
-  // put this poll in place — firefox, 12-responsive, passing in isolation — was
-  // the dual-tree one: two hamburgers, and the clicked trigger and the mounted
-  // dialog could belong to different Sheet roots. That cause is gone with the
-  // second tree, but the trigger is still the wrong thing to wait on, because
-  // crossing 1024px now swaps which tree is mounted: this Sheet root and its
-  // trigger are torn down and rebuilt, and the replacement trigger starts at
-  // data-state="closed". Any test that resizes across the breakpoint would race
-  // that remount. Polling the dialog asks the question the caller actually has.
-  //
-  // Re-clicking is convergent here for the same reason as the slider span: the
-  // check is guarded on the dialog not already being visible, and a Radix
-  // Dialog trigger only opens (Escape/overlay closes it, not the trigger).
-  await expect
-    .poll(
-      async () => {
-        if (await sheet.isVisible().catch(() => false)) return true
-        await menuBtn.click({ timeout: 5_000 }).catch(() => { })
-        return sheet.isVisible().catch(() => false)
-      },
-      { timeout, message: 'The mobile bottom sheet never opened.' },
-    )
-    .toBe(true)
-
+  // Radix Dialog.Trigger TOGGLES open state. Re-clicking while the portal is
+  // mounting can close the sheet again; wait for this single action's result.
+  await menuBtn.click({ timeout })
   await expect(sheet).toBeVisible({ timeout })
   return sheet
 }

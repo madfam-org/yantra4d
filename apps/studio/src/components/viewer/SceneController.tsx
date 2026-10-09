@@ -29,7 +29,7 @@ interface SceneControllerProps {
 }
 
 const SceneController = forwardRef<SceneControllerHandle, SceneControllerProps>(({ cameraViews = [] }, ref) => {
-  const { gl, camera, scene } = useThree()
+  const { gl, camera, scene, invalidate } = useThree()
   const animationRef = useRef<CameraAnimation | null>(null)
   const prefersReducedMotion = useRef(
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -65,6 +65,9 @@ const SceneController = forwardRef<SceneControllerHandle, SceneControllerProps>(
 
     if (t >= 1) {
       animationRef.current = null
+    } else {
+      // The canvas renders on demand: keep frames coming until the move ends.
+      invalidate()
     }
   })
 
@@ -85,6 +88,7 @@ const SceneController = forwardRef<SceneControllerHandle, SceneControllerProps>(
         controls.update()
       }
       camera.updateProjectionMatrix()
+      invalidate()
     },
     animateTo: (position: number[], target?: number[] | null, duration: number = 0.5) => {
       const currentTarget = controls?.target
@@ -99,6 +103,7 @@ const SceneController = forwardRef<SceneControllerHandle, SceneControllerProps>(
         elapsed: 0,
         duration,
       }
+      invalidate()
     },
     getCameraState: () => ({
       position: camera.position.toArray(),

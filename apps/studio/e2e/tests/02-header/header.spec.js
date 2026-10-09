@@ -1,9 +1,11 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage, enableClipboard, waitForRenderSettled } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, enableClipboard, readClipboard, forceBackendRender, waitForRenderSettled } from '../../helpers/test-utils.js'
 
 test.describe('Studio Header', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
+    // This suite mocks server rendering; keep browser-WASM fallback out of it.
+    await forceBackendRender(page)
     await goToStudio(page)
     // The dock shows Processing/Procesando while the auto-render is in flight;
     // settle before any test asserts Generate/Generar text (ARC race class, #43).
@@ -69,10 +71,17 @@ test.describe('Studio Header', () => {
 
   test('share button copies URL to clipboard', async ({ page, header }) => {
     await enableClipboard(page)
+    // A stale clipboard or a fleeting toast cannot prove this click copied a URL.
+    await page.evaluate(() => navigator.clipboard.writeText('clipboard-test-baseline'))
+    const current = new URL(page.url())
+    const mode = current.pathname.split('/').filter(Boolean)[2]
     await header.clickShare()
-    // Toast may appear as inline tooltip or via sonner
-    const toast = page.getByText('Link copied!').or(page.getByText('¡Enlace copiado!'))
-    await expect(toast.first()).toBeVisible({ timeout: 5000 })
+    await expect.poll(async () => {
+      const copied = await readClipboard(page)
+      if (copied === 'clipboard-test-baseline') return null
+      const url = new URL(copied)
+      return { origin: url.origin, pathname: url.pathname, hash: url.hash }
+    }).toEqual({ origin: current.origin, pathname: `/project/test/${mode}`, hash: '' })
   })
 
   test('share toast disappears after a delay', async ({ page, header }) => {

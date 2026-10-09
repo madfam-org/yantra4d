@@ -82,7 +82,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     shortcutHelpOpen, setShortcutHelpOpen,
     manifest, projectSlug,
     stressData, stressSimulationActive, handleRunFEA,
-    physicsJobId, physicsProgress, physicsFrames, handleRunPhysics,
+    physicsJobId, physicsProgress, physicsFrames, physicsUnavailable, handleRunPhysics,
     optimizationJobId, optimizationProgress, optimizationLogs, handleOptimizeTopology
   } = useProject()
 
@@ -198,35 +198,45 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
         unit={unit}
       />
       <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
-      {/* FEA Overlay Trigger */}
+      {/* Simulation tools. The stress map and the parameter search are
+          estimates; physics needs a solver backend on the server. */}
       {mode && parts.length > 0 && !loading && (
-        <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2">
+        <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2 max-w-[220px]">
           {physicsJobId ? (
             <div className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-card border border-border">
-              Simulating Physics... {Math.round(physicsProgress)}%
+              {t('sim.physics_running', { progress: Math.round(physicsProgress) })}
             </div>
           ) : (
-            <button 
+            <button
+              type="button"
               onClick={handleRunPhysics}
-              disabled={physicsFrames !== null}
-              className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors ${physicsFrames !== null ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'}`}
+              disabled={physicsFrames !== null || physicsUnavailable}
+              aria-describedby={physicsUnavailable ? 'physics-unavailable-note' : undefined}
+              className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors disabled:cursor-not-allowed ${physicsFrames !== null ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'} ${physicsUnavailable ? 'opacity-60' : ''}`}
             >
-              {physicsFrames !== null ? 'Physics Baked' : 'Run Full Physics'}
+              {physicsFrames !== null ? t('sim.physics_done') : t('sim.physics_run')}
             </button>
           )}
+          {physicsUnavailable && (
+            <p id="physics-unavailable-note" className="px-2 py-1 text-[10px] leading-snug rounded bg-card/90 text-muted-foreground border border-border">
+              {t('sim.physics_unavailable')}
+            </p>
+          )}
 
-          <button 
+          <button
+            type="button"
             onClick={handleRunFEA}
             disabled={stressSimulationActive}
+            title={t('sim.stress_note')}
             className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors ${stressSimulationActive ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'}`}
           >
-            {stressSimulationActive ? 'FEA Stress Active' : 'Show Stress Map (Fast)'}
+            {stressSimulationActive ? t('sim.stress_active') : t('sim.stress_run')}
           </button>
-          
-          {/* Topo Optimization UI */}
+
+          {/* Heuristic parameter estimate */}
           {optimizationJobId ? (
             <div className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-purple-900 border border-purple-500 text-white flex flex-col gap-1 max-w-[200px]">
-              <div>AI Optimizer... {Math.round(optimizationProgress)}%</div>
+              <div>{t('sim.optimize_running', { progress: Math.round(optimizationProgress) })}</div>
               {optimizationLogs.length > 0 && (
                 <div className="text-[10px] opacity-80 truncate">
                   {optimizationLogs[optimizationLogs.length - 1]}
@@ -234,14 +244,15 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
               )}
             </div>
           ) : (
-            <button 
+            <button
+              type="button"
               onClick={handleOptimizeTopology}
+              title={t('sim.optimize_note')}
               className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-purple-600 text-white hover:bg-purple-500 border border-purple-400 transition-colors"
             >
-              AI Topo Optimization
+              {t('sim.optimize_run')}
             </button>
           )}
-
         </div>
       )}
       {!loading && parts.length > 0 && (

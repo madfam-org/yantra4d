@@ -93,6 +93,21 @@ describe('apiFetch', () => {
 })
 
 describe('useRateLimit', () => {
+  it('releases its subscription when the consumer unmounts', async () => {
+    const { renderHook } = await import('@testing-library/react')
+    const mod = await import('./apiClient')
+    const add = vi.spyOn(Set.prototype, 'add')
+    const { unmount } = renderHook(() => mod.useRateLimit())
+    const index = add.mock.calls.findIndex(([value]) =>
+      typeof value === 'function' && value.name === 'listener')
+    expect(index).toBeGreaterThanOrEqual(0)
+    const listeners = add.mock.contexts[index]
+    const listener = add.mock.calls[index][0]
+    expect(listeners.has(listener)).toBe(true)
+    unmount()
+    expect(listeners.has(listener)).toBe(false)
+  })
+
   it('returns initial rate limit state', async () => {
     const { renderHook } = await import('@testing-library/react')
     const mod = await import('./apiClient')
@@ -118,7 +133,7 @@ describe('useRateLimit', () => {
     })
 
     await act(async () => {
-      await mod.apiFetch('http://api/test')
+      await mod.apiFetch('http://api/api/render-stream')
     })
 
     // -1, not NaN: the same "no ceiling" sentinel the tier API uses.
@@ -143,11 +158,54 @@ describe('useRateLimit', () => {
     })
 
     await act(async () => {
-      await mod.apiFetch('http://api/test')
+      await mod.apiFetch('http://api/api/render-stream')
     })
 
     expect(result.current.limit).toBe(200)
     expect(result.current.remaining).toBe(180)
     expect(result.current.tier).toBe('premium')
   })
+})
+
+
+describe('render quota isolation', () => {
+  it('ignores exhausted non-render quotas when deciding render placement', async () => {
+    const { renderHook, act } = await import('@testing-library/react')
+    const mod = await import('./apiClient')
+    const { result, unmount } = renderHook(() => mod.useRateLimit())
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false, status: 429,
+      headers: new Headers({ 'X-RateLimit-Limit': '500', 'X-RateLimit-Remaining': '0' }),
+    })
+    for (const path of ['/api/projects', '/api/estimate', '/api/render-cancel']) {
+      await act(async () => { await mod.apiFetch(path) })
+    }
+    expect(result.current.remaining).toBeNull()
+    expect(mod.isRateLimitExhausted()).toBe(false)
+    unmount()
+  })
+
+  it.each(['/api/render', '/api/render-stream?request=1'])(
+    'retains exhausted %s quota after artifact and catalog responses', async (path) => {
+      const { renderHook, act } = await import('@testing-library/react')
+      const mod = await import('./apiClient')
+      const { result, unmount } = renderHook(() => mod.useRateLimit())
+      const mockedFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+        ok: false, status: 429,
+        headers: new Headers({ 'X-RateLimit-Limit': '10', 'X-RateLimit-Remaining': '0' }),
+      }).mockResolvedValue({
+        ok: true,
+        headers: new Headers({ 'X-RateLimit-Limit': '500', 'X-RateLimit-Remaining': '499' }),
+      })
+      await act(async () => { await mod.apiFetch(path) })
+      for (const other of ['/api/projects', '/api/artifacts/example.stl']) {
+        await act(async () => { await mod.apiFetch(other) })
+      }
+      expect(mockedFetch).toHaveBeenCalledTimes(3)
+      expect(result.current.limit).toBe(10)
+      expect(result.current.remaining).toBe(0)
+      expect(mod.isRateLimitExhausted()).toBe(true)
+      unmount()
+    },
+  )
 })

@@ -69,6 +69,8 @@ The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()`,
 | `src/services/cache/renderCache.ts` | IndexedDB L2 cache of rendered parts; authenticates artifact fetches and never caches a non-OK response |
 | `src/services/engine/renderPlacement.ts` | The pure placement policy — the precedence table above lives here |
 | `src/services/engine/renderCapability.ts` | Device capability probe (`capable` / `limited` / `incapable`), cached in `localStorage` |
+| `src/components/editor/graph/GraphEditor.tsx` | Writable node-graph editor for `.graph.json` sources — see [Authoring graph cartridges](../../docs/guides/graph-cartridges.md#editing-a-graph-in-studio) |
+| `src/lib/graph/` | The graph document model (`graphDocument`), expressions and declarations (`graphExpressions`), manifest bindings (`graphBindings`) and layout (`graphLayout`) |
 | `src/config/fallback-manifest.json` | Bundled copy of `projects/gridfinity/project.json` minus `project.force_backend`; kept in step by `scripts/qa/sync_fallback_manifest.py --check` (blocking in CI: `manifest-sync`) — never edit it by hand |
 
 ### Environment Variables

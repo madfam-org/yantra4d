@@ -119,7 +119,7 @@ class TestManifestRoute:
     def test_public_project_is_unaffected(self, client):
         res = client.get(f"/api/projects/{PUBLIC_SLUG}/manifest")
         assert res.status_code == 200
-        assert res.headers["Cache-Control"] == "public, max-age=300"
+        assert res.headers["Cache-Control"] == "public, no-cache"
         assert res.headers.get("ETag")
 
     def test_anonymous_gets_locked_with_auth_required(self, client):

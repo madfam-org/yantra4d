@@ -699,7 +699,7 @@ Symptoms map one-to-one:
    manifest):
    - `TIER_OVERRIDES` — e.g. `{"person@example.com":"premium"}` (an existing
      Secret saying `"madfam"` keeps working — no rotation is required)
-   - `PROJECT_ACCESS_GRANTS` — e.g. `{"tablaco":["client@example.com"]}` (only
+   - `PROJECT_ACCESS_GRANTS` — e.g. `{"<private-slug>":["client@example.com"]}` (only
      needed for identities that must see a private project **without** the
      `premium` tier)
 2. Confirm `PRIVATE_PROJECTS` in `k8s/production/yantra4d-backend-deployment.yaml`
@@ -708,11 +708,12 @@ Symptoms map one-to-one:
 3. Roll the backend (a new digest pin, or a rollout restart issued through
    Enclii) so the pod reads the new keys — they are read at call time, but the
    Secret is mounted at pod start.
-4. Verify without touching a secret: `curl -s -o /dev/null -w '%{http_code}'
-   https://api.yantra4d.com/api/projects/tablaco/manifest` → `403` anonymously;
-   the same request with an authorized bearer → `200`; the Studio at
-   `/project/tablaco` shows the locked screen anonymously and renders after an
-   authorized sign-in.
+4. Verify without touching a secret (`<private-slug>` is any slug listed in
+   `PRIVATE_PROJECTS`): `curl -s -o /dev/null -w '%{http_code}'
+   https://api.yantra4d.com/api/projects/<private-slug>/manifest` → `403`
+   anonymously; the same request with an authorized bearer → `200`; the Studio
+   at `/project/<private-slug>` shows the locked screen anonymously and renders
+   after an authorized sign-in.
 
 ## Future Work
 

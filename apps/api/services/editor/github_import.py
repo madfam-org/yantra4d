@@ -8,11 +8,12 @@ import datetime
 import json
 import logging
 import re
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 
-from utils.project_resolver import find_project_dir, project_write_root
+from utils.project_resolver import find_project_dir, project_write_root, slug_in_use
 
 logger = logging.getLogger(__name__)
 
@@ -148,25 +149,41 @@ def validate_repo(repo_url: str, github_token: str | None = None) -> dict:
 
 
 def import_repo(repo_url: str, slug: str, manifest: dict, github_token: str | None = None) -> dict:
-    """Full clone repo directly into projects/{slug}/ preserving .git directory.
+    """Full clone repo into <user-projects>/{slug}/ preserving .git directory.
 
     The .git directory is preserved so the project is a real git repo
     and supports commit-back workflow via git operations API.
 
     Returns dict with keys: success, slug, error
     """
-    # A newly imported cartridge is authored here, so it lands in the public
-    # commons root; the existence check spans every root so an import can never
-    # shadow a client-private slug.
-    if find_project_dir(slug) is not None:
-        return {"success": False, "error": f"Project '{slug}' already exists"}
+    # A newly imported cartridge lands in the user-projects root; the
+    # existence check spans every root so an import can never shadow a curated
+    # slug.
+    if slug_in_use(slug) is not None:
+        return {"success": False, "error": f"Project '{slug}' already exists", "error_code": "slug_in_use"}
     project_dir = project_write_root() / slug
 
-    # Full clone (no --depth 1) directly into projects/{slug}/
+    # Reserve the slug atomically (exclusive mkdir; git clones into an empty
+    # directory). A concurrent import or fork of the same slug gets
+    # slug_in_use and never touches this directory; a failed clone removes
+    # only the directory this call created.
+    try:
+        project_dir.parent.mkdir(parents=True, exist_ok=True)
+        project_dir.mkdir()
+    except FileExistsError:
+        return {"success": False, "error": f"Project '{slug}' already exists", "error_code": "slug_in_use"}
+
+    # Full clone (no --depth 1) directly into <user-projects>/{slug}/
     if not clone_repo(repo_url, project_dir, github_token, shallow=False):
+        shutil.rmtree(project_dir, ignore_errors=True)
         return {"success": False, "error": "Failed to clone repository"}
 
-    # Write manifest into the repo
+    # Write manifest into the repo. The cartridge is known by the slug it was
+    # imported under, so the manifest names that slug whatever the submitted
+    # manifest said (discovery and the Studio both key on project.slug).
+    manifest = dict(manifest)
+    project = manifest.get("project")
+    manifest["project"] = {**project, "slug": slug} if isinstance(project, dict) else {"slug": slug}
     with open(project_dir / "project.json", "w") as f:
         json.dump(manifest, f, indent=2)
 

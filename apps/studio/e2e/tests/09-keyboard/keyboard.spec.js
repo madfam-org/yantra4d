@@ -26,6 +26,8 @@ test.describe('Keyboard Shortcuts', () => {
   })
 
   test('Cmd/Ctrl+Z triggers undo', async ({ page, sidebar }) => {
+    // Finish the preset's initial render before editing its parameter row.
+    await sidebar.waitForRenderOutput()
     const valueBefore = await sidebar.sliderValue('width').textContent()
     await sidebar.editSliderValue('width', 100)
     await expect(sidebar.sliderValue('width')).toHaveText('100', { timeout: 10000 })

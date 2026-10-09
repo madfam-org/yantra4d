@@ -1,0 +1,39 @@
+{
+  "workflow_runs": [
+    {
+      "id": 50,
+      "head_branch": "release",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": 49,
+      "head_branch": "main",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "id": 48,
+      "head_branch": "main",
+      "status": "in_progress",
+      "conclusion": "success",
+      "head_sha": "cccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "id": 46,
+      "head_branch": "main",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "dddddddddddddddddddddddddddddddddddddddd"
+    },
+    {
+      "id": 47,
+      "head_branch": "main",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "61e45153051a0161a3a8c7f6ef002b8967253a61"
+    }
+  ]
+}

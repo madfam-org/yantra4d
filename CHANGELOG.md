@@ -13,7 +13,189 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Added
+- **Graph Engine Wave D: Expressions, Select, Reflect, Polyline And Bounded Revolve**
+  — graph format 1.1, built as far as the Voron 2.4 assembly A printed parts need
+  (lane P8-ENGINE, 2026-10-04).
+  - **G-EXPR.** Float, count and condition inputs take `{"expr": "..."}` in the
+    safeFormula dialect (`apps/studio/src/lib/safeFormula.ts`), mirrored exactly
+    (strict `==`, truncating `%`, eager `&&`/`||`/`?:`). A top-level `parameters`
+    object declares the manifest ids a graph reads (default plus an optional
+    string→number `map`), and an ordered `derived` list names intermediate values.
+    Undeclared or unread names are transpile errors. Expressions are re-emitted from
+    their syntax tree, so no document text reaches the generated script.
+  - **Nodes:** `select` (a solid chosen by a boolean expression), `reflect` (a pure
+    mirror; `mirror` keeps the original), `profile_polyline` (closed line profile,
+    expression coordinates) and a **bounded** `revolve`: angle in (0, 360], axis in
+    the profile's plane, no axis crossing, reach within 1000 mm, and a valid
+    positive-volume result, all checked before or right after the kernel call.
+  - **A profile now feeds exactly one node.** A second consumer used to fail at
+    render ("No pending wires present"); it is now a validation error.
+  - The node catalog gains per-param `expr` flags, `param_kinds`, the `expression`
+    contract and the new limits; `graph.schema.json` gains the 1.1 shapes. A 1.0
+    graph transpiles byte-for-byte as before.
+  - **Landing order:** the keystone re-vendors this engine first, then the pin
+    moves, and only then does this change go green on `spec-conformance`.
+
 ### Changed
+- **Simulation endpoints report only what they computed** (Pro tier).
+  - `POST /api/projects/<slug>/simulate/physics` answers **501** with
+    `error_code: "physics_solver_unavailable"` and creates no job unless a physics
+    solver backend is registered (`configure_physics_solver` in
+    `apps/api/tasks/simulation_tasks.py`). Before, it queued a job that waited
+    about 3 s and reported 100 frames without running a solver. The PPF script
+    generator stays as the solver's input, and a job's frames are now exactly
+    what the solver returned.
+  - `POST /simulate/optimize` and its status route carry `method: "heuristic"`
+    and `approximation: true`. The status route adds `current_score` and the
+    log lines read "heuristic score": the number comes from a deterministic
+    rule, not from a stress solve. **Deprecated:** `current_sigma` stays in the
+    status response for one release as an alias with the same value as
+    `current_score`; read `current_score`.
+  - `POST /simulate/stress` carries `method: "geometry_proxy"` and
+    `approximation: true` next to the existing `stress_proxy_v1` summary.
+  - Studio: the physics button disables itself and shows the reason once the
+    server refuses; the stress map and the parameter search are labelled as
+    estimates (the "FEA" and "AI Topo Optimization" copy is gone), in all six
+    locales. The physics request is now actually sent: the handler read a
+    `manifest` that was not in scope and threw before the request.
+  - Docs: `README.md`, `docs/guides/physics-simulation.md`, `docs/index.md`,
+    `docs/cartridges/hyperobject_candidates.md` and `ROADMAP.md` now describe
+    this behaviour.
+- **Render: User Cartridges Render Their Declared Graph** — in a fork or a
+  GitHub import (`project.meta.json` `source.type` `fork`/`github`), a mode that
+  declares `graph_file` now renders that graph with the `graph` engine instead of
+  its `scad_file` script. A fork's graph is its only editable source, so until
+  now a graph edit saved in the Studio was rendered from the unchanged script.
+  Commons and private cartridges keep rendering their script (D5: a twin's
+  script retires only once parity holds).
+  - One resolver, `apps/api/services/engine/render_source.py`, decides the
+    render source and engine for every path: `/api/render`, `/api/render-stream`,
+    the git HEAD preview and animation frames. The graph executes on the render
+    worker through the existing graph → sandboxed CadQuery path; nothing new
+    runs in the API process.
+  - A user cartridge whose `graph_file` is not a plain relative `*.graph.json`
+    path inside the cartridge, or is missing, answers 400 — never a silent
+    fallback to the script.
+  - The render cache keys on the resolved source's content; for a graph also on
+    the manifest's binding map, so a binding-only edit is a new render (this
+    closes the graph engine's documented binding cache gap). The worker re-reads
+    the manifest for graph tasks, so it renders with the bindings the key was
+    computed from.
+  - `PUT .../manifest/bindings` validates against a user cartridge's
+    `graph_file` graphs too, so binding edits work in a twin's fork.
+  - The manifest route's `X-Render-Revision` carries a digest of a user
+    cartridge's render sources (`<release>+src.<digest>`).
+  - Studio: a graph save bumps a per-project source revision that every client
+    render cache key includes, and forces the post-save render, so the preview
+    shows the edited geometry instead of cached pre-edit parts.
+- **Animation And Git HEAD Renders Run On The Render Worker** — `POST
+  /api/projects/<slug>/animations/<id>/render` and `POST
+  /api/projects/<slug>/git/render-head` no longer call the render engines from
+  the API process. Each frame part, and each HEAD part, is now an ordinary job
+  on the render queue, waited on through the same `render:<job_id>` channels as
+  `/api/render`. So there is one render path: the worker's cancellation,
+  leases, release check and artifact publishing apply, and a gunicorn worker no
+  longer runs a kernel for minutes at a time. Both routes keep their request
+  and response shapes. Additive: the flipbook stream opens with the `job` event
+  (`request_id` + `job_ids`, cancellable with `POST /api/render-cancel`), a
+  client that disconnects mid-flipbook cancels its remaining frames, and HEAD
+  parts may carry `viewer_url`. Both routes answer 503
+  `render_worker_unavailable` without a worker heartbeat, as `/api/render`
+  does. A worker without `git` makes render-head answer 503 `git_unavailable`,
+  the same as the API's own check. Behaviour fixes that come with the worker
+  path:
+  - a CadQuery animation renders each part with its own `target_part`;
+  - frame base parameters pass the same validation as `/api/render`;
+  - a frame's file name carries a digest of its parameters, so two requests no
+    longer overwrite each other's frames;
+  - the HEAD route renders the cartridge named in its URL, not a `project`
+    field in the body;
+  - neither route writes the render cache.
+
+  The worker checks HEAD out into a private temporary directory per job and
+  removes it when the job ends. The project is resolved from the slug, and the
+  entry file must resolve inside the checkout. New task fields:
+  `source: {kind: "git_head", entry}` and `payload.cache_write`; see
+  `apps/api/services/engine/worker_dispatch.py`. A guard keeps it this way:
+  `tests/unit/test_engine_guard.py` fails if an API module imports the CadQuery
+  engine or its pool, or if `create_app()` loads them, and
+  `services/engine/engine_guard.worker_only` makes the CadQuery entry points
+  raise inside a request.
+- **Forks And Imports Are Written By Their Creator** — the account that forks a
+  cartridge or imports a repository is recorded at creation (its token `sub`
+  and a timestamp, kept outside the cartridge in `<write root>/.owners/`, so it
+  never enters git, a push or a download). The write routes now accept that
+  account or an `admin`; anyone else gets 403 `not_cartridge_owner`. A fork or
+  import made before this change has no recorded creator and is admin-only.
+  With auth disabled, forks and imports are writable only in local development
+  mode (Flask debugger on), the same rule private projects follow. `git/pull`,
+  `git/push` and `POST /api/github/sync` are now guarded too, and admin flags apply only to
+  writable cartridges (a commons cartridge answers `read_only_cartridge`).
+  `GET /api/projects/<slug>/meta` reports the caller's `can_write` and
+  `is_owner`. Studio: "Fork to edit" replaces the editor on cartridges you
+  cannot write, and assembly editing is shown only on cartridges you can write.
+- **A Fork's Manifest Names The Fork** — forking copied `project.json`
+  verbatim, so the fork kept its source's `project.slug`: the project listing
+  (which keys on that slug) hid the fork, and the Studio, which waits for a
+  manifest whose slug matches the URL, stayed on "Loading project..." after
+  "Fork & Edit". The fork route now sets `project.slug` to the new slug. A
+  GitHub import likewise stores the manifest under the slug it was imported
+  as, whatever slug the submitted manifest carried.
+- **Fork And Import Reserve Their Slug Atomically** — the new cartridge's
+  directory is created with an exclusive `mkdir` before copying or cloning. Of
+  two concurrent forks or imports to the same slug, one succeeds and the other
+  gets 409 `slug_in_use` without touching the first one's directory (previously
+  the failing request's cleanup could remove it). A failed clone removes only
+  the directory its own request created.
+- **Image: include git for the editor's version-control features; degrade
+  cleanly without it** — the API image (used by both the API and the render
+  worker) and the dev image now install `git`, which history on first save,
+  commit/diff/log, GitHub import/sync and render-HEAD shell out to. On a host
+  without it, saves proceed untracked instead of failing, and the git and
+  GitHub routes answer 503 `git_unavailable`.
+- **Tighter CadQuery render environment** — the CadQuery render subprocess (and
+  the warm pool) now runs with a minimal environment rather than a full copy of
+  the parent's: only the Python, locale, fontconfig and OCCT/CadQuery variables
+  it needs, a writable `HOME`, and `PYTHONPATH` limited to the curated cartridge
+  roots. The render runner enforces an import **allowlist** (known-safe packages
+  plus sibling cartridges on the curated roots) as defence in depth over the
+  shared sandbox's denylist, in Yantra4D's runner layer so the vendored
+  `commons_sandbox` core is untouched. The processes that spawn CadQuery children
+  (render worker, API) are set non-dumpable on Linux so a same-UID child cannot
+  read the parent's `/proc` memory. The render log returned to clients is bounded
+  in size and scrubbed of credential-shaped content (the full log still reaches
+  the server's own logs). AI synthesis now writes only the file types it is
+  designed to emit (OpenSCAD source and manifest). Manifest file references
+  (`scad_file`, `cq_file`, `graph_file`, `static_stl`) must be relative paths
+  without control characters or `..` segments that resolve inside the cartridge
+  directory; in user-authored cartridges they must also use `[A-Za-z0-9_./-]`.
+  A mode with any other reference is not renderable (400). New scan derived the
+  allowlist from every commons CadQuery script; all of them still render.
+
+- **Persistent writable storage for user projects** — user-authored cartridges
+  (forks, GitHub imports, onboarding, AI synthesis) now live in their own root,
+  `USER_PROJECTS_DIR` (`/app/user-projects` in the image, a gitignored
+  `user-projects/` locally), separate from the release-shipped commons and
+  private roots, which stay read-only. It resolves after the curated roots, a
+  new slug must be free in every root, and it is kept off `OPENSCADPATH` and the
+  CadQuery `PYTHONPATH`. A fork of a read-only source is now itself writable.
+  The API logs user cartridges hidden by a later curated slug at startup.
+  `docker-compose*.yml` mount a `user_projects` volume. Operator note:
+  `docs/operations/user-projects-storage.md`.
+- **Read-Only Commons Cartridges, Enforced On The Server** — the API now writes
+  only into a cartridge it created for someone: a fork or an imported repository
+  (`project.meta.json` `source.type` `fork` or `github`). A built-in commons
+  cartridge, or any cartridge with a missing, unreadable or unknown source type,
+  answers every write with 403 `read_only_cartridge` and is left untouched — no
+  file, no manifest edit, no `.git`. Covered routes: `PUT`/`POST`/`DELETE`
+  `/api/projects/<slug>/files` (including the SCAD editor autosave),
+  `PUT /manifest/assembly-steps`, `POST /assembly-steps/write`,
+  `POST /git/connect-remote` and `POST /git/commit`. The Studio already offered
+  "Fork to edit" for these cartridges; the server now applies the same rule.
+  Forks and imports behave exactly as before, and privacy (`project_locked`)
+  and tier checks still answer first. The Studio assembly-steps editor now
+  reports a refused save (any non-2xx) instead of toasting "saved".
 - **The Commons Pin Lands At `solid-hyperobjects@b0fa7147` — 500 → 495 Cartridges**
   — the `projects` submodule, verified against a stand-in until now, is pinned at
   the real commons. The content differs from the stand-in in two ruled ways, and
@@ -94,7 +276,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `madfam-org/cq-hyperobject-test@c970dbc`. **The API now serves exactly the
   commons count** — 495 today, plus whatever mounts under `private-projects/`.
   (Verified: `ManifestService.discover_projects()` returns 496 = 495 commons +
-  `tablaco`.)
+  one client-private cartridge.)
 
   **Every submodule-aware gate re-based.** The "submodule-backed vs vendored"
   distinction (34 cartridges) no longer exists, and four gates would have gone
@@ -172,6 +354,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   customer in `essentials` with no error anywhere).
 
 ### Added
+- **A Writable Graph Editor In Studio (G-EDITOR)** — the Graph view of a
+  `.graph.json` source is now an editor, not a picture: a palette driven by
+  `graph-node-catalog.json`; drag-to-connect with socket type and loop checks;
+  add, delete and disconnect; an inspector where each numeric param is a literal,
+  a manifest binding or (when the catalog marks it `"expr": true`) a safeFormula
+  expression; a panel for graph 1.1 declared parameters (with option → number
+  maps the author enters) and ordered derived values; validation on every edit,
+  linked to the node, socket or param at fault; render preview through the
+  existing render path; and `.graph.json` export. **Saves go to a fork only** (or
+  an imported repository); a commons cartridge is edited in the buffer and offers
+  "Fork to save". New route `PUT /api/projects/<slug>/manifest/bindings` sets or
+  clears `binding` on existing manifest parameters of a fork, validated against
+  every graph source and written atomically. The read-only `GraphCanvas` is
+  replaced by `components/editor/graph/`.
 - **Derived CDG Mating-Rule Candidates (PROPOSED)** — `scripts/qa/derive_mating_candidates.py`
   reads the CDG interfaces the cartridges already declare, derives the mating rules
   those declarations imply, scores each candidate against the author-written answer
@@ -600,7 +796,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   run in a checkout without them, silently emitted the shorter list and overwrote
   the good one — no lane could see it, since the `landing` CI job checks out no
   submodules and the deploy's Build Landing job did not either. It also carried
-  `tablaco`, a client-private cartridge the API has hidden from `/api/projects`
+  a client-private cartridge the API has hidden from `/api/projects`
   since access control landed, with its description and a link to a Studio page
   that refuses to load. The generator now skips private cartridges on both signals
   the backend uses (`access_control.view == "private"` and the `PRIVATE_PROJECTS`
@@ -611,7 +807,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stale commit in `manifest-validation`, the only job whose checkout is complete
   enough to judge the file, and `build-landing` now regenerates at deploy so the
   shipped gallery is correct by construction. Regenerated: **328 → 501 entries**,
-  `tablaco` removed. `project.unlisted` is untouched — unlisted means "not in API
+  the private entry removed. `project.unlisted` is untouched — unlisted means "not in API
   listings but reachable by URL", which is not private.
 - **Active Render Jobs Have a Lease, So the Count Stays Truthful** —
   `yantra_render_active_jobs` was a plain Redis set with no expiry: the worker adds
@@ -758,7 +954,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Per-Project CI Propagation** — `scripts/ci/propagate_project_ci.sh`: GitHub
   CLI script that installs the reusable Yantra4D CI workflow into all 33
   federated `madfam-org/*` repos, sets `DISPATCH_TOKEN` secrets, and skips
-  the private `tablaco` repo automatically.
+  the client-private repo automatically.
 - **MQTT Dev Infrastructure** — `eclipse-mosquitto` service added to
   `docker-compose.dev.yml`; `scripts/dev/mock_telemetry_publisher.py` lets
   developers publish synthetic 4D telemetry locally; integration tests added
@@ -807,7 +1003,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/fonts/…` with `OPENSCADPATH` and `FONTCONFIG_FILE` set in Emscripten's
   `preRun`. A `/scad/` fallback survives **dev builds only**, refuses a body
   beginning with `<!doctype`, and warns that it carries no libraries or fonts.
-- **Gitmodules Configuration** — Appended `update = none` instruction to the `projects/tablaco` submodule to automatically exclude it from causing checkout failures during anonymous or unauthed public clones of the overarching application.
+- **Gitmodules Configuration** — Appended `update = none` instruction to the client-private cartridge submodule (then under `projects/`) to automatically exclude it from causing checkout failures during anonymous or unauthed public clones of the overarching application.
 - **Project Manifest Schema** — `project.engine` enum extended to include
   `"implicit"` alongside `"openscad"` and `"cadquery"`.
 - **CHANGELOG** — Retroactively versioned from `v0.1.0` through `v0.10.0`.

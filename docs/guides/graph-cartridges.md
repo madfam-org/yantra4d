@@ -14,26 +14,50 @@ Contract: [`packages/schemas/graph.schema.json`](../../packages/schemas/graph.sc
 Generated node catalog (params, defaults, socket types, limits):
 [`packages/schemas/graph-node-catalog.json`](../../packages/schemas/graph-node-catalog.json).
 
-## What is NOT verified yet
+## How a graph is verified
 
-**The keystone cannot render a graph.** `y4d-spec`'s `mode_sources()` recognises `.py`,
-`.cq` and `.scad` only, so a `.graph.json` mode gets **no render bar**: no watertight
-check, no body-count check, no cross-kernel parity, no B-Rep validity gate, and no row in
-the nightly sweep. Every other cartridge in the commons clears that bar; the two graph
-cartridges do not, and the nightly completeness check now *names* them rather than passing
-over them silently.
+The keystone (`y4d-spec`) renders a `.graph.json` mode by transpiling it with a
+byte-identical vendored copy of this engine (`y4d_spec/graph/`, guarded on both sides:
+the keystone's `check_graph_sync.py` and this repo's `check_spec_graph_vendor.py`), then
+judging the script on the CadQuery path: watertight, body count, B-Rep validity, presets
+and frames — the same bar every script cartridge clears.
 
-Concretely, this is why 498 of 500 cartridges carry a `verification` block and the two
-missing ones are exactly `flange-plate` and `spacer-block`. The structural gates below
-(`compliance_audit.py`, `validate_manifests.py`, the generated node catalog, the
-transpiler's own cycle/socket/dangling-ref validation) do run on graphs, so a graph cannot
-be malformed — but nothing yet proves the *geometry it emits* is sound.
+A graph authored for a cartridge that already has a script is a **golden twin**: declare
+it with `graph_file` next to the script, and `y4d-spec check --render --parity` compares
+the two at the defaults and at every preset, at the cross-kernel parity bar. The script is
+the oracle; it retires only after parity holds (owner decision D5, 2026-10-04).
 
-Closing this is lane **G-SPEC**, the first lane of Wave D in
-[`ROADMAP.md`](../../ROADMAP.md#the-node-based-geometry-programme-waves-df-s): until it
-lands, authoring more graph cartridges grows unverified surface. Treat the render probe in
-"Checking your work" below as mandatory rather than advisory for now — it is currently the
-only geometric check a graph cartridge gets.
+```json
+{ "id": "flat_idler", "scad_file": "main.py", "cq_file": "main.py",
+  "graph_file": "idler.graph.json", "parts": ["flat_idler"] }
+```
+
+The first golden twin is `solid-hyperobjects/idler-608/idler.graph.json` (three modes,
+exact parity at the defaults and all presets).
+
+### Which source renders
+
+One resolver decides what a mode renders (`apps/api/services/engine/render_source.py`),
+and every render path asks it: `/api/render`, `/api/render-stream`, the git HEAD
+preview and animation frames.
+
+| Cartridge | Mode declares `graph_file` | Renders |
+|-----------|----------------------------|---------|
+| **User cartridge**: `project.meta.json` `source.type` is `fork` or `github` | yes | the graph, with the `graph` engine (and its `graph_engine` tier gate) |
+| User cartridge | no | `scad_file` |
+| Commons or private cartridge (no user source type) | either | `scad_file` (the twin renders only once parity retires the script) |
+
+In a fork the graph is the only editable source (the Studio editor saves `.scad` and
+`.graph.json`), so this is what makes a graph edit show up in the fork's renders. A
+user cartridge whose `graph_file` is not a plain relative `*.graph.json` path inside
+the cartridge, or does not exist, gets a 400. It never falls back to the script: that
+would render the geometry the user did not edit.
+
+The render cache keys on the resolved source's content, plus the manifest's binding
+map for a graph, so saving a graph or changing a binding is a new render. For a user
+cartridge the manifest route's `X-Render-Revision` also carries a digest of its
+sources, and the Studio bumps a per-project source revision on every graph save, so
+neither the in-memory nor the IndexedDB render cache can answer with pre-edit parts.
 
 ## The shape of a graph
 
@@ -67,11 +91,22 @@ where a solid belongs fails at validation rather than at render.
 | Group | Nodes |
 |-------|-------|
 | Solids | `box`, `cylinder`, `sphere` |
-| Profiles | `profile_rect`, `profile_circle`, `profile_polygon` → `extrude` |
+| Profiles | `profile_rect`, `profile_circle`, `profile_polygon`, `profile_polyline` → `extrude` or `revolve` |
 | Booleans | `union`, `cut`, `intersect` |
-| Transforms | `translate`, `rotate`, `mirror` |
+| Transforms | `translate`, `rotate`, `mirror` (keeps the original), `reflect` (the reflection alone) |
+| Selection | `select` (a solid chosen by a boolean `when`) |
 | Patterns | `pattern_linear`, `pattern_polar` |
 | Finishing | `fillet`, `chamfer`, `shell`, `hole` |
+
+A profile feeds exactly **one** node: CadQuery keeps a profile's wires as pending state
+that the first `extrude`/`revolve` consumes, so a second consumer would fail at render.
+The transpiler refuses it; duplicate the profile node instead.
+
+`profile_polyline` takes `points`, a closed list of 3–256 `[x, y]` pairs on its `plane`
+(lines only; arcs and splines are not in the vocabulary yet).
+
+`select` builds **both** inputs and passes one on: a branch that cannot be built fails the
+render even when it is not chosen.
 
 The catalog file is generated from the engine itself, so it is always the
 accurate list — including each param's kind, default and whether it can be
@@ -108,25 +143,60 @@ both variants:
 
 Each node param may be driven by at most one manifest parameter.
 
+### Expressions (graph format 1.1)
+
+A float, count or condition input may be an expression instead of a literal:
+
+```json
+{
+  "version": "1.1.0",
+  "parameters": {
+    "width":  { "default": 10 },
+    "nema":   { "default": "NEMA17", "map": { "NEMA17": 42.3, "NEMA23": 57 } },
+    "gusset": { "default": true }
+  },
+  "derived": [
+    { "id": "body_w", "expr": "nema" },
+    { "id": "half",   "expr": "width / 2" }
+  ],
+  "nodes": [
+    { "id": "plate", "type": "box", "params": { "w": { "expr": "body_w + 4" }, "h": { "expr": "half" } } }
+  ]
+}
+```
+
+- **The dialect** is the one the manifest constraints already use
+  (`apps/studio/src/lib/safeFormula.ts`): numbers, identifiers, `+ - * / %`, comparisons,
+  `&& || !`, `?:` and parentheses; no strings, no function calls; at most 256 characters
+  and 128 tokens. It has no `min`/`max`, so a clamp is a ternary pair
+  (`x < hi ? x : hi`, then `lo > that ? lo : that`). Semantics are JavaScript's and the
+  engine mirrors them exactly: `==` is strict, `%` truncates, `&&`/`||` return booleans,
+  both sides of `&&`/`||`/`?:` are evaluated, and `/` or `%` by zero is an error.
+- **`parameters`** declares, by manifest parameter id, every value an expression reads.
+  The render injects the manifest value; `default` is used when nothing is injected. A
+  numeric option string such as `"608"` reads as a number; a non-numeric one needs a `map`.
+  A declared parameter that no expression reads is an error.
+- **`derived`** is an ordered list of named intermediates; each may read parameters and
+  earlier derived ids. An unread derived id is an error.
+- A node param takes an expression **or** a manifest `binding`, never both. Selector, axis
+  and plane params stay literal.
+- Expressions are parsed and validated at transpile time and re-emitted from their syntax
+  tree; the generated script contains validated literals, variable reads and a fixed set
+  of helpers — never the expression's text.
+
+The node catalog marks which params take an expression (`"expr": true`) and publishes the
+dialect limits under `expression`.
+
 ## Two rules that follow from the security model
 
 The transpiler emits **only** validated literals and bound-parameter reads;
 it never interpolates text into code. Two consequences shape authoring:
 
-**There are no expressions** — today. A derived value must be its own parameter. A
-polar pattern therefore exposes both `count` and `angle` rather than computing
-`360 / count`, and the cartridge documents that an even circle wants
-`spacing = 360 / count`. This was a deliberate trade: no expression evaluator meant no
-evaluator to escape.
-
-The cost of that trade is now understood to be parametricity itself — without
-`width / 2 - wall` in a socket, a graph is a *frozen* script and every derived dimension is
-a constant. Lane **G-EXPR** (Wave D) reverses it the safe way: `{"expr": "..."}` inputs
-evaluated **at transpile time**, on the same restricted dialect the manifest constraints
-already use (`apps/studio/src/lib/safeFormula.ts` — arithmetic, comparison, boolean and
-ternary over parameter identifiers and numeric literals; no string literals, no function
-calls, capped at 256 characters and 128 tokens). The transpiler would still emit only
-validated numbers, so the security property above is preserved.
+**Expressions never become code.** Format 1.0 had no expressions at all, so a derived
+value had to be its own parameter (the flange's `count` and `angle`). Format 1.1 adds
+them (see "Expressions" above) without giving up the property: an expression is parsed
+into a syntax tree at transpile time and re-spelled from that tree, so only validated
+numbers, declared variable reads and the engine's own helper calls reach the script.
 
 **Structural params are not bindable.** Selectors (`edges`, `face`), `axis` and
 `plane` stay literal, so a render-time value can never change the *shape* of
@@ -134,10 +204,14 @@ the emitted code — only its numbers. Numeric params bind freely. Pattern
 counts are additionally clamped in the generated script, so a slider wired to a
 count cannot detonate a boolean loop inside the render worker.
 
-`revolve` is deliberately absent: an unbounded revolve exhausted memory during
-bring-up, and the render worker must not host an operation that can hang a job. A
-**bounded** revolve is scheduled in lane G-NODES-2, alongside loft, sweep and text — the
-memory bound is the design work, not the operation.
+**`revolve` is bounded.** An unbounded revolve exhausted memory during bring-up, so the
+node only accepts inputs whose cost and validity are known before the kernel is called:
+the angle is in (0, 360] (OCC silently wraps larger angles); the axis (`x`, `y` or `z`,
+through the origin) must lie in the profile's plane, checked at transpile time (an axis
+normal to the plane yields a zero-volume solid that still reports itself valid); the
+profile may not cross the axis; and it may reach at most 1000 mm from the origin (an
+engine convention). The result must be a valid solid with positive volume before
+anything consumes it. Loft, sweep and text are still absent.
 
 ## Wiring the manifest
 
@@ -166,6 +240,78 @@ applies on a `limited` device -- adding it to a graph cartridge buys nothing.
 An author who wants an explicit, readable pin should write the HARD key
 `render.server_only: true` instead; see
 [Render placement](../reference/manifest.md#render-placement-renderserver_only-vs-projectforce_backend).
+
+## Editing a graph in Studio
+
+Open a `.graph.json` source in the Studio editor and switch the **Text / Graph**
+toggle to **Graph**. The text view and the graph view edit the same buffer: every
+graph edit is written back as JSON, and the validation panel under the editor
+runs the transpiler's rules on every change.
+
+| You want to | Do this |
+|---|---|
+| Add a node | **Nodes** opens the palette (built from `graph-node-catalog.json`, so a node the engine adds appears with no Studio change). Click a node type, or drag it onto the canvas. |
+| Connect | Drag from a node's output handle (right) to an input socket (left). A socket of the wrong type, or a connection that would make a loop, is refused while you drag; the model's `connect()` refuses it again if anything slips through. |
+| Disconnect / delete | Select an edge or node and press Delete or Backspace, or use the inspector's unplug and **Delete** buttons. Deleting a bound node also drops its bindings. |
+| Edit a node | Select it. The inspector lists its sockets and params. Each numeric param is a **Value** (a literal, checked against its kind as the server checks it), a **Manifest parameter** (a `binding`), or — once the catalog marks it `"expr": true` — an **Expression**. Structural params (selectors, axes, planes) are literal only. |
+| Make it a part | In the inspector, **Output part** maps a manifest part id to the selected solid. |
+| Find a problem | Nodes with problems are outlined; the socket or param at fault is red. Click an address such as `cut_1.a:` in the validation panel to select that node. |
+
+Node positions are stored in each node's `meta.position`, which the renderer
+ignores; moving a node never triggers a render.
+
+### Expressions, declared parameters and derived values (graph 1.1)
+
+When the node catalog marks a param `"expr": true`, the inspector offers an
+**Expression** mode: `{"expr": "width / 2 - wall"}` in the
+`apps/studio/src/lib/safeFormula.ts` dialect (at most 256 characters / 128
+tokens, or whatever the catalog's `expression` block says). The editor evaluates
+it with that same function and shows the value as you type.
+
+- Identifiers are **manifest parameter ids**, and a graph must declare each one it
+  reads in its top-level `parameters` object. When an expression reads an
+  undeclared manifest parameter, the editor offers **Declare**; the declaration's
+  fallback default is the manifest's default.
+- A **select** parameter with named options (`NEMA17`, `NEMA23`) has no number
+  until its declaration has a `map`. The **Parameters** panel asks for one number
+  per option; the editor never guesses them.
+- **Derived values** are an ordered list of named intermediates
+  (`seat_r = b_od / 2 + press_fit / 2`). Each may read declared parameters and the
+  derived values above it; the panel lets you add, edit, reorder and remove them.
+- A document that uses `parameters` or `derived` is version **1.1**; the editor
+  bumps the version when you add the first declaration. A declared id that is not
+  in the manifest is shown as a warning.
+- As in the engine, a declared parameter or derived value that no expression reads
+  is an error, and a node param cannot carry an expression while a manifest
+  parameter also binds it; the editor flags both and does not save until they are
+  resolved.
+
+### Saving: a fork, never the commons
+
+Graph saves go through the same `PUT /api/projects/<slug>/files/<path>` the text
+editor uses, and the server re-validates the document before writing it. The
+editor writes only a project whose `project.meta.json` has a `source.type`, and
+the server enforces the same rule: every write route, the bindings route
+included, answers a commons cartridge with 403 `read_only_cartridge` and writes
+nothing into it.
+
+| Project | Graph edits | Manifest bindings | How to keep your work |
+|---|---|---|---|
+| Your **fork** (`source.type: "fork"`) | Saved and rendered as you edit (debounced), once the document is valid | Saved with the graph through `PUT /api/projects/<slug>/manifest/bindings` | Save (or Ctrl/Cmd+S) |
+| An **imported repository** (`"github"`) | Saved and rendered as you edit | Not editable (the route is fork-only) | Save, then commit and push with the Git panel |
+| A **commons cartridge** (no `project.meta.json`) | Kept in the editor only — never written | Not editable | **Export .graph.json**, or **Fork to save** (the existing Fork & Edit flow), then propose it to `solid-hyperobjects` as a pull request yourself |
+
+The bindings route is fork-only (an imported repository gets 403 `not_a_fork`)
+and can only set or clear `binding` on parameters the fork's
+manifest already has; it rejects unknown parameters, unknown body keys and bodies
+over 16 KB, checks the merged binding map against every graph source of the
+project with the transpiler, and writes the manifest atomically. The graph is
+always written before the bindings that point into it.
+
+Preview is the normal render: after a save, the Studio renders the current mode,
+so a fork shows the edited part as soon as the save lands. There is no per-node
+preview yet (roadmap item G-PREVIEW), and no in-Studio "propose to the commons as
+a pull request" flow.
 
 ## Checking your work
 

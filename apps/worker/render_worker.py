@@ -8,8 +8,10 @@ import json
 import logging
 import os
 import sys
+import tempfile
 import threading
 import time
+from pathlib import Path
 
 import redis
 
@@ -19,10 +21,11 @@ if BACKEND_PATH not in sys.path:
 
 # Use the same imports as the orchestrator to run the actual engines
 from config import Config
-from manifest import get_manifest
+from manifest import get_manifest, invalidate_cache
 from services.core.implicit_engine import run_render as run_implicit_render
 from services.core.implicit_engine import stream_render as stream_implicit_render
-from services.engine import render_orchestrator
+from services.editor.git_operations import git_archive_head
+from services.engine import generator_output, render_orchestrator
 from services.engine.cadquery_engine import build_cadquery_command
 from services.engine.cadquery_engine import run_render as run_cadquery_render
 from services.engine.cadquery_engine import stream_render as stream_cadquery_render
@@ -40,7 +43,21 @@ from services.engine.render_contract import (
     render_channel_for_job,
     render_final_channel_for_job,
 )
-from services.storage import check_artifact_store_ready, get_artifact_store, publish_artifact
+from services.engine.render_revision import render_revision
+from services.engine.worker_dispatch import (
+    SOURCE_ERROR_GIT_UNAVAILABLE,
+    SOURCE_ERROR_MISSING,
+    SOURCE_ERROR_OUTSIDE,
+    SOURCE_ERROR_UNAVAILABLE,
+    SOURCE_GIT_HEAD,
+)
+from services.storage import (
+    check_artifact_store_ready,
+    get_artifact_store,
+    publish_artifact,
+)
+from utils.process_hardening import set_process_nondumpable
+from utils.project_resolver import resolve_project_dir
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -263,7 +280,7 @@ def _notify_cancelled(job_id: str, part: str) -> None:
     )
 
 
-def _notify_error(job_id: str, part: str, error: str) -> None:
+def _notify_error(job_id: str, part: str, error: str, **extra) -> None:
     _publish_job_event(
         job_id,
         build_render_event(
@@ -271,6 +288,7 @@ def _notify_error(job_id: str, part: str, error: str) -> None:
             part=part,
             error=error,
             message=error,
+            **extra,
         ),
         emit_final=True,
     )
@@ -298,8 +316,112 @@ def _post_render_convert(output_path, output_filename, part, stl_prefix, actual_
 
     return serve_path, serve_filename, viewer_filename
 
+def _reject_stale_release(task) -> bool:
+    """Queued work must never render a new image under an old artifact identity."""
+    current = render_revision()
+    requested = task.get("payload", {}).get("render_revision", "")
+    if requested == current:
+        return False
+    _notify_error(
+        task["job_id"], task["part"],
+        "Renderer release changed while this job was queued. Reload and generate again.",
+    )
+    return True
+
+
+class _SourceError(Exception):
+    """A task's render source could not be materialised; the message is user-facing.
+
+    ``code`` travels on the error event as ``source_error`` (see
+    ``worker_dispatch.SOURCE_ERROR_*``) so the route can answer with the status
+    it always has: a missing file is not a broken checkout.
+    """
+
+    def __init__(self, message: str, code: str = SOURCE_ERROR_UNAVAILABLE):
+        super().__init__(message)
+        self.code = code
+
+
+def _materialise_git_head(task, checkout: Path) -> str:
+    """Extract the cartridge's committed HEAD into *checkout*; return the entry's path.
+
+    The project directory is resolved here from the slug, like every other
+    cartridge lookup, rather than taken from the queue. The entry is resolved
+    inside the checkout, so neither `..` nor a committed symlink can point the
+    renderer at a file outside it.
+    """
+    slug = task.get("payload", {}).get("project_slug") or ""
+    project_dir, err = resolve_project_dir(slug, require_git=True)
+    if err:
+        raise _SourceError(err)
+
+    archived = git_archive_head(project_dir, checkout)
+    if archived.get("git_unavailable"):
+        raise _SourceError(archived.get("error") or "git unavailable", SOURCE_ERROR_GIT_UNAVAILABLE)
+    if not archived.get("success"):
+        raise _SourceError(archived.get("error") or "Failed to extract HEAD archive")
+
+    entry = str((task.get("source") or {}).get("entry") or "")
+    root = checkout.resolve()
+    target = (root / entry).resolve()
+    if not entry or not target.is_relative_to(root) or target == root:
+        raise _SourceError("Render file is outside the project", SOURCE_ERROR_OUTSIDE)
+    if not target.is_file():
+        raise _SourceError("SCAD file does not exist in HEAD", SOURCE_ERROR_MISSING)
+    return str(target)
+
+
+def _process_sourced_task(task) -> None:
+    """Render a task whose input is not the working tree (see worker_dispatch).
+
+    The HEAD checkout lives in this process's own temporary directory for the
+    duration of one job and is removed when it ends, success or not. Nothing
+    is written to the shared cartridge volume.
+    """
+    kind = (task.get("source") or {}).get("kind")
+    if kind != SOURCE_GIT_HEAD:
+        _notify_error(task["job_id"], task["part"], f"Unsupported render source: {kind}",
+                      source_error=SOURCE_ERROR_UNAVAILABLE)
+        return
+    with tempfile.TemporaryDirectory(prefix="yantra_head_") as checkout:
+        try:
+            scad_path = _materialise_git_head(task, Path(checkout))
+        except _SourceError as exc:
+            _notify_error(task["job_id"], task["part"], str(exc), source_error=exc.code)
+            return
+        except Exception as exc:
+            logger.exception("HEAD checkout failed for job %s", task.get("job_id"))
+            _notify_error(task["job_id"], task["part"], str(exc), source_error=SOURCE_ERROR_UNAVAILABLE)
+            return
+        _render_sync_task({**task, "scad_path": scad_path})
+
+
 def process_sync_task(task):
     """Processes a synchronous render task and publishes the final result."""
+    if _reject_stale_release(task):
+        return
+    if task.get("source"):
+        _process_sourced_task(task)
+        return
+    _render_sync_task(task)
+
+
+def _task_manifest(project_slug, engine: str):
+    """The manifest a task renders against.
+
+    A graph render reads its parameter bindings from the manifest, and a fork's
+    bindings change on disk through the API (PUT .../manifest/bindings), which
+    invalidates only the API process's manifest cache. The API keys the render
+    on the binding map, so a graph task re-reads the manifest here: the render
+    must use the bindings its cache key was computed from.
+    """
+    if engine == "graph":
+        invalidate_cache(project_slug)
+    return get_manifest(project_slug)
+
+
+def _render_sync_task(task):
+    """Render one sync task's part from ``task['scad_path']`` and publish it."""
     job_id = task['job_id']
     engine = task['engine']
     part = task['part']
@@ -311,7 +433,7 @@ def process_sync_task(task):
     params = payload['params']
     mode_map = payload['mode_map']
 
-    manifest = get_manifest(project_slug)
+    manifest = _task_manifest(project_slug, engine)
     
     logger.info(f"Worker processing sync render for part {part} using {engine}")
 
@@ -372,16 +494,24 @@ def process_sync_task(task):
             size_bytes = None
 
         viewer_path = _viewer_path(viewer_filename)
+        # GOC-1 sidecar: digested and written before publishing (an object
+        # store removes the local copies), then published with the geometry.
+        gen = generator_output.prepare_part_output(task, manifest, serve_path, viewer_path)
         published = _publish_part_artifacts(
-            (serve_path, viewer_path), discard=_intermediates(output_path, serve_path)
+            (serve_path, viewer_path, gen and gen.sidecar_path), discard=_intermediates(output_path, serve_path)
         )
         serve_key = published[serve_path]
         viewer_key = published.get(viewer_path) if viewer_path else None
+        gen_fields = gen.part_fields(published) if gen else {}
 
-        render_cache.put(
-            project_slug, payload['scad_filename'], params, part, export_format,
-            serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash')
-        )
+        # Off for renders that are not the working tree's render of this key
+        # (animation frames, git HEAD previews): see worker_dispatch.
+        if payload.get('cache_write', True):
+            render_cache.put(
+                project_slug, payload['scad_filename'], params, part, export_format,
+                serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
+                generator_fields=gen.cache_fields(published) if gen else None,
+            )
 
         part_entry = {
             "type": part,
@@ -399,6 +529,7 @@ def process_sync_task(task):
             url=f"/static/{serve_key}",
             size_bytes=size_bytes,
             log=f"[{part}] {stderr}\n",
+            **gen_fields, **generator_output.envelope_fields(payload),
         )
         if viewer_key:
             final_payload["viewer_url"] = f"/static/{viewer_key}"
@@ -415,6 +546,13 @@ def process_sync_task(task):
 
 def process_stream_task(task):
     """Processes a streaming render task and publishes SSE progress events."""
+    if _reject_stale_release(task):
+        return
+    if task.get("source"):
+        # Only the sync path materialises a source; rendering the task's
+        # scad_path instead would render the wrong tree.
+        _notify_error(task["job_id"], task["part"], "Render source is not supported on the stream path")
+        return
     job_id = task['job_id']
     engine = task['engine']
     part = task['part']
@@ -430,7 +568,7 @@ def process_stream_task(task):
     project_slug = payload['project_slug']
     params = payload['params']
     mode_map = payload['mode_map']
-    manifest = get_manifest(project_slug)
+    manifest = _task_manifest(project_slug, engine)
 
     logger.info(f"Worker streaming render for part {part} using {engine}")
     if _is_cancelled(job_id):
@@ -501,8 +639,9 @@ def process_stream_task(task):
                         size_bytes = None
 
                     viewer_path = _viewer_path(viewer_filename)
+                    gen = generator_output.prepare_part_output(task, manifest, serve_path, viewer_path)
                     published = _publish_part_artifacts(
-                        (serve_path, viewer_path),
+                        (serve_path, viewer_path, gen and gen.sidecar_path),
                         discard=_intermediates(output_path, serve_path),
                     )
                     serve_key = published[serve_path]
@@ -510,12 +649,14 @@ def process_stream_task(task):
 
                     render_cache.put(
                         project_slug, payload['scad_filename'], params, part, export_format,
-                        serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash')
+                        serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
+                        generator_fields=gen.cache_fields(published) if gen else None,
                     )
                     part_entry = {
                         "type": part,
                         "url": f"/static/{serve_key}",
                         "size_bytes": size_bytes,
+                        **(gen.part_fields(published) if gen else {}),
                     }
                     if viewer_key:
                         part_entry["viewer_url"] = f"/static/{viewer_key}"
@@ -527,6 +668,7 @@ def process_stream_task(task):
                             RENDER_EVENT_PART_DONE,
                             part=part,
                             **part_entry,
+                            **generator_output.envelope_fields(payload),
                         ),
                         emit_final=True,
                     )
@@ -571,6 +713,13 @@ def _reconcile_active_jobs_on_start() -> list[str]:
 
 
 def run_worker():
+    # This process spawns CadQuery render subprocesses under the same UID, so
+    # make it non-dumpable before any render runs: a same-UID child then cannot
+    # read this parent's /proc/<pid>/environ or /proc/<pid>/mem. The child's own
+    # environment is already minimised; this closes the parent side. No-op off
+    # Linux (local development); production is Linux, where it matters.
+    set_process_nondumpable()
+
     # Fail closed before the first BLPOP. A worker that cannot reach its
     # artifact store would render happily and publish nowhere, and every
     # resulting URL would 404 — so it must not start at all.

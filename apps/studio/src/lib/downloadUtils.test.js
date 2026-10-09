@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
+import { setTokenGetter } from '../services/core/apiClient'
 import { downloadFile, downloadDataUrl, downloadZip, downloadZipFromData } from './downloadUtils'
 
 describe('downloadUtils', () => {
@@ -9,12 +10,12 @@ describe('downloadUtils', () => {
     vi.spyOn(document, 'createElement').mockReturnValue({
       href: '',
       download: '',
-      click,
+      click, remove: vi.fn(),
     })
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:local')
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      blob: () => Promise.resolve(new Blob(['stldata'])),
+      ok: true, blob: () => Promise.resolve(new Blob(['stldata'])),
     })
 
     await downloadFile('http://cross-origin.example/file.stl', 'test.stl')
@@ -27,23 +28,20 @@ describe('downloadUtils', () => {
     vi.restoreAllMocks()
   })
 
-  it('downloadFile falls back to direct anchor on fetch failure', async () => {
+  it('downloadFile rejects network failures without navigating', async () => {
     const click = vi.fn()
     const links = []
     vi.spyOn(document.body, 'appendChild').mockImplementation(() => {})
     vi.spyOn(document.body, 'removeChild').mockImplementation(() => {})
     vi.spyOn(document, 'createElement').mockImplementation(() => {
-      const link = { href: '', download: '', click }
+      const link = { href: '', download: '', click, remove: vi.fn() }
       links.push(link)
       return link
     })
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network error'))
 
-    await downloadFile('http://cross-origin.example/file.stl', 'test.stl')
-
-    expect(click).toHaveBeenCalled()
-    // Fallback should use the original URL directly
-    expect(links[links.length - 1].href).toBe('http://cross-origin.example/file.stl')
+    await expect(downloadFile('http://cross-origin.example/file.stl', 'test.stl')).rejects.toThrow('network error')
+    expect(click).not.toHaveBeenCalled()
 
     vi.restoreAllMocks()
   })
@@ -55,10 +53,10 @@ describe('downloadUtils', () => {
     vi.spyOn(document, 'createElement').mockReturnValue({
       href: '',
       download: '',
-      click,
+      click, remove: vi.fn(),
     })
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      blob: () => Promise.resolve(new Blob(['hello'])),
+      ok: true, blob: () => Promise.resolve(new Blob(['hello'])),
     })
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:data')
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
@@ -82,14 +80,14 @@ vi.mock('jszip', () => ({
 describe('downloadZip', () => {
   it('fetches items, creates zip, and triggers download', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      blob: () => Promise.resolve(new Blob(['stldata'])),
+      ok: true, blob: () => Promise.resolve(new Blob(['stldata'])),
     })
 
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:zip-url')
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
 
     const click = vi.fn()
-    vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click })
+    vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click, remove: vi.fn() })
     vi.spyOn(document.body, 'appendChild').mockImplementation(() => {})
     vi.spyOn(document.body, 'removeChild').mockImplementation(() => {})
 
@@ -112,7 +110,7 @@ describe('downloadZipFromData', () => {
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
 
     const click = vi.fn()
-    vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click })
+    vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click, remove: vi.fn() })
     vi.spyOn(document.body, 'appendChild').mockImplementation(() => {})
     vi.spyOn(document.body, 'removeChild').mockImplementation(() => {})
 
@@ -125,5 +123,25 @@ describe('downloadZipFromData', () => {
     expect(click).toHaveBeenCalled()
 
     vi.restoreAllMocks()
+  })
+})
+
+
+describe('artifact response validation', () => {
+  it.each([401, 403, 404, 500])('rejects HTTP %s instead of saving its body', async status => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status })
+    await expect(downloadFile('/static/private.stl', 'part.stl')).rejects.toThrow(`HTTP ${status}`)
+    await expect(downloadZip([{ url: '/static/private.stl', filename: 'part.stl' }], 'parts.zip')).rejects.toThrow(`HTTP ${status}`)
+    fetchMock.mockRestore()
+  })
+  it('authenticates trusted artifacts without sending tokens to external files', async () => {
+    setTokenGetter(async () => 'test-token')
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status: 403 })
+    await expect(downloadFile('/static/private.stl', 'part.stl')).rejects.toThrow()
+    expect(fetchMock).toHaveBeenLastCalledWith('/static/private.stl', { headers: { Authorization: 'Bearer test-token' } })
+    await expect(downloadFile('https://external.example/file.stl', 'part.stl')).rejects.toThrow()
+    expect(fetchMock).toHaveBeenLastCalledWith('https://external.example/file.stl')
+    setTokenGetter(async () => null)
+    fetchMock.mockRestore()
   })
 })

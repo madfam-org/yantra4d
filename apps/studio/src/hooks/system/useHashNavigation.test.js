@@ -151,6 +151,17 @@ describe('isProjectsView', () => {
 // ========================================================================
 describe('parseHash', () => {
   describe('with /project/ prefix paths', () => {
+    it('preserves the mode in previously generated share URLs', () => {
+      const result = parseHash('/project/gridfinity/share/grid', presets, modes, 'unit')
+      expect(result.mode.id).toBe('grid')
+    })
+
+    it('keeps a declared mode named share unambiguous', () => {
+      const result = parseHash('/project/gridfinity/share/compact', presets, [...modes, { id: 'share' }])
+      expect(result.mode.id).toBe('share')
+      expect(result.preset.id).toBe('compact')
+    })
+
     it('parses slug + mode + preset from full path', () => {
       const result = parseHash('/project/gridfinity/unit/default', presets, modes)
       expect(result.mode.id).toBe('unit')

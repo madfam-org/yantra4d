@@ -1561,10 +1561,10 @@ describe('renderParts (browser mode)', () => {
     expect(fetchMock.mock.calls.some(c => String(c[0]).includes('/api/render-stream'))).toBe(true)
   })
 
-  it('falls back to the server when the browser runs out of memory', async () => {
+  it.each(['oom', 'kernel-error'])('falls back to the server on %s', async (kind) => {
     workerThatReplies((msg, send) => {
       if (msg.type === 'init') send?.({ data: { type: 'init-done' } })
-      else if (msg.type === 'render') send?.({ data: { type: 'error', message: 'Cannot enlarge memory arrays', kind: 'oom' } })
+      else if (msg.type === 'render') send?.({ data: { type: 'error', message: 'Cannot enlarge memory arrays', kind } })
     })
 
     vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
@@ -1586,7 +1586,7 @@ describe('renderParts (browser mode)', () => {
       onProgress: p => p.log && logs.push(p.log),
     })
     expect(result).toHaveLength(1)
-    expect(logs.some(l => l.includes('[FALLBACK] Browser render failed (oom)'))).toBe(true)
+    expect(logs.some(l => l.includes(`[FALLBACK] Browser render failed (${kind})`))).toBe(true)
   })
 
   it('does NOT fall back on a SCAD error — the server would reject it identically', async () => {

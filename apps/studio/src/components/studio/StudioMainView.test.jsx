@@ -395,6 +395,37 @@ describe('StudioMainView', () => {
     expect(document.body.textContent).toContain('iteration 1')
   })
 
+  it('physics is disabled with the reason when the server has no solver', () => {
+    withContext({
+      mode: 'full',
+      parts: [{ type: 'body' }],
+      loading: false,
+      physicsJobId: null,
+      physicsFrames: null,
+      physicsUnavailable: true,
+    })
+    render(<StudioMainView />)
+    const button = screen.getByRole('button', { name: 'sim.physics_run' })
+    expect(button).toBeDisabled()
+    const note = screen.getByText('sim.physics_unavailable')
+    expect(button).toHaveAttribute('aria-describedby', note.id)
+  })
+
+  it('physics stays available until the server refuses it', () => {
+    withContext({ mode: 'full', parts: [{ type: 'body' }], loading: false, physicsFrames: null, physicsUnavailable: false })
+    render(<StudioMainView />)
+    expect(screen.getByRole('button', { name: 'sim.physics_run' })).toBeEnabled()
+    expect(screen.queryByText('sim.physics_unavailable')).toBeNull()
+  })
+
+  it('the stress map and the parameter search are labelled as estimates, not FEA', () => {
+    withContext({ mode: 'full', parts: [{ type: 'body' }], loading: false, physicsFrames: null })
+    render(<StudioMainView />)
+    expect(screen.getByRole('button', { name: 'sim.stress_run' })).toHaveAttribute('title', 'sim.stress_note')
+    expect(screen.getByRole('button', { name: 'sim.optimize_run' })).toHaveAttribute('title', 'sim.optimize_note')
+    expect(document.body.textContent).not.toMatch(/FEA|Topo Optimization/)
+  })
+
   it('an estimate nested under total is read the same as a flat one', () => {
     // The estimate arrives either flat or wrapped in `total` depending on
     // whether the render produced one part or several.

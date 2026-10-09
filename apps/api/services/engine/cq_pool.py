@@ -36,6 +36,7 @@ import threading
 import time
 from collections.abc import Callable
 
+from services.engine.engine_guard import worker_only
 from services.engine.render_engine import RENDER_TIMEOUT_S
 
 logger = logging.getLogger(__name__)
@@ -268,6 +269,7 @@ class CadQueryPool:
 
     # -- public API --------------------------------------------------------
 
+    @worker_only
     def submit(
         self,
         script_path: str,

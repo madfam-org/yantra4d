@@ -28,9 +28,13 @@ from collections import OrderedDict
 
 import redis as redis_lib
 
+from services.engine.render_revision import cache_revision
 from utils.metrics import CACHE_HITS, CACHE_MISSES
 
 logger = logging.getLogger(__name__)
+
+#: GOC-1 fields a cache entry may carry (services/engine/generator_output.CACHE_FIELDS).
+GENERATOR_FIELDS = ("sha256", "media_type", "instance_id", "variables_key")
 
 DEFAULT_TTL = int(os.getenv("RENDER_CACHE_TTL", "3600"))
 DEFAULT_MAX_ENTRIES = int(os.getenv("RENDER_CACHE_MAX_ENTRIES", "200"))
@@ -131,12 +135,13 @@ class RenderCache:
         return get_artifact_store()
 
     def _stored(self, entry: dict | None) -> bool:
-        """Whether the artifact an entry names is still in the store."""
+        """Whether the artifact an entry names, and its GOC-1 sidecar if any, are still stored."""
         key = entry_key(entry)
         if not key:
             return False
+        keys = [key, *([entry["variables_key"]] if entry.get("variables_key") else [])]
         try:
-            return self.store.exists(key)
+            return all(self.store.exists(k) for k in keys)
         except Exception:
             # A store that cannot answer must not fail the render: degrade to a
             # miss and re-render, which is correct, just slower.
@@ -179,6 +184,7 @@ class RenderCache:
             "format": export_format,
             # See _engine_signature: keeps Manifold and CGAL outputs disjoint.
             "engine": cls._engine_signature(),
+            "revision": cache_revision(),
             **({"scad_hash": scad_content_hash} if scad_content_hash else {}),
         }, sort_keys=True)
         return hashlib.sha256(raw.encode()).hexdigest()
@@ -205,11 +211,7 @@ class RenderCache:
             _redis_client.setex(
                 f"render:{key}",
                 REDIS_TTL,
-                json.dumps({
-                    "key": entry["key"],
-                    "size_bytes": entry["size_bytes"],
-                    "ts": entry["ts"],
-                })
+                json.dumps({k: entry[k] for k in ("key", "size_bytes", "ts", *GENERATOR_FIELDS) if k in entry})
             )
             _redis_ok()
         except Exception as e:
@@ -252,16 +254,18 @@ class RenderCache:
         CACHE_MISSES.inc()
         return None
 
-    def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, artifact_key: str, size_bytes: int | None, scad_content_hash: str | None = None):
+    def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, artifact_key: str, size_bytes: int | None, scad_content_hash: str | None = None, generator_fields: dict | None = None):
         """Record that *artifact_key* satisfies this render.
 
         ``artifact_key`` is a store key (``ArtifactStore``), i.e. the same
         artifact-relative name that goes into the `/static/<key>` URL — never
         an absolute path, which would only mean something to a process sharing
-        the producer's filesystem.
+        the producer's filesystem. *generator_fields* are the part's GOC-1
+        fields (``GENERATOR_FIELDS``), so a hit answers with what a miss does.
         """
         key = self._make_key(project, scad_file, params, part, export_format, scad_content_hash)
-        entry = {"key": artifact_key, "size_bytes": size_bytes, "ts": time.time()}
+        entry = {"key": artifact_key, "size_bytes": size_bytes, "ts": time.time(),
+                 **{k: v for k, v in (generator_fields or {}).items() if k in GENERATOR_FIELDS}}
 
         # L1
         with self._lock:

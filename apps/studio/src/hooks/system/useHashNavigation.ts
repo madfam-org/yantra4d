@@ -81,7 +81,13 @@ export function parseHash(
   let modeId: string | null
   let presetId: string | null
 
-  if (parts.length >= 3) {
+  // Older share buttons emitted /project/{slug}/share/{modeId}.
+  // Preserve those links without shadowing a real mode named "share".
+  if (parts.length >= 3 && parts[1] === 'share' &&
+      !modes.some(m => m.id === 'share') && modes.some(m => m.id === parts[2])) {
+    modeId = parts[2]
+    presetId = null
+  } else if (parts.length >= 3) {
     modeId = parts[1]
     presetId = parts[2]
   } else if (parts.length === 2) {

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useShareableUrl, getSharedParams } from './useShareableUrl'
+import { parseHash } from '../system/useHashNavigation'
 
 describe('useShareableUrl', () => {
   const defaultParams = { size: 40, rows: 3, cols: 3, show_base: true }
@@ -35,13 +36,44 @@ describe('useShareableUrl', () => {
   })
 
   describe('generateShareUrl', () => {
+    it.each(['中文标签', 'قطعة', 'café 🧵', 'e\u0301'])('round-trips Unicode text %s through existing decoders', (text) => {
+      const { result } = renderHook(() => useShareableUrl({
+        params: { text }, defaultParams: { text: '' }, mode: 'tag', projectSlug: 'keytag',
+      }))
+      const url = new URL(result.current.generateShareUrl())
+      const encoded = url.searchParams.get('p').replace(/-/g, '+').replace(/_/g, '/')
+      // Existing deployments read atob -> JSON.parse, so the new link must too.
+      expect(JSON.parse(atob(encoded))).toEqual({ text })
+      window.history.replaceState(null, '', url.pathname + url.search)
+      expect(getSharedParams()).toEqual({ text })
+    })
+
+    it('preserves the exact bytes of legacy Latin-1 text links', () => {
+      const diff = { text: 'café / Ã©' }
+      const encoded = btoa(JSON.stringify(diff)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+      window.history.replaceState(null, '', `?p=${encoded}`)
+      expect(getSharedParams()).toEqual(diff)
+    })
+
+    it('round-trips a non-default mode through the navigation parser', () => {
+      const modes = [{ id: 'single' }, { id: 'grid' }]
+      const params = { ...defaultParams, size: 60 }
+      const { result } = renderHook(() =>
+        useShareableUrl({ params, mode: 'grid', projectSlug: 'gridfinity', defaultParams })
+      )
+      const url = new URL(result.current.generateShareUrl())
+      expect(parseHash(url.pathname, [], modes, 'single').mode.id).toBe('grid')
+      window.history.replaceState(null, '', url.pathname + url.search)
+      expect(getSharedParams()).toEqual({ size: 60 })
+    })
+
     it('generates URL with encoded param diff', () => {
       const params = { ...defaultParams, size: 60 }
       const { result } = renderHook(() =>
         useShareableUrl({ params, mode: 'single', projectSlug: 'gridfinity', defaultParams })
       )
       const url = result.current.generateShareUrl()
-      expect(url).toContain('/project/gridfinity/share/single')
+      expect(url).toContain('/project/gridfinity/single')
       expect(url).toContain('p=')
 
       // Decode and verify
@@ -58,7 +90,7 @@ describe('useShareableUrl', () => {
         useShareableUrl({ params: defaultParams, mode: 'single', projectSlug: 'gridfinity', defaultParams })
       )
       const url = result.current.generateShareUrl()
-      expect(url).toContain('/project/gridfinity/share/single')
+      expect(url).toContain('/project/gridfinity/single')
       expect(url).not.toContain('p=')
     })
 
@@ -90,7 +122,7 @@ describe('useShareableUrl', () => {
       await act(async () => { ok = await result.current.copyShareUrl() })
       expect(ok).toBe(true)
       expect(writeText).toHaveBeenCalledOnce()
-      expect(writeText.mock.calls[0][0]).toContain('/project/gridfinity/share/single')
+      expect(writeText.mock.calls[0][0]).toContain('/project/gridfinity/single')
     })
 
     it('returns false when clipboard fails', async () => {

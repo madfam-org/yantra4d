@@ -1,0 +1,51 @@
+---
+// Static hosts need links and dismissal, not an eager React runtime. Share the
+// vendored platform/style contract so the Astro and React hosts stay aligned.
+import { DEFAULT_ECOSYSTEM_PLATFORMS } from './vendor/ecosystem-banner/platforms';
+import { BANNER_STYLES } from './vendor/ecosystem-banner/presentation';
+const list = DEFAULT_ECOSYSTEM_PLATFORMS.filter(p => p.keyword && p.name && p.url);
+---
+<style is:global set:html={BANNER_STYLES} />
+<div hidden data-ecosystem-banner role="complementary"
+  aria-label={`MADFAM ecosystem ticker: ${list.map(p => p.name).join(', ')}`}
+  data-testid="ecosystem-banner" class="madfam-eco-banner">
+  <div class="madfam-eco-banner__inner">
+    <span aria-hidden="true" class="madfam-eco-banner__label">MADFAM ECOSYSTEM</span>
+    <span aria-hidden="true" class="madfam-eco-banner__separator">/</span>
+    <div class="madfam-eco-banner__viewport"><div class="madfam-eco-banner__track">
+      {list.map((platform) => (
+        <a href={platform.url} target="_blank" rel="noopener noreferrer"
+          title={`${platform.keyword}: ${platform.name}`} class="madfam-eco-banner__item">
+          <span class="madfam-eco-banner__keyword">{platform.keyword}:</span>
+          <span class="madfam-eco-banner__name">{platform.name}</span>
+          <span class="madfam-eco-banner__external">↗</span>
+        </a>
+      ))}
+    </div></div>
+    <button type="button" aria-label="Dismiss MADFAM ecosystem ticker" class="madfam-eco-banner__dismiss">
+      <span aria-hidden="true" class="madfam-eco-banner__dismiss-glyph">×</span>
+    </button>
+  </div>
+</div>
+<style is:global>
+  /* The landing keeps links manually scrollable on every tier: no infinite
+     decorative loop during page load. The gallery still owns its 3D motion.
+     Keep this host policy out of the shared React presentation. */
+  .madfam-eco-banner,
+  .madfam-eco-banner__track {
+    animation: none;
+  }
+  .madfam-eco-banner__track {
+    will-change: auto;
+  }
+  .madfam-eco-banner__viewport {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(71 85 105) transparent;
+    mask-image: none;
+  }
+</style>
+<script>
+  import { wireEcosystemBanner } from '../lib/ecosystem-banner';
+  document.querySelectorAll<HTMLElement>('[data-ecosystem-banner]').forEach(wireEcosystemBanner);
+</script>

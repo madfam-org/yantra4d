@@ -28,6 +28,7 @@ from services.core.tier_service import (
     is_unlimited,
     resolve_tier,
 )
+from services.engine.generator_output import envelope_fields
 from services.engine.render_orchestrator import (
     RenderPayloadError,
     cancel_all_renders,
@@ -222,6 +223,8 @@ def render_stl():
         # Echoed so a caller can correlate — and, when it supplied its own,
         # confirm the handle it can cancel with.
         "request_id": payload.get("request_id"),
+        # GOC-1 (additive): {format_version, complete, variables_sha256}.
+        **envelope_fields(payload),
     })
     for k, v in _make_rate_limit_headers(tier).items():
         resp.headers[k] = v

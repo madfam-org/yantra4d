@@ -22,7 +22,7 @@ const softCards = [
 ---
 
 <!-- ═══════ Section: The Parametric Commons ═══════ -->
-<section id="hyper-commons" class="cv-auto relative py-28 px-6 overflow-hidden">
+<section data-motion-section id="hyper-commons" class="cv-auto relative py-28 px-6 overflow-hidden">
 
   <!-- Animated background grid -->
   <div class="hc-grid-bg absolute inset-0 -z-10" aria-hidden="true"></div>
@@ -64,11 +64,11 @@ const softCards = [
                 <line x1="320" y1="0" x2="320" y2="400" />
               </g>
               <!-- The morphing shape -->
-              <rect class="hc-shape-morph" x="80" y="100" rx="8" fill="none" stroke="hsl(var(--primary))" stroke-width="2" />
+              <rect class="hc-shape-morph" x="80" y="100" width="240" height="200" rx="8" fill="none" stroke="hsl(var(--primary))" stroke-width="2" />
               <!-- Ghost outlines showing parameter space -->
-              <rect class="hc-shape-ghost hc-ghost-1" x="60" y="80" rx="4" fill="none" stroke="hsl(var(--primary) / 0.12)" stroke-width="1" stroke-dasharray="4 4" />
-              <rect class="hc-shape-ghost hc-ghost-2" x="100" y="120" rx="12" fill="none" stroke="hsl(var(--primary) / 0.08)" stroke-width="1" stroke-dasharray="4 4" />
-              <rect class="hc-shape-ghost hc-ghost-3" x="120" y="60" rx="6" fill="none" stroke="hsl(var(--primary) / 0.06)" stroke-width="1" stroke-dasharray="4 4" />
+              <rect class="hc-shape-ghost hc-ghost-1" x="60" y="80" width="280" height="240" rx="4" fill="none" stroke="hsl(var(--primary) / 0.12)" stroke-width="1" stroke-dasharray="4 4" />
+              <rect class="hc-shape-ghost hc-ghost-2" x="100" y="120" width="180" height="160" rx="12" fill="none" stroke="hsl(var(--primary) / 0.08)" stroke-width="1" stroke-dasharray="4 4" />
+              <rect class="hc-shape-ghost hc-ghost-3" x="120" y="60" width="160" height="280" rx="6" fill="none" stroke="hsl(var(--primary) / 0.06)" stroke-width="1" stroke-dasharray="4 4" />
               <!-- Parameter dimension arrows -->
               <g class="hc-dim-arrows" stroke="hsl(var(--primary) / 0.3)" stroke-width="1.5">
                 <line class="hc-dim-x" x1="80" y1="340" x2="320" y2="340" marker-end="url(#arrowhead)" />
@@ -377,30 +377,10 @@ const softCards = [
     50%      { width: 3.5rem; height: 3.5rem; border-radius: 1rem; }
   }
 
-  /* ── Scroll fade-in ── */
-  .hc-fade-in {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-  }
-
-  .hc-fade-in.hc-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* ── "Why hyperobjects" entry: transform only ──
-     No opacity in this transition. Fading text in from 0 leaves several
-     frames where the copy sits below the WCAG contrast floor, which the
-     axe lane flags; sliding it in leaves every frame at full contrast. */
-  .hc-rise {
-    transform: translateY(24px);
-    transition: transform 0.7s ease-out;
-  }
-
-  .hc-rise.hc-visible {
-    transform: translateY(0);
-  }
+  /* Copy is visible without script or a descendant visibility observer.
+     Observing descendants forces layout inside a deferred cv-auto section. */
+  .hc-fade-in { opacity: 1; transform: none; }
+  .hc-rise { transform: none; }
 
   /* ── Domain card hover ── */
   .hc-domain-card {
@@ -444,21 +424,7 @@ const softCards = [
   }
 </style>
 
-<!-- ═══════ Script: Intersection Observer for fade-in ═══════ -->
 <script>
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('hc-visible');
-        }
-      });
-    },
-    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-  );
-
-  // .hc-rise shares the observer but not the opacity transition — see styles.
-  document
-    .querySelectorAll('.hc-fade-in, .hc-rise')
-    .forEach((el) => observer.observe(el));
+  import { observeSectionMotion } from '../lib/section-motion';
+  observeSectionMotion(document.getElementById('hyper-commons'));
 </script>

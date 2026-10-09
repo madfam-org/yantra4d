@@ -30,7 +30,7 @@ Two things follow from it being generated rather than maintained:
   disk, because a partial checkout is exactly how the committed list went 328
   entries against a 495-cartridge commons. Run
   `git submodule update --init projects/` first. The two `update = none`
-  submodules (the client-private `tablaco` pair) are *expected* to be absent and
+  submodules (the client-private pair) are *expected* to be absent and
   never count as an incomplete checkout.
 - **Private cartridges are excluded, on both the signals the backend uses** —
   `access_control.view == "private"` in the manifest and the `PRIVATE_PROJECTS`

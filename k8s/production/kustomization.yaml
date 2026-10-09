@@ -19,15 +19,39 @@ resources:
 - yantra4d-redis-service.yaml
 
 images:
-- digest: sha256:d8b84f3c5bc2c79aac1246c71b377dc55b351b5c37f550d82dd4f7994eb20b98
+- digest: sha256:8b81dd37ff027bec4e516d41acfbe9fe2460070dc6d4a4570a2ac5b9d59df065
+  name: docker.io/library/redis
+  newName: docker.io/library/redis
+- digest: sha256:435d227a857b268abf5dcfa2bae0e53984eb6c987cfba71b364b5edc4fbb1d3c
   name: ghcr.io/madfam-org/yantra4d/admin
   newName: ghcr.io/madfam-org/yantra4d/admin
-- digest: sha256:4b211a623016a460e5117627b5c575f40e33067e7bb8bc445eb47257ed4ed852
+- digest: sha256:a060ba893b3322b95e0efc2822f83de17ddc0838fe9328f4ec2c41c03169f6a3
   name: ghcr.io/madfam-org/yantra4d/backend
   newName: ghcr.io/madfam-org/yantra4d/backend
-- digest: sha256:1346684911dc41a1497f1029e77213f3057859200e58f956cef50ecab977ab90
+- digest: sha256:c35f16fe36d3780d62ff36ae7c631d9d849e344e6022795cf24c3b5be4741409
   name: ghcr.io/madfam-org/yantra4d/landing
   newName: ghcr.io/madfam-org/yantra4d/landing
-- digest: sha256:c44b7a04fa11f755337aceb0ee57d0b5d8c767eb3032127ceb0161c38367f7a5
+- digest: sha256:3d7bfc1f644003ee8fb56fd9b2bfec6459b5b6ce82f3d7f79902727a1d1fcf52
   name: ghcr.io/madfam-org/yantra4d/studio
   newName: ghcr.io/madfam-org/yantra4d/studio
+
+# A singleton Redis must release its writable PVC before its replacement starts.
+# Server-side apply retained the live rollingUpdate during this transition.
+# Replace only this complete Deployment so Recreate can remove those fields.
+patches:
+- patch: |-
+    - op: add
+      path: /spec/strategy
+      value:
+        type: Recreate
+        rollingUpdate: null
+  target:
+    kind: Deployment
+    name: yantra4d-redis
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: yantra4d-redis
+      annotations:
+        argocd.argoproj.io/sync-options: Replace=true

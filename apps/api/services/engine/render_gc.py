@@ -101,7 +101,8 @@ def _collectable(store) -> list[tuple[float, int, str]]:
     out = []
     for info in store.list():
         name = info.key.rsplit("/", 1)[-1]
-        if os.path.splitext(name)[1].lower() not in GC_EXTENSIONS:
+        # GOC-1 sidecars (`<artifact>.variables.json`) expire with their artifacts.
+        if os.path.splitext(name)[1].lower() not in GC_EXTENSIONS and not name.lower().endswith(".variables.json"):
             continue
         out.append((info.modified_at, info.size, info.key))
     return out

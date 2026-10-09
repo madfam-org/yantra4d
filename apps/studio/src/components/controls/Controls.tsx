@@ -373,6 +373,7 @@ export default function Controls({ params, setParams, mode, presets = [], onAppl
                     {visiblePresets.map(p => (
                         <button
                             key={p.id}
+                            data-testid={`preset-${p.id}`}
                             type="button"
                             className={`flex-shrink-0 px-3 py-1.5 text-sm rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex items-center justify-center whitespace-nowrap min-h-[44px] ${activePresetId === p.id
                                 ? 'bg-primary text-primary-foreground border-primary'

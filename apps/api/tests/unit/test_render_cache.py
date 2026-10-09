@@ -19,6 +19,13 @@ from services.engine.render_cache import RenderCache, entry_key
 from services.storage import FilesystemArtifactStore
 
 
+@pytest.fixture(autouse=True)
+def isolated_redis(monkeypatch):
+    # L1 eviction/TTL assertions must not be repopulated by a real L2.
+    # The Redis tests install their own client explicitly.
+    monkeypatch.setattr("services.engine.render_cache._redis_client", None)
+
+
 @pytest.fixture
 def store(tmp_path):
     """A filesystem artifact store rooted at the test's own directory."""

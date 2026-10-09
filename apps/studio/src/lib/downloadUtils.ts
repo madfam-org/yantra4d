@@ -1,35 +1,44 @@
+import { apiFetch } from '../services/core/apiClient'
+import { getApiBase } from '../services/core/backendDetection'
+
+async function fetchArtifact(url: string): Promise<Response> {
+  const target = new URL(url, window.location.href)
+  const api = new URL(getApiBase() || '/', window.location.href)
+  const trusted = target.origin === api.origin &&
+    (target.pathname.startsWith('/api/') || target.pathname.startsWith('/static/'))
+  const response = await (trusted ? apiFetch(url) : fetch(url))
+  if (!response.ok) throw new Error(`Download failed (HTTP ${response.status})`)
+  return response
+}
+
 /**
  * Trigger a file download. Fetches the file as a blob first so that the
  * `download` attribute's filename is respected even for cross-origin URLs.
  */
 export async function downloadFile(url: string, filename: string): Promise<void> {
+  const response = await fetchArtifact(url)
+  triggerBlobDownload(await response.blob(), filename)
+}
+
+function triggerBlobDownload(blob: Blob, filename: string): void {
+  const blobUrl = URL.createObjectURL(blob)
+  const link = document.createElement('a')
   try {
-    const response = await fetch(url)
-    const blob = await response.blob()
-    const blobUrl = URL.createObjectURL(blob)
-    const link = document.createElement('a')
     link.href = blobUrl
     link.download = filename
     document.body.appendChild(link)
     link.click()
-    document.body.removeChild(link)
+  } finally {
+    link.remove()
     URL.revokeObjectURL(blobUrl)
-  } catch {
-    // Fallback: direct navigation for blob URL failures
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
   }
 }
 
 /**
  * Download a data URL as a file.
  */
-export function downloadDataUrl(dataUrl: string, filename: string): void {
-  downloadFile(dataUrl, filename)
+export function downloadDataUrl(dataUrl: string, filename: string): Promise<void> {
+  return downloadFile(dataUrl, filename)
 }
 
 interface ZipUrlItem {
@@ -45,17 +54,12 @@ export async function downloadZip(items: ZipUrlItem[], zipFilename: string): Pro
   const { default: JSZip } = await import('jszip')
   const zip = new JSZip()
   for (const item of items) {
-    const res = await fetch(item.url)
+    const res = await fetchArtifact(item.url)
     const blob = await res.blob()
     zip.file(item.filename, blob)
   }
   const content = await zip.generateAsync({ type: 'blob' })
-  const url = URL.createObjectURL(content)
-  try {
-    await downloadFile(url, zipFilename)
-  } finally {
-    URL.revokeObjectURL(url)
-  }
+  triggerBlobDownload(content, zipFilename)
   return content
 }
 
@@ -74,11 +78,6 @@ export async function downloadZipFromData(items: ZipDataItem[], zipFilename: str
     zip.file(item.filename, item.data)
   }
   const blob = await zip.generateAsync({ type: 'blob' })
-  const url = URL.createObjectURL(blob)
-  try {
-    await downloadFile(url, zipFilename)
-  } finally {
-    URL.revokeObjectURL(url)
-  }
+  triggerBlobDownload(blob, zipFilename)
   return blob
 }

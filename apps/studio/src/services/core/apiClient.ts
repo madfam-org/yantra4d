@@ -2,7 +2,7 @@
  * Shared API client that injects Authorization header when a token is available.
  * Tracks rate limit headers from render responses.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type TokenGetter = () => Promise<string | null>
 
@@ -73,8 +73,11 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
 
   const response = await fetch(url, { ...options, headers })
 
-  // Extract rate limit headers if present
-  if (response.headers?.get) {
+  // Catalog, estimates and artifacts have separate Flask rate-limit buckets.
+  // They must not replace the render allowance or alter render placement.
+  const path = new URL(url, 'http://localhost').pathname.replace(/\/$/, '')
+  const isRenderResponse = path === '/api/render' || path === '/api/render-stream'
+  if (isRenderResponse && response.headers?.get) {
     const rlLimit = response.headers.get('X-RateLimit-Limit')
     const rlRemaining = response.headers.get('X-RateLimit-Remaining')
     const rlTier = response.headers.get('X-RateLimit-Tier')
@@ -114,14 +117,11 @@ export function isRateLimitExhausted(): boolean {
 export function useRateLimit(): RateLimitState {
   const [state, setState] = useState<RateLimitState>({ ..._rateLimitState })
 
-  // Subscribe on first call via module-level set
-  // Using useState initializer to register only once
-  useState(() => {
+  useEffect(() => {
     const listener: RateLimitListener = (newState) => setState(newState)
     _rateLimitListeners.add(listener)
-    // Return cleanup (not used by useState, but we store ref)
-    return () => _rateLimitListeners.delete(listener)
-  })
+    return () => { _rateLimitListeners.delete(listener) }
+  }, [])
 
   return state
 }

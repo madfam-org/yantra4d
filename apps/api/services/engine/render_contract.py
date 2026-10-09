@@ -11,7 +11,12 @@ from __future__ import annotations
 # the client which jobs it started, so `POST /api/render-cancel` can be scoped to
 # them instead of cancelling every render on the box. No field was removed or
 # changed, so a 1.0.0 consumer keeps working — it just ignores the new event.
-RENDER_STREAM_SCHEMA_VERSION = "1.1.0"
+#
+# 1.2.0 adds the GOC-1 generator-output fields (additive): `part_done` carries
+# `sha256`, `media_type`, `instance_id` and `variables_url` for a generated part
+# (cached ones included) plus `generator_output`; `complete` carries
+# `generator_output: {format_version, complete, variables_sha256}`.
+RENDER_STREAM_SCHEMA_VERSION = "1.2.0"
 
 RENDER_CHANNEL_PREFIX = "render"
 RENDER_FINAL_CHANNEL_SUFFIX = "final"

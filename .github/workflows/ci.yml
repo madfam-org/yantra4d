@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 # Every job below runs on the shared self-hosted pool (madfam-runners-blue), and
-# the e2e matrix alone is ten shards. Without a concurrency group, each push to
+# the e2e matrix alone is eleven shards. Without a concurrency group, each push to
 # an open PR stacked a full new run on the pool while the superseded run kept
 # going — on 2026-09-02 four open PRs queued 20–60 min per job for that reason.
 # One group per PR (or per ref for pushes): a new PR head cancels the run it
@@ -60,9 +60,9 @@ jobs:
   # doubling: merging a pull request runs the full matrix for the merge commit,
   # then deploy.yml pushes `deploy(yantra4d): update digests`, which touches
   # ONLY k8s/production/kustomization.yaml — and that second push ran the whole
-  # matrix again for a file no job here reads. deploy.yml already excludes that
-  # path from its own triggers for the same reason ("Digest commits do not
-  # loop"); this is the other half of that rule.
+  # matrix again for a file no job here reads. deploy.yml classifies that path
+  # as a no-op after CI completion ("Digest commits do not loop"); this is the
+  # other half of that rule.
   #
   # no-code means EVERY changed file is documentation or a deploy digest bump:
   # any `*.md`, `docs/**`, `apps/docs/**` (the Starlight docs site, which no job
@@ -203,6 +203,12 @@ jobs:
         working-directory: apps/studio
     steps:
       - uses: actions/checkout@v4
+      - name: Initialize the pinned commons for consumer contract tests
+        # ManifestProvider.fasteners.test.jsx reads the actual cartridge pin.
+        # Only its public root is needed; do not clone nested CAD libraries or
+        # private project mounts for a Studio test.
+        working-directory: ${{ github.workspace }}
+        run: git submodule update --init --depth=1 -- projects
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -354,7 +360,7 @@ jobs:
 
   landing-lighthouse:
     # Lighthouse's timing budgets are CPU measurements, and the ARC pods share
-    # their node with the ten e2e shards above. While the matrix runs, one
+    # their node with the eleven e2e shards above. While the matrix runs, one
     # pod's BenchmarkIndex swings 937–1782 within minutes and total-blocking-
     # time swings with it for the SAME build: 985 → 974 ms, 1504 → 123 ms,
     # 1782 → 91 ms (ci run 35460027219); at a calibrated 3.4× the runs still
@@ -509,8 +515,8 @@ jobs:
       # The same pin is in apps/api/requirements-dev.txt so a developer's local
       # ruff is the one CI runs, and scripts/tests/test_ruff_pin.py fails if the
       # two ever disagree. Bump both together.
-      - run: pip install "ruff==0.16.5" pip-audit
-      - run: pip-audit --desc || true
+      - run: pip install "ruff==0.16.5" "pip-audit==2.10.1"
+      - run: pip-audit --desc
       - run: ruff check .
       # apps/worker was never linted by anything: this job's `ruff check .` runs
       # under `working-directory: apps/api`, and no other job installs ruff, so
@@ -561,6 +567,11 @@ jobs:
     # worker count, which would run WebGL-heavy viewer specs concurrently on one
     # runner and trade a known problem for a flaky one. Mobile only matches the
     # responsive suite (28 specs, ~4 min) so it stays unsharded.
+    #
+    # WebKit runs the same specs about twice as slowly on this pool: on
+    # 2026-10-09 its thirds took 27–31 min against the 30 min cap, and the cap
+    # cancelled one (GitHub reports a timed-out job as cancelled), while the
+    # chromium and firefox thirds took 15–21 min. WebKit is sharded four ways.
     strategy:
       fail-fast: false
       matrix:
@@ -571,9 +582,10 @@ jobs:
           - { project: firefox,  shard: 1, shards: 3 }
           - { project: firefox,  shard: 2, shards: 3 }
           - { project: firefox,  shard: 3, shards: 3 }
-          - { project: webkit,   shard: 1, shards: 3 }
-          - { project: webkit,   shard: 2, shards: 3 }
-          - { project: webkit,   shard: 3, shards: 3 }
+          - { project: webkit,   shard: 1, shards: 4 }
+          - { project: webkit,   shard: 2, shards: 4 }
+          - { project: webkit,   shard: 3, shards: 4 }
+          - { project: webkit,   shard: 4, shards: 4 }
           - { project: mobile,   shard: 1, shards: 1 }
     runs-on: madfam-runners-blue
     timeout-minutes: 30
@@ -924,7 +936,8 @@ jobs:
   # not backlog.
   spec-conformance:
     runs-on: madfam-runners-blue
-    timeout-minutes: 25
+    # A shared-library pin can legitimately select the complete commons.
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
         with:
@@ -942,11 +955,17 @@ jobs:
         # solid-hyperobjects / soft-hyperobjects), never a floating tag: the bar
         # the platform clears must be the bar the commons cleared. The repo is
         # public (2026-09-05), so no token is needed to fetch it.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@3aa57133186573b26279417f8de59b6c47ed9027"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@142db1802bbf9e1135ceae6c9c531c469f2d295b"
       - name: Structural conformance (full commons)
+        shell: bash
         run: |
           status=0
-          y4d-spec check projects/*/ | tee spec-report.txt || status=$?
+          dirs=()
+          for manifest in projects/*/project.json; do
+            [ -f "$manifest" ] && dirs+=("${manifest%/project.json}")
+          done
+          [ "${#dirs[@]}" -gt 0 ] || { echo "::error::No cartridges found"; exit 1; }
+          y4d-spec check "${dirs[@]}" 2>&1 | tee spec-report.txt || status=$?
           echo "### y4d-spec structural" >> "$GITHUB_STEP_SUMMARY"
           tail -1 spec-report.txt >> "$GITHUB_STEP_SUMMARY"
           exit $status
@@ -955,24 +974,26 @@ jobs:
       # the strongest check per second spent (it caught hook-and-eye's dead
       # bra_tape dispatch, invisible in every structural lane).
       - name: Render conformance (changed cartridges)
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE="${{ github.event.pull_request.base.sha }}"
           else
             BASE="${{ github.event.before }}"
           fi
-          git cat-file -e "$BASE" 2>/dev/null || BASE=$(git rev-parse HEAD~1)
-          changed=$(git diff --name-only "$BASE"...HEAD -- projects/ | cut -d/ -f1,2 | sort -u)
-          dirs=""
-          for d in $changed; do
-            [ -f "$d/project.json" ] && dirs="$dirs $d"
-          done
-          if [ -z "$dirs" ]; then
+          python3 scripts/ci/select_render_cartridges.py "$BASE" > changed-cartridges.txt
+          dirs=()
+          while IFS= read -r directory; do
+            dirs+=("$directory")
+          done < changed-cartridges.txt
+          if [ "${#dirs[@]}" -eq 0 ]; then
             echo "no cartridges changed — skipping renders"
             exit 0
           fi
           status=0
-          y4d-spec check --render --parity -v $dirs | tee render-report.txt || status=$?
+          y4d-spec check --render --parity --require-openscad \
+            --openscad-path "$PWD/libs" --openscad-path "$PWD/projects" \
+            -v "${dirs[@]}" 2>&1 | tee render-report.txt || status=$?
           echo "### y4d-spec renders (changed)" >> "$GITHUB_STEP_SUMMARY"
           tail -1 render-report.txt >> "$GITHUB_STEP_SUMMARY"
           exit $status

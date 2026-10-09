@@ -40,7 +40,7 @@ exposure was partial and worse for being partial: 34 of the 500 cartridges were
 separate satellite repos and every dual-engine cartridge was among them. (Two
 earlier statements of that figure disagreed — this doc said 34 and the script's
 docstring said 35; 34 was right. `.gitmodules` declared 37 paths under
-`projects/`, of which two were the client-private `tablaco*` entries and one the
+`projects/`, of which two were the client-private entries and one the
 `cq-hyperobject-test` fixture the catalog excludes.) Second, the cartridges the Commons catalog does not publish are
 excluded by importing the generator's own exclusion set rather than restating it, so this
 audit and `COMMONS.md` can never describe different commons.
@@ -69,7 +69,7 @@ Recomputed over **502 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Cartridges declaring ≥1 `camera_views` entry | 458 | 502 | 91.2% | 293 / 326 = 89.9% | +1.4 pp |
 | Curated camera angles per cartridge | 1218 | 502 | 2.43 | 883 / 326 = 2.71 | -0.28 |
 | Cartridges shipping ≥1 preset | 472 | 502 | 94.0% | 303 / 326 = 92.9% | +1.1 pp |
-| Proven configurations (presets) per cartridge | 1548 | 502 | 3.08 | 1021 / 326 = 3.13 | -0.05 |
+| Proven configurations (presets) per cartridge | 1551 | 502 | 3.09 | 1021 / 326 = 3.13 | -0.04 |
 | Cartridges declaring ≥1 constraint | 502 | 502 | 100.0% | 287 / 326 = 88.0% | +12.0 pp |
 | Bilingual constraints per cartridge | 1095 | 502 | 2.18 | 555 / 326 = 1.70 | +0.48 |
 | Cartridges carrying `hyperobject.material_awareness` | 490 | 502 | 97.6% | 310 / 326 = 95.1% | +2.5 pp |
@@ -79,7 +79,7 @@ Recomputed over **502 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Cartridges declaring an `animations` block | 20 | 502 | 4.0% | 1 / 326 = 0.3% | +3.7 pp |
 | CDG family keys with ≥1 member in the commons | 113 | 116 | 97.4% | 55 / 61 = 90.2% | +7.2 pp |
 | Cartridges resolving to ≥1 CDG standard family | 211 | 502 | 42.0% | ~98 / 326 = 30.1% | +12.0 pp |
-| Studio strings translated across de/fr/pt/zh | 1512 | 1512 | 100.0% | ~992 / 1308 = 75.8% | +24.2 pp |
+| Studio strings translated across de/fr/pt/zh | 1828 | 1828 | 100.0% | ~992 / 1308 = 75.8% | +24.2 pp |
 | Studio locale files carrying the full key set | 6 | 6 | 100.0% | 6 / 6 = 100.0% | +0.0 pp |
 | Dual-engine cartridges (CadQuery B-Rep + OpenSCAD CSG) | 20 | 502 | 4.0% | — | new in 2026-09 |
 | Cartridges declaring ≥1 CDG interface | 492 | 502 | 98.0% | — | new in 2026-09 |
@@ -91,7 +91,7 @@ Recomputed over **502 cartridges** (`docs/commons-catalog.json` `counts.cartridg
 | Landing-gallery entries the Commons catalog does not publish | 0 | 502 | 0.0% | — | new in 2026-09 |
 | Cartridges offering STEP (B-Rep) export | 493 | 502 | 98.2% | — | new in 2026-09 |
 | Cartridges carrying an explicit licence | 502 | 502 | 100.0% | — | new in 2026-09 |
-| Cartridges carrying a `verification` block | 500 | 502 | 99.6% | — | new in 2026-09 |
+| Cartridges carrying a `verification` block | 502 | 502 | 100.0% | — | new in 2026-09 |
 
 **Not recomputed — reported instead of approximated.** These figures in the 2026-08 section are judgement, frontend code reachability, or another QA lane's output; a proxy number here would look computed while measuring something else.
 
@@ -216,8 +216,8 @@ landing gallery.** When this section was first written 326 were: the static
 `scripts/dev/generate-landing-projects.mjs`, and it had gone 328 entries against a
 501-cartridge commons because the generator silently emits a short list in a checkout
 without the submodules. Two of those 328 entries were cartridges the Commons catalog
-deliberately does not publish, one of them the client-private `tablaco`. #100 regenerated
-the file from a complete checkout (501 entries, `tablaco` dropped on both the signals the
+deliberately does not publish, one of them a client-private cartridge. #100 regenerated
+the file from a complete checkout (501 entries, the private one dropped on both the signals the
 backend uses — `access_control.view == "private"` and `PRIVATE_PROJECTS`), and closed the
 hole that let it rot: `--check` blocks a stale commit in `manifest-validation`, the only
 lane whose checkout is complete enough to judge it, and `build-landing` **regenerates** at

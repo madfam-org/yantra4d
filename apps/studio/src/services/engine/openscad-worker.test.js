@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
+import { detectPhase, isLogWorthy, isKernelFailureDiagnostic } from '../../lib/openscad-phases'
 
 describe('detectPhase', () => {
   it('returns "compiling" for lines containing Compiling', () => {
@@ -49,4 +49,14 @@ describe('isLogWorthy', () => {
     expect(isLogWorthy('')).toBe(false)
     expect(isLogWorthy('WARNING: unused variable')).toBe(false)
   })
+})
+
+
+describe('kernel failure diagnostics', () => {
+  it.each([
+    'ERROR: CGAL error in CGAL_Nef_polyhedron3(): CGAL ERROR: assertion violation!',
+    'CGAL ERROR: precondition violation!',
+    'File: /CGAL/Nef_3/SNC_FM_decorator.h Line: 420',
+  ])('recognizes %s', line => expect(isKernelFailureDiagnostic(line)).toBe(true))
+  it.each(['ERROR: Parser error: syntax error', 'ERROR: Assertion (width > 0) failed', 'CGAL cache size: 0'])('does not retry %s', line => expect(isKernelFailureDiagnostic(line)).toBe(false))
 })

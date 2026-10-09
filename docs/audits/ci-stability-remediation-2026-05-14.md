@@ -2,7 +2,7 @@
 
 ## Scope
 
-This remediation targets the P0 stability blockers observed after the production Tablaco render recovery:
+This remediation targets the P0 stability blockers observed after the production render recovery of the client-private cartridge:
 
 - Frontend `npm audit --audit-level=high` failures.
 - Private project submodule checkout failures in GitHub Actions.
@@ -64,7 +64,7 @@ These are the remaining blockers before calling the platform fully stable in pro
 
 - Confirm GitHub Actions pass on `main` after commit `2b0c397`.
 - Run a live browser audit of `yantra4d.com`, `app.yantra4d.com`, `api.yantra4d.com`, and `admin.yantra4d.com`.
-- Verify the browser-usable Tablaco path end to end: project discovery, manifest load, parameter changes, render, fallback behavior, export, BOM, and quote handoff where enabled.
+- Verify the browser-usable client-private cartridge path end to end: project discovery, manifest load, parameter changes, render, fallback behavior, export, BOM, and quote handoff where enabled.
 - Run the broader Playwright audit suite against the production-like backend/OpenSCAD path, not just the mobile responsive project.
 - Plan safe cleanup for remaining low/moderate npm advisories in Landing and Admin, especially framework/dev-tool major upgrades that should not be forced into the high-severity hotfix.
 - Validate auth-enabled production behavior for tiers, CORS, Redis render cache, database persistence, webhook signatures, and graceful backend degradation.

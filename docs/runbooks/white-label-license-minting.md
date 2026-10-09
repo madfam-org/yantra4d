@@ -189,11 +189,11 @@ an `exp` matched to the contract term rather than relying on revocation.
 
 ---
 
-## 6. Private client demo kit (the tablaco pattern)
+## 6. Private client demo kit
 
 For client engagements that need a private, shareable demo *before or
 alongside* a white-label deployment, the platform already supports a
-three-part pattern, proven with the `tablaco` engagement:
+three-part pattern, already proven with one client engagement:
 
 1. **`unlisted` flag** — admin-togglable per project:
    `PATCH /api/admin/projects/<slug>/flags` with `{"unlisted": true}`
@@ -208,11 +208,12 @@ three-part pattern, proven with the `tablaco` engagement:
    `project.json`. Applied only to the `guest` tier by
    `get_render_limit_for_project()`
    (`apps/api/services/core/tier_service.py:88-106`).
-3. **Admin-only public-link route** — `GET /api/admin/projects/tablaco/public-link`
+3. **Admin-only public-link route** — `GET /api/admin/projects/<private-slug>/public-link`
    (`admin.py:344-363`) returns the storefront and studio URLs to share with
    the client; it is the only place the link is exposed, and it requires the
-   `admin` role. Honest limit: the route is hardcoded to the `tablaco` slug —
-   a new client demo needs its own route (or a generalization of this one).
+   `admin` role. Honest limit: the route hardcodes one client's slug (a literal,
+   not a path parameter) — a new client demo needs its own route (or a
+   generalization of this one).
 
 Keep client cartridges out of the public Commons: list them in `NOT_COMMONS`
 in **both** `scripts/qa/generate_commons_catalog.py` and

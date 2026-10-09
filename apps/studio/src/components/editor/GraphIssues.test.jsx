@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
 import GraphIssues from './GraphIssues'
 
 const validDoc = {
@@ -55,11 +55,29 @@ describe('GraphIssues', () => {
     expect(screen.getByText(/2 problems — this will not save/)).toBeInTheDocument()
   })
 
-  it('attributes a problem to its node', () => {
+  it('attributes a problem to its node and the param it is about', () => {
     const doc = structuredClone(validDoc)
     doc.nodes[0].params.nope = 1
     render(<GraphIssues content={json(doc)} />)
-    expect(screen.getByText('base:')).toBeInTheDocument()
+    expect(screen.getByText('base.nope:')).toBeInTheDocument()
+  })
+
+  it('attributes a missing input to its socket', () => {
+    const doc = structuredClone(validDoc)
+    const consumer = doc.nodes.find((n) => n.inputs)
+    const socket = Object.keys(consumer.inputs)[0]
+    delete consumer.inputs[socket]
+    render(<GraphIssues content={json(doc)} />)
+    expect(screen.getByText(`${consumer.id}.${socket}:`)).toBeInTheDocument()
+  })
+
+  it('selects the node an issue is about when the graph editor is showing', () => {
+    const doc = structuredClone(validDoc)
+    doc.nodes[0].params.nope = 1
+    const onSelectNode = vi.fn()
+    render(<GraphIssues content={json(doc)} onSelectNode={onSelectNode} />)
+    fireEvent.click(screen.getByRole('button', { name: 'base.nope:' }))
+    expect(onSelectNode).toHaveBeenCalledWith('base')
   })
 
   it('marks profiles in the order and explains the marker', () => {

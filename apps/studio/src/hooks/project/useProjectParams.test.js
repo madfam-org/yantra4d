@@ -88,23 +88,26 @@ const mockHandleGenerate = vi.fn()
 const { renderState } = vi.hoisted(() => ({ renderState: { parts: [] } }))
 
 vi.mock('../render/useRender', () => ({
-  useRender: () => ({
-    parts: renderState.parts,
-    setParts: mockSetParts,
-    logs: '',
-    setLogs: vi.fn(),
-    loading: false,
-    progress: 0,
-    progressPhase: '',
-    checkCache: mockCheckCache,
-    evictCache: vi.fn(),
-    showConfirmDialog: false,
-    pendingEstimate: null,
-    handleGenerate: mockHandleGenerate,
-    handleCancelGenerate: vi.fn(),
-    handleConfirmRender: vi.fn(),
-    handleCancelRender: vi.fn(),
-  }),
+  useRender: (options) => {
+    renderState.options = options
+    return {
+      parts: renderState.parts,
+      setParts: mockSetParts,
+      logs: '',
+      setLogs: vi.fn(),
+      loading: false,
+      progress: 0,
+      progressPhase: '',
+      checkCache: mockCheckCache,
+      evictCache: vi.fn(),
+      showConfirmDialog: false,
+      pendingEstimate: null,
+      handleGenerate: mockHandleGenerate,
+      handleCancelGenerate: vi.fn(),
+      handleConfirmRender: vi.fn(),
+      handleCancelRender: vi.fn(),
+    }
+  },
 }))
 
 vi.mock('../editor/useKeyboardShortcuts', () => ({
@@ -117,6 +120,25 @@ vi.mock('../render/useParameterPreviewCache', () => ({
     preRenderStatus: 'idle',
   })),
 }))
+
+describe('useProjectParams: a saved source edit misses the L1 render cache', () => {
+  it('moves the cache key without re-running the auto-render effect', async () => {
+    const { bumpSourceRevision } = await import('../../services/cache/sourceRevision')
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    const getCacheKey = renderState.options.getCacheKey
+    const before = getCacheKey('default', {})
+
+    bumpSourceRevision('slug')
+
+    // Read at call time: the same function now answers a different key, so the
+    // post-save preview cannot be served the pre-edit parts from L1 …
+    expect(renderState.options.getCacheKey('default', {})).not.toBe(before)
+    // … and the key function's identity is unchanged, so the bump alone does not
+    // queue a second (automatic) render behind the forced one the save issues.
+    expect(renderState.options.getCacheKey).toBe(getCacheKey)
+    expect(result.current).toBeDefined()
+  })
+})
 
 describe('useProjectParams', () => {
   it('toggles grid preset', () => {

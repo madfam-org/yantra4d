@@ -164,11 +164,33 @@ describe('ProjectGalleryGrid', () => {
     expect(screen.queryByText('Voronoi Generator')).not.toBeInTheDocument()
   })
 
-  it('renders hyperobject badge on hyperobject cards', () => {
-    render(<ProjectGalleryGrid {...defaultProps} />)
-    // The slide-holder card should display the Hyperobject badge
-    const badges = screen.getAllByText(/Hyperobject/)
-    expect(badges.length).toBeGreaterThan(0)
+  it('renders hyperobject badge on hyperobject cards, in the page language', () => {
+    const { unmount } = render(<ProjectGalleryGrid {...defaultProps} />)
+    // Default lang is es: the badge reads "Hiperobjeto" (it used to say
+    // "Hyperobject" on the Spanish page).
+    expect(screen.getAllByText(/Hiperobjeto/).length).toBeGreaterThan(0)
+    unmount()
+    render(<ProjectGalleryGrid {...defaultProps} lang="en" />)
+    expect(screen.getAllByText(/Hyperobject/).length).toBeGreaterThan(0)
+  })
+
+  it('takes labels from the island when given', () => {
+    render(
+      <ProjectGalleryGrid
+        {...defaultProps}
+        lang="en"
+        categoryLabels={{ all: 'Everything', storage: 'Boxes', mechanical: 'Gears', art: 'Art', commons: 'Commons' }}
+        domainLabels={{ medical: 'Clinic' }}
+        openLabel="Go →"
+        hyperobjectLabel="Family"
+        showTabs={false}
+      />,
+    )
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument()
+    expect(screen.getAllByText('Boxes').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Clinic').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Go →').length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Family/).length).toBeGreaterThan(0)
   })
 
   it('shows domain label on hyperobject cards', () => {

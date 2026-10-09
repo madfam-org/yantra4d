@@ -1,0 +1,7747 @@
+{
+ "source": "https://fashioncabi.net/api/v1/catalog",
+ "generated_at": "2026-09-19T06:49:21Z",
+ "total": 516,
+ "items": [
+  {
+   "slug": "a-line-dress",
+   "name": "A-Line Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 22,
+   "tier": "2",
+   "thumbnail": "/flats/a-line-dress/front.svg",
+   "views": {
+    "back": "/flats/a-line-dress/back.svg",
+    "front": "/flats/a-line-dress/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "a-line-skirt",
+   "name": "A-Line Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 33,
+   "tier": "1",
+   "thumbnail": "/flats/a-line-skirt/front.svg",
+   "views": {
+    "back": "/flats/a-line-skirt/back.svg",
+    "front": "/flats/a-line-skirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "woven"
+  },
+  {
+   "slug": "abaya",
+   "name": "Abaya",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 98,
+   "tier": "1",
+   "thumbnail": "/flats/abaya/front.svg",
+   "views": {
+    "back": "/flats/abaya/back.svg",
+    "front": "/flats/abaya/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "adaptive-magnetic-shirt",
+   "name": "Magnetic-close dress shirt (adaptive)",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 371,
+   "tier": "2",
+   "thumbnail": "/flats/adaptive-magnetic-shirt/front.svg",
+   "views": {
+    "back": "/flats/adaptive-magnetic-shirt/back.svg",
+    "front": "/flats/adaptive-magnetic-shirt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "cotton-poplin"
+  },
+  {
+   "slug": "adaptive-wrap-skirt",
+   "name": "Adaptive Wrap Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 150,
+   "tier": "2",
+   "thumbnail": "/flats/adaptive-wrap-skirt/front.svg",
+   "views": {
+    "back": "/flats/adaptive-wrap-skirt/back.svg",
+    "front": "/flats/adaptive-wrap-skirt/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "agbada",
+   "name": "Agbàdá",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 282,
+   "tier": "4",
+   "thumbnail": "/flats/agbada/front.svg",
+   "views": {
+    "back": "/flats/agbada/back.svg",
+    "front": "/flats/agbada/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "agbada-boubou",
+   "name": "Agbada (grand boubou)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 483,
+   "tier": "3",
+   "thumbnail": "/flats/agbada-boubou/front.svg",
+   "views": {
+    "back": "/flats/agbada-boubou/back.svg",
+    "front": "/flats/agbada-boubou/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "algodon-percal"
+  },
+  {
+   "slug": "angarkha",
+   "name": "Aṅgarkhā (अंगरखा)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 284,
+   "tier": "4",
+   "thumbnail": "/flats/angarkha/front.svg",
+   "views": {
+    "back": "/flats/angarkha/back.svg",
+    "front": "/flats/angarkha/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "ankle-gaiter",
+   "name": "Ankle Gaiter",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 231,
+   "tier": "2",
+   "thumbnail": "/flats/ankle-gaiter/front.svg",
+   "views": {
+    "back": "/flats/ankle-gaiter/back.svg",
+    "front": "/flats/ankle-gaiter/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "anorak-smock",
+   "name": "Pullover anorak smock",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 379,
+   "tier": "2",
+   "thumbnail": "/flats/anorak-smock/front.svg",
+   "views": {
+    "back": "/flats/anorak-smock/back.svg",
+    "front": "/flats/anorak-smock/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-ventile"
+  },
+  {
+   "slug": "ao-dai-tunic",
+   "name": "Áo Dài (Tunic)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 200,
+   "tier": "3",
+   "thumbnail": "/flats/ao-dai-tunic/front.svg",
+   "views": {
+    "back": "/flats/ao-dai-tunic/back.svg",
+    "front": "/flats/ao-dai-tunic/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "ao-tu-than",
+   "name": "Áo tứ thân (four-panel dress)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 487,
+   "tier": "3",
+   "thumbnail": "/flats/ao-tu-than/front.svg",
+   "views": {
+    "back": "/flats/ao-tu-than/back.svg",
+    "front": "/flats/ao-tu-than/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "seda-satinada"
+  },
+  {
+   "slug": "aran-sweater",
+   "name": "Aran Cable Sweater",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 331,
+   "tier": "3",
+   "thumbnail": "/flats/aran-sweater/front.svg",
+   "views": {
+    "back": "/flats/aran-sweater/back.svg",
+    "front": "/flats/aran-sweater/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-aran"
+  },
+  {
+   "slug": "arm-warmers",
+   "name": "Arm Warmers",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 135,
+   "tier": "1",
+   "thumbnail": "/flats/arm-warmers/front.svg",
+   "views": {
+    "back": "/flats/arm-warmers/back.svg",
+    "front": "/flats/arm-warmers/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "articulated-scale-mail",
+   "name": "Articulated Scale Mail",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 123,
+   "tier": "4",
+   "thumbnail": "/flats/articulated-scale-mail/front.svg",
+   "views": {
+    "back": "/flats/articulated-scale-mail/back.svg",
+    "front": "/flats/articulated-scale-mail/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "assistive-grip-glove",
+   "name": "Assistive grip glove",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 431,
+   "tier": "4",
+   "thumbnail": "/flats/assistive-grip-glove/front.svg",
+   "views": {
+    "back": "/flats/assistive-grip-glove/back.svg",
+    "front": "/flats/assistive-grip-glove/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "neopreno"
+  },
+  {
+   "slug": "athletic-shorts",
+   "name": "Athletic Shorts",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 18,
+   "tier": "1",
+   "thumbnail": "/flats/athletic-shorts/front.svg",
+   "views": {
+    "back": "/flats/athletic-shorts/back.svg",
+    "front": "/flats/athletic-shorts/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "technical"
+  },
+  {
+   "slug": "aymara-pollera-skirt",
+   "name": "Aymara pollera skirt",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 497,
+   "tier": "2",
+   "thumbnail": "/flats/aymara-pollera-skirt/front.svg",
+   "views": {
+    "back": "/flats/aymara-pollera-skirt/back.svg",
+    "front": "/flats/aymara-pollera-skirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "lana-tejida"
+  },
+  {
+   "slug": "baby-bib-set",
+   "name": "Bandana Feeding Bib",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 325,
+   "tier": "1",
+   "thumbnail": "/flats/baby-bib-set/front.svg",
+   "views": {
+    "back": "/flats/baby-bib-set/back.svg",
+    "front": "/flats/baby-bib-set/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-terry"
+  },
+  {
+   "slug": "baby-bodysuit",
+   "name": "Baby Bodysuit (Onesie)",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 92,
+   "tier": "4",
+   "thumbnail": "/flats/baby-bodysuit/front.svg",
+   "views": {
+    "back": "/flats/baby-bodysuit/back.svg",
+    "front": "/flats/baby-bodysuit/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "baby-cardigan",
+   "name": "Baby Knit Cardigan",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 322,
+   "tier": "2",
+   "thumbnail": "/flats/baby-cardigan/front.svg",
+   "views": {
+    "back": "/flats/baby-cardigan/back.svg",
+    "front": "/flats/baby-cardigan/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-merino-jersey"
+  },
+  {
+   "slug": "baby-cocoon",
+   "name": "Baby Swaddle Cocoon",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 328,
+   "tier": "1",
+   "thumbnail": "/flats/baby-cocoon/front.svg",
+   "views": {
+    "back": "/flats/baby-cocoon/back.svg",
+    "front": "/flats/baby-cocoon/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-jersey"
+  },
+  {
+   "slug": "baby-kimono-bodysuit",
+   "name": "Kimono-Wrap Baby Bodysuit",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 407,
+   "tier": "1",
+   "thumbnail": "/flats/baby-kimono-bodysuit/front.svg",
+   "views": {
+    "back": "/flats/baby-kimono-bodysuit/back.svg",
+    "front": "/flats/baby-kimono-bodysuit/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "baby-kimono-wrap",
+   "name": "Baby Kimono Wrap",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 289,
+   "tier": "1",
+   "thumbnail": "/flats/baby-kimono-wrap/front.svg",
+   "views": {
+    "back": "/flats/baby-kimono-wrap/back.svg",
+    "front": "/flats/baby-kimono-wrap/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "baby-mittens",
+   "name": "Baby Scratch Mittens",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 330,
+   "tier": "1",
+   "thumbnail": "/flats/baby-mittens/front.svg",
+   "views": {
+    "back": "/flats/baby-mittens/back.svg",
+    "front": "/flats/baby-mittens/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-interlock"
+  },
+  {
+   "slug": "baby-sleeper",
+   "name": "Baby sleeper",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 94,
+   "tier": "4",
+   "thumbnail": "/flats/baby-sleeper/front.svg",
+   "views": {
+    "back": "/flats/baby-sleeper/back.svg",
+    "front": "/flats/baby-sleeper/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "knit"
+  },
+  {
+   "slug": "backpack-panel",
+   "name": "Backpack (Panelled)",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 128,
+   "tier": "2",
+   "thumbnail": "/flats/backpack-panel/front.svg",
+   "views": {
+    "back": "/flats/backpack-panel/back.svg",
+    "front": "/flats/backpack-panel/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "cordura"
+  },
+  {
+   "slug": "bag-clip-closure",
+   "name": "Bag Clip Closure",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 104,
+   "tier": "1",
+   "thumbnail": "/flats/bag-clip-closure/front.svg",
+   "views": {
+    "back": "/flats/bag-clip-closure/back.svg",
+    "front": "/flats/bag-clip-closure/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "baju-kurung",
+   "name": "Baju Kurung",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 278,
+   "tier": "4",
+   "thumbnail": "/flats/baju-kurung/front.svg",
+   "views": {
+    "back": "/flats/baju-kurung/back.svg",
+    "front": "/flats/baju-kurung/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "baju-melayu-set",
+   "name": "Baju Melayu set",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 498,
+   "tier": "2",
+   "thumbnail": "/flats/baju-melayu-set/front.svg",
+   "views": {
+    "back": "/flats/baju-melayu-set/back.svg",
+    "front": "/flats/baju-melayu-set/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "algodon-tejido"
+  },
+  {
+   "slug": "balaclava",
+   "name": "Balaclava",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 195,
+   "tier": "2",
+   "thumbnail": "/flats/balaclava/front.svg",
+   "views": {
+    "back": "/flats/balaclava/back.svg",
+    "front": "/flats/balaclava/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "balaclava-knit",
+   "name": "Knit Balaclava Hood",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 337,
+   "tier": "2",
+   "thumbnail": "/flats/balaclava-knit/front.svg",
+   "views": {
+    "back": "/flats/balaclava-knit/back.svg",
+    "front": "/flats/balaclava-knit/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-merino"
+  },
+  {
+   "slug": "balconette-bra",
+   "name": "Balconette Bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 220,
+   "tier": "3",
+   "thumbnail": "/flats/balconette-bra/front.svg",
+   "views": {
+    "back": "/flats/balconette-bra/back.svg",
+    "front": "/flats/balconette-bra/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "any"
+  },
+  {
+   "slug": "balconette-underwire-bra",
+   "name": "Balconette Underwire Bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 460,
+   "tier": "3",
+   "thumbnail": "/flats/balconette-underwire-bra/front.svg",
+   "views": {
+    "back": "/flats/balconette-underwire-bra/back.svg",
+    "front": "/flats/balconette-underwire-bra/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "encaje-elastico"
+  },
+  {
+   "slug": "ballet-flat-upper",
+   "name": "Ballet Flat Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 234,
+   "tier": "3",
+   "thumbnail": "/flats/ballet-flat-upper/front.svg",
+   "views": {
+    "back": "/flats/ballet-flat-upper/back.svg",
+    "front": "/flats/ballet-flat-upper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "ballet-tutu-platter",
+   "name": "Platter Tutu",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 473,
+   "tier": "3",
+   "thumbnail": "/flats/ballet-tutu-platter/front.svg",
+   "views": {
+    "back": "/flats/ballet-tutu-platter/back.svg",
+    "front": "/flats/ballet-tutu-platter/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "tul-nylon"
+  },
+  {
+   "slug": "bandhgala-jacket",
+   "name": "Bandhgala formal jacket",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 447,
+   "tier": "3",
+   "thumbnail": "/flats/bandhgala-jacket/front.svg",
+   "views": {
+    "back": "/flats/bandhgala-jacket/back.svg",
+    "front": "/flats/bandhgala-jacket/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "barong",
+   "name": "Barong (Tagalog)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 198,
+   "tier": "3",
+   "thumbnail": "/flats/barong/front.svg",
+   "views": {
+    "back": "/flats/barong/back.svg",
+    "front": "/flats/barong/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "barong-tagalog",
+   "name": "Barong Tagalog",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 486,
+   "tier": "3",
+   "thumbnail": "/flats/barong-tagalog/front.svg",
+   "views": {
+    "back": "/flats/barong-tagalog/back.svg",
+    "front": "/flats/barong-tagalog/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "organza-pina"
+  },
+  {
+   "slug": "battery-pocket-liner",
+   "name": "Battery Pocket Liner",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 296,
+   "tier": "4",
+   "thumbnail": "/flats/battery-pocket-liner/front.svg",
+   "views": {
+    "back": "/flats/battery-pocket-liner/back.svg",
+    "front": "/flats/battery-pocket-liner/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-ripstop-shell"
+  },
+  {
+   "slug": "beanie",
+   "name": "Beanie",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 191,
+   "tier": "1",
+   "thumbnail": "/flats/beanie/front.svg",
+   "views": {
+    "back": "/flats/beanie/back.svg",
+    "front": "/flats/beanie/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "bellows-elbow-sleeve",
+   "name": "Bellows-actuated elbow sleeve",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 436,
+   "tier": "4",
+   "thumbnail": "/flats/bellows-elbow-sleeve/front.svg",
+   "views": {
+    "back": "/flats/bellows-elbow-sleeve/back.svg",
+    "front": "/flats/bellows-elbow-sleeve/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "belt-bag",
+   "name": "Belt Bag / Fanny Pack",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 129,
+   "tier": "2",
+   "thumbnail": "/flats/belt-bag/front.svg",
+   "views": {
+    "back": "/flats/belt-bag/back.svg",
+    "front": "/flats/belt-bag/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "cordura"
+  },
+  {
+   "slug": "belt-buckle-notion",
+   "name": "Belt Buckle",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/belt-buckle-notion/front.svg",
+   "views": {
+    "back": "/flats/belt-buckle-notion/back.svg",
+    "front": "/flats/belt-buckle-notion/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "belt-clip-notion",
+   "name": "Belt Clip",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 105,
+   "tier": "1",
+   "thumbnail": "/flats/belt-clip-notion/front.svg",
+   "views": {
+    "back": "/flats/belt-clip-notion/back.svg",
+    "front": "/flats/belt-clip-notion/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "belt-hanger-loop-organizer",
+   "name": "Belt-Hanger Loop Organizer",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 421,
+   "tier": "1",
+   "thumbnail": "/flats/belt-hanger-loop-organizer/front.svg",
+   "views": {
+    "back": "/flats/belt-hanger-loop-organizer/back.svg",
+    "front": "/flats/belt-hanger-loop-organizer/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "belt-roll-keeper",
+   "name": "Roll-up belt keeper",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 370,
+   "tier": "1",
+   "thumbnail": "/flats/belt-roll-keeper/front.svg",
+   "views": {
+    "back": "/flats/belt-roll-keeper/back.svg",
+    "front": "/flats/belt-roll-keeper/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "leather-split"
+  },
+  {
+   "slug": "beret-structured",
+   "name": "Structured Beret",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 216,
+   "tier": "2",
+   "thumbnail": "/flats/beret-structured/front.svg",
+   "views": {
+    "back": "/flats/beret-structured/back.svg",
+    "front": "/flats/beret-structured/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "beret-wool",
+   "name": "Wool Beret",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 355,
+   "tier": "2",
+   "thumbnail": "/flats/beret-wool/front.svg",
+   "views": {
+    "back": "/flats/beret-wool/back.svg",
+    "front": "/flats/beret-wool/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-felt"
+  },
+  {
+   "slug": "bermuda-shorts",
+   "name": "Bermuda Shorts",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 83,
+   "tier": "2",
+   "thumbnail": "/flats/bermuda-shorts/front.svg",
+   "views": {
+    "back": "/flats/bermuda-shorts/back.svg",
+    "front": "/flats/bermuda-shorts/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "bias-tape-holder-caddy",
+   "name": "Bias-Tape Maker Caddy",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 413,
+   "tier": "1",
+   "thumbnail": "/flats/bias-tape-holder-caddy/front.svg",
+   "views": {
+    "back": "/flats/bias-tape-holder-caddy/back.svg",
+    "front": "/flats/bias-tape-holder-caddy/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "bib-apron",
+   "name": "Bib Apron",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 91,
+   "tier": "1",
+   "thumbnail": "/flats/bib-apron/front.svg",
+   "views": {
+    "back": "/flats/bib-apron/back.svg",
+    "front": "/flats/bib-apron/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "woven"
+  },
+  {
+   "slug": "bib-overalls",
+   "name": "Bib Overalls",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 49,
+   "tier": "2",
+   "thumbnail": "/flats/bib-overalls/front.svg",
+   "views": {
+    "back": "/flats/bib-overalls/back.svg",
+    "front": "/flats/bib-overalls/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "denim"
+  },
+  {
+   "slug": "bib-work-apron",
+   "name": "Denim Bib Work Apron",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 306,
+   "tier": "2",
+   "thumbnail": "/flats/bib-work-apron/front.svg",
+   "views": {
+    "back": "/flats/bib-work-apron/back.svg",
+    "front": "/flats/bib-work-apron/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "denim-12oz"
+  },
+  {
+   "slug": "bikini-bottom",
+   "name": "Bikini bottom",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 56,
+   "tier": "4",
+   "thumbnail": "/flats/bikini-bottom/front.svg",
+   "views": {
+    "back": "/flats/bikini-bottom/back.svg",
+    "front": "/flats/bikini-bottom/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "technical"
+  },
+  {
+   "slug": "bikini-top",
+   "name": "Bikini Top",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 55,
+   "tier": "4",
+   "thumbnail": "/flats/bikini-top/front.svg",
+   "views": {
+    "back": "/flats/bikini-top/back.svg",
+    "front": "/flats/bikini-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "technical"
+  },
+  {
+   "slug": "biometric-bra-band",
+   "name": "Biometric Bra Band",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 263,
+   "tier": "4",
+   "thumbnail": "/flats/biometric-bra-band/front.svg",
+   "views": {
+    "back": "/flats/biometric-bra-band/back.svg",
+    "front": "/flats/biometric-bra-band/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "poliester-elastano-compresion"
+  },
+  {
+   "slug": "blazer",
+   "name": "Blazer",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 30,
+   "tier": "3",
+   "thumbnail": "/flats/blazer/front.svg",
+   "views": {
+    "back": "/flats/blazer/back.svg",
+    "front": "/flats/blazer/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "blouse",
+   "name": "Blouse",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 21,
+   "tier": "2",
+   "thumbnail": "/flats/blouse/front.svg",
+   "views": {
+    "back": "/flats/blouse/back.svg",
+    "front": "/flats/blouse/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "boat-neck-top",
+   "name": "Boat-Neck Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 185,
+   "tier": "1",
+   "thumbnail": "/flats/boat-neck-top/front.svg",
+   "views": {
+    "back": "/flats/boat-neck-top/back.svg",
+    "front": "/flats/boat-neck-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "boater-hat",
+   "name": "Straw Boater Hat",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 354,
+   "tier": "3",
+   "thumbnail": "/flats/boater-hat/front.svg",
+   "views": {
+    "back": "/flats/boater-hat/back.svg",
+    "front": "/flats/boater-hat/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "straw-braid"
+  },
+  {
+   "slug": "bodice-block",
+   "name": "Bodice Block (Sloper)",
+   "family": "",
+   "kind": "block",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/bodice-block/front.svg",
+   "views": {
+    "back": "/flats/bodice-block/back.svg",
+    "front": "/flats/bodice-block/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": ""
+  },
+  {
+   "slug": "bolero",
+   "name": "Bolero",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 176,
+   "tier": "2",
+   "thumbnail": "/flats/bolero/front.svg",
+   "views": {
+    "back": "/flats/bolero/back.svg",
+    "front": "/flats/bolero/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "bomber-jacket",
+   "name": "Bomber Jacket",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 29,
+   "tier": "2",
+   "thumbnail": "/flats/bomber-jacket/front.svg",
+   "views": {
+    "back": "/flats/bomber-jacket/back.svg",
+    "front": "/flats/bomber-jacket/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "mixed"
+  },
+  {
+   "slug": "boning-channel",
+   "name": "Boning Channel",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/boning-channel/front.svg",
+   "views": {
+    "back": "/flats/boning-channel/back.svg",
+    "front": "/flats/boning-channel/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "boot-hook-pull-tab",
+   "name": "Boot-Hook Pull Tab",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 425,
+   "tier": "2",
+   "thumbnail": "/flats/boot-hook-pull-tab/front.svg",
+   "views": {
+    "back": "/flats/boot-hook-pull-tab/back.svg",
+    "front": "/flats/boot-hook-pull-tab/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "cuero-vegetal"
+  },
+  {
+   "slug": "boot-shaper-sleeve",
+   "name": "Boot Shaper Sleeve",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 258,
+   "tier": "2",
+   "thumbnail": "/flats/boot-shaper-sleeve/front.svg",
+   "views": {
+    "back": "/flats/boot-shaper-sleeve/back.svg",
+    "front": "/flats/boot-shaper-sleeve/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "boxer-brief-fly",
+   "name": "Fly-Front Boxer Brief",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 463,
+   "tier": "1",
+   "thumbnail": "/flats/boxer-brief-fly/front.svg",
+   "views": {
+    "back": "/flats/boxer-brief-fly/back.svg",
+    "front": "/flats/boxer-brief-fly/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "boxer-briefs",
+   "name": "Boxer Briefs",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 10,
+   "tier": "4",
+   "thumbnail": "/flats/boxer-briefs/front.svg",
+   "views": {
+    "back": "/flats/boxer-briefs/back.svg",
+    "front": "/flats/boxer-briefs/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "knit"
+  },
+  {
+   "slug": "boxing-fight-short",
+   "name": "Boxing fight short",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 457,
+   "tier": "2",
+   "thumbnail": "/flats/boxing-fight-short/front.svg",
+   "views": {
+    "back": "/flats/boxing-fight-short/back.svg",
+    "front": "/flats/boxing-fight-short/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-satinado"
+  },
+  {
+   "slug": "bra-ring-slider",
+   "name": "Bra Ring & Slider",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 116,
+   "tier": "1",
+   "thumbnail": "/flats/bra-ring-slider/front.svg",
+   "views": {
+    "back": "/flats/bra-ring-slider/back.svg",
+    "front": "/flats/bra-ring-slider/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "bra-wireless",
+   "name": "Wireless Bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 11,
+   "tier": "4",
+   "thumbnail": "/flats/bra-wireless/front.svg",
+   "views": {
+    "back": "/flats/bra-wireless/back.svg",
+    "front": "/flats/bra-wireless/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "knit"
+  },
+  {
+   "slug": "bralette-soft",
+   "name": "Soft triangle bralette",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 382,
+   "tier": "2",
+   "thumbnail": "/flats/bralette-soft/front.svg",
+   "views": {
+    "back": "/flats/bralette-soft/back.svg",
+    "front": "/flats/bralette-soft/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "cotton-modal"
+  },
+  {
+   "slug": "briefs",
+   "name": "Briefs",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 9,
+   "tier": "4",
+   "thumbnail": "/flats/briefs/front.svg",
+   "views": {
+    "back": "/flats/briefs/back.svg",
+    "front": "/flats/briefs/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "bucket-bag",
+   "name": "Bucket Bag",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 208,
+   "tier": "2",
+   "thumbnail": "/flats/bucket-bag/front.svg",
+   "views": {
+    "back": "/flats/bucket-bag/back.svg",
+    "front": "/flats/bucket-bag/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "bucket-hat",
+   "name": "Bucket Hat",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 133,
+   "tier": "2",
+   "thumbnail": "/flats/bucket-hat/front.svg",
+   "views": {
+    "back": "/flats/bucket-hat/back.svg",
+    "front": "/flats/bucket-hat/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "twill"
+  },
+  {
+   "slug": "bustle-pad",
+   "name": "Bustle Pad",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 274,
+   "tier": "3",
+   "thumbnail": "/flats/bustle-pad/front.svg",
+   "views": {
+    "back": "/flats/bustle-pad/back.svg",
+    "front": "/flats/bustle-pad/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "button-aid-cuff-shirt",
+   "name": "Button-Aid Cuff Shirt",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 298,
+   "tier": "2",
+   "thumbnail": "/flats/button-aid-cuff-shirt/front.svg",
+   "views": {
+    "back": "/flats/button-aid-cuff-shirt/back.svg",
+    "front": "/flats/button-aid-cuff-shirt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "buttonhole-spacer-guide",
+   "name": "Buttonhole-Spacer Guide Roll",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 417,
+   "tier": "1",
+   "thumbnail": "/flats/buttonhole-spacer-guide/front.svg",
+   "views": {
+    "back": "/flats/buttonhole-spacer-guide/back.svg",
+    "front": "/flats/buttonhole-spacer-guide/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "cable-knit-vest",
+   "name": "Cable-Knit Vest",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 404,
+   "tier": "2",
+   "thumbnail": "/flats/cable-knit-vest/front.svg",
+   "views": {
+    "back": "/flats/cable-knit-vest/back.svg",
+    "front": "/flats/cable-knit-vest/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "punto-lana"
+  },
+  {
+   "slug": "camera-holster",
+   "name": "Camera Holster",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 243,
+   "tier": "2",
+   "thumbnail": "/flats/camera-holster/front.svg",
+   "views": {
+    "back": "/flats/camera-holster/back.svg",
+    "front": "/flats/camera-holster/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "camera-strap",
+   "name": "Camera Strap",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 206,
+   "tier": "1",
+   "thumbnail": "/flats/camera-strap/front.svg",
+   "views": {
+    "back": "/flats/camera-strap/back.svg",
+    "front": "/flats/camera-strap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "camisole",
+   "name": "Camisole",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 44,
+   "tier": "1",
+   "thumbnail": "/flats/camisole/front.svg",
+   "views": {
+    "back": "/flats/camisole/back.svg",
+    "front": "/flats/camisole/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "knit"
+  },
+  {
+   "slug": "camp-collar-shirt",
+   "name": "Camp-Collar Shirt",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 77,
+   "tier": "2",
+   "thumbnail": "/flats/camp-collar-shirt/front.svg",
+   "views": {
+    "back": "/flats/camp-collar-shirt/back.svg",
+    "front": "/flats/camp-collar-shirt/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "woven"
+  },
+  {
+   "slug": "can-can-ruffle-skirt",
+   "name": "Can-Can Ruffle Skirt",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 481,
+   "tier": "3",
+   "thumbnail": "/flats/can-can-ruffle-skirt/front.svg",
+   "views": {
+    "back": "/flats/can-can-ruffle-skirt/back.svg",
+    "front": "/flats/can-can-ruffle-skirt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "tul-nylon"
+  },
+  {
+   "slug": "cape-coat",
+   "name": "A-line cape coat",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 378,
+   "tier": "3",
+   "thumbnail": "/flats/cape-coat/front.svg",
+   "views": {
+    "back": "/flats/cape-coat/back.svg",
+    "front": "/flats/cape-coat/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-melton"
+  },
+  {
+   "slug": "capelet",
+   "name": "Capelet",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 177,
+   "tier": "1",
+   "thumbnail": "/flats/capelet/front.svg",
+   "views": {
+    "back": "/flats/capelet/back.svg",
+    "front": "/flats/capelet/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "cardigan",
+   "name": "Cardigan",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 39,
+   "tier": "4",
+   "thumbnail": "/flats/cardigan/front.svg",
+   "views": {
+    "back": "/flats/cardigan/back.svg",
+    "front": "/flats/cardigan/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "knit"
+  },
+  {
+   "slug": "cardigan-shawl-collar",
+   "name": "Shawl-Collar Cardigan",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 333,
+   "tier": "2",
+   "thumbnail": "/flats/cardigan-shawl-collar/front.svg",
+   "views": {
+    "back": "/flats/cardigan-shawl-collar/back.svg",
+    "front": "/flats/cardigan-shawl-collar/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-lambswool"
+  },
+  {
+   "slug": "cargo-pants",
+   "name": "Cargo Pants",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 37,
+   "tier": "2",
+   "thumbnail": "/flats/cargo-pants/front.svg",
+   "views": {
+    "back": "/flats/cargo-pants/back.svg",
+    "front": "/flats/cargo-pants/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "carpenter-jean",
+   "name": "Carpenter Jean with Tool Loops",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 302,
+   "tier": "2",
+   "thumbnail": "/flats/carpenter-jean/front.svg",
+   "views": {
+    "back": "/flats/carpenter-jean/back.svg",
+    "front": "/flats/carpenter-jean/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "denim-14oz"
+  },
+  {
+   "slug": "casual-button-down",
+   "name": "Casual Button-Down Shirt",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 20,
+   "tier": "2",
+   "thumbnail": "/flats/casual-button-down/front.svg",
+   "views": {
+    "back": "/flats/casual-button-down/back.svg",
+    "front": "/flats/casual-button-down/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "cavalier-cloak",
+   "name": "Cavalier Cloak",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 275,
+   "tier": "3",
+   "thumbnail": "/flats/cavalier-cloak/front.svg",
+   "views": {
+    "back": "/flats/cavalier-cloak/back.svg",
+    "front": "/flats/cavalier-cloak/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-melton-abrigo"
+  },
+  {
+   "slug": "chainmail-drape-top",
+   "name": "Printed Chainmail Drape Top",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 347,
+   "tier": "4",
+   "thumbnail": "/flats/chainmail-drape-top/front.svg",
+   "views": {
+    "back": "/flats/chainmail-drape-top/back.svg",
+    "front": "/flats/chainmail-drape-top/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "chainmail-panel",
+   "name": "Chainmail Panel",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/chainmail-panel/front.svg",
+   "views": {
+    "back": "/flats/chainmail-panel/back.svg",
+    "front": "/flats/chainmail-panel/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "chaleco-charro",
+   "name": "Chaleco Charro",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 300,
+   "tier": "3",
+   "thumbnail": "/flats/chaleco-charro/front.svg",
+   "views": {
+    "back": "/flats/chaleco-charro/back.svg",
+    "front": "/flats/chaleco-charro/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "chalk-bag",
+   "name": "Chalk Bag",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 236,
+   "tier": "1",
+   "thumbnail": "/flats/chalk-bag/front.svg",
+   "views": {
+    "back": "/flats/chalk-bag/back.svg",
+    "front": "/flats/chalk-bag/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "chamanto-poncho",
+   "name": "Chamanto poncho",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 496,
+   "tier": "3",
+   "thumbnail": "/flats/chamanto-poncho/front.svg",
+   "views": {
+    "back": "/flats/chamanto-poncho/back.svg",
+    "front": "/flats/chamanto-poncho/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "lana-tejida"
+  },
+  {
+   "slug": "changpao",
+   "name": "Changpao (長袍)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 299,
+   "tier": "4",
+   "thumbnail": "/flats/changpao/front.svg",
+   "views": {
+    "back": "/flats/changpao/back.svg",
+    "front": "/flats/changpao/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "chef-coat",
+   "name": "Chef Coat",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 87,
+   "tier": "2",
+   "thumbnail": "/flats/chef-coat/front.svg",
+   "views": {
+    "back": "/flats/chef-coat/back.svg",
+    "front": "/flats/chef-coat/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "chelsea-boot-upper",
+   "name": "Chelsea Boot Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 360,
+   "tier": "3",
+   "thumbnail": "/flats/chelsea-boot-upper/front.svg",
+   "views": {
+    "back": "/flats/chelsea-boot-upper/back.svg",
+    "front": "/flats/chelsea-boot-upper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "leather-suede"
+  },
+  {
+   "slug": "cheongsam-qipao",
+   "name": "Cheongsam (qipao)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 489,
+   "tier": "3",
+   "thumbnail": "/flats/cheongsam-qipao/front.svg",
+   "views": {
+    "back": "/flats/cheongsam-qipao/back.svg",
+    "front": "/flats/cheongsam-qipao/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "brocado-seda"
+  },
+  {
+   "slug": "child-pinafore",
+   "name": "Children's Pinafore Dress",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 324,
+   "tier": "2",
+   "thumbnail": "/flats/child-pinafore/front.svg",
+   "views": {
+    "back": "/flats/child-pinafore/back.svg",
+    "front": "/flats/child-pinafore/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-poplin"
+  },
+  {
+   "slug": "chinos",
+   "name": "Chinos",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 17,
+   "tier": "2",
+   "thumbnail": "/flats/chinos/front.svg",
+   "views": {
+    "back": "/flats/chinos/back.svg",
+    "front": "/flats/chinos/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "chore-coat",
+   "name": "Chore Coat",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 65,
+   "tier": "2",
+   "thumbnail": "/flats/chore-coat/front.svg",
+   "views": {
+    "back": "/flats/chore-coat/back.svg",
+    "front": "/flats/chore-coat/front.svg"
+   },
+   "interfaces": 7,
+   "fabric": "woven"
+  },
+  {
+   "slug": "chukka-boot-upper",
+   "name": "Chukka Boot Soft Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 423,
+   "tier": "3",
+   "thumbnail": "/flats/chukka-boot-upper/front.svg",
+   "views": {
+    "back": "/flats/chukka-boot-upper/back.svg",
+    "front": "/flats/chukka-boot-upper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "lona-encerada"
+  },
+  {
+   "slug": "chunky-turtleneck",
+   "name": "Chunky Roll-Neck Sweater",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 340,
+   "tier": "2",
+   "thumbnail": "/flats/chunky-turtleneck/front.svg",
+   "views": {
+    "back": "/flats/chunky-turtleneck/back.svg",
+    "front": "/flats/chunky-turtleneck/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-chunky"
+  },
+  {
+   "slug": "circle-skirt",
+   "name": "Circle Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 178,
+   "tier": "2",
+   "thumbnail": "/flats/circle-skirt/front.svg",
+   "views": {
+    "back": "/flats/circle-skirt/back.svg",
+    "front": "/flats/circle-skirt/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "circus-aerial-unitard",
+   "name": "Aerial-Silk Unitard",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 479,
+   "tier": "3",
+   "thumbnail": "/flats/circus-aerial-unitard/front.svg",
+   "views": {
+    "back": "/flats/circus-aerial-unitard/back.svg",
+    "front": "/flats/circus-aerial-unitard/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "climbing-harness-short",
+   "name": "Climbing harness short",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 452,
+   "tier": "3",
+   "thumbnail": "/flats/climbing-harness-short/front.svg",
+   "views": {
+    "back": "/flats/climbing-harness-short/back.svg",
+    "front": "/flats/climbing-harness-short/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-cordura"
+  },
+  {
+   "slug": "cloche-hat",
+   "name": "Cloche Hat",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 353,
+   "tier": "3",
+   "thumbnail": "/flats/cloche-hat/front.svg",
+   "views": {
+    "back": "/flats/cloche-hat/back.svg",
+    "front": "/flats/cloche-hat/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "wool-felt"
+  },
+  {
+   "slug": "cocktail-dress",
+   "name": "Cocktail Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 71,
+   "tier": "3",
+   "thumbnail": "/flats/cocktail-dress/front.svg",
+   "views": {
+    "back": "/flats/cocktail-dress/back.svg",
+    "front": "/flats/cocktail-dress/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "woven"
+  },
+  {
+   "slug": "cocoon-coat",
+   "name": "Cocoon Coat",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 190,
+   "tier": "3",
+   "thumbnail": "/flats/cocoon-coat/front.svg",
+   "views": {
+    "back": "/flats/cocoon-coat/back.svg",
+    "front": "/flats/cocoon-coat/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "collar-band",
+   "name": "Band Collar (Mandarin)",
+   "family": "",
+   "kind": "block",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/collar-band/front.svg",
+   "views": {
+    "back": "/flats/collar-band/back.svg",
+    "front": "/flats/collar-band/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "collar-stay",
+   "name": "Collar Stay",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 117,
+   "tier": "1",
+   "thumbnail": "/flats/collar-stay/front.svg",
+   "views": {
+    "back": "/flats/collar-stay/back.svg",
+    "front": "/flats/collar-stay/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "commedia-harlequin-suit",
+   "name": "Harlequin Diamond Suit",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 476,
+   "tier": "3",
+   "thumbnail": "/flats/commedia-harlequin-suit/front.svg",
+   "views": {
+    "back": "/flats/commedia-harlequin-suit/back.svg",
+    "front": "/flats/commedia-harlequin-suit/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "raso-poliester"
+  },
+  {
+   "slug": "compression-binder",
+   "name": "Compression chest binder",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 387,
+   "tier": "2",
+   "thumbnail": "/flats/compression-binder/front.svg",
+   "views": {
+    "back": "/flats/compression-binder/back.svg",
+    "front": "/flats/compression-binder/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "power-mesh"
+  },
+  {
+   "slug": "compression-tri-suit",
+   "name": "Triathlon compression suit",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 449,
+   "tier": "3",
+   "thumbnail": "/flats/compression-tri-suit/front.svg",
+   "views": {
+    "back": "/flats/compression-tri-suit/back.svg",
+    "front": "/flats/compression-tri-suit/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "conduit-cable-harness-tee",
+   "name": "Cable-Conduit Harness Tee",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 472,
+   "tier": "4",
+   "thumbnail": "/flats/conduit-cable-harness-tee/front.svg",
+   "views": {
+    "back": "/flats/conduit-cable-harness-tee/back.svg",
+    "front": "/flats/conduit-cable-harness-tee/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-conductor"
+  },
+  {
+   "slug": "cook-pants",
+   "name": "Cook Pants",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 166,
+   "tier": "1",
+   "thumbnail": "/flats/cook-pants/front.svg",
+   "views": {
+    "back": "/flats/cook-pants/back.svg",
+    "front": "/flats/cook-pants/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "cord-end-notion",
+   "name": "Cord End",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/cord-end-notion/front.svg",
+   "views": {
+    "back": "/flats/cord-end-notion/back.svg",
+    "front": "/flats/cord-end-notion/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "cord-stopper",
+   "name": "Cord Stopper",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 103,
+   "tier": "1",
+   "thumbnail": "/flats/cord-stopper/front.svg",
+   "views": {
+    "back": "/flats/cord-stopper/back.svg",
+    "front": "/flats/cord-stopper/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "cotehardie",
+   "name": "Cotehardie",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 270,
+   "tier": "3",
+   "thumbnail": "/flats/cotehardie/front.svg",
+   "views": {
+    "back": "/flats/cotehardie/back.svg",
+    "front": "/flats/cotehardie/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "lana-melton-abrigo"
+  },
+  {
+   "slug": "coverall",
+   "name": "Coverall",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 84,
+   "tier": "2",
+   "thumbnail": "/flats/coverall/front.svg",
+   "views": {
+    "back": "/flats/coverall/back.svg",
+    "front": "/flats/coverall/front.svg"
+   },
+   "interfaces": 9,
+   "fabric": "woven"
+  },
+  {
+   "slug": "covert-coat",
+   "name": "Covert coat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 440,
+   "tier": "4",
+   "thumbnail": "/flats/covert-coat/front.svg",
+   "views": {
+    "back": "/flats/covert-coat/back.svg",
+    "front": "/flats/covert-coat/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "cowl-neck-sweater",
+   "name": "Cowl-Neck Sweater",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 334,
+   "tier": "2",
+   "thumbnail": "/flats/cowl-neck-sweater/front.svg",
+   "views": {
+    "back": "/flats/cowl-neck-sweater/back.svg",
+    "front": "/flats/cowl-neck-sweater/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-merino"
+  },
+  {
+   "slug": "cowl-neck-top",
+   "name": "Cowl-Neck Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 161,
+   "tier": "1",
+   "thumbnail": "/flats/cowl-neck-top/front.svg",
+   "views": {
+    "back": "/flats/cowl-neck-top/back.svg",
+    "front": "/flats/cowl-neck-top/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "crewneck-sweater",
+   "name": "Crewneck Sweater",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 38,
+   "tier": "4",
+   "thumbnail": "/flats/crewneck-sweater/front.svg",
+   "views": {
+    "back": "/flats/crewneck-sweater/back.svg",
+    "front": "/flats/crewneck-sweater/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "crop-top",
+   "name": "Crop Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 75,
+   "tier": "1",
+   "thumbnail": "/flats/crop-top/front.svg",
+   "views": {
+    "back": "/flats/crop-top/back.svg",
+    "front": "/flats/crop-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "knit"
+  },
+  {
+   "slug": "culottes",
+   "name": "Culottes",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 80,
+   "tier": "2",
+   "thumbnail": "/flats/culottes/front.svg",
+   "views": {
+    "back": "/flats/culottes/back.svg",
+    "front": "/flats/culottes/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "cummerbund-pleated",
+   "name": "Pleated cummerbund",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 442,
+   "tier": "2",
+   "thumbnail": "/flats/cummerbund-pleated/front.svg",
+   "views": {
+    "back": "/flats/cummerbund-pleated/back.svg",
+    "front": "/flats/cummerbund-pleated/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "seda-satinada"
+  },
+  {
+   "slug": "cycling-bib-short",
+   "name": "Cycling bib short",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 450,
+   "tier": "3",
+   "thumbnail": "/flats/cycling-bib-short/front.svg",
+   "views": {
+    "back": "/flats/cycling-bib-short/back.svg",
+    "front": "/flats/cycling-bib-short/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "cycling-shorts",
+   "name": "Cycling Shorts",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 58,
+   "tier": "4",
+   "thumbnail": "/flats/cycling-shorts/front.svg",
+   "views": {
+    "back": "/flats/cycling-shorts/back.svg",
+    "front": "/flats/cycling-shorts/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "technical"
+  },
+  {
+   "slug": "d-ring-slider",
+   "name": "D-Ring / Slider",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 109,
+   "tier": "1",
+   "thumbnail": "/flats/d-ring-slider/front.svg",
+   "views": {
+    "back": "/flats/d-ring-slider/back.svg",
+    "front": "/flats/d-ring-slider/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "webbing"
+  },
+  {
+   "slug": "dashiki",
+   "name": "Dashiki",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 141,
+   "tier": "1",
+   "thumbnail": "/flats/dashiki/front.svg",
+   "views": {
+    "back": "/flats/dashiki/back.svg",
+    "front": "/flats/dashiki/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton_print"
+  },
+  {
+   "slug": "dashiki-tunic",
+   "name": "Dashiki",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 393,
+   "tier": "2",
+   "thumbnail": "/flats/dashiki-tunic/front.svg",
+   "views": {
+    "back": "/flats/dashiki-tunic/back.svg",
+    "front": "/flats/dashiki-tunic/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "cotton-print"
+  },
+  {
+   "slug": "deel",
+   "name": "Deel (дээл)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 285,
+   "tier": "4",
+   "thumbnail": "/flats/deel/front.svg",
+   "views": {
+    "back": "/flats/deel/back.svg",
+    "front": "/flats/deel/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "lana-melton-abrigo"
+  },
+  {
+   "slug": "deerstalker-cap",
+   "name": "Deerstalker Cap",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 218,
+   "tier": "3",
+   "thumbnail": "/flats/deerstalker-cap/front.svg",
+   "views": {
+    "back": "/flats/deerstalker-cap/back.svg",
+    "front": "/flats/deerstalker-cap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "delicates-wash-bag",
+   "name": "Mesh delicates wash bag",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 368,
+   "tier": "1",
+   "thumbnail": "/flats/delicates-wash-bag/front.svg",
+   "views": {
+    "back": "/flats/delicates-wash-bag/back.svg",
+    "front": "/flats/delicates-wash-bag/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "mesh-poly"
+  },
+  {
+   "slug": "denim-chore-apron",
+   "name": "Denim Chore Apron",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 291,
+   "tier": "2",
+   "thumbnail": "/flats/denim-chore-apron/front.svg",
+   "views": {
+    "back": "/flats/denim-chore-apron/back.svg",
+    "front": "/flats/denim-chore-apron/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "mezclilla-denim"
+  },
+  {
+   "slug": "denim-chore-coat",
+   "name": "Denim Chore Coat",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 303,
+   "tier": "2",
+   "thumbnail": "/flats/denim-chore-coat/front.svg",
+   "views": {
+    "back": "/flats/denim-chore-coat/back.svg",
+    "front": "/flats/denim-chore-coat/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "denim-12oz"
+  },
+  {
+   "slug": "denim-chore-jacket",
+   "name": "Denim Chore Jacket",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 402,
+   "tier": "2",
+   "thumbnail": "/flats/denim-chore-jacket/front.svg",
+   "views": {
+    "back": "/flats/denim-chore-jacket/back.svg",
+    "front": "/flats/denim-chore-jacket/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "mezclilla-14oz"
+  },
+  {
+   "slug": "denim-jacket",
+   "name": "Denim Jacket",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 28,
+   "tier": "2",
+   "thumbnail": "/flats/denim-jacket/front.svg",
+   "views": {
+    "back": "/flats/denim-jacket/back.svg",
+    "front": "/flats/denim-jacket/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "denim"
+  },
+  {
+   "slug": "denim-overall-short",
+   "name": "Denim Short Overall (Shortall)",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 305,
+   "tier": "2",
+   "thumbnail": "/flats/denim-overall-short/front.svg",
+   "views": {
+    "back": "/flats/denim-overall-short/back.svg",
+    "front": "/flats/denim-overall-short/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "denim-10oz"
+  },
+  {
+   "slug": "denim-shorts",
+   "name": "Denim Shorts",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 19,
+   "tier": "2",
+   "thumbnail": "/flats/denim-shorts/front.svg",
+   "views": {
+    "back": "/flats/denim-shorts/back.svg",
+    "front": "/flats/denim-shorts/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "denim"
+  },
+  {
+   "slug": "denim-western-shirt",
+   "name": "Denim Western Shirt",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 290,
+   "tier": "2",
+   "thumbnail": "/flats/denim-western-shirt/front.svg",
+   "views": {
+    "back": "/flats/denim-western-shirt/back.svg",
+    "front": "/flats/denim-western-shirt/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "mezclilla-denim"
+  },
+  {
+   "slug": "derby-shoe-upper",
+   "name": "Derby Shoe Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 359,
+   "tier": "3",
+   "thumbnail": "/flats/derby-shoe-upper/front.svg",
+   "views": {
+    "back": "/flats/derby-shoe-upper/back.svg",
+    "front": "/flats/derby-shoe-upper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "leather-calf"
+  },
+  {
+   "slug": "dhoti",
+   "name": "Dhoti",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 156,
+   "tier": "1",
+   "thumbnail": "/flats/dhoti/front.svg",
+   "views": {
+    "back": "/flats/dhoti/back.svg",
+    "front": "/flats/dhoti/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "dirndl",
+   "name": "Dirndl",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 154,
+   "tier": "3",
+   "thumbnail": "/flats/dirndl/front.svg",
+   "views": {
+    "back": "/flats/dirndl/back.svg",
+    "front": "/flats/dirndl/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "dirndl-bodice",
+   "name": "Dirndl laced bodice (Mieder)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 395,
+   "tier": "3",
+   "thumbnail": "/flats/dirndl-bodice/front.svg",
+   "views": {
+    "back": "/flats/dirndl-bodice/back.svg",
+    "front": "/flats/dirndl-bodice/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "cotton-brocade"
+  },
+  {
+   "slug": "dive-skin-suit",
+   "name": "Dive-skin swim suit",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 458,
+   "tier": "3",
+   "thumbnail": "/flats/dive-skin-suit/front.svg",
+   "views": {
+    "back": "/flats/dive-skin-suit/back.svg",
+    "front": "/flats/dive-skin-suit/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "dog-coat",
+   "name": "Dog Coat",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 242,
+   "tier": "2",
+   "thumbnail": "/flats/dog-coat/front.svg",
+   "views": {
+    "back": "/flats/dog-coat/back.svg",
+    "front": "/flats/dog-coat/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "any"
+  },
+  {
+   "slug": "dopp-kit",
+   "name": "Dopp Kit",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 130,
+   "tier": "2",
+   "thumbnail": "/flats/dopp-kit/front.svg",
+   "views": {
+    "back": "/flats/dopp-kit/back.svg",
+    "front": "/flats/dopp-kit/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "coated"
+  },
+  {
+   "slug": "double-breasted-blazer",
+   "name": "Double-Breasted Blazer",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 311,
+   "tier": "3",
+   "thumbnail": "/flats/double-breasted-blazer/front.svg",
+   "views": {
+    "back": "/flats/double-breasted-blazer/back.svg",
+    "front": "/flats/double-breasted-blazer/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-flannel"
+  },
+  {
+   "slug": "drawcord-anchor",
+   "name": "Drawcord Anchor",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 118,
+   "tier": "1",
+   "thumbnail": "/flats/drawcord-anchor/front.svg",
+   "views": {
+    "back": "/flats/drawcord-anchor/back.svg",
+    "front": "/flats/drawcord-anchor/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "dress-shirt",
+   "name": "Dress Shirt",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 4,
+   "tier": "2",
+   "thumbnail": "/flats/dress-shirt/front.svg",
+   "views": {
+    "back": "/flats/dress-shirt/back.svg",
+    "front": "/flats/dress-shirt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "dress-trousers",
+   "name": "Dress Trousers",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 36,
+   "tier": "2",
+   "thumbnail": "/flats/dress-trousers/front.svg",
+   "views": {
+    "back": "/flats/dress-trousers/back.svg",
+    "front": "/flats/dress-trousers/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "drop-back-jumpsuit",
+   "name": "Drop-Back Jumpsuit",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 251,
+   "tier": "2",
+   "thumbnail": "/flats/drop-back-jumpsuit/front.svg",
+   "views": {
+    "back": "/flats/drop-back-jumpsuit/back.svg",
+    "front": "/flats/drop-back-jumpsuit/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "mezclilla-denim"
+  },
+  {
+   "slug": "duffel-bag",
+   "name": "Duffel Bag",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 201,
+   "tier": "2",
+   "thumbnail": "/flats/duffel-bag/front.svg",
+   "views": {
+    "back": "/flats/duffel-bag/back.svg",
+    "front": "/flats/duffel-bag/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "duffle-coat",
+   "name": "Toggle duffle coat",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 380,
+   "tier": "3",
+   "thumbnail": "/flats/duffle-coat/front.svg",
+   "views": {
+    "back": "/flats/duffle-coat/back.svg",
+    "front": "/flats/duffle-coat/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-melton"
+  },
+  {
+   "slug": "ecg-monitoring-vest",
+   "name": "ECG-Electrode Monitoring Vest",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 467,
+   "tier": "4",
+   "thumbnail": "/flats/ecg-monitoring-vest/front.svg",
+   "views": {
+    "back": "/flats/ecg-monitoring-vest/back.svg",
+    "front": "/flats/ecg-monitoring-vest/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-conductor"
+  },
+  {
+   "slug": "edwardian-walking-skirt",
+   "name": "Edwardian Walking Skirt",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 272,
+   "tier": "3",
+   "thumbnail": "/flats/edwardian-walking-skirt/front.svg",
+   "views": {
+    "back": "/flats/edwardian-walking-skirt/back.svg",
+    "front": "/flats/edwardian-walking-skirt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "elizabethan-doublet",
+   "name": "Elizabethan Doublet",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 269,
+   "tier": "3",
+   "thumbnail": "/flats/elizabethan-doublet/front.svg",
+   "views": {
+    "back": "/flats/elizabethan-doublet/back.svg",
+    "front": "/flats/elizabethan-doublet/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "emg-sleeve-band",
+   "name": "EMG-Electrode Sleeve Band",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 471,
+   "tier": "4",
+   "thumbnail": "/flats/emg-sleeve-band/front.svg",
+   "views": {
+    "back": "/flats/emg-sleeve-band/back.svg",
+    "front": "/flats/emg-sleeve-band/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "jersey-conductor"
+  },
+  {
+   "slug": "epaulette-dress-tunic",
+   "name": "Epaulette Dress Tunic",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 295,
+   "tier": "3",
+   "thumbnail": "/flats/epaulette-dress-tunic/front.svg",
+   "views": {
+    "back": "/flats/epaulette-dress-tunic/back.svg",
+    "front": "/flats/epaulette-dress-tunic/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "espadrille-shoe-upper",
+   "name": "Espadrille Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 361,
+   "tier": "2",
+   "thumbnail": "/flats/espadrille-shoe-upper/front.svg",
+   "views": {
+    "back": "/flats/espadrille-shoe-upper/back.svg",
+    "front": "/flats/espadrille-shoe-upper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-canvas"
+  },
+  {
+   "slug": "espadrille-upper",
+   "name": "Espadrille Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 227,
+   "tier": "3",
+   "thumbnail": "/flats/espadrille-upper/front.svg",
+   "views": {
+    "back": "/flats/espadrille-upper/back.svg",
+    "front": "/flats/espadrille-upper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "espadrille-upper-wrap",
+   "name": "Espadrille Upper Wrap",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 424,
+   "tier": "2",
+   "thumbnail": "/flats/espadrille-upper-wrap/front.svg",
+   "views": {
+    "back": "/flats/espadrille-upper-wrap/back.svg",
+    "front": "/flats/espadrille-upper-wrap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "lona-algodon"
+  },
+  {
+   "slug": "etextile-sensor-tee",
+   "name": "E-Textile Sensor Tee",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 145,
+   "tier": "4",
+   "thumbnail": "/flats/etextile-sensor-tee/front.svg",
+   "views": {
+    "back": "/flats/etextile-sensor-tee/back.svg",
+    "front": "/flats/etextile-sensor-tee/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "jersey-conductive"
+  },
+  {
+   "slug": "evening-gown",
+   "name": "Evening Gown",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 72,
+   "tier": "3",
+   "thumbnail": "/flats/evening-gown/front.svg",
+   "views": {
+    "back": "/flats/evening-gown/back.svg",
+    "front": "/flats/evening-gown/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "eyelet-grommet",
+   "name": "Eyelet Grommet",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 108,
+   "tier": "1",
+   "thumbnail": "/flats/eyelet-grommet/front.svg",
+   "views": {
+    "back": "/flats/eyelet-grommet/back.svg",
+    "front": "/flats/eyelet-grommet/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "fair-isle-yoke",
+   "name": "Fair Isle Yoke Sweater",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 332,
+   "tier": "3",
+   "thumbnail": "/flats/fair-isle-yoke/front.svg",
+   "views": {
+    "back": "/flats/fair-isle-yoke/back.svg",
+    "front": "/flats/fair-isle-yoke/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-shetland"
+  },
+  {
+   "slug": "falda-de-manta",
+   "name": "Falda de Manta",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 140,
+   "tier": "1",
+   "thumbnail": "/flats/falda-de-manta/front.svg",
+   "views": {
+    "back": "/flats/falda-de-manta/back.svg",
+    "front": "/flats/falda-de-manta/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "manta"
+  },
+  {
+   "slug": "fedora-blank",
+   "name": "Sewn Fedora Crown-and-Brim",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 358,
+   "tier": "3",
+   "thumbnail": "/flats/fedora-blank/front.svg",
+   "views": {
+    "back": "/flats/fedora-blank/back.svg",
+    "front": "/flats/fedora-blank/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "wool-felt"
+  },
+  {
+   "slug": "field-jacket",
+   "name": "Field Jacket",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 169,
+   "tier": "2",
+   "thumbnail": "/flats/field-jacket/front.svg",
+   "views": {
+    "back": "/flats/field-jacket/back.svg",
+    "front": "/flats/field-jacket/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "field-jacket-m65",
+   "name": "Field Jacket (M-65 pattern)",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 310,
+   "tier": "3",
+   "thumbnail": "/flats/field-jacket-m65/front.svg",
+   "views": {
+    "back": "/flats/field-jacket-m65/back.svg",
+    "front": "/flats/field-jacket-m65/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "sateen-cotton"
+  },
+  {
+   "slug": "five-panel-cap",
+   "name": "Five-Panel Cap",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 132,
+   "tier": "2",
+   "thumbnail": "/flats/five-panel-cap/front.svg",
+   "views": {
+    "back": "/flats/five-panel-cap/back.svg",
+    "front": "/flats/five-panel-cap/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "twill"
+  },
+  {
+   "slug": "flamenco-bata-cola",
+   "name": "Flamenco Bata de Cola",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 475,
+   "tier": "4",
+   "thumbnail": "/flats/flamenco-bata-cola/front.svg",
+   "views": {
+    "back": "/flats/flamenco-bata-cola/back.svg",
+    "front": "/flats/flamenco-bata-cola/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "algodon-percal"
+  },
+  {
+   "slug": "flannel-shirt",
+   "name": "Flannel Shirt",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 76,
+   "tier": "2",
+   "thumbnail": "/flats/flannel-shirt/front.svg",
+   "views": {
+    "back": "/flats/flannel-shirt/back.svg",
+    "front": "/flats/flannel-shirt/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "woven"
+  },
+  {
+   "slug": "flat-seam-base-layer",
+   "name": "Flat-Seam Base Layer",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 250,
+   "tier": "2",
+   "thumbnail": "/flats/flat-seam-base-layer/front.svg",
+   "views": {
+    "back": "/flats/flat-seam-base-layer/back.svg",
+    "front": "/flats/flat-seam-base-layer/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "flexure-cuff-glove",
+   "name": "Printed Flexure-Cuff Glove",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 345,
+   "tier": "4",
+   "thumbnail": "/flats/flexure-cuff-glove/front.svg",
+   "views": {
+    "back": "/flats/flexure-cuff-glove/back.svg",
+    "front": "/flats/flexure-cuff-glove/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "flexure-spine-harness",
+   "name": "Flexure-Spine Fashion Harness",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 351,
+   "tier": "4",
+   "thumbnail": "/flats/flexure-spine-harness/front.svg",
+   "views": {
+    "back": "/flats/flexure-spine-harness/back.svg",
+    "front": "/flats/flexure-spine-harness/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "folk-dirndl-apron",
+   "name": "Dirndl apron overlay",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 499,
+   "tier": "2",
+   "thumbnail": "/flats/folk-dirndl-apron/front.svg",
+   "views": {
+    "back": "/flats/folk-dirndl-apron/back.svg",
+    "front": "/flats/folk-dirndl-apron/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "algodon-percal"
+  },
+  {
+   "slug": "formal-bib-shirt",
+   "name": "Bib-front formal shirt",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 443,
+   "tier": "3",
+   "thumbnail": "/flats/formal-bib-shirt/front.svg",
+   "views": {
+    "back": "/flats/formal-bib-shirt/back.svg",
+    "front": "/flats/formal-bib-shirt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "formal-shirt",
+   "name": "Formal Shirt",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 70,
+   "tier": "2",
+   "thumbnail": "/flats/formal-shirt/front.svg",
+   "views": {
+    "back": "/flats/formal-shirt/back.svg",
+    "front": "/flats/formal-shirt/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "woven"
+  },
+  {
+   "slug": "formal-tailcoat-trouser",
+   "name": "Braid-side formal trouser",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 446,
+   "tier": "3",
+   "thumbnail": "/flats/formal-tailcoat-trouser/front.svg",
+   "views": {
+    "back": "/flats/formal-tailcoat-trouser/back.svg",
+    "front": "/flats/formal-tailcoat-trouser/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "frock-coat",
+   "name": "Frock Coat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 318,
+   "tier": "4",
+   "thumbnail": "/flats/frock-coat/front.svg",
+   "views": {
+    "back": "/flats/frock-coat/back.svg",
+    "front": "/flats/frock-coat/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-melton"
+  },
+  {
+   "slug": "garment-bag",
+   "name": "Garment Bag",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 253,
+   "tier": "2",
+   "thumbnail": "/flats/garment-bag/front.svg",
+   "views": {
+    "back": "/flats/garment-bag/back.svg",
+    "front": "/flats/garment-bag/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "nylon-ripstop-shell"
+  },
+  {
+   "slug": "garment-clip-pouch",
+   "name": "Garment-Clip Travel Pouch",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 420,
+   "tier": "1",
+   "thumbnail": "/flats/garment-clip-pouch/front.svg",
+   "views": {
+    "back": "/flats/garment-clip-pouch/back.svg",
+    "front": "/flats/garment-clip-pouch/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "garment-clip-strap",
+   "name": "Clip-strap garment carrier",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 367,
+   "tier": "1",
+   "thumbnail": "/flats/garment-clip-strap/front.svg",
+   "views": {
+    "back": "/flats/garment-clip-strap/back.svg",
+    "front": "/flats/garment-clip-strap/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "poly-webbing"
+  },
+  {
+   "slug": "garment-hanger-cover",
+   "name": "Padded Garment-Hanger Cover",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 419,
+   "tier": "1",
+   "thumbnail": "/flats/garment-hanger-cover/front.svg",
+   "views": {
+    "back": "/flats/garment-hanger-cover/back.svg",
+    "front": "/flats/garment-hanger-cover/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "garment-travel-fold",
+   "name": "Fold-flat travel garment folder",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 363,
+   "tier": "1",
+   "thumbnail": "/flats/garment-travel-fold/front.svg",
+   "views": {
+    "back": "/flats/garment-travel-fold/back.svg",
+    "front": "/flats/garment-travel-fold/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "ripstop-nylon"
+  },
+  {
+   "slug": "garter-belt",
+   "name": "Garter Belt",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 222,
+   "tier": "2",
+   "thumbnail": "/flats/garter-belt/front.svg",
+   "views": {
+    "back": "/flats/garter-belt/back.svg",
+    "front": "/flats/garter-belt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "any"
+  },
+  {
+   "slug": "gaucho-pants",
+   "name": "Gaucho Pants",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 183,
+   "tier": "2",
+   "thumbnail": "/flats/gaucho-pants/front.svg",
+   "views": {
+    "back": "/flats/gaucho-pants/back.svg",
+    "front": "/flats/gaucho-pants/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "gho-wrap-robe",
+   "name": "Gho wrap robe",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 500,
+   "tier": "3",
+   "thumbnail": "/flats/gho-wrap-robe/front.svg",
+   "views": {
+    "back": "/flats/gho-wrap-robe/back.svg",
+    "front": "/flats/gho-wrap-robe/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "algodon-tejido"
+  },
+  {
+   "slug": "godet-skirt",
+   "name": "Godet Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 179,
+   "tier": "3",
+   "thumbnail": "/flats/godet-skirt/front.svg",
+   "views": {
+    "back": "/flats/godet-skirt/back.svg",
+    "front": "/flats/godet-skirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "grip-pad-palm-mitt",
+   "name": "Grip-pad palm mitt",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 434,
+   "tier": "3",
+   "thumbnail": "/flats/grip-pad-palm-mitt/front.svg",
+   "views": {
+    "back": "/flats/grip-pad-palm-mitt/back.svg",
+    "front": "/flats/grip-pad-palm-mitt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "neopreno"
+  },
+  {
+   "slug": "guayabera",
+   "name": "Guayabera",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 96,
+   "tier": "2",
+   "thumbnail": "/flats/guayabera/front.svg",
+   "views": {
+    "back": "/flats/guayabera/back.svg",
+    "front": "/flats/guayabera/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "woven"
+  },
+  {
+   "slug": "guayabera-shirt",
+   "name": "Guayabera (de alforzas)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 391,
+   "tier": "3",
+   "thumbnail": "/flats/guayabera-shirt/front.svg",
+   "views": {
+    "back": "/flats/guayabera-shirt/back.svg",
+    "front": "/flats/guayabera-shirt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "linen-lightweight"
+  },
+  {
+   "slug": "gusset-flexure-legging",
+   "name": "Flexure-Gusset Performance Legging",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 346,
+   "tier": "4",
+   "thumbnail": "/flats/gusset-flexure-legging/front.svg",
+   "views": {
+    "back": "/flats/gusset-flexure-legging/back.svg",
+    "front": "/flats/gusset-flexure-legging/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "hakama",
+   "name": "Hakama (袴)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 281,
+   "tier": "4",
+   "thumbnail": "/flats/hakama/front.svg",
+   "views": {
+    "back": "/flats/hakama/back.svg",
+    "front": "/flats/hakama/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "halter-top",
+   "name": "Halter Top",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 162,
+   "tier": "2",
+   "thumbnail": "/flats/halter-top/front.svg",
+   "views": {
+    "back": "/flats/halter-top/back.svg",
+    "front": "/flats/halter-top/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "hanbok-chima",
+   "name": "Chima (치마)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 280,
+   "tier": "4",
+   "thumbnail": "/flats/hanbok-chima/front.svg",
+   "views": {
+    "back": "/flats/hanbok-chima/back.svg",
+    "front": "/flats/hanbok-chima/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "hanbok-jeogori",
+   "name": "Hanbok Jeogori",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 143,
+   "tier": "3",
+   "thumbnail": "/flats/hanbok-jeogori/front.svg",
+   "views": {
+    "back": "/flats/hanbok-jeogori/back.svg",
+    "front": "/flats/hanbok-jeogori/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "silk"
+  },
+  {
+   "slug": "hanbok-magoja",
+   "name": "Hanbok magoja overjacket",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 488,
+   "tier": "3",
+   "thumbnail": "/flats/hanbok-magoja/front.svg",
+   "views": {
+    "back": "/flats/hanbok-magoja/back.svg",
+    "front": "/flats/hanbok-magoja/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "seda-satinada"
+  },
+  {
+   "slug": "handkerchief-skirt",
+   "name": "Handkerchief Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 180,
+   "tier": "2",
+   "thumbnail": "/flats/handkerchief-skirt/front.svg",
+   "views": {
+    "back": "/flats/handkerchief-skirt/back.svg",
+    "front": "/flats/handkerchief-skirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "hanger-cover-padded",
+   "name": "Padded hanger cover",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 364,
+   "tier": "1",
+   "thumbnail": "/flats/hanger-cover-padded/front.svg",
+   "views": {
+    "back": "/flats/hanger-cover-padded/back.svg",
+    "front": "/flats/hanger-cover-padded/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "quilted-cotton"
+  },
+  {
+   "slug": "haori",
+   "name": "Haori (羽織)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 286,
+   "tier": "4",
+   "thumbnail": "/flats/haori/front.svg",
+   "views": {
+    "back": "/flats/haori/back.svg",
+    "front": "/flats/haori/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "haptic-nav-belt",
+   "name": "Haptic Navigation Belt",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 264,
+   "tier": "4",
+   "thumbnail": "/flats/haptic-nav-belt/front.svg",
+   "views": {
+    "back": "/flats/haptic-nav-belt/back.svg",
+    "front": "/flats/haptic-nav-belt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-ripstop-shell"
+  },
+  {
+   "slug": "harem-pants",
+   "name": "Harem Pants",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 182,
+   "tier": "2",
+   "thumbnail": "/flats/harem-pants/front.svg",
+   "views": {
+    "back": "/flats/harem-pants/back.svg",
+    "front": "/flats/harem-pants/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "harness-vest",
+   "name": "Harness Vest",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 241,
+   "tier": "3",
+   "thumbnail": "/flats/harness-vest/front.svg",
+   "views": {
+    "back": "/flats/harness-vest/back.svg",
+    "front": "/flats/harness-vest/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "any"
+  },
+  {
+   "slug": "headwrap",
+   "name": "Headwrap",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 194,
+   "tier": "2",
+   "thumbnail": "/flats/headwrap/front.svg",
+   "views": {
+    "back": "/flats/headwrap/back.svg",
+    "front": "/flats/headwrap/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "heated-glove-liner",
+   "name": "Heated Glove Liner",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 261,
+   "tier": "4",
+   "thumbnail": "/flats/heated-glove-liner/front.svg",
+   "views": {
+    "back": "/flats/heated-glove-liner/back.svg",
+    "front": "/flats/heated-glove-liner/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "heated-vest",
+   "name": "Heated Vest",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 146,
+   "tier": "4",
+   "thumbnail": "/flats/heated-vest/front.svg",
+   "views": {
+    "back": "/flats/heated-vest/back.svg",
+    "front": "/flats/heated-vest/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "softshell"
+  },
+  {
+   "slug": "heated-vest-panel",
+   "name": "Heated Vest Panel",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 468,
+   "tier": "4",
+   "thumbnail": "/flats/heated-vest-panel/front.svg",
+   "views": {
+    "back": "/flats/heated-vest-panel/back.svg",
+    "front": "/flats/heated-vest-panel/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "jersey-conductor"
+  },
+  {
+   "slug": "heel-tip-slipper",
+   "name": "Heel-Tip-Blank Slipper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 426,
+   "tier": "2",
+   "thumbnail": "/flats/heel-tip-slipper/front.svg",
+   "views": {
+    "back": "/flats/heel-tip-slipper/back.svg",
+    "front": "/flats/heel-tip-slipper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "fieltro-lana"
+  },
+  {
+   "slug": "henley",
+   "name": "Henley",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 73,
+   "tier": "2",
+   "thumbnail": "/flats/henley/front.svg",
+   "views": {
+    "back": "/flats/henley/back.svg",
+    "front": "/flats/henley/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "hi-vis-vest",
+   "name": "Hi-Vis Safety Vest",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 89,
+   "tier": "1",
+   "thumbnail": "/flats/hi-vis-vest/front.svg",
+   "views": {
+    "back": "/flats/hi-vis-vest/back.svg",
+    "front": "/flats/hi-vis-vest/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "technical"
+  },
+  {
+   "slug": "high-waist-brief",
+   "name": "High-waist control brief",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 384,
+   "tier": "2",
+   "thumbnail": "/flats/high-waist-brief/front.svg",
+   "views": {
+    "back": "/flats/high-waist-brief/back.svg",
+    "front": "/flats/high-waist-brief/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "power-mesh"
+  },
+  {
+   "slug": "high-waist-shaping-brief",
+   "name": "High-Waist Shaping Brief",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 461,
+   "tier": "2",
+   "thumbnail": "/flats/high-waist-shaping-brief/front.svg",
+   "views": {
+    "back": "/flats/high-waist-shaping-brief/back.svg",
+    "front": "/flats/high-waist-shaping-brief/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "hiking-gaiter",
+   "name": "Hiking Gaiter",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 235,
+   "tier": "2",
+   "thumbnail": "/flats/hiking-gaiter/front.svg",
+   "views": {
+    "back": "/flats/hiking-gaiter/back.svg",
+    "front": "/flats/hiking-gaiter/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "hinge-collar-capelet",
+   "name": "Articulated Hinge-Collar Capelet",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 344,
+   "tier": "4",
+   "thumbnail": "/flats/hinge-collar-capelet/front.svg",
+   "views": {
+    "back": "/flats/hinge-collar-capelet/back.svg",
+    "front": "/flats/hinge-collar-capelet/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "hoodie-pullover",
+   "name": "Pullover Hoodie",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 5,
+   "tier": "1",
+   "thumbnail": "/flats/hoodie-pullover/front.svg",
+   "views": {
+    "back": "/flats/hoodie-pullover/back.svg",
+    "front": "/flats/hoodie-pullover/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "hook-loop-closure",
+   "name": "Hook-and-Loop Closure",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/hook-loop-closure/front.svg",
+   "views": {
+    "back": "/flats/hook-loop-closure/back.svg",
+    "front": "/flats/hook-loop-closure/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "house-slipper",
+   "name": "House Slipper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 228,
+   "tier": "2",
+   "thumbnail": "/flats/house-slipper/front.svg",
+   "views": {
+    "back": "/flats/house-slipper/back.svg",
+    "front": "/flats/house-slipper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "huipil",
+   "name": "Huipil",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 137,
+   "tier": "1",
+   "thumbnail": "/flats/huipil/front.svg",
+   "views": {
+    "back": "/flats/huipil/back.svg",
+    "front": "/flats/huipil/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "manta"
+  },
+  {
+   "slug": "huipil-blouse",
+   "name": "Huipil (three-web blouse)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 397,
+   "tier": "2",
+   "thumbnail": "/flats/huipil-blouse/front.svg",
+   "views": {
+    "back": "/flats/huipil-blouse/back.svg",
+    "front": "/flats/huipil-blouse/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "illuminated-gilet",
+   "name": "Illuminated Cycling Gilet",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 265,
+   "tier": "4",
+   "thumbnail": "/flats/illuminated-gilet/front.svg",
+   "views": {
+    "back": "/flats/illuminated-gilet/back.svg",
+    "front": "/flats/illuminated-gilet/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-ripstop-shell"
+  },
+  {
+   "slug": "invisible-zipper-notion",
+   "name": "Invisible Zipper",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/invisible-zipper-notion/front.svg",
+   "views": {
+    "back": "/flats/invisible-zipper-notion/back.svg",
+    "front": "/flats/invisible-zipper-notion/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "ironing-board-cover",
+   "name": "Ironing Board Cover",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 260,
+   "tier": "2",
+   "thumbnail": "/flats/ironing-board-cover/front.svg",
+   "views": {
+    "back": "/flats/ironing-board-cover/back.svg",
+    "front": "/flats/ironing-board-cover/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "jalabiya",
+   "name": "Jalabiya (Gulf thobe)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 392,
+   "tier": "3",
+   "thumbnail": "/flats/jalabiya/front.svg",
+   "views": {
+    "back": "/flats/jalabiya/back.svg",
+    "front": "/flats/jalabiya/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "cotton-poplin"
+  },
+  {
+   "slug": "jeans-5-pocket",
+   "name": "Jeans (5-pocket)",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 2,
+   "tier": "2",
+   "thumbnail": "/flats/jeans-5-pocket/front.svg",
+   "views": {
+    "back": "/flats/jeans-5-pocket/back.svg",
+    "front": "/flats/jeans-5-pocket/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "denim"
+  },
+  {
+   "slug": "jeans-button",
+   "name": "Jeans Button",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 112,
+   "tier": "1",
+   "thumbnail": "/flats/jeans-button/front.svg",
+   "views": {
+    "back": "/flats/jeans-button/back.svg",
+    "front": "/flats/jeans-button/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "denim"
+  },
+  {
+   "slug": "jeogori-jacket",
+   "name": "Hanbok jeogori jacket (maedeup)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 394,
+   "tier": "4",
+   "thumbnail": "/flats/jeogori-jacket/front.svg",
+   "views": {
+    "back": "/flats/jeogori-jacket/back.svg",
+    "front": "/flats/jeogori-jacket/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "silk-ramie"
+  },
+  {
+   "slug": "jewelry-roll",
+   "name": "Jewelry Roll",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 256,
+   "tier": "2",
+   "thumbnail": "/flats/jewelry-roll/front.svg",
+   "views": {
+    "back": "/flats/jewelry-roll/back.svg",
+    "front": "/flats/jewelry-roll/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "jinbei-top",
+   "name": "Jinbei (Top)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 158,
+   "tier": "2",
+   "thumbnail": "/flats/jinbei-top/front.svg",
+   "views": {
+    "back": "/flats/jinbei-top/back.svg",
+    "front": "/flats/jinbei-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "joggers",
+   "name": "Joggers",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 16,
+   "tier": "1",
+   "thumbnail": "/flats/joggers/front.svg",
+   "views": {
+    "back": "/flats/joggers/back.svg",
+    "front": "/flats/joggers/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "knit"
+  },
+  {
+   "slug": "jumpsuit",
+   "name": "Jumpsuit",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 47,
+   "tier": "2",
+   "thumbnail": "/flats/jumpsuit/front.svg",
+   "views": {
+    "back": "/flats/jumpsuit/back.svg",
+    "front": "/flats/jumpsuit/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "woven"
+  },
+  {
+   "slug": "kaftan",
+   "name": "Kaftan",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 99,
+   "tier": "1",
+   "thumbnail": "/flats/kaftan/front.svg",
+   "views": {
+    "back": "/flats/kaftan/back.svg",
+    "front": "/flats/kaftan/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "kebaya",
+   "name": "Kebaya",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 199,
+   "tier": "3",
+   "thumbnail": "/flats/kebaya/front.svg",
+   "views": {
+    "back": "/flats/kebaya/back.svg",
+    "front": "/flats/kebaya/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "kebaya-lace-blouse",
+   "name": "Kebaya lace blouse",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 490,
+   "tier": "3",
+   "thumbnail": "/flats/kebaya-lace-blouse/front.svg",
+   "views": {
+    "back": "/flats/kebaya-lace-blouse/back.svg",
+    "front": "/flats/kebaya-lace-blouse/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "encaje-elastico"
+  },
+  {
+   "slug": "kente-wrap",
+   "name": "Kente wrapper cloth garment",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 396,
+   "tier": "2",
+   "thumbnail": "/flats/kente-wrap/front.svg",
+   "views": {
+    "back": "/flats/kente-wrap/back.svg",
+    "front": "/flats/kente-wrap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "kente-weave"
+  },
+  {
+   "slug": "kente-wrap-cloth",
+   "name": "Kente wrapper cloth",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 484,
+   "tier": "2",
+   "thumbnail": "/flats/kente-wrap-cloth/front.svg",
+   "views": {
+    "back": "/flats/kente-wrap-cloth/back.svg",
+    "front": "/flats/kente-wrap-cloth/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "algodon-tejido"
+  },
+  {
+   "slug": "kids-anorak",
+   "name": "Children's Anorak",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 329,
+   "tier": "2",
+   "thumbnail": "/flats/kids-anorak/front.svg",
+   "views": {
+    "back": "/flats/kids-anorak/back.svg",
+    "front": "/flats/kids-anorak/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "ripstop-nylon"
+  },
+  {
+   "slug": "kids-raincoat",
+   "name": "Children's Hooded Raincoat",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 323,
+   "tier": "2",
+   "thumbnail": "/flats/kids-raincoat/front.svg",
+   "views": {
+    "back": "/flats/kids-raincoat/back.svg",
+    "front": "/flats/kids-raincoat/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "pu-coated-nylon"
+  },
+  {
+   "slug": "kids-school-pinafore",
+   "name": "Kids School Pinafore",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 288,
+   "tier": "2",
+   "thumbnail": "/flats/kids-school-pinafore/front.svg",
+   "views": {
+    "back": "/flats/kids-school-pinafore/back.svg",
+    "front": "/flats/kids-school-pinafore/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "kids-school-pinny",
+   "name": "School Smock (Pinny)",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 326,
+   "tier": "1",
+   "thumbnail": "/flats/kids-school-pinny/front.svg",
+   "views": {
+    "back": "/flats/kids-school-pinny/back.svg",
+    "front": "/flats/kids-school-pinny/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "poly-cotton"
+  },
+  {
+   "slug": "kids-t-shirt",
+   "name": "Kids' T-shirt",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 93,
+   "tier": "1",
+   "thumbnail": "/flats/kids-t-shirt/front.svg",
+   "views": {
+    "back": "/flats/kids-t-shirt/back.svg",
+    "front": "/flats/kids-t-shirt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "kilt-8yard",
+   "name": "Eight-yard kilt",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 398,
+   "tier": "3",
+   "thumbnail": "/flats/kilt-8yard/front.svg",
+   "views": {
+    "back": "/flats/kilt-8yard/back.svg",
+    "front": "/flats/kilt-8yard/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-tartan"
+  },
+  {
+   "slug": "kilt-wrap",
+   "name": "Kilt (Wrap)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 155,
+   "tier": "3",
+   "thumbnail": "/flats/kilt-wrap/front.svg",
+   "views": {
+    "back": "/flats/kilt-wrap/back.svg",
+    "front": "/flats/kilt-wrap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool"
+  },
+  {
+   "slug": "kimono-haori",
+   "name": "Haori (women's lined)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 399,
+   "tier": "3",
+   "thumbnail": "/flats/kimono-haori/front.svg",
+   "views": {
+    "back": "/flats/kimono-haori/back.svg",
+    "front": "/flats/kimono-haori/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "silk-habutai"
+  },
+  {
+   "slug": "kimono-robe",
+   "name": "Kimono-style Robe",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 100,
+   "tier": "1",
+   "thumbnail": "/flats/kimono-robe/front.svg",
+   "views": {
+    "back": "/flats/kimono-robe/back.svg",
+    "front": "/flats/kimono-robe/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "kimono-robe-sash",
+   "name": "Sashed Kimono Robe",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 462,
+   "tier": "2",
+   "thumbnail": "/flats/kimono-robe-sash/front.svg",
+   "views": {
+    "back": "/flats/kimono-robe-sash/back.svg",
+    "front": "/flats/kimono-robe-sash/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "seda-satinada"
+  },
+  {
+   "slug": "kiss-lock-purse",
+   "name": "Kiss-Lock Purse",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 202,
+   "tier": "3",
+   "thumbnail": "/flats/kiss-lock-purse/front.svg",
+   "views": {
+    "back": "/flats/kiss-lock-purse/back.svg",
+    "front": "/flats/kiss-lock-purse/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "knife-roll",
+   "name": "Knife Roll",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 240,
+   "tier": "2",
+   "thumbnail": "/flats/knife-roll/front.svg",
+   "views": {
+    "back": "/flats/knife-roll/back.svg",
+    "front": "/flats/knife-roll/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "knit-balaclava-hood",
+   "name": "Knit Balaclava Hood",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 412,
+   "tier": "2",
+   "thumbnail": "/flats/knit-balaclava-hood/front.svg",
+   "views": {
+    "back": "/flats/knit-balaclava-hood/back.svg",
+    "front": "/flats/knit-balaclava-hood/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "punto-lana"
+  },
+  {
+   "slug": "knit-poncho-wrap",
+   "name": "Knit Poncho Wrap",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 293,
+   "tier": "2",
+   "thumbnail": "/flats/knit-poncho-wrap/front.svg",
+   "views": {
+    "back": "/flats/knit-poncho-wrap/back.svg",
+    "front": "/flats/knit-poncho-wrap/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-melton-abrigo"
+  },
+  {
+   "slug": "knit-tank-dress",
+   "name": "Knit Tank Dress",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 335,
+   "tier": "2",
+   "thumbnail": "/flats/knit-tank-dress/front.svg",
+   "views": {
+    "back": "/flats/knit-tank-dress/back.svg",
+    "front": "/flats/knit-tank-dress/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-knit"
+  },
+  {
+   "slug": "knit-vest-argyle",
+   "name": "Argyle Knit Vest",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 338,
+   "tier": "2",
+   "thumbnail": "/flats/knit-vest-argyle/front.svg",
+   "views": {
+    "back": "/flats/knit-vest-argyle/back.svg",
+    "front": "/flats/knit-vest-argyle/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-lambswool"
+  },
+  {
+   "slug": "kurta",
+   "name": "Kurta",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 97,
+   "tier": "2",
+   "thumbnail": "/flats/kurta/front.svg",
+   "views": {
+    "back": "/flats/kurta/back.svg",
+    "front": "/flats/kurta/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "woven"
+  },
+  {
+   "slug": "lab-coat",
+   "name": "Lab Coat",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 88,
+   "tier": "2",
+   "thumbnail": "/flats/lab-coat/front.svg",
+   "views": {
+    "back": "/flats/lab-coat/back.svg",
+    "front": "/flats/lab-coat/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "woven"
+  },
+  {
+   "slug": "lattice-armor-panel",
+   "name": "Lattice Armor Panel",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 122,
+   "tier": "4",
+   "thumbnail": "/flats/lattice-armor-panel/front.svg",
+   "views": {
+    "back": "/flats/lattice-armor-panel/back.svg",
+    "front": "/flats/lattice-armor-panel/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "lattice-corset",
+   "name": "Printed Lattice Corset",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 350,
+   "tier": "4",
+   "thumbnail": "/flats/lattice-corset/front.svg",
+   "views": {
+    "back": "/flats/lattice-corset/back.svg",
+    "front": "/flats/lattice-corset/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "lattice-drape-skirt",
+   "name": "Lattice-Drape Printed Skirt",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 410,
+   "tier": "4",
+   "thumbnail": "/flats/lattice-drape-skirt/front.svg",
+   "views": {
+    "back": "/flats/lattice-drape-skirt/back.svg",
+    "front": "/flats/lattice-drape-skirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "lattice-panel-skirt",
+   "name": "Printed Lattice-Panel Skirt",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 342,
+   "tier": "4",
+   "thumbnail": "/flats/lattice-panel-skirt/front.svg",
+   "views": {
+    "back": "/flats/lattice-panel-skirt/back.svg",
+    "front": "/flats/lattice-panel-skirt/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "led-costume-panel",
+   "name": "LED Costume Panel",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 148,
+   "tier": "4",
+   "thumbnail": "/flats/led-costume-panel/front.svg",
+   "views": {
+    "back": "/flats/led-costume-panel/back.svg",
+    "front": "/flats/led-costume-panel/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "coated"
+  },
+  {
+   "slug": "led-safety-sash",
+   "name": "LED Safety Sash",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 470,
+   "tier": "4",
+   "thumbnail": "/flats/led-safety-sash/front.svg",
+   "views": {
+    "back": "/flats/led-safety-sash/back.svg",
+    "front": "/flats/led-safety-sash/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "nylon-satinado"
+  },
+  {
+   "slug": "led-trim-jacket",
+   "name": "LED Trim Jacket",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 262,
+   "tier": "4",
+   "thumbnail": "/flats/led-trim-jacket/front.svg",
+   "views": {
+    "back": "/flats/led-trim-jacket/back.svg",
+    "front": "/flats/led-trim-jacket/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "leg-o-mutton-blouse",
+   "name": "Leg-o'-Mutton Blouse",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 273,
+   "tier": "3",
+   "thumbnail": "/flats/leg-o-mutton-blouse/front.svg",
+   "views": {
+    "back": "/flats/leg-o-mutton-blouse/back.svg",
+    "front": "/flats/leg-o-mutton-blouse/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "leggings",
+   "name": "Leggings",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 7,
+   "tier": "1",
+   "thumbnail": "/flats/leggings/front.svg",
+   "views": {
+    "back": "/flats/leggings/back.svg",
+    "front": "/flats/leggings/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "knit"
+  },
+  {
+   "slug": "lehenga",
+   "name": "Leheṅgā (लहंगा)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 283,
+   "tier": "4",
+   "thumbnail": "/flats/lehenga/front.svg",
+   "views": {
+    "back": "/flats/lehenga/back.svg",
+    "front": "/flats/lehenga/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "leotard-princess-seam",
+   "name": "Princess-Seam Dance Leotard",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 474,
+   "tier": "2",
+   "thumbnail": "/flats/leotard-princess-seam/front.svg",
+   "views": {
+    "back": "/flats/leotard-princess-seam/back.svg",
+    "front": "/flats/leotard-princess-seam/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "lingerie-travel-pouch",
+   "name": "Lingerie Travel Pouch",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 259,
+   "tier": "2",
+   "thumbnail": "/flats/lingerie-travel-pouch/front.svg",
+   "views": {
+    "back": "/flats/lingerie-travel-pouch/back.svg",
+    "front": "/flats/lingerie-travel-pouch/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "nylon-ripstop-shell"
+  },
+  {
+   "slug": "lint-brush-mitt",
+   "name": "Fabric lint-brush mitt",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 369,
+   "tier": "1",
+   "thumbnail": "/flats/lint-brush-mitt/front.svg",
+   "views": {
+    "back": "/flats/lint-brush-mitt/back.svg",
+    "front": "/flats/lint-brush-mitt/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "velour-cotton"
+  },
+  {
+   "slug": "long-sleeve-tee",
+   "name": "Long-sleeve Tee",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 13,
+   "tier": "1",
+   "thumbnail": "/flats/long-sleeve-tee/front.svg",
+   "views": {
+    "back": "/flats/long-sleeve-tee/back.svg",
+    "front": "/flats/long-sleeve-tee/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "knit"
+  },
+  {
+   "slug": "longline-bra",
+   "name": "Longline Bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 221,
+   "tier": "3",
+   "thumbnail": "/flats/longline-bra/front.svg",
+   "views": {
+    "back": "/flats/longline-bra/back.svg",
+    "front": "/flats/longline-bra/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "any"
+  },
+  {
+   "slug": "longline-bralette",
+   "name": "Longline Soft Bralette",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 459,
+   "tier": "2",
+   "thumbnail": "/flats/longline-bralette/front.svg",
+   "views": {
+    "back": "/flats/longline-bralette/back.svg",
+    "front": "/flats/longline-bralette/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "encaje-elastico"
+  },
+  {
+   "slug": "longline-underwire-bra",
+   "name": "Longline underwire bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 381,
+   "tier": "3",
+   "thumbnail": "/flats/longline-underwire-bra/front.svg",
+   "views": {
+    "back": "/flats/longline-underwire-bra/back.svg",
+    "front": "/flats/longline-underwire-bra/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "power-mesh"
+  },
+  {
+   "slug": "lounge-wide-pant",
+   "name": "Wide-Leg Lounge Pant",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 466,
+   "tier": "1",
+   "thumbnail": "/flats/lounge-wide-pant/front.svg",
+   "views": {
+    "back": "/flats/lounge-wide-pant/back.svg",
+    "front": "/flats/lounge-wide-pant/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "magnetic-clasp",
+   "name": "Magnetic Clasp",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 115,
+   "tier": "1",
+   "thumbnail": "/flats/magnetic-clasp/front.svg",
+   "views": {
+    "back": "/flats/magnetic-clasp/back.svg",
+    "front": "/flats/magnetic-clasp/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "magnetic-placket-shirt",
+   "name": "Magnetic-Placket Shirt",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 246,
+   "tier": "2",
+   "thumbnail": "/flats/magnetic-placket-shirt/front.svg",
+   "views": {
+    "back": "/flats/magnetic-placket-shirt/back.svg",
+    "front": "/flats/magnetic-placket-shirt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "marching-band-tunic",
+   "name": "Marching-Band Tunic",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 480,
+   "tier": "3",
+   "thumbnail": "/flats/marching-band-tunic/front.svg",
+   "views": {
+    "back": "/flats/marching-band-tunic/back.svg",
+    "front": "/flats/marching-band-tunic/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "gabardina-poliester"
+  },
+  {
+   "slug": "mary-jane-upper",
+   "name": "Mary Jane Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 233,
+   "tier": "3",
+   "thumbnail": "/flats/mary-jane-upper/front.svg",
+   "views": {
+    "back": "/flats/mary-jane-upper/back.svg",
+    "front": "/flats/mary-jane-upper/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "mascot-body-shell",
+   "name": "Mascot Body-Shell Suit",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 478,
+   "tier": "3",
+   "thumbnail": "/flats/mascot-body-shell/front.svg",
+   "views": {
+    "back": "/flats/mascot-body-shell/back.svg",
+    "front": "/flats/mascot-body-shell/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "foam-forrado"
+  },
+  {
+   "slug": "maternity-dress",
+   "name": "Maternity Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 152,
+   "tier": "2",
+   "thumbnail": "/flats/maternity-dress/front.svg",
+   "views": {
+    "back": "/flats/maternity-dress/back.svg",
+    "front": "/flats/maternity-dress/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "maxi-dress",
+   "name": "Maxi Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 24,
+   "tier": "2",
+   "thumbnail": "/flats/maxi-dress/front.svg",
+   "views": {
+    "back": "/flats/maxi-dress/back.svg",
+    "front": "/flats/maxi-dress/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "maxi-skirt",
+   "name": "Maxi Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 82,
+   "tier": "1",
+   "thumbnail": "/flats/maxi-skirt/front.svg",
+   "views": {
+    "back": "/flats/maxi-skirt/back.svg",
+    "front": "/flats/maxi-skirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "woven"
+  },
+  {
+   "slug": "messenger-bag",
+   "name": "Messenger Bag",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 205,
+   "tier": "2",
+   "thumbnail": "/flats/messenger-bag/front.svg",
+   "views": {
+    "back": "/flats/messenger-bag/back.svg",
+    "front": "/flats/messenger-bag/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "mini-skirt",
+   "name": "Mini Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 35,
+   "tier": "2",
+   "thumbnail": "/flats/mini-skirt/front.svg",
+   "views": {
+    "back": "/flats/mini-skirt/back.svg",
+    "front": "/flats/mini-skirt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "mittens",
+   "name": "Mittens",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 134,
+   "tier": "2",
+   "thumbnail": "/flats/mittens/front.svg",
+   "views": {
+    "back": "/flats/mittens/back.svg",
+    "front": "/flats/mittens/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "moccasin",
+   "name": "Moccasin",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 229,
+   "tier": "3",
+   "thumbnail": "/flats/moccasin/front.svg",
+   "views": {
+    "back": "/flats/moccasin/back.svg",
+    "front": "/flats/moccasin/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "moccasin-driver-upper",
+   "name": "Driving-Moccasin Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 429,
+   "tier": "3",
+   "thumbnail": "/flats/moccasin-driver-upper/front.svg",
+   "views": {
+    "back": "/flats/moccasin-driver-upper/back.svg",
+    "front": "/flats/moccasin-driver-upper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cuero-vegetal"
+  },
+  {
+   "slug": "moccasin-upper",
+   "name": "Hand-Sewn Moccasin Upper",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 362,
+   "tier": "3",
+   "thumbnail": "/flats/moccasin-upper/front.svg",
+   "views": {
+    "back": "/flats/moccasin-upper/back.svg",
+    "front": "/flats/moccasin-upper/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "leather-deerskin"
+  },
+  {
+   "slug": "mock-neck-top",
+   "name": "Mock-Neck Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 164,
+   "tier": "2",
+   "thumbnail": "/flats/mock-neck-top/front.svg",
+   "views": {
+    "back": "/flats/mock-neck-top/back.svg",
+    "front": "/flats/mock-neck-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "mohair-cardigan",
+   "name": "Brushed Mohair Cardigan",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 339,
+   "tier": "2",
+   "thumbnail": "/flats/mohair-cardigan/front.svg",
+   "views": {
+    "back": "/flats/mohair-cardigan/back.svg",
+    "front": "/flats/mohair-cardigan/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "mohair-blend"
+  },
+  {
+   "slug": "molle-webbing",
+   "name": "MOLLE Webbing",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 107,
+   "tier": "1",
+   "thumbnail": "/flats/molle-webbing/front.svg",
+   "views": {
+    "back": "/flats/molle-webbing/back.svg",
+    "front": "/flats/molle-webbing/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "webbing"
+  },
+  {
+   "slug": "morning-coat",
+   "name": "Morning Coat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 294,
+   "tier": "3",
+   "thumbnail": "/flats/morning-coat/front.svg",
+   "views": {
+    "back": "/flats/morning-coat/back.svg",
+    "front": "/flats/morning-coat/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "morning-coat-tailcoat",
+   "name": "Morning coat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 439,
+   "tier": "4",
+   "thumbnail": "/flats/morning-coat-tailcoat/front.svg",
+   "views": {
+    "back": "/flats/morning-coat-tailcoat/back.svg",
+    "front": "/flats/morning-coat-tailcoat/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "morning-tailcoat",
+   "name": "Morning Coat (cutaway)",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 314,
+   "tier": "4",
+   "thumbnail": "/flats/morning-tailcoat/front.svg",
+   "views": {
+    "back": "/flats/morning-tailcoat/back.svg",
+    "front": "/flats/morning-tailcoat/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-herringbone"
+  },
+  {
+   "slug": "neck-gaiter",
+   "name": "Neck Gaiter",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 192,
+   "tier": "1",
+   "thumbnail": "/flats/neck-gaiter/front.svg",
+   "views": {
+    "back": "/flats/neck-gaiter/back.svg",
+    "front": "/flats/neck-gaiter/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "nehru-collar-suit",
+   "name": "Nehru-collar suit jacket",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 445,
+   "tier": "3",
+   "thumbnail": "/flats/nehru-collar-suit/front.svg",
+   "views": {
+    "back": "/flats/nehru-collar-suit/back.svg",
+    "front": "/flats/nehru-collar-suit/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "nehru-jacket",
+   "name": "Nehru Collar Jacket",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 315,
+   "tier": "3",
+   "thumbnail": "/flats/nehru-jacket/front.svg",
+   "views": {
+    "back": "/flats/nehru-jacket/back.svg",
+    "front": "/flats/nehru-jacket/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-worsted"
+  },
+  {
+   "slug": "nehru-sherwani",
+   "name": "Sherwani",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 492,
+   "tier": "4",
+   "thumbnail": "/flats/nehru-sherwani/front.svg",
+   "views": {
+    "back": "/flats/nehru-sherwani/back.svg",
+    "front": "/flats/nehru-sherwani/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "brocado-seda"
+  },
+  {
+   "slug": "newsboy-cap",
+   "name": "Eight-Panel Newsboy Cap",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 356,
+   "tier": "2",
+   "thumbnail": "/flats/newsboy-cap/front.svg",
+   "views": {
+    "back": "/flats/newsboy-cap/back.svg",
+    "front": "/flats/newsboy-cap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "tweed-wool"
+  },
+  {
+   "slug": "nightgown",
+   "name": "Nightgown",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 43,
+   "tier": "1",
+   "thumbnail": "/flats/nightgown/front.svg",
+   "views": {
+    "back": "/flats/nightgown/back.svg",
+    "front": "/flats/nightgown/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "mixed"
+  },
+  {
+   "slug": "norfolk-jacket",
+   "name": "Norfolk Jacket",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 406,
+   "tier": "3",
+   "thumbnail": "/flats/norfolk-jacket/front.svg",
+   "views": {
+    "back": "/flats/norfolk-jacket/back.svg",
+    "front": "/flats/norfolk-jacket/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "nursing-bra",
+   "name": "Nursing Bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 225,
+   "tier": "3",
+   "thumbnail": "/flats/nursing-bra/front.svg",
+   "views": {
+    "back": "/flats/nursing-bra/back.svg",
+    "front": "/flats/nursing-bra/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "any"
+  },
+  {
+   "slug": "nursing-clip-bra",
+   "name": "Clip-down nursing bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 386,
+   "tier": "3",
+   "thumbnail": "/flats/nursing-clip-bra/front.svg",
+   "views": {
+    "back": "/flats/nursing-clip-bra/back.svg",
+    "front": "/flats/nursing-clip-bra/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "cotton-jersey"
+  },
+  {
+   "slug": "nursing-sleep-bra",
+   "name": "Nursing Sleep Bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 464,
+   "tier": "2",
+   "thumbnail": "/flats/nursing-sleep-bra/front.svg",
+   "views": {
+    "back": "/flats/nursing-sleep-bra/back.svg",
+    "front": "/flats/nursing-sleep-bra/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "nursing-top",
+   "name": "Nursing Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 151,
+   "tier": "2",
+   "thumbnail": "/flats/nursing-top/front.svg",
+   "views": {
+    "back": "/flats/nursing-top/back.svg",
+    "front": "/flats/nursing-top/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "off-shoulder-top",
+   "name": "Off-Shoulder Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 184,
+   "tier": "1",
+   "thumbnail": "/flats/off-shoulder-top/front.svg",
+   "views": {
+    "back": "/flats/off-shoulder-top/back.svg",
+    "front": "/flats/off-shoulder-top/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "one-hand-wrap-shirt",
+   "name": "One-hand-close wrap shirt",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 438,
+   "tier": "2",
+   "thumbnail": "/flats/one-hand-wrap-shirt/front.svg",
+   "views": {
+    "back": "/flats/one-hand-wrap-shirt/back.svg",
+    "front": "/flats/one-hand-wrap-shirt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "one-hand-wrap-top",
+   "name": "One-Hand Wrap Top",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 248,
+   "tier": "2",
+   "thumbnail": "/flats/one-hand-wrap-top/front.svg",
+   "views": {
+    "back": "/flats/one-hand-wrap-top/back.svg",
+    "front": "/flats/one-hand-wrap-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "one-handed-jacket",
+   "name": "One-handed-dressing jacket",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 373,
+   "tier": "3",
+   "thumbnail": "/flats/one-handed-jacket/front.svg",
+   "views": {
+    "back": "/flats/one-handed-jacket/back.svg",
+    "front": "/flats/one-handed-jacket/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "softshell"
+  },
+  {
+   "slug": "one-piece-swimsuit",
+   "name": "One-piece Swimsuit",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 54,
+   "tier": "4",
+   "thumbnail": "/flats/one-piece-swimsuit/front.svg",
+   "views": {
+    "back": "/flats/one-piece-swimsuit/back.svg",
+    "front": "/flats/one-piece-swimsuit/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "technical"
+  },
+  {
+   "slug": "opera-cape-formal",
+   "name": "Opera evening cape",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 448,
+   "tier": "3",
+   "thumbnail": "/flats/opera-cape-formal/front.svg",
+   "views": {
+    "back": "/flats/opera-cape-formal/back.svg",
+    "front": "/flats/opera-cape-formal/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "seda-satinada"
+  },
+  {
+   "slug": "overall-buckle",
+   "name": "Overall Buckle",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 113,
+   "tier": "1",
+   "thumbnail": "/flats/overall-buckle/front.svg",
+   "views": {
+    "back": "/flats/overall-buckle/back.svg",
+    "front": "/flats/overall-buckle/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "denim"
+  },
+  {
+   "slug": "overcoat",
+   "name": "Overcoat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 63,
+   "tier": "3",
+   "thumbnail": "/flats/overcoat/front.svg",
+   "views": {
+    "back": "/flats/overcoat/back.svg",
+    "front": "/flats/overcoat/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "pack-hip-belt",
+   "name": "Pack Hip Belt",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 238,
+   "tier": "2",
+   "thumbnail": "/flats/pack-hip-belt/front.svg",
+   "views": {
+    "back": "/flats/pack-hip-belt/back.svg",
+    "front": "/flats/pack-hip-belt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "packable-rain-shell",
+   "name": "Packable rain shell",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 376,
+   "tier": "2",
+   "thumbnail": "/flats/packable-rain-shell/front.svg",
+   "views": {
+    "back": "/flats/packable-rain-shell/back.svg",
+    "front": "/flats/packable-rain-shell/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "ripstop-nylon"
+  },
+  {
+   "slug": "padded-hanger-cover",
+   "name": "Padded Hanger Cover",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 257,
+   "tier": "2",
+   "thumbnail": "/flats/padded-hanger-cover/front.svg",
+   "views": {
+    "back": "/flats/padded-hanger-cover/back.svg",
+    "front": "/flats/padded-hanger-cover/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "painter-pant",
+   "name": "Painter Pant",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 167,
+   "tier": "2",
+   "thumbnail": "/flats/painter-pant/front.svg",
+   "views": {
+    "back": "/flats/painter-pant/back.svg",
+    "front": "/flats/painter-pant/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "canvas"
+  },
+  {
+   "slug": "painters-pant",
+   "name": "Painter's Utility Pant",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 308,
+   "tier": "2",
+   "thumbnail": "/flats/painters-pant/front.svg",
+   "views": {
+    "back": "/flats/painters-pant/back.svg",
+    "front": "/flats/painters-pant/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "duck-canvas"
+  },
+  {
+   "slug": "pajama-set",
+   "name": "Pajama Set",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 41,
+   "tier": "1",
+   "thumbnail": "/flats/pajama-set/front.svg",
+   "views": {
+    "back": "/flats/pajama-set/back.svg",
+    "front": "/flats/pajama-set/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "mixed"
+  },
+  {
+   "slug": "palazzo-pants",
+   "name": "Palazzo Pants",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 79,
+   "tier": "1",
+   "thumbnail": "/flats/palazzo-pants/front.svg",
+   "views": {
+    "back": "/flats/palazzo-pants/back.svg",
+    "front": "/flats/palazzo-pants/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "panties-bikini",
+   "name": "Bikini Panties",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 45,
+   "tier": "4",
+   "thumbnail": "/flats/panties-bikini/front.svg",
+   "views": {
+    "back": "/flats/panties-bikini/back.svg",
+    "front": "/flats/panties-bikini/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "knit"
+  },
+  {
+   "slug": "panto-dame-gown",
+   "name": "Pantomime Dame Gown",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 477,
+   "tier": "3",
+   "thumbnail": "/flats/panto-dame-gown/front.svg",
+   "views": {
+    "back": "/flats/panto-dame-gown/back.svg",
+    "front": "/flats/panto-dame-gown/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "raso-poliester"
+  },
+  {
+   "slug": "parametric-ruff",
+   "name": "Parametric Printed Ruff Collar",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 349,
+   "tier": "4",
+   "thumbnail": "/flats/parametric-ruff/front.svg",
+   "views": {
+    "back": "/flats/parametric-ruff/back.svg",
+    "front": "/flats/parametric-ruff/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "parka",
+   "name": "Parka",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 59,
+   "tier": "3",
+   "thumbnail": "/flats/parka/front.svg",
+   "views": {
+    "back": "/flats/parka/back.svg",
+    "front": "/flats/parka/front.svg"
+   },
+   "interfaces": 7,
+   "fabric": "technical"
+  },
+  {
+   "slug": "patch-pocket",
+   "name": "Patch Pocket",
+   "family": "",
+   "kind": "block",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/patch-pocket/front.svg",
+   "views": {
+    "back": "/flats/patch-pocket/back.svg",
+    "front": "/flats/patch-pocket/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "pattern-weight-bag",
+   "name": "Pattern-Weight Bag Set",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 415,
+   "tier": "1",
+   "thumbnail": "/flats/pattern-weight-bag/front.svg",
+   "views": {
+    "back": "/flats/pattern-weight-bag/back.svg",
+    "front": "/flats/pattern-weight-bag/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "lona-encerada"
+  },
+  {
+   "slug": "peak-lapel-tuxedo",
+   "name": "Peak-Lapel Dinner Jacket (Tuxedo)",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 312,
+   "tier": "4",
+   "thumbnail": "/flats/peak-lapel-tuxedo/front.svg",
+   "views": {
+    "back": "/flats/peak-lapel-tuxedo/back.svg",
+    "front": "/flats/peak-lapel-tuxedo/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-barathea"
+  },
+  {
+   "slug": "peasant-top",
+   "name": "Peasant Top",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 186,
+   "tier": "2",
+   "thumbnail": "/flats/peasant-top/front.svg",
+   "views": {
+    "back": "/flats/peasant-top/back.svg",
+    "front": "/flats/peasant-top/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "pencil-skirt",
+   "name": "Pencil Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 32,
+   "tier": "2",
+   "thumbnail": "/flats/pencil-skirt/front.svg",
+   "views": {
+    "back": "/flats/pencil-skirt/back.svg",
+    "front": "/flats/pencil-skirt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "peplum-top",
+   "name": "Peplum Top",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 160,
+   "tier": "2",
+   "thumbnail": "/flats/peplum-top/front.svg",
+   "views": {
+    "back": "/flats/peplum-top/back.svg",
+    "front": "/flats/peplum-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "poplin"
+  },
+  {
+   "slug": "pillbox-hat",
+   "name": "Pillbox Hat",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 211,
+   "tier": "3",
+   "thumbnail": "/flats/pillbox-hat/front.svg",
+   "views": {
+    "back": "/flats/pillbox-hat/back.svg",
+    "front": "/flats/pillbox-hat/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "pinafore-dress",
+   "name": "Pinafore Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 163,
+   "tier": "1",
+   "thumbnail": "/flats/pinafore-dress/front.svg",
+   "views": {
+    "back": "/flats/pinafore-dress/back.svg",
+    "front": "/flats/pinafore-dress/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "pleat-panel-collar",
+   "name": "Printed Pleat-Panel Collar",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 343,
+   "tier": "4",
+   "thumbnail": "/flats/pleat-panel-collar/front.svg",
+   "views": {
+    "back": "/flats/pleat-panel-collar/back.svg",
+    "front": "/flats/pleat-panel-collar/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "pleated-skirt",
+   "name": "Pleated Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 34,
+   "tier": "2",
+   "thumbnail": "/flats/pleated-skirt/front.svg",
+   "views": {
+    "back": "/flats/pleated-skirt/back.svg",
+    "front": "/flats/pleated-skirt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "pneu-finger-splint-sleeve",
+   "name": "Pneumatic finger-splint sleeve",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 432,
+   "tier": "4",
+   "thumbnail": "/flats/pneu-finger-splint-sleeve/front.svg",
+   "views": {
+    "back": "/flats/pneu-finger-splint-sleeve/back.svg",
+    "front": "/flats/pneu-finger-splint-sleeve/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "pocket-hoops",
+   "name": "Pocket Hoops",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 268,
+   "tier": "3",
+   "thumbnail": "/flats/pocket-hoops/front.svg",
+   "views": {
+    "back": "/flats/pocket-hoops/back.svg",
+    "front": "/flats/pocket-hoops/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "point-turner-sleeve",
+   "name": "Point-Turner Tool Sleeve",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 414,
+   "tier": "1",
+   "thumbnail": "/flats/point-turner-sleeve/front.svg",
+   "views": {
+    "back": "/flats/point-turner-sleeve/back.svg",
+    "front": "/flats/point-turner-sleeve/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "pollera-panamena",
+   "name": "Pollera panameña",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 495,
+   "tier": "4",
+   "thumbnail": "/flats/pollera-panamena/front.svg",
+   "views": {
+    "back": "/flats/pollera-panamena/back.svg",
+    "front": "/flats/pollera-panamena/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "algodon-percal"
+  },
+  {
+   "slug": "polo-shirt",
+   "name": "Polo Shirt",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 3,
+   "tier": "2",
+   "thumbnail": "/flats/polo-shirt/front.svg",
+   "views": {
+    "back": "/flats/polo-shirt/back.svg",
+    "front": "/flats/polo-shirt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "poncho-knit",
+   "name": "Knit Ruana Poncho",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 336,
+   "tier": "2",
+   "thumbnail": "/flats/poncho-knit/front.svg",
+   "views": {
+    "back": "/flats/poncho-knit/back.svg",
+    "front": "/flats/poncho-knit/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-alpaca"
+  },
+  {
+   "slug": "poncho-mexicano",
+   "name": "Mexican gaban poncho",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 400,
+   "tier": "2",
+   "thumbnail": "/flats/poncho-mexicano/front.svg",
+   "views": {
+    "back": "/flats/poncho-mexicano/back.svg",
+    "front": "/flats/poncho-mexicano/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-sarape"
+  },
+  {
+   "slug": "poncho-ruana",
+   "name": "Ruana",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 279,
+   "tier": "4",
+   "thumbnail": "/flats/poncho-ruana/front.svg",
+   "views": {
+    "back": "/flats/poncho-ruana/back.svg",
+    "front": "/flats/poncho-ruana/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "lana-melton-abrigo"
+  },
+  {
+   "slug": "post-surgical-access-tee",
+   "name": "Post-Surgical Access Tee",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 249,
+   "tier": "2",
+   "thumbnail": "/flats/post-surgical-access-tee/front.svg",
+   "views": {
+    "back": "/flats/post-surgical-access-tee/back.svg",
+    "front": "/flats/post-surgical-access-tee/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "press-folding-board-cover",
+   "name": "Folding-Board Press Cover",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 418,
+   "tier": "1",
+   "thumbnail": "/flats/press-folding-board-cover/front.svg",
+   "views": {
+    "back": "/flats/press-folding-board-cover/back.svg",
+    "front": "/flats/press-folding-board-cover/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "lino-lavado"
+  },
+  {
+   "slug": "printed-corset-busk",
+   "name": "Printed Corset Busk",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 124,
+   "tier": "4",
+   "thumbnail": "/flats/printed-corset-busk/front.svg",
+   "views": {
+    "back": "/flats/printed-corset-busk/back.svg",
+    "front": "/flats/printed-corset-busk/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "printed-epaulette",
+   "name": "Printed Epaulette",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 125,
+   "tier": "4",
+   "thumbnail": "/flats/printed-epaulette/front.svg",
+   "views": {
+    "back": "/flats/printed-epaulette/back.svg",
+    "front": "/flats/printed-epaulette/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "printed-flexure-cuff",
+   "name": "Printed Flexure Cuff",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 119,
+   "tier": "4",
+   "thumbnail": "/flats/printed-flexure-cuff/front.svg",
+   "views": {
+    "back": "/flats/printed-flexure-cuff/back.svg",
+    "front": "/flats/printed-flexure-cuff/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "printed-gusset-flexure",
+   "name": "Printed Gusset Flexure",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 126,
+   "tier": "4",
+   "thumbnail": "/flats/printed-gusset-flexure/front.svg",
+   "views": {
+    "back": "/flats/printed-gusset-flexure/back.svg",
+    "front": "/flats/printed-gusset-flexure/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "printed-hinge-collar",
+   "name": "Printed Hinge Collar",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 121,
+   "tier": "4",
+   "thumbnail": "/flats/printed-hinge-collar/front.svg",
+   "views": {
+    "back": "/flats/printed-hinge-collar/back.svg",
+    "front": "/flats/printed-hinge-collar/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "printed-mesh-overlay",
+   "name": "Printed Structural Mesh Overlay",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 352,
+   "tier": "4",
+   "thumbnail": "/flats/printed-mesh-overlay/front.svg",
+   "views": {
+    "back": "/flats/printed-mesh-overlay/back.svg",
+    "front": "/flats/printed-mesh-overlay/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "printed-panel-tee",
+   "name": "AM Printed-Panel Tee",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 409,
+   "tier": "4",
+   "thumbnail": "/flats/printed-panel-tee/front.svg",
+   "views": {
+    "back": "/flats/printed-panel-tee/back.svg",
+    "front": "/flats/printed-panel-tee/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "puffer-jacket",
+   "name": "Puffer Jacket",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 31,
+   "tier": "4",
+   "thumbnail": "/flats/puffer-jacket/front.svg",
+   "views": {
+    "back": "/flats/puffer-jacket/back.svg",
+    "front": "/flats/puffer-jacket/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "technical"
+  },
+  {
+   "slug": "puffer-vest",
+   "name": "Puffer Vest",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 64,
+   "tier": "4",
+   "thumbnail": "/flats/puffer-vest/front.svg",
+   "views": {
+    "back": "/flats/puffer-vest/back.svg",
+    "front": "/flats/puffer-vest/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "technical"
+  },
+  {
+   "slug": "qipao",
+   "name": "Qipao / Cheongsam",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 142,
+   "tier": "3",
+   "thumbnail": "/flats/qipao/front.svg",
+   "views": {
+    "back": "/flats/qipao/back.svg",
+    "front": "/flats/qipao/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "brocade"
+  },
+  {
+   "slug": "quilted-liner-jacket",
+   "name": "Quilted button-in liner jacket",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 377,
+   "tier": "2",
+   "thumbnail": "/flats/quilted-liner-jacket/front.svg",
+   "views": {
+    "back": "/flats/quilted-liner-jacket/back.svg",
+    "front": "/flats/quilted-liner-jacket/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "quilted-nylon"
+  },
+  {
+   "slug": "qumbaz-coat",
+   "name": "Qumbaz linen robe",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 494,
+   "tier": "2",
+   "thumbnail": "/flats/qumbaz-coat/front.svg",
+   "views": {
+    "back": "/flats/qumbaz-coat/back.svg",
+    "front": "/flats/qumbaz-coat/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lino-lavado"
+  },
+  {
+   "slug": "racerback-sports-bra",
+   "name": "Racerback sports bra",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 388,
+   "tier": "2",
+   "thumbnail": "/flats/racerback-sports-bra/front.svg",
+   "views": {
+    "back": "/flats/racerback-sports-bra/back.svg",
+    "front": "/flats/racerback-sports-bra/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "power-mesh"
+  },
+  {
+   "slug": "radio-chest-pack",
+   "name": "Radio Chest Pack",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 244,
+   "tier": "2",
+   "thumbnail": "/flats/radio-chest-pack/front.svg",
+   "views": {
+    "back": "/flats/radio-chest-pack/back.svg",
+    "front": "/flats/radio-chest-pack/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "raglan-baseball-tee",
+   "name": "Raglan Baseball Tee",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 74,
+   "tier": "1",
+   "thumbnail": "/flats/raglan-baseball-tee/front.svg",
+   "views": {
+    "back": "/flats/raglan-baseball-tee/back.svg",
+    "front": "/flats/raglan-baseball-tee/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "knit"
+  },
+  {
+   "slug": "raglan-knit-pullover",
+   "name": "Raglan Knit Pullover",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 292,
+   "tier": "4",
+   "thumbnail": "/flats/raglan-knit-pullover/front.svg",
+   "views": {
+    "back": "/flats/raglan-knit-pullover/back.svg",
+    "front": "/flats/raglan-knit-pullover/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "rain-chaps",
+   "name": "Rain Chaps",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 237,
+   "tier": "2",
+   "thumbnail": "/flats/rain-chaps/front.svg",
+   "views": {
+    "back": "/flats/rain-chaps/back.svg",
+    "front": "/flats/rain-chaps/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "raincoat",
+   "name": "Raincoat",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 61,
+   "tier": "4",
+   "thumbnail": "/flats/raincoat/front.svg",
+   "views": {
+    "back": "/flats/raincoat/back.svg",
+    "front": "/flats/raincoat/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "technical"
+  },
+  {
+   "slug": "rash-guard",
+   "name": "Rash Guard",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 57,
+   "tier": "4",
+   "thumbnail": "/flats/rash-guard/front.svg",
+   "views": {
+    "back": "/flats/rash-guard/back.svg",
+    "front": "/flats/rash-guard/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "technical"
+  },
+  {
+   "slug": "rash-guard-zip",
+   "name": "Zip-front rash guard",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 390,
+   "tier": "2",
+   "thumbnail": "/flats/rash-guard-zip/front.svg",
+   "views": {
+    "back": "/flats/rash-guard-zip/back.svg",
+    "front": "/flats/rash-guard-zip/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "swim-lycra"
+  },
+  {
+   "slug": "rash-guard-zip-hood",
+   "name": "Zip-hood rash guard",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 453,
+   "tier": "2",
+   "thumbnail": "/flats/rash-guard-zip-hood/front.svg",
+   "views": {
+    "back": "/flats/rash-guard-zip-hood/back.svg",
+    "front": "/flats/rash-guard-zip-hood/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "raw-hem-denim-short",
+   "name": "Raw-Hem Denim Short",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 411,
+   "tier": "2",
+   "thumbnail": "/flats/raw-hem-denim-short/front.svg",
+   "views": {
+    "back": "/flats/raw-hem-denim-short/back.svg",
+    "front": "/flats/raw-hem-denim-short/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "mezclilla-14oz"
+  },
+  {
+   "slug": "rebozo",
+   "name": "Rebozo",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 139,
+   "tier": "1",
+   "thumbnail": "/flats/rebozo/front.svg",
+   "views": {
+    "back": "/flats/rebozo/back.svg",
+    "front": "/flats/rebozo/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "woven"
+  },
+  {
+   "slug": "regency-spencer",
+   "name": "Regency Spencer",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 276,
+   "tier": "3",
+   "thumbnail": "/flats/regency-spencer/front.svg",
+   "views": {
+    "back": "/flats/regency-spencer/back.svg",
+    "front": "/flats/regency-spencer/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "regency-stays",
+   "name": "Regency Stays",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 267,
+   "tier": "3",
+   "thumbnail": "/flats/regency-stays/front.svg",
+   "views": {
+    "back": "/flats/regency-stays/back.svg",
+    "front": "/flats/regency-stays/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "rehab-sensor-cuff",
+   "name": "Rehab Sensor Cuff",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 266,
+   "tier": "4",
+   "thumbnail": "/flats/rehab-sensor-cuff/front.svg",
+   "views": {
+    "back": "/flats/rehab-sensor-cuff/back.svg",
+    "front": "/flats/rehab-sensor-cuff/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "poliester-elastano-compresion"
+  },
+  {
+   "slug": "rivet-burr",
+   "name": "Rivet + Burr",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 111,
+   "tier": "1",
+   "thumbnail": "/flats/rivet-burr/front.svg",
+   "views": {
+    "back": "/flats/rivet-burr/back.svg",
+    "front": "/flats/rivet-burr/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "denim"
+  },
+  {
+   "slug": "robe",
+   "name": "Robe",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 42,
+   "tier": "1",
+   "thumbnail": "/flats/robe/front.svg",
+   "views": {
+    "back": "/flats/robe/back.svg",
+    "front": "/flats/robe/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "woven"
+  },
+  {
+   "slug": "roll-top-backpack",
+   "name": "Roll-Top Backpack",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 203,
+   "tier": "2",
+   "thumbnail": "/flats/roll-top-backpack/front.svg",
+   "views": {
+    "back": "/flats/roll-top-backpack/back.svg",
+    "front": "/flats/roll-top-backpack/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "romper",
+   "name": "Romper",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 48,
+   "tier": "2",
+   "thumbnail": "/flats/romper/front.svg",
+   "views": {
+    "back": "/flats/romper/back.svg",
+    "front": "/flats/romper/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "running-shorts",
+   "name": "Running Shorts",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 52,
+   "tier": "1",
+   "thumbnail": "/flats/running-shorts/front.svg",
+   "views": {
+    "back": "/flats/running-shorts/back.svg",
+    "front": "/flats/running-shorts/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "technical"
+  },
+  {
+   "slug": "saddle-bag",
+   "name": "Saddle Bag",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 209,
+   "tier": "2",
+   "thumbnail": "/flats/saddle-bag/front.svg",
+   "views": {
+    "back": "/flats/saddle-bag/back.svg",
+    "front": "/flats/saddle-bag/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "safari-suit-jacket",
+   "name": "Safari-Suit Bush Jacket",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 319,
+   "tier": "3",
+   "thumbnail": "/flats/safari-suit-jacket/front.svg",
+   "views": {
+    "back": "/flats/safari-suit-jacket/back.svg",
+    "front": "/flats/safari-suit-jacket/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "cotton-twill"
+  },
+  {
+   "slug": "salwar-kameez-set",
+   "name": "Salwar kameez set",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 491,
+   "tier": "2",
+   "thumbnail": "/flats/salwar-kameez-set/front.svg",
+   "views": {
+    "back": "/flats/salwar-kameez-set/back.svg",
+    "front": "/flats/salwar-kameez-set/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "algodon-voile"
+  },
+  {
+   "slug": "sandal-strap-set",
+   "name": "Sandal Strap Set",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 230,
+   "tier": "2",
+   "thumbnail": "/flats/sandal-strap-set/front.svg",
+   "views": {
+    "back": "/flats/sandal-strap-set/back.svg",
+    "front": "/flats/sandal-strap-set/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "sarafan",
+   "name": "Sarafan",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 277,
+   "tier": "4",
+   "thumbnail": "/flats/sarafan/front.svg",
+   "views": {
+    "back": "/flats/sarafan/back.svg",
+    "front": "/flats/sarafan/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "sarape-poncho",
+   "name": "Sarape / Poncho",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 138,
+   "tier": "1",
+   "thumbnail": "/flats/sarape-poncho/front.svg",
+   "views": {
+    "back": "/flats/sarape-poncho/back.svg",
+    "front": "/flats/sarape-poncho/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "wool"
+  },
+  {
+   "slug": "sari-blouse",
+   "name": "Sari Blouse (Choli)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 144,
+   "tier": "3",
+   "thumbnail": "/flats/sari-blouse/front.svg",
+   "views": {
+    "back": "/flats/sari-blouse/back.svg",
+    "front": "/flats/sari-blouse/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "silk"
+  },
+  {
+   "slug": "sarong-wrap",
+   "name": "Sarong (Wrap)",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 157,
+   "tier": "1",
+   "thumbnail": "/flats/sarong-wrap/front.svg",
+   "views": {
+    "back": "/flats/sarong-wrap/back.svg",
+    "front": "/flats/sarong-wrap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "scale-mail-bodice",
+   "name": "Printed Scale-Mail Bodice",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 341,
+   "tier": "4",
+   "thumbnail": "/flats/scale-mail-bodice/front.svg",
+   "views": {
+    "back": "/flats/scale-mail-bodice/back.svg",
+    "front": "/flats/scale-mail-bodice/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "scale-mail-gauntlet",
+   "name": "Printed Scale-Mail Gauntlet",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 348,
+   "tier": "4",
+   "thumbnail": "/flats/scale-mail-gauntlet/front.svg",
+   "views": {
+    "back": "/flats/scale-mail-gauntlet/back.svg",
+    "front": "/flats/scale-mail-gauntlet/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-flex"
+  },
+  {
+   "slug": "school-polo",
+   "name": "School Polo",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 95,
+   "tier": "2",
+   "thumbnail": "/flats/school-polo/front.svg",
+   "views": {
+    "back": "/flats/school-polo/back.svg",
+    "front": "/flats/school-polo/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "knit"
+  },
+  {
+   "slug": "scrub-cap",
+   "name": "Scrub Cap",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 193,
+   "tier": "1",
+   "thumbnail": "/flats/scrub-cap/front.svg",
+   "views": {
+    "back": "/flats/scrub-cap/back.svg",
+    "front": "/flats/scrub-cap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "scrubs-pants",
+   "name": "Scrubs Pants",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 86,
+   "tier": "1",
+   "thumbnail": "/flats/scrubs-pants/front.svg",
+   "views": {
+    "back": "/flats/scrubs-pants/back.svg",
+    "front": "/flats/scrubs-pants/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "woven"
+  },
+  {
+   "slug": "scrubs-top",
+   "name": "Scrubs Top",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 85,
+   "tier": "1",
+   "thumbnail": "/flats/scrubs-top/front.svg",
+   "views": {
+    "back": "/flats/scrubs-top/back.svg",
+    "front": "/flats/scrubs-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "seated-rain-cape",
+   "name": "Seated Rain Cape",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 247,
+   "tier": "2",
+   "thumbnail": "/flats/seated-rain-cape/front.svg",
+   "views": {
+    "back": "/flats/seated-rain-cape/back.svg",
+    "front": "/flats/seated-rain-cape/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-ripstop-shell"
+  },
+  {
+   "slug": "seated-wear-trouser",
+   "name": "Seated-wear rise-adjusted trouser",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 372,
+   "tier": "2",
+   "thumbnail": "/flats/seated-wear-trouser/front.svg",
+   "views": {
+    "back": "/flats/seated-wear-trouser/back.svg",
+    "front": "/flats/seated-wear-trouser/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "twill-stretch"
+  },
+  {
+   "slug": "seated-wrap-trouser",
+   "name": "Seated-wear wrap trouser",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 437,
+   "tier": "2",
+   "thumbnail": "/flats/seated-wrap-trouser/front.svg",
+   "views": {
+    "back": "/flats/seated-wrap-trouser/back.svg",
+    "front": "/flats/seated-wrap-trouser/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "selvedge-jean",
+   "name": "Selvedge Straight Jean",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 301,
+   "tier": "2",
+   "thumbnail": "/flats/selvedge-jean/front.svg",
+   "views": {
+    "back": "/flats/selvedge-jean/back.svg",
+    "front": "/flats/selvedge-jean/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "denim-14oz"
+  },
+  {
+   "slug": "selvedge-jean-straight",
+   "name": "Selvedge Straight-Leg Jean",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 401,
+   "tier": "3",
+   "thumbnail": "/flats/selvedge-jean-straight/front.svg",
+   "views": {
+    "back": "/flats/selvedge-jean-straight/back.svg",
+    "front": "/flats/selvedge-jean-straight/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "mezclilla-selvage"
+  },
+  {
+   "slug": "sensor-cycling-jersey",
+   "name": "Sensor-Mount Cycling Jersey",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 469,
+   "tier": "4",
+   "thumbnail": "/flats/sensor-cycling-jersey/front.svg",
+   "views": {
+    "back": "/flats/sensor-cycling-jersey/back.svg",
+    "front": "/flats/sensor-cycling-jersey/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "sensor-hem-band",
+   "name": "Sensor Hem Band",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 297,
+   "tier": "4",
+   "thumbnail": "/flats/sensor-hem-band/front.svg",
+   "views": {
+    "back": "/flats/sensor-hem-band/back.svg",
+    "front": "/flats/sensor-hem-band/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "poliester-elastano-compresion"
+  },
+  {
+   "slug": "sensory-friendly-tee",
+   "name": "Sensory-friendly seamless tee",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 374,
+   "tier": "1",
+   "thumbnail": "/flats/sensory-friendly-tee/front.svg",
+   "views": {
+    "back": "/flats/sensory-friendly-tee/back.svg",
+    "front": "/flats/sensory-friendly-tee/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "modal-jersey"
+  },
+  {
+   "slug": "sensory-tee",
+   "name": "Sensory-Friendly Tee",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 153,
+   "tier": "1",
+   "thumbnail": "/flats/sensory-tee/front.svg",
+   "views": {
+    "back": "/flats/sensory-tee/back.svg",
+    "front": "/flats/sensory-tee/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "sew-through-button",
+   "name": "Sew-Through Button",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/sew-through-button/front.svg",
+   "views": {
+    "back": "/flats/sew-through-button/back.svg",
+    "front": "/flats/sew-through-button/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "shank-button",
+   "name": "Shank Button",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/shank-button/front.svg",
+   "views": {
+    "back": "/flats/shank-button/back.svg",
+    "front": "/flats/shank-button/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "shapewear-short",
+   "name": "Shapewear Short",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 224,
+   "tier": "2",
+   "thumbnail": "/flats/shapewear-short/front.svg",
+   "views": {
+    "back": "/flats/shapewear-short/back.svg",
+    "front": "/flats/shapewear-short/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "any"
+  },
+  {
+   "slug": "shaping-body-suit",
+   "name": "Shaping bodysuit (scoop tank)",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 383,
+   "tier": "3",
+   "thumbnail": "/flats/shaping-body-suit/front.svg",
+   "views": {
+    "back": "/flats/shaping-body-suit/back.svg",
+    "front": "/flats/shaping-body-suit/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "power-mesh"
+  },
+  {
+   "slug": "shaping-bodysuit",
+   "name": "Shaping Bodysuit",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 226,
+   "tier": "3",
+   "thumbnail": "/flats/shaping-bodysuit/front.svg",
+   "views": {
+    "back": "/flats/shaping-bodysuit/back.svg",
+    "front": "/flats/shaping-bodysuit/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "any"
+  },
+  {
+   "slug": "sheath-dress",
+   "name": "Sheath Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 172,
+   "tier": "3",
+   "thumbnail": "/flats/sheath-dress/front.svg",
+   "views": {
+    "back": "/flats/sheath-dress/back.svg",
+    "front": "/flats/sheath-dress/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "shift-dress",
+   "name": "Shift Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 23,
+   "tier": "2",
+   "thumbnail": "/flats/shift-dress/front.svg",
+   "views": {
+    "back": "/flats/shift-dress/back.svg",
+    "front": "/flats/shift-dress/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "woven"
+  },
+  {
+   "slug": "shirt-dress",
+   "name": "Shirt Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 26,
+   "tier": "2",
+   "thumbnail": "/flats/shirt-dress/front.svg",
+   "views": {
+    "back": "/flats/shirt-dress/back.svg",
+    "front": "/flats/shirt-dress/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "woven"
+  },
+  {
+   "slug": "shoe-bag-drawstring",
+   "name": "Shoe Bag (Drawstring)",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 254,
+   "tier": "2",
+   "thumbnail": "/flats/shoe-bag-drawstring/front.svg",
+   "views": {
+    "back": "/flats/shoe-bag-drawstring/back.svg",
+    "front": "/flats/shoe-bag-drawstring/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "shoe-horn-boot-sock",
+   "name": "Shoe-Horn Boot Sock",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 427,
+   "tier": "2",
+   "thumbnail": "/flats/shoe-horn-boot-sock/front.svg",
+   "views": {
+    "back": "/flats/shoe-horn-boot-sock/back.svg",
+    "front": "/flats/shoe-horn-boot-sock/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "punto-lana"
+  },
+  {
+   "slug": "shoe-stuffer-bag",
+   "name": "Shaped shoe-tree fabric stuffer",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 365,
+   "tier": "1",
+   "thumbnail": "/flats/shoe-stuffer-bag/front.svg",
+   "views": {
+    "back": "/flats/shoe-stuffer-bag/back.svg",
+    "front": "/flats/shoe-stuffer-bag/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "cotton-drill"
+  },
+  {
+   "slug": "shop-coverall",
+   "name": "Mechanic's Shop Coverall",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 309,
+   "tier": "3",
+   "thumbnail": "/flats/shop-coverall/front.svg",
+   "views": {
+    "back": "/flats/shop-coverall/back.svg",
+    "front": "/flats/shop-coverall/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "twill-cotton"
+  },
+  {
+   "slug": "shweshwe-pinafore",
+   "name": "Shweshwe pinafore dress",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 485,
+   "tier": "2",
+   "thumbnail": "/flats/shweshwe-pinafore/front.svg",
+   "views": {
+    "back": "/flats/shweshwe-pinafore/back.svg",
+    "front": "/flats/shweshwe-pinafore/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "algodon-estampado"
+  },
+  {
+   "slug": "side-opening-top",
+   "name": "Side-Opening Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 149,
+   "tier": "2",
+   "thumbnail": "/flats/side-opening-top/front.svg",
+   "views": {
+    "back": "/flats/side-opening-top/back.svg",
+    "front": "/flats/side-opening-top/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "side-opening-trousers",
+   "name": "Side-Opening Trousers",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 245,
+   "tier": "2",
+   "thumbnail": "/flats/side-opening-trousers/front.svg",
+   "views": {
+    "back": "/flats/side-opening-trousers/back.svg",
+    "front": "/flats/side-opening-trousers/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "size-marker-ring-tag",
+   "name": "Size-Marker Ring Tag Set",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 422,
+   "tier": "1",
+   "thumbnail": "/flats/size-marker-ring-tag/front.svg",
+   "views": {
+    "back": "/flats/size-marker-ring-tag/back.svg",
+    "front": "/flats/size-marker-ring-tag/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "ski-base-layer-set",
+   "name": "Merino ski base-layer set",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 456,
+   "tier": "2",
+   "thumbnail": "/flats/ski-base-layer-set/front.svg",
+   "views": {
+    "back": "/flats/ski-base-layer-set/back.svg",
+    "front": "/flats/ski-base-layer-set/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "punto-merino"
+  },
+  {
+   "slug": "skirt-block",
+   "name": "Straight Skirt Block",
+   "family": "",
+   "kind": "block",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/skirt-block/front.svg",
+   "views": {
+    "back": "/flats/skirt-block/back.svg",
+    "front": "/flats/skirt-block/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": ""
+  },
+  {
+   "slug": "sleeve-block",
+   "name": "Sleeve Block (Set-in)",
+   "family": "",
+   "kind": "block",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/sleeve-block/front.svg",
+   "views": {
+    "back": "/flats/sleeve-block/back.svg",
+    "front": "/flats/sleeve-block/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "sling-bag",
+   "name": "Sling Bag",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 204,
+   "tier": "2",
+   "thumbnail": "/flats/sling-bag/front.svg",
+   "views": {
+    "back": "/flats/sling-bag/back.svg",
+    "front": "/flats/sling-bag/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "slip-dress",
+   "name": "Slip Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 46,
+   "tier": "2",
+   "thumbnail": "/flats/slip-dress/front.svg",
+   "views": {
+    "back": "/flats/slip-dress/back.svg",
+    "front": "/flats/slip-dress/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "woven"
+  },
+  {
+   "slug": "smock",
+   "name": "Smock",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 168,
+   "tier": "1",
+   "thumbnail": "/flats/smock/front.svg",
+   "views": {
+    "back": "/flats/smock/back.svg",
+    "front": "/flats/smock/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "canvas"
+  },
+  {
+   "slug": "snap-fastener",
+   "name": "Snap Fastener",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 101,
+   "tier": "1",
+   "thumbnail": "/flats/snap-fastener/front.svg",
+   "views": {
+    "back": "/flats/snap-fastener/back.svg",
+    "front": "/flats/snap-fastener/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "soft-bootie",
+   "name": "Soft Bootie",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 232,
+   "tier": "2",
+   "thumbnail": "/flats/soft-bootie/front.svg",
+   "views": {
+    "back": "/flats/soft-bootie/back.svg",
+    "front": "/flats/soft-bootie/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "soft-finger-mitt",
+   "name": "Soft-finger dressing mitt",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 433,
+   "tier": "4",
+   "thumbnail": "/flats/soft-finger-mitt/front.svg",
+   "views": {
+    "back": "/flats/soft-finger-mitt/back.svg",
+    "front": "/flats/soft-finger-mitt/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "neopreno"
+  },
+  {
+   "slug": "sports-bra",
+   "name": "Sports Bra",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 12,
+   "tier": "4",
+   "thumbnail": "/flats/sports-bra/front.svg",
+   "views": {
+    "back": "/flats/sports-bra/back.svg",
+    "front": "/flats/sports-bra/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "technical"
+  },
+  {
+   "slug": "spring-hook",
+   "name": "Spring Hook",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 106,
+   "tier": "1",
+   "thumbnail": "/flats/spring-hook/front.svg",
+   "views": {
+    "back": "/flats/spring-hook/back.svg",
+    "front": "/flats/spring-hook/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "webbing"
+  },
+  {
+   "slug": "stage-quick-change-gown",
+   "name": "Quick-Change Stage Gown",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 482,
+   "tier": "3",
+   "thumbnail": "/flats/stage-quick-change-gown/front.svg",
+   "views": {
+    "back": "/flats/stage-quick-change-gown/back.svg",
+    "front": "/flats/stage-quick-change-gown/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "raso-poliester"
+  },
+  {
+   "slug": "stirrup-legging-knit",
+   "name": "Stirrup Knit Legging",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 403,
+   "tier": "1",
+   "thumbnail": "/flats/stirrup-legging-knit/front.svg",
+   "views": {
+    "back": "/flats/stirrup-legging-knit/back.svg",
+    "front": "/flats/stirrup-legging-knit/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "jersey-algodon"
+  },
+  {
+   "slug": "strap-buckle-notion",
+   "name": "Strap Buckle",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 102,
+   "tier": "1",
+   "thumbnail": "/flats/strap-buckle-notion/front.svg",
+   "views": {
+    "back": "/flats/strap-buckle-notion/back.svg",
+    "front": "/flats/strap-buckle-notion/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "structured-corset",
+   "name": "Structured Corset",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 196,
+   "tier": "3",
+   "thumbnail": "/flats/structured-corset/front.svg",
+   "views": {
+    "back": "/flats/structured-corset/back.svg",
+    "front": "/flats/structured-corset/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "structured-fascinator",
+   "name": "Structured Fascinator",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 212,
+   "tier": "3",
+   "thumbnail": "/flats/structured-fascinator/front.svg",
+   "views": {
+    "back": "/flats/structured-fascinator/back.svg",
+    "front": "/flats/structured-fascinator/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "suit-jacket",
+   "name": "Suit Jacket",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 67,
+   "tier": "3",
+   "thumbnail": "/flats/suit-jacket/front.svg",
+   "views": {
+    "back": "/flats/suit-jacket/back.svg",
+    "front": "/flats/suit-jacket/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "woven"
+  },
+  {
+   "slug": "suit-trousers",
+   "name": "Suit Trousers",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 68,
+   "tier": "2",
+   "thumbnail": "/flats/suit-trousers/front.svg",
+   "views": {
+    "back": "/flats/suit-trousers/back.svg",
+    "front": "/flats/suit-trousers/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "woven"
+  },
+  {
+   "slug": "sun-bonnet",
+   "name": "Sun Bonnet",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 217,
+   "tier": "2",
+   "thumbnail": "/flats/sun-bonnet/front.svg",
+   "views": {
+    "back": "/flats/sun-bonnet/back.svg",
+    "front": "/flats/sun-bonnet/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "sun-hat",
+   "name": "Wide-Brim Sun Hat",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 213,
+   "tier": "2",
+   "thumbnail": "/flats/sun-hat/front.svg",
+   "views": {
+    "back": "/flats/sun-hat/back.svg",
+    "front": "/flats/sun-hat/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "suspender-belt",
+   "name": "Suspender belt (six-strap)",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 385,
+   "tier": "2",
+   "thumbnail": "/flats/suspender-belt/front.svg",
+   "views": {
+    "back": "/flats/suspender-belt/back.svg",
+    "front": "/flats/suspender-belt/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "satin-tricot"
+  },
+  {
+   "slug": "suspender-clip",
+   "name": "Suspender Clip",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 114,
+   "tier": "1",
+   "thumbnail": "/flats/suspender-clip/front.svg",
+   "views": {
+    "back": "/flats/suspender-clip/back.svg",
+    "front": "/flats/suspender-clip/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "sweater-dress",
+   "name": "Sweater Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 188,
+   "tier": "2",
+   "thumbnail": "/flats/sweater-dress/front.svg",
+   "views": {
+    "back": "/flats/sweater-dress/back.svg",
+    "front": "/flats/sweater-dress/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "sweater-storage-envelope",
+   "name": "Sweater Storage Envelope",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 255,
+   "tier": "2",
+   "thumbnail": "/flats/sweater-storage-envelope/front.svg",
+   "views": {
+    "back": "/flats/sweater-storage-envelope/back.svg",
+    "front": "/flats/sweater-storage-envelope/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "manta-cruda"
+  },
+  {
+   "slug": "sweater-storage-roll",
+   "name": "Roll-up sweater storage sleeve",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 366,
+   "tier": "1",
+   "thumbnail": "/flats/sweater-storage-roll/front.svg",
+   "views": {
+    "back": "/flats/sweater-storage-roll/back.svg",
+    "front": "/flats/sweater-storage-roll/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "cotton-muslin"
+  },
+  {
+   "slug": "sweater-vest",
+   "name": "Sweater Vest",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 175,
+   "tier": "2",
+   "thumbnail": "/flats/sweater-vest/front.svg",
+   "views": {
+    "back": "/flats/sweater-vest/back.svg",
+    "front": "/flats/sweater-vest/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "sweatpants",
+   "name": "Sweatpants",
+   "family": "bottoms",
+   "kind": "garment",
+   "rank": 15,
+   "tier": "1",
+   "thumbnail": "/flats/sweatpants/front.svg",
+   "views": {
+    "back": "/flats/sweatpants/back.svg",
+    "front": "/flats/sweatpants/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "knit"
+  },
+  {
+   "slug": "sweatshirt-crewneck",
+   "name": "Crewneck Sweatshirt",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 6,
+   "tier": "1",
+   "thumbnail": "/flats/sweatshirt-crewneck/front.svg",
+   "views": {
+    "back": "/flats/sweatshirt-crewneck/back.svg",
+    "front": "/flats/sweatshirt-crewneck/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "swim-trunks",
+   "name": "Swim Trunks",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 53,
+   "tier": "4",
+   "thumbnail": "/flats/swim-trunks/front.svg",
+   "views": {
+    "back": "/flats/swim-trunks/back.svg",
+    "front": "/flats/swim-trunks/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "technical"
+  },
+  {
+   "slug": "swimsuit-one-piece",
+   "name": "Structured one-piece swimsuit",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 389,
+   "tier": "3",
+   "thumbnail": "/flats/swimsuit-one-piece/front.svg",
+   "views": {
+    "back": "/flats/swimsuit-one-piece/back.svg",
+    "front": "/flats/swimsuit-one-piece/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "swim-lycra"
+  },
+  {
+   "slug": "swing-coat",
+   "name": "Swing Coat",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 189,
+   "tier": "3",
+   "thumbnail": "/flats/swing-coat/front.svg",
+   "views": {
+    "back": "/flats/swing-coat/back.svg",
+    "front": "/flats/swing-coat/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "t-shirt-crew",
+   "name": "T-shirt (Crew Neck)",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 1,
+   "tier": "1",
+   "thumbnail": "/flats/t-shirt-crew/front.svg",
+   "views": {
+    "back": "/flats/t-shirt-crew/back.svg",
+    "front": "/flats/t-shirt-crew/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "knit"
+  },
+  {
+   "slug": "t-shirt-v-neck",
+   "name": "T-shirt (V-neck)",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 27,
+   "tier": "1",
+   "thumbnail": "/flats/t-shirt-v-neck/front.svg",
+   "views": {
+    "back": "/flats/t-shirt-v-neck/back.svg",
+    "front": "/flats/t-shirt-v-neck/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "knit"
+  },
+  {
+   "slug": "tabard",
+   "name": "Tabard",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 171,
+   "tier": "1",
+   "thumbnail": "/flats/tabard/front.svg",
+   "views": {
+    "back": "/flats/tabard/back.svg",
+    "front": "/flats/tabard/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "tailored-trouser-pleat",
+   "name": "Double-Pleat Tailored Trouser",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 316,
+   "tier": "3",
+   "thumbnail": "/flats/tailored-trouser-pleat/front.svg",
+   "views": {
+    "back": "/flats/tailored-trouser-pleat/back.svg",
+    "front": "/flats/tailored-trouser-pleat/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "wool-worsted"
+  },
+  {
+   "slug": "tailored-vest-back-strap",
+   "name": "Cinch-Back Tailoring Vest",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 320,
+   "tier": "3",
+   "thumbnail": "/flats/tailored-vest-back-strap/front.svg",
+   "views": {
+    "back": "/flats/tailored-vest-back-strap/back.svg",
+    "front": "/flats/tailored-vest-back-strap/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-worsted"
+  },
+  {
+   "slug": "tank-dress",
+   "name": "Tank Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 173,
+   "tier": "1",
+   "thumbnail": "/flats/tank-dress/front.svg",
+   "views": {
+    "back": "/flats/tank-dress/back.svg",
+    "front": "/flats/tank-dress/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "tank-top",
+   "name": "Tank Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 8,
+   "tier": "1",
+   "thumbnail": "/flats/tank-top/front.svg",
+   "views": {
+    "back": "/flats/tank-top/back.svg",
+    "front": "/flats/tank-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "knit"
+  },
+  {
+   "slug": "tendon-knuckle-brace",
+   "name": "Tendon-knuckle wrist brace",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 435,
+   "tier": "4",
+   "thumbnail": "/flats/tendon-knuckle-brace/front.svg",
+   "views": {
+    "back": "/flats/tendon-knuckle-brace/back.svg",
+    "front": "/flats/tendon-knuckle-brace/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "thermal-waffle-henley",
+   "name": "Waffle Thermal Henley",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 465,
+   "tier": "1",
+   "thumbnail": "/flats/thermal-waffle-henley/front.svg",
+   "views": {
+    "back": "/flats/thermal-waffle-henley/back.svg",
+    "front": "/flats/thermal-waffle-henley/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "punto-waffle"
+  },
+  {
+   "slug": "thimble-finger-cot",
+   "name": "Quilter's Thimble Cot",
+   "family": "care_keeping",
+   "kind": "garment",
+   "rank": 416,
+   "tier": "1",
+   "thumbnail": "/flats/thimble-finger-cot/front.svg",
+   "views": {
+    "back": "/flats/thimble-finger-cot/back.svg",
+    "front": "/flats/thimble-finger-cot/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "thobe",
+   "name": "Thobe / Thawb",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 159,
+   "tier": "2",
+   "thumbnail": "/flats/thobe/front.svg",
+   "views": {
+    "back": "/flats/thobe/back.svg",
+    "front": "/flats/thobe/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "three-piece-vest-back",
+   "name": "Three-piece suit vest",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 444,
+   "tier": "3",
+   "thumbnail": "/flats/three-piece-vest-back/front.svg",
+   "views": {
+    "back": "/flats/three-piece-vest-back/back.svg",
+    "front": "/flats/three-piece-vest-back/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "tiered-dress",
+   "name": "Tiered Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 174,
+   "tier": "2",
+   "thumbnail": "/flats/tiered-dress/front.svg",
+   "views": {
+    "back": "/flats/tiered-dress/back.svg",
+    "front": "/flats/tiered-dress/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "toddler-dungaree",
+   "name": "Toddler Dungaree",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 321,
+   "tier": "2",
+   "thumbnail": "/flats/toddler-dungaree/front.svg",
+   "views": {
+    "back": "/flats/toddler-dungaree/back.svg",
+    "front": "/flats/toddler-dungaree/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-twill"
+  },
+  {
+   "slug": "toddler-legging",
+   "name": "Toddler Footed Legging",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 327,
+   "tier": "1",
+   "thumbnail": "/flats/toddler-legging/front.svg",
+   "views": {
+    "back": "/flats/toddler-legging/back.svg",
+    "front": "/flats/toddler-legging/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cotton-lycra"
+  },
+  {
+   "slug": "toddler-pinafore",
+   "name": "Toddler Pinafore Dress",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 408,
+   "tier": "2",
+   "thumbnail": "/flats/toddler-pinafore/front.svg",
+   "views": {
+    "back": "/flats/toddler-pinafore/back.svg",
+    "front": "/flats/toddler-pinafore/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "popelina-algodon"
+  },
+  {
+   "slug": "toddler-play-dungarees",
+   "name": "Toddler Play Dungarees",
+   "family": "kids_baby",
+   "kind": "garment",
+   "rank": 287,
+   "tier": "2",
+   "thumbnail": "/flats/toddler-play-dungarees/front.svg",
+   "views": {
+    "back": "/flats/toddler-play-dungarees/back.svg",
+    "front": "/flats/toddler-play-dungarees/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "mezclilla-denim"
+  },
+  {
+   "slug": "toe-post-sandal-strap",
+   "name": "Toe-Post Sandal Strap Set",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 430,
+   "tier": "2",
+   "thumbnail": "/flats/toe-post-sandal-strap/front.svg",
+   "views": {
+    "back": "/flats/toe-post-sandal-strap/back.svg",
+    "front": "/flats/toe-post-sandal-strap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "cuero-vegetal"
+  },
+  {
+   "slug": "toggle-closure",
+   "name": "Toggle Closure",
+   "family": "findings",
+   "kind": "garment",
+   "rank": 110,
+   "tier": "1",
+   "thumbnail": "/flats/toggle-closure/front.svg",
+   "views": {
+    "back": "/flats/toggle-closure/back.svg",
+    "front": "/flats/toggle-closure/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "tool-roll",
+   "name": "Tool Roll",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 239,
+   "tier": "1",
+   "thumbnail": "/flats/tool-roll/front.svg",
+   "views": {
+    "back": "/flats/tool-roll/back.svg",
+    "front": "/flats/tool-roll/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "tote-bag",
+   "name": "Tote Bag",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 127,
+   "tier": "2",
+   "thumbnail": "/flats/tote-bag/front.svg",
+   "views": {
+    "back": "/flats/tote-bag/back.svg",
+    "front": "/flats/tote-bag/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "canvas"
+  },
+  {
+   "slug": "tpu-pleat-panel",
+   "name": "TPU Pleat Panel",
+   "family": "am_fashion",
+   "kind": "garment",
+   "rank": 120,
+   "tier": "4",
+   "thumbnail": "/flats/tpu-pleat-panel/front.svg",
+   "views": {
+    "back": "/flats/tpu-pleat-panel/back.svg",
+    "front": "/flats/tpu-pleat-panel/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "tpu-panel-impreso"
+  },
+  {
+   "slug": "track-jacket",
+   "name": "Track Jacket",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 51,
+   "tier": "2",
+   "thumbnail": "/flats/track-jacket/front.svg",
+   "views": {
+    "back": "/flats/track-jacket/back.svg",
+    "front": "/flats/track-jacket/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "technical"
+  },
+  {
+   "slug": "track-pants",
+   "name": "Track Pants",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 50,
+   "tier": "1",
+   "thumbnail": "/flats/track-pants/front.svg",
+   "views": {
+    "back": "/flats/track-pants/back.svg",
+    "front": "/flats/track-pants/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "technical"
+  },
+  {
+   "slug": "trail-run-vest-pack",
+   "name": "Trail-running vest pack",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 451,
+   "tier": "3",
+   "thumbnail": "/flats/trail-run-vest-pack/front.svg",
+   "views": {
+    "back": "/flats/trail-run-vest-pack/back.svg",
+    "front": "/flats/trail-run-vest-pack/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-ripstop"
+  },
+  {
+   "slug": "trench-coat",
+   "name": "Trench Coat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 60,
+   "tier": "3",
+   "thumbnail": "/flats/trench-coat/front.svg",
+   "views": {
+    "back": "/flats/trench-coat/back.svg",
+    "front": "/flats/trench-coat/front.svg"
+   },
+   "interfaces": 6,
+   "fabric": "woven"
+  },
+  {
+   "slug": "trouser-hook-notion",
+   "name": "Trouser Hook and Bar",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/trouser-hook-notion/front.svg",
+   "views": {
+    "back": "/flats/trouser-hook-notion/back.svg",
+    "front": "/flats/trouser-hook-notion/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "tube-top",
+   "name": "Tube Top",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 187,
+   "tier": "1",
+   "thumbnail": "/flats/tube-top/front.svg",
+   "views": {
+    "back": "/flats/tube-top/back.svg",
+    "front": "/flats/tube-top/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "tudor-kirtle",
+   "name": "Tudor Kirtle",
+   "family": "costume_historical",
+   "kind": "garment",
+   "rank": 271,
+   "tier": "3",
+   "thumbnail": "/flats/tudor-kirtle/front.svg",
+   "views": {
+    "back": "/flats/tudor-kirtle/back.svg",
+    "front": "/flats/tudor-kirtle/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "tulip-skirt",
+   "name": "Tulip Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 181,
+   "tier": "2",
+   "thumbnail": "/flats/tulip-skirt/front.svg",
+   "views": {
+    "back": "/flats/tulip-skirt/back.svg",
+    "front": "/flats/tulip-skirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "tunic",
+   "name": "Tunic",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 78,
+   "tier": "1",
+   "thumbnail": "/flats/tunic/front.svg",
+   "views": {
+    "back": "/flats/tunic/back.svg",
+    "front": "/flats/tunic/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "woven"
+  },
+  {
+   "slug": "turban-band",
+   "name": "Turban Band",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 215,
+   "tier": "1",
+   "thumbnail": "/flats/turban-band/front.svg",
+   "views": {
+    "back": "/flats/turban-band/back.svg",
+    "front": "/flats/turban-band/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "turban-wrap-hat",
+   "name": "Draped Turban Hat",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 357,
+   "tier": "2",
+   "thumbnail": "/flats/turban-wrap-hat/front.svg",
+   "views": {
+    "back": "/flats/turban-wrap-hat/back.svg",
+    "front": "/flats/turban-wrap-hat/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "jersey-viscose"
+  },
+  {
+   "slug": "turtleneck-sweater",
+   "name": "Turtleneck Sweater",
+   "family": "knitwear",
+   "kind": "garment",
+   "rank": 40,
+   "tier": "4",
+   "thumbnail": "/flats/turtleneck-sweater/front.svg",
+   "views": {
+    "back": "/flats/turtleneck-sweater/back.svg",
+    "front": "/flats/turtleneck-sweater/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "knit"
+  },
+  {
+   "slug": "underwire-bra",
+   "name": "Underwire Bra",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 219,
+   "tier": "3",
+   "thumbnail": "/flats/underwire-bra/front.svg",
+   "views": {
+    "back": "/flats/underwire-bra/back.svg",
+    "front": "/flats/underwire-bra/front.svg"
+   },
+   "interfaces": 7,
+   "fabric": "any"
+  },
+  {
+   "slug": "utility-vest",
+   "name": "Utility Vest",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 170,
+   "tier": "2",
+   "thumbnail": "/flats/utility-vest/front.svg",
+   "views": {
+    "back": "/flats/utility-vest/back.svg",
+    "front": "/flats/utility-vest/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "varsity-jacket",
+   "name": "Varsity Jacket",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 66,
+   "tier": "2",
+   "thumbnail": "/flats/varsity-jacket/front.svg",
+   "views": {
+    "back": "/flats/varsity-jacket/back.svg",
+    "front": "/flats/varsity-jacket/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "mixed"
+  },
+  {
+   "slug": "veiled-cocktail-hat",
+   "name": "Veiled Cocktail Hat",
+   "family": "millinery",
+   "kind": "garment",
+   "rank": 214,
+   "tier": "3",
+   "thumbnail": "/flats/veiled-cocktail-hat/front.svg",
+   "views": {
+    "back": "/flats/veiled-cocktail-hat/back.svg",
+    "front": "/flats/veiled-cocktail-hat/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "vyshyvanka-shirt",
+   "name": "Vyshyvanka embroidered shirt",
+   "family": "heritage_global",
+   "kind": "garment",
+   "rank": 493,
+   "tier": "2",
+   "thumbnail": "/flats/vyshyvanka-shirt/front.svg",
+   "views": {
+    "back": "/flats/vyshyvanka-shirt/back.svg",
+    "front": "/flats/vyshyvanka-shirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "algodon-estampado"
+  },
+  {
+   "slug": "waistband-block",
+   "name": "Waistband Block",
+   "family": "",
+   "kind": "block",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/waistband-block/front.svg",
+   "views": {
+    "back": "/flats/waistband-block/back.svg",
+    "front": "/flats/waistband-block/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  },
+  {
+   "slug": "waistcoat",
+   "name": "Waistcoat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 69,
+   "tier": "3",
+   "thumbnail": "/flats/waistcoat/front.svg",
+   "views": {
+    "back": "/flats/waistcoat/back.svg",
+    "front": "/flats/waistcoat/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "woven"
+  },
+  {
+   "slug": "waistcoat-6button",
+   "name": "Six-Button Tailored Waistcoat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 313,
+   "tier": "3",
+   "thumbnail": "/flats/waistcoat-6button/front.svg",
+   "views": {
+    "back": "/flats/waistcoat-6button/back.svg",
+    "front": "/flats/waistcoat-6button/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "wool-worsted"
+  },
+  {
+   "slug": "waistcoat-lapelled",
+   "name": "Lapelled formal waistcoat",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 441,
+   "tier": "3",
+   "thumbnail": "/flats/waistcoat-lapelled/front.svg",
+   "views": {
+    "back": "/flats/waistcoat-lapelled/back.svg",
+    "front": "/flats/waistcoat-lapelled/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "wallet-organizer",
+   "name": "Wallet Organizer",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 210,
+   "tier": "2",
+   "thumbnail": "/flats/wallet-organizer/front.svg",
+   "views": {
+    "back": "/flats/wallet-organizer/back.svg",
+    "front": "/flats/wallet-organizer/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "waspie",
+   "name": "Waspie",
+   "family": "underwear_lounge",
+   "kind": "garment",
+   "rank": 223,
+   "tier": "3",
+   "thumbnail": "/flats/waspie/front.svg",
+   "views": {
+    "back": "/flats/waspie/back.svg",
+    "front": "/flats/waspie/front.svg"
+   },
+   "interfaces": 4,
+   "fabric": "any"
+  },
+  {
+   "slug": "watch-strap",
+   "name": "Watch Strap",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 136,
+   "tier": "2",
+   "thumbnail": "/flats/watch-strap/front.svg",
+   "views": {
+    "back": "/flats/watch-strap/back.svg",
+    "front": "/flats/watch-strap/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "leather"
+  },
+  {
+   "slug": "wearable-compute-cap",
+   "name": "Wearable-Compute Cap",
+   "family": "etextile",
+   "kind": "garment",
+   "rank": 147,
+   "tier": "4",
+   "thumbnail": "/flats/wearable-compute-cap/front.svg",
+   "views": {
+    "back": "/flats/wearable-compute-cap/back.svg",
+    "front": "/flats/wearable-compute-cap/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "twill"
+  },
+  {
+   "slug": "webbing-belt",
+   "name": "Webbing Belt",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 131,
+   "tier": "2",
+   "thumbnail": "/flats/webbing-belt/front.svg",
+   "views": {
+    "back": "/flats/webbing-belt/back.svg",
+    "front": "/flats/webbing-belt/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "webbing"
+  },
+  {
+   "slug": "weekender-bag",
+   "name": "Weekender Bag",
+   "family": "bags_luggage",
+   "kind": "garment",
+   "rank": 207,
+   "tier": "2",
+   "thumbnail": "/flats/weekender-bag/front.svg",
+   "views": {
+    "back": "/flats/weekender-bag/back.svg",
+    "front": "/flats/weekender-bag/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "any"
+  },
+  {
+   "slug": "welder-jacket",
+   "name": "Welder's Cotton Duck Jacket",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 307,
+   "tier": "3",
+   "thumbnail": "/flats/welder-jacket/front.svg",
+   "views": {
+    "back": "/flats/welder-jacket/back.svg",
+    "front": "/flats/welder-jacket/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "duck-canvas"
+  },
+  {
+   "slug": "welt-pocket-blazer",
+   "name": "Jetted-Pocket Unstructured Blazer",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 317,
+   "tier": "3",
+   "thumbnail": "/flats/welt-pocket-blazer/front.svg",
+   "views": {
+    "back": "/flats/welt-pocket-blazer/back.svg",
+    "front": "/flats/welt-pocket-blazer/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "linen-wool"
+  },
+  {
+   "slug": "welt-pocket-trouser",
+   "name": "Welt-Pocket Dress Trouser",
+   "family": "tailoring",
+   "kind": "garment",
+   "rank": 405,
+   "tier": "3",
+   "thumbnail": "/flats/welt-pocket-trouser/front.svg",
+   "views": {
+    "back": "/flats/welt-pocket-trouser/back.svg",
+    "front": "/flats/welt-pocket-trouser/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "lana-peinada-traje"
+  },
+  {
+   "slug": "wide-leg-jean",
+   "name": "Wide-Leg Jean",
+   "family": "denim",
+   "kind": "garment",
+   "rank": 304,
+   "tier": "2",
+   "thumbnail": "/flats/wide-leg-jean/front.svg",
+   "views": {
+    "back": "/flats/wide-leg-jean/back.svg",
+    "front": "/flats/wide-leg-jean/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "denim-12oz"
+  },
+  {
+   "slug": "windbreaker",
+   "name": "Windbreaker",
+   "family": "outerwear",
+   "kind": "garment",
+   "rank": 62,
+   "tier": "2",
+   "thumbnail": "/flats/windbreaker/front.svg",
+   "views": {
+    "back": "/flats/windbreaker/back.svg",
+    "front": "/flats/windbreaker/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "technical"
+  },
+  {
+   "slug": "windbreaker-packable",
+   "name": "Packable running windbreaker",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 455,
+   "tier": "2",
+   "thumbnail": "/flats/windbreaker-packable/front.svg",
+   "views": {
+    "back": "/flats/windbreaker-packable/back.svg",
+    "front": "/flats/windbreaker-packable/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-ripstop"
+  },
+  {
+   "slug": "work-glove",
+   "name": "Work Glove",
+   "family": "accessories",
+   "kind": "garment",
+   "rank": 197,
+   "tier": "3",
+   "thumbnail": "/flats/work-glove/front.svg",
+   "views": {
+    "back": "/flats/work-glove/back.svg",
+    "front": "/flats/work-glove/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": "any"
+  },
+  {
+   "slug": "work-shirt",
+   "name": "Work Shirt",
+   "family": "workwear_uniforms",
+   "kind": "garment",
+   "rank": 90,
+   "tier": "2",
+   "thumbnail": "/flats/work-shirt/front.svg",
+   "views": {
+    "back": "/flats/work-shirt/back.svg",
+    "front": "/flats/work-shirt/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "woven"
+  },
+  {
+   "slug": "wrap-dress",
+   "name": "Wrap Dress",
+   "family": "dresses_jumpsuits",
+   "kind": "garment",
+   "rank": 25,
+   "tier": "2",
+   "thumbnail": "/flats/wrap-dress/front.svg",
+   "views": {
+    "back": "/flats/wrap-dress/back.svg",
+    "front": "/flats/wrap-dress/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "mixed"
+  },
+  {
+   "slug": "wrap-recovery-top",
+   "name": "Post-surgery wrap recovery top",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 375,
+   "tier": "2",
+   "thumbnail": "/flats/wrap-recovery-top/front.svg",
+   "views": {
+    "back": "/flats/wrap-recovery-top/back.svg",
+    "front": "/flats/wrap-recovery-top/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "modal-jersey"
+  },
+  {
+   "slug": "wrap-skirt",
+   "name": "Wrap Skirt",
+   "family": "skirts",
+   "kind": "garment",
+   "rank": 81,
+   "tier": "1",
+   "thumbnail": "/flats/wrap-skirt/front.svg",
+   "views": {
+    "back": "/flats/wrap-skirt/back.svg",
+    "front": "/flats/wrap-skirt/front.svg"
+   },
+   "interfaces": 2,
+   "fabric": "woven"
+  },
+  {
+   "slug": "wrap-top",
+   "name": "Wrap Top",
+   "family": "woven_tops",
+   "kind": "garment",
+   "rank": 165,
+   "tier": "2",
+   "thumbnail": "/flats/wrap-top/front.svg",
+   "views": {
+    "back": "/flats/wrap-top/back.svg",
+    "front": "/flats/wrap-top/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "any"
+  },
+  {
+   "slug": "yoga-wrap-crop",
+   "name": "Wrap-front yoga crop",
+   "family": "active_swim",
+   "kind": "garment",
+   "rank": 454,
+   "tier": "2",
+   "thumbnail": "/flats/yoga-wrap-crop/front.svg",
+   "views": {
+    "back": "/flats/yoga-wrap-crop/back.svg",
+    "front": "/flats/yoga-wrap-crop/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-elastano"
+  },
+  {
+   "slug": "zip-hoodie",
+   "name": "Zip Hoodie",
+   "family": "knit_tops",
+   "kind": "garment",
+   "rank": 14,
+   "tier": "2",
+   "thumbnail": "/flats/zip-hoodie/front.svg",
+   "views": {
+    "back": "/flats/zip-hoodie/back.svg",
+    "front": "/flats/zip-hoodie/front.svg"
+   },
+   "interfaces": 5,
+   "fabric": "knit"
+  },
+  {
+   "slug": "zip-pull-aid-vest",
+   "name": "Zip-Pull Aid Vest",
+   "family": "adaptive",
+   "kind": "garment",
+   "rank": 252,
+   "tier": "2",
+   "thumbnail": "/flats/zip-pull-aid-vest/front.svg",
+   "views": {
+    "back": "/flats/zip-pull-aid-vest/back.svg",
+    "front": "/flats/zip-pull-aid-vest/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "nylon-ripstop-shell"
+  },
+  {
+   "slug": "zip-pull-assist-bootie",
+   "name": "Zip-Pull-Assist Bootie",
+   "family": "footwear_soft",
+   "kind": "garment",
+   "rank": 428,
+   "tier": "2",
+   "thumbnail": "/flats/zip-pull-assist-bootie/front.svg",
+   "views": {
+    "back": "/flats/zip-pull-assist-bootie/back.svg",
+    "front": "/flats/zip-pull-assist-bootie/front.svg"
+   },
+   "interfaces": 3,
+   "fabric": "neopreno"
+  },
+  {
+   "slug": "zipper-notion",
+   "name": "Zipper",
+   "family": "",
+   "kind": "notion",
+   "rank": null,
+   "tier": "",
+   "thumbnail": "/flats/zipper-notion/front.svg",
+   "views": {
+    "back": "/flats/zipper-notion/back.svg",
+    "front": "/flats/zipper-notion/front.svg"
+   },
+   "interfaces": 1,
+   "fabric": ""
+  }
+ ]
+}

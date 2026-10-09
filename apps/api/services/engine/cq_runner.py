@@ -4,7 +4,15 @@ import math
 import os
 import sys
 
-from commons_sandbox import build_sandbox_builtins, read_script, validate_script_path
+from commons_sandbox import read_script, validate_script_path
+
+# cq_runner is launched as a standalone script (its own directory is sys.path[0]),
+# so the sibling allowlist module imports flat; it is also importable as part of
+# the application package under services.engine for the test suite.
+try:  # pragma: no cover - exercised by both invocation styles
+    from cq_sandbox import build_cq_sandbox_builtins
+except ImportError:  # pragma: no cover
+    from services.engine.cq_sandbox import build_cq_sandbox_builtins
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +42,12 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
     print(f"Executing CadQuery script: {script_path}")
     script_content = read_script(script_path)
 
-    safe_builtins = build_sandbox_builtins("CadQuery scripts")
+    # Allowlist import policy (defence in depth over the shared core's denylist):
+    # a cartridge may import only known-safe packages and sibling cartridges on
+    # the curated roots. The engine hands those roots down in the environment.
+    curated_env = os.environ.get("YANTRA4D_CURATED_ROOTS", "")
+    curated_roots = frozenset(p for p in curated_env.split(os.pathsep) if p)
+    safe_builtins = build_cq_sandbox_builtins("CadQuery scripts", curated_roots)
 
     exec_globals = {
         "__builtins__": safe_builtins,

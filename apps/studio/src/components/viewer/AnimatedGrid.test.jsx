@@ -125,6 +125,7 @@ function makeMockGeometry() {
       this.boundingBox = { ...mockBoundingBox }
     }),
     boundingBox: null,
+    dispose: vi.fn(),
     clone: vi.fn(function () { return makeMockGeometry() }),
   }
 }
@@ -587,5 +588,36 @@ describe('AnimatedGrid', () => {
       expect(pos.y).toBeCloseTo(10)
       expect(pos.z).toBeCloseTo(15)
     })
+  })
+})
+
+
+describe('AnimatedGrid geometry ownership', () => {
+  it('reuses cell geometry across color and wireframe changes and disposes it on unmount', async () => {
+    const geos = makeGeometries()
+    const view = renderGrid()
+    await act(async () => { fetchResolve(geos) })
+    const owned = geos.flatMap(({ geometry }) => geometry.clone.mock.results.map(r => r.value))
+    expect(owned).toHaveLength(8)
+    view.rerender(<AnimatedGrid params={defaultParams} colors={{body:'#ff0000'}} wireframe />)
+    expect(geos.map(({ geometry }) => geometry.clone.mock.calls.length)).toEqual([4, 4])
+    view.unmount()
+    for (const geometry of owned) expect(geometry.dispose).toHaveBeenCalledOnce()
+    for (const { geometry } of geos) expect(geometry.dispose).not.toHaveBeenCalled()
+  })
+
+  it('releases old cell geometry when a parameter change replaces the assembly', async () => {
+    const first = makeGeometries()
+    const view = renderGrid()
+    await act(async () => { fetchResolve(first) })
+    const oldClones = first.flatMap(({ geometry }) => geometry.clone.mock.results.map(r => r.value))
+    view.rerender(<AnimatedGrid params={{...defaultParams, size:21}} colors={{}} wireframe={false} />)
+    const next = makeGeometries()
+    await act(async () => { fetchResolve(next) })
+    for (const geometry of oldClones) expect(geometry.dispose).toHaveBeenCalledOnce()
+    const newClones = next.flatMap(({ geometry }) => geometry.clone.mock.results.map(r => r.value))
+    expect(newClones).toHaveLength(8)
+    view.unmount()
+    for (const geometry of newClones) expect(geometry.dispose).toHaveBeenCalledOnce()
   })
 })

@@ -86,6 +86,19 @@ brew install openscad
 - OpenSCAD syntax error in `.scad` file — look for `ERROR:` lines in logs
 - CORS issue — backend not accepting requests from studio origin
 
+The viewer fetches and parses artifacts after the render job finishes. A completed
+render log therefore does not prove that geometry reached the canvas. Inspect
+artifact HTTP responses and `[WorkerLoader]` errors separately from render logs.
+
+STL tasks are shared by URL and owned by the loader: a component unmount or
+StrictMode effect replay must not abandon other consumers of the same task.
+Changing URL or format hides prior geometry and ignores late results. Worker
+errors, deserialization failures, dispatch failures and the 120-second timeout
+settle pending work; discarding a worker releases all its tasks so a later mount
+can retry. Successful same-URL geometry remains cached for the page lifetime;
+this contract does not establish a bounded geometry-memory budget or diagnose
+GPU/context failures. See [render artifact identity](../operations/render-artifact-storage.md#cache-identity-across-releases).
+
 ## Network & CORS
 
 ### CORS Errors
@@ -180,6 +193,12 @@ The CI workflow runs `diff` between these two files. They must be byte-identical
 ### Shared Link Shows Wrong Parameters
 
 **Format**: `?p=<base64url-encoded JSON>` encodes only non-default parameter values.
+New links escape non-ASCII text using JSON Unicode escapes before base64url
+encoding, so Chinese, Arabic, emoji and combining marks survive the existing
+`atob` → `JSON.parse` reader. Legacy Latin-1 links keep their original decoding;
+do not switch them unconditionally to UTF-8. ASCII links keep their wire format.
+See the [share hook](../../apps/studio/src/hooks/project/useShareableUrl.ts) and
+[round-trip tests](../../apps/studio/src/hooks/project/useShareableUrl.test.js).
 
 **Causes**:
 - Parameters were changed after the link was generated
@@ -314,3 +333,47 @@ warning saying so. In production the same path is the bug the bundle exists to
 fix: nginx's `try_files … /index.html` answers `/scad/anything` with the SPA's
 own HTML at **200 OK**, so the fallback explicitly refuses a body beginning with
 `<!doctype` rather than writing a page of HTML into the virtual FS as SCAD.
+
+### Native renderer stalls after substantial output
+
+The cancellable OpenSCAD and CadQuery subprocess paths drain stdout and stderr
+while the renderer runs. Waiting for exit before reading can fill an OS pipe
+and deadlock a valid render until its timeout. The shared process utility uses
+timed `communicate()` calls to drain output while checking cancellation; the
+existing render deadline and cleanup remain in force. OpenSCAD streaming discards
+unused stdout instead of creating an unread pipe; its stderr progress stream
+and output geometry file remain unchanged.
+
+Overlapping native requests retain separate process ownership. A cancellation
+callback terminates its own registered subprocess, and finishing one request
+does not deregister another. Both synchronous and streamed paths pass the
+process identity through cancellation and cleanup. The legacy argument-free
+engine cancellation helper still targets the most recently active process;
+request handlers must use their scoped cancellation signal instead.
+
+[Real subprocess regressions](../../apps/api/tests/unit/test_native_render_pipe_drain.py)
+write more than pipe capacity and exercise cancellation and timeout. This repair
+does not establish process-tree isolation, a diagnostic-output memory budget,
+or geometric correctness. The warm CadQuery pool and CadQuery streaming path
+retain their existing implementations.
+
+### Controls that do not affect the selected mode
+
+The Studio filters parameters with `visible_in_modes`; an omitted list makes a
+control visible in every mode. Authors must scope controls to the modes that
+consume them, including shared dimensions. The [fastener cartridge](https://github.com/madfam-org/solid-hyperobjects/blob/main/fasteners/docs/README.md)
+separates CadQuery styles from OpenSCAD numeric styles and bolt dimensions from
+nut dimensions. Its [consumer regression](../../apps/studio/src/contexts/project/ManifestProvider.fasteners.test.jsx)
+checks all five modes against the actual commons pin. Repair cartridge metadata
+in the commons, then promote an accepted pin and regenerate derived assets.
+
+## Numeric dropdowns change native geometry
+
+Select parameters use the literal type declared by their manifest option. A
+browser may submit `"2"`, but an option declared as numeric `2` must reach the
+kernel as a number. Otherwise OpenSCAD comparisons and lookup-table indexing can
+fall back to unrelated dimensions. Undeclared or ambiguous values are rejected
+by parameter cleaning; declared string options remain strings and are escaped
+as one OpenSCAD string literal. The existing checkbox adapter remains numeric
+`0`/`1`; direct CLI comparisons must use the same encoding when a cartridge tests
+`== 1`. Compare actual mesh dimensions, not just successful process exit.

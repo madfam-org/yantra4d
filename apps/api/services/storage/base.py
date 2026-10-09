@@ -16,8 +16,8 @@ the backend's business. Two backends exist:
     Today's directory (``Config.STATIC_DIR``). The default, and deliberately
     a no-op for artifacts that already sit at their final path — a render that
     wrote straight into the static directory is *published* without a copy, so
-    paths, inodes, mtimes and served headers are byte-for-byte what they were
-    before this abstraction existed.
+    paths, inodes and mtimes are preserved. Mesh MIME types are explicit so
+    downloads do not depend on the host operating system MIME registry.
 
 ``s3``
     Any S3-compatible endpoint (MinIO in this platform's own clusters), with
@@ -114,13 +114,12 @@ def key_for_path(path: str | os.PathLike, root: str | os.PathLike | None) -> str
 
 
 def guess_content_type(key: str) -> str:
-    """MIME type for *key*, matching what Werkzeug would serve for the same name.
-
-    Deliberately the plain :mod:`mimetypes` lookup with an
-    ``application/octet-stream`` fallback — the same call Werkzeug's
-    ``send_file`` makes — so a mesh streamed from object storage is labelled
-    exactly as the same mesh served off disk.
-    """
+    """Stable mesh types, independent of the host OS's MIME database."""
+    mesh_types = {".stl": "model/stl", ".glb": "model/gltf-binary",
+                  ".gltf": "model/gltf+json", ".3mf": "model/3mf"}
+    extension = Path(key).suffix.lower()
+    if extension in mesh_types:
+        return mesh_types[extension]
     content_type, _encoding = mimetypes.guess_type(key)
     return content_type or "application/octet-stream"
 

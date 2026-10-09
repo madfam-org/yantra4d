@@ -140,6 +140,7 @@ def _not_modified(etag: str, info: ArtifactInfo, as_attachment: bool, name: str)
     response.headers["ETag"] = f'"{etag}"'
     response.headers["Last-Modified"] = http_date(info.modified_at)
     response.headers["Cache-Control"] = DEFAULT_CACHE_CONTROL
+    response.headers["Accept-Ranges"] = "bytes"
     _set_disposition(response, as_attachment, name)
     return response
 
@@ -233,12 +234,10 @@ def _streamed_response(
     response.headers["ETag"] = f'"{etag}"'
     response.headers["Last-Modified"] = http_date(info.modified_at)
     response.headers["Cache-Control"] = DEFAULT_CACHE_CONTROL
+    # Both stores support ranges; advertise consistently across Werkzeug versions.
+    response.headers["Accept-Ranges"] = "bytes"
     if content_range:
         response.headers["Content-Range"] = content_range
-        # Werkzeug advertises range support on the ranged response and nowhere
-        # else — a plain 200 off `send_file` carries no `Accept-Ranges` — and
-        # the two backends have to agree header for header.
-        response.headers["Accept-Ranges"] = "bytes"
     _set_disposition(response, as_attachment, name)
     return response
 
@@ -254,7 +253,9 @@ def send_static_artifact(filename: str, *, store: ArtifactStore | None = None) -
     if root is not None:
         # Unchanged from before the store existed, including Werkzeug's own
         # safe-join and its NotFound for a missing or non-file path.
-        return send_from_directory(str(root), filename)
+        response = send_from_directory(str(root), filename, mimetype=guess_content_type(filename))
+        response.headers["Accept-Ranges"] = "bytes"
+        return response
 
     try:
         key = normalize_key(filename)
@@ -286,7 +287,9 @@ def send_artifact_download(
 
         safe_path = safe_join_path(str(root), filename)
         if safe_path and safe_path.exists() and safe_path.suffix.lower() == f".{expected_suffix}":
-            return send_file(safe_path, as_attachment=True, download_name=filename)
+            response = send_file(safe_path, as_attachment=True, download_name=filename, mimetype=guess_content_type(filename))
+            response.headers["Accept-Ranges"] = "bytes"
+            return response
         return None
 
     try:

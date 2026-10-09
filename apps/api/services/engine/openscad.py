@@ -16,7 +16,7 @@ from pathlib import Path
 
 from config import Config
 from manifest import get_manifest
-from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, RenderResult
+from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, RenderResult, communicate_cancellable
 
 logger = logging.getLogger(__name__)
 
@@ -157,6 +157,25 @@ def validate_params(params: dict, project_slug: str | None = None) -> dict:
             if max_val is not None and num_val > float(max_val):
                 num_val = float(max_val)
             cleaned[key] = num_val
+        elif param_type == "select":
+            # Native HTML selects may send strings, but the declared option
+            # owns the kernel type. Quoting a numeric enum changes geometry.
+            options = [option["value"] for option in defn.get("options", [])
+                       if isinstance(option, dict) and "value" in option]
+            matches = []
+            if isinstance(value, (str, int, float)) and not isinstance(value, bool):
+                matches = [option for option in options
+                           if not isinstance(option, bool) and type(option) is type(value) and option == value]
+                if not matches:
+                    matches = [option for option in options
+                               if isinstance(option, (str, int, float)) and not isinstance(option, bool)
+                               and (str(option) == str(value)
+                                    or (isinstance(option, (int, float)) and isinstance(value, (int, float))
+                                        and option == value))]
+            if len(matches) != 1:
+                logger.warning("Rejecting undeclared or ambiguous select value for %s", key)
+                continue
+            cleaned[key] = matches[0]
         elif param_type == "text":
             str_val = str(value)
             if not re.match(r'^[a-zA-Z0-9 _.#,-]*$', str_val):
@@ -344,7 +363,7 @@ def build_openscad_command(output_path: str, scad_path: str, params: dict, mode_
         elif isinstance(value, (int, float)):
             val_str = str(value)
         elif isinstance(value, str):
-            val_str = f'"{value}"'
+            val_str = json.dumps(value, ensure_ascii=False)
         else:
             str_val = str(value)
             if re.match(r'^[a-zA-Z0-9_]+$', str_val):
@@ -437,17 +456,13 @@ def run_render(
         kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
         kill_timer.start()
         try:
-            while process.poll() is None:
-                if is_cancelled():
-                    _process_manager.cancel()
-                    break
-                time.sleep(0.05)
-
-            _, stderr = process.communicate()
+            _, stderr = communicate_cancellable(
+                process, is_cancelled, lambda: _process_manager.cancel(process),
+            )
         finally:
             duration_ms = (time.monotonic() - t0) * 1000
             kill_timer.cancel()
-            _process_manager.clear()
+            _process_manager.clear(process)
 
         if is_cancelled():
             return RenderResult(
@@ -504,10 +519,12 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
     })
 
     try:
-        # Run with Popen to stream stderr
+        # Geometry goes to the output file and progress comes from stderr.
+        # Never create an unread stdout pipe: verbose children can fill it and
+        # deadlock before writing progress or exiting.
         logger.info(f"Streaming OpenSCAD (CWD: {os.getcwd()}): {_sanitize_cmd_for_log(cmd)}")
         process = _process_manager.start(
-            subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=_openscad_env(scad_path))
+            subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL, text=True, env=_openscad_env(scad_path))
         )
 
         kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
@@ -535,7 +552,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
 
         while True:
             if is_cancelled and is_cancelled():
-                _process_manager.cancel()
+                _process_manager.cancel(process)
                 yield json.dumps({
                     'event': 'error',
                     'part': part,
@@ -569,7 +586,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
                 })
             except queue.Empty:
                 if is_cancelled and is_cancelled():
-                    _process_manager.cancel()
+                    _process_manager.cancel(process)
                     yield json.dumps({
                         'event': 'error',
                         'part': part,
@@ -586,7 +603,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         process.wait()
     finally:
         kill_timer.cancel()
-        _process_manager.clear()
+        _process_manager.clear(process)
 
     if process.returncode == 0:
         final_progress = part_base + part_weight

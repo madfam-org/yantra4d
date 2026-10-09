@@ -1,0 +1,3284 @@
+{
+ "_comment": "VENDORED from the private fashion-cabinet repository, docs/interfaces/yantra4d-consumers.json (the back-edge of the FC->Y4D hardware bridge, published for Yantra4D to vendor and pin). Public slugs and names only. Refresh by hand: gh api repos/madfam-org/fashion-cabinet/contents/docs/interfaces/yantra4d-consumers.json --jq .content | base64 -d, then trim with scripts/dev/generate-landing-projects.mjs --trim-consumers <file>. Do not hand-edit entries.",
+ "schema_version": "yantra4d_consumers_v1",
+ "vendored_at": "2026-09-19T06:45:05Z",
+ "producer": {
+  "commons": "fashion-cabinet",
+  "spec": "docs/spec/v1/hardware-ref.md"
+ },
+ "resolved_against": {
+  "file": "yantra4d-hardware.snapshot.json",
+  "upstream_commit": "335443c901dc4a736a309f98dd67447c68569091"
+ },
+ "counts": {
+  "targets": 88,
+  "consumers": 302,
+  "unlinked_claims": 1
+ },
+ "consumers": {
+  "bag-clip": [
+   {
+    "slug": "bag-clip-closure",
+    "name": "Bag Clip Closure",
+    "band": "FC-200",
+    "drives": [
+     "clip_width"
+    ]
+   }
+  ],
+  "bag-feet": [
+   {
+    "slug": "weekender-bag",
+    "name": "Weekender Bag",
+    "band": "FC-300",
+    "drives": [
+     "foot_dia",
+     "foot_h",
+     "washer_dia"
+    ]
+   }
+  ],
+  "battery-holder": [
+   {
+    "slug": "heated-vest",
+    "name": "Heated Vest",
+    "band": "FC-200",
+    "drives": [
+     "cell"
+    ]
+   }
+  ],
+  "battery-pocket-frame": [
+   {
+    "slug": "battery-pocket-liner",
+    "name": "Battery Pocket Liner",
+    "band": "FC-300",
+    "drives": [
+     "bay_h",
+     "bay_t",
+     "bay_w",
+     "corner_r",
+     "frame_t",
+     "frame_w",
+     "hole_dia",
+     "lip",
+     "sew_pitch"
+    ]
+   }
+  ],
+  "bellows-actuator": [
+   {
+    "slug": "bellows-elbow-sleeve",
+    "name": "Bellows-actuated elbow sleeve",
+    "band": "FC-500",
+    "drives": [
+     "outer_dia"
+    ]
+   }
+  ],
+  "belt-buckle": [
+   {
+    "slug": "belt-buckle-notion",
+    "name": "Belt Buckle",
+    "band": null,
+    "drives": [
+     "bar_dia",
+     "strap_width"
+    ]
+   },
+   {
+    "slug": "sandal-strap-set",
+    "name": "Sandal Strap Set",
+    "band": "FC-300",
+    "drives": [
+     "prong_d",
+     "strap_width"
+    ]
+   }
+  ],
+  "belt-clip": [
+   {
+    "slug": "belt-clip-notion",
+    "name": "Belt Clip",
+    "band": "FC-200",
+    "drives": [
+     "belt_w"
+    ]
+   }
+  ],
+  "belt-hanger": [
+   {
+    "slug": "belt-hanger-loop-organizer",
+    "name": "Belt-Hanger Loop Organizer",
+    "band": "FC-500",
+    "drives": [
+     "hook_count",
+     "hook_reach",
+     "strap_w"
+    ]
+   },
+   {
+    "slug": "belt-roll-keeper",
+    "name": "Roll-up belt keeper",
+    "band": "FC-400",
+    "drives": [
+     "hook_count",
+     "strap_w"
+    ]
+   }
+  ],
+  "bias-tape-maker": [
+   {
+    "slug": "bias-tape-holder-caddy",
+    "name": "Bias-Tape Maker Caddy",
+    "band": "FC-500",
+    "drives": [
+     "tape_width",
+     "throat_len",
+     "tool_len"
+    ]
+   }
+  ],
+  "boning-stay": [
+   {
+    "slug": "boning-channel",
+    "name": "Boning Channel",
+    "band": null,
+    "drives": [
+     "channel_clear",
+     "stay_length",
+     "stay_width"
+    ]
+   },
+   {
+    "slug": "longline-bra",
+    "name": "Longline Bra",
+    "band": "FC-300",
+    "drives": [
+     "channel_clear",
+     "stay_length",
+     "stay_width"
+    ]
+   },
+   {
+    "slug": "pocket-hoops",
+    "name": "Pocket Hoops",
+    "band": "FC-300",
+    "drives": [
+     "channel_wall",
+     "stay_length",
+     "stay_t",
+     "stay_width"
+    ]
+   },
+   {
+    "slug": "waspie",
+    "name": "Waspie",
+    "band": "FC-300",
+    "drives": [
+     "channel_clear",
+     "stay_length",
+     "stay_width"
+    ]
+   }
+  ],
+  "boot-hook-puller": [
+   {
+    "slug": "boot-hook-pull-tab",
+    "name": "Boot-Hook Pull Tab",
+    "band": "FC-500",
+    "drives": [
+     "blade_t",
+     "blade_w",
+     "hook_r"
+    ]
+   }
+  ],
+  "bra-ring-slider": [
+   {
+    "slug": "bra-ring-slider",
+    "name": "Bra Ring & Slider",
+    "band": "FC-200",
+    "drives": [
+     "strap_w"
+    ]
+   },
+   {
+    "slug": "bralette-soft",
+    "name": "Soft triangle bralette",
+    "band": "FC-400",
+    "drives": [
+     "strap_w",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "longline-bralette",
+    "name": "Longline Soft Bralette",
+    "band": "FC-500",
+    "drives": [
+     "strap_w",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "nursing-bra",
+    "name": "Nursing Bra",
+    "band": "FC-300",
+    "drives": [
+     "strap_w",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "nursing-clip-bra",
+    "name": "Clip-down nursing bra",
+    "band": "FC-400",
+    "drives": [
+     "strap_w",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "nursing-sleep-bra",
+    "name": "Nursing Sleep Bra",
+    "band": "FC-500",
+    "drives": [
+     "strap_w",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "swimsuit-one-piece",
+    "name": "Structured one-piece swimsuit",
+    "band": "FC-400",
+    "drives": [
+     "strap_w",
+     "wire_d"
+    ]
+   }
+  ],
+  "bra-underwire": [
+   {
+    "slug": "balconette-bra",
+    "name": "Balconette Bra",
+    "band": "FC-300",
+    "drives": [
+     "cup_width",
+     "sweep_deg",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "balconette-underwire-bra",
+    "name": "Balconette Underwire Bra",
+    "band": "FC-500",
+    "drives": [
+     "cup_width",
+     "sweep_deg",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "longline-underwire-bra",
+    "name": "Longline underwire bra",
+    "band": "FC-400",
+    "drives": [
+     "cup_width",
+     "sweep_deg",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "underwire-bra",
+    "name": "Underwire Bra",
+    "band": "FC-300",
+    "drives": [
+     "cup_width",
+     "sweep_deg",
+     "wire_d"
+    ]
+   }
+  ],
+  "button-hook-aid": [
+   {
+    "slug": "button-aid-cuff-shirt",
+    "name": "Button-Aid Cuff Shirt",
+    "band": "FC-300",
+    "drives": [
+     "finger_scallops",
+     "grip_len",
+     "grip_t",
+     "grip_w",
+     "loop_depth",
+     "loop_dia",
+     "loop_t",
+     "neck_len"
+    ]
+   }
+  ],
+  "buttonhole-spacer": [
+   {
+    "slug": "buttonhole-spacer-guide",
+    "name": "Buttonhole-Spacer Guide Roll",
+    "band": "FC-500",
+    "drives": [
+     "pitch",
+     "rail_len",
+     "rail_w"
+    ]
+   }
+  ],
+  "cam-buckle": [
+   {
+    "slug": "messenger-bag",
+    "name": "Messenger Bag",
+    "band": "FC-300",
+    "drives": [
+     "webbing_t",
+     "webbing_w"
+    ]
+   }
+  ],
+  "carabiner": [
+   {
+    "slug": "camera-holster",
+    "name": "Camera Holster",
+    "band": "FC-300",
+    "drives": [
+     "inner_w",
+     "opening",
+     "spine"
+    ]
+   },
+   {
+    "slug": "spring-hook",
+    "name": "Spring Hook",
+    "band": "FC-200",
+    "drives": [
+     "inner_w"
+    ]
+   }
+  ],
+  "chicago-screw": [
+   {
+    "slug": "wallet-organizer",
+    "name": "Wallet Organizer",
+    "band": "FC-300",
+    "drives": [
+     "head_dia",
+     "post_dia",
+     "stack_t"
+    ]
+   }
+  ],
+  "collar-stay": [
+   {
+    "slug": "collar-stay",
+    "name": "Collar Stay",
+    "band": "FC-200",
+    "drives": [
+     "base_w",
+     "stay_len"
+    ]
+   }
+  ],
+  "cord-end": [
+   {
+    "slug": "cord-end-notion",
+    "name": "Cord End",
+    "band": null,
+    "drives": [
+     "cord_dia",
+     "tip_length"
+    ]
+   },
+   {
+    "slug": "knife-roll",
+    "name": "Knife Roll",
+    "band": "FC-300",
+    "drives": [
+     "bell_flare",
+     "cord_dia",
+     "lanyard_hole",
+     "tip_length",
+     "wall"
+    ]
+   },
+   {
+    "slug": "tool-roll",
+    "name": "Tool Roll",
+    "band": "FC-300",
+    "drives": [
+     "bell_flare",
+     "cord_dia",
+     "tip_length",
+     "wall"
+    ]
+   }
+  ],
+  "cord-lock": [
+   {
+    "slug": "anorak-smock",
+    "name": "Pullover anorak smock",
+    "band": "FC-400",
+    "drives": [
+     "body_size",
+     "cord_dia",
+     "cords"
+    ]
+   },
+   {
+    "slug": "chalk-bag",
+    "name": "Chalk Bag",
+    "band": "FC-300",
+    "drives": [
+     "body_size",
+     "cord_dia",
+     "cords"
+    ]
+   },
+   {
+    "slug": "cord-stopper",
+    "name": "Cord Stopper",
+    "band": "FC-200",
+    "drives": [
+     "cord_dia"
+    ]
+   },
+   {
+    "slug": "drawcord-anchor",
+    "name": "Drawcord Anchor",
+    "band": "FC-200",
+    "drives": [
+     "cord_dia"
+    ]
+   },
+   {
+    "slug": "ironing-board-cover",
+    "name": "Ironing Board Cover",
+    "band": "FC-300",
+    "drives": [
+     "body_size",
+     "cord_dia",
+     "cords",
+     "wall"
+    ]
+   },
+   {
+    "slug": "kids-anorak",
+    "name": "Children's Anorak",
+    "band": "FC-400",
+    "drives": [
+     "body_size",
+     "cord_dia",
+     "cords",
+     "lock_style",
+     "wall"
+    ]
+   },
+   {
+    "slug": "packable-rain-shell",
+    "name": "Packable rain shell",
+    "band": "FC-400",
+    "drives": [
+     "body_size",
+     "cord_dia",
+     "cords"
+    ]
+   },
+   {
+    "slug": "shoe-bag-drawstring",
+    "name": "Shoe Bag (Drawstring)",
+    "band": "FC-300",
+    "drives": [
+     "body_size",
+     "cord_dia",
+     "cords"
+    ]
+   },
+   {
+    "slug": "windbreaker-packable",
+    "name": "Packable running windbreaker",
+    "band": "FC-500",
+    "drives": [
+     "cord_dia",
+     "cords"
+    ]
+   }
+  ],
+  "corset-busk": [
+   {
+    "slug": "printed-corset-busk",
+    "name": "Printed Corset Busk",
+    "band": "FC-200",
+    "drives": [
+     "busk_len",
+     "knobs",
+     "plate_t",
+     "plate_w"
+    ]
+   },
+   {
+    "slug": "regency-stays",
+    "name": "Regency Stays",
+    "band": "FC-300",
+    "drives": [
+     "busk_len",
+     "knobs",
+     "plate_t",
+     "plate_w"
+    ]
+   },
+   {
+    "slug": "structured-corset",
+    "name": "Structured Corset",
+    "band": "FC-200",
+    "drives": [
+     "busk_len"
+    ]
+   }
+  ],
+  "d-ring": [
+   {
+    "slug": "bib-work-apron",
+    "name": "Denim Bib Work Apron",
+    "band": "FC-400",
+    "drives": [
+     "bow_depth",
+     "webbing",
+     "wire_h",
+     "wire_t"
+    ]
+   },
+   {
+    "slug": "d-ring-slider",
+    "name": "D-Ring / Slider",
+    "band": "FC-200",
+    "drives": [
+     "webbing"
+    ]
+   },
+   {
+    "slug": "drop-back-jumpsuit",
+    "name": "Drop-Back Jumpsuit",
+    "band": "FC-300",
+    "drives": [
+     "bow_depth",
+     "webbing",
+     "wire_h",
+     "wire_t"
+    ]
+   },
+   {
+    "slug": "jewelry-roll",
+    "name": "Jewelry Roll",
+    "band": "FC-300",
+    "drives": [
+     "bow_depth",
+     "webbing",
+     "wire_t"
+    ]
+   },
+   {
+    "slug": "one-hand-wrap-top",
+    "name": "One-Hand Wrap Top",
+    "band": "FC-300",
+    "drives": [
+     "bow_depth",
+     "webbing",
+     "wire_h",
+     "wire_t"
+    ]
+   }
+  ],
+  "epaulette-board": [
+   {
+    "slug": "epaulette-dress-tunic",
+    "name": "Epaulette Dress Tunic",
+    "band": "FC-300",
+    "drives": [
+     "board_len",
+     "button_dia",
+     "narrow_w",
+     "plate_t",
+     "rim_h",
+     "rim_w",
+     "wide_w"
+    ]
+   },
+   {
+    "slug": "marching-band-tunic",
+    "name": "Marching-Band Tunic",
+    "band": "FC-500",
+    "drives": [
+     "board_len",
+     "narrow_w",
+     "wide_w"
+    ]
+   },
+   {
+    "slug": "printed-epaulette",
+    "name": "Printed Epaulette",
+    "band": "FC-200",
+    "drives": [
+     "board_len",
+     "narrow_w",
+     "wide_w"
+    ]
+   }
+  ],
+  "fascinator-base": [
+   {
+    "slug": "structured-fascinator",
+    "name": "Structured Fascinator",
+    "band": "FC-300",
+    "drives": [
+     "base_dia",
+     "brim_w",
+     "dome_h",
+     "sew_holes"
+    ]
+   }
+  ],
+  "finray-gripper": [
+   {
+    "slug": "assistive-grip-glove",
+    "name": "Assistive grip glove",
+    "band": "FC-500",
+    "drives": [
+     "fin_len"
+    ]
+   }
+  ],
+  "folding-board": [
+   {
+    "slug": "garment-travel-fold",
+    "name": "Fold-flat travel garment folder",
+    "band": "FC-400",
+    "drives": [
+     "fold_h",
+     "fold_w",
+     "panel_t"
+    ]
+   },
+   {
+    "slug": "press-folding-board-cover",
+    "name": "Folding-Board Press Cover",
+    "band": "FC-500",
+    "drives": [
+     "fold_h",
+     "fold_w",
+     "panel_t"
+    ]
+   }
+  ],
+  "frog-closure": [
+   {
+    "slug": "changpao",
+    "name": "Changpao (長袍)",
+    "band": "FC-300",
+    "drives": [
+     "knots",
+     "span"
+    ]
+   },
+   {
+    "slug": "jeogori-jacket",
+    "name": "Hanbok jeogori jacket (maedeup)",
+    "band": "FC-400",
+    "drives": [
+     "knots",
+     "span"
+    ]
+   }
+  ],
+  "garment-clip": [
+   {
+    "slug": "garment-clip-pouch",
+    "name": "Garment-Clip Travel Pouch",
+    "band": "FC-500",
+    "drives": [
+     "jaw_len",
+     "jaw_t",
+     "jaw_w"
+    ]
+   },
+   {
+    "slug": "garment-clip-strap",
+    "name": "Clip-strap garment carrier",
+    "band": "FC-400",
+    "drives": [
+     "jaw_len",
+     "jaw_w",
+     "tooth_n"
+    ]
+   }
+  ],
+  "garment-eyelet": [
+   {
+    "slug": "cotehardie",
+    "name": "Cotehardie",
+    "band": "FC-300",
+    "drives": [
+     "barrel_h",
+     "flange_dia",
+     "inner_dia",
+     "wall",
+     "washer_t"
+    ]
+   },
+   {
+    "slug": "derby-shoe-upper",
+    "name": "Derby Shoe Upper",
+    "band": "FC-400",
+    "drives": [
+     "barrel_h",
+     "inner_dia"
+    ]
+   },
+   {
+    "slug": "dirndl-bodice",
+    "name": "Dirndl laced bodice (Mieder)",
+    "band": "FC-400",
+    "drives": [
+     "barrel_h",
+     "flange_dia",
+     "inner_dia"
+    ]
+   },
+   {
+    "slug": "espadrille-upper",
+    "name": "Espadrille Upper",
+    "band": "FC-300",
+    "drives": [
+     "barrel_h",
+     "inner_dia"
+    ]
+   },
+   {
+    "slug": "espadrille-upper-wrap",
+    "name": "Espadrille Upper Wrap",
+    "band": "FC-500",
+    "drives": [
+     "barrel_h",
+     "inner_dia",
+     "wall"
+    ]
+   },
+   {
+    "slug": "eyelet-grommet",
+    "name": "Eyelet Grommet",
+    "band": "FC-200",
+    "drives": [
+     "flange_dia",
+     "inner_dia"
+    ]
+   },
+   {
+    "slug": "hiking-gaiter",
+    "name": "Hiking Gaiter",
+    "band": "FC-300",
+    "drives": [
+     "barrel_h",
+     "flange_dia",
+     "inner_dia"
+    ]
+   },
+   {
+    "slug": "moccasin-driver-upper",
+    "name": "Driving-Moccasin Upper",
+    "band": "FC-500",
+    "drives": [
+     "barrel_h",
+     "inner_dia",
+     "wall"
+    ]
+   },
+   {
+    "slug": "tudor-kirtle",
+    "name": "Tudor Kirtle",
+    "band": "FC-300",
+    "drives": [
+     "barrel_h",
+     "flange_dia",
+     "inner_dia",
+     "wall",
+     "washer_t"
+    ]
+   }
+  ],
+  "garment-hanger": [
+   {
+    "slug": "garment-hanger-cover",
+    "name": "Padded Garment-Hanger Cover",
+    "band": "FC-500",
+    "drives": [
+     "bar_drop",
+     "shoulder_t",
+     "shoulder_w"
+    ]
+   },
+   {
+    "slug": "hanger-cover-padded",
+    "name": "Padded hanger cover",
+    "band": "FC-400",
+    "drives": [
+     "shoulder_w",
+     "slope"
+    ]
+   }
+  ],
+  "garter-clip": [
+   {
+    "slug": "garter-belt",
+    "name": "Garter Belt",
+    "band": "FC-300",
+    "drives": [
+     "grip_clear",
+     "strap_t",
+     "strap_w"
+    ]
+   },
+   {
+    "slug": "suspender-belt",
+    "name": "Suspender belt (six-strap)",
+    "band": "FC-400",
+    "drives": [
+     "grip_clear",
+     "strap_t",
+     "strap_w"
+    ]
+   }
+  ],
+  "hat-size-reducer": [
+   {
+    "slug": "beret-structured",
+    "name": "Structured Beret",
+    "band": "FC-300",
+    "drives": [
+     "head_circ",
+     "strip_height"
+    ]
+   },
+   {
+    "slug": "boater-hat",
+    "name": "Straw Boater Hat",
+    "band": "FC-400",
+    "drives": [
+     "head_circ",
+     "strip_length"
+    ]
+   },
+   {
+    "slug": "cloche-hat",
+    "name": "Cloche Hat",
+    "band": "FC-400",
+    "drives": [
+     "head_circ",
+     "strip_length"
+    ]
+   },
+   {
+    "slug": "fedora-blank",
+    "name": "Sewn Fedora Crown-and-Brim",
+    "band": "FC-400",
+    "drives": [
+     "head_circ",
+     "strip_length"
+    ]
+   },
+   {
+    "slug": "pillbox-hat",
+    "name": "Pillbox Hat",
+    "band": "FC-300",
+    "drives": [
+     "head_circ",
+     "strip_height"
+    ]
+   }
+  ],
+  "headband-blank": [
+   {
+    "slug": "turban-band",
+    "name": "Turban Band",
+    "band": "FC-300",
+    "drives": [
+     "band_w",
+     "head_width",
+     "sew_holes"
+    ]
+   }
+  ],
+  "heel-tip-blank": [
+   {
+    "slug": "heel-tip-slipper",
+    "name": "Heel-Tip-Blank Slipper",
+    "band": "FC-500",
+    "drives": [
+     "tip_h",
+     "tip_l",
+     "tip_w"
+    ]
+   }
+  ],
+  "hook-and-eye": [
+   {
+    "slug": "ao-tu-than",
+    "name": "Áo tứ thân (four-panel dress)",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "plate_t",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "ballet-tutu-platter",
+    "name": "Platter Tutu",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "bra-wireless",
+    "name": "Wireless Bra",
+    "band": "FC-100",
+    "drives": [
+     "columns",
+     "rows"
+    ]
+   },
+   {
+    "slug": "can-can-ruffle-skirt",
+    "name": "Can-Can Ruffle Skirt",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "cheongsam-qipao",
+    "name": "Cheongsam (qipao)",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "plate_t",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "cummerbund-pleated",
+    "name": "Pleated cummerbund",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "rows",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "flamenco-bata-cola",
+    "name": "Flamenco Bata de Cola",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "high-waist-shaping-brief",
+    "name": "High-Waist Shaping Brief",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "kebaya-lace-blouse",
+    "name": "Kebaya lace blouse",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "plate_t",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "opera-cape-formal",
+    "name": "Opera evening cape",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "rows",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "panto-dame-gown",
+    "name": "Pantomime Dame Gown",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "pollera-panamena",
+    "name": "Pollera panameña",
+    "band": "FC-500",
+    "drives": [
+     "columns",
+     "plate_t",
+     "rows",
+     "size_mm"
+    ]
+   },
+   {
+    "slug": "shaping-body-suit",
+    "name": "Shaping bodysuit (scoop tank)",
+    "band": "FC-400",
+    "drives": [
+     "columns",
+     "rows"
+    ]
+   },
+   {
+    "slug": "shaping-bodysuit",
+    "name": "Shaping Bodysuit",
+    "band": "FC-300",
+    "drives": [
+     "columns",
+     "rows"
+    ]
+   }
+  ],
+  "hook-loop-tape": [
+   {
+    "slug": "boot-shaper-sleeve",
+    "name": "Boot Shaper Sleeve",
+    "band": "FC-300",
+    "drives": [
+     "sew_margin",
+     "strip_length",
+     "strip_width"
+    ]
+   },
+   {
+    "slug": "boxing-fight-short",
+    "name": "Boxing fight short",
+    "band": "FC-500",
+    "drives": [
+     "sew_margin",
+     "strip_length"
+    ]
+   },
+   {
+    "slug": "dog-coat",
+    "name": "Dog Coat",
+    "band": "FC-300",
+    "drives": [
+     "base_t",
+     "sew_margin",
+     "strip_length",
+     "strip_width"
+    ]
+   },
+   {
+    "slug": "hi-vis-vest",
+    "name": "Hi-Vis Safety Vest",
+    "band": "FC-100",
+    "drives": [
+     "overlap_mm",
+     "strip_length"
+    ]
+   },
+   {
+    "slug": "hook-loop-closure",
+    "name": "Hook-and-Loop Closure",
+    "band": null,
+    "drives": [
+     "sew_margin",
+     "strip_length",
+     "strip_width"
+    ]
+   },
+   {
+    "slug": "seated-wear-trouser",
+    "name": "Seated-wear rise-adjusted trouser",
+    "band": "FC-400",
+    "drives": [
+     "sew_margin",
+     "strip_length"
+    ]
+   },
+   {
+    "slug": "side-opening-trousers",
+    "name": "Side-Opening Trousers",
+    "band": "FC-300",
+    "drives": [
+     "sew_margin",
+     "strip_length",
+     "strip_width"
+    ]
+   },
+   {
+    "slug": "wrap-recovery-top",
+    "name": "Post-surgery wrap recovery top",
+    "band": "FC-400",
+    "drives": [
+     "sew_margin",
+     "strip_length"
+    ]
+   }
+  ],
+  "invisible-zipper": [
+   {
+    "slug": "circus-aerial-unitard",
+    "name": "Aerial-Silk Unitard",
+    "band": "FC-500",
+    "drives": [
+     "coil_dia",
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "compression-tri-suit",
+    "name": "Triathlon compression suit",
+    "band": "FC-500",
+    "drives": [
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "dive-skin-suit",
+    "name": "Dive-skin swim suit",
+    "band": "FC-500",
+    "drives": [
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "invisible-zipper-notion",
+    "name": "Invisible Zipper",
+    "band": null,
+    "drives": [
+     "coil_dia",
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "lehenga",
+    "name": "Leheṅgā (लहंगा)",
+    "band": "FC-300",
+    "drives": [
+     "tape_thick",
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "rash-guard-zip-hood",
+    "name": "Zip-hood rash guard",
+    "band": "FC-500",
+    "drives": [
+     "tape_width",
+     "zip_length"
+    ]
+   }
+  ],
+  "jeans-button": [
+   {
+    "slug": "jeans-button",
+    "name": "Jeans Button",
+    "band": "FC-200",
+    "drives": [
+     "head_dia"
+    ]
+   },
+   {
+    "slug": "raw-hem-denim-short",
+    "name": "Raw-Hem Denim Short",
+    "band": "FC-500",
+    "drives": [
+     "head_dia",
+     "head_h",
+     "socket_dia",
+     "socket_h",
+     "tack_dia",
+     "tack_h"
+    ]
+   },
+   {
+    "slug": "selvedge-jean",
+    "name": "Selvedge Straight Jean",
+    "band": "FC-400",
+    "drives": [
+     "head_dia",
+     "head_h",
+     "socket_dia",
+     "socket_h",
+     "tack_dia",
+     "tack_h"
+    ]
+   },
+   {
+    "slug": "selvedge-jean-straight",
+    "name": "Selvedge Straight-Leg Jean",
+    "band": "FC-500",
+    "drives": [
+     "head_dia",
+     "head_h",
+     "socket_dia",
+     "socket_h",
+     "tack_dia",
+     "tack_h"
+    ]
+   },
+   {
+    "slug": "wide-leg-jean",
+    "name": "Wide-Leg Jean",
+    "band": "FC-400",
+    "drives": [
+     "head_dia",
+     "head_h",
+     "socket_dia",
+     "socket_h",
+     "tack_dia",
+     "tack_h"
+    ]
+   }
+  ],
+  "kiss-lock-frame": [
+   {
+    "slug": "kiss-lock-purse",
+    "name": "Kiss-Lock Purse",
+    "band": "FC-300",
+    "drives": [
+     "arch_h",
+     "channel_w",
+     "frame_w"
+    ]
+   }
+  ],
+  "lacing-hook": [
+   {
+    "slug": "ankle-gaiter",
+    "name": "Ankle Gaiter",
+    "band": "FC-300",
+    "drives": [
+     "hook_count",
+     "pitch",
+     "plate_w"
+    ]
+   },
+   {
+    "slug": "chukka-boot-upper",
+    "name": "Chukka Boot Soft Upper",
+    "band": "FC-500",
+    "drives": [
+     "cord_dia",
+     "hook_count",
+     "pitch"
+    ]
+   }
+  ],
+  "ladder-lock": [
+   {
+    "slug": "climbing-harness-short",
+    "name": "Climbing harness short",
+    "band": "FC-500",
+    "drives": [
+     "frame_t",
+     "webbing_t",
+     "webbing_w"
+    ]
+   }
+  ],
+  "led-channel": [
+   {
+    "slug": "heated-vest-panel",
+    "name": "Heated Vest Panel",
+    "band": "FC-500",
+    "drives": [
+     "depth",
+     "lip",
+     "strip_width",
+     "wall"
+    ]
+   },
+   {
+    "slug": "led-costume-panel",
+    "name": "LED Costume Panel",
+    "band": "FC-200",
+    "drives": [
+     "length",
+     "strip_width"
+    ]
+   },
+   {
+    "slug": "led-safety-sash",
+    "name": "LED Safety Sash",
+    "band": "FC-500",
+    "drives": [
+     "depth",
+     "lip",
+     "strip_width",
+     "wall"
+    ]
+   },
+   {
+    "slug": "led-trim-jacket",
+    "name": "LED Trim Jacket",
+    "band": "FC-300",
+    "drives": [
+     "depth",
+     "lip",
+     "strip_width",
+     "wall"
+    ]
+   }
+  ],
+  "magnetic-button-cover": [
+   {
+    "slug": "adaptive-magnetic-shirt",
+    "name": "Magnetic-close dress shirt (adaptive)",
+    "band": "FC-400",
+    "drives": [
+     "button_dia",
+     "button_t",
+     "hole_dia",
+     "sew_holes"
+    ]
+   },
+   {
+    "slug": "magnetic-placket-shirt",
+    "name": "Magnetic-Placket Shirt",
+    "band": "FC-300",
+    "drives": [
+     "button_dia",
+     "button_t",
+     "hole_dia",
+     "sew_holes"
+    ]
+   },
+   {
+    "slug": "one-hand-wrap-shirt",
+    "name": "One-hand-close wrap shirt",
+    "band": "FC-500",
+    "drives": [
+     "button_dia"
+    ]
+   }
+  ],
+  "magnetic-clasp": [
+   {
+    "slug": "adaptive-wrap-skirt",
+    "name": "Adaptive Wrap Skirt",
+    "band": "FC-200",
+    "drives": [
+     "disc_dia"
+    ]
+   },
+   {
+    "slug": "cavalier-cloak",
+    "name": "Cavalier Cloak",
+    "band": "FC-300",
+    "drives": [
+     "disc_dia",
+     "disc_h",
+     "magnet_dia",
+     "magnet_h",
+     "sew_holes"
+    ]
+   },
+   {
+    "slug": "magnetic-clasp",
+    "name": "Magnetic Clasp",
+    "band": "FC-200",
+    "drives": [
+     "disc_dia"
+    ]
+   },
+   {
+    "slug": "one-handed-jacket",
+    "name": "One-handed-dressing jacket",
+    "band": "FC-400",
+    "drives": [
+     "disc_dia",
+     "sew_holes"
+    ]
+   },
+   {
+    "slug": "seated-wrap-trouser",
+    "name": "Seated-wear wrap trouser",
+    "band": "FC-500",
+    "drives": [
+     "disc_dia"
+    ]
+   },
+   {
+    "slug": "side-opening-top",
+    "name": "Side-Opening Top",
+    "band": "FC-200",
+    "drives": [
+     "disc_dia"
+    ]
+   },
+   {
+    "slug": "stage-quick-change-gown",
+    "name": "Quick-Change Stage Gown",
+    "band": "FC-500",
+    "drives": [
+     "disc_dia",
+     "disc_h",
+     "magnet_dia",
+     "sew_holes"
+    ]
+   }
+  ],
+  "molle-clip": [
+   {
+    "slug": "molle-webbing",
+    "name": "MOLLE Webbing",
+    "band": "FC-200",
+    "drives": [
+     "col_pitch",
+     "panel_cols"
+    ]
+   }
+  ],
+  "overall-buckle": [
+   {
+    "slug": "denim-overall-short",
+    "name": "Denim Short Overall (Shortall)",
+    "band": "FC-400",
+    "drives": [
+     "button_dia",
+     "depth",
+     "frame_h",
+     "strap_w",
+     "wire_t"
+    ]
+   },
+   {
+    "slug": "overall-buckle",
+    "name": "Overall Buckle",
+    "band": "FC-200",
+    "drives": [
+     "strap_w"
+    ]
+   },
+   {
+    "slug": "toddler-dungaree",
+    "name": "Toddler Dungaree",
+    "band": "FC-400",
+    "drives": [
+     "button_dia",
+     "depth",
+     "frame_h",
+     "strap_w",
+     "wire_t"
+    ]
+   },
+   {
+    "slug": "toddler-play-dungarees",
+    "name": "Toddler Play Dungarees",
+    "band": "FC-300",
+    "drives": [
+     "button_dia",
+     "frame_h",
+     "strap_w",
+     "wire_t"
+    ]
+   }
+  ],
+  "pattern-weight": [
+   {
+    "slug": "pattern-weight-bag",
+    "name": "Pattern-Weight Bag Set",
+    "band": "FC-500",
+    "drives": [
+     "stack_clear",
+     "weight_dia",
+     "weight_h"
+    ]
+   }
+  ],
+  "pi-hat-case": [
+   {
+    "slug": "wearable-compute-cap",
+    "name": "Wearable-Compute Cap",
+    "band": "FC-200",
+    "drives": [
+     "screen_w"
+    ]
+   }
+  ],
+  "pneu-net-finger": [
+   {
+    "slug": "pneu-finger-splint-sleeve",
+    "name": "Pneumatic finger-splint sleeve",
+    "band": "FC-500",
+    "drives": [
+     "finger_len",
+     "finger_w"
+    ]
+   }
+  ],
+  "point-turner": [
+   {
+    "slug": "point-turner-sleeve",
+    "name": "Point-Turner Tool Sleeve",
+    "band": "FC-500",
+    "drives": [
+     "presser_w",
+     "tool_len",
+     "tool_t"
+    ]
+   }
+  ],
+  "rivet": [
+   {
+    "slug": "carpenter-jean",
+    "name": "Carpenter Jean with Tool Loops",
+    "band": "FC-400",
+    "drives": [
+     "bore_dia",
+     "burr_dia",
+     "cap_dia",
+     "cap_h",
+     "post_dia",
+     "post_h"
+    ]
+   },
+   {
+    "slug": "denim-chore-apron",
+    "name": "Denim Chore Apron",
+    "band": "FC-300",
+    "drives": [
+     "bore_dia",
+     "burr_dia",
+     "cap_dia",
+     "cap_h",
+     "post_dia",
+     "post_h"
+    ]
+   },
+   {
+    "slug": "denim-chore-jacket",
+    "name": "Denim Chore Jacket",
+    "band": "FC-500",
+    "drives": [
+     "bore_dia",
+     "burr_dia",
+     "cap_h"
+    ]
+   },
+   {
+    "slug": "rivet-burr",
+    "name": "Rivet + Burr",
+    "band": "FC-200",
+    "drives": [
+     "cap_dia"
+    ]
+   },
+   {
+    "slug": "toe-post-sandal-strap",
+    "name": "Toe-Post Sandal Strap Set",
+    "band": "FC-500",
+    "drives": [
+     "bore_dia",
+     "burr_dia",
+     "cap_h"
+    ]
+   }
+  ],
+  "seam-conduit-clip": [
+   {
+    "slug": "conduit-cable-harness-tee",
+    "name": "Cable-Conduit Harness Tee",
+    "band": "FC-500",
+    "drives": [
+     "bundle_dia",
+     "clip_len",
+     "hole_dia",
+     "tab_t",
+     "tab_w"
+    ]
+   },
+   {
+    "slug": "heated-glove-liner",
+    "name": "Heated Glove Liner",
+    "band": "FC-300",
+    "drives": [
+     "bundle_dia",
+     "clip_len",
+     "run_count",
+     "tab_w"
+    ]
+   },
+   {
+    "slug": "illuminated-gilet",
+    "name": "Illuminated Cycling Gilet",
+    "band": "FC-300",
+    "drives": [
+     "bundle_dia",
+     "clip_len",
+     "hole_dia",
+     "run_pitch",
+     "tab_t",
+     "tab_w",
+     "wall"
+    ]
+   }
+  ],
+  "seam-strain-relief": [
+   {
+    "slug": "haptic-nav-belt",
+    "name": "Haptic Navigation Belt",
+    "band": "FC-300",
+    "drives": [
+     "cable_dia",
+     "hole_dia",
+     "plate_len",
+     "plate_t",
+     "plate_w",
+     "sew_holes"
+    ]
+   }
+  ],
+  "sensor-mount-plate": [
+   {
+    "slug": "etextile-sensor-tee",
+    "name": "E-Textile Sensor Tee",
+    "band": "FC-200",
+    "drives": [
+     "base_w"
+    ]
+   },
+   {
+    "slug": "rehab-sensor-cuff",
+    "name": "Rehab Sensor Cuff",
+    "band": "FC-300",
+    "drives": [
+     "base_d",
+     "base_thick",
+     "base_w",
+     "corner_r",
+     "screw_dia",
+     "screw_holes",
+     "screw_inset"
+    ]
+   },
+   {
+    "slug": "sensor-cycling-jersey",
+    "name": "Sensor-Mount Cycling Jersey",
+    "band": "FC-500",
+    "drives": [
+     "base_d",
+     "base_w",
+     "corner_r",
+     "screw_holes"
+    ]
+   },
+   {
+    "slug": "sensor-hem-band",
+    "name": "Sensor Hem Band",
+    "band": "FC-300",
+    "drives": [
+     "base_d",
+     "base_thick",
+     "base_w",
+     "corner_r",
+     "screw_dia",
+     "screw_holes",
+     "screw_inset"
+    ]
+   }
+  ],
+  "sew-on-snap": [
+   {
+    "slug": "baby-bib-set",
+    "name": "Bandana Feeding Bib",
+    "band": "FC-400",
+    "drives": [
+     "disc_t",
+     "engage_clear",
+     "hole_dia",
+     "sew_holes",
+     "snap_dia",
+     "stud_dia"
+    ]
+   },
+   {
+    "slug": "baby-cocoon",
+    "name": "Baby Swaddle Cocoon",
+    "band": "FC-400",
+    "drives": [
+     "disc_t",
+     "engage_clear",
+     "hole_dia",
+     "sew_holes",
+     "snap_dia",
+     "stud_dia"
+    ]
+   },
+   {
+    "slug": "baby-kimono-bodysuit",
+    "name": "Kimono-Wrap Baby Bodysuit",
+    "band": "FC-500",
+    "drives": [
+     "disc_t",
+     "engage_clear",
+     "stud_dia"
+    ]
+   },
+   {
+    "slug": "denim-western-shirt",
+    "name": "Denim Western Shirt",
+    "band": "FC-300",
+    "drives": [
+     "disc_t",
+     "engage_clear",
+     "hole_dia",
+     "sew_holes",
+     "snap_dia",
+     "stud_dia"
+    ]
+   },
+   {
+    "slug": "leotard-princess-seam",
+    "name": "Princess-Seam Dance Leotard",
+    "band": "FC-500",
+    "drives": [
+     "hole_dia",
+     "sew_holes",
+     "snap_dia"
+    ]
+   },
+   {
+    "slug": "post-surgical-access-tee",
+    "name": "Post-Surgical Access Tee",
+    "band": "FC-300",
+    "drives": [
+     "disc_t",
+     "hole_dia",
+     "sew_holes",
+     "snap_dia",
+     "stud_dia"
+    ]
+   },
+   {
+    "slug": "snap-fastener",
+    "name": "Snap Fastener",
+    "band": "FC-200",
+    "drives": [
+     "sew_holes",
+     "snap_dia"
+    ]
+   },
+   {
+    "slug": "sweater-storage-envelope",
+    "name": "Sweater Storage Envelope",
+    "band": "FC-300",
+    "drives": [
+     "sew_holes",
+     "snap_dia",
+     "stud_dia"
+    ]
+   }
+  ],
+  "sew-through-button": [
+   {
+    "slug": "baby-cardigan",
+    "name": "Baby Knit Cardigan",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "baju-kurung",
+    "name": "Baju Kurung",
+    "band": "FC-300",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "baju-melayu-set",
+    "name": "Baju Melayu set",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "barong-tagalog",
+    "name": "Barong Tagalog",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "boxer-brief-fly",
+    "name": "Fly-Front Boxer Brief",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "child-pinafore",
+    "name": "Children's Pinafore Dress",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "commedia-harlequin-suit",
+    "name": "Harlequin Diamond Suit",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "deel",
+    "name": "Deel (дээл)",
+    "band": "FC-300",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "denim-chore-coat",
+    "name": "Denim Chore Coat",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "double-breasted-blazer",
+    "name": "Double-Breasted Blazer",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "elizabethan-doublet",
+    "name": "Elizabethan Doublet",
+    "band": "FC-300",
+    "drives": [
+     "button_ligne",
+     "card_count",
+     "hole_count",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "formal-bib-shirt",
+    "name": "Bib-front formal shirt",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "frock-coat",
+    "name": "Frock Coat",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "guayabera-shirt",
+    "name": "Guayabera (de alforzas)",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "hanbok-chima",
+    "name": "Chima (치마)",
+    "band": "FC-300",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "hanbok-magoja",
+    "name": "Hanbok magoja overjacket",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "jalabiya",
+    "name": "Jalabiya (Gulf thobe)",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "kids-school-pinny",
+    "name": "School Smock (Pinny)",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "leg-o-mutton-blouse",
+    "name": "Leg-o'-Mutton Blouse",
+    "band": "FC-300",
+    "drives": [
+     "button_ligne",
+     "card_count",
+     "hole_count",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "mary-jane-upper",
+    "name": "Mary Jane Upper",
+    "band": "FC-300",
+    "drives": [
+     "button_ligne",
+     "card_count",
+     "hole_count",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "mohair-cardigan",
+    "name": "Brushed Mohair Cardigan",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "morning-coat",
+    "name": "Morning Coat",
+    "band": "FC-300",
+    "drives": [
+     "button_ligne",
+     "card_count",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "morning-tailcoat",
+    "name": "Morning Coat (cutaway)",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "newsboy-cap",
+    "name": "Eight-Panel Newsboy Cap",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "quilted-liner-jacket",
+    "name": "Quilted button-in liner jacket",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "qumbaz-coat",
+    "name": "Qumbaz linen robe",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "safari-suit-jacket",
+    "name": "Safari-Suit Bush Jacket",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "sarafan",
+    "name": "Sarafan",
+    "band": "FC-300",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "sew-through-button",
+    "name": "Sew-Through Button",
+    "band": null,
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "shweshwe-pinafore",
+    "name": "Shweshwe pinafore dress",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "thermal-waffle-henley",
+    "name": "Waffle Thermal Henley",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "hole_count",
+     "hole_spacing"
+    ]
+   },
+   {
+    "slug": "toddler-pinafore",
+    "name": "Toddler Pinafore Dress",
+    "band": "FC-500",
+    "drives": [
+     "card_count",
+     "dish_depth",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "waistcoat-6button",
+    "name": "Six-Button Tailored Waistcoat",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "waistcoat-lapelled",
+    "name": "Lapelled formal waistcoat",
+    "band": "FC-500",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "welder-jacket",
+    "name": "Welder's Cotton Duck Jacket",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "welt-pocket-blazer",
+    "name": "Jetted-Pocket Unstructured Blazer",
+    "band": "FC-400",
+    "drives": [
+     "button_ligne",
+     "dish_depth",
+     "hole_count",
+     "hole_dia",
+     "hole_spacing",
+     "thickness"
+    ]
+   }
+  ],
+  "shank-button-solid": [
+   {
+    "slug": "bandhgala-jacket",
+    "name": "Bandhgala formal jacket",
+    "band": "FC-500",
+    "drives": [
+     "diameter_mm",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "cardigan-shawl-collar",
+    "name": "Shawl-Collar Cardigan",
+    "band": "FC-400",
+    "drives": [
+     "diameter_mm",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "covert-coat",
+    "name": "Covert coat",
+    "band": "FC-500",
+    "drives": [
+     "diameter_mm",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "kids-school-pinafore",
+    "name": "Kids School Pinafore",
+    "band": "FC-300",
+    "drives": [
+     "diameter_mm",
+     "hole_dia",
+     "holes",
+     "rim",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "morning-coat-tailcoat",
+    "name": "Morning coat",
+    "band": "FC-500",
+    "drives": [
+     "diameter_mm",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "nehru-collar-suit",
+    "name": "Nehru-collar suit jacket",
+    "band": "FC-500",
+    "drives": [
+     "diameter_mm",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "nehru-jacket",
+    "name": "Nehru Collar Jacket",
+    "band": "FC-400",
+    "drives": [
+     "diameter_mm",
+     "hole_dia",
+     "holes",
+     "rim",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "nehru-sherwani",
+    "name": "Sherwani",
+    "band": "FC-500",
+    "drives": [
+     "diameter_mm",
+     "hole_dia",
+     "holes",
+     "rim",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "norfolk-jacket",
+    "name": "Norfolk Jacket",
+    "band": "FC-500",
+    "drives": [
+     "diameter_mm",
+     "rim",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "peak-lapel-tuxedo",
+    "name": "Peak-Lapel Dinner Jacket (Tuxedo)",
+    "band": "FC-400",
+    "drives": [
+     "diameter_mm",
+     "hole_dia",
+     "holes",
+     "rim",
+     "thickness"
+    ]
+   },
+   {
+    "slug": "shank-button",
+    "name": "Shank Button",
+    "band": null,
+    "drives": [
+     "diameter_mm"
+    ]
+   }
+  ],
+  "shoe-horn": [
+   {
+    "slug": "shoe-horn-boot-sock",
+    "name": "Shoe-Horn Boot Sock",
+    "band": "FC-500",
+    "drives": [
+     "blade_t",
+     "horn_len",
+     "scoop_w"
+    ]
+   }
+  ],
+  "side-release-buckle": [
+   {
+    "slug": "chelsea-boot-upper",
+    "name": "Chelsea Boot Upper",
+    "band": "FC-400",
+    "drives": [
+     "wall_t",
+     "webbing_w"
+    ]
+   },
+   {
+    "slug": "roll-top-backpack",
+    "name": "Roll-Top Backpack",
+    "band": "FC-300",
+    "drives": [
+     "webbing_t",
+     "webbing_w"
+    ]
+   },
+   {
+    "slug": "seated-rain-cape",
+    "name": "Seated Rain Cape",
+    "band": "FC-300",
+    "drives": [
+     "body_t",
+     "webbing_t",
+     "webbing_w"
+    ]
+   },
+   {
+    "slug": "trail-run-vest-pack",
+    "name": "Trail-running vest pack",
+    "band": "FC-500",
+    "drives": [
+     "body_t",
+     "webbing_w"
+    ]
+   }
+  ],
+  "size-marker-ring": [
+   {
+    "slug": "size-marker-ring-tag",
+    "name": "Size-Marker Ring Tag Set",
+    "band": "FC-500",
+    "drives": [
+     "ring_w",
+     "rod_dia",
+     "tab_h"
+    ]
+   }
+  ],
+  "snap-electrode-carrier": [
+   {
+    "slug": "biometric-bra-band",
+    "name": "Biometric Bra Band",
+    "band": "FC-300",
+    "drives": [
+     "disc_dia",
+     "disc_t",
+     "hole_dia",
+     "sew_holes"
+    ]
+   },
+   {
+    "slug": "ecg-monitoring-vest",
+    "name": "ECG-Electrode Monitoring Vest",
+    "band": "FC-500",
+    "drives": [
+     "disc_dia",
+     "disc_t",
+     "hole_dia",
+     "sew_holes"
+    ]
+   },
+   {
+    "slug": "emg-sleeve-band",
+    "name": "EMG-Electrode Sleeve Band",
+    "band": "FC-500",
+    "drives": [
+     "disc_dia",
+     "disc_t",
+     "hole_dia",
+     "sew_holes"
+    ]
+   }
+  ],
+  "snap-fit": [
+   {
+    "slug": "field-jacket-m65",
+    "name": "Field Jacket (M-65 pattern)",
+    "band": "FC-400",
+    "drives": [
+     "beam_width",
+     "bore_dia",
+     "wall"
+    ]
+   },
+   {
+    "slug": "five-panel-cap",
+    "name": "Five-Panel Cap",
+    "band": "FC-200",
+    "drives": [
+     "bore_dia"
+    ]
+   },
+   {
+    "slug": "kids-raincoat",
+    "name": "Children's Hooded Raincoat",
+    "band": "FC-400",
+    "drives": [
+     "beam_width",
+     "bore_dia",
+     "wall"
+    ]
+   }
+  ],
+  "snap-hook-swivel": [
+   {
+    "slug": "sling-bag",
+    "name": "Sling Bag",
+    "band": "FC-300",
+    "drives": [
+     "webbing_t",
+     "webbing_w"
+    ]
+   }
+  ],
+  "soft-finger": [
+   {
+    "slug": "soft-finger-mitt",
+    "name": "Soft-finger dressing mitt",
+    "band": "FC-500",
+    "drives": [
+     "finger_len"
+    ]
+   }
+  ],
+  "soft-gripper-pad": [
+   {
+    "slug": "grip-pad-palm-mitt",
+    "name": "Grip-pad palm mitt",
+    "band": "FC-500",
+    "drives": [
+     "pad_len",
+     "pad_w"
+    ]
+   }
+  ],
+  "strap-buckle": [
+   {
+    "slug": "backpack-panel",
+    "name": "Backpack (Panelled)",
+    "band": "FC-200",
+    "drives": [
+     "webbing"
+    ]
+   },
+   {
+    "slug": "harness-vest",
+    "name": "Harness Vest",
+    "band": "FC-300",
+    "drives": [
+     "web_t",
+     "webbing"
+    ]
+   },
+   {
+    "slug": "kilt-8yard",
+    "name": "Eight-yard kilt",
+    "band": "FC-400",
+    "drives": [
+     "web_t",
+     "webbing"
+    ]
+   },
+   {
+    "slug": "pack-hip-belt",
+    "name": "Pack Hip Belt",
+    "band": "FC-300",
+    "drives": [
+     "wall",
+     "web_t",
+     "webbing"
+    ]
+   },
+   {
+    "slug": "radio-chest-pack",
+    "name": "Radio Chest Pack",
+    "band": "FC-300",
+    "drives": [
+     "wall",
+     "web_t",
+     "webbing"
+    ]
+   },
+   {
+    "slug": "rain-chaps",
+    "name": "Rain Chaps",
+    "band": "FC-300",
+    "drives": [
+     "web_t",
+     "webbing"
+    ]
+   },
+   {
+    "slug": "strap-buckle-notion",
+    "name": "Strap Buckle",
+    "band": "FC-200",
+    "drives": [
+     "webbing"
+    ]
+   },
+   {
+    "slug": "tailored-vest-back-strap",
+    "name": "Cinch-Back Tailoring Vest",
+    "band": "FC-400",
+    "drives": [
+     "snap_clear",
+     "wall",
+     "web_t",
+     "webbing"
+    ]
+   },
+   {
+    "slug": "three-piece-vest-back",
+    "name": "Three-piece suit vest",
+    "band": "FC-500",
+    "drives": [
+     "snap_clear",
+     "wall",
+     "web_t",
+     "webbing"
+    ]
+   },
+   {
+    "slug": "tote-bag",
+    "name": "Tote Bag",
+    "band": "FC-200",
+    "drives": [
+     "webbing"
+    ]
+   },
+   {
+    "slug": "webbing-belt",
+    "name": "Webbing Belt",
+    "band": "FC-200",
+    "drives": [
+     "webbing"
+    ]
+   }
+  ],
+  "strap-end-tip": [
+   {
+    "slug": "bucket-bag",
+    "name": "Bucket Bag",
+    "band": "FC-300",
+    "drives": [
+     "strap_t",
+     "strap_w",
+     "tip_len"
+    ]
+   }
+  ],
+  "strap-ring": [
+   {
+    "slug": "duffel-bag",
+    "name": "Duffel Bag",
+    "band": "FC-300",
+    "drives": [
+     "opening",
+     "webbing_w"
+    ]
+   }
+  ],
+  "suspender-clip": [
+   {
+    "slug": "suspender-clip",
+    "name": "Suspender Clip",
+    "band": "FC-200",
+    "drives": [
+     "webbing"
+    ]
+   }
+  ],
+  "tendon-knuckle": [
+   {
+    "slug": "tendon-knuckle-brace",
+    "name": "Tendon-knuckle wrist brace",
+    "band": "FC-500",
+    "drives": [
+     "seg_len"
+    ]
+   }
+  ],
+  "thimble": [
+   {
+    "slug": "thimble-finger-cot",
+    "name": "Quilter's Thimble Cot",
+    "band": "FC-500",
+    "drives": [
+     "finger_girth",
+     "thimble_h",
+     "wall_t"
+    ]
+   }
+  ],
+  "toggle": [
+   {
+    "slug": "cape-coat",
+    "name": "A-line cape coat",
+    "band": "FC-400",
+    "drives": [
+     "barrel_dia",
+     "barrel_len",
+     "cords"
+    ]
+   },
+   {
+    "slug": "duffle-coat",
+    "name": "Toggle duffle coat",
+    "band": "FC-400",
+    "drives": [
+     "barrel_dia",
+     "barrel_len",
+     "cords"
+    ]
+   },
+   {
+    "slug": "knit-poncho-wrap",
+    "name": "Knit Poncho Wrap",
+    "band": "FC-300",
+    "drives": [
+     "barrel_dia",
+     "barrel_len",
+     "cord_dia",
+     "cords"
+    ]
+   },
+   {
+    "slug": "poncho-ruana",
+    "name": "Ruana",
+    "band": "FC-300",
+    "drives": [
+     "barrel_dia",
+     "barrel_len",
+     "cord_dia",
+     "cords"
+    ]
+   },
+   {
+    "slug": "toggle-closure",
+    "name": "Toggle Closure",
+    "band": "FC-200",
+    "drives": [
+     "barrel_len",
+     "cord_dia"
+    ]
+   }
+  ],
+  "tpu-chainmail-panel": [
+   {
+    "slug": "chainmail-drape-top",
+    "name": "Printed Chainmail Drape Top",
+    "band": "FC-400",
+    "drives": [
+     "clearance",
+     "cols",
+     "ring_id",
+     "rows",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "chainmail-panel",
+    "name": "Chainmail Panel",
+    "band": null,
+    "drives": [
+     "cols",
+     "ring_id",
+     "rows",
+     "wire_d"
+    ]
+   }
+  ],
+  "tpu-flexure-cuff": [
+   {
+    "slug": "flexure-cuff-glove",
+    "name": "Printed Flexure-Cuff Glove",
+    "band": "FC-400",
+    "drives": [
+     "cuff_circum",
+     "cuff_height",
+     "wall"
+    ]
+   },
+   {
+    "slug": "flexure-spine-harness",
+    "name": "Flexure-Spine Fashion Harness",
+    "band": "FC-400",
+    "drives": [
+     "cuff_circum",
+     "cuff_height",
+     "wall"
+    ]
+   },
+   {
+    "slug": "printed-flexure-cuff",
+    "name": "Printed Flexure Cuff",
+    "band": "FC-200",
+    "drives": [
+     "cuff_circum",
+     "cuff_height",
+     "wall"
+    ]
+   }
+  ],
+  "tpu-gusset-flexure": [
+   {
+    "slug": "gusset-flexure-legging",
+    "name": "Flexure-Gusset Performance Legging",
+    "band": "FC-400",
+    "drives": [
+     "diag_h",
+     "diag_w",
+     "wall"
+    ]
+   },
+   {
+    "slug": "printed-gusset-flexure",
+    "name": "Printed Gusset Flexure",
+    "band": "FC-200",
+    "drives": [
+     "diag_h",
+     "diag_w",
+     "wall"
+    ]
+   }
+  ],
+  "tpu-hinge-collar": [
+   {
+    "slug": "hinge-collar-capelet",
+    "name": "Articulated Hinge-Collar Capelet",
+    "band": "FC-400",
+    "drives": [
+     "band_h",
+     "collar_len",
+     "wall"
+    ]
+   },
+   {
+    "slug": "printed-hinge-collar",
+    "name": "Printed Hinge Collar",
+    "band": "FC-200",
+    "drives": [
+     "band_h",
+     "collar_len",
+     "wall"
+    ]
+   }
+  ],
+  "tpu-lattice-panel": [
+   {
+    "slug": "lattice-armor-panel",
+    "name": "Lattice Armor Panel",
+    "band": "FC-200",
+    "drives": [
+     "cols",
+     "gap",
+     "rows",
+     "tile"
+    ]
+   },
+   {
+    "slug": "lattice-corset",
+    "name": "Printed Lattice Corset",
+    "band": "FC-400",
+    "drives": [
+     "cols",
+     "gap",
+     "rows",
+     "tile"
+    ]
+   },
+   {
+    "slug": "lattice-panel-skirt",
+    "name": "Printed Lattice-Panel Skirt",
+    "band": "FC-400",
+    "drives": [
+     "cols",
+     "gap",
+     "rows",
+     "tile"
+    ]
+   },
+   {
+    "slug": "printed-mesh-overlay",
+    "name": "Printed Structural Mesh Overlay",
+    "band": "FC-400",
+    "drives": [
+     "cols",
+     "gap",
+     "rows",
+     "tile"
+    ]
+   },
+   {
+    "slug": "printed-panel-tee",
+    "name": "AM Printed-Panel Tee",
+    "band": "FC-500",
+    "drives": [
+     "cols",
+     "gap",
+     "rows",
+     "tile"
+    ]
+   }
+  ],
+  "tpu-pleat-panel": [
+   {
+    "slug": "lattice-drape-skirt",
+    "name": "Lattice-Drape Printed Skirt",
+    "band": "FC-500",
+    "drives": [
+     "panel_width",
+     "pleat_pitch",
+     "pleats",
+     "wall"
+    ]
+   },
+   {
+    "slug": "parametric-ruff",
+    "name": "Parametric Printed Ruff Collar",
+    "band": "FC-400",
+    "drives": [
+     "panel_width",
+     "pleat_depth",
+     "pleat_pitch",
+     "pleats",
+     "wall"
+    ]
+   },
+   {
+    "slug": "pleat-panel-collar",
+    "name": "Printed Pleat-Panel Collar",
+    "band": "FC-400",
+    "drives": [
+     "panel_width",
+     "pleat_depth",
+     "pleat_pitch",
+     "pleats",
+     "wall"
+    ]
+   },
+   {
+    "slug": "tpu-pleat-panel",
+    "name": "TPU Pleat Panel",
+    "band": "FC-200",
+    "drives": [
+     "panel_width",
+     "pleat_depth",
+     "pleat_pitch",
+     "pleats",
+     "wall"
+    ]
+   }
+  ],
+  "tpu-scale-mail": [
+   {
+    "slug": "articulated-scale-mail",
+    "name": "Articulated Scale Mail",
+    "band": "FC-200",
+    "drives": [
+     "cols",
+     "overlap",
+     "rows",
+     "scale_h",
+     "scale_w"
+    ]
+   },
+   {
+    "slug": "scale-mail-bodice",
+    "name": "Printed Scale-Mail Bodice",
+    "band": "FC-400",
+    "drives": [
+     "cols",
+     "overlap",
+     "rows",
+     "scale_h",
+     "scale_w"
+    ]
+   },
+   {
+    "slug": "scale-mail-gauntlet",
+    "name": "Printed Scale-Mail Gauntlet",
+    "band": "FC-400",
+    "drives": [
+     "cols",
+     "overlap",
+     "rows",
+     "scale_h",
+     "scale_w"
+    ]
+   }
+  ],
+  "tri-glide-slider": [
+   {
+    "slug": "camera-strap",
+    "name": "Camera Strap",
+    "band": "FC-300",
+    "drives": [
+     "webbing_t",
+     "webbing_w"
+    ]
+   }
+  ],
+  "trouser-hook-bar": [
+   {
+    "slug": "bustle-pad",
+    "name": "Bustle Pad",
+    "band": "FC-300",
+    "drives": [
+     "hook_width",
+     "plate_len",
+     "plate_t",
+     "sew_holes",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "chaleco-charro",
+    "name": "Chaleco Charro",
+    "band": "FC-300",
+    "drives": [
+     "gap",
+     "hook_width",
+     "plate_len",
+     "plate_t",
+     "sew_holes",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "edwardian-walking-skirt",
+    "name": "Edwardian Walking Skirt",
+    "band": "FC-300",
+    "drives": [
+     "hook_width",
+     "plate_len",
+     "plate_t",
+     "sew_holes",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "formal-tailcoat-trouser",
+    "name": "Braid-side formal trouser",
+    "band": "FC-500",
+    "drives": [
+     "hook_width",
+     "plate_t",
+     "sew_holes"
+    ]
+   },
+   {
+    "slug": "regency-spencer",
+    "name": "Regency Spencer",
+    "band": "FC-300",
+    "drives": [
+     "hook_width",
+     "plate_len",
+     "plate_t",
+     "sew_holes",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "suit-trousers",
+    "name": "Suit Trousers",
+    "band": "FC-100",
+    "drives": [
+     "hook_width"
+    ]
+   },
+   {
+    "slug": "tailored-trouser-pleat",
+    "name": "Double-Pleat Tailored Trouser",
+    "band": "FC-400",
+    "drives": [
+     "gap",
+     "hook_width",
+     "plate_len",
+     "plate_t",
+     "sew_holes",
+     "wire_d"
+    ]
+   },
+   {
+    "slug": "trouser-hook-notion",
+    "name": "Trouser Hook and Bar",
+    "band": null,
+    "drives": [
+     "hook_width",
+     "sew_holes"
+    ]
+   },
+   {
+    "slug": "welt-pocket-trouser",
+    "name": "Welt-Pocket Dress Trouser",
+    "band": "FC-500",
+    "drives": [
+     "gap",
+     "plate_len",
+     "wire_d"
+    ]
+   }
+  ],
+  "twist-lock-closure": [
+   {
+    "slug": "saddle-bag",
+    "name": "Saddle Bag",
+    "band": "FC-300",
+    "drives": [
+     "plate_l",
+     "plate_w",
+     "turn_l"
+    ]
+   }
+  ],
+  "veil-comb": [
+   {
+    "slug": "veiled-cocktail-hat",
+    "name": "Veiled Cocktail Hat",
+    "band": "FC-300",
+    "drives": [
+     "bar_length",
+     "slot_count",
+     "slot_pitch"
+    ]
+   }
+  ],
+  "watch-adapter": [
+   {
+    "slug": "watch-strap",
+    "name": "Watch Strap",
+    "band": "FC-200",
+    "drives": [
+     "lug_width"
+    ]
+   }
+  ],
+  "zipper": [
+   {
+    "slug": "baby-sleeper",
+    "name": "Baby sleeper",
+    "band": "FC-100",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "belt-bag",
+    "name": "Belt Bag / Fanny Pack",
+    "band": "FC-200",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "cocktail-dress",
+    "name": "Cocktail Dress",
+    "band": "FC-100",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "coverall",
+    "name": "Coverall",
+    "band": "FC-100",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "delicates-wash-bag",
+    "name": "Mesh delicates wash bag",
+    "band": "FC-400",
+    "drives": [
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "dopp-kit",
+    "name": "Dopp Kit",
+    "band": "FC-200",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "garment-bag",
+    "name": "Garment Bag",
+    "band": "FC-300",
+    "drives": [
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "lingerie-travel-pouch",
+    "name": "Lingerie Travel Pouch",
+    "band": "FC-300",
+    "drives": [
+     "chain_size",
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "mascot-body-shell",
+    "name": "Mascot Body-Shell Suit",
+    "band": "FC-500",
+    "drives": [
+     "chain_size",
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "puffer-jacket",
+    "name": "Puffer Jacket",
+    "band": "FC-100",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "puffer-vest",
+    "name": "Puffer Vest",
+    "band": "FC-100",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "raincoat",
+    "name": "Raincoat",
+    "band": "FC-100",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "rash-guard-zip",
+    "name": "Zip-front rash guard",
+    "band": "FC-400",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "shop-coverall",
+    "name": "Mechanic's Shop Coverall",
+    "band": "FC-400",
+    "drives": [
+     "chain_size",
+     "gap",
+     "tape_thick",
+     "tape_width",
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "track-jacket",
+    "name": "Track Jacket",
+    "band": "FC-100",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "windbreaker",
+    "name": "Windbreaker",
+    "band": "FC-100",
+    "drives": [
+     "zip_length"
+    ]
+   },
+   {
+    "slug": "zipper-notion",
+    "name": "Zipper",
+    "band": null,
+    "drives": [
+     "tape_width",
+     "zip_length"
+    ]
+   }
+  ],
+  "zipper-loop-aid": [
+   {
+    "slug": "zip-pull-aid-vest",
+    "name": "Zip-Pull Aid Vest",
+    "band": "FC-300",
+    "drives": [
+     "part_t",
+     "ring_id",
+     "ring_w",
+     "tab_t",
+     "tab_w"
+    ]
+   }
+  ],
+  "zipper-pull-assist": [
+   {
+    "slug": "zip-pull-assist-bootie",
+    "name": "Zip-Pull-Assist Bootie",
+    "band": "FC-500",
+    "drives": [
+     "body_l",
+     "lever_len",
+     "lever_w"
+    ]
+   }
+  ]
+ },
+ "wanted": [
+  {
+   "target_slug": "hammer-loop",
+   "requesting": [
+    "painters-pant"
+   ]
+  }
+ ]
+}

@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { buildHash } from '../system/useHashNavigation'
 
 /**
  * Encode parameter state into a compact URL-safe string.
@@ -15,7 +16,13 @@ function encodeParams(params: Record<string, unknown>, defaultParams: Record<str
     }
   }
   if (Object.keys(diff).length === 0) return null
-  const json = JSON.stringify(diff)
+  // btoa accepts bytes, not Unicode. Escape non-ASCII UTF-16 code units as
+  // JSON escapes (including both halves of emoji surrogate pairs). Existing
+  // atob -> JSON.parse readers can then open new links without a wire migration;
+  // blindly decoding old Latin-1 links as UTF-8 would change some legacy text.
+  const json = JSON.stringify(diff).replace(/[\u007f-\uffff]/g, character =>
+    '\\u' + character.charCodeAt(0).toString(16).padStart(4, '0'),
+  )
   // Use base64url encoding (URL-safe, no padding)
   return btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
@@ -67,7 +74,7 @@ export function useShareableUrl({ params, mode, projectSlug, defaultParams }: Us
     url.search = ''
     url.hash = ''
     // Set pathname to current project/mode
-    url.pathname = `/project/${projectSlug}/share/${mode}`
+    url.pathname = buildHash(projectSlug, mode)
     if (encoded) {
       url.searchParams.set('p', encoded)
     }

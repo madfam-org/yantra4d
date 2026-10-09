@@ -1,0 +1,2590 @@
+{
+ "source": "https://api.yantra4d.com/api/catalog/graph",
+ "generated_at": "2026-09-19T06:49:21Z",
+ "edge_count": 266,
+ "node_count": 211,
+ "family_sizes": [
+  {
+   "family": "unc-1/4-20",
+   "members": 17
+  },
+  {
+   "family": "pco-1881",
+   "members": 9
+  },
+  {
+   "family": "involute-gear",
+   "members": 7
+  },
+  {
+   "family": "din-rail-35",
+   "members": 7
+  },
+  {
+   "family": "iso-m3",
+   "members": 7
+  },
+  {
+   "family": "t-slot-extrusion",
+   "members": 7
+  },
+  {
+   "family": "bearing-608",
+   "members": 6
+  },
+  {
+   "family": "iso-m4",
+   "members": 6
+  },
+  {
+   "family": "gridfinity",
+   "members": 6
+  },
+  {
+   "family": "webbing-strap",
+   "members": 6
+  },
+  {
+   "family": "arca-swiss",
+   "members": 5
+  },
+  {
+   "family": "vesa",
+   "members": 5
+  },
+  {
+   "family": "gopro-mount",
+   "members": 4
+  },
+  {
+   "family": "miter-ttrack",
+   "members": 4
+  },
+  {
+   "family": "optical-breadboard",
+   "members": 4
+  },
+  {
+   "family": "luer",
+   "members": 4
+  },
+  {
+   "family": "pc-fan",
+   "members": 4
+  },
+  {
+   "family": "spi-neck",
+   "members": 4
+  },
+  {
+   "family": "e26-e27-lamp",
+   "members": 4
+  },
+  {
+   "family": "nema-stepper",
+   "members": 4
+  },
+  {
+   "family": "ips-pipe",
+   "members": 3
+  },
+  {
+   "family": "battery-cell",
+   "members": 3
+  },
+  {
+   "family": "timing-belt",
+   "members": 3
+  },
+  {
+   "family": "cuvette",
+   "members": 3
+  },
+  {
+   "family": "iso-m5",
+   "members": 3
+  },
+  {
+   "family": "ght-hose",
+   "members": 3
+  },
+  {
+   "family": "drone-motor-mount",
+   "members": 3
+  },
+  {
+   "family": "slas-microplate",
+   "members": 3
+  },
+  {
+   "family": "aerator-m22-m24",
+   "members": 2
+  },
+  {
+   "family": "handlebar-clamp",
+   "members": 2
+  },
+  {
+   "family": "bevel-gear",
+   "members": 2
+  },
+  {
+   "family": "wall-stud",
+   "members": 2
+  },
+  {
+   "family": "card-format",
+   "members": 2
+  },
+  {
+   "family": "business-card",
+   "members": 2
+  },
+  {
+   "family": "conical-tube",
+   "members": 2
+  },
+  {
+   "family": "drip-irrigation",
+   "members": 2
+  },
+  {
+   "family": "iso-hex-fastener",
+   "members": 2
+  },
+  {
+   "family": "filter-thread",
+   "members": 2
+  },
+  {
+   "family": "servo-spline",
+   "members": 2
+  },
+  {
+   "family": "support-rod-12",
+   "members": 2
+  },
+  {
+   "family": "pegboard-1in",
+   "members": 2
+  },
+  {
+   "family": "indicator-stem-8mm",
+   "members": 2
+  },
+  {
+   "family": "shaft-spline",
+   "members": 2
+  },
+  {
+   "family": "gu10-lamp",
+   "members": 2
+  },
+  {
+   "family": "mc4",
+   "members": 2
+  },
+  {
+   "family": "microscope-slide",
+   "members": 2
+  },
+  {
+   "family": "molle-pals",
+   "members": 2
+  },
+  {
+   "family": "nato-rail",
+   "members": 2
+  },
+  {
+   "family": "net-cup",
+   "members": 2
+  },
+  {
+   "family": "rms-objective",
+   "members": 2
+  },
+  {
+   "family": "rpi-mount",
+   "members": 2
+  },
+  {
+   "family": "picatinny",
+   "members": 2
+  },
+  {
+   "family": "enable-prosthetic",
+   "members": 2
+  },
+  {
+   "family": "15mm-rod",
+   "members": 2
+  },
+  {
+   "family": "iso-518-shoe",
+   "members": 2
+  },
+  {
+   "family": "worm-gear",
+   "members": 2
+  },
+  {
+   "family": "bobbin-class-15",
+   "members": 1
+  },
+  {
+   "family": "bottle-cage-boss",
+   "members": 1
+  },
+  {
+   "family": "crown-cap-26",
+   "members": 1
+  },
+  {
+   "family": "brick-8mm-stud",
+   "members": 1
+  },
+  {
+   "family": "cable-gland",
+   "members": 1
+  },
+  {
+   "family": "unc-3/8-16",
+   "members": 1
+  },
+  {
+   "family": "portafilter-58",
+   "members": 1
+  },
+  {
+   "family": "compass-capsule",
+   "members": 1
+  },
+  {
+   "family": "conduit",
+   "members": 1
+  },
+  {
+   "family": "arduino-mount",
+   "members": 1
+  },
+  {
+   "family": "tubular-drain",
+   "members": 1
+  },
+  {
+   "family": "round-duct",
+   "members": 1
+  },
+  {
+   "family": "microswitch-d2f",
+   "members": 1
+  },
+  {
+   "family": "iso-metric-thread",
+   "members": 1
+  },
+  {
+   "family": "ferro-rod",
+   "members": 1
+  },
+  {
+   "family": "optic-25.4",
+   "members": 1
+  },
+  {
+   "family": "sma-rf",
+   "members": 1
+  },
+  {
+   "family": "fpv-cam",
+   "members": 1
+  },
+  {
+   "family": "beverage-can",
+   "members": 1
+  },
+  {
+   "family": "auto-gauge-52-60",
+   "members": 1
+  },
+  {
+   "family": "multiboard",
+   "members": 1
+  },
+  {
+   "family": "french-cleat",
+   "members": 1
+  },
+  {
+   "family": "indicator-dovetail",
+   "members": 1
+  },
+  {
+   "family": "hex-bit-1/4",
+   "members": 1
+  },
+  {
+   "family": "trapezoidal-thread",
+   "members": 1
+  },
+  {
+   "family": "led-strip",
+   "members": 1
+  },
+  {
+   "family": "cam-lock",
+   "members": 1
+  },
+  {
+   "family": "addressable-led",
+   "members": 1
+  },
+  {
+   "family": "mic-thread-5/8-27",
+   "members": 1
+  },
+  {
+   "family": "watch-movement",
+   "members": 1
+  },
+  {
+   "family": "multiconnect",
+   "members": 1
+  },
+  {
+   "family": "sae-j1962",
+   "members": 1
+  },
+  {
+   "family": "ato-fuse",
+   "members": 1
+  },
+  {
+   "family": "wall-box",
+   "members": 1
+  },
+  {
+   "family": "paint-pot",
+   "members": 1
+  },
+  {
+   "family": "paracord-550",
+   "members": 1
+  },
+  {
+   "family": "petri-90mm",
+   "members": 1
+  },
+  {
+   "family": "cts-pipe",
+   "members": 1
+  },
+  {
+   "family": "license-plate",
+   "members": 1
+  },
+  {
+   "family": "psu-mount",
+   "members": 1
+  },
+  {
+   "family": "round-rail-25",
+   "members": 1
+  },
+  {
+   "family": "mgn-rail",
+   "members": 1
+  },
+  {
+   "family": "usb-sd-media",
+   "members": 1
+  },
+  {
+   "family": "iso-m6",
+   "members": 1
+  },
+  {
+   "family": "servo-body",
+   "members": 1
+  },
+  {
+   "family": "presser-shank",
+   "members": 1
+  },
+  {
+   "family": "kurt-vise",
+   "members": 1
+  },
+  {
+   "family": "keyhole-hanger",
+   "members": 1
+  },
+  {
+   "family": "baby-pin-5/8",
+   "members": 1
+  },
+  {
+   "family": "stemfie",
+   "members": 1
+  },
+  {
+   "family": "stir-bar",
+   "members": 1
+  },
+  {
+   "family": "ansi-a156-strike",
+   "members": 1
+  },
+  {
+   "family": "at-switch-3.5mm",
+   "members": 1
+  },
+  {
+   "family": "iso-m8",
+   "members": 1
+  },
+  {
+   "family": "er-collet",
+   "members": 1
+  },
+  {
+   "family": "v-belt",
+   "members": 1
+  },
+  {
+   "family": "watch-lug",
+   "members": 1
+  }
+ ],
+ "edges": [
+  {
+   "a": "aerator-adapter",
+   "b": "aerator-cache",
+   "family": "aerator-m22-m24",
+   "kind": "mates_with",
+   "via": "M22x1 / M24x1 aerator",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "arca-gopro-bridge",
+   "b": "gopro-arm",
+   "family": "gopro-mount",
+   "kind": "mates_with",
+   "via": "GoPro action-cam mount",
+   "geometry": "snap↔snap"
+  },
+  {
+   "a": "arca-gopro-bridge",
+   "b": "gopro-ballhead",
+   "family": "gopro-mount",
+   "kind": "mates_with",
+   "via": "GoPro action-cam mount",
+   "geometry": "snap↔snap"
+  },
+  {
+   "a": "arca-gopro-bridge",
+   "b": "gopro-mount",
+   "family": "gopro-mount",
+   "kind": "mates_with",
+   "via": "GoPro action-cam mount",
+   "geometry": "snap↔snap"
+  },
+  {
+   "a": "gopro-arm",
+   "b": "gopro-ballhead",
+   "family": "gopro-mount",
+   "kind": "mates_with",
+   "via": "GoPro action-cam mount",
+   "geometry": "snap↔snap"
+  },
+  {
+   "a": "gopro-arm",
+   "b": "gopro-mount",
+   "family": "gopro-mount",
+   "kind": "mates_with",
+   "via": "GoPro action-cam mount",
+   "geometry": "snap↔snap"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "gopro-mount",
+   "family": "gopro-mount",
+   "kind": "mates_with",
+   "via": "GoPro action-cam mount",
+   "geometry": "snap↔snap"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "arca-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "gopro-ballhead",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "nato-rail",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "optical-post",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "rod-bridge",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "rod-rig-clamp",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "shoe-bar",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-l-bracket",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "gopro-ballhead",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "nato-rail",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "optical-post",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "rod-bridge",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "rod-rig-clamp",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "shoe-bar",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "arca-plate",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "ball-socket",
+   "b": "camera-quarter-twenty",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "ball-socket",
+   "b": "gopro-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "ball-socket",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "ball-socket",
+   "b": "spigot-adapter",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "camera-quarter-twenty",
+   "b": "gopro-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "camera-quarter-twenty",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "camera-quarter-twenty",
+   "b": "spigot-adapter",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "drill-fence",
+   "b": "ttrack-clamp",
+   "family": "unc-1/4-20",
+   "kind": "same_family",
+   "via": "3/4in T-track (19.05 mm slot; 1/4-20 stud)",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "nato-rail",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "optical-post",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "rod-bridge",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "rod-rig-clamp",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "shoe-bar",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "gopro-ballhead",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "gopro-mount",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "gopro-mount",
+   "b": "spigot-adapter",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "nato-rail",
+   "b": "optical-post",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nato-rail",
+   "b": "rod-bridge",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nato-rail",
+   "b": "rod-rig-clamp",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nato-rail",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nato-rail",
+   "b": "shoe-bar",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nato-rail",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nato-rail",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "optical-post",
+   "b": "rod-bridge",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "optical-post",
+   "b": "rod-rig-clamp",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "optical-post",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "optical-post",
+   "b": "shoe-bar",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "optical-post",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "optical-post",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-bridge",
+   "b": "rod-rig-clamp",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-bridge",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-bridge",
+   "b": "shoe-bar",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-bridge",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-bridge",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-rig-clamp",
+   "b": "sensor-mount-plate",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-rig-clamp",
+   "b": "shoe-bar",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-rig-clamp",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-rig-clamp",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "sensor-mount-plate",
+   "b": "spigot-adapter",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "sensor-mount-plate",
+   "b": "shoe-bar",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "sensor-mount-plate",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "sensor-mount-plate",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME 1/4-20",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "shoe-bar",
+   "b": "shoe-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "shoe-bar",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "shoe-mount",
+   "b": "suction-mount",
+   "family": "unc-1/4-20",
+   "kind": "mates_with",
+   "via": "ASME B1.1 1/4-20 UNC",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "bar-clamp",
+   "b": "condensate-fitting",
+   "family": "ips-pipe",
+   "kind": "mates_with",
+   "via": "1/2in & 3/4in IPS pipe",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bar-clamp",
+   "b": "pipe-fitting",
+   "family": "ips-pipe",
+   "kind": "mates_with",
+   "via": "1/2in & 3/4in IPS pipe",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "condensate-fitting",
+   "b": "pipe-fitting",
+   "family": "ips-pipe",
+   "kind": "mates_with",
+   "via": "1/2-3/4 in IPS stub slip (PVC sched 40)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "barend-mount",
+   "b": "bike-mount",
+   "family": "handlebar-clamp",
+   "kind": "mates_with",
+   "via": "handlebar 7/8-1in (22.2-25.4mm)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bearing-housing",
+   "b": "gt2-idler",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "ISO 15 (608/625/6900)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bearing-housing",
+   "b": "idler-608",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "ISO 15 (608/625/6900)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bearing-housing",
+   "b": "linear-wheel",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "ISO 15 (608/625/6900)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bearing-housing",
+   "b": "roller-bracket",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "ISO 15 (608/625/6900)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bearing-housing",
+   "b": "timing-pulley",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "ISO 15 (608/625/6900)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "gt2-idler",
+   "b": "idler-608",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "608 bearing (ISO 15 — 8×22×7)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "gt2-idler",
+   "b": "linear-wheel",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "608 bearing (ISO 15 — 8×22×7)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "gt2-idler",
+   "b": "roller-bracket",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "608 bearing (ISO 15 — 8×22×7)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "gt2-idler",
+   "b": "timing-pulley",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "608 bearing (ISO 15 — 8×22×7)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "idler-608",
+   "b": "linear-wheel",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "608 bearing (ISO 15 — 8×22×7)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "idler-608",
+   "b": "roller-bracket",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "608 bearing (ISO 15 — 8×22×7)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "idler-608",
+   "b": "timing-pulley",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "608 bearing (ISO 15 — 8×22×7)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "linear-wheel",
+   "b": "roller-bracket",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "ISO 15 (625/608)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "linear-wheel",
+   "b": "timing-pulley",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "ISO 15 (625/608)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "roller-bracket",
+   "b": "timing-pulley",
+   "family": "bearing-608",
+   "kind": "mates_with",
+   "via": "608 bearing OD 22 mm / plain shaft bore",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bench-dog",
+   "b": "camlock-latch",
+   "family": "miter-ttrack",
+   "kind": "mates_with",
+   "via": "19mm/20mm dog hole",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bench-dog",
+   "b": "lock-cam",
+   "family": "miter-ttrack",
+   "kind": "mates_with",
+   "via": "19mm/20mm dog hole",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "camlock-latch",
+   "b": "lock-cam",
+   "family": "miter-ttrack",
+   "kind": "mates_with",
+   "via": "16/19mm cam-lock",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "bike-wall-rack",
+   "b": "stud-bracket",
+   "family": "wall-stud",
+   "kind": "mates_with",
+   "via": "Wall Stud Mount",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "bird-feeder",
+   "b": "bottle-coupler",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bird-feeder",
+   "b": "bottle-thread",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bird-feeder",
+   "b": "faircap-filter",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bird-feeder",
+   "b": "filter-straw",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bird-feeder",
+   "b": "jar-adapter",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bird-feeder",
+   "b": "pco-cap",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bird-feeder",
+   "b": "pet-dispenser",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bird-feeder",
+   "b": "rain-gauge-funnel",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-coupler",
+   "b": "bottle-thread",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-coupler",
+   "b": "faircap-filter",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-coupler",
+   "b": "filter-straw",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-coupler",
+   "b": "jar-adapter",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-coupler",
+   "b": "pco-cap",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-coupler",
+   "b": "pet-dispenser",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-coupler",
+   "b": "rain-gauge-funnel",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-thread",
+   "b": "faircap-filter",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881 / SP-400 finish series",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-thread",
+   "b": "filter-straw",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881 / SP-400 finish series",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-thread",
+   "b": "jar-adapter",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881 / SP-400 finish series",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-thread",
+   "b": "pco-cap",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881 / SP-400 finish series",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-thread",
+   "b": "pet-dispenser",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881 / SP-400 finish series",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-thread",
+   "b": "rain-gauge-funnel",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881 / SP-400 finish series",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "faircap-filter",
+   "b": "filter-straw",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "faircap-filter",
+   "b": "jar-adapter",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "faircap-filter",
+   "b": "pco-cap",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "faircap-filter",
+   "b": "pet-dispenser",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "faircap-filter",
+   "b": "rain-gauge-funnel",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "filter-straw",
+   "b": "jar-adapter",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "28mm/bottle (28-410 / PCO-1881)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "filter-straw",
+   "b": "pco-cap",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "28mm/bottle (28-410 / PCO-1881)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "filter-straw",
+   "b": "pet-dispenser",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "28mm/bottle (28-410 / PCO-1881)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "filter-straw",
+   "b": "rain-gauge-funnel",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "28mm/bottle (28-410 / PCO-1881)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "jar-adapter",
+   "b": "pco-cap",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "jar-adapter",
+   "b": "pet-dispenser",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "jar-adapter",
+   "b": "rain-gauge-funnel",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "pco-cap",
+   "b": "pet-dispenser",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "pco-cap",
+   "b": "rain-gauge-funnel",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "pet-dispenser",
+   "b": "rain-gauge-funnel",
+   "family": "pco-1881",
+   "kind": "mates_with",
+   "via": "PCO 1881",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "bottle-bracket",
+   "b": "dryer-holster",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "ISO 7045 M4",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "bottle-bracket",
+   "b": "hasp",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "ISO 7045 M4",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "bottle-bracket",
+   "b": "mc4-junction",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "ISO 7045 M4",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "bottle-bracket",
+   "b": "toiletry-holder",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "ISO 7045 M4",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "dryer-holster",
+   "b": "hasp",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "ISO 7045 M4",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "dryer-holster",
+   "b": "mc4-junction",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "ISO 7045 M4",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "dryer-holster",
+   "b": "toiletry-holder",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "ISO 7045 M4",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "hasp",
+   "b": "mc4-junction",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "4 in safety-pattern hasp (No.8/M4 screws)",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "hasp",
+   "b": "toiletry-holder",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "4 in safety-pattern hasp (No.8/M4 screws)",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "mc4-junction",
+   "b": "toiletry-holder",
+   "family": "iso-m4",
+   "kind": "mates_with",
+   "via": "M4 clearance (Ø4.4 mm) surface fixing",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "breadboard-holder",
+   "b": "circuit-trainer",
+   "family": "optical-breadboard",
+   "kind": "mates_with",
+   "via": "830-pt breadboard",
+   "geometry": "grid↔profile"
+  },
+  {
+   "a": "circuit-trainer",
+   "b": "dovetail-slide",
+   "family": "optical-breadboard",
+   "kind": "mates_with",
+   "via": "breadboard 2.54mm",
+   "geometry": "profile↔rail"
+  },
+  {
+   "a": "busbar-support",
+   "b": "devboard-tray",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "busbar-support",
+   "b": "din-module",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "busbar-support",
+   "b": "din-rail-clip",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "busbar-support",
+   "b": "din-relay",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "busbar-support",
+   "b": "din-terminal-comb",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "busbar-support",
+   "b": "terminal-cover",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "devboard-tray",
+   "b": "din-module",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "devboard-tray",
+   "b": "din-rail-clip",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "devboard-tray",
+   "b": "din-relay",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "devboard-tray",
+   "b": "din-terminal-comb",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "devboard-tray",
+   "b": "terminal-cover",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-module",
+   "b": "din-rail-clip",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-module",
+   "b": "din-relay",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-module",
+   "b": "din-terminal-comb",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-module",
+   "b": "terminal-cover",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "din-relay",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715 TS35",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "din-terminal-comb",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715 TS35",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "terminal-cover",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715 TS35",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-relay",
+   "b": "din-terminal-comb",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-relay",
+   "b": "terminal-cover",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "din-terminal-comb",
+   "b": "terminal-cover",
+   "family": "din-rail-35",
+   "kind": "same_family",
+   "via": "DIN EN 60715",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "card-holder",
+   "b": "deck-box",
+   "family": "card-format",
+   "kind": "mates_with",
+   "via": "playing card 63x88mm",
+   "geometry": "profile↔pocket"
+  },
+  {
+   "a": "centrifuge-adapter",
+   "b": "centrifuge-tube-adapter",
+   "family": "conical-tube",
+   "kind": "mates_with",
+   "via": "15/50mL Falcon",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "enclosure-vent",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 261 M3/M4/M5",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "ferro-handle",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 261 M3/M4/M5",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "flexure-mount",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 261 M3/M4/M5",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "matrix-frame",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 261 M3/M4/M5",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "enclosure-vent",
+   "b": "ferro-handle",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 7045 M3",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "enclosure-vent",
+   "b": "flexure-mount",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 7045 M3",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "enclosure-vent",
+   "b": "matrix-frame",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 7045 M3",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "ferro-handle",
+   "b": "flexure-mount",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 4026 M3 set screw",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "ferro-handle",
+   "b": "matrix-frame",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 4026 M3 set screw",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "flexure-mount",
+   "b": "matrix-frame",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "ISO 261 M3",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "insert-jig",
+   "b": "pcb-standoff",
+   "family": "iso-m3",
+   "kind": "mates_with",
+   "via": "M3-M8 insert",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "gridfinity",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity (42 mm module)",
+   "geometry": "socket↔profile"
+  },
+  {
+   "a": "din-rail-clip",
+   "b": "locking-mechanism-hyperobject",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity (42 mm module)",
+   "geometry": "socket↔profile"
+  },
+  {
+   "a": "grid-hub",
+   "b": "gridfinity",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity 42 mm",
+   "geometry": "grid↔profile"
+  },
+  {
+   "a": "grid-hub",
+   "b": "gridfinity-baseplate",
+   "family": "gridfinity",
+   "kind": "same_family",
+   "via": "Gridfinity 42 mm",
+   "geometry": "grid↔grid"
+  },
+  {
+   "a": "grid-hub",
+   "b": "gridfinity-tool",
+   "family": "gridfinity",
+   "kind": "same_family",
+   "via": "Gridfinity 42 mm",
+   "geometry": "grid↔grid"
+  },
+  {
+   "a": "grid-hub",
+   "b": "locking-mechanism-hyperobject",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity 42 mm",
+   "geometry": "grid↔profile"
+  },
+  {
+   "a": "gridfinity",
+   "b": "gridfinity-baseplate",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+   "geometry": "profile↔grid"
+  },
+  {
+   "a": "gridfinity",
+   "b": "gridfinity-tool",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
+   "geometry": "profile↔grid"
+  },
+  {
+   "a": "gridfinity",
+   "b": "locking-mechanism-hyperobject",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity (42mm module, 7mm Z-unit)",
+   "geometry": "grid↔profile"
+  },
+  {
+   "a": "gridfinity-baseplate",
+   "b": "gridfinity-tool",
+   "family": "gridfinity",
+   "kind": "same_family",
+   "via": "Gridfinity 42 mm",
+   "geometry": "grid↔grid"
+  },
+  {
+   "a": "gridfinity-baseplate",
+   "b": "locking-mechanism-hyperobject",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity 42 mm",
+   "geometry": "grid↔profile"
+  },
+  {
+   "a": "gridfinity-tool",
+   "b": "locking-mechanism-hyperobject",
+   "family": "gridfinity",
+   "kind": "mates_with",
+   "via": "Gridfinity 42 mm",
+   "geometry": "grid↔profile"
+  },
+  {
+   "a": "dosing-aid",
+   "b": "syringe-carriage",
+   "family": "luer",
+   "kind": "mates_with",
+   "via": "Luer barrel",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "drip-fitting",
+   "b": "drip-manifold",
+   "family": "drip-irrigation",
+   "kind": "mates_with",
+   "via": "1/4in & 1/2in drip",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "drum-hardware",
+   "b": "thumb-screw",
+   "family": "iso-m5",
+   "kind": "mates_with",
+   "via": "12-24 UNC (5.49 mm, 24 TPI) / M5",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "dust-shroud",
+   "b": "fan-adapter",
+   "family": "pc-fan",
+   "kind": "mates_with",
+   "via": "PC fan 40-140mm",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "dust-shroud",
+   "b": "fan-duct",
+   "family": "pc-fan",
+   "kind": "mates_with",
+   "via": "PC fan 40-140mm",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "fan-adapter",
+   "b": "fan-duct",
+   "family": "pc-fan",
+   "kind": "mates_with",
+   "via": "PC fan 40-140mm",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "featherboard",
+   "b": "roller-bracket",
+   "family": "t-slot-extrusion",
+   "kind": "mates_with",
+   "via": "T-slot / 3/4in miter",
+   "geometry": "profile↔rail"
+  },
+  {
+   "a": "featherboard",
+   "b": "seed-tray",
+   "family": "t-slot-extrusion",
+   "kind": "mates_with",
+   "via": "T-slot / 3/4in miter",
+   "geometry": "profile↔grid"
+  },
+  {
+   "a": "linear-wheel",
+   "b": "roller-bracket",
+   "family": "t-slot-extrusion",
+   "kind": "mates_with",
+   "via": "OpenBuilds V-slot",
+   "geometry": "profile↔rail"
+  },
+  {
+   "a": "linear-wheel",
+   "b": "seed-tray",
+   "family": "t-slot-extrusion",
+   "kind": "mates_with",
+   "via": "OpenBuilds V-slot",
+   "geometry": "profile↔grid"
+  },
+  {
+   "a": "roller-bracket",
+   "b": "tslot-2020",
+   "family": "t-slot-extrusion",
+   "kind": "mates_with",
+   "via": "2020 T-slot (6 mm slot)",
+   "geometry": "rail↔profile"
+  },
+  {
+   "a": "roller-bracket",
+   "b": "tslot-corner",
+   "family": "t-slot-extrusion",
+   "kind": "mates_with",
+   "via": "2020 T-slot (6 mm slot)",
+   "geometry": "rail↔profile"
+  },
+  {
+   "a": "seed-tray",
+   "b": "tslot-2020",
+   "family": "t-slot-extrusion",
+   "kind": "mates_with",
+   "via": "1020 tray",
+   "geometry": "grid↔profile"
+  },
+  {
+   "a": "seed-tray",
+   "b": "tslot-corner",
+   "family": "t-slot-extrusion",
+   "kind": "mates_with",
+   "via": "1020 tray",
+   "geometry": "grid↔profile"
+  },
+  {
+   "a": "filter-step-ring",
+   "b": "lens-cap",
+   "family": "filter-thread",
+   "kind": "mates_with",
+   "via": "M46-M82 x 0.75",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "flask-clamp",
+   "b": "optical-post",
+   "family": "support-rod-12",
+   "kind": "mates_with",
+   "via": "12 mm / 1/2 in support rod",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "framing-hyperobject",
+   "b": "vesa-arm-extender",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA 75/100",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "framing-hyperobject",
+   "b": "vesa-mount",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA 75/100",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "framing-hyperobject",
+   "b": "vesa-plate-adapter",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA 75/100",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "framing-hyperobject",
+   "b": "vesa-thinclient",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA 75/100",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "vesa-arm-extender",
+   "b": "vesa-mount",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA MIS-D",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "vesa-arm-extender",
+   "b": "vesa-plate-adapter",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA MIS-D",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "vesa-arm-extender",
+   "b": "vesa-thinclient",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA MIS-D",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "vesa-mount",
+   "b": "vesa-plate-adapter",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA MIS-D/E/F (FDMI)",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "vesa-mount",
+   "b": "vesa-thinclient",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA MIS-D/E/F (FDMI)",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "vesa-plate-adapter",
+   "b": "vesa-thinclient",
+   "family": "vesa",
+   "kind": "mates_with",
+   "via": "VESA MIS-D",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "growler-cap",
+   "b": "pump-adapter",
+   "family": "spi-neck",
+   "kind": "mates_with",
+   "via": "38-400 continuous-thread finish",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "growler-cap",
+   "b": "sharps-lid-adapter",
+   "family": "spi-neck",
+   "kind": "mates_with",
+   "via": "38-400 continuous-thread finish",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "growler-cap",
+   "b": "squeeze-nozzle",
+   "family": "spi-neck",
+   "kind": "mates_with",
+   "via": "38-400 continuous-thread finish",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "pump-adapter",
+   "b": "sharps-lid-adapter",
+   "family": "spi-neck",
+   "kind": "mates_with",
+   "via": "SPI 20-410 / 24-410 / 28-410 (8 TPI)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "pump-adapter",
+   "b": "squeeze-nozzle",
+   "family": "spi-neck",
+   "kind": "mates_with",
+   "via": "SPI 20-410 / 24-410 / 28-410 (8 TPI)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "sharps-lid-adapter",
+   "b": "squeeze-nozzle",
+   "family": "spi-neck",
+   "kind": "mates_with",
+   "via": "GPI/SPI continuous-thread finishes 63-400 / 70-400 / 89-400 (pitch 4.23 mm)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "hose-adapter",
+   "b": "sprinkler-adapter",
+   "family": "ght-hose",
+   "kind": "mates_with",
+   "via": "GHT 3/4 / M22-M24 aerator",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "hose-adapter",
+   "b": "thread-adapter-kit",
+   "family": "ght-hose",
+   "kind": "mates_with",
+   "via": "GHT 3/4 / M22-M24 aerator",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "sprinkler-adapter",
+   "b": "thread-adapter-kit",
+   "family": "ght-hose",
+   "kind": "mates_with",
+   "via": "GHT 3/4",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "indicator-base",
+   "b": "indicator-holder",
+   "family": "indicator-stem-8mm",
+   "kind": "mates_with",
+   "via": "8 mm indicator stem (Mitutoyo Series 2)",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "knob-dshaft",
+   "b": "spline-hub",
+   "family": "shaft-spline",
+   "kind": "mates_with",
+   "via": "D-shaft / spline bore",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "lamp-adapter-kit",
+   "b": "lamp-socket-extender",
+   "family": "e26-e27-lamp",
+   "kind": "mates_with",
+   "via": "IEC 60061 E26 / E27 (7 TPI)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "lamp-adapter-kit",
+   "b": "socket-adapter",
+   "family": "e26-e27-lamp",
+   "kind": "mates_with",
+   "via": "IEC 60061 E26 / E27 (7 TPI)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "lamp-socket-extender",
+   "b": "socket-adapter",
+   "family": "e26-e27-lamp",
+   "kind": "mates_with",
+   "via": "IEC 60061 E26 / E27 (7 TPI)",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "lamp-adapter-kit",
+   "b": "socket-adapter",
+   "family": "gu10-lamp",
+   "kind": "mates_with",
+   "via": "GU10 / IEC 60061 B22d",
+   "geometry": "snap↔snap"
+  },
+  {
+   "a": "landing-skid",
+   "b": "motor-soft-mount",
+   "family": "drone-motor-mount",
+   "kind": "mates_with",
+   "via": "16x16 / 19x19 / 9x9 brushless motor mount",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "landing-skid",
+   "b": "prop-guard",
+   "family": "drone-motor-mount",
+   "kind": "mates_with",
+   "via": "16x16 / 19x19 / 9x9 brushless motor mount",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "motor-soft-mount",
+   "b": "prop-guard",
+   "family": "drone-motor-mount",
+   "kind": "mates_with",
+   "via": "16x16 / 19x19 / 9x9 brushless motor mount",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "mc4-holder",
+   "b": "mc4-junction",
+   "family": "mc4",
+   "kind": "mates_with",
+   "via": "MC4",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "microplate-tray",
+   "b": "pipette-stand",
+   "family": "slas-microplate",
+   "kind": "same_family",
+   "via": "ANSI/SLAS 1-2004 & 4-2004 (9mm pitch)",
+   "geometry": "grid↔grid"
+  },
+  {
+   "a": "microplate-tray",
+   "b": "tube-rack",
+   "family": "slas-microplate",
+   "kind": "same_family",
+   "via": "ANSI/SLAS 1-2004 & 4-2004 (9mm pitch)",
+   "geometry": "grid↔grid"
+  },
+  {
+   "a": "pipette-stand",
+   "b": "tube-rack",
+   "family": "slas-microplate",
+   "kind": "same_family",
+   "via": "ANSI-SLAS microplate 9 mm pitch",
+   "geometry": "grid↔grid"
+  },
+  {
+   "a": "molle-clip",
+   "b": "molle-pouch",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "25mm webbing",
+   "geometry": "profile↔rail"
+  },
+  {
+   "a": "molle-clip",
+   "b": "nebulizer-mask-strap",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "25mm webbing",
+   "geometry": "profile↔rail"
+  },
+  {
+   "a": "molle-clip",
+   "b": "pet-hardware",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "25mm webbing",
+   "geometry": "profile↔snap"
+  },
+  {
+   "a": "molle-clip",
+   "b": "strap-buckle",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "25mm webbing",
+   "geometry": "profile↔snap"
+  },
+  {
+   "a": "molle-pouch",
+   "b": "nebulizer-mask-strap",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "1 in (25.4 mm) webbing cross-section",
+   "geometry": "profile↔rail"
+  },
+  {
+   "a": "molle-pouch",
+   "b": "pet-hardware",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "1 in (25.4 mm) webbing cross-section",
+   "geometry": "profile↔snap"
+  },
+  {
+   "a": "molle-pouch",
+   "b": "strap-buckle",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "1 in (25.4 mm) webbing cross-section",
+   "geometry": "profile↔snap"
+  },
+  {
+   "a": "molle-pouch",
+   "b": "paracord-jig",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "20-55 mm belt webbing channel",
+   "geometry": "rail↔profile"
+  },
+  {
+   "a": "nebulizer-mask-strap",
+   "b": "paracord-jig",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "20/25mm webbing",
+   "geometry": "rail↔profile"
+  },
+  {
+   "a": "nebulizer-mask-strap",
+   "b": "strap-buckle",
+   "family": "webbing-strap",
+   "kind": "same_family",
+   "via": "20/25mm webbing",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "paracord-jig",
+   "b": "pet-hardware",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "25mm webbing",
+   "geometry": "profile↔snap"
+  },
+  {
+   "a": "paracord-jig",
+   "b": "strap-buckle",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "25mm webbing",
+   "geometry": "profile↔snap"
+  },
+  {
+   "a": "pet-hardware",
+   "b": "strap-buckle",
+   "family": "webbing-strap",
+   "kind": "mates_with",
+   "via": "20/25mm webbing",
+   "geometry": "snap↔snap"
+  },
+  {
+   "a": "motor-mount",
+   "b": "nema-bracket",
+   "family": "nema-stepper",
+   "kind": "mates_with",
+   "via": "NEMA 17/23/34",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "motor-mount",
+   "b": "nema-damper",
+   "family": "nema-stepper",
+   "kind": "mates_with",
+   "via": "NEMA 17/23/34",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "motor-mount",
+   "b": "scara-robotics",
+   "family": "nema-stepper",
+   "kind": "mates_with",
+   "via": "NEMA 17/23/34",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nema-bracket",
+   "b": "nema-damper",
+   "family": "nema-stepper",
+   "kind": "mates_with",
+   "via": "NEMA 17/23",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nema-bracket",
+   "b": "scara-robotics",
+   "family": "nema-stepper",
+   "kind": "mates_with",
+   "via": "NEMA 17/23",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nema-damper",
+   "b": "scara-robotics",
+   "family": "nema-stepper",
+   "kind": "mates_with",
+   "via": "NEMA 17/23",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "nato-rail",
+   "b": "rail-bridge",
+   "family": "nato-rail",
+   "kind": "same_family",
+   "via": "NATO accessory rail",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "net-cup",
+   "b": "net-cup-lid",
+   "family": "net-cup",
+   "kind": "mates_with",
+   "via": "2/3in net cup",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "objective-case",
+   "b": "objective-turret",
+   "family": "rms-objective",
+   "kind": "mates_with",
+   "via": "RMS W0.800in x 36 TPI (20.32 mm, DIN 58888) / M25 x 0.75",
+   "geometry": "thread↔thread"
+  },
+  {
+   "a": "pi-hat-case",
+   "b": "sbc-case",
+   "family": "rpi-mount",
+   "kind": "mates_with",
+   "via": "RPi HAT",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "picatinny-rail",
+   "b": "rail-bridge",
+   "family": "picatinny",
+   "kind": "same_family",
+   "via": "MIL-STD-1913 / M-LOK",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "prosthetic-socket",
+   "b": "prosthetic-wrist",
+   "family": "enable-prosthetic",
+   "kind": "mates_with",
+   "via": "e-NABLE / OSL 4-bolt",
+   "geometry": "bolt_pattern↔bolt_pattern"
+  },
+  {
+   "a": "rod-bridge",
+   "b": "rod-rig-clamp",
+   "family": "15mm-rod",
+   "kind": "mates_with",
+   "via": "15mm LWS rod",
+   "geometry": "socket↔socket"
+  },
+  {
+   "a": "shoe-bar",
+   "b": "shoe-mount",
+   "family": "iso-518-shoe",
+   "kind": "same_family",
+   "via": "ISO 518",
+   "geometry": "rail↔rail"
+  },
+  {
+   "a": "worm-gear",
+   "b": "worm-wheel",
+   "family": "worm-gear",
+   "kind": "mates_with",
+   "via": "DIN 3975",
+   "geometry": "thread↔thread"
+  }
+ ]
+}

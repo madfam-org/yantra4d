@@ -284,14 +284,14 @@ Exit criteria:
 ### Sprint 17 — Production Physics Readiness & Generative Optimization
 _Integration: **[PPF Contact Solver](https://github.com/st-tech/ppf-contact-solver)** (SIGGRAPH Asia 2024)._
 
-Transition the current mock simulation pipeline to full GPU-accelerated production readiness for compliant hyperobjects.
+Take the simulation pipeline from "no solver" (today the physics endpoint answers 501 `physics_solver_unavailable`) to GPU-accelerated production readiness for compliant hyperobjects.
 
 - [ ] **Infrastructure Provisioning:**
     - Deploy NVIDIA `g6.2xlarge` or `g6e.2xlarge` GPU instances with CUDA 12.8+.
     - Authenticate registry access to `ghcr.io/st-tech/ppf-contact-solver-compiled`.
     - Configure static storage (S3 or mounted volume) for persistent PLY frame sequences.
 - [ ] **Backend Simulation Hardening:**
-    - Replace mock `time.sleep` loops in `simulation_tasks.py` with real `subprocess` execution of generated PPF Python scripts.
+    - Register a solver backend with `configure_physics_solver` (`simulation_tasks.py`) that executes the generated PPF Python scripts. The timed mock loop is gone; without a backend the endpoint answers 501.
     - Implement real-time STL path resolution in `script_generator.py` for concrete CAD-to-SOLVER mesh injection.
     - Migrate from background threads to Celery `@celery.task(queue="gpu_tasks")` for distributed job management.
 - [ ] **Optimizer Physical Intelligence:**

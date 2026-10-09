@@ -459,5 +459,15 @@
   "graph.point_coordinate": "Point {n} {axis}",
   "graph.point_remove": "Retirer le point {n}",
   "graph.point_add": "Ajouter un point",
-  "graph.limit_reached": "Limite atteinte ({limit})."
+  "graph.limit_reached": "Limite atteinte ({limit}).",
+  "sim.physics_run": "Lancer la simulation physique",
+  "sim.physics_running": "Simulation physique... {progress} %",
+  "sim.physics_done": "Images de simulation physique prêtes",
+  "sim.physics_unavailable": "La simulation physique n'est pas disponible : aucun solveur physique n'est configuré sur ce serveur.",
+  "sim.stress_run": "Carte des contraintes (estimation)",
+  "sim.stress_active": "Estimation des contraintes affichée",
+  "sim.stress_note": "Carte des contraintes approximative dérivée de la géométrie. Ce n'est pas une analyse par éléments finis.",
+  "sim.optimize_run": "Estimation des paramètres (heuristique)",
+  "sim.optimize_running": "Estimation heuristique... {progress} %",
+  "sim.optimize_note": "Estimation heuristique : une règle fixe ajuste un paramètre numérique. Aucun solveur de contraintes n'est exécuté ; le résultat n'est donc pas une conception optimisée."
 }

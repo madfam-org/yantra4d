@@ -27,7 +27,7 @@ The vision: apply simulated energy to any hyperobject and watch the continuous S
 
 **What is real today:** the Studio energy slider (`simulated_energy`) drives a thermodynamic-collapse heuristic in the implicit SDF engine (sag past glass-transition temperature), and a render whose browser estimate exceeds the device's budget is placed on the server by `apps/studio/src/services/engine/renderPlacement.ts` — one rule in the placement table below, not a "circuit breaker" bolted onto `renderService.ts`.
 
-**What is mocked or heuristic today:** the "full physics simulation" pipeline (`POST /api/projects/:slug/simulate/physics`) generates a PPF solver script but never executes it — the background worker produces synthetic progress frames only (`apps/api/tasks/simulation_tasks.py`). The FEA stress endpoint returns a labeled geometry-derived **stress proxy**, not a structural solve. Real PPF/FEM execution on GPU nodes is **roadmap**. See the [Current status](#-current-status-2026-09-02) section.
+**What is estimated or unavailable today:** no physics solver ships with this repo. `POST /api/projects/:slug/simulate/physics` answers **501** `physics_solver_unavailable` and creates no job until a solver backend is registered with `configure_physics_solver` (`apps/api/tasks/simulation_tasks.py`). The stress endpoint returns a labeled geometry-derived **estimate** (`method: "geometry_proxy"`, `approximation: true`), not a structural solve, and the optimize endpoint is a deterministic **heuristic** (`method: "heuristic"`, `approximation: true`). Real PPF/FEM execution on GPU nodes is **roadmap**. See the [Current status](#-current-status-2026-09-02) section.
 
 ---
 
@@ -63,11 +63,11 @@ Honest, code-verified snapshot. **Working today:**
 - **Implicit SDF engine** — TPMS/lattice field generation, including the energy→sag "phase shift" heuristic behind the digital-twin slider.
 - **Per-mode engine resolution** — a single cartridge can mix modes across kernels; the render engine is resolved per mode (`ManifestService.mode_engine`), so the flagship hyperobjects ship **dual-engine** (exact CadQuery B-Rep modes alongside their original OpenSCAD modes).
 
-**Mocked or heuristic today (presented as roadmap, not shipped):**
+**Estimated, heuristic or unavailable today (presented as roadmap, not shipped):**
 
-- **PPF physics simulation** — the worker generates a solver script but does not execute it; progress and frames are synthetic (`apps/api/tasks/simulation_tasks.py`). No GPU execution path exists in this repo yet.
-- **FEA stress heatmap** — a deterministic geometry-derived proxy (`schema_version: stress_proxy_v1`, `approximation: true`), not a structural solver.
-- **Topology optimization** — a deterministic heuristic optimizer (`apps/api/services/simulation/optimizer.py` describes itself as the stand-in used "when full PDE-backed" solving is unavailable), not a real generative/PDE optimization.
+- **PPF physics simulation** — the endpoint answers 501 `physics_solver_unavailable` and creates no job until a solver backend is registered with `configure_physics_solver`; the PPF script generator builds the input such a backend would run. No solver or GPU execution path ships in this repo yet.
+- **Stress heatmap** — a deterministic geometry-derived estimate (`method: "geometry_proxy"`, `approximation: true`, `schema_version: stress_proxy_v1`), not a finite-element solve.
+- **Parameter estimate** (formerly labelled topology optimization) — a deterministic heuristic (`method: "heuristic"`, `approximation: true`; `apps/api/services/simulation/optimizer.py` describes itself as the stand-in used "when full PDE-backed" solving is unavailable), not a generative or PDE-based optimization. Its status field `current_sigma` is a deprecated alias of `current_score` for one release.
 
 ---
 

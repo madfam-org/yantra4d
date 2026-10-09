@@ -61,7 +61,11 @@ test.describe('Graph editor', () => {
     await forceBackendRender(page)
   })
 
-  test('add, connect, set a parameter, bind, validate and export', async ({ page }) => {
+  test('add, connect, set a parameter, bind, validate and export', async ({ page, browserName }) => {
+    // The longest flow in the suite. On WebKit, with the runner pool loaded, it outlasted the
+    // 60 s budget on all three attempts (main, 2026-10-09) while passing in PR runs, so WebKit
+    // alone gets the slow budget (3x) instead of the whole suite getting a longer timeout.
+    test.slow(browserName === 'webkit', 'longest flow in the suite; WebKit on a loaded runner pool')
     const writes = await mockGraphCartridge(page)
     await goToStudio(page)
 

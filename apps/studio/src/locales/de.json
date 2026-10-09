@@ -459,5 +459,15 @@
   "graph.point_coordinate": "Punkt {n} {axis}",
   "graph.point_remove": "Punkt {n} entfernen",
   "graph.point_add": "Punkt hinzufügen",
-  "graph.limit_reached": "Grenze erreicht ({limit})."
+  "graph.limit_reached": "Grenze erreicht ({limit}).",
+  "sim.physics_run": "Physiksimulation starten",
+  "sim.physics_running": "Physik wird simuliert... {progress} %",
+  "sim.physics_done": "Physik-Frames bereit",
+  "sim.physics_unavailable": "Die Physiksimulation ist nicht verfügbar: Auf diesem Server ist kein Physik-Solver konfiguriert.",
+  "sim.stress_run": "Spannungskarte (Schätzung)",
+  "sim.stress_active": "Spannungsschätzung wird angezeigt",
+  "sim.stress_note": "Näherungsweise Spannungskarte, aus der Geometrie abgeleitet. Keine Finite-Elemente-Analyse.",
+  "sim.optimize_run": "Parameterschätzung (heuristisch)",
+  "sim.optimize_running": "Heuristische Schätzung... {progress} %",
+  "sim.optimize_note": "Heuristische Schätzung: Eine feste Regel passt einen numerischen Parameter an. Es läuft kein Spannungs-Solver, daher ist das Ergebnis kein optimiertes Design."
 }

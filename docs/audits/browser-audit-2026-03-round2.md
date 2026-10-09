@@ -5,7 +5,7 @@
 **Stack**: `docker compose up --build` (backend:5000, studio:3000, landing:4321, redis:6379)
 **Auth**: Disabled (`AUTH_ENABLED=false` — madfam tier, all features unlocked)
 **Branch**: `audit/round-2-remediation`
-**Projects tested**: gridfinity, tablaco, custom-msh
+**Projects tested**: gridfinity, one client-private cartridge, custom-msh
 **Viewports**: 1280x900, 1024x768, 768x1024, 375x812, 812x375
 
 ---
@@ -34,7 +34,7 @@
 ### ISSUE-R2-1: Mobile controls completely inaccessible below 1024px (HIGH)
 
 **Viewport**: 375x812, 768x1024, 812x375 (all viewports < 1024px)
-**Projects**: ALL (gridfinity, tablaco, custom-msh)
+**Projects**: ALL (gridfinity, the client-private cartridge, custom-msh)
 **Category**: Responsive Layout
 
 **Description**: The `StudioSidebar` component renders both a desktop sidebar (`hidden lg:flex`) and a mobile controls bar (`lg:hidden`) with a Sheet trigger (hamburger menu + mode tabs). However, in `App.jsx:202`, the `StudioSidebar` is wrapped in a parent container with `hidden lg:flex`:
@@ -66,7 +66,7 @@ The 3D viewer renders correctly, but users can only view the default model — t
 - `audit/G4-gridfinity-mobile-portrait-v2.png` — Gridfinity 375x812: 3D viewer only, no controls
 - `audit/G5-gridfinity-tablet-portrait.png` — Gridfinity 768x1024: same issue
 - `audit/G7-gridfinity-mobile-landscape.png` — Gridfinity 812x375: same issue
-- `audit/T4-tablaco-mobile-portrait.png` — Tablaco 375x812: same issue
+- `audit/T4-<private-slug>-mobile-portrait.png` — client-private cartridge 375x812: same issue
 - `audit/M3-custom-msh-mobile-portrait.png` — Custom-MSH 375x812: same issue
 
 ---
@@ -92,7 +92,7 @@ This is the same as **ISSUE-1 from the March audit** (Round 1). The OpenSCAD pro
 ### ISSUE-R2-3: Export format selection is UI-only — downloads always serve cached GLB (HIGH) — **RESOLVED**
 
 **Viewport**: 1280x900 (desktop)
-**Projects**: ALL (gridfinity, tablaco, custom-msh)
+**Projects**: ALL (gridfinity, the client-private cartridge, custom-msh)
 **Category**: Export / Download
 
 **Description**: The ExportPanel displays all 7 format buttons (STL, 3MF, OFF, STEP, GLB, GLTF, OBJ) and the button label updates correctly when a format is selected. However, clicking "Download {format}" always downloads the cached GLB render file — the `export_format` parameter is **never sent** in the download request.
@@ -154,7 +154,7 @@ This was **ISSUE-3 from the March audit** — partially improved but still obser
 | March Issue | March Severity | Round 2 Status | Notes |
 |-------------|---------------|----------------|-------|
 | ISSUE-1: custom-msh assembly render (box_base/box_lid) | High | **PERSISTS** (ISSUE-R2-2) | Still fails with code 1 |
-| ISSUE-5: tablaco render failure | High | **RESOLVED** | Unit mode auto-render succeeds, all 3 modes work |
+| ISSUE-5: private-cartridge render failure | High | **RESOLVED** | Unit mode auto-render succeeds, all 3 modes work |
 | ISSUE-3: stale model info on mode switch | Medium | **IMPROVED** (ISSUE-R2-5) | Less noticeable with cache, but still present |
 | ISSUE-4: language not persistent across navigation | Medium | **RESOLVED** | Language persists across project switching |
 | ISSUE-8: 13 missing GLB models on landing carousel | Medium | **RESOLVED** | Manifest-driven detection (`manifest.json`) prevents 404s; only GLBs listed in manifest are requested |
@@ -174,7 +174,7 @@ This was **ISSUE-3 from the March audit** — partially improved but still obser
 ## Positive Findings
 
 ### Desktop (1280x900) — All 3 Projects
-- 3D viewer renders correctly for gridfinity (Cup, Baseplate, Lid modes), tablaco (Unit, Assembly, Grid modes), custom-msh (Holder, Rack modes)
+- 3D viewer renders correctly for gridfinity (Cup, Baseplate, Lid modes), the client-private cartridge (Unit, Assembly, Grid modes), custom-msh (Holder, Rack modes)
 - Mode switching triggers auto-render with SSE streaming progress
 - Cached renders load instantly on mode re-visit
 - Camera views (Isometric, Top, Front, Right) work correctly
@@ -188,7 +188,7 @@ This was **ISSUE-3 from the March audit** — partially improved but still obser
 - Console panel shows render progress and status messages
 - BOM panel accessible on gridfinity (Documents tab)
 - Export panel shows all 7 format buttons with correct labels
-- Assembly steps visible for gridfinity and tablaco
+- Assembly steps visible for gridfinity and the client-private cartridge
 - Undo/Redo (Cmd+Z / Cmd+Shift+Z) functional
 
 ### Tablet Landscape (1024x768)
@@ -214,7 +214,7 @@ This was **ISSUE-3 from the March audit** — partially improved but still obser
 ### Phases Completed
 - [x] Phase 0: Stack setup + health verification
 - [x] Phase 1A: Gridfinity desktop (modes, params, presets, export, BOM, assembly, viewer tools)
-- [x] Phase 1B: Tablaco desktop (3 modes, params, assembly, grid render)
+- [x] Phase 1B: Client-private cartridge desktop (3 modes, params, assembly, grid render)
 - [x] Phase 1C: Custom-MSH desktop (holder, rack, assembly failure)
 - [x] Phase 2: Cross-project features (navigation, theme, language, undo/redo)
 - [x] Phase 3-V1: Desktop 1280x900 (covered in Phase 1-2)
@@ -233,6 +233,8 @@ Mobile/tablet portrait testing of parameter controls, export panel interaction, 
 
 ## Screenshots Index
 
+`<private-slug>` stands for the client-private cartridge's slug, elided from the filenames below.
+
 | File | Viewport | Description |
 |------|----------|-------------|
 | `audit/G1-gridfinity-initial-desktop.png` | 1280x900 | Gridfinity Cup mode initial load |
@@ -242,10 +244,10 @@ Mobile/tablet portrait testing of parameter controls, export panel interaction, 
 | `audit/G5-gridfinity-tablet-portrait.png` | 768x1024 | Tablet portrait: no controls |
 | `audit/G6-gridfinity-tablet-landscape.png` | 1024x768 | Tablet landscape: full sidebar visible |
 | `audit/G7-gridfinity-mobile-landscape.png` | 812x375 | Mobile landscape: no controls |
-| `audit/T1-tablaco-initial-desktop.png` | 1280x900 | Tablaco Unit mode render (ISSUE-5 resolved) |
-| `audit/T2-tablaco-assembly-desktop.png` | 1280x900 | Tablaco Assembly mode (2 parts) |
-| `audit/T3-tablaco-grid-desktop.png` | 1280x900 | Tablaco Grid mode (5 parts, 2x2) |
-| `audit/T4-tablaco-mobile-portrait.png` | 375x812 | Tablaco mobile: no controls |
+| `audit/T1-<private-slug>-initial-desktop.png` | 1280x900 | Private cartridge Unit mode render (ISSUE-5 resolved) |
+| `audit/T2-<private-slug>-assembly-desktop.png` | 1280x900 | Private cartridge Assembly mode (2 parts) |
+| `audit/T3-<private-slug>-grid-desktop.png` | 1280x900 | Private cartridge Grid mode (5 parts, 2x2) |
+| `audit/T4-<private-slug>-mobile-portrait.png` | 375x812 | Private cartridge mobile: no controls |
 | `audit/M1-custom-msh-holder-desktop.png` | 1280x900 | Custom-MSH holder mode |
 | `audit/M2-custom-msh-assembly-partial.png` | 1280x900 | Assembly: box_base/box_lid ERROR |
 | `audit/M3-custom-msh-mobile-portrait.png` | 375x812 | Custom-MSH mobile: no controls |

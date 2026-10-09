@@ -1,5 +1,7 @@
 ---
 import type { Translations } from '../lib/i18n';
+import { fillTemplate } from '../lib/i18n';
+import { COMMONS_STATS } from '../data/projects';
 
 interface Props {
   t?: Translations;
@@ -8,7 +10,7 @@ interface Props {
 const { t } = Astro.props;
 ---
 
-<section id="for-makers" class="py-24 px-6">
+<section id="for-makers" class="cv-auto py-24 px-6">
   <div class="mx-auto max-w-5xl">
     <h2 class="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">{t ? t.forMakers.heading : 'Hecho para Makers'}</h2>
     <p class="mb-12 text-center text-muted-foreground max-w-2xl mx-auto">
@@ -28,7 +30,7 @@ const { t } = Astro.props;
       <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
         <div class="mb-3 text-2xl">📦</div>
         <h3 class="mb-2 font-semibold">{t ? t.forMakers.export.title : 'Exporta a Tu Manera'}</h3>
-        <p class="text-sm text-muted-foreground">{t ? t.forMakers.export.desc : 'STL, 3MF u OFF. Un clic. Listo para tu slicer.'}</p>
+        <p class="text-sm text-muted-foreground">{t ? fillTemplate(t.forMakers.export.desc, { stepCapable: COMMONS_STATS.stepCapable }) : 'STL, 3MF u OFF. Un clic. Listo para tu slicer.'}</p>
       </div>
       <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
         <div class="mb-3 text-2xl">🔧</div>

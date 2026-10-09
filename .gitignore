@@ -72,6 +72,7 @@ apps/api/static/*.off
 apps/api/static/*.step
 apps/api/static/*.gltf
 apps/api/static/*.glb
+apps/api/static/*.variables.json
 
 # Font cache UUID files
 **/fonts/.uuid
@@ -87,3 +88,12 @@ mobile-controls-*.png
 
 # Redis dev-server dump
 apps/api/dump.rdb
+
+# Raw (uncompressed) commons renders: the input of scripts/dev/optimize-commons-models.mjs.
+# Rendered by .github/workflows/prerender-commons.yml into an actions/cache; only the
+# optimized *.lod*.glb + manifest.json under apps/landing/public/models are committed.
+apps/landing/public/models/raw/
+
+# User-authored cartridges (forks, imports, onboarding) written by a local
+# API run. Config.USER_PROJECTS_DIR defaults here outside a container.
+/user-projects/

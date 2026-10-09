@@ -137,10 +137,9 @@ def publish_artifact_best_effort(path: str | os.PathLike, *, store: ArtifactStor
 
     For the producers that already trusted a converter's boolean and emitted a
     `/static/` URL without checking the file landed — the static-part
-    conversion, git HEAD-diff renders, animation frames. Making those raise
-    would turn a link that 404s (today's behaviour, on the rare path where a
-    converter lies) into a 500 on the whole request, which is a regression, not
-    a fix. The mismatch is logged rather than swallowed silently.
+    conversion. Making that raise would turn a link that 404s (today's
+    behaviour, on the rare path where a converter lies) into a 500 on the whole
+    request, which is a regression, not a fix. The mismatch is logged rather than swallowed silently.
 
     The render worker deliberately does **not** use this: there, an artifact
     that failed to publish must fail the render.

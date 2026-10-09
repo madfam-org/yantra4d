@@ -10,3 +10,8 @@ export const STUDIO_URL = import.meta.env.PUBLIC_STUDIO_URL || (isLocal
 export const API_URL = isLocal
   ? 'http://localhost:5000'
   : 'https://api.yantra4d.com';
+
+/** The public origin of this site, for canonical / alternate / Open Graph URLs.
+ *  Build-time only (Astro `site` is not configured); never derived from the
+ *  request so a preview build cannot mint canonical links to itself. */
+export const SITE_ORIGIN = import.meta.env.PUBLIC_SITE_ORIGIN || 'https://yantra4d.com';

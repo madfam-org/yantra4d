@@ -6,3 +6,6 @@ dist/
 
 # Astro generated
 .astro/
+
+# Quality gates (Lighthouse CI reports; Playwright output is ignored at the root)
+.lighthouseci/

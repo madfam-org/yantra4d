@@ -1,0 +1,64 @@
+---
+/**
+ * One commons card, server-rendered. The first page of the gallery is plain
+ * HTML so the commons is on the page for every visitor — crawlers, no-JS,
+ * the still tier — before any island wakes up. `ProjectGalleryGrid.tsx`
+ * renders the same card shape client-side for filtered and paged results;
+ * keep the two in step.
+ */
+import type { GalleryItem } from '../lib/gallery';
+
+interface Props {
+  project: GalleryItem;
+  studioUrl: string;
+  openLabel: string;
+  hyperobjectLabel: string;
+  categoryLabel: string;
+  domainLabel?: string;
+}
+
+const { project, studioUrl, openLabel, hyperobjectLabel, categoryLabel, domainLabel } = Astro.props;
+---
+
+<a
+  href={`${studioUrl}/project/${project.slug}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  data-testid="commons-card"
+  data-slug={project.slug}
+  class={`group rounded-xl border overflow-hidden transition-shadow hover:shadow-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+    project.isHyperobject
+      ? 'border-blue-300 dark:border-blue-700 bg-gradient-to-b from-blue-50/50 to-card dark:from-blue-950/20 dark:to-card'
+      : 'border-border bg-card'
+  }`}
+>
+  <div class="aspect-video bg-secondary/30 overflow-hidden relative">
+    <img
+      src={project.thumbnail}
+      alt={project.name}
+      class="w-full h-full object-cover transition-transform group-hover:scale-105"
+      loading="lazy"
+      decoding="async"
+      width="640"
+      height="360"
+    />
+    {project.isHyperobject && (
+      <span class="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm">
+        🔷 {hyperobjectLabel}
+      </span>
+    )}
+  </div>
+  <div class="p-4">
+    <div class="flex items-center justify-between mb-1 gap-1">
+      <h3 class="font-semibold text-sm truncate min-w-0">{project.name}</h3>
+      <div class="flex gap-1 shrink-0">
+        {project.isHyperobject && domainLabel && (
+          <span class="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 rounded-full px-1.5 py-0.5 font-medium">{domainLabel}</span>
+        )}
+        <span class="text-xs text-muted-foreground bg-secondary/50 rounded-full px-2 py-0.5">{categoryLabel}</span>
+      </div>
+    </div>
+    <p class="text-xs text-muted-foreground mb-2 line-clamp-2">{project.description}</p>
+    <span class="text-xs text-primary-readable group-hover:underline">{openLabel}</span>
+  </div>
+</a>

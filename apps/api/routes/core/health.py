@@ -11,6 +11,7 @@ from flask import Blueprint, jsonify
 from config import Config
 from extensions import limiter
 from services.engine.render_gc import HIGH_WATER, volume_usage
+from services.engine.render_revision import render_revision
 
 logger = logging.getLogger(__name__)
 
@@ -228,6 +229,7 @@ def readiness():
         "checks": checks,
         "debug_mode": Config.DEBUG,
         "render_worker_required": render_worker_required,
+        "render_revision": render_revision(),
         "artifact_store": store_kind,
     })
     resp.headers["Cache-Control"] = "no-cache"

@@ -259,7 +259,9 @@ describe('accent text never uses text-primary on small copy', () => {
     const html = loadTemplate('HyperCommons.astro')
     const stats = html.match(/text-xl sm:text-2xl font-bold text-primary\b/g)
     expect(stats).not.toBeNull()
-    expect(stats!.length).toBe(4)
+    // Four solid-commons cards plus the soft-commons card template, which
+    // renders once per non-null snapshot figure — five occurrences in source.
+    expect(stats!.length).toBe(5)
   })
 
   it('ProjectGalleryGrid open label uses the readable accent', () => {
@@ -269,5 +271,62 @@ describe('accent text never uses text-primary on small copy', () => {
     )
     expect(src).toContain('text-xs text-primary-readable')
     expect(src).not.toMatch(/text-xs text-primary\b(?!-)/)
+  })
+})
+
+describe('BeforeAfter captions and elided-code comment (small text)', () => {
+  // The two panel captions are 12px on a bg-secondary/50 bar over bg-card; the
+  // "// 200+ lines of geometry..." line is 14px code on bg-card. The comment
+  // used text-muted-foreground/60, which composites UNDER the 4.5:1 floor in
+  // both themes (3.4:1 dark, 2.6:1 light); the captions used the muted token,
+  // which passes but reads dim beside the panels' body copy. Both are locked
+  // here: by class, and by the token math that justified the change.
+  let themes: Record<'light' | 'dark', Record<string, HSL>>
+  beforeAll(() => {
+    const css = readFileSync(TOKENS, 'utf-8')
+    themes = { light: parseTheme(css, ':root'), dark: parseTheme(css, '.dark') }
+  })
+
+  it('captions use text-foreground on the caption bar, not the muted token', () => {
+    const html = loadTemplate('BeforeAfter.astro')
+    const captions = classAttrs(html).filter((a) => a.includes('bg-secondary/50') && a.includes('text-xs'))
+    expect(captions).toHaveLength(2)
+    for (const attr of captions) {
+      expect(attr).toContain('text-foreground')
+      expect(attr).not.toMatch(/text-muted-foreground/)
+    }
+  })
+
+  it('the elided-code comment never uses an alpha-faded muted token', () => {
+    const html = loadTemplate('BeforeAfter.astro')
+    const pre = html.slice(html.indexOf('<pre'), html.indexOf('</pre>'))
+    expect(pre).not.toMatch(/text-muted-foreground\/\d+/)
+    expect(pre).toContain('text-muted-foreground italic')
+  })
+
+  it('the token math says why: /60 fails the floor, the plain token and text-foreground clear it', () => {
+    for (const theme of ['light', 'dark'] as const) {
+      const vars = themes[theme]
+      const card = hslToRgb(vars.card)
+      const bar = composite(hslToRgb(vars.secondary), 0.5, card)
+      const muted = hslToRgb(vars['muted-foreground'])
+      const fg = hslToRgb(vars.foreground)
+      expect(contrast(composite(muted, 0.6, card), card), `${theme}: muted/60 on card`).toBeLessThan(SMALL_TEXT_FLOOR)
+      expect(contrast(muted, card), `${theme}: muted on card`).toBeGreaterThanOrEqual(SMALL_TEXT_FLOOR)
+      expect(contrast(fg, bar), `${theme}: foreground on the caption bar`).toBeGreaterThanOrEqual(SMALL_TEXT_FLOOR)
+    }
+  })
+})
+
+describe('gallery island copy on the stage surface (bg-zinc-950)', () => {
+  // text-zinc-500 (#71717a) on zinc-950 (#09090b) is 3.9:1 — under the 4.5:1
+  // floor for the 14px loading line and the 18px empty state. axe flagged the
+  // Suspense fallback the moment the stage mounted in the audit; zinc-400 is
+  // 9:1 on the same surface. Locked by source, like the grid's open label.
+  it('never uses text-zinc-500 for text on the stage', () => {
+    for (const file of ['CommonsGallery.tsx', 'ProjectCarousel3D.tsx', 'StillStrip.tsx']) {
+      const src = readFileSync(resolve(COMPONENTS_DIR, file), 'utf-8')
+      expect(src, `${file} uses text-zinc-500`).not.toContain('text-zinc-500')
+    }
   })
 })

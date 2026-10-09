@@ -95,9 +95,9 @@ class TestKeyRules:
         assert key_for_path("/scratch/renders/body.glb", None) == "body.glb"
 
     def test_content_type_matches_what_werkzeug_would_send(self):
-        # Werkzeug guesses with mimetypes and falls back to octet-stream; a mesh
+        # Unknown formats still use the platform registry; known meshes have
         # streamed from a bucket must be labelled like the same mesh off disk.
-        assert guess_content_type("body.stl") == guess_content_type("body.stl")
+        assert guess_content_type("body.stl") == "model/stl"
         assert guess_content_type("thing.unknownext") == "application/octet-stream"
         assert guess_content_type("page.json") == "application/json"
 
@@ -285,3 +285,12 @@ class TestBestEffortPublish:
         """A link that 404s is today's behaviour; a 500 would be a regression."""
         assert publish_artifact_best_effort(tmp_path / "ghost.obj", store=store) == "ghost.obj"
         assert not store.exists("ghost.obj")
+
+
+@pytest.mark.parametrize("name, expected", [
+    ("BODY.STL", "model/stl"), ("mesh.glb", "model/gltf-binary"),
+    ("scene.gltf", "model/gltf+json"), ("part.3mf", "model/3mf"),
+])
+def test_mesh_content_types_ignore_platform_registry(monkeypatch, name, expected):
+    monkeypatch.setattr("mimetypes.guess_type", lambda _: ("application/wrong", None))
+    assert guess_content_type(name) == expected

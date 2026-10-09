@@ -14,6 +14,12 @@ vi.mock('../system/useUpgradePrompt', () => ({
   useUpgradePrompt: () => ({ triggerUpgradePrompt: vi.fn() }),
 }))
 
+vi.mock('../../services/cache/renderCache', () => ({
+  makeCacheKey: vi.fn(async (...args) => JSON.stringify(args)),
+  get: vi.fn(async () => null),
+  put: vi.fn(async () => {}),
+}))
+
 vi.mock('sonner', () => ({
   toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() },
 }))
@@ -540,5 +546,30 @@ describe('useRender', () => {
     // It is still called — the service is the one that knows whether anything
     // is in flight — but it must report that there was nothing to cancel.
     expect(cancelSupersededRender).toHaveReturnedWith(false)
+  })
+})
+
+
+describe('persistent render revision', () => {
+  beforeEach(async () => {
+    const { estimateRenderTime, renderParts } = await import('../../services/engine/renderService')
+    estimateRenderTime.mockReturnValue(10)
+    renderParts.mockResolvedValue([{ type: 'main', url: 'blob:mock' }])
+  })
+  it('bypasses persistent geometry when the server identifies no release', async () => {
+    const cache = await import('../../services/cache/renderCache')
+    const { result } = renderUseRender()
+    await act(async () => { await result.current.handleGenerate() })
+    expect(cache.get).not.toHaveBeenCalled()
+    expect(cache.put).not.toHaveBeenCalled()
+  })
+
+  it('namespaces persistent reads and writes by the identified release', async () => {
+    const cache = await import('../../services/cache/renderCache')
+    const { result } = renderUseRender({ renderRevision: 'release-two' })
+    await act(async () => { await result.current.handleGenerate() })
+    expect(cache.makeCacheKey).toHaveBeenCalledWith('test', 'unit', { size: 20 }, 'glb', 'release-two')
+    expect(cache.get).toHaveBeenCalled()
+    expect(cache.put).toHaveBeenCalled()
   })
 })

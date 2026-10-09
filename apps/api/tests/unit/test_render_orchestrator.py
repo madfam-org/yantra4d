@@ -5,6 +5,7 @@ Focuses on the _post_render_convert helper which was fixed to return
 separate url (download) and viewer_url (GLB) fields rather than replacing
 the STL path with the GLB path unconditionally.
 """
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -347,7 +348,7 @@ def contract_env(monkeypatch):
         lambda raw, *args: dict(raw),
     )
     monkeypatch.setattr(
-        "services.engine.render_orchestrator.compute_scad_hash",
+        "services.engine.render_orchestrator.source_content_hash",
         lambda *args: "deadbeef",
     )
     # Default state: strict mode off, regardless of the ambient environment.
@@ -544,19 +545,26 @@ def test_stream_part_timeout_default_is_180():
     assert render_orchestrator.RENDER_STREAM_PART_TIMEOUT_SECONDS == 180
 
 
-def test_stream_part_timeout_is_env_tunable(monkeypatch):
-    """RENDER_STREAM_PART_TIMEOUT_SECONDS overrides the default at import time."""
-    import importlib
+def test_stream_part_timeout_is_env_tunable():
+    """Import-time configuration must not replace classes held by other tests."""
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
 
-    monkeypatch.setenv("RENDER_STREAM_PART_TIMEOUT_SECONDS", "240")
-    from services.engine import render_orchestrator
-
-    reloaded = importlib.reload(render_orchestrator)
-    try:
-        assert reloaded.RENDER_STREAM_PART_TIMEOUT_SECONDS == 240
-    finally:
-        monkeypatch.delenv("RENDER_STREAM_PART_TIMEOUT_SECONDS", raising=False)
-        importlib.reload(render_orchestrator)
+    # Reloading this module in-process replaces RenderPayloadError while route
+    # modules retain the old class. Later malformed requests then return 500
+    # instead of 400 solely because these tests ran first.
+    result = subprocess.run(
+        [sys.executable, "-c",
+         ("from services.engine.render_orchestrator import RENDER_STREAM_PART_TIMEOUT_SECONDS; "
+          "print(RENDER_STREAM_PART_TIMEOUT_SECONDS)")],
+        env={**os.environ, "RENDER_STREAM_PART_TIMEOUT_SECONDS": "240"},
+        cwd=Path(__file__).resolve().parents[2],
+        check=False, capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "240"
 
 
 def test_stream_part_timeout_stays_under_subprocess_ceiling():
@@ -564,3 +572,54 @@ def test_stream_part_timeout_stays_under_subprocess_ceiling():
     from services.engine import render_orchestrator
 
     assert render_orchestrator.RENDER_STREAM_PART_TIMEOUT_SECONDS < 300
+
+
+class TestReleaseArtifactNames:
+    def test_release_and_source_changes_do_not_overwrite_previous_urls(self, tmp_path, monkeypatch):
+        from services.engine.render_orchestrator import extract_render_payload
+        source = tmp_path / "main.scad"
+        source.write_text("cube(10);")
+        context = ("main.scad", str(source), ["main"], {}, {}, "default")
+        # extract_render_payload reads the manifest's parameter declarations for
+        # the GOC-1 variables; a parameterless stand-in keeps this test about names.
+        stub_manifest = SimpleNamespace(slug="test", parameters=[])
+        with patch("services.engine.render_orchestrator.resolve_render_context", return_value=context), \
+             patch("services.engine.render_orchestrator.get_manifest", return_value=stub_manifest), \
+             patch("services.engine.render_orchestrator.validate_params", side_effect=lambda p, _: p):
+            monkeypatch.setenv("RENDER_BUILD_ID", "release-one")
+            first = extract_render_payload({"project": "test", "parameters": {"size": 10}})
+            assert extract_render_payload({"project": "test", "parameters": {"size": 10}})["stl_prefix"] == first["stl_prefix"]
+            monkeypatch.setenv("RENDER_BUILD_ID", "release-two")
+            second = extract_render_payload({"project": "test", "parameters": {"size": 10}})
+            assert first["stl_prefix"] != second["stl_prefix"]
+            source.write_text("sphere(10);")
+            third = extract_render_payload({"project": "test", "parameters": {"size": 10}})
+            assert third["stl_prefix"] != second["stl_prefix"]
+            monkeypatch.setattr("services.engine.render_orchestrator.render_cache._engine_signature", lambda: "another-kernel")
+            fourth = extract_render_payload({"project": "test", "parameters": {"size": 10}})
+            assert fourth["stl_prefix"] != third["stl_prefix"]
+
+
+def test_mode_whose_file_is_not_a_plain_relative_path_is_a_payload_error(tmp_path, monkeypatch):
+    """A manifest mode naming a file with a newline (or any non-plain name) is
+    never resolved to a path: the render request gets a payload error (400)."""
+    import json as _json
+
+    from manifest import ProjectManifest
+    from services.engine import render_orchestrator as ro
+
+    project = tmp_path / "cart"
+    project.mkdir()
+    (project / "main.scad").write_text("cube(1);")
+    data = {
+        "project": {"name": "C", "slug": "cart", "version": "1.0.0"},
+        "modes": [{"id": "bad", "scad_file": "x.graph.json\nimport os", "parts": ["p"]}],
+        "parts": [{"id": "p"}],
+        "parameters": [],
+    }
+    (project / "project.json").write_text(_json.dumps(data))
+    monkeypatch.setattr(ro, "get_manifest", lambda *_: ProjectManifest(data, project))
+
+    result = ro.resolve_render_context({"project": "cart", "mode": "bad"})
+    assert isinstance(result, ro.RenderPayloadError)
+    assert "Invalid SCAD file" in result.message

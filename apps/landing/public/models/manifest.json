@@ -1,89 +1,237 @@
 {
-  "generated": "2026-03-21T06:11:04Z",
+  "version": 2,
+  "generated": "2026-09-19T07:10:21Z",
+  "generator": "scripts/dev/optimize-commons-models.mjs",
+  "source": {
+    "kind": "legacy-glb",
+    "commons_pin": "f2c578f78037c37f0f29fe0571b946aeeb45bc0f"
+  },
+  "budgets": {
+    "lod1Bytes": 12288,
+    "lod0Bytes": 61440,
+    "lod1Triangles": 2500,
+    "lod0Triangles": 25000,
+    "keyframeBytes": 61440
+  },
   "models": [
     {
       "slug": "din-rail-clip",
-      "size": 6732
+      "size": 2432,
+      "lod1": {
+        "file": "din-rail-clip.lod1.glb",
+        "bytes": 2432,
+        "triangles": 334
+      }
     },
     {
       "slug": "faircap-filter",
-      "size": 40400
+      "size": 8632,
+      "lod1": {
+        "file": "faircap-filter.lod1.glb",
+        "bytes": 8632,
+        "triangles": 2200
+      }
     },
     {
       "slug": "fasteners",
-      "size": 118704
+      "size": 10504,
+      "lod1": {
+        "file": "fasteners.lod1.glb",
+        "bytes": 10504,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "fasteners.lod0.glb",
+        "bytes": 22712,
+        "triangles": 6550
+      }
     },
     {
       "slug": "framing-hyperobject",
-      "size": 18368
+      "size": 4676,
+      "lod1": {
+        "file": "framing-hyperobject.lod1.glb",
+        "bytes": 4676,
+        "triangles": 980
+      }
     },
     {
       "slug": "gear-reducer",
-      "size": 15264
+      "size": 4168,
+      "lod1": {
+        "file": "gear-reducer.lod1.glb",
+        "bytes": 4168,
+        "triangles": 812
+      }
     },
     {
       "slug": "gears",
-      "size": 43432
+      "size": 9428,
+      "lod1": {
+        "file": "gears.lod1.glb",
+        "bytes": 9428,
+        "triangles": 2368
+      }
     },
     {
       "slug": "glia-diagnostic",
-      "size": 9908
+      "size": 3140,
+      "lod1": {
+        "file": "glia-diagnostic.lod1.glb",
+        "bytes": 3140,
+        "triangles": 508
+      }
     },
     {
       "slug": "gridfinity",
-      "size": 14464
+      "size": 3896,
+      "lod1": {
+        "file": "gridfinity.lod1.glb",
+        "bytes": 3896,
+        "triangles": 772
+      }
     },
     {
       "slug": "julia-vase",
-      "size": 447736
+      "size": 11484,
+      "lod1": {
+        "file": "julia-vase.lod1.glb",
+        "bytes": 11484,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "julia-vase.lod0.glb",
+        "bytes": 56584,
+        "triangles": 15760
+      }
     },
     {
       "slug": "maze",
-      "size": 12748
+      "size": 3568,
+      "lod1": {
+        "file": "maze.lod1.glb",
+        "bytes": 3568,
+        "triangles": 664
+      }
     },
     {
       "slug": "microscope-slide-holder",
-      "size": 21344
+      "size": 4772,
+      "lod1": {
+        "file": "microscope-slide-holder.lod1.glb",
+        "bytes": 4772,
+        "triangles": 1142
+      }
     },
     {
       "slug": "motor-mount",
-      "size": 18324
+      "size": 4732,
+      "lod1": {
+        "file": "motor-mount.lod1.glb",
+        "bytes": 4732,
+        "triangles": 972
+      }
     },
     {
       "slug": "parametric-connector",
-      "size": 90704
+      "size": 10020,
+      "lod1": {
+        "file": "parametric-connector.lod1.glb",
+        "bytes": 10020,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "parametric-connector.lod0.glb",
+        "bytes": 18040,
+        "triangles": 4994
+      }
     },
     {
       "slug": "portacosas",
-      "size": 18792
+      "size": 4404,
+      "lod1": {
+        "file": "portacosas.lod1.glb",
+        "bytes": 4404,
+        "triangles": 1008
+      }
     },
     {
       "slug": "prosthetic-socket",
-      "size": 141228
+      "size": 10136,
+      "lod1": {
+        "file": "prosthetic-socket.lod1.glb",
+        "bytes": 10136,
+        "triangles": 2498
+      },
+      "lod0": {
+        "file": "prosthetic-socket.lod0.glb",
+        "bytes": 28064,
+        "triangles": 7828
+      }
     },
     {
       "slug": "relief",
-      "size": 13148
+      "size": 3532,
+      "lod1": {
+        "file": "relief.lod1.glb",
+        "bytes": 3532,
+        "triangles": 688
+      }
     },
     {
       "slug": "soft-jaw",
-      "size": 5948
+      "size": 2312,
+      "lod1": {
+        "file": "soft-jaw.lod1.glb",
+        "bytes": 2312,
+        "triangles": 284
+      }
     },
     {
       "slug": "spiral-planter",
-      "size": 2353108
+      "size": 10084,
+      "lod1": {
+        "file": "spiral-planter.lod1.glb",
+        "bytes": 10084,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "spiral-planter.lod0.glb",
+        "bytes": 56376,
+        "triangles": 17170
+      }
     },
     {
       "slug": "superformula",
-      "size": 17156
+      "size": 4712,
+      "lod1": {
+        "file": "superformula.lod1.glb",
+        "bytes": 4712,
+        "triangles": 908
+      }
     },
     {
       "slug": "torus-knot",
-      "size": 104500
+      "size": 11228,
+      "lod1": {
+        "file": "torus-knot.lod1.glb",
+        "bytes": 11228,
+        "triangles": 2500
+      },
+      "lod0": {
+        "file": "torus-knot.lod0.glb",
+        "bytes": 22880,
+        "triangles": 5760
+      }
     },
     {
       "slug": "voronoi",
-      "size": 16324
+      "size": 4392,
+      "lod1": {
+        "file": "voronoi.lod1.glb",
+        "bytes": 4392,
+        "triangles": 900
+      }
     }
   ]
 }

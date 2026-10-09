@@ -47,8 +47,13 @@ vi.mock('@/components/ui/tabs', async (importOriginal) => {
 vi.mock('../../contexts/system/LanguageProvider', () => ({
   useLanguage: vi.fn(),
 }))
+vi.mock('../../hooks/project/useProjectMeta', async (importOriginal) => {
+  const actual = await importOriginal()
+  return { ...actual, useProjectMeta: vi.fn() }
+})
 
 import StudioSidebar from './StudioSidebar'
+import { useProjectMeta } from '../../hooks/project/useProjectMeta'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 
@@ -95,6 +100,8 @@ const baseContext = {
 beforeEach(() => {
   vi.clearAllMocks()
   useProject.mockReturnValue(baseContext)
+  // The caller's own fork: writable.
+  useProjectMeta.mockReturnValue({ source: { type: 'fork' }, can_write: true, is_owner: true })
   useLanguage.mockReturnValue({
     t: (key) => key,
     language: 'en',
@@ -243,6 +250,41 @@ describe('StudioSidebar', () => {
   it('hides assembly editor toggle when no assembly steps', () => {
     render(<StudioSidebar />)
     expect(screen.queryByText('btn.edit_assembly')).not.toBeInTheDocument()
+  })
+
+  describe('assembly editing is offered only on cartridges the caller can write', () => {
+    const withSteps = () => useProject.mockReturnValue({
+      ...baseContext,
+      manifest: { ...baseContext.manifest, assembly_steps: [{ id: 's1' }] },
+    })
+
+    it('hides it on a built-in cartridge', () => {
+      withSteps()
+      useProjectMeta.mockReturnValue({ can_write: false, is_owner: false })
+      render(<StudioSidebar />)
+      expect(screen.queryByText('btn.edit_assembly')).not.toBeInTheDocument()
+    })
+
+    it("hides it on someone else's fork", () => {
+      withSteps()
+      useProjectMeta.mockReturnValue({ source: { type: 'fork' }, can_write: false, is_owner: false })
+      render(<StudioSidebar />)
+      expect(screen.queryByText('btn.edit_assembly')).not.toBeInTheDocument()
+    })
+
+    it('shows it on your own fork', () => {
+      withSteps()
+      useProjectMeta.mockReturnValue({ source: { type: 'fork' }, can_write: true, is_owner: true })
+      render(<StudioSidebar />)
+      expect(screen.getAllByText('btn.edit_assembly').length).toBeGreaterThan(0)
+    })
+
+    it('hides it while the answer is unknown (meta not loaded)', () => {
+      withSteps()
+      useProjectMeta.mockReturnValue(null)
+      render(<StudioSidebar />)
+      expect(screen.queryByText('btn.edit_assembly')).not.toBeInTheDocument()
+    })
   })
 
   it('renders mobile menu button with screen reader text', () => {

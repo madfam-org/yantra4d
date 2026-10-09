@@ -50,7 +50,7 @@ const stats = [
 ---
 
 <!-- ═══════ Section: Common Denominator Geometry ═══════ -->
-<section id="cdg-section" class="relative py-28 px-6 overflow-hidden">
+<section data-motion-section id="cdg-section" class="cv-auto relative py-28 px-6 overflow-hidden">
 
   <!-- Background: subtle graph paper effect -->
   <div class="cdg-graph-bg absolute inset-0 -z-10" aria-hidden="true"></div>
@@ -227,16 +227,8 @@ const stats = [
     50% { opacity: 1; }
   }
 
-  /* Fade-in on scroll */
-  .cdg-fade-in {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-  .cdg-fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  /* Keep copy readable without script and preserve deferred section layout. */
+  .cdg-fade-in { opacity: 1; transform: none; }
 
   @media (prefers-reduced-motion: reduce) {
     .cdg-pulse-ring,
@@ -250,9 +242,6 @@ const stats = [
 </style>
 
 <script>
-  const observer = new IntersectionObserver(
-    (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-    { threshold: 0.1 }
-  );
-  document.querySelectorAll('.cdg-fade-in').forEach(el => observer.observe(el));
+  import { observeSectionMotion } from '../lib/section-motion';
+  observeSectionMotion(document.getElementById('cdg-section'));
 </script>

@@ -12,6 +12,16 @@ logger = logging.getLogger(__name__)
 DEFAULT_API_PORT = 5000
 _DEFAULT_CORS_ORIGINS = "http://localhost:5173,http://localhost:3000,http://localhost:3001"
 
+
+def _env_flag(name: str, default: bool) -> bool:
+    """Boolean env flag: 1/true/yes/on or 0/false/no/off; anything else is the default."""
+    value = os.getenv(name, "").strip().lower()
+    if value in ("1", "true", "yes", "on"):
+        return True
+    if value in ("0", "false", "no", "off"):
+        return False
+    return default
+
 @dataclass
 class AppConfig:
     """Application configuration with environment variable support."""
@@ -22,6 +32,7 @@ class AppConfig:
     SCAD_DIR: Path = field(init=False)
     PROJECTS_DIR: Path = field(init=False)
     PRIVATE_PROJECTS_DIR: Path = field(init=False)
+    USER_PROJECTS_DIR: Path = field(init=False)
     CARTRIDGES_DIRS: list[Path] = field(init=False)
     LIBS_DIR: Path = field(init=False)
     REDIS_URL: str = field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379"))
@@ -78,6 +89,25 @@ class AppConfig:
     RENDER_ARTIFACT_S3_PREFIX: str = field(
         default_factory=lambda: os.getenv("RENDER_ARTIFACT_S3_PREFIX", "").strip()
     )
+
+    # ── Generator output (GOC-1 variables.json) ────────────────────────
+    # See services/engine/generator_output.py and docs/reference/generator-output.md.
+    # RENDER_GENERATOR_OUTPUT: write a `<artifact>.variables.json` sidecar per
+    # rendered part and add the GOC-1 fields to the render envelope.
+    RENDER_GENERATOR_OUTPUT: bool = field(default_factory=lambda: _env_flag("RENDER_GENERATOR_OUTPUT", True))
+    # RENDER_INJECT_FULL_PARAMS: inject the manifest default of every in-scope
+    # parameter the caller did not send. Off: such a parameter is recorded as
+    # `source_default` (value null) and the kernel uses its own source literal.
+    # Off by default because some cartridges' source and manifest defaults
+    # differ, so turning it on changes their geometry.
+    RENDER_INJECT_FULL_PARAMS: bool = field(default_factory=lambda: _env_flag("RENDER_INJECT_FULL_PARAMS", False))
+    # RENDER_MATERIAL_INJECTION: legacy `target_material` → mat_*/thermo_*
+    # injection (today's behaviour). Off: nothing is injected and
+    # `target_material` is stripped from the engine payload.
+    RENDER_MATERIAL_INJECTION: bool = field(default_factory=lambda: _env_flag("RENDER_MATERIAL_INJECTION", True))
+    # The solid commons commit baked into the image, recorded as
+    # `generator.commons.sha`. Optional; a git checkout answers for itself.
+    COMMONS_SHA: str = field(default_factory=lambda: os.getenv("COMMONS_SHA", "").strip())
 
     # Janua Auth
     MANIFEST_STRICTNESS: str = field(default_factory=lambda: os.getenv("MANIFEST_STRICTNESS", ""))
@@ -163,10 +193,23 @@ class AppConfig:
             os.getenv("PRIVATE_PROJECTS_DIR", default_private_projects)
         )
 
+        # Third root: user-authored cartridges -- forks, GitHub imports,
+        # onboarded and AI-synthesised cartridges. The commons and the private
+        # root are curated content shipped with the release and are treated as
+        # read-only; every new cartridge is written here instead
+        # (`utils.project_resolver.project_write_root`). In a container this is
+        # a persistent volume (see docs/operations/user-projects-storage.md);
+        # locally it defaults to a gitignored `user-projects/` in the repo.
+        default_user_projects = parent / "user-projects"
+        self.USER_PROJECTS_DIR = Path(
+            os.getenv("USER_PROJECTS_DIR", default_user_projects)
+        )
+
         # Dynamic search paths for cartridges. Order is significant and is the
         # resolution order used by `utils.project_resolver`: the public commons
-        # wins a slug collision, and writes (onboard, fork) always target
-        # PROJECTS_DIR.
+        # wins a slug collision, then the private root, then any extra roots,
+        # and the user root comes LAST so a user-authored cartridge can never
+        # shadow a curated one.
         cartridge_paths = [self.PROJECTS_DIR, self.PRIVATE_PROJECTS_DIR]
         # Support node_modules cartridges if present
         root_node_modules = parent / "node_modules" / "@yantra4d"
@@ -180,6 +223,9 @@ class AppConfig:
                 if path.is_dir():
                     cartridge_paths.append(path)
         
+        if self.USER_PROJECTS_DIR not in cartridge_paths:
+            cartridge_paths.append(self.USER_PROJECTS_DIR)
+
         self.CARTRIDGES_DIRS = cartridge_paths
 
         default_libs = parent / "libs"

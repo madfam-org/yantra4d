@@ -100,8 +100,8 @@ describe('Hero.astro', () => {
     expect(html).toMatch(/Launch Studio|studioBtn/)
   })
 
-  it('has scroll indicator animation', () => {
-    expect(html).toContain('animate-bounce')
+  it('has a scroll indicator without an idle animation loop', () => {
+    expect(html).not.toContain('animate-bounce')
     expect(html).toContain('<svg')
     expect(html).toContain('bottom-8')
   })
@@ -394,7 +394,7 @@ describe('CDGSection.astro', () => {
     expect(html).toContain('aria-hidden="true"')
   })
 
-  it('has fade-in animation classes', () => {
+  it('has static entry content classes', () => {
     expect(html).toContain('cdg-fade-in')
   })
 })
@@ -447,10 +447,13 @@ describe('HyperCommons.astro', () => {
 
   it('has impact stats section', () => {
     expect(html).toMatch(/Impacto Real|impactHeading/)
-    expect(html).toContain('sm:grid-cols-4')
+    // Four solid-commons figures plus the soft-commons cards, which render
+    // only when their snapshot figure is a number (never a zero).
+    expect(html).toContain('sm:grid-cols-3')
+    expect(html).toContain('data-testid="impact-soft"')
   })
 
-  it('has fade-in animation classes', () => {
+  it('has static entry content classes', () => {
     expect(html).toContain('hc-fade-in')
   })
 
@@ -483,16 +486,11 @@ describe('HyperCommons.astro', () => {
     expect(anchor).toContain('decoration-primary')
   })
 
-  it('enters the word note on transform alone, never opacity', () => {
-    // An entry animation that fades from opacity 0 leaves frames below the
-    // WCAG contrast floor, which the axe lane flags. .hc-rise must therefore
-    // transition transform only — asserted here so a later edit cannot
-    // quietly reintroduce an opacity fade on this block.
+  it('keeps the word note static and at full contrast without script', () => {
     const rise = html.match(/\.hc-rise\s*\{[^}]*\}/)
     expect(rise).not.toBeNull()
-    expect(rise![0]).toContain('transform')
+    expect(rise![0]).toContain('transform: none')
     expect(rise![0]).not.toContain('opacity')
-    expect(html).toMatch(/\.hc-rise\.hc-visible\s*\{[^}]*transform:\s*translateY\(0\)/)
   })
 })
 

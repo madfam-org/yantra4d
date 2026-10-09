@@ -15,7 +15,7 @@ from extensions import limiter
 from manifest import invalidate_cache
 from middleware.auth import require_role
 from services.core.manifest_generator import generate_manifest
-from utils.project_resolver import find_project_dir, project_write_root
+from utils.project_resolver import project_write_root, slug_in_use
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import validate_project_slug
 
@@ -80,7 +80,7 @@ def analyze_scad_files():
 @limiter.limit(rate_limits.ONBOARD_CREATE)
 @handle_exceptions
 def create_project():
-    """Accept a manifest and .scad files, write them to PROJECTS_DIR."""
+    """Accept a manifest and .scad files, write them to the user-projects root."""
     content_type = request.content_type or ''
 
     if 'multipart' in content_type:
@@ -114,9 +114,9 @@ def create_project():
     if slug_err:
         return error_response(slug_err, 400)
 
-    # New cartridges are authored into the public commons root. The existence
-    # check spans every root so onboarding cannot shadow a private slug.
-    if find_project_dir(slug) is not None:
+    # New cartridges are authored into the user-projects root. The existence
+    # check spans every root so onboarding cannot shadow a curated slug.
+    if slug_in_use(slug) is not None:
         return error_response(f"Project '{slug}' already exists.", 409)
     project_dir = project_write_root() / slug
 

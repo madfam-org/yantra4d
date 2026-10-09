@@ -1,6 +1,11 @@
 """
 Optimization Task Queue
-Background thread system for running long multi-generation topological evolution.
+Background thread that runs the heuristic parameter estimate.
+
+The estimate comes from ``TopologyOptimizer``, a deterministic rule that moves
+one numeric parameter toward a target inside inferred bounds. No stress solver
+runs, so every job is marked ``method: "heuristic"`` and ``approximation: True``
+and its score is a heuristic score, not a computed stress.
 """
 import logging
 import threading
@@ -14,6 +19,7 @@ logger = logging.getLogger(__name__)
 _OPT_JOB_STORE: dict[str, dict] = {}
 _OPT_JOB_LOCK = threading.Lock()
 _TOTAL_GENERATIONS = 15
+METHOD = "heuristic"
 
 
 def _new_job_record(slug: str, original_params: dict) -> dict:
@@ -21,6 +27,8 @@ def _new_job_record(slug: str, original_params: dict) -> dict:
     return {
         "status": "queued",
         "slug": slug,
+        "method": METHOD,
+        "approximation": True,
         "progress": 0.0,
         "best_params": None,
         "current_params": original_params.copy(),
@@ -30,7 +38,7 @@ def _new_job_record(slug: str, original_params: dict) -> dict:
         "started_at": None,
         "finished_at": None,
         "duration_ms": None,
-        "current_sigma": None,
+        "current_score": None,
         "best_iteration": None,
         "cancel_requested": False,
     }
@@ -84,12 +92,12 @@ def _run_optimizer_loop(job_id: str, slug: str, original_params: dict):
                     return
 
                 state["progress"] = (gen / float(_TOTAL_GENERATIONS)) * 100.0
-                state["current_sigma"] = result["current_sigma"]
+                state["current_score"] = result["current_sigma"]
                 state["best_iteration"] = opt.best_iteration
                 log_msg = (
                     f"Gen {gen:02d} | "
                     f"{result['metadata']['parameter']}={result['testing_params'][result['metadata']['parameter']]} "
-                    f"-> sigma {result['current_sigma']:.3f}, best {result['best_sigma']:.3f}"
+                    f"-> heuristic score {result['current_sigma']:.3f} (best {result['best_sigma']:.3f})"
                 )
                 state["logs"].append(log_msg)
                 state["best_params"] = opt.best_params

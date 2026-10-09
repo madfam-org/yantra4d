@@ -23,7 +23,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Browser rendering and render placement](./guides/wasm-mode.md): the browser is the DEFAULT placement — the 11-rule precedence table, the capability probe, the wasm bundle, limitations and browser support.
 -   [Multi-Project Platform](./guides/multi-project.md): Multi-project setup, project switching, and Docker configuration.
 -   [AI Features](./guides/ai-features.md): AI Configurator, Code Editor, and Synthesizer — setup, API reference, session management, tier access.
--   [Physics Simulation](./guides/physics-simulation.md): PPF Contact Solver pipeline (execution mocked), a labeled FEA stress proxy, heuristic topology optimization — architecture, REST API, local dev mock mode.
+-   [Physics Simulation](./guides/physics-simulation.md): PPF Contact Solver pipeline (the physics endpoint answers 501 `physics_solver_unavailable` until a solver backend is registered), a labeled geometry-derived stress estimate, a heuristic parameter estimate — architecture, REST API, local development.
 -   [Implicit SDF Engine](./guides/implicit-engine.md): TPMS lattice rendering, `engine: "implicit"` manifest usage, Digital Twin phase simulation.
 -   [MQTT Telemetry](./guides/mqtt-telemetry.md): Real-time sensor data injection for 4D hyperobjects — MQTT client, parameter merging, SSE streaming.
 -   [Rate Limiting](./guides/rate-limiting.md): Flask-Limiter, per-tier render limits, why a browser render costs no quota, production Redis setup.
@@ -69,7 +69,7 @@ is its human-readable projection. The `cq-hyperobject-test` engine fixture lives
 under `apps/api/tests/fixtures/cartridges/`; client-private cartridges mount under
 `private-projects/` and are served only to authorized identities.
 
--   [Sentinel Gripper](../projects/sentinel-gripper-hyperobject/README.md) 🤖 — Crown demo: soft-robotics compliant gripper with PPF physics optimization
+-   [Sentinel Gripper](../projects/sentinel-gripper-hyperobject/README.md) 🤖 — Crown demo: soft-robotics compliant gripper designed for PPF contact simulation (roadmap)
 -   [Gridfinity](../projects/gridfinity/) — Modular storage bins (flagship)
 -   [Microscope Slide Holder](../projects/microscope-slide-holder/) 🔷 — Microscope slide retention (first hyperobject)
 -   [Julia Vase](../projects/julia-vase/) — Fractal-surface vase (dual-engine)
@@ -102,8 +102,8 @@ The platform has five layers:
 
 1. **OpenSCAD Models** (`projects/{slug}/`) — Parametric geometry for previews and fast iteration.
 2. **CadQuery Models** (`projects/{slug}/`) — Industrial-grade B-Rep mirrors for manufacturing export (STEP, GLB).
-3. **Physics Engine** (`apps/api/services/simulation/`) — PPF Contact Solver integration for FEM stress simulation and generative topology optimization.
-4. **Backend API** (`apps/api/`) — Flask server that invokes all four engines, runs verification, and queues background GPU tasks.
+3. **Physics Engine** (`apps/api/services/simulation/`) — PPF script generation for a contact solver that is not wired up yet (the physics endpoint answers 501 until one is registered) and a heuristic parameter estimate. The stress map is a geometry-derived estimate, not an FEM solve.
+4. **Backend API** (`apps/api/`) — Flask server that invokes all four engines, runs verification, and queues background jobs.
 5. **Frontend SPA** (`apps/studio/`) — React app with Three.js viewer, kinematic timeline, and real-time physics heatmap.
 
 All layers are connected through **project manifests** (`projects/{slug}/project.json`), which declare modes, parameters, parts, kinematics, physics targets, and labels. The backend's manifest registry discovers projects at startup; the frontend fetches the active project's manifest via `/api/projects/{slug}/manifest`. See [Project Manifest](./reference/manifest.md) and [Multi-Project Platform](./guides/multi-project.md) for details.

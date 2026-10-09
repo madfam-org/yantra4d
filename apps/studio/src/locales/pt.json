@@ -445,5 +445,15 @@
   "graph.point_coordinate": "Ponto {n} {axis}",
   "graph.point_remove": "Remover o ponto {n}",
   "graph.point_add": "Adicionar ponto",
-  "graph.limit_reached": "Limite atingido ({limit})."
+  "graph.limit_reached": "Limite atingido ({limit}).",
+  "sim.physics_run": "Executar simulação física",
+  "sim.physics_running": "Simulando física... {progress}%",
+  "sim.physics_done": "Quadros de física prontos",
+  "sim.physics_unavailable": "A simulação física não está disponível: este servidor não tem um solucionador físico configurado.",
+  "sim.stress_run": "Mapa de tensões (estimativa)",
+  "sim.stress_active": "Mostrando estimativa de tensões",
+  "sim.stress_note": "Mapa de tensões aproximado derivado da geometria. Não é uma análise por elementos finitos.",
+  "sim.optimize_run": "Estimativa de parâmetros (heurística)",
+  "sim.optimize_running": "Estimativa heurística... {progress}%",
+  "sim.optimize_note": "Estimativa heurística: uma regra fixa ajusta um parâmetro numérico. Nenhum solucionador de tensões é executado, portanto o resultado não é um projeto otimizado."
 }

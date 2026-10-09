@@ -51,18 +51,21 @@ beforeEach(() => {
   vi.stubGlobal('requestAnimationFrame', (cb) => setTimeout(() => cb(performance.now()), 16))
   setQualityMode('auto')
 })
-afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); vi.clearAllMocks() })
+afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); vi.clearAllMocks(); vi.restoreAllMocks() })
 
 describe('<ViewerPerformance>', () => {
-  it('publishes readings and lowers Auto scale when the probe shows no headroom', async () => {
+  it('publishes readings, and lowers Auto scale to what the probe fits once frames run late', async () => {
+    let clock = 0
+    vi.spyOn(performance, 'now').mockImplementation(() => clock)
     gl = fakeRenderer(fakeContext(() => 120e6)) // 30 ms per probe render
     const { unmount } = render(<ViewerPerformance />)
     expect(gl.info.autoReset).toBe(false)
     frame()
     await act(async () => { await vi.advanceTimersByTimeAsync(200) })
     expect(gl.render).toHaveBeenCalledTimes(8) // 4 renders at each of the two probe scales
+    expect(getRenderScale()).toBe(1) // the probe only arms the step down
+    act(() => { for (let i = 0; i < 40; i++) { clock += 33; frame() } }) // every frame a frame late
     expect(getRenderScale()).toBe(0.55)
-    for (let i = 0; i < 40; i++) frame()
     await act(async () => { await vi.advanceTimersByTimeAsync(1000) })
     const readings = getQualityReadings()
     expect(readings.gpu).toBe('Intel, Test GPU')

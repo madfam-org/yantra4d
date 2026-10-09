@@ -7,9 +7,11 @@
  *   EXT_disjoint_timer_query_webgl2, and when a scene of a new size appears
  *   the view is rendered offscreen at two scales to fit t(s) = a + b·s².
  * - Scale policy: Sharp, Balanced and Battery are fixed scales. Auto starts at
- *   the sharpest scale whose predicted GPU time fits 80% of the frame budget,
- *   steps down when the p90 of a 30-frame window is over budget and steps up
- *   after three windows of headroom, each with a cooldown.
+ *   full resolution. It steps down only when a 30-frame window is both over
+ *   80% of the frame budget on the GPU and late on screen (frame interval p90
+ *   over 1.25 frames), jumping straight to the scale a probe predicted fits.
+ *   It steps up after three windows of GPU headroom, each with a cooldown.
+ *   A frame the screen shows on time is never blurred to save GPU time.
  * - Readings for a diagnostics UI: stats().
  *
  *   const budget = createRenderBudget(renderer, {
@@ -72,10 +74,19 @@ export class AdaptiveScaler {
   static readonly HEADROOM = 0.5
   /** Consecutive headroom windows needed before stepping up. */
   static readonly UP_WINDOWS = 3
+  /** A frame interval over this is late on screen (a dropped frame at 60 Hz). */
+  static readonly LATE_FRAME_MS = FRAME_BUDGET_MS * 1.25
+  /** Intervals longer than this are pauses between on-demand renders, not frames. */
+  static readonly IDLE_GAP_MS = 100
 
   scale: number
   private readonly budgetMs: number
   private samples: number[] = []
+  private intervals: number[] = []
+  /** True once the host reports frame intervals; from then on Auto only steps down on late frames. */
+  private pacingKnown = false
+  /** Scale the last probe predicted fits; a step down may jump straight to it. */
+  private suggested: number | null = null
   private lastChange = Number.NEGATIVE_INFINITY
   private headroomWindows = 0
 
@@ -87,22 +98,41 @@ export class AdaptiveScaler {
   reset(scale: number): void {
     this.scale = scale
     this.samples = []
+    this.intervals = []
     this.headroomWindows = 0
     this.lastChange = Number.NEGATIVE_INFINITY
   }
 
-  /** Feed one frame's GPU time (ms); returns the new scale when it changes. */
-  push(gpuMs: number, now: number): number | null {
+  /** Remember the scale a probe predicts fits, for the next step down. */
+  suggest(scale: number): void {
+    this.suggested = scale
+  }
+
+  /**
+   * Feed one frame's GPU time (ms) and, when the host knows it, the interval
+   * since the previous rendered frame. Returns the new scale when it changes.
+   * GPU time alone never lowers the scale once intervals are known: a frame
+   * the screen shows on time is not worth blurring.
+   */
+  push(gpuMs: number, now: number, frameMs?: number): number | null {
     this.samples.push(gpuMs)
+    if (frameMs !== undefined) {
+      this.pacingKnown = true
+      if (frameMs < AdaptiveScaler.IDLE_GAP_MS) this.intervals.push(frameMs)
+    }
     if (this.samples.length < AdaptiveScaler.WINDOW) return null
     const p90 = percentile(this.samples, 0.9) ?? 0
+    const intervalP90 = this.intervals.length >= AdaptiveScaler.WINDOW / 2 ? percentile(this.intervals, 0.9) : null
     this.samples = []
+    this.intervals = []
     const ladder = SCALE_LADDER
     const index = Math.max(0, ladder.findIndex((s) => s <= this.scale + 1e-6))
     if (p90 > this.budgetMs) {
       this.headroomWindows = 0
-      if (index < ladder.length - 1 && now - this.lastChange >= AdaptiveScaler.DOWN_COOLDOWN_MS) {
-        return this.change(ladder[index + 1], now)
+      const late = !this.pacingKnown || (intervalP90 !== null && intervalP90 > AdaptiveScaler.LATE_FRAME_MS)
+      if (late && index < ladder.length - 1 && now - this.lastChange >= AdaptiveScaler.DOWN_COOLDOWN_MS) {
+        const next = ladder[index + 1]
+        return this.change(this.suggested !== null && this.suggested < next ? this.suggested : next, now)
       }
       return null
     }
@@ -257,6 +287,8 @@ export function createRenderBudget(renderer: WebGLRenderer, options: RenderBudge
   let drawCalls = 0
   let triangles = 0
   let frameAtBegin = -1
+  let lastRenderedAt: number | null = null
+  let lastIntervalMs: number | null = null
   let probedTriangles = 0
   let probing = false
   let disposed = false
@@ -299,9 +331,15 @@ export function createRenderBudget(renderer: WebGLRenderer, options: RenderBudge
       targets.forEach((t) => t.dispose())
       probing = false
       if (results.length >= 2) {
-        autoScale = scaleFromProbe(results[0] / probeFrames, results[1] / probeFrames, probeScale, budgetMs)
-        scaler.reset(autoScale)
-        apply()
+        // A lighter scene may raise the scale at once. A heavier one only arms the
+        // next step down: the scale drops when frames are actually late.
+        const fits = scaleFromProbe(results[0] / probeFrames, results[1] / probeFrames, probeScale, budgetMs)
+        scaler.suggest(fits)
+        if (fits > autoScale) {
+          autoScale = fits
+          scaler.reset(autoScale)
+          apply()
+        }
       }
     }
     requestAnimationFrame(() => collect(0))
@@ -313,7 +351,7 @@ export function createRenderBudget(renderer: WebGLRenderer, options: RenderBudge
       samples.push(ms)
       if (samples.length > 120) samples.shift()
       if (mode === 'auto') {
-        const next = scaler.push(ms, performance.now())
+        const next = scaler.push(ms, performance.now(), lastIntervalMs ?? undefined)
         if (next !== null) { autoScale = next; apply() }
       }
     }
@@ -331,6 +369,8 @@ export function createRenderBudget(renderer: WebGLRenderer, options: RenderBudge
     drawCalls = info.render.calls
     triangles = info.render.triangles
     const now = performance.now()
+    if (lastRenderedAt !== null) lastIntervalMs = now - lastRenderedAt
+    lastRenderedAt = now
     frameTimes.push(now)
     while (frameTimes[0] < now - 1000) frameTimes.shift()
     if (mode === 'auto' && options.probeTarget && triangles > 1000

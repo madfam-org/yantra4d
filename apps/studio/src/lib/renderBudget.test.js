@@ -59,6 +59,30 @@ describe('AdaptiveScaler', () => {
     low.reset(1)
     expect(low.scale).toBe(1)
   })
+
+  const feedPaced = (scaler, ms, now, frameMs, n = AdaptiveScaler.WINDOW) => {
+    let out = null
+    for (let i = 0; i < n; i++) out = scaler.push(ms, now, frameMs) ?? out
+    return out
+  }
+  it('holds the scale while frames keep pace, however busy the GPU looks', () => {
+    const scaler = new AdaptiveScaler(1)
+    expect(feedPaced(scaler, BUDGET * 1.5, 0, FRAME_BUDGET_MS)).toBeNull()
+    expect(feedPaced(scaler, BUDGET * 1.5, 5000, FRAME_BUDGET_MS)).toBeNull()
+    expect(scaler.scale).toBe(1)
+  })
+  it('steps down on late frames, straight to the scale a probe suggested', () => {
+    const scaler = new AdaptiveScaler(1)
+    expect(feedPaced(scaler, BUDGET * 1.5, 0, FRAME_BUDGET_MS * 2)).toBe(0.85)
+    const probed = new AdaptiveScaler(1)
+    probed.suggest(0.55)
+    expect(feedPaced(probed, BUDGET * 1.5, 0, FRAME_BUDGET_MS * 2)).toBe(0.55)
+  })
+  it('reads long gaps as pauses between on-demand renders, not as late frames', () => {
+    const scaler = new AdaptiveScaler(1)
+    expect(feedPaced(scaler, BUDGET * 1.5, 0, AdaptiveScaler.IDLE_GAP_MS + 1)).toBeNull()
+    expect(scaler.scale).toBe(1)
+  })
 })
 
 describe('describeBrowser', () => {
@@ -128,7 +152,7 @@ describe('createRenderBudget', () => {
     vi.stubGlobal('WebGL2RenderingContext', FakeWebGL2)
     vi.stubGlobal('requestAnimationFrame', (cb) => setTimeout(() => cb(performance.now()), 16))
   })
-  afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals() })
+  afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); vi.restoreAllMocks() })
 
   it('times frames, follows modes and restores the renderer on dispose', () => {
     const renderer = fakeRenderer(fakeContext(() => 5e6))
@@ -148,14 +172,38 @@ describe('createRenderBudget', () => {
     expect(renderer.info.autoReset).toBe(true)
   })
 
-  it('probes two scales offscreen when a larger scene appears and picks the scale that fits', async () => {
+  it('probes two scales offscreen when a larger scene appears, and drops to the fitting scale only once frames run late', async () => {
+    let clock = 0
+    vi.spyOn(performance, 'now').mockImplementation(() => clock)
     const renderer = fakeRenderer(fakeContext(() => 120e6))
     const onScale = vi.fn()
     const budget = createRenderBudget(renderer, { onScale, probeTarget: () => ({ scene: {}, camera: {} }) })
     budget.onFrame(() => { renderer.render(); renderer.info.render.triangles = 50_000 })
     await vi.advanceTimersByTimeAsync(200)
     expect(renderer.render).toHaveBeenCalledTimes(9)
+    expect(onScale).not.toHaveBeenCalled() // the probe only arms the step down
+    for (let i = 0; i < AdaptiveScaler.WINDOW + 2; i++) {
+      clock += FRAME_BUDGET_MS * 2 // every frame a frame late
+      budget.onFrame(() => renderer.render())
+    }
     expect(onScale).toHaveBeenLastCalledWith(SCALE_LADDER[SCALE_LADDER.length - 1])
+    budget.dispose()
+  })
+
+  it('keeps full resolution through a heavy scene that the screen still shows on time', async () => {
+    let clock = 0
+    vi.spyOn(performance, 'now').mockImplementation(() => clock)
+    const renderer = fakeRenderer(fakeContext(() => 15e6)) // over 80% of the budget, under one frame
+    const onScale = vi.fn()
+    const budget = createRenderBudget(renderer, { onScale, probeTarget: () => ({ scene: {}, camera: {} }) })
+    budget.onFrame(() => { renderer.render(); renderer.info.render.triangles = 50_000 })
+    await vi.advanceTimersByTimeAsync(200)
+    for (let i = 0; i < AdaptiveScaler.WINDOW * 3; i++) {
+      clock += FRAME_BUDGET_MS
+      budget.onFrame(() => renderer.render())
+    }
+    expect(onScale).not.toHaveBeenCalled()
+    expect(budget.scale).toBe(1)
     budget.dispose()
   })
 })

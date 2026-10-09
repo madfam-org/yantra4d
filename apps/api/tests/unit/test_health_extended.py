@@ -28,6 +28,12 @@ class TestLiveness:
 
 
 class TestReadiness:
+    def test_readiness_identifies_the_serving_build(self, client, monkeypatch):
+        monkeypatch.setenv("RENDER_BUILD_ID", "source-run-attempt")
+        resp = client.get("/api/health/ready")
+        assert resp.json["render_revision"] == "source-run-attempt"
+        assert resp.headers["Cache-Control"] == "no-cache"
+
     def test_healthy_when_openscad_exists(self, client, monkeypatch):
         from config import Config
         monkeypatch.setattr(Config, "OPENSCAD_PATH", "/bin/sh")  # exists on all systems

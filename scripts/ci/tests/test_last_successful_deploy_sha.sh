@@ -116,11 +116,20 @@ assert_eq "stdout is the head SHA and nothing else" "${EXPECTED_SHA}" "${STDOUT}
 echo "success: the request asks the API the right question"
 assert_contains "queries the deploy workflow's runs" \
   "/repos/madfam-org/yantra4d/actions/workflows/deploy.yml/runs" "${ARGV}"
-assert_contains "filters to the deploy branch" "branch=main" "${ARGV}"
-assert_contains "filters to successful runs" "status=success" "${ARGV}"
-assert_contains "asks for one run" "per_page=1" "${ARGV}"
+assert_contains "reads a bounded recent history page" "per_page=100" "${ARGV}"
+case "${ARGV}" in
+  *branch=*|*status=*) nope "avoids stale server-side search filters" "${ARGV}" ;;
+  *) ok "avoids stale server-side search filters" ;;
+esac
 assert_contains "sends the bearer token" "Authorization: Bearer" "${ARGV}"
 assert_contains "pins the API version" "X-GitHub-Api-Version" "${ARGV}"
+
+echo "mixed history: ignore other branches, failed and unfinished runs"
+run_case "${FIXTURES_DIR}/runs_mixed.json" 200 0
+assert_eq "select newest completed success on main" "${EXPECTED_SHA}" "${STDOUT}"
+assert_eq "mixed history resolves" "${EXIT_RESOLVED}" "${STATUS}"
+run_case "${FIXTURES_DIR}/runs_mixed.json" 200 0 DEPLOY_BRANCH=release
+assert_eq "select requested branch locally" "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" "${STDOUT}"
 
 echo "empty: no successful run yet (first deploy) builds everything"
 run_case "${FIXTURES_DIR}/runs_empty.json" 200 0
@@ -186,7 +195,8 @@ echo "overrides: branch and workflow file are configurable"
 run_case "${FIXTURES_DIR}/runs_success.json" 200 0 \
   DEPLOY_BRANCH="release" DEPLOY_WORKFLOW_FILE="ship.yml"
 assert_contains "honours DEPLOY_WORKFLOW_FILE" "workflows/ship.yml/runs" "${ARGV}"
-assert_contains "honours DEPLOY_BRANCH" "branch=release" "${ARGV}"
+assert_eq "does not accept main for a release branch" "${EXIT_BUILD_EVERYTHING}" "${STATUS}"
+assert_eq "wrong branch emits no SHA" "" "${STDOUT}"
 
 echo "overrides: GITHUB_API_URL (GitHub Enterprise) is honoured"
 run_case "${FIXTURES_DIR}/runs_success.json" 200 0 \

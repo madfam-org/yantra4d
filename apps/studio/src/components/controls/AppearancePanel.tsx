@@ -4,6 +4,7 @@ import { useLanguage } from "../../contexts/system/LanguageProvider"
 import { useManifest } from "../../contexts/project/ManifestProvider"
 
 import SliderControl from './SliderControl'
+import ViewerQualityPanel from '../viewer/ViewerQualityPanel'
 
 interface MeasurementPoint {
     x: number
@@ -227,6 +228,8 @@ export default function AppearancePanel({ mode, colors, setColors, wireframe, se
                     </select>
                 </div>
             </div>
+
+            <ViewerQualityPanel />
 
             {/* Color Controls */}
             {partColors.length > 0 && (

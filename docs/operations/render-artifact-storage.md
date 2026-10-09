@@ -12,6 +12,48 @@ asks it instead. See [Operator flip runbook](#operator-flip-runbook).
 
 ---
 
+## Cache identity across releases
+
+The image publisher assigns `RENDER_BUILD_ID` to the API/worker image and
+`VITE_RENDER_BUILD_ID` to Studio, using the source SHA, build run and attempt.
+The readiness response exposes the same public `render_revision`. After a backend
+build, the publisher waits for readiness from that exact build; an HTTP200 from
+the previous image cannot accept its replacement. The expected identity is an
+output of the producing build job, so retrying only failed jobs does not invent
+a new identity for an image reused from a successful earlier attempt. A missing
+build output fails verification closed. Frontend-only publication
+checks backend availability and does not claim frontend image convergence.
+Independent production image and user-journey checks remain required.
+
+Rebuilding the same source produces a distinct namespace because fonts, kernels
+and dependency images can change independently of a cartridge's root script.
+The server's memory/Redis keys include this identity; generated artifact names
+also include it, the root source hash, kernel signature, mode and effective compensated parameters.
+Existing URLs are not reused by a later release. Old entries expire normally.
+Queued jobs carry the API build identity: a replacement worker rejects a job
+from another release (including unidentified legacy jobs) before reading any
+cartridge source, and asks the caller to reload and generate again. Local API
+and worker processes with no build identity can still run together.
+
+The manifest endpoint exposes `X-Render-Revision` through CORS, includes it in
+its ETag, and requires public-cache revalidation. The authored manifest is not
+modified. On project load, Studio uses that revision in its memory/persistent
+cache keys and includes its own build identity in persistent keys. Parameters
+are nested, canonically serialized data: names such as `project` or `mode`
+cannot replace cache identity. Missing server identity disables persistent
+reads and writes; an unidentified server uses a process-local cache namespace.
+
+This is release invalidation on **project load**, not live update notification
+for an already-open tab. Reload after a deployment. Live source edits
+without a new build, cache separation between browser/native placement,
+and artifacts' retention remain separate concerns; this is not a claim of
+immutable content addressing for every source dependency. Other image builders
+must supply unique build identities to enable safe persistent reuse.
+
+See the [platform overview](../../README.md), [render cache](../../apps/api/services/engine/render_cache.py),
+[artifact orchestration](../../apps/api/services/engine/render_orchestrator.py),
+and [Studio cache](../../apps/studio/src/services/cache/renderCache.ts).
+
 ## Why
 
 A finished render is an STL/GLB/3MF file. The **render worker** writes it into
@@ -229,7 +271,8 @@ conditional revalidation work on both, and a private project's artifact is
 | `routes/engine/verify.py`, `routes/engine/analysis.py`, `routes/engine/simulate.py`, `routes/integrations/cotiza_export.py`, `routes/integrations/printer.py` | Locate the artifact through the store and materialise it with `local_artifact()` — the artifact's own path under `fs`, a temporary download under `s3`. |
 | `routes/engine/download.py` | Render artifacts come from the store (streamed, never redirected); a project's checked-in `exports/` files still come from the project directory. |
 | `routes/core/health.py` | Reports the store kind and whether it answers. |
-| `routes/editor/git_ops.py`, `routes/projects/animations.py`, `_render_static_part` | Also publish through the store — they render in the API process but serve from `/static`, so they would otherwise 404 under `s3`. |
+| `routes/editor/git_ops.py`, `routes/projects/animations.py` | Render on the worker (`services/engine/worker_dispatch.py`), so their artifacts are published by the worker like every other part. |
+| `_render_static_part` | Also publishes through the store — a converted static part is produced in the API process but served from `/static`, so it would otherwise 404 under `s3`. |
 
 ## What this leaves of the worker Deployment split (ADR-014, #88)
 

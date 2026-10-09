@@ -68,3 +68,24 @@ class TestEndToEndCacheBehaviour:
 
         with patch.object(RenderCache, "_engine_signature", return_value="Manifold|v1"):
             assert cache.get(*ARGS) is None  # other backend: miss, not a wrong hit
+
+
+class TestReleasePartitionsTheCache:
+    def test_existing_artifact_is_not_reused_after_release(self, tmp_path, monkeypatch):
+        artifact = tmp_path / "part.stl"
+        artifact.write_bytes(b"solid\n")
+        cache = RenderCache(store=FilesystemArtifactStore(tmp_path))
+        monkeypatch.setenv("RENDER_BUILD_ID", "source-a-build-1")
+        cache.put(*ARGS, artifact.name, 6)
+        assert cache.get(*ARGS) is not None
+        # Same root script and parameters, but different libraries/fonts/image.
+        monkeypatch.setenv("RENDER_BUILD_ID", "source-a-build-2")
+        assert cache.get(*ARGS) is None
+
+    def test_unidentified_build_has_only_process_local_identity(self, monkeypatch):
+        from services.engine.render_revision import cache_revision, render_revision
+        monkeypatch.delenv("RENDER_BUILD_ID", raising=False)
+        assert render_revision() == ""
+        assert cache_revision() == cache_revision()
+        monkeypatch.setattr("services.engine.render_revision._PROCESS_REVISION", "another-process")
+        assert cache_revision() == "another-process"

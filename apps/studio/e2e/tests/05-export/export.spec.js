@@ -1,4 +1,5 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
+import { readFile } from 'node:fs/promises'
 import { forceBackendRender, goToStudio, setLanguage } from '../../helpers/test-utils.js'
 
 test.describe('Export Panel', () => {
@@ -41,6 +42,29 @@ test.describe('Export Panel', () => {
   // Download buttons
   test('download STL button is visible', async ({ page }) => {
     await expect(page.locator('button', { hasText: 'Download STL' })).toBeVisible()
+  })
+
+  test('download STL completes with the rendered binary artifact', async ({ page, sidebar }) => {
+    await forceBackendRender(page)
+    await goToStudio(page)
+    await sidebar.selectSection('export')
+    const button = page.getByRole('button', { name: 'Download STL', exact: true })
+    await expect(button).toBeEnabled({ timeout: 15000 })
+    const [download] = await Promise.all([
+      page.waitForEvent('download', { timeout: 15000 }),
+      button.click(),
+    ])
+    expect(await download.failure()).toBeNull()
+    expect(download.suggestedFilename()).toBe('test_cup_body.stl')
+    const file = await download.path()
+    expect(file).not.toBeNull()
+    const bytes = await readFile(file)
+    // The API fixture is a binary STL with one triangle. Verify the browser
+    // actually saved its bytes, rather than only enabling/clicking a button.
+    expect(bytes.length).toBe(134)
+    expect(bytes.readUInt32LE(80)).toBe(1)
+    expect(bytes.readFloatLE(108)).toBe(1)
+    expect(bytes.readFloatLE(124)).toBe(1)
   })
 
   test('download SCAD button is visible', async ({ page }) => {

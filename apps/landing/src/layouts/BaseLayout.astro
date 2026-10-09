@@ -1,6 +1,6 @@
 ---
 import type { Translations } from '../lib/i18n';
-import { EcosystemBannerClient } from '../components/EcosystemBannerClient';
+import EcosystemBanner from '../components/EcosystemBanner.astro';
 import { buildTierBootstrap } from '../lib/tier-bootstrap';
 import { SITE_ORIGIN } from '../lib/env';
 
@@ -67,9 +67,8 @@ const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN || '';
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased pb-8">
     <slot />
-    <!-- The banner is fixed at the bottom and never part of the LCP; hydrating
-         it at idle keeps react-dom's parse/execute off the critical path. -->
-    <EcosystemBannerClient client:idle />
+    <!-- Static links and a small dismissal handler keep React off initial load. -->
+    <EcosystemBanner />
     <script>
       // The tier beacon: one anonymous sendBeacon per session, only when the
       // build enables it (PUBLIC_RUM_BEACON=1) — see src/lib/rum.ts.

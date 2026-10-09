@@ -46,3 +46,25 @@ gap or incident link.
 These files are maintained by `internal-devops/scripts/sync-agent-docs.py`.
 If repo-specific long-form agent guidance is needed, put it in `AGENTS.md`,
 not `CLAUDE.md`.
+
+## Render release integrity
+
+[Cache identity and artifact storage](docs/operations/render-artifact-storage.md#cache-identity-across-releases) documents API/worker and Studio build namespaces, manifest revalidation and the limits of project-load invalidation. [README](README.md) is the platform overview. Keep runtime revision metadata separate from authored commons manifests.
+
+Shared configuration links preserve Unicode text through JSON escapes and retain legacy decoding. See the [share-link contract and limits](docs/guides/troubleshooting.md#shareable-urls).
+
+Viewer artifact loading has independent completion and lifecycle guarantees. See [blank-viewer diagnostics and shared STL task ownership](docs/guides/troubleshooting.md#blank-viewer--no-stl); render completion alone does not prove canvas delivery.
+
+## Native render output
+
+[Native renderer output and cancellation](docs/guides/troubleshooting.md#native-renderer-stalls-after-substantial-output) explains pipe draining, per-request process ownership, deadlines and remaining isolation limits.
+
+[Mode-specific controls](docs/guides/troubleshooting.md#controls-that-do-not-affect-the-selected-mode) documents the commons-owned visibility contract and actual-pin fastener regression.
+
+## Publication source acceptance
+
+[Viewer resource ownership](docs/architecture/viewer-resource-ownership.md) documents the 32 MiB/16-entry CPU cache, per-consumer geometry, GLTF and animated-grid cleanup, and the limits of these budgets.
+
+[Publication source acceptance](docs/operations/release-source-gate.md) describes the exact-main CI gate, stale-source pin refusal and runtime verification boundary.
+
+Native select validation preserves declared option types, including numeric HTML-select values; undeclared/ambiguous choices are dropped. See docs/guides/troubleshooting.md for the kernel and checkbox encoding contract.

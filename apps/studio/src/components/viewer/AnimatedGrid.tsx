@@ -105,6 +105,8 @@ function AnimatedGrid({ params, colors, wireframe, onReady, onError, onCancelled
     const controller = new AbortController()
     let settled = false
     setError(null) // eslint-disable-line react-hooks/set-state-in-effect
+    setGeometries(null)
+    setGeoCenter(null)
     fetchAssemblyGeometries(params, geometryKeys, projectSlug, { signal: controller.signal })
       .then(geos => {
         if (controller.signal.aborted) return
@@ -130,6 +132,20 @@ function AnimatedGrid({ params, colors, wireframe, onReady, onError, onCancelled
     () => Array.from({ length: cubeCount }, () => React.createRef<THREE.Group>()),
     [cubeCount]
   )
+
+  // Every cell owns its geometry. Color/wireframe rerenders reuse those
+  // allocations; replacing the assembly or unmounting releases them. Cached
+  // source geometry belongs to the fetcher and must never be disposed here.
+  const cellGeometries = useMemo(
+    () => Array.from({ length: cubeCount }, () =>
+      geometries?.map(({ type, geometry }) => ({ type, geometry: geometry.clone() })) ?? []),
+    [cubeCount, geometries]
+  )
+  useEffect(() => () => {
+    for (const cell of cellGeometries) {
+      for (const { geometry } of cell) geometry.dispose()
+    }
+  }, [cellGeometries])
 
   // Cache reduced motion preference (avoids per-frame matchMedia calls)
   const prefersReducedMotion = useRef(
@@ -188,8 +204,8 @@ function AnimatedGrid({ params, colors, wireframe, onReady, onError, onCancelled
         <group key={idx} position={[cx, yPos + cy, zPos + cz]}>
           <group ref={groupRefs[idx]}>
           <group position={[-cx, -cy, -cz]}>
-            {geometries.map(({ type, geometry }) => (
-              <mesh key={type} geometry={geometry.clone()}>
+            {cellGeometries[idx].map(({ type, geometry }) => (
+              <mesh key={type} geometry={geometry}>
                 <meshStandardMaterial
                   key={wireframe ? 'wf' : 'solid'}
                   color={colors[type] || defaultColor}

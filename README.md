@@ -27,9 +27,21 @@ The vision: apply simulated energy to any hyperobject and watch the continuous S
 
 **What is real today:** the Studio energy slider (`simulated_energy`) drives a thermodynamic-collapse heuristic in the implicit SDF engine (sag past glass-transition temperature), and a render whose browser estimate exceeds the device's budget is placed on the server by `apps/studio/src/services/engine/renderPlacement.ts` — one rule in the placement table below, not a "circuit breaker" bolted onto `renderService.ts`.
 
-**What is mocked or heuristic today:** the "full physics simulation" pipeline (`POST /api/projects/:slug/simulate/physics`) generates a PPF solver script but never executes it — the background worker produces synthetic progress frames only (`apps/api/tasks/simulation_tasks.py`). The FEA stress endpoint returns a labeled geometry-derived **stress proxy**, not a structural solve. Real PPF/FEM execution on GPU nodes is **roadmap**. See the [Current status](#-current-status-2026-09-02) section.
+**What is estimated or unavailable today:** no physics solver ships with this repo. `POST /api/projects/:slug/simulate/physics` answers **501** `physics_solver_unavailable` and creates no job until a solver backend is registered with `configure_physics_solver` (`apps/api/tasks/simulation_tasks.py`). The stress endpoint returns a labeled geometry-derived **estimate** (`method: "geometry_proxy"`, `approximation: true`), not a structural solve, and the optimize endpoint is a deterministic **heuristic** (`method: "heuristic"`, `approximation: true`). Real PPF/FEM execution on GPU nodes is **roadmap**. See the [Current status](#-current-status-2026-09-02) section.
 
 ---
+
+Render caches are scoped to published renderer builds; see [release cache identity](docs/operations/render-artifact-storage.md#cache-identity-across-releases) for invalidation, missing-identity behavior and remaining limits.
+
+[Native renderer output and cancellation](docs/guides/troubleshooting.md#native-renderer-stalls-after-substantial-output) explains pipe draining, per-request process ownership, deadlines and remaining isolation limits.
+
+[Mode-specific controls](docs/guides/troubleshooting.md#controls-that-do-not-affect-the-selected-mode) documents the commons-owned visibility contract and actual-pin fastener regression.
+
+[Native dropdown values](docs/guides/troubleshooting.md#numeric-dropdowns-change-native-geometry) retain the declared numeric or string option type; direct CLI comparisons must also match the platform checkbox encoding.
+
+[Viewer resource ownership](docs/architecture/viewer-resource-ownership.md) documents the 32 MiB/16-entry CPU cache, per-consumer geometry, GLTF and animated-grid cleanup, and the limits of these budgets.
+
+[Publication source acceptance](docs/operations/release-source-gate.md) describes the exact-main CI gate, stale-source pin refusal and runtime verification boundary.
 
 ## 🛠️ The Stack
 - **CAD Engines**: Four-kernel execution via [OpenSCAD](https://openscad.org/) (CSG), [CadQuery](https://cadquery.readthedocs.io/) (B-Rep), a native **Implicit SDF Engine** (TPMS/Lattice), and a **Graph Engine** that transpiles `.graph.json` node graphs into sandboxed CadQuery (see [authoring guide](docs/guides/graph-cartridges.md)).
@@ -51,11 +63,11 @@ Honest, code-verified snapshot. **Working today:**
 - **Implicit SDF engine** — TPMS/lattice field generation, including the energy→sag "phase shift" heuristic behind the digital-twin slider.
 - **Per-mode engine resolution** — a single cartridge can mix modes across kernels; the render engine is resolved per mode (`ManifestService.mode_engine`), so the flagship hyperobjects ship **dual-engine** (exact CadQuery B-Rep modes alongside their original OpenSCAD modes).
 
-**Mocked or heuristic today (presented as roadmap, not shipped):**
+**Estimated, heuristic or unavailable today (presented as roadmap, not shipped):**
 
-- **PPF physics simulation** — the worker generates a solver script but does not execute it; progress and frames are synthetic (`apps/api/tasks/simulation_tasks.py`). No GPU execution path exists in this repo yet.
-- **FEA stress heatmap** — a deterministic geometry-derived proxy (`schema_version: stress_proxy_v1`, `approximation: true`), not a structural solver.
-- **Topology optimization** — a deterministic heuristic optimizer (`apps/api/services/simulation/optimizer.py` describes itself as the stand-in used "when full PDE-backed" solving is unavailable), not a real generative/PDE optimization.
+- **PPF physics simulation** — the endpoint answers 501 `physics_solver_unavailable` and creates no job until a solver backend is registered with `configure_physics_solver`; the PPF script generator builds the input such a backend would run. No solver or GPU execution path ships in this repo yet.
+- **Stress heatmap** — a deterministic geometry-derived estimate (`method: "geometry_proxy"`, `approximation: true`, `schema_version: stress_proxy_v1`), not a finite-element solve.
+- **Parameter estimate** (formerly labelled topology optimization) — a deterministic heuristic (`method: "heuristic"`, `approximation: true`; `apps/api/services/simulation/optimizer.py` describes itself as the stand-in used "when full PDE-backed" solving is unavailable), not a generative or PDE-based optimization. Its status field `current_sigma` is a deprecated alias of `current_score` for one release.
 
 ---
 
@@ -117,10 +129,10 @@ declared license ever diverges from the one a cartridge actually ships, if a
 manifest declares two conflicting licenses, or if an excluded cartridge appears
 in the published catalog (`scripts/qa/check_licenses.py --strict-all`).
 
-Two cartridges are deliberately **excluded** from the published Commons:
-`tablaco` and `tablaco-v2` are client engagements whose client retains all
-private rights, so they live outside the commons repo entirely and mount at
-`private-projects/`. (`cq-hyperobject-test` used to be a third exclusion; since
+Two cartridges are deliberately **excluded** from the published Commons: they
+are client-owned private cartridges, so they live outside the commons repo
+entirely, mount at `private-projects/`, and are served only to authorized
+identities. (`cq-hyperobject-test` used to be a third exclusion; since
 RFC 0038 P2 it is an engine test fixture vendored under
 `apps/api/tests/fixtures/cartridges/` and is not a cartridge at all.)
 
@@ -207,3 +219,7 @@ Open [localhost:3000](http://localhost:3000) to enter the Studio.
 Yantra4D is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. Our hyperobjects are always released under the **CERN-OHL-W-2.0** (Weakly Reciprocal) open hardware license.
 
 **Join the movement. Print the Hyperobjects.**
+
+Shared configuration links preserve Unicode text through JSON escapes and retain legacy decoding. See the [share-link contract and limits](docs/guides/troubleshooting.md#shareable-urls).
+
+Viewer artifact loading has independent completion and lifecycle guarantees. See [blank-viewer diagnostics and shared STL task ownership](docs/guides/troubleshooting.md#blank-viewer--no-stl); render completion alone does not prove canvas delivery.

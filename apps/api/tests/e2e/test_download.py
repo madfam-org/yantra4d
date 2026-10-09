@@ -231,3 +231,54 @@ class TestRenderFormatTierGate:
         with auth_client(tmp_projects) as (client, headers):
             resp = client.get("/api/projects/test-project/download/step/nope.step", headers=headers)
             assert resp.status_code == 403
+
+
+class TestGeneratorOutputSidecarDownload:
+    """A GOC-1 `<artifact>.variables.json` sidecar passes exactly its artifact's gates."""
+
+    STL_SIDECAR = "test-project_preview_0a1b2c_body.stl.variables.json"
+    STEP_SIDECAR = "test-project_preview_0a1b2c_body.step.variables.json"
+
+    @staticmethod
+    def _stage(tmp_projects, name):
+        static = tmp_projects / "static"
+        static.mkdir(exist_ok=True)
+        (static / name).write_bytes(b'{"format":"hyperobjects.generator-output"}')
+
+    def test_guest_reads_the_sidecar_of_an_stl(self, tmp_projects):
+        self._stage(tmp_projects, self.STL_SIDECAR)
+        with auth_client(tmp_projects) as (client, headers):
+            resp = client.get(f"/api/projects/test-project/download/stl/{self.STL_SIDECAR}", headers=headers)
+            assert resp.status_code == 200
+            assert resp.mimetype == "application/json"
+            assert resp.get_json()["format"] == "hyperobjects.generator-output"
+
+    def test_guest_cannot_read_the_sidecar_of_a_step(self, tmp_projects):
+        self._stage(tmp_projects, self.STEP_SIDECAR)
+        with auth_client(tmp_projects) as (client, headers):
+            resp = client.get(f"/api/projects/test-project/download/step/{self.STEP_SIDECAR}", headers=headers)
+            assert resp.status_code == 403
+
+    def test_pro_reads_the_sidecar_of_a_step(self, tmp_projects):
+        self._stage(tmp_projects, self.STEP_SIDECAR)
+        with auth_client(tmp_projects, tier="pro") as (client, headers):
+            resp = client.get(f"/api/projects/test-project/download/step/{self.STEP_SIDECAR}", headers=headers)
+            assert resp.status_code == 200
+
+    def test_access_control_of_the_artifact_applies(self, tmp_projects):
+        manifest_path = tmp_projects / "test-project" / "project.json"
+        manifest = json.loads(manifest_path.read_text())
+        manifest["access_control"] = {"download_stl": "authenticated"}
+        manifest_path.write_text(json.dumps(manifest))
+        self._stage(tmp_projects, self.STL_SIDECAR)
+        with auth_client(tmp_projects) as (client, headers):
+            resp = client.get(f"/api/projects/test-project/download/stl/{self.STL_SIDECAR}", headers=headers)
+            assert resp.status_code == 401
+
+    def test_the_format_must_match_the_described_artifact(self, client):
+        resp = client.get(f"/api/projects/test-project/download/3mf/{self.STL_SIDECAR}")
+        assert resp.status_code == 400
+
+    def test_a_missing_sidecar_is_404_and_never_falls_back_to_exports(self, client):
+        resp = client.get("/api/projects/test-project/download/stl/test.stl.variables.json")
+        assert resp.status_code == 404

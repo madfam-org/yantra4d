@@ -20,6 +20,9 @@ import MeasureTool from './MeasureTool'
 import ThicknessOverlay from './ThicknessOverlay'
 import OverhangOverlay from './OverhangOverlay'
 import ParameterPreviewOverlay from './ParameterPreviewOverlay'
+import AsyncEdges from './AsyncEdges'
+import ViewerPerformance, { CompileGate, InvalidateOnCommit, KeepRendering } from './ViewerPerformance'
+import { MAX_DPR, useRenderScale } from '../../lib/viewerQuality'
 import type { GhostVariants } from './GhostGeometryOverlay'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
@@ -31,6 +34,18 @@ const CAMERA_FOV_MOBILE = 60
 const ORBIT_MIN_DISTANCE_MM = 0.5
 const ORBIT_MAX_DISTANCE_MM = 5000  // far enough for large assemblies (mm)
 const SCENE_UP_VECTOR: [number, number, number] = [0, 0, 1]   // Z-up coordinate system
+
+/** Volumetric centroid per geometry: O(triangles), so computed once, not on every viewer render. */
+const centroidCache = new WeakMap<THREE.BufferGeometry, { x: number; y: number; z: number }>()
+function centroidOf(geometry: THREE.BufferGeometry) {
+    let centroid = centroidCache.get(geometry)
+    if (!centroid) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferGeometry structurally matches GeometryLike
+        centroid = computeCentroid(geometry as any)
+        centroidCache.set(geometry, centroid)
+    }
+    return centroid
+}
 
 type HighlightMode = 'normal' | 'highlight' | 'ghost' | 'hidden' | 'preview'
 
@@ -195,6 +210,7 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
     if (glass) {
         const glassOpacity = wireframe ? 0.1 : 0.35
         return (
+            <CompileGate signature={geom.uuid}>
             <mesh geometry={geom}>
                 <meshPhysicalMaterial
                     key={`glass-${wireframe}`}
@@ -208,8 +224,9 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                     thickness={2}
                     depthWrite={false}
                 />
-                <Edges threshold={30} color={color} />
+                <AsyncEdges geometry={geom} threshold={30} color={color} />
             </mesh>
+            </CompileGate>
         )
     }
 
@@ -218,14 +235,15 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
     // If it's a native GLTF scene and we have no material overrides (like wireframe/ghost), render the rich scene!
     if (gltfScene && !wireframe && !isGhost && !glass) {
         return (
-            <group>
+            <CompileGate signature={geom.uuid}>
                 <primitive object={gltfScene} />
-                {!isGhost && <Edges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
-            </group>
+                {!isGhost && <AsyncEdges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
+            </CompileGate>
         )
     }
 
     return (
+        <CompileGate signature={geom.uuid}>
         <mesh geometry={geom}>
             <meshStandardMaterial
                 key={`${wireframe}-${highlightMode}`}
@@ -238,8 +256,9 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                 emissiveIntensity={emissiveIntensity}
                 depthWrite={!isGhost}
             />
-            {!isGhost && <Edges threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
+            {!isGhost && <AsyncEdges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
         </mesh>
+        </CompileGate>
     )
 }
 
@@ -407,7 +426,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                 ? geom.index.count / 3
                 : (geom.attributes?.position?.count || 0) / 3
             totalTriangles += triCount
-            const centroid = computeCentroid(geomAny)
+            const centroid = centroidOf(geom)
 
             weightedCenterSum.x += centroid.x * vol
             weightedCenterSum.y += centroid.y * vol
@@ -603,6 +622,9 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
     const bgColor = isDark ? '#09090b' : '#f4f4f5'
     const isMobile = useIsMobile()
     const fov = useResponsiveFov()
+    const renderScale = useRenderScale()
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR) * renderScale
+    const [reducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
 
     return (
         <div
@@ -614,6 +636,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
             // wait on "idle" instead of guessing at the overlay's visibility.
             data-testid="viewer-root"
             data-render-state={loading ? 'rendering' : 'idle'}
+            data-render-scale={renderScale}
         >
             <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
 
@@ -700,8 +723,10 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
             </div>
 
             <ErrorBoundary t={t}>
-                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true, localClippingEnabled: clippingEnabled }}>
+                <Canvas shadows frameloop="demand" dpr={dpr} className="h-full w-full" camera={{ position: initialCameraPos, fov, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true, localClippingEnabled: clippingEnabled }}>
                     <color attach="background" args={[bgColor]} />
+                    <ViewerPerformance />
+                    <KeepRendering active={(animating && mode === 'grid') || !!hoveredParam} />
                     <SceneController ref={sceneRef} cameraViews={cameraViews} />
 
                     {orthoCamera && (
@@ -713,7 +738,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                     <pointLight position={[10, 10, 10]} intensity={0.5 * lightIntensity} />
 
                     {/* @ts-expect-error target accepts number[] at runtime */}
-                    <OrbitControls makeDefault up={SCENE_UP_VECTOR} minDistance={ORBIT_MIN_DISTANCE_MM} maxDistance={ORBIT_MAX_DISTANCE_MM} target={centerOfMass} />
+                    <OrbitControls makeDefault enableDamping={!reducedMotion} up={SCENE_UP_VECTOR} minDistance={ORBIT_MIN_DISTANCE_MM} maxDistance={ORBIT_MAX_DISTANCE_MM} target={centerOfMass} />
                     <Grid
                         infiniteGrid
                         sectionSize={unit === 'in' ? 25.4 : 10}
@@ -803,8 +828,8 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                 {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => {
                                                     const partDef = manifest?.parts?.find(p => p.id === part.type)
                                                     const geom = geometriesRef.current[part.type]
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferGeometry structurally matches GeometryLike
-                                                    const centroidVec = geom ? new Vector3(computeCentroid(geom as any).x, computeCentroid(geom as any).y, computeCentroid(geom as any).z) : null
+                                                    const centroid = geom ? centroidOf(geom) : null
+                                                    const centroidVec = centroid ? new Vector3(centroid.x, centroid.y, centroid.z) : null
                                                     const displacement: [number, number, number] = explodeFactor > 0 && centroidVec
                                                         ? centroidVec.sub(new Vector3(...centerOfMass)).multiplyScalar(explodeFactor).toArray() as [number, number, number]
                                                         : [0, 0, 0]
@@ -865,8 +890,8 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                 {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => {
                                                     const partDef = manifest?.parts?.find(p => p.id === part.type)
                                                     const geom = geometriesRef.current[part.type]
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferGeometry structurally matches GeometryLike
-                                                    const centroidVec = geom ? new Vector3(computeCentroid(geom as any).x, computeCentroid(geom as any).y, computeCentroid(geom as any).z) : null
+                                                    const centroid = geom ? centroidOf(geom) : null
+                                                    const centroidVec = centroid ? new Vector3(centroid.x, centroid.y, centroid.z) : null
                                                     const displacement: [number, number, number] = explodeFactor > 0 && centroidVec
                                                         ? centroidVec.sub(new Vector3(...centerOfMass)).multiplyScalar(explodeFactor).toArray() as [number, number, number]
                                                         : [0, 0, 0]
@@ -943,6 +968,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                             </>
                         ) : null}
                     </Suspense>
+                    <InvalidateOnCommit />
                 </Canvas>
             </ErrorBoundary>
         </div>

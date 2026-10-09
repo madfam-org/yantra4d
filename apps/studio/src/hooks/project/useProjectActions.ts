@@ -167,7 +167,12 @@ export function useProjectActions({
 
     if (downloadParts.length === 1) {
       const part = downloadParts[0]
-      await downloadFile(pickUrl(part), `${projectSlug}_${mode}_${part.type}.${ext}`)
+      try {
+        await downloadFile(pickUrl(part), `${projectSlug}_${mode}_${part.type}.${ext}`)
+      } catch (e) {
+        setLogs(prev => prev + `\n${t("log.error")}` + (e as Error).message)
+        toast.error((e as Error).message)
+      }
       return
     }
     setLogs(prev => prev + `\n${t("log.zipping")}`)

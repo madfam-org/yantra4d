@@ -18,7 +18,10 @@ from services.ai.ai_session import (
 
 
 @pytest.fixture(autouse=True)
-def _clear_sessions():
+def _clear_sessions(monkeypatch):
+    # Memory-store tests must not change behavior when a local Redis is running.
+    # Redis contract tests below install their own controlled client.
+    monkeypatch.setattr("services.ai.ai_session.redis_client", None)
     _sessions.clear()
     yield
     _sessions.clear()

@@ -319,7 +319,7 @@ function App() {
                 <div className="flex flex-col h-full min-h-0 border-r border-border">
                   <ErrorBoundary t={t}>
                     <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading editor...</div>}>
-                      <ScadEditor slug={projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
+                      <ScadEditor slug={projectSlug} handleGenerate={handleGenerate} manifest={manifest} onForkRequest={handleForkRequest} />
                       <GitPanel slug={projectSlug} />
                     </Suspense>
                   </ErrorBoundary>
@@ -370,7 +370,7 @@ function App() {
               <SheetTitle className="sr-only">Code Editor</SheetTitle>
               <ErrorBoundary t={t}>
                 <Suspense fallback={<div className="flex items-center justify-center h-32 text-muted-foreground text-sm">Loading editor...</div>}>
-                  <ScadEditor slug={projectSlug} handleGenerate={handleGenerate} manifest={manifest} />
+                  <ScadEditor slug={projectSlug} handleGenerate={handleGenerate} manifest={manifest} onForkRequest={handleForkRequest} />
                   <GitPanel slug={projectSlug} />
                 </Suspense>
               </ErrorBoundary>

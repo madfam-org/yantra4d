@@ -53,6 +53,7 @@ interface UseRenderOptions {
   getCacheKey: (mode: string, params: Record<string, unknown>) => string
   project?: string
   exportFormat?: string
+  renderRevision?: string
 }
 
 /** How a render was asked for. */
@@ -87,7 +88,7 @@ interface UseRenderResult {
 /**
  * Hook encapsulating render orchestration: generate, cancel, confirm dialog, cache.
  */
-export function useRender({ mode, params, manifest, t, getCacheKey, project, exportFormat }: UseRenderOptions): UseRenderResult {
+export function useRender({ mode, params, manifest, t, getCacheKey, project, exportFormat, renderRevision }: UseRenderOptions): UseRenderResult {
   const [parts, setParts] = useState<RenderPart[]>([])
   const [logs, setLogs] = useState(t("log.ready"))
   const [loading, setLoading] = useState(false)
@@ -131,10 +132,11 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
       return
     }
 
-    // L2: IndexedDB persistent cache (~5ms)
-    if (!forceRender) {
+    // Persistent geometry is reusable only when the API identifies its release.
+    // Older servers and offline fallbacks have no trusted revision: render anew.
+    if (!forceRender && renderRevision) {
       try {
-        const idbKey = await idbCache.makeCacheKey(project || '', mode, params, exportFormat || 'glb')
+        const idbKey = await idbCache.makeCacheKey(project || '', mode, params, exportFormat || 'glb', renderRevision)
         const cached = await idbCache.get(idbKey)
         if (cached) {
           const restoredParts: RenderPart[] = cached.map(p => {
@@ -247,7 +249,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
       setLogs(prev => prev + `\n${t("log.gen_stl")}`)
 
       // Populate IndexedDB cache in the background
-      idbCache.makeCacheKey(project || '', mode, params, exportFormat || 'glb')
+      if (renderRevision) idbCache.makeCacheKey(project || '', mode, params, exportFormat || 'glb', renderRevision)
         .then(idbKey => idbCache.put(idbKey, result))
         .catch(() => {})
     } catch (e) {
@@ -275,7 +277,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
         setProgress(0)
       }, LOADING_RESET_DELAY_MS)
     }
-  }, [mode, params, manifest, t, getCacheKey, project, exportFormat, triggerUpgradePrompt])
+  }, [mode, params, manifest, t, getCacheKey, project, exportFormat, renderRevision, triggerUpgradePrompt])
 
   const handleCancelGenerate = useCallback(async () => {
     if (abortControllerRef.current) {

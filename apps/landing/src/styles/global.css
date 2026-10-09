@@ -19,6 +19,14 @@
     [id] {
         scroll-margin-top: 3.5rem;
     }
+    /* Still mode also serves low-memory, single-core and Save-Data devices.
+       Keep decorative CSS loops off as well as the 3D stage. User-triggered
+       hover/focus transitions remain available. */
+    html[data-tier='still'] main *,
+    html[data-tier='still'] main *::before,
+    html[data-tier='still'] main *::after {
+        animation: none !important;
+    }
 }
 
 @layer utilities {
@@ -33,4 +41,12 @@
     .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
     .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
     .px-safe { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+}
+
+/* Decorative diagrams consume animation work only while their section is
+   visible. The section boundary, never deferred descendants, is observed. */
+[data-motion-section]:not([data-motion-visible]) *,
+[data-motion-section]:not([data-motion-visible]) *::before,
+[data-motion-section]:not([data-motion-visible]) *::after {
+  animation-play-state: paused !important;
 }

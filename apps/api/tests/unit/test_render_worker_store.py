@@ -490,3 +490,25 @@ class TestTheStreamingPathPublishesToo:
         assert store.exists(ARTIFACT)
         assert cache.get(SLUG, "main.scad", {"width": 42}, PART, "stl",
                          scad_content_hash="abc123")["key"] == ARTIFACT
+
+
+@pytest.mark.parametrize("processor", [render_worker.process_sync_task, render_worker.process_stream_task])
+@pytest.mark.parametrize("requested", ["previous-release", ""])
+def test_queued_old_release_never_reaches_geometry(processor, requested, monkeypatch):
+    monkeypatch.setenv("RENDER_BUILD_ID", "current-release")
+    failures = []
+    monkeypatch.setattr(render_worker, "_notify_error", lambda *args: failures.append(args))
+    def unexpected_manifest(*args):
+        pytest.fail("stale task reached the cartridge loader")
+    monkeypatch.setattr(render_worker, "get_manifest", unexpected_manifest)
+    # Deliberately no paths/parameters: the task must be rejected before any
+    # of them are interpreted against the replacement image.
+    processor({"job_id": "old-job", "part": "body", "payload": {"render_revision": requested}})
+    assert len(failures) == 1
+    assert failures[0][:2] == ("old-job", "body")
+    assert "Reload and generate again" in failures[0][2]
+
+
+def test_matching_release_is_accepted(monkeypatch):
+    monkeypatch.setenv("RENDER_BUILD_ID", "same-release")
+    assert not render_worker._reject_stale_release({"payload": {"render_revision": "same-release"}})

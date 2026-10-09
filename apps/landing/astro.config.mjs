@@ -10,9 +10,9 @@ import react from '@astrojs/react';
 
 // Vendor chunking. Two named chunks, for two different lifetimes:
 //
-//   vendor-react — react + react-dom + scheduler. Every island needs it, the
-//                  ecosystem banner mounts at client:load, so this is paid on
-//                  every page view. ~55 KB gzipped.
+//   vendor-react — react + react-dom + scheduler. Interactive islands need it
+//                  when the gallery enters view; the static ecosystem banner
+//                  does not hydrate React. ~55 KB gzipped.
 //   vendor-three — three + @react-three/* (+ the meshopt decoder under
 //                  three/examples). Imported dynamically by the 3D stage only,
 //                  on the lite/full tiers, once the gallery is in view.

@@ -4,13 +4,15 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { ManifestProvider, useManifest } from './ManifestProvider'
 import fallbackManifest from '../../config/fallback-manifest'
 
+const route = vi.hoisted(() => ({ pathname: '/project/gridfinity', hash: '' }))
 vi.mock('react-router-dom', () => ({
-  useLocation: () => ({ pathname: '/project/gridfinity', hash: '' }),
+  useLocation: () => route,
   useNavigate: () => vi.fn()
 }))
 
 // Mock fetch so the provider doesn't hit the network
 beforeEach(() => {
+  route.pathname = '/project/gridfinity'
   vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('no backend'))))
 })
 
@@ -18,7 +20,7 @@ function TestConsumer() {
   const {
     loading, manifest, getMode, getParametersForMode, getDefaultParams, getDefaultColors, getLabel,
     getCameraViews, getGroupLabel, getViewerConfig, getEstimateConstants, projectSlug,
-    projects, switchProject,
+    projects, switchProject, ready, manifestError, renderRevision,
   } = useManifest()
   if (loading) return <div data-testid="loading">loading</div>
 
@@ -41,6 +43,9 @@ function TestConsumer() {
 
   return (
     <div>
+      <span data-testid="render-revision">{renderRevision}</span>
+      <span data-testid="ready">{String(ready)}</span>
+      <span data-testid="manifest-error">{manifestError}</span>
       <span data-testid="bin-id">{binMode?.id}</span>
       <span data-testid="baseplate-params">{baseplateParams.map(p => p.id).join(',')}</span>
       <span data-testid="default-grid-x">{defaults.grid_x}</span>
@@ -65,6 +70,87 @@ function TestConsumer() {
 }
 
 describe('ManifestProvider', () => {
+  it('loads the requested manifest while catalogue discovery is pending', async () => {
+    const fetchMock = vi.fn((url) => url.endsWith('/api/projects')
+      ? new Promise(() => {})
+      : Promise.resolve({ ok: true, json: async () => fallbackManifest }))
+    vi.stubGlobal('fetch', fetchMock)
+    const { unmount } = render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+    await waitFor(() => expect(screen.getByTestId('ready')).toHaveTextContent('true'))
+    expect(fetchMock.mock.calls.map(([url]) => url)).toContainEqual(
+      expect.stringContaining('/api/projects/gridfinity/manifest'))
+    expect(screen.getByTestId('projects-count')).toHaveTextContent('0')
+    const catalogueSignal = fetchMock.mock.calls[0][1].signal
+    unmount()
+    expect(catalogueSignal.aborted).toBe(true)
+  })
+
+  it('keeps direct project loading independent of a failed catalogue', async () => {
+    vi.stubGlobal('fetch', vi.fn((url) => url.endsWith('/api/projects')
+      ? Promise.reject(new DOMException('Timed out', 'AbortError'))
+      : Promise.resolve({ ok: true, json: async () => fallbackManifest })))
+    render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+    await waitFor(() => expect(screen.getByTestId('ready')).toHaveTextContent('true'))
+    expect(screen.getByTestId('manifest-error')).toBeEmptyDOMElement()
+    expect(screen.getByTestId('project-slug')).toHaveTextContent('gridfinity')
+  })
+
+  it('preserves another project slug when catalogue discovery fails', async () => {
+    route.pathname = '/project/other'
+    vi.stubGlobal('fetch', vi.fn((url) => url.endsWith('/api/projects')
+      ? Promise.reject(new Error('Catalog unavailable'))
+      : Promise.resolve({ ok: true, json: async () => ({
+        ...fallbackManifest, project: { ...fallbackManifest.project, slug: 'other' },
+      }) })))
+    render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+    await waitFor(() => expect(screen.getByTestId('ready')).toHaveTextContent('true'))
+    expect(screen.getByTestId('project-slug')).toHaveTextContent('other')
+    expect(fetch.mock.calls.map(([url]) => url)).toContainEqual(
+      expect.stringContaining('/api/projects/other/manifest'))
+  })
+
+  describe('ready waits for the manifest of the requested slug (fork after "Fork & Edit")', () => {
+    const serve = (manifestSlug) => vi.stubGlobal('fetch', vi.fn((url) => Promise.resolve({ ok: true, json: async () =>
+      url.endsWith('/api/projects') ? [] : ({
+        ...fallbackManifest, project: { ...fallbackManifest.project, slug: manifestSlug },
+      }) })))
+
+    it('becomes ready when the fork manifest names the fork slug', async () => {
+      route.pathname = '/project/my-gridfinity-fork'
+      serve('my-gridfinity-fork')
+      render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+      await waitFor(() => expect(screen.getByTestId('ready')).toHaveTextContent('true'))
+      expect(fetch.mock.calls.map(([url]) => url)).toContainEqual(
+        expect.stringContaining('/api/projects/my-gridfinity-fork/manifest'))
+    })
+
+    it("never becomes ready on a manifest that still names its source's slug", async () => {
+      route.pathname = '/project/my-gridfinity-fork'
+      serve('gridfinity')
+      render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+      await waitFor(() => expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/projects/my-gridfinity-fork/manifest'), expect.anything()))
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(screen.queryByTestId('ready')?.textContent ?? 'false').toBe('false')
+    })
+  })
+
+  it('loads the new manifest after cross-project navigation', async () => {
+    vi.stubGlobal('fetch', vi.fn((url) => Promise.resolve({ ok: true, json: async () =>
+      url.endsWith('/api/projects') ? [] : ({
+        ...fallbackManifest, project: { ...fallbackManifest.project,
+          slug: url.includes('/other/') ? 'other' : 'gridfinity' },
+      }) })))
+    const { rerender } = render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+    await waitFor(() => expect(screen.getByTestId('ready')).toHaveTextContent('true'))
+    route.pathname = '/project/other'
+    rerender(<ManifestProvider><TestConsumer /></ManifestProvider>)
+    await waitFor(() => {
+      expect(screen.getByTestId('project-slug')).toHaveTextContent('other')
+      expect(screen.getByTestId('ready')).toHaveTextContent('true')
+    })
+  })
+
   it('provides fallback manifest data', async () => {
     render(
       <ManifestProvider>
@@ -261,4 +347,15 @@ describe('ManifestProvider', () => {
     expect(screen.getByTestId('projects-count').textContent).toBe('14')
     expect(screen.getByTestId('project-slug').textContent).toBe('gridfinity')
   })
+})
+
+
+it('carries server render identity without changing the authored manifest', async () => {
+  vi.stubGlobal('fetch', vi.fn((url) => Promise.resolve({
+    ok: true,
+    headers: new Headers({ 'X-Render-Revision': 'release-two' }),
+    json: async () => url.endsWith('/api/projects') ? [] : fallbackManifest,
+  })))
+  render(<ManifestProvider><TestConsumer /></ManifestProvider>)
+  await waitFor(() => expect(screen.getByTestId('render-revision')).toHaveTextContent('release-two'))
 })

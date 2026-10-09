@@ -8,13 +8,13 @@ Live browser and API audit of:
 - `https://app.yantra4d.com`
 - `https://admin.yantra4d.com`
 - `https://api.yantra4d.com`
-- private Tablaco Studio route: `https://app.yantra4d.com/project/tablaco`
+- the client-private cartridge's Studio route: `https://app.yantra4d.com/project/<private-slug>`
 
 ## Findings
 
 1. Landing, Studio shell, and Admin shell loaded over HTTPS with no page errors.
-2. Tablaco manifest was available at `/api/projects/tablaco/manifest` even though Tablaco is intentionally unlisted from `/api/projects`.
-3. Tablaco browser render initially failed because `/api/render-stream` returned Cloudflare `502`; the browser surfaced it as a CORS failure because upstream 502 responses did not include app-origin CORS headers.
+2. The client-private cartridge's manifest was available at `/api/projects/<private-slug>/manifest` even though it is intentionally unlisted from `/api/projects`.
+3. The client-private cartridge's browser render initially failed because `/api/render-stream` returned Cloudflare `502`; the browser surfaced it as a CORS failure because upstream 502 responses did not include app-origin CORS headers.
 4. `yantra4d-backend` was unhealthy: backend pods had `0` ready replicas.
 5. The render-worker sidecar failed with `ModuleNotFoundError: No module named 'config'` because the worker process did not have `/app/backend` on `PYTHONPATH`.
 6. The previous worker image also failed with `python: can't open file '/app/worker/render_worker.py'` before the newest image was active.

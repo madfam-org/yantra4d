@@ -31,6 +31,14 @@ Viewer artifact loading has independent completion and lifecycle guarantees. See
 
 [Native dropdown values](docs/guides/troubleshooting.md#numeric-dropdowns-change-native-geometry) retain the declared numeric or string option type; direct CLI comparisons must also match the platform checkbox encoding.
 
+## Related repositories and contracts
+
+- hyperobjects-spec: [README](https://github.com/madfam-org/hyperobjects-spec/blob/main/README.md) (checks, parity, golden twins), [graph schema](https://github.com/madfam-org/hyperobjects-spec/blob/main/src/y4d_spec/graph/graph.schema.json) (graph format 1.x), [ASSEMBLIES.md](https://github.com/madfam-org/hyperobjects-spec/blob/main/docs/ASSEMBLIES.md) (ASM-1, kinematics §9).
+- solid-hyperobjects: [assemblies](https://github.com/madfam-org/solid-hyperobjects/blob/main/assemblies/README.md), mounted at `projects/`; forks are written to [user-projects storage](docs/operations/user-projects-storage.md). [Graph cartridges](docs/guides/graph-cartridges.md) covers the Studio graph editor.
+- asset-shells: [README](https://github.com/madfam-org/asset-shells/blob/main/README.md) (shell store, twin graph).
+- pravara-mes: [Sparkplug package](https://github.com/madfam-org/pravara-mes/blob/main/packages/sparkplug/README.md) (machine telemetry).
+- Status: [ROADMAP.md, Digital twins programme](ROADMAP.md#digital-twins-programme-status-as-of-2026-10-05) (dated 2026-10-05; open PRs in merge order, next steps).
+
 ## Publication source acceptance
 
 [Viewer resource ownership](docs/architecture/viewer-resource-ownership.md) documents the 32 MiB/16-entry CPU cache, per-consumer geometry, GLTF and animated-grid cleanup, and the limits of these budgets.

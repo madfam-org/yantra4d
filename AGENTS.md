@@ -574,7 +574,9 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 - [`docs/index.md`](docs/index.md) -- Platform documentation hub
 - [`docs/reference/manifest.md`](docs/reference/manifest.md) -- Manifest schema and extension guide
 - [`docs/architecture/web_interface.md`](docs/architecture/web_interface.md) -- Full-stack architecture details
-- [`docs/guides/graph-cartridges.md`](docs/guides/graph-cartridges.md) -- Authoring node-graph cartridges
+- [`docs/guides/graph-cartridges.md`](docs/guides/graph-cartridges.md) -- Authoring node-graph cartridges, graph format 1.1, and editing a fork in the Studio graph editor
+- [`docs/operations/user-projects-storage.md`](docs/operations/user-projects-storage.md) -- Where forks, imports and onboarded cartridges are written: the user-projects volume, backup and restore
+- [README: Related repositories and contracts](README.md#-related-repositories-and-contracts) -- the keystone, both commons, asset-shells and pravara-mes, each linked at the document that defines its contract
 - [`docs/architecture/sim4d-extraction.md`](docs/architecture/sim4d-extraction.md) -- What was taken from sim4d and what was left
 - [`docs/operations/cross-ecosystem-interventions.md`](docs/operations/cross-ecosystem-interventions.md) -- Items owed to Yantra4D from other platforms
 - [`docs/operations/render-artifact-storage.md`](docs/operations/render-artifact-storage.md) -- Render artifact store: filesystem default, S3 backend, operator flip runbook and rollback

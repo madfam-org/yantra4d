@@ -226,6 +226,23 @@ jobs:
       # there must not block a deploy — but it stays visible in the log.
       - name: Audit build tooling (advisory)
         run: npm audit --audit-level=high || true
+      - name: Check out the keystone at the pinned SHA (FK golden parity)
+        # src/lib/kinematics/parity.test.ts reproduces the keystone's golden pose files
+        # from its compiled kinematic models (Phase 7, D4). The goldens are read from the
+        # keystone at the SAME SHA spec-conformance installs, so they cannot drift from
+        # the pin; nothing is copied into this repo and vitest itself never fetches.
+        working-directory: ${{ github.workspace }}
+        run: |
+          SHA=$(grep -ho 'hyperobjects-spec.git@[0-9a-f]\{40\}' .github/workflows/ci.yml .github/workflows/spec-nightly.yml | sed 's/.*@//' | sort -u)
+          if [ "$(printf '%s\n' "$SHA" | grep -c .)" -ne 1 ]; then
+            echo "::error::the keystone pin is not one SHA across ci.yml and spec-nightly.yml: $SHA"
+            exit 1
+          fi
+          git init -q "$RUNNER_TEMP/keystone"
+          git -C "$RUNNER_TEMP/keystone" fetch -q --depth 1 https://github.com/madfam-org/hyperobjects-spec.git "$SHA"
+          git -C "$RUNNER_TEMP/keystone" checkout -q FETCH_HEAD
+          echo "Y4D_KEYSTONE_DIR=$RUNNER_TEMP/keystone" >> "$GITHUB_ENV"
+          echo "keystone goldens at $SHA"
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test:coverage

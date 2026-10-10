@@ -4,13 +4,13 @@
   "generated_by": "scripts/qa/derive_mating_candidates.py",
   "status": "proposed",
   "inputs": {
-    "cartridges_scanned": 502,
-    "cartridges_public_total": 502,
+    "cartridges_scanned": 512,
+    "cartridges_public_total": 512,
     "cartridges_out_of_scope": 0,
     "scope_note": "every projects/*/project.json is read; only the client-private slugs named in PRIVATE_EXCLUDED are skipped, and since RFC 0038 P2 those are not under projects/ at all (they mount at private-projects/). The commons is one submodule, so projects/ is either fully checked out or empty; validate_manifests.py's ratchet is what refuses the empty case",
-    "interfaces_declared": 969,
-    "interfaces_with_resolved_family": 278,
-    "objects_with_resolved_family": 211,
+    "interfaces_declared": 1078,
+    "interfaces_with_resolved_family": 349,
+    "objects_with_resolved_family": 222,
     "author_declared_pairs_in_scope": 301,
     "author_declared_links_out_of_scope": 0,
     "bridge_snapshot_available": true,
@@ -18,68 +18,80 @@
   },
   "graph_baseline": {
     "note": "the live graph's own rule replayed over the in-scope manifests; see baseline_graph_pairs() for why get_graph() is not called directly",
-    "graph_nodes": 211,
-    "edges": 262,
-    "isolated_graph_nodes": 71,
-    "density_pct_over_graph_nodes": 1.1826,
-    "density_pct_over_catalog": 0.2083,
+    "graph_nodes": 222,
+    "edges": 373,
+    "isolated_graph_nodes": 67,
+    "density_pct_over_graph_nodes": 1.5205,
+    "density_pct_over_catalog": 0.2851,
     "author_declared_pairs_reproduced": 167,
     "author_declared_pairs_missing": 134,
     "author_declared_pairs_without_shared_family": 111
   },
   "tier_summary": {
     "corroborated": 26,
-    "plausible": 48,
+    "plausible": 52,
     "speculative": 29
   },
   "projection": [
     {
       "tranche": "corroborated",
       "rules": 26,
-      "new_edges_in_tranche": 64,
-      "edges_after": 326,
+      "new_edges_in_tranche": 146,
+      "edges_after": 519,
       "author_declared_pairs_explained": 180,
       "author_declared_pairs_explained_pct": 59.8,
-      "graph_nodes": 211,
-      "isolated_graph_nodes_after": 66,
-      "density_pct_over_graph_nodes": 1.4715,
-      "density_pct_over_catalog": 0.2592
+      "graph_nodes": 222,
+      "isolated_graph_nodes_after": 63,
+      "density_pct_over_graph_nodes": 2.1157,
+      "density_pct_over_catalog": 0.3967
     },
     {
       "tranche": "plausible",
-      "rules": 48,
+      "rules": 52,
       "new_edges_in_tranche": 15,
-      "edges_after": 341,
+      "edges_after": 534,
       "author_declared_pairs_explained": 190,
       "author_declared_pairs_explained_pct": 63.12,
-      "graph_nodes": 211,
-      "isolated_graph_nodes_after": 55,
-      "density_pct_over_graph_nodes": 1.5392,
-      "density_pct_over_catalog": 0.2712
+      "graph_nodes": 222,
+      "isolated_graph_nodes_after": 52,
+      "density_pct_over_graph_nodes": 2.1768,
+      "density_pct_over_catalog": 0.4082
     },
     {
       "tranche": "speculative",
       "rules": 29,
-      "new_edges_in_tranche": 87,
-      "edges_after": 428,
+      "new_edges_in_tranche": 99,
+      "edges_after": 633,
       "author_declared_pairs_explained": 190,
       "author_declared_pairs_explained_pct": 63.12,
-      "graph_nodes": 211,
-      "isolated_graph_nodes_after": 41,
-      "density_pct_over_graph_nodes": 1.9318,
-      "density_pct_over_catalog": 0.3404
+      "graph_nodes": 222,
+      "isolated_graph_nodes_after": 40,
+      "density_pct_over_graph_nodes": 2.5804,
+      "density_pct_over_catalog": 0.4839
     }
   ],
   "rejected_interfaces": {
     "counts": {
       "standard_absent": 2,
-      "standard_internal": 563,
-      "standard_unrecognized": 126
+      "standard_internal": 564,
+      "standard_unrecognized": 163
     },
     "unrecognized_standards": [
       {
         "standard": "iso_8559",
         "interfaces": 28
+      },
+      {
+        "standard": "FPV frame camera side plate, outer face, on the camera side-screw axis",
+        "interfaces": 6
+      },
+      {
+        "standard": "ISO 7380-1 M5x10 button head on the plate's top face (10 − plate_t into the T-nut)",
+        "interfaces": 3
+      },
+      {
+        "standard": "ISO 7380-1 M5x10 button head, head on the counterbore floor (10 − 4.5 = 5.5 into the T-nut)",
+        "interfaces": 3
       },
       {
         "standard": "plain round shaft (metric nominal)",
@@ -91,6 +103,22 @@
       },
       {
         "standard": "3/16-1/4in tube",
+        "interfaces": 2
+      },
+      {
+        "standard": "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the C's top face (5.5 of the screw passes into the nut)",
+        "interfaces": 2
+      },
+      {
+        "standard": "ISO 7380-1 M5x30 button head, head on the counterbore floor",
+        "interfaces": 2
+      },
+      {
+        "standard": "the F695 stack's bottom face bears on its boss, 5.0 below its belt mid-plane",
+        "interfaces": 2
+      },
+      {
+        "standard": "the F695 stack's top face bears on the roof arm's underside, 5.0 above its belt mid-plane",
         "interfaces": 2
       },
       {
@@ -119,6 +147,10 @@
       },
       {
         "standard": "19.05 mm key pitch",
+        "interfaces": 1
+      },
+      {
+        "standard": "20 x 20 mm VTX pattern; the foot's two bolts use one 20 mm row (bolt_span 20, across the lean)",
         "interfaces": 1
       },
       {
@@ -164,43 +196,165 @@
       {
         "standard": "6-12mm shaft",
         "interfaces": 1
-      },
-      {
-        "standard": "6-30 mm seed Ø series (maize ~8-12, common bean ~10-14, squash ~12-18)",
-        "interfaces": 1
-      },
-      {
-        "standard": "6/8mm shaft + magnets",
-        "interfaces": 1
-      },
-      {
-        "standard": "60° V-groove bench block",
-        "interfaces": 1
-      },
-      {
-        "standard": "6mm dia × 2mm N52 neodymium",
-        "interfaces": 1
-      },
-      {
-        "standard": "70-450 / 86-450 mason CT finish",
-        "interfaces": 1
-      },
-      {
-        "standard": "Cherry MX / Alps / Box Cherry stem dimensions",
-        "interfaces": 1
-      },
-      {
-        "standard": "Custom mounting pattern",
-        "interfaces": 1
-      },
-      {
-        "standard": "DIN terminal",
-        "interfaces": 1
       }
     ],
-    "unrecognized_standards_distinct": 95
+    "unrecognized_standards_distinct": 119
   },
   "rules": [
+    {
+      "rule_id": "t-slot-extrusion:profile+profile",
+      "claim": "objects declaring standard family 't-slot-extrusion' in role 'profile' mate with objects declaring it in role 'profile'",
+      "family": "t-slot-extrusion",
+      "role_a": "profile",
+      "role_b": "profile",
+      "symmetric": true,
+      "confidence": "corroborated",
+      "reason": "6 author-declared compatible_with links already assert profile<->profile within this family, and both roles have 2+ objects",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 16,
+        "objects_role_b": 16,
+        "objects_total": 16,
+        "objects_both_roles": 16
+      },
+      "claimed_pairs": 120,
+      "pairs_already_in_graph": 39,
+      "new_edges": 81,
+      "evidence": {
+        "author_declared_pairs": 6,
+        "author_declared_examples": [
+          [
+            "featherboard",
+            "roller-bracket"
+          ],
+          [
+            "featherboard",
+            "tslot-corner"
+          ],
+          [
+            "linear-wheel",
+            "roller-bracket"
+          ],
+          [
+            "linear-wheel",
+            "tslot-corner"
+          ],
+          [
+            "roller-bracket",
+            "tslot-2020"
+          ]
+        ],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "2020 6 mm slot (MISUMI HFS5): a 5.8 tongue 2 high on the pad's top face, along the C",
+          "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+          "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "2020 series-5 slot (6 mm opening); D's bottom face rests on the saddle; the frame sits 10 from D's end (its slot station)",
+          "2020 series-5 slot (6 mm opening); the arm bears on the rear beam's top face, at the slot station 10 from its end",
+          "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+          "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+          "2020 series-5 slot (6 mm opening); the end face bears on the horizontal's side, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the heel bears on the upright's inner face, 30 below its top",
+          "2020 series-5 slot (6 mm opening); the mount face bears on the extrusion face",
+          "2020 series-5 slot (6 mm opening); the plate's underside bears on the bed extrusion's top face, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the plate's underside bears on the horizontal's top face",
+          "2020 series-5 slot (6 mm opening); the top face bears on the horizontal's bottom face, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the top face bears on the perpendicular horizontal's bottom face, 10 from its butted end",
+          "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+          "A 6 mm groove 2.5 deep along z for a 5.8 tongue, as a 2020 slot's opening (MISUMI HFS5); framed on the backer's face",
+          "OpenBuilds V-slot",
+          "T-slot / 3/4in miter",
+          "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
+          "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "base_len",
+          "bolt_dia",
+          "bracket_leg",
+          "bracket_thick",
+          "c_end",
+          "c_inboard",
+          "d_end",
+          "e_end",
+          "feather_n",
+          "finger_ang",
+          "finger_len",
+          "foot_len"
+        ],
+        "role_b_parameters": [
+          "base_len",
+          "bolt_dia",
+          "bracket_leg",
+          "bracket_thick",
+          "c_end",
+          "c_inboard",
+          "d_end",
+          "e_end",
+          "feather_n",
+          "finger_ang",
+          "finger_len",
+          "foot_len"
+        ]
+      },
+      "examples": [
+        {
+          "a": "featherboard",
+          "a_interface": "featherboard_fingers",
+          "a_standard": "T-slot / 3/4in miter",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_bracket_foot_slot",
+          "b_standard": "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "featherboard",
+          "a_interface": "featherboard_fingers",
+          "a_standard": "T-slot / 3/4in miter",
+          "b": "tslot-corner",
+          "b_interface": "corner_2way_leg_x",
+          "b_standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "author_declared": true,
+          "already_in_graph": false
+        },
+        {
+          "a": "linear-wheel",
+          "a_interface": "vslot_wheel_groove",
+          "a_standard": "OpenBuilds V-slot",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_bracket_foot_slot",
+          "b_standard": "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "linear-wheel",
+          "a_interface": "vslot_wheel_groove",
+          "a_standard": "OpenBuilds V-slot",
+          "b": "tslot-corner",
+          "b_interface": "corner_2way_leg_x",
+          "b_standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "author_declared": true,
+          "already_in_graph": false
+        },
+        {
+          "a": "roller-bracket",
+          "a_interface": "extrusion_bracket_foot_slot",
+          "a_standard": "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+          "b": "tslot-2020",
+          "b_interface": "corner_bracket_leg_a",
+          "b_standard": "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "author_declared": true,
+          "already_in_graph": true
+        }
+      ]
+    },
     {
       "rule_id": "unc-1/4-20:bolt_pattern+thread",
       "claim": "objects declaring standard family 'unc-1/4-20' in role 'bolt_pattern' mate with objects declaring it in role 'thread'",
@@ -456,6 +610,132 @@
       ]
     },
     {
+      "rule_id": "timing-belt:profile+profile",
+      "claim": "objects declaring standard family 'timing-belt' in role 'profile' mate with objects declaring it in role 'profile'",
+      "family": "timing-belt",
+      "role_a": "profile",
+      "role_b": "profile",
+      "symmetric": true,
+      "confidence": "corroborated",
+      "reason": "2 author-declared compatible_with links already assert profile<->profile within this family, and both roles have 2+ objects",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 5,
+        "objects_role_b": 5,
+        "objects_total": 5,
+        "objects_both_roles": 5
+      },
+      "claimed_pairs": 10,
+      "pairs_already_in_graph": 1,
+      "new_edges": 9,
+      "evidence": {
+        "author_declared_pairs": 2,
+        "author_declared_examples": [
+          [
+            "belt-clamp",
+            "gt2-idler"
+          ],
+          [
+            "gt2-idler",
+            "timing-pulley"
+          ]
+        ],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
+          "9 mm GT2 belt end (Gates 2MR, B 1.52, T 0.76): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed on the slot wall the back bears on, at the jaw entrance and mid-width",
+          "GT2 (2mm) / HTD 3M/5M",
+          "GT2 2mm / HTD 3M",
+          "GT2 2mm belt"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "base_t",
+          "belt",
+          "belt_a_level",
+          "belt_b_level",
+          "belt_line",
+          "belt_type",
+          "belt_w",
+          "belt_width",
+          "clamp_x",
+          "jaw_length",
+          "post_d",
+          "slot_w"
+        ],
+        "role_b_parameters": [
+          "base_t",
+          "belt",
+          "belt_a_level",
+          "belt_b_level",
+          "belt_line",
+          "belt_type",
+          "belt_w",
+          "belt_width",
+          "clamp_x",
+          "jaw_length",
+          "post_d",
+          "slot_w"
+        ]
+      },
+      "examples": [
+        {
+          "a": "belt-clamp",
+          "a_interface": "belt_tooth_grip",
+          "a_standard": "GT2 2mm / HTD 3M",
+          "b": "gt2-idler",
+          "b_interface": "gt2_tooth_profile",
+          "b_standard": "GT2 2mm belt",
+          "author_declared": true,
+          "already_in_graph": false
+        },
+        {
+          "a": "gt2-idler",
+          "a_interface": "gt2_tooth_profile",
+          "a_standard": "GT2 2mm belt",
+          "b": "timing-pulley",
+          "b_interface": "timing_belt_tooth",
+          "b_standard": "GT2 (2mm) / HTD 3M/5M",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "belt-clamp",
+          "a_interface": "belt_tooth_grip",
+          "a_standard": "GT2 2mm / HTD 3M",
+          "b": "timing-pulley",
+          "b_interface": "timing_belt_tooth",
+          "b_standard": "GT2 (2mm) / HTD 3M/5M",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "belt-clamp",
+          "a_interface": "belt_tooth_grip",
+          "a_standard": "GT2 2mm / HTD 3M",
+          "b": "x-carriage",
+          "b_interface": "x_carriage_belt_a_xn",
+          "b_standard": "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "belt-clamp",
+          "a_interface": "belt_tooth_grip",
+          "a_standard": "GT2 2mm / HTD 3M",
+          "b": "z-belt-clamp",
+          "b_interface": "z_belt_clamp_lower",
+          "b_standard": "9 mm GT2 belt end (Gates 2MR, B 1.52, T 0.76): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed on the slot wall the back bears on, at the jaw entrance and mid-width",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
       "rule_id": "involute-gear:profile+profile",
       "claim": "objects declaring standard family 'involute-gear' in role 'profile' mate with objects declaring it in role 'profile'",
       "family": "involute-gear",
@@ -567,227 +847,6 @@
           "b": "planetary-stage",
           "b_interface": "involute_tooth",
           "b_standard": "ISO 53 / DIN 867 involute tooth form",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
-      "rule_id": "t-slot-extrusion:profile+profile",
-      "claim": "objects declaring standard family 't-slot-extrusion' in role 'profile' mate with objects declaring it in role 'profile'",
-      "family": "t-slot-extrusion",
-      "role_a": "profile",
-      "role_b": "profile",
-      "symmetric": true,
-      "confidence": "corroborated",
-      "reason": "3 author-declared compatible_with links already assert profile<->profile within this family, and both roles have 2+ objects",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 4,
-        "objects_role_b": 4,
-        "objects_total": 4,
-        "objects_both_roles": 4
-      },
-      "claimed_pairs": 6,
-      "pairs_already_in_graph": 0,
-      "new_edges": 6,
-      "evidence": {
-        "author_declared_pairs": 3,
-        "author_declared_examples": [
-          [
-            "featherboard",
-            "tslot-corner"
-          ],
-          [
-            "linear-wheel",
-            "tslot-corner"
-          ],
-          [
-            "tslot-2020",
-            "tslot-corner"
-          ]
-        ],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "OpenBuilds V-slot",
-          "T-slot / 3/4in miter",
-          "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "bolt_dia",
-          "feather_n",
-          "finger_ang",
-          "finger_len",
-          "kerf",
-          "leg_len",
-          "outer_dia",
-          "screw_size",
-          "series",
-          "slot_fit_clearance",
-          "slot_series",
-          "thick"
-        ],
-        "role_b_parameters": [
-          "bolt_dia",
-          "feather_n",
-          "finger_ang",
-          "finger_len",
-          "kerf",
-          "leg_len",
-          "outer_dia",
-          "screw_size",
-          "series",
-          "slot_fit_clearance",
-          "slot_series",
-          "thick"
-        ]
-      },
-      "examples": [
-        {
-          "a": "featherboard",
-          "a_interface": "featherboard_fingers",
-          "a_standard": "T-slot / 3/4in miter",
-          "b": "tslot-corner",
-          "b_interface": "tslot_bolt_grid",
-          "b_standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "author_declared": true,
-          "already_in_graph": false
-        },
-        {
-          "a": "linear-wheel",
-          "a_interface": "vslot_wheel_groove",
-          "a_standard": "OpenBuilds V-slot",
-          "b": "tslot-corner",
-          "b_interface": "tslot_bolt_grid",
-          "b_standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "author_declared": true,
-          "already_in_graph": false
-        },
-        {
-          "a": "tslot-2020",
-          "a_interface": "tslot_extrusion_profile",
-          "a_standard": "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
-          "b": "tslot-corner",
-          "b_interface": "tslot_bolt_grid",
-          "b_standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "author_declared": true,
-          "already_in_graph": false
-        },
-        {
-          "a": "featherboard",
-          "a_interface": "featherboard_fingers",
-          "a_standard": "T-slot / 3/4in miter",
-          "b": "linear-wheel",
-          "b_interface": "vslot_wheel_groove",
-          "b_standard": "OpenBuilds V-slot",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "featherboard",
-          "a_interface": "featherboard_fingers",
-          "a_standard": "T-slot / 3/4in miter",
-          "b": "tslot-2020",
-          "b_interface": "tslot_extrusion_profile",
-          "b_standard": "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
-      "rule_id": "timing-belt:profile+profile",
-      "claim": "objects declaring standard family 'timing-belt' in role 'profile' mate with objects declaring it in role 'profile'",
-      "family": "timing-belt",
-      "role_a": "profile",
-      "role_b": "profile",
-      "symmetric": true,
-      "confidence": "corroborated",
-      "reason": "2 author-declared compatible_with links already assert profile<->profile within this family, and both roles have 2+ objects",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 3,
-        "objects_role_b": 3,
-        "objects_total": 3,
-        "objects_both_roles": 3
-      },
-      "claimed_pairs": 3,
-      "pairs_already_in_graph": 1,
-      "new_edges": 2,
-      "evidence": {
-        "author_declared_pairs": 2,
-        "author_declared_examples": [
-          [
-            "belt-clamp",
-            "gt2-idler"
-          ],
-          [
-            "gt2-idler",
-            "timing-pulley"
-          ]
-        ],
-        "graph_rule_admits": null,
-        "graph_agrees": true,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "GT2 (2mm) / HTD 3M/5M",
-          "GT2 2mm / HTD 3M",
-          "GT2 2mm belt"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "belt",
-          "belt_type",
-          "belt_w",
-          "belt_width",
-          "teeth",
-          "width"
-        ],
-        "role_b_parameters": [
-          "belt",
-          "belt_type",
-          "belt_w",
-          "belt_width",
-          "teeth",
-          "width"
-        ]
-      },
-      "examples": [
-        {
-          "a": "belt-clamp",
-          "a_interface": "belt_tooth_grip",
-          "a_standard": "GT2 2mm / HTD 3M",
-          "b": "gt2-idler",
-          "b_interface": "gt2_tooth_profile",
-          "b_standard": "GT2 2mm belt",
-          "author_declared": true,
-          "already_in_graph": false
-        },
-        {
-          "a": "gt2-idler",
-          "a_interface": "gt2_tooth_profile",
-          "a_standard": "GT2 2mm belt",
-          "b": "timing-pulley",
-          "b_interface": "timing_belt_tooth",
-          "b_standard": "GT2 (2mm) / HTD 3M/5M",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "belt-clamp",
-          "a_interface": "belt_tooth_grip",
-          "a_standard": "GT2 2mm / HTD 3M",
-          "b": "timing-pulley",
-          "b_interface": "timing_belt_tooth",
-          "b_standard": "GT2 (2mm) / HTD 3M/5M",
           "author_declared": false,
           "already_in_graph": false
         }
@@ -1129,6 +1188,145 @@
       ]
     },
     {
+      "rule_id": "iso-m3:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 'iso-m3' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "iso-m3",
+      "role_a": "bolt_pattern",
+      "role_b": "bolt_pattern",
+      "symmetric": true,
+      "confidence": "corroborated",
+      "reason": "8 author-declared compatible_with links already assert bolt_pattern<->bolt_pattern within this family, and both roles have 2+ objects",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 10,
+        "objects_role_b": 10,
+        "objects_total": 10,
+        "objects_both_roles": 10
+      },
+      "claimed_pairs": 45,
+      "pairs_already_in_graph": 45,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 8,
+        "author_declared_examples": [
+          [
+            "din-rail-clip",
+            "enclosure-vent"
+          ],
+          [
+            "din-rail-clip",
+            "ferro-handle"
+          ],
+          [
+            "din-rail-clip",
+            "flexure-mount"
+          ],
+          [
+            "din-rail-clip",
+            "matrix-frame"
+          ],
+          [
+            "enclosure-vent",
+            "ferro-handle"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "4 × M3 heat-set inserts on a 20 mm square (the MGN12H's pattern, HIWIN); the plate's front face, framed at the pattern's centre",
+          "4 × M3 on a 20 mm square (HIWIN MGN12H B 20 × C 20); the proxy's back face, framed at the pattern's centre; M3 screws through the proxy into the carriage's threads",
+          "Flight-controller stack 30.5x30.5 M3 / 20x20 M3 / 20x20 M2",
+          "HIWIN MGN12H top: 4 × M3 on 20 × 20; the plate's back face, M3x8 SHCS through it into the block",
+          "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along), M3x3 threads; the joint's underside, M3x8 screws through it",
+          "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along); the plate's face, M3 screws through it",
+          "ISO 261 M3",
+          "ISO 261 M3/M4/M5",
+          "ISO 4026 M3 set screw",
+          "ISO 7045 M3"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bolt_size",
+          "bolt_spacing",
+          "grub_d",
+          "m3_d",
+          "mirrored",
+          "plate_t",
+          "screw_d",
+          "stack_pattern",
+          "standoff_h",
+          "toolhead_y"
+        ],
+        "role_b_parameters": [
+          "bolt_size",
+          "bolt_spacing",
+          "grub_d",
+          "m3_d",
+          "mirrored",
+          "plate_t",
+          "screw_d",
+          "stack_pattern",
+          "standoff_h",
+          "toolhead_y"
+        ]
+      },
+      "examples": [
+        {
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "enclosure-vent",
+          "b_interface": "corner_screw_mount",
+          "b_standard": "ISO 7045 M3",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "ferro-handle",
+          "b_interface": "grub_lock",
+          "b_standard": "ISO 4026 M3 set screw",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "flexure-mount",
+          "b_interface": "m3_mount",
+          "b_standard": "ISO 261 M3",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "matrix-frame",
+          "b_interface": "corner_screw_mount",
+          "b_standard": "ISO 7045 M3",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "enclosure-vent",
+          "a_interface": "corner_screw_mount",
+          "a_standard": "ISO 7045 M3",
+          "b": "ferro-handle",
+          "b_interface": "grub_lock",
+          "b_standard": "ISO 4026 M3 set screw",
+          "author_declared": true,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "pco-1881:thread+thread",
       "claim": "objects declaring standard family 'pco-1881' in role 'thread' mate with objects declaring it in role 'thread'",
       "family": "pco-1881",
@@ -1266,6 +1464,146 @@
       ]
     },
     {
+      "rule_id": "bearing-608:socket+socket",
+      "claim": "objects declaring standard family 'bearing-608' in role 'socket' mate with objects declaring it in role 'socket'",
+      "family": "bearing-608",
+      "role_a": "socket",
+      "role_b": "socket",
+      "symmetric": true,
+      "confidence": "corroborated",
+      "reason": "11 author-declared compatible_with links already assert socket<->socket within this family, and both roles have 2+ objects",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 7,
+        "objects_role_b": 7,
+        "objects_total": 7,
+        "objects_both_roles": 7
+      },
+      "claimed_pairs": 21,
+      "pairs_already_in_graph": 21,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 11,
+        "author_declared_examples": [
+          [
+            "bearing-housing",
+            "gt2-idler"
+          ],
+          [
+            "bearing-housing",
+            "idler-608"
+          ],
+          [
+            "bearing-housing",
+            "linear-wheel"
+          ],
+          [
+            "bearing-housing",
+            "roller-bracket"
+          ],
+          [
+            "bearing-housing",
+            "timing-pulley"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "608 bearing (ISO 15 — 8×22×7)",
+          "608 bearing OD 22 mm / plain shaft bore",
+          "625 bearing (5 × 16 × 5) in a Ø16.2 pocket 5 deep, face A flush with the opening face, a 1.5 mm shoulder with a Ø10 hole behind it",
+          "ISO 15 (608/625/6900)",
+          "ISO 15 (623/625/6900)",
+          "ISO 15 (625/608)",
+          "ISO 15 deep-groove ball bearing outer-ring seat (608: 8 x 22 x 7)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "back_wall",
+          "bearing",
+          "bearing_bore",
+          "bearing_od",
+          "bearing_seat",
+          "belt_offset",
+          "belt_plane",
+          "belt_width",
+          "big_pulley_od",
+          "cb_depth",
+          "counterbore",
+          "mirrored"
+        ],
+        "role_b_parameters": [
+          "back_wall",
+          "bearing",
+          "bearing_bore",
+          "bearing_od",
+          "bearing_seat",
+          "belt_offset",
+          "belt_plane",
+          "belt_width",
+          "big_pulley_od",
+          "cb_depth",
+          "counterbore",
+          "mirrored"
+        ]
+      },
+      "examples": [
+        {
+          "a": "bearing-housing",
+          "a_interface": "bearing_seat",
+          "a_standard": "ISO 15 (608/625/6900)",
+          "b": "gt2-idler",
+          "b_interface": "idler_608_seat",
+          "b_standard": "608 bearing (ISO 15 — 8×22×7)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "bearing-housing",
+          "a_interface": "bearing_seat",
+          "a_standard": "ISO 15 (608/625/6900)",
+          "b": "idler-608",
+          "b_interface": "bearing_608_seat",
+          "b_standard": "608 bearing (ISO 15 — 8×22×7)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "bearing-housing",
+          "a_interface": "bearing_seat",
+          "a_standard": "ISO 15 (608/625/6900)",
+          "b": "linear-wheel",
+          "b_interface": "bearing_bore",
+          "b_standard": "ISO 15 (625/608)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "bearing-housing",
+          "a_interface": "bearing_seat",
+          "a_standard": "ISO 15 (608/625/6900)",
+          "b": "roller-bracket",
+          "b_interface": "roller_shaft_seat",
+          "b_standard": "608 bearing OD 22 mm / plain shaft bore",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "bearing-housing",
+          "a_interface": "bearing_seat",
+          "a_standard": "ISO 15 (608/625/6900)",
+          "b": "timing-pulley",
+          "b_interface": "idler_bearing_seat",
+          "b_standard": "ISO 15 (623/625/6900)",
+          "author_declared": true,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "din-rail-35:rail+rail",
       "claim": "objects declaring standard family 'din-rail-35' in role 'rail' mate with objects declaring it in role 'rail'",
       "family": "din-rail-35",
@@ -1393,14 +1731,14 @@
       ]
     },
     {
-      "rule_id": "bearing-608:socket+socket",
-      "claim": "objects declaring standard family 'bearing-608' in role 'socket' mate with objects declaring it in role 'socket'",
-      "family": "bearing-608",
-      "role_a": "socket",
-      "role_b": "socket",
+      "rule_id": "nema-stepper:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 'nema-stepper' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "nema-stepper",
+      "role_a": "bolt_pattern",
+      "role_b": "bolt_pattern",
       "symmetric": true,
       "confidence": "corroborated",
-      "reason": "11 author-declared compatible_with links already assert socket<->socket within this family, and both roles have 2+ objects",
+      "reason": "5 author-declared compatible_with links already assert bolt_pattern<->bolt_pattern within this family, and both roles have 2+ objects",
       "one_sided": false,
       "members": {
         "objects_role_a": 6,
@@ -1412,27 +1750,27 @@
       "pairs_already_in_graph": 15,
       "new_edges": 0,
       "evidence": {
-        "author_declared_pairs": 11,
+        "author_declared_pairs": 5,
         "author_declared_examples": [
           [
-            "bearing-housing",
-            "gt2-idler"
+            "motor-mount",
+            "nema-bracket"
           ],
           [
-            "bearing-housing",
-            "idler-608"
+            "motor-mount",
+            "nema-damper"
           ],
           [
-            "bearing-housing",
-            "linear-wheel"
+            "nema-bracket",
+            "nema-damper"
           ],
           [
-            "bearing-housing",
-            "roller-bracket"
+            "nema-bracket",
+            "scara-robotics"
           ],
           [
-            "bearing-housing",
-            "timing-pulley"
+            "nema-damper",
+            "scara-robotics"
           ]
         ],
         "graph_rule_admits": "mates_with",
@@ -1440,214 +1778,92 @@
         "bridge_objects": 0,
         "bridge_consumers": 0,
         "standards_observed": [
-          "608 bearing (ISO 15 — 8×22×7)",
-          "608 bearing OD 22 mm / plain shaft bore",
-          "ISO 15 (608/625/6900)",
-          "ISO 15 (623/625/6900)",
-          "ISO 15 (625/608)"
+          "NEMA 17 face (4 × M3 on 31, Ø22 pilot) under the motor plate, motor hanging below, inboard of the C; clearance holes, the M3 screws from above",
+          "NEMA 17 face: 31 mm square of M3 holes as slots ±2 along x for the loop tension, Ø23 pilot slot",
+          "NEMA 17/23",
+          "NEMA 17/23/34",
+          "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+          "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the top face"
         ]
       },
       "falsification_handles": {
         "role_a_parameters": [
-          "back_wall",
-          "bearing",
-          "bearing_bore",
-          "bearing_od",
-          "bearing_seat",
-          "belt_width",
-          "cb_depth",
-          "counterbore",
-          "open_slot",
-          "press_fit",
-          "shaft_dia",
-          "width"
+          "base_len",
+          "base_t",
+          "belt_offset",
+          "belt_plane",
+          "big_pulley_od",
+          "center_distance",
+          "margin",
+          "mirrored",
+          "motor_frame_size",
+          "nema",
+          "nema_size",
+          "pilot_open"
         ],
         "role_b_parameters": [
-          "back_wall",
-          "bearing",
-          "bearing_bore",
-          "bearing_od",
-          "bearing_seat",
-          "belt_width",
-          "cb_depth",
-          "counterbore",
-          "open_slot",
-          "press_fit",
-          "shaft_dia",
-          "width"
+          "base_len",
+          "base_t",
+          "belt_offset",
+          "belt_plane",
+          "big_pulley_od",
+          "center_distance",
+          "margin",
+          "mirrored",
+          "motor_frame_size",
+          "nema",
+          "nema_size",
+          "pilot_open"
         ]
       },
       "examples": [
         {
-          "a": "bearing-housing",
-          "a_interface": "bearing_seat",
-          "a_standard": "ISO 15 (608/625/6900)",
-          "b": "gt2-idler",
-          "b_interface": "idler_608_seat",
-          "b_standard": "608 bearing (ISO 15 — 8×22×7)",
+          "a": "motor-mount",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23/34",
+          "b": "nema-bracket",
+          "b_interface": "extrusion_mount_motor_face",
+          "b_standard": "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "bearing-housing",
-          "a_interface": "bearing_seat",
-          "a_standard": "ISO 15 (608/625/6900)",
-          "b": "idler-608",
-          "b_interface": "bearing_608_seat",
-          "b_standard": "608 bearing (ISO 15 — 8×22×7)",
+          "a": "motor-mount",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23/34",
+          "b": "nema-damper",
+          "b_interface": "nema_bolt_pattern",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "bearing-housing",
-          "a_interface": "bearing_seat",
-          "a_standard": "ISO 15 (608/625/6900)",
-          "b": "linear-wheel",
-          "b_interface": "bearing_bore",
-          "b_standard": "ISO 15 (625/608)",
+          "a": "nema-bracket",
+          "a_interface": "extrusion_mount_motor_face",
+          "a_standard": "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+          "b": "nema-damper",
+          "b_interface": "nema_bolt_pattern",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "bearing-housing",
-          "a_interface": "bearing_seat",
-          "a_standard": "ISO 15 (608/625/6900)",
-          "b": "roller-bracket",
-          "b_interface": "roller_shaft_seat",
-          "b_standard": "608 bearing OD 22 mm / plain shaft bore",
+          "a": "nema-bracket",
+          "a_interface": "extrusion_mount_motor_face",
+          "a_standard": "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+          "b": "scara-robotics",
+          "b_interface": "nema17_mount",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "bearing-housing",
-          "a_interface": "bearing_seat",
-          "a_standard": "ISO 15 (608/625/6900)",
-          "b": "timing-pulley",
-          "b_interface": "idler_bearing_seat",
-          "b_standard": "ISO 15 (623/625/6900)",
-          "author_declared": true,
-          "already_in_graph": true
-        }
-      ]
-    },
-    {
-      "rule_id": "iso-m3:bolt_pattern+bolt_pattern",
-      "claim": "objects declaring standard family 'iso-m3' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
-      "family": "iso-m3",
-      "role_a": "bolt_pattern",
-      "role_b": "bolt_pattern",
-      "symmetric": true,
-      "confidence": "corroborated",
-      "reason": "8 author-declared compatible_with links already assert bolt_pattern<->bolt_pattern within this family, and both roles have 2+ objects",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 5,
-        "objects_role_b": 5,
-        "objects_total": 5,
-        "objects_both_roles": 5
-      },
-      "claimed_pairs": 10,
-      "pairs_already_in_graph": 10,
-      "new_edges": 0,
-      "evidence": {
-        "author_declared_pairs": 8,
-        "author_declared_examples": [
-          [
-            "din-rail-clip",
-            "enclosure-vent"
-          ],
-          [
-            "din-rail-clip",
-            "ferro-handle"
-          ],
-          [
-            "din-rail-clip",
-            "flexure-mount"
-          ],
-          [
-            "din-rail-clip",
-            "matrix-frame"
-          ],
-          [
-            "enclosure-vent",
-            "ferro-handle"
-          ]
-        ],
-        "graph_rule_admits": "mates_with",
-        "graph_agrees": true,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "ISO 261 M3",
-          "ISO 261 M3/M4/M5",
-          "ISO 4026 M3 set screw",
-          "ISO 7045 M3"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "bolt_size",
-          "bolt_spacing",
-          "grub_d",
-          "m3_d",
-          "screw_d"
-        ],
-        "role_b_parameters": [
-          "bolt_size",
-          "bolt_spacing",
-          "grub_d",
-          "m3_d",
-          "screw_d"
-        ]
-      },
-      "examples": [
-        {
-          "a": "din-rail-clip",
-          "a_interface": "device_bolt_pattern",
-          "a_standard": "ISO 261 M3/M4/M5",
-          "b": "enclosure-vent",
-          "b_interface": "corner_screw_mount",
-          "b_standard": "ISO 7045 M3",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "din-rail-clip",
-          "a_interface": "device_bolt_pattern",
-          "a_standard": "ISO 261 M3/M4/M5",
-          "b": "ferro-handle",
-          "b_interface": "grub_lock",
-          "b_standard": "ISO 4026 M3 set screw",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "din-rail-clip",
-          "a_interface": "device_bolt_pattern",
-          "a_standard": "ISO 261 M3/M4/M5",
-          "b": "flexure-mount",
-          "b_interface": "m3_mount",
-          "b_standard": "ISO 261 M3",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "din-rail-clip",
-          "a_interface": "device_bolt_pattern",
-          "a_standard": "ISO 261 M3/M4/M5",
-          "b": "matrix-frame",
-          "b_interface": "corner_screw_mount",
-          "b_standard": "ISO 7045 M3",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "enclosure-vent",
-          "a_interface": "corner_screw_mount",
-          "a_standard": "ISO 7045 M3",
-          "b": "ferro-handle",
-          "b_interface": "grub_lock",
-          "b_standard": "ISO 4026 M3 set screw",
+          "a": "nema-damper",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23",
+          "b": "scara-robotics",
+          "b_interface": "nema17_mount",
+          "b_standard": "NEMA 17/23",
           "author_declared": true,
           "already_in_graph": true
         }
@@ -2531,125 +2747,6 @@
       ]
     },
     {
-      "rule_id": "nema-stepper:bolt_pattern+bolt_pattern",
-      "claim": "objects declaring standard family 'nema-stepper' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
-      "family": "nema-stepper",
-      "role_a": "bolt_pattern",
-      "role_b": "bolt_pattern",
-      "symmetric": true,
-      "confidence": "corroborated",
-      "reason": "5 author-declared compatible_with links already assert bolt_pattern<->bolt_pattern within this family, and both roles have 2+ objects",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 4,
-        "objects_role_b": 4,
-        "objects_total": 4,
-        "objects_both_roles": 4
-      },
-      "claimed_pairs": 6,
-      "pairs_already_in_graph": 6,
-      "new_edges": 0,
-      "evidence": {
-        "author_declared_pairs": 5,
-        "author_declared_examples": [
-          [
-            "motor-mount",
-            "nema-bracket"
-          ],
-          [
-            "motor-mount",
-            "nema-damper"
-          ],
-          [
-            "nema-bracket",
-            "nema-damper"
-          ],
-          [
-            "nema-bracket",
-            "scara-robotics"
-          ],
-          [
-            "nema-damper",
-            "scara-robotics"
-          ]
-        ],
-        "graph_rule_admits": "mates_with",
-        "graph_agrees": true,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "NEMA 17/23",
-          "NEMA 17/23/34"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "motor_frame_size",
-          "nema",
-          "nema_size",
-          "pilot_open"
-        ],
-        "role_b_parameters": [
-          "motor_frame_size",
-          "nema",
-          "nema_size",
-          "pilot_open"
-        ]
-      },
-      "examples": [
-        {
-          "a": "motor-mount",
-          "a_interface": "nema_bolt_pattern",
-          "a_standard": "NEMA 17/23/34",
-          "b": "nema-bracket",
-          "b_interface": "nema_bolt_pattern",
-          "b_standard": "NEMA 17/23",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "motor-mount",
-          "a_interface": "nema_bolt_pattern",
-          "a_standard": "NEMA 17/23/34",
-          "b": "nema-damper",
-          "b_interface": "nema_bolt_pattern",
-          "b_standard": "NEMA 17/23",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "nema-bracket",
-          "a_interface": "nema_bolt_pattern",
-          "a_standard": "NEMA 17/23",
-          "b": "nema-damper",
-          "b_interface": "nema_bolt_pattern",
-          "b_standard": "NEMA 17/23",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "nema-bracket",
-          "a_interface": "nema_bolt_pattern",
-          "a_standard": "NEMA 17/23",
-          "b": "scara-robotics",
-          "b_interface": "nema17_mount",
-          "b_standard": "NEMA 17/23",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "nema-damper",
-          "a_interface": "nema_bolt_pattern",
-          "a_standard": "NEMA 17/23",
-          "b": "scara-robotics",
-          "b_interface": "nema17_mount",
-          "b_standard": "NEMA 17/23",
-          "author_declared": true,
-          "already_in_graph": true
-        }
-      ]
-    },
-    {
       "rule_id": "webbing-strap:profile+snap",
       "claim": "objects declaring standard family 'webbing-strap' in role 'profile' mate with objects declaring it in role 'snap'",
       "family": "webbing-strap",
@@ -2816,13 +2913,15 @@
           "bore_d",
           "hub_bore",
           "motor_pattern",
-          "prop_dia"
+          "prop_dia",
+          "ring_height"
         ],
         "role_b_parameters": [
           "bore_d",
           "hub_bore",
           "motor_pattern",
-          "prop_dia"
+          "prop_dia",
+          "ring_height"
         ]
       },
       "examples": [
@@ -2841,7 +2940,7 @@
           "a_interface": "frame_bolt_pattern",
           "a_standard": "16x16 / 19x19 / 9x9 brushless motor mount",
           "b": "prop-guard",
-          "b_interface": "motor_mount",
+          "b_interface": "hub_underside",
           "b_standard": "16x16 / 19x19 / 9x9 brushless motor mount",
           "author_declared": true,
           "already_in_graph": true
@@ -2851,7 +2950,7 @@
           "a_interface": "motor_bolt_pattern",
           "a_standard": "16x16 / 19x19 / 9x9 brushless motor mount",
           "b": "prop-guard",
-          "b_interface": "motor_mount",
+          "b_interface": "hub_underside",
           "b_standard": "16x16 / 19x19 / 9x9 brushless motor mount",
           "author_declared": true,
           "already_in_graph": true
@@ -3859,6 +3958,605 @@
       ]
     },
     {
+      "rule_id": "t-slot-extrusion:grid+profile",
+      "claim": "objects declaring standard family 't-slot-extrusion' in role 'grid' mate with objects declaring it in role 'profile'",
+      "family": "t-slot-extrusion",
+      "role_a": "grid",
+      "role_b": "profile",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "3 author-declared compatible_with link(s) assert grid<->profile, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 1,
+        "objects_role_b": 16,
+        "objects_total": 17,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 16,
+      "pairs_already_in_graph": 16,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 3,
+        "author_declared_examples": [
+          [
+            "featherboard",
+            "seed-tray"
+          ],
+          [
+            "linear-wheel",
+            "seed-tray"
+          ],
+          [
+            "seed-tray",
+            "tslot-2020"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "1020 tray",
+          "2020 6 mm slot (MISUMI HFS5): a 5.8 tongue 2 high on the pad's top face, along the C",
+          "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+          "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "2020 series-5 slot (6 mm opening); D's bottom face rests on the saddle; the frame sits 10 from D's end (its slot station)",
+          "2020 series-5 slot (6 mm opening); the arm bears on the rear beam's top face, at the slot station 10 from its end",
+          "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+          "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+          "2020 series-5 slot (6 mm opening); the end face bears on the horizontal's side, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the heel bears on the upright's inner face, 30 below its top",
+          "2020 series-5 slot (6 mm opening); the mount face bears on the extrusion face",
+          "2020 series-5 slot (6 mm opening); the plate's underside bears on the bed extrusion's top face, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the plate's underside bears on the horizontal's top face",
+          "2020 series-5 slot (6 mm opening); the top face bears on the horizontal's bottom face, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the top face bears on the perpendicular horizontal's bottom face, 10 from its butted end",
+          "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+          "A 6 mm groove 2.5 deep along z for a 5.8 tongue, as a 2020 slot's opening (MISUMI HFS5); framed on the backer's face",
+          "OpenBuilds V-slot",
+          "T-slot / 3/4in miter",
+          "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
+          "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "cell_top",
+          "cols",
+          "depth",
+          "rows"
+        ],
+        "role_b_parameters": [
+          "base_len",
+          "bolt_dia",
+          "bracket_leg",
+          "bracket_thick",
+          "c_end",
+          "c_inboard",
+          "d_end",
+          "e_end",
+          "feather_n",
+          "finger_ang",
+          "finger_len",
+          "foot_len"
+        ]
+      },
+      "examples": [
+        {
+          "a": "seed-tray",
+          "a_interface": "seed_cell_array",
+          "a_standard": "1020 tray",
+          "b": "featherboard",
+          "b_interface": "featherboard_fingers",
+          "b_standard": "T-slot / 3/4in miter",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "seed-tray",
+          "a_interface": "seed_cell_array",
+          "a_standard": "1020 tray",
+          "b": "linear-wheel",
+          "b_interface": "vslot_wheel_groove",
+          "b_standard": "OpenBuilds V-slot",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "seed-tray",
+          "a_interface": "seed_cell_array",
+          "a_standard": "1020 tray",
+          "b": "tslot-2020",
+          "b_interface": "corner_bracket_leg_a",
+          "b_standard": "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "seed-tray",
+          "a_interface": "seed_cell_array",
+          "a_standard": "1020 tray",
+          "b": "ab-drive",
+          "b_interface": "ab_drive_c_key",
+          "b_standard": "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "seed-tray",
+          "a_interface": "seed_cell_array",
+          "a_standard": "1020 tray",
+          "b": "ab-front-idler",
+          "b_interface": "front_idler_top_key",
+          "b_standard": "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "t-slot-extrusion:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 't-slot-extrusion' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "t-slot-extrusion",
+      "role_a": "bolt_pattern",
+      "role_b": "bolt_pattern",
+      "symmetric": true,
+      "confidence": "plausible",
+      "reason": "the live graph's geometry table already admits bolt_pattern<->bolt_pattern (as 'mates_with') and both roles have 2+ objects, but no author has declared a pairing to confirm it",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 6,
+        "objects_role_b": 6,
+        "objects_total": 6,
+        "objects_both_roles": 6
+      },
+      "claimed_pairs": 15,
+      "pairs_already_in_graph": 15,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "20mm T-slot (2020)",
+          "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "M5 screw through the pad into an M5 T-nut in a 2020 6 mm slot; framed on the pad's top face, which bears on the C's bottom face",
+          "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "c_end",
+          "c_inboard",
+          "mirrored",
+          "mount_pitch",
+          "screw_offset",
+          "thickness"
+        ],
+        "role_b_parameters": [
+          "c_end",
+          "c_inboard",
+          "mirrored",
+          "mount_pitch",
+          "screw_offset",
+          "thickness"
+        ]
+      },
+      "examples": [
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "corner-idler-bracket",
+          "b_interface": "corner_idler_mount_a",
+          "b_standard": "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "psu-mount",
+          "b_interface": "extrusion_tslot",
+          "b_standard": "20mm T-slot (2020)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "z-belt-clamp",
+          "b_interface": "z_belt_clamp_mount",
+          "b_standard": "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "z-drive-housing",
+          "b_interface": "z_drive_mount_a",
+          "b_standard": "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "z-joint",
+          "b_interface": "z_joint_c_mount",
+          "b_standard": "M5 screw through the pad into an M5 T-nut in a 2020 6 mm slot; framed on the pad's top face, which bears on the C's bottom face",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "t-slot-extrusion:profile+rail",
+      "claim": "objects declaring standard family 't-slot-extrusion' in role 'profile' mate with objects declaring it in role 'rail'",
+      "family": "t-slot-extrusion",
+      "role_a": "profile",
+      "role_b": "rail",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "3 author-declared compatible_with link(s) assert profile<->rail, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 16,
+        "objects_role_b": 1,
+        "objects_total": 16,
+        "objects_both_roles": 1
+      },
+      "claimed_pairs": 15,
+      "pairs_already_in_graph": 15,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 3,
+        "author_declared_examples": [
+          [
+            "featherboard",
+            "roller-bracket"
+          ],
+          [
+            "linear-wheel",
+            "roller-bracket"
+          ],
+          [
+            "roller-bracket",
+            "tslot-2020"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "2020 6 mm slot (MISUMI HFS5): a 5.8 tongue 2 high on the pad's top face, along the C",
+          "2020 T-slot (6 mm slot)",
+          "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+          "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "2020 series-5 slot (6 mm opening); D's bottom face rests on the saddle; the frame sits 10 from D's end (its slot station)",
+          "2020 series-5 slot (6 mm opening); the arm bears on the rear beam's top face, at the slot station 10 from its end",
+          "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+          "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+          "2020 series-5 slot (6 mm opening); the end face bears on the horizontal's side, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the heel bears on the upright's inner face, 30 below its top",
+          "2020 series-5 slot (6 mm opening); the mount face bears on the extrusion face",
+          "2020 series-5 slot (6 mm opening); the plate's underside bears on the bed extrusion's top face, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the plate's underside bears on the horizontal's top face",
+          "2020 series-5 slot (6 mm opening); the top face bears on the horizontal's bottom face, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the top face bears on the perpendicular horizontal's bottom face, 10 from its butted end",
+          "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+          "A 6 mm groove 2.5 deep along z for a 5.8 tongue, as a 2020 slot's opening (MISUMI HFS5); framed on the backer's face",
+          "OpenBuilds V-slot",
+          "T-slot / 3/4in miter",
+          "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
+          "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "base_len",
+          "bolt_dia",
+          "bracket_leg",
+          "bracket_thick",
+          "c_end",
+          "c_inboard",
+          "d_end",
+          "e_end",
+          "feather_n",
+          "finger_ang",
+          "finger_len",
+          "foot_len"
+        ],
+        "role_b_parameters": [
+          "mount"
+        ]
+      },
+      "examples": [
+        {
+          "a": "featherboard",
+          "a_interface": "featherboard_fingers",
+          "a_standard": "T-slot / 3/4in miter",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "linear-wheel",
+          "a_interface": "vslot_wheel_groove",
+          "a_standard": "OpenBuilds V-slot",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "tslot-2020",
+          "a_interface": "corner_bracket_leg_a",
+          "a_standard": "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_key",
+          "a_standard": "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-front-idler",
+          "a_interface": "front_idler_top_key",
+          "a_standard": "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "timing-belt:profile+socket",
+      "claim": "objects declaring standard family 'timing-belt' in role 'profile' mate with objects declaring it in role 'socket'",
+      "family": "timing-belt",
+      "role_a": "profile",
+      "role_b": "socket",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "the live graph's geometry table already admits profile<->socket (as 'mates_with') and both roles have 2+ objects, but no author has declared a pairing to confirm it",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 5,
+        "objects_role_b": 3,
+        "objects_total": 8,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 15,
+      "pairs_already_in_graph": 15,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
+          "9 mm GT2 belt end (Gates 2MR, B 1.52, T 0.76): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed on the slot wall the back bears on, at the jaw entrance and mid-width",
+          "GT2 (2mm) / HTD 3M/5M",
+          "GT2 2mm / HTD 3M",
+          "GT2 2mm belt",
+          "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the GT2 20T idler's axle, screwed into a Ø4.2 pilot (guide pp. 98, 100)",
+          "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+          "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "base_t",
+          "belt",
+          "belt_a_level",
+          "belt_b_level",
+          "belt_line",
+          "belt_type",
+          "belt_w",
+          "belt_width",
+          "clamp_x",
+          "jaw_length",
+          "post_d",
+          "slot_w"
+        ],
+        "role_b_parameters": [
+          "idler_drop",
+          "idler_offset",
+          "idler_width",
+          "mirrored"
+        ]
+      },
+      "examples": [
+        {
+          "a": "belt-clamp",
+          "a_interface": "belt_tooth_grip",
+          "a_standard": "GT2 2mm / HTD 3M",
+          "b": "ab-drive",
+          "b_interface": "ab_drive_corner_idler_bolt",
+          "b_standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "belt-clamp",
+          "a_interface": "belt_tooth_grip",
+          "a_standard": "GT2 2mm / HTD 3M",
+          "b": "corner-idler-bracket",
+          "b_interface": "corner_idler_idler_bolt",
+          "b_standard": "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "belt-clamp",
+          "a_interface": "belt_tooth_grip",
+          "a_standard": "GT2 2mm / HTD 3M",
+          "b": "xy-joint",
+          "b_interface": "xy_joint_idler_bolt",
+          "b_standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the GT2 20T idler's axle, screwed into a Ø4.2 pilot (guide pp. 98, 100)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "gt2-idler",
+          "a_interface": "gt2_tooth_profile",
+          "a_standard": "GT2 2mm belt",
+          "b": "ab-drive",
+          "b_interface": "ab_drive_corner_idler_bolt",
+          "b_standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "gt2-idler",
+          "a_interface": "gt2_tooth_profile",
+          "a_standard": "GT2 2mm belt",
+          "b": "corner-idler-bracket",
+          "b_interface": "corner_idler_idler_bolt",
+          "b_standard": "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "iso-m5:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 'iso-m5' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "iso-m5",
+      "role_a": "bolt_pattern",
+      "role_b": "bolt_pattern",
+      "symmetric": true,
+      "confidence": "plausible",
+      "reason": "the live graph's geometry table already admits bolt_pattern<->bolt_pattern (as 'mates_with') and both roles have 2+ objects, but no author has declared a pairing to confirm it",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 5,
+        "objects_role_b": 5,
+        "objects_total": 5,
+        "objects_both_roles": 5
+      },
+      "claimed_pairs": 10,
+      "pairs_already_in_graph": 10,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+          "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
+          "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
+          "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bolt_dia",
+          "d_end",
+          "e_end",
+          "kerf",
+          "mirrored",
+          "nut_af"
+        ],
+        "role_b_parameters": [
+          "bolt_dia",
+          "d_end",
+          "e_end",
+          "kerf",
+          "mirrored",
+          "nut_af"
+        ]
+      },
+      "examples": [
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "ab-front-idler",
+          "b_interface": "front_idler_top_mount",
+          "b_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "iv-pole-clamp",
+          "b_interface": "pinch_bolt_pattern",
+          "b_standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "xy-joint",
+          "b_interface": "xy_joint_beam_mount",
+          "b_standard": "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "z-joint",
+          "b_interface": "z_joint_clamp_mount",
+          "b_standard": "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-front-idler",
+          "a_interface": "front_idler_top_mount",
+          "a_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "b": "iv-pole-clamp",
+          "b_interface": "pinch_bolt_pattern",
+          "b_standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "spi-neck:thread+thread",
       "claim": "objects declaring standard family 'spi-neck' in role 'thread' mate with objects declaring it in role 'thread'",
       "family": "spi-neck",
@@ -3965,221 +4663,117 @@
       ]
     },
     {
-      "rule_id": "t-slot-extrusion:grid+profile",
-      "claim": "objects declaring standard family 't-slot-extrusion' in role 'grid' mate with objects declaring it in role 'profile'",
-      "family": "t-slot-extrusion",
-      "role_a": "grid",
-      "role_b": "profile",
+      "rule_id": "nema-stepper:bolt_pattern+socket",
+      "claim": "objects declaring standard family 'nema-stepper' in role 'bolt_pattern' mate with objects declaring it in role 'socket'",
+      "family": "nema-stepper",
+      "role_a": "bolt_pattern",
+      "role_b": "socket",
       "symmetric": false,
       "confidence": "plausible",
-      "reason": "3 author-declared compatible_with link(s) assert grid<->profile, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "reason": "2 author-declared compatible_with link(s) assert bolt_pattern<->socket, but one role is declared by a single object — the rule cannot be generalised from one side",
       "one_sided": true,
       "members": {
-        "objects_role_a": 1,
-        "objects_role_b": 4,
-        "objects_total": 5,
-        "objects_both_roles": 0
+        "objects_role_a": 6,
+        "objects_role_b": 1,
+        "objects_total": 6,
+        "objects_both_roles": 1
       },
-      "claimed_pairs": 4,
-      "pairs_already_in_graph": 4,
+      "claimed_pairs": 5,
+      "pairs_already_in_graph": 5,
       "new_edges": 0,
       "evidence": {
-        "author_declared_pairs": 3,
+        "author_declared_pairs": 2,
         "author_declared_examples": [
           [
-            "featherboard",
-            "seed-tray"
+            "motor-mount",
+            "nema-bracket"
           ],
           [
-            "linear-wheel",
-            "seed-tray"
-          ],
-          [
-            "seed-tray",
-            "tslot-2020"
+            "motor-mount",
+            "nema-damper"
           ]
         ],
-        "graph_rule_admits": "mates_with",
+        "graph_rule_admits": null,
         "graph_agrees": true,
         "bridge_objects": 0,
         "bridge_consumers": 0,
         "standards_observed": [
-          "1020 tray",
-          "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "OpenBuilds V-slot",
-          "T-slot / 3/4in miter",
-          "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)"
+          "NEMA 17 face (4 × M3 on 31, Ø22 pilot) under the motor plate, motor hanging below, inboard of the C; clearance holes, the M3 screws from above",
+          "NEMA 17 face: 31 mm square of M3 holes as slots ±2 along x for the loop tension, Ø23 pilot slot",
+          "NEMA 17/23",
+          "NEMA 17/23/34",
+          "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+          "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the top face",
+          "NEMA motor face spec"
         ]
       },
       "falsification_handles": {
         "role_a_parameters": [
-          "cell_top",
-          "cols",
-          "depth",
-          "rows"
+          "base_len",
+          "base_t",
+          "belt_offset",
+          "belt_plane",
+          "big_pulley_od",
+          "center_distance",
+          "margin",
+          "mirrored",
+          "motor_frame_size",
+          "nema",
+          "nema_size",
+          "pilot_open"
         ],
         "role_b_parameters": [
-          "bolt_dia",
-          "feather_n",
-          "finger_ang",
-          "finger_len",
-          "kerf",
-          "leg_len",
-          "outer_dia",
-          "screw_size",
-          "series",
-          "slot_fit_clearance",
-          "slot_series",
-          "thick"
+          "nema_size"
         ]
       },
       "examples": [
         {
-          "a": "seed-tray",
-          "a_interface": "seed_cell_array",
-          "a_standard": "1020 tray",
-          "b": "featherboard",
-          "b_interface": "featherboard_fingers",
-          "b_standard": "T-slot / 3/4in miter",
+          "a": "nema-bracket",
+          "a_interface": "extrusion_mount_motor_face",
+          "a_standard": "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+          "b": "motor-mount",
+          "b_interface": "nema_pilot_bore",
+          "b_standard": "NEMA motor face spec",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "seed-tray",
-          "a_interface": "seed_cell_array",
-          "a_standard": "1020 tray",
-          "b": "linear-wheel",
-          "b_interface": "vslot_wheel_groove",
-          "b_standard": "OpenBuilds V-slot",
+          "a": "nema-damper",
+          "a_interface": "nema_bolt_pattern",
+          "a_standard": "NEMA 17/23",
+          "b": "motor-mount",
+          "b_interface": "nema_pilot_bore",
+          "b_standard": "NEMA motor face spec",
           "author_declared": true,
           "already_in_graph": true
         },
         {
-          "a": "seed-tray",
-          "a_interface": "seed_cell_array",
-          "a_standard": "1020 tray",
-          "b": "tslot-2020",
-          "b_interface": "tslot_extrusion_profile",
-          "b_standard": "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "seed-tray",
-          "a_interface": "seed_cell_array",
-          "a_standard": "1020 tray",
-          "b": "tslot-corner",
-          "b_interface": "tslot_bolt_grid",
-          "b_standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+          "a": "ab-drive",
+          "a_interface": "ab_drive_motor_face",
+          "a_standard": "NEMA 17 face (4 × M3 on 31, Ø22 pilot) under the motor plate, motor hanging below, inboard of the C; clearance holes, the M3 screws from above",
+          "b": "motor-mount",
+          "b_interface": "nema_pilot_bore",
+          "b_standard": "NEMA motor face spec",
           "author_declared": false,
           "already_in_graph": true
-        }
-      ]
-    },
-    {
-      "rule_id": "t-slot-extrusion:profile+rail",
-      "claim": "objects declaring standard family 't-slot-extrusion' in role 'profile' mate with objects declaring it in role 'rail'",
-      "family": "t-slot-extrusion",
-      "role_a": "profile",
-      "role_b": "rail",
-      "symmetric": false,
-      "confidence": "plausible",
-      "reason": "3 author-declared compatible_with link(s) assert profile<->rail, but one role is declared by a single object — the rule cannot be generalised from one side",
-      "one_sided": true,
-      "members": {
-        "objects_role_a": 4,
-        "objects_role_b": 1,
-        "objects_total": 5,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 4,
-      "pairs_already_in_graph": 4,
-      "new_edges": 0,
-      "evidence": {
-        "author_declared_pairs": 3,
-        "author_declared_examples": [
-          [
-            "featherboard",
-            "roller-bracket"
-          ],
-          [
-            "linear-wheel",
-            "roller-bracket"
-          ],
-          [
-            "roller-bracket",
-            "tslot-2020"
-          ]
-        ],
-        "graph_rule_admits": "mates_with",
-        "graph_agrees": true,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "2020 T-slot (6 mm slot)",
-          "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "OpenBuilds V-slot",
-          "T-slot / 3/4in miter",
-          "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "bolt_dia",
-          "feather_n",
-          "finger_ang",
-          "finger_len",
-          "kerf",
-          "leg_len",
-          "outer_dia",
-          "screw_size",
-          "series",
-          "slot_fit_clearance",
-          "slot_series",
-          "thick"
-        ],
-        "role_b_parameters": [
-          "mount"
-        ]
-      },
-      "examples": [
+        },
         {
-          "a": "featherboard",
-          "a_interface": "featherboard_fingers",
-          "a_standard": "T-slot / 3/4in miter",
-          "b": "roller-bracket",
-          "b_interface": "extrusion_tab",
-          "b_standard": "2020 T-slot (6 mm slot)",
-          "author_declared": true,
+          "a": "scara-robotics",
+          "a_interface": "nema17_mount",
+          "a_standard": "NEMA 17/23",
+          "b": "motor-mount",
+          "b_interface": "nema_pilot_bore",
+          "b_standard": "NEMA motor face spec",
+          "author_declared": false,
           "already_in_graph": true
         },
         {
-          "a": "linear-wheel",
-          "a_interface": "vslot_wheel_groove",
-          "a_standard": "OpenBuilds V-slot",
-          "b": "roller-bracket",
-          "b_interface": "extrusion_tab",
-          "b_standard": "2020 T-slot (6 mm slot)",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "tslot-2020",
-          "a_interface": "tslot_extrusion_profile",
-          "a_standard": "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
-          "b": "roller-bracket",
-          "b_interface": "extrusion_tab",
-          "b_standard": "2020 T-slot (6 mm slot)",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "tslot-corner",
-          "a_interface": "tslot_bolt_grid",
-          "a_standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "b": "roller-bracket",
-          "b_interface": "extrusion_tab",
-          "b_standard": "2020 T-slot (6 mm slot)",
+          "a": "z-drive-housing",
+          "a_interface": "z_drive_motor_face",
+          "a_standard": "NEMA 17 face: 31 mm square of M3 holes as slots ±2 along x for the loop tension, Ø23 pilot slot",
+          "b": "motor-mount",
+          "b_interface": "nema_pilot_bore",
+          "b_standard": "NEMA motor face spec",
           "author_declared": false,
           "already_in_graph": true
         }
@@ -4376,91 +4970,6 @@
       ]
     },
     {
-      "rule_id": "nema-stepper:bolt_pattern+socket",
-      "claim": "objects declaring standard family 'nema-stepper' in role 'bolt_pattern' mate with objects declaring it in role 'socket'",
-      "family": "nema-stepper",
-      "role_a": "bolt_pattern",
-      "role_b": "socket",
-      "symmetric": false,
-      "confidence": "plausible",
-      "reason": "2 author-declared compatible_with link(s) assert bolt_pattern<->socket, but one role is declared by a single object — the rule cannot be generalised from one side",
-      "one_sided": true,
-      "members": {
-        "objects_role_a": 4,
-        "objects_role_b": 1,
-        "objects_total": 4,
-        "objects_both_roles": 1
-      },
-      "claimed_pairs": 3,
-      "pairs_already_in_graph": 3,
-      "new_edges": 0,
-      "evidence": {
-        "author_declared_pairs": 2,
-        "author_declared_examples": [
-          [
-            "motor-mount",
-            "nema-bracket"
-          ],
-          [
-            "motor-mount",
-            "nema-damper"
-          ]
-        ],
-        "graph_rule_admits": null,
-        "graph_agrees": true,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "NEMA 17/23",
-          "NEMA 17/23/34",
-          "NEMA motor face spec"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "motor_frame_size",
-          "nema",
-          "nema_size",
-          "pilot_open"
-        ],
-        "role_b_parameters": [
-          "nema_size"
-        ]
-      },
-      "examples": [
-        {
-          "a": "nema-bracket",
-          "a_interface": "nema_bolt_pattern",
-          "a_standard": "NEMA 17/23",
-          "b": "motor-mount",
-          "b_interface": "nema_pilot_bore",
-          "b_standard": "NEMA motor face spec",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "nema-damper",
-          "a_interface": "nema_bolt_pattern",
-          "a_standard": "NEMA 17/23",
-          "b": "motor-mount",
-          "b_interface": "nema_pilot_bore",
-          "b_standard": "NEMA motor face spec",
-          "author_declared": true,
-          "already_in_graph": true
-        },
-        {
-          "a": "scara-robotics",
-          "a_interface": "nema17_mount",
-          "a_standard": "NEMA 17/23",
-          "b": "motor-mount",
-          "b_interface": "nema_pilot_bore",
-          "b_standard": "NEMA motor face spec",
-          "author_declared": false,
-          "already_in_graph": true
-        }
-      ]
-    },
-    {
       "rule_id": "slas-microplate:grid+grid",
       "claim": "objects declaring standard family 'slas-microplate' in role 'grid' mate with objects declaring it in role 'grid'",
       "family": "slas-microplate",
@@ -4548,6 +5057,85 @@
           "b": "tube-rack",
           "b_interface": "tube_well_array",
           "b_standard": "SBS 9mm pitch (small)",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "timing-belt:socket+socket",
+      "claim": "objects declaring standard family 'timing-belt' in role 'socket' mate with objects declaring it in role 'socket'",
+      "family": "timing-belt",
+      "role_a": "socket",
+      "role_b": "socket",
+      "symmetric": true,
+      "confidence": "plausible",
+      "reason": "the live graph's geometry table already admits socket<->socket (as 'mates_with') and both roles have 2+ objects, but no author has declared a pairing to confirm it",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 3,
+        "objects_role_b": 3,
+        "objects_total": 3,
+        "objects_both_roles": 3
+      },
+      "claimed_pairs": 3,
+      "pairs_already_in_graph": 3,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the GT2 20T idler's axle, screwed into a Ø4.2 pilot (guide pp. 98, 100)",
+          "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+          "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "idler_drop",
+          "idler_offset",
+          "idler_width",
+          "mirrored"
+        ],
+        "role_b_parameters": [
+          "idler_drop",
+          "idler_offset",
+          "idler_width",
+          "mirrored"
+        ]
+      },
+      "examples": [
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_corner_idler_bolt",
+          "a_standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+          "b": "corner-idler-bracket",
+          "b_interface": "corner_idler_idler_bolt",
+          "b_standard": "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_corner_idler_bolt",
+          "a_standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+          "b": "xy-joint",
+          "b_interface": "xy_joint_idler_bolt",
+          "b_standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the GT2 20T idler's axle, screwed into a Ø4.2 pilot (guide pp. 98, 100)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "corner-idler-bracket",
+          "a_interface": "corner_idler_idler_bolt",
+          "a_standard": "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm",
+          "b": "xy-joint",
+          "b_interface": "xy_joint_idler_bolt",
+          "b_standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the GT2 20T idler's axle, screwed into a Ø4.2 pilot (guide pp. 98, 100)",
           "author_declared": false,
           "already_in_graph": true
         }
@@ -6599,6 +7187,139 @@
       ]
     },
     {
+      "rule_id": "t-slot-extrusion:bolt_pattern+profile",
+      "claim": "objects declaring standard family 't-slot-extrusion' in role 'bolt_pattern' mate with objects declaring it in role 'profile'",
+      "family": "t-slot-extrusion",
+      "role_a": "bolt_pattern",
+      "role_b": "profile",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->profile, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 6,
+        "objects_role_b": 16,
+        "objects_total": 17,
+        "objects_both_roles": 5
+      },
+      "claimed_pairs": 81,
+      "pairs_already_in_graph": 30,
+      "new_edges": 51,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "2020 6 mm slot (MISUMI HFS5): a 5.8 tongue 2 high on the pad's top face, along the C",
+          "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+          "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "2020 series-5 slot (6 mm opening); D's bottom face rests on the saddle; the frame sits 10 from D's end (its slot station)",
+          "2020 series-5 slot (6 mm opening); the arm bears on the rear beam's top face, at the slot station 10 from its end",
+          "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+          "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+          "2020 series-5 slot (6 mm opening); the end face bears on the horizontal's side, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the heel bears on the upright's inner face, 30 below its top",
+          "2020 series-5 slot (6 mm opening); the mount face bears on the extrusion face",
+          "2020 series-5 slot (6 mm opening); the plate's underside bears on the bed extrusion's top face, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the plate's underside bears on the horizontal's top face",
+          "2020 series-5 slot (6 mm opening); the top face bears on the horizontal's bottom face, 10 from its butted end",
+          "2020 series-5 slot (6 mm opening); the top face bears on the perpendicular horizontal's bottom face, 10 from its butted end",
+          "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+          "20mm T-slot (2020)",
+          "A 6 mm groove 2.5 deep along z for a 5.8 tongue, as a 2020 slot's opening (MISUMI HFS5); framed on the backer's face",
+          "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "M5 screw through the pad into an M5 T-nut in a 2020 6 mm slot; framed on the pad's top face, which bears on the C's bottom face",
+          "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "OpenBuilds V-slot",
+          "T-slot / 3/4in miter",
+          "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
+          "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "c_end",
+          "c_inboard",
+          "mirrored",
+          "mount_pitch",
+          "screw_offset",
+          "thickness"
+        ],
+        "role_b_parameters": [
+          "base_len",
+          "bolt_dia",
+          "bracket_leg",
+          "bracket_thick",
+          "c_end",
+          "c_inboard",
+          "d_end",
+          "e_end",
+          "feather_n",
+          "finger_ang",
+          "finger_len",
+          "foot_len"
+        ]
+      },
+      "examples": [
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "ab-drive",
+          "b_interface": "ab_drive_c_key",
+          "b_standard": "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "ab-front-idler",
+          "b_interface": "front_idler_top_key",
+          "b_standard": "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "chain-mount",
+          "b_interface": "extrusion_bracket_foot_slot",
+          "b_standard": "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "corner-idler-bracket",
+          "b_interface": "corner_idler_corner_key",
+          "b_standard": "2020 series-5 slot (6 mm opening); the end face bears on the horizontal's side, 10 from its butted end",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "endstop-mount",
+          "b_interface": "extrusion_endstop_foot_slot",
+          "b_standard": "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
       "rule_id": "unc-1/4-20:bolt_pattern+rail",
       "claim": "objects declaring standard family 'unc-1/4-20' in role 'bolt_pattern' mate with objects declaring it in role 'rail'",
       "family": "unc-1/4-20",
@@ -6814,14 +7535,14 @@
       ]
     },
     {
-      "rule_id": "iso-m3:bolt_pattern+socket",
-      "claim": "objects declaring standard family 'iso-m3' in role 'bolt_pattern' mate with objects declaring it in role 'socket'",
-      "family": "iso-m3",
+      "rule_id": "iso-m5:bolt_pattern+thread",
+      "claim": "objects declaring standard family 'iso-m5' in role 'bolt_pattern' mate with objects declaring it in role 'thread'",
+      "family": "iso-m5",
       "role_a": "bolt_pattern",
-      "role_b": "socket",
+      "role_b": "thread",
       "symmetric": false,
       "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->socket, with no author-declared link and no geometry rule admitting the pairing",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->thread, with no author-declared link and no geometry rule admitting the pairing",
       "one_sided": false,
       "members": {
         "objects_role_a": 5,
@@ -6840,78 +7561,81 @@
         "bridge_objects": 0,
         "bridge_consumers": 0,
         "standards_observed": [
-          "ISO 261 M3",
-          "ISO 261 M3/M4/M5",
-          "ISO 4026 M3 set screw",
-          "ISO 7045 M3",
-          "ISO metric (M2/M2.5/M3)",
-          "M3-M8 insert"
+          "12-24 UNC (5.49 mm, 24 TPI) / M5",
+          "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+          "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
+          "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
+          "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on",
+          "M5/M6"
         ]
       },
       "falsification_handles": {
         "role_a_parameters": [
-          "bolt_size",
-          "bolt_spacing",
-          "grub_d",
-          "m3_d",
-          "screw_d"
+          "bolt_dia",
+          "d_end",
+          "e_end",
+          "kerf",
+          "mirrored",
+          "nut_af"
         ],
         "role_b_parameters": [
-          "insert_size",
-          "melt_fit",
-          "screw_size",
-          "standoff_h",
-          "wall"
+          "clearance",
+          "engage_turns",
+          "rod_len",
+          "thread_size",
+          "thread_std"
         ]
       },
       "examples": [
         {
-          "a": "din-rail-clip",
-          "a_interface": "device_bolt_pattern",
-          "a_standard": "ISO 261 M3/M4/M5",
-          "b": "insert-jig",
-          "b_interface": "insert_boss_socket",
-          "b_standard": "M3-M8 insert",
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "drum-hardware",
+          "b_interface": "tension_rod_thread",
+          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
           "author_declared": false,
           "already_in_graph": false
         },
         {
-          "a": "din-rail-clip",
-          "a_interface": "device_bolt_pattern",
-          "a_standard": "ISO 261 M3/M4/M5",
-          "b": "pcb-standoff",
-          "b_interface": "standoff_bore",
-          "b_standard": "ISO metric (M2/M2.5/M3)",
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "thumb-screw",
+          "b_interface": "iso_metric_thread",
+          "b_standard": "M5/M6",
           "author_declared": false,
           "already_in_graph": false
         },
         {
-          "a": "enclosure-vent",
-          "a_interface": "corner_screw_mount",
-          "a_standard": "ISO 7045 M3",
-          "b": "insert-jig",
-          "b_interface": "insert_boss_socket",
-          "b_standard": "M3-M8 insert",
+          "a": "ab-front-idler",
+          "a_interface": "front_idler_top_mount",
+          "a_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "b": "drum-hardware",
+          "b_interface": "tension_rod_thread",
+          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
           "author_declared": false,
           "already_in_graph": false
         },
         {
-          "a": "enclosure-vent",
-          "a_interface": "corner_screw_mount",
-          "a_standard": "ISO 7045 M3",
-          "b": "pcb-standoff",
-          "b_interface": "standoff_bore",
-          "b_standard": "ISO metric (M2/M2.5/M3)",
+          "a": "ab-front-idler",
+          "a_interface": "front_idler_top_mount",
+          "a_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "b": "thumb-screw",
+          "b_interface": "iso_metric_thread",
+          "b_standard": "M5/M6",
           "author_declared": false,
           "already_in_graph": false
         },
         {
-          "a": "ferro-handle",
-          "a_interface": "grub_lock",
-          "a_standard": "ISO 4026 M3 set screw",
-          "b": "insert-jig",
-          "b_interface": "insert_boss_socket",
-          "b_standard": "M3-M8 insert",
+          "a": "iv-pole-clamp",
+          "a_interface": "pinch_bolt_pattern",
+          "a_standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+          "b": "drum-hardware",
+          "b_interface": "tension_rod_thread",
+          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
           "author_declared": false,
           "already_in_graph": false
         }
@@ -7017,6 +7741,121 @@
           "b": "spigot-adapter",
           "b_interface": "unc_screw_thread",
           "b_standard": "ASME B1.1 1/4-20 & 3/8-16 UNC",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
+      "rule_id": "iso-m3:bolt_pattern+socket",
+      "claim": "objects declaring standard family 'iso-m3' in role 'bolt_pattern' mate with objects declaring it in role 'socket'",
+      "family": "iso-m3",
+      "role_a": "bolt_pattern",
+      "role_b": "socket",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->socket, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 10,
+        "objects_role_b": 2,
+        "objects_total": 11,
+        "objects_both_roles": 1
+      },
+      "claimed_pairs": 19,
+      "pairs_already_in_graph": 10,
+      "new_edges": 9,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "4 × M3 heat-set inserts on a 20 mm square (the MGN12H's pattern, HIWIN); the plate's front face, framed at the pattern's centre",
+          "4 × M3 on a 20 mm square (HIWIN MGN12H B 20 × C 20); the proxy's back face, framed at the pattern's centre; M3 screws through the proxy into the carriage's threads",
+          "Flight-controller stack 30.5x30.5 M3 / 20x20 M3 / 20x20 M2",
+          "HIWIN MGN12H top: 4 × M3 on 20 × 20; the plate's back face, M3x8 SHCS through it into the block",
+          "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along), M3x3 threads; the joint's underside, M3x8 screws through it",
+          "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along); the plate's face, M3 screws through it",
+          "ISO 261 M3",
+          "ISO 261 M3/M4/M5",
+          "ISO 4026 M3 set screw",
+          "ISO 7045 M3",
+          "ISO metric (M2/M2.5/M3)",
+          "M3-M8 insert"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bolt_size",
+          "bolt_spacing",
+          "grub_d",
+          "m3_d",
+          "mirrored",
+          "plate_t",
+          "screw_d",
+          "stack_pattern",
+          "standoff_h",
+          "toolhead_y"
+        ],
+        "role_b_parameters": [
+          "insert_size",
+          "melt_fit",
+          "screw_size",
+          "standoff_h",
+          "wall"
+        ]
+      },
+      "examples": [
+        {
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "insert-jig",
+          "b_interface": "insert_boss_socket",
+          "b_standard": "M3-M8 insert",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "din-rail-clip",
+          "a_interface": "device_bolt_pattern",
+          "a_standard": "ISO 261 M3/M4/M5",
+          "b": "pcb-standoff",
+          "b_interface": "standoff_bore",
+          "b_standard": "ISO metric (M2/M2.5/M3)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "enclosure-vent",
+          "a_interface": "corner_screw_mount",
+          "a_standard": "ISO 7045 M3",
+          "b": "insert-jig",
+          "b_interface": "insert_boss_socket",
+          "b_standard": "M3-M8 insert",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "enclosure-vent",
+          "a_interface": "corner_screw_mount",
+          "a_standard": "ISO 7045 M3",
+          "b": "pcb-standoff",
+          "b_interface": "standoff_bore",
+          "b_standard": "ISO metric (M2/M2.5/M3)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "ferro-handle",
+          "a_interface": "grub_lock",
+          "a_standard": "ISO 4026 M3 set screw",
+          "b": "insert-jig",
+          "b_interface": "insert_boss_socket",
+          "b_standard": "M3-M8 insert",
           "author_declared": false,
           "already_in_graph": false
         }
@@ -7311,102 +8150,6 @@
       ]
     },
     {
-      "rule_id": "t-slot-extrusion:bolt_pattern+profile",
-      "claim": "objects declaring standard family 't-slot-extrusion' in role 'bolt_pattern' mate with objects declaring it in role 'profile'",
-      "family": "t-slot-extrusion",
-      "role_a": "bolt_pattern",
-      "role_b": "profile",
-      "symmetric": false,
-      "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->profile, with no author-declared link and no geometry rule admitting the pairing",
-      "one_sided": true,
-      "members": {
-        "objects_role_a": 1,
-        "objects_role_b": 4,
-        "objects_total": 5,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 4,
-      "pairs_already_in_graph": 0,
-      "new_edges": 4,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "20mm T-slot (2020)",
-          "OpenBuilds V-slot",
-          "T-slot / 3/4in miter",
-          "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "thickness"
-        ],
-        "role_b_parameters": [
-          "bolt_dia",
-          "feather_n",
-          "finger_ang",
-          "finger_len",
-          "kerf",
-          "leg_len",
-          "outer_dia",
-          "screw_size",
-          "series",
-          "slot_fit_clearance",
-          "slot_series",
-          "thick"
-        ]
-      },
-      "examples": [
-        {
-          "a": "psu-mount",
-          "a_interface": "extrusion_tslot",
-          "a_standard": "20mm T-slot (2020)",
-          "b": "featherboard",
-          "b_interface": "featherboard_fingers",
-          "b_standard": "T-slot / 3/4in miter",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "psu-mount",
-          "a_interface": "extrusion_tslot",
-          "a_standard": "20mm T-slot (2020)",
-          "b": "linear-wheel",
-          "b_interface": "vslot_wheel_groove",
-          "b_standard": "OpenBuilds V-slot",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "psu-mount",
-          "a_interface": "extrusion_tslot",
-          "a_standard": "20mm T-slot (2020)",
-          "b": "tslot-2020",
-          "b_interface": "tslot_extrusion_profile",
-          "b_standard": "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "psu-mount",
-          "a_interface": "extrusion_tslot",
-          "a_standard": "20mm T-slot (2020)",
-          "b": "tslot-corner",
-          "b_interface": "tslot_bolt_grid",
-          "b_standard": "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
       "rule_id": "involute-gear:spline+spline",
       "claim": "objects declaring standard family 'involute-gear' in role 'spline' mate with objects declaring it in role 'spline'",
       "family": "involute-gear",
@@ -7572,75 +8315,6 @@
       ]
     },
     {
-      "rule_id": "iso-m5:bolt_pattern+thread",
-      "claim": "objects declaring standard family 'iso-m5' in role 'bolt_pattern' mate with objects declaring it in role 'thread'",
-      "family": "iso-m5",
-      "role_a": "bolt_pattern",
-      "role_b": "thread",
-      "symmetric": false,
-      "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->thread, with no author-declared link and no geometry rule admitting the pairing",
-      "one_sided": true,
-      "members": {
-        "objects_role_a": 1,
-        "objects_role_b": 2,
-        "objects_total": 3,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 2,
-      "pairs_already_in_graph": 0,
-      "new_edges": 2,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "12-24 UNC (5.49 mm, 24 TPI) / M5",
-          "M5 (5.3 mm clearance, 8.1 mm AF nut)",
-          "M5/M6"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "bolt_dia",
-          "kerf",
-          "nut_af"
-        ],
-        "role_b_parameters": [
-          "clearance",
-          "engage_turns",
-          "rod_len",
-          "thread_size",
-          "thread_std"
-        ]
-      },
-      "examples": [
-        {
-          "a": "iv-pole-clamp",
-          "a_interface": "pinch_bolt_pattern",
-          "a_standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
-          "b": "drum-hardware",
-          "b_interface": "tension_rod_thread",
-          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "iv-pole-clamp",
-          "a_interface": "pinch_bolt_pattern",
-          "a_standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
-          "b": "thumb-screw",
-          "b_interface": "iso_metric_thread",
-          "b_standard": "M5/M6",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
       "rule_id": "optical-breadboard:grid+threaded_socket",
       "claim": "objects declaring standard family 'optical-breadboard' in role 'grid' mate with objects declaring it in role 'threaded_socket'",
       "family": "optical-breadboard",
@@ -7708,6 +8382,213 @@
           "b_standard": "25 mm threaded wall-grid interface (22.54/20.15 mm trapezoidal, 29°, 2.5 mm pitch)",
           "author_declared": false,
           "already_in_graph": false
+        }
+      ]
+    },
+    {
+      "rule_id": "t-slot-extrusion:bolt_pattern+grid",
+      "claim": "objects declaring standard family 't-slot-extrusion' in role 'bolt_pattern' mate with objects declaring it in role 'grid'",
+      "family": "t-slot-extrusion",
+      "role_a": "bolt_pattern",
+      "role_b": "grid",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->grid, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 6,
+        "objects_role_b": 1,
+        "objects_total": 7,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 6,
+      "pairs_already_in_graph": 5,
+      "new_edges": 1,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "1020 tray",
+          "20mm T-slot (2020)",
+          "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "M5 screw through the pad into an M5 T-nut in a 2020 6 mm slot; framed on the pad's top face, which bears on the C's bottom face",
+          "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "c_end",
+          "c_inboard",
+          "mirrored",
+          "mount_pitch",
+          "screw_offset",
+          "thickness"
+        ],
+        "role_b_parameters": [
+          "cell_top",
+          "cols",
+          "depth",
+          "rows"
+        ]
+      },
+      "examples": [
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "seed-tray",
+          "b_interface": "seed_cell_array",
+          "b_standard": "1020 tray",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "corner-idler-bracket",
+          "a_interface": "corner_idler_mount_a",
+          "a_standard": "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "b": "seed-tray",
+          "b_interface": "seed_cell_array",
+          "b_standard": "1020 tray",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "psu-mount",
+          "a_interface": "extrusion_tslot",
+          "a_standard": "20mm T-slot (2020)",
+          "b": "seed-tray",
+          "b_interface": "seed_cell_array",
+          "b_standard": "1020 tray",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "z-belt-clamp",
+          "a_interface": "z_belt_clamp_mount",
+          "a_standard": "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "b": "seed-tray",
+          "b_interface": "seed_cell_array",
+          "b_standard": "1020 tray",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "z-drive-housing",
+          "a_interface": "z_drive_mount_a",
+          "a_standard": "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "b": "seed-tray",
+          "b_interface": "seed_cell_array",
+          "b_standard": "1020 tray",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "t-slot-extrusion:bolt_pattern+rail",
+      "claim": "objects declaring standard family 't-slot-extrusion' in role 'bolt_pattern' mate with objects declaring it in role 'rail'",
+      "family": "t-slot-extrusion",
+      "role_a": "bolt_pattern",
+      "role_b": "rail",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->rail, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 6,
+        "objects_role_b": 1,
+        "objects_total": 7,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 6,
+      "pairs_already_in_graph": 5,
+      "new_edges": 1,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "2020 T-slot (6 mm slot)",
+          "20mm T-slot (2020)",
+          "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "M5 screw through the pad into an M5 T-nut in a 2020 6 mm slot; framed on the pad's top face, which bears on the C's bottom face",
+          "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "c_end",
+          "c_inboard",
+          "mirrored",
+          "mount_pitch",
+          "screw_offset",
+          "thickness"
+        ],
+        "role_b_parameters": [
+          "mount"
+        ]
+      },
+      "examples": [
+        {
+          "a": "bed-extrusion-mount",
+          "a_interface": "bed_mount_bed",
+          "a_standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "corner-idler-bracket",
+          "a_interface": "corner_idler_mount_a",
+          "a_standard": "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "psu-mount",
+          "a_interface": "extrusion_tslot",
+          "a_standard": "20mm T-slot (2020)",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "z-belt-clamp",
+          "a_interface": "z_belt_clamp_mount",
+          "a_standard": "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "z-drive-housing",
+          "a_interface": "z_drive_mount_a",
+          "a_standard": "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
+          "author_declared": false,
+          "already_in_graph": true
         }
       ]
     },
@@ -8305,168 +9186,6 @@
       ]
     },
     {
-      "rule_id": "t-slot-extrusion:bolt_pattern+grid",
-      "claim": "objects declaring standard family 't-slot-extrusion' in role 'bolt_pattern' mate with objects declaring it in role 'grid'",
-      "family": "t-slot-extrusion",
-      "role_a": "bolt_pattern",
-      "role_b": "grid",
-      "symmetric": false,
-      "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->grid, with no author-declared link and no geometry rule admitting the pairing",
-      "one_sided": true,
-      "members": {
-        "objects_role_a": 1,
-        "objects_role_b": 1,
-        "objects_total": 2,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 1,
-      "pairs_already_in_graph": 0,
-      "new_edges": 1,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "1020 tray",
-          "20mm T-slot (2020)"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "thickness"
-        ],
-        "role_b_parameters": [
-          "cell_top",
-          "cols",
-          "depth",
-          "rows"
-        ]
-      },
-      "examples": [
-        {
-          "a": "psu-mount",
-          "a_interface": "extrusion_tslot",
-          "a_standard": "20mm T-slot (2020)",
-          "b": "seed-tray",
-          "b_interface": "seed_cell_array",
-          "b_standard": "1020 tray",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
-      "rule_id": "t-slot-extrusion:bolt_pattern+rail",
-      "claim": "objects declaring standard family 't-slot-extrusion' in role 'bolt_pattern' mate with objects declaring it in role 'rail'",
-      "family": "t-slot-extrusion",
-      "role_a": "bolt_pattern",
-      "role_b": "rail",
-      "symmetric": false,
-      "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->rail, with no author-declared link and no geometry rule admitting the pairing",
-      "one_sided": true,
-      "members": {
-        "objects_role_a": 1,
-        "objects_role_b": 1,
-        "objects_total": 2,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 1,
-      "pairs_already_in_graph": 0,
-      "new_edges": 1,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "2020 T-slot (6 mm slot)",
-          "20mm T-slot (2020)"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "thickness"
-        ],
-        "role_b_parameters": [
-          "mount"
-        ]
-      },
-      "examples": [
-        {
-          "a": "psu-mount",
-          "a_interface": "extrusion_tslot",
-          "a_standard": "20mm T-slot (2020)",
-          "b": "roller-bracket",
-          "b_interface": "extrusion_tab",
-          "b_standard": "2020 T-slot (6 mm slot)",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
-      "rule_id": "t-slot-extrusion:grid+rail",
-      "claim": "objects declaring standard family 't-slot-extrusion' in role 'grid' mate with objects declaring it in role 'rail'",
-      "family": "t-slot-extrusion",
-      "role_a": "grid",
-      "role_b": "rail",
-      "symmetric": false,
-      "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles grid<->rail, with no author-declared link and no geometry rule admitting the pairing",
-      "one_sided": true,
-      "members": {
-        "objects_role_a": 1,
-        "objects_role_b": 1,
-        "objects_total": 2,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 1,
-      "pairs_already_in_graph": 0,
-      "new_edges": 1,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "1020 tray",
-          "2020 T-slot (6 mm slot)"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "cell_top",
-          "cols",
-          "depth",
-          "rows"
-        ],
-        "role_b_parameters": [
-          "mount"
-        ]
-      },
-      "examples": [
-        {
-          "a": "seed-tray",
-          "a_interface": "seed_cell_array",
-          "a_standard": "1020 tray",
-          "b": "roller-bracket",
-          "b_interface": "extrusion_tab",
-          "b_standard": "2020 T-slot (6 mm slot)",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
       "rule_id": "gridfinity:profile+profile",
       "claim": "objects declaring standard family 'gridfinity' in role 'profile' mate with objects declaring it in role 'profile'",
       "family": "gridfinity",
@@ -8638,6 +9357,61 @@
           "b": "dovetail-slide",
           "b_interface": "optics_dovetail_60",
           "b_standard": "optics dovetail (60°, Thorlabs RC/XT class)",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
+      "rule_id": "t-slot-extrusion:grid+rail",
+      "claim": "objects declaring standard family 't-slot-extrusion' in role 'grid' mate with objects declaring it in role 'rail'",
+      "family": "t-slot-extrusion",
+      "role_a": "grid",
+      "role_b": "rail",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles grid<->rail, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 1,
+        "objects_role_b": 1,
+        "objects_total": 2,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 1,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "1020 tray",
+          "2020 T-slot (6 mm slot)"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "cell_top",
+          "cols",
+          "depth",
+          "rows"
+        ],
+        "role_b_parameters": [
+          "mount"
+        ]
+      },
+      "examples": [
+        {
+          "a": "seed-tray",
+          "a_interface": "seed_cell_array",
+          "a_standard": "1020 tray",
+          "b": "roller-bracket",
+          "b_interface": "extrusion_tab",
+          "b_standard": "2020 T-slot (6 mm slot)",
           "author_declared": false,
           "already_in_graph": true
         }

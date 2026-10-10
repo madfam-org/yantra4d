@@ -131,6 +131,11 @@ spec:
               value: "https://app.yantra4d.com"
             - name: ANALYTICS_DB_PATH
               value: "/app/backend/data/.analytics.db"
+            # User-authored cartridges (forks, imports, onboarding) live on the
+            # user-projects PVC, never in the read-only commons. Must equal the
+            # render-worker's value: render jobs carry absolute source paths.
+            - name: USER_PROJECTS_DIR
+              value: "/app/user-projects"
             # ── Render artifact storage ────────────────────────────
             # Where finished renders live. `fs` is the render-output emptyDir
             # below — today's behaviour, and the default. `s3` puts them in an
@@ -203,6 +208,8 @@ spec:
               mountPath: /app/backend/static
             - name: analytics-pvc
               mountPath: /app/backend/data
+            - name: user-projects
+              mountPath: /app/user-projects
           resources:
             requests:
               cpu: 50m
@@ -226,6 +233,9 @@ spec:
               value: "false"
             - name: PROJECTS_DIR
               value: "/app/projects"
+            # Same path as the backend container (see there).
+            - name: USER_PROJECTS_DIR
+              value: "/app/user-projects"
             - name: PYTHONPATH
               value: "/app/backend"
             - name: REDIS_URL
@@ -287,6 +297,11 @@ spec:
               mountPath: /tmp
             - name: render-output
               mountPath: /app/backend/static
+            # Same volume, same path as the backend's: a render job carries the
+            # absolute source path the API resolved, so a fork is only
+            # renderable if the worker sees it at exactly that path.
+            - name: user-projects
+              mountPath: /app/user-projects
           resources:
             requests:
               cpu: 100m
@@ -318,3 +333,9 @@ spec:
         - name: analytics-pvc
           persistentVolumeClaim:
             claimName: yantra4d-analytics
+        # Forks, imports and onboarded cartridges. A new volume name, never a
+        # repurposed one (see analytics-pvc above for why that matters under
+        # server-side apply). docs/operations/user-projects-storage.md
+        - name: user-projects
+          persistentVolumeClaim:
+            claimName: yantra4d-user-projects

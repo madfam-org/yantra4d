@@ -13,10 +13,11 @@ const studioUrl = STUDIO_URL;
 
 
 <section class="relative flex min-h-screen phone-landscape:min-h-[80vh] flex-col items-center justify-center px-6 overflow-hidden">
-  <!-- Immersive Background -->
+  <!-- Static decoration keeps the initial viewport idle; interaction and the
+       visible 3D gallery retain their own motion. -->
   <div class="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background/90 to-background" />
   <div class="absolute inset-0 -z-20 opacity-20">
-    <div class="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/30 via-transparent to-transparent motion-safe:animate-pulse"></div>
+    <div class="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/30 via-transparent to-transparent"></div>
   </div>
   
   <!-- "Vicarious" Configurator UI Mockup Background (Abstract) -->
@@ -34,7 +35,7 @@ const studioUrl = STUDIO_URL;
       The border and background tint still carry the accent identity.
     -->
     <div class="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary-readable backdrop-blur-sm mb-4">
-      <span class="flex h-2 w-2 rounded-full bg-primary mr-2 motion-safe:animate-pulse"></span>
+      <span class="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
       {t?.heroNew?.badge ?? 'v0.1.0 Public Beta'}
     </div>
 
@@ -74,7 +75,7 @@ const studioUrl = STUDIO_URL;
   </div>
 
   <!-- Scroll Indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 motion-safe:animate-bounce">
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2">
     <svg class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
     </svg>

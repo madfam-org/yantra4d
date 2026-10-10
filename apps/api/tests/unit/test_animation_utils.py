@@ -6,7 +6,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from routes.projects.animations import _ease, _interpolate_params
+from routes.projects.animations import _ease, _interpolate_params, _snap_to_parameter_grid
 
 
 class TestEase:
@@ -83,3 +83,33 @@ class TestInterpolateParams:
         assert result["a"] == 5
         assert result["b"] == 150
         assert result["c"] == "blue"
+
+
+NEMA_DEFINITIONS = [{"id": "nema_size", "type": "slider", "min": 17, "max": 34, "step": 6}]
+
+
+class TestParameterGrid:
+    def test_frames_land_on_the_slider_grid(self):
+        # motor-mount as shipped: linear gave 17, 21, 26, 30, 34 and four identical frames.
+        values = [
+            _interpolate_params({"nema_size": 17}, {"nema_size": 34}, i / 4, NEMA_DEFINITIONS)["nema_size"]
+            for i in range(5)
+        ]
+        assert values == [17, 23, 29, 29, 34]  # round-half-even at the middle frame
+        assert all(isinstance(v, int) for v in values)
+
+    def test_without_definitions_nothing_changes(self):
+        assert _interpolate_params({"nema_size": 17}, {"nema_size": 34}, 0.25) == {"nema_size": 21}
+
+    def test_clamps_and_leaves_the_rest_alone(self):
+        defs = [
+            {"id": "teeth", "min": 8, "max": 40, "step": 4},
+            {"id": "gap", "min": 0.0, "max": 1.0, "step": 0.25},
+            {"id": "label", "type": "text"},
+            {"id": "no_step", "min": 0, "max": 10},
+        ]
+        out = _snap_to_parameter_grid({"teeth": 41, "gap": 0.6, "label": "x", "no_step": 3.3, "lid": True, "extra": 2.2}, defs)
+        assert out == {"teeth": 40, "gap": 0.5, "label": "x", "no_step": 3.3, "lid": True, "extra": 2.2}
+        assert isinstance(out["teeth"], int)
+        assert _snap_to_parameter_grid({"teeth": -5}, defs) == {"teeth": 8}
+        assert _snap_to_parameter_grid({"teeth": 12}, None) == {"teeth": 12}

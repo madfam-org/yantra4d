@@ -2,13 +2,14 @@
 
 > [!IMPORTANT]
 > **This page is a design brief for a roadmap capability, not a description of
-> what runs today.** The physics pipeline — endpoints, job queue, script
-> generation, polling, Studio UI — is real, but
-> `apps/api/tasks/simulation_tasks.py` **never executes the generated PPF
-> script**: every environment receives synthetic progress and frames. The FEA
-> stress endpoint returns a labeled geometry-derived proxy
-> (`stress_proxy_v1`, `approximation: true`), and the topology optimizer is a
-> deterministic heuristic. Read every "solver" sentence below as *what these
+> what runs today.** No physics solver ships with this repo: the physics
+> endpoint answers 501 `physics_solver_unavailable` and creates no job until a
+> solver backend is registered with `configure_physics_solver`
+> (`apps/api/tasks/simulation_tasks.py`). The PPF script generation such a
+> backend would run is real. The stress endpoint returns a labeled
+> geometry-derived estimate (`method: "geometry_proxy"`, `approximation: true`),
+> and the parameter search is a deterministic heuristic (`method: "heuristic"`,
+> `approximation: true`). Read every "solver" sentence below as *what these
 > cartridges would exercise once real PPF/FEM execution lands*.
 
 To absolutely push the limits of Yantra4D's parametric engine, the multi-material pipeline, the real-time WebGL viewers, and finally, the heavy-duty **PPF Contact Simulator's** generative feedback loop, the ideal project must possess specific mechanical traits:

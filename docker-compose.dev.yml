@@ -83,6 +83,8 @@ services:
       - ./libs:/app/libs:ro
       # Rendered STL/3MF files survive restarts
       - backend_static:/app/backend/static
+      # User-authored cartridges (forks, imports) survive restarts
+      - user_projects:/app/user-projects
     ports:
       - "5000:5000"
     env_file:
@@ -94,6 +96,7 @@ services:
       HOST: "0.0.0.0"
       OPENSCAD_PATH: /usr/local/bin/openscad
       PROJECTS_DIR: /app/projects
+      USER_PROJECTS_DIR: /app/user-projects
       OPENSCADPATH: /app/libs:/app/libs/dotSCAD/src:/app/projects
       VERIFY_SCRIPT: /app/backend/tests/verify_design.py
       AUTH_ENABLED: "false"
@@ -171,6 +174,7 @@ services:
 volumes:
   postgres_data:
   backend_static:
+  user_projects:
   studio_node_modules:
   landing_node_modules:
   admin_node_modules:

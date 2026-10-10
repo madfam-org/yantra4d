@@ -1,9 +1,10 @@
 import { test, expect } from '../../fixtures/app.fixture.js'
-import { goToStudio, setLanguage } from '../../helpers/test-utils.js'
+import { goToStudio, setLanguage, forceBackendRender } from '../../helpers/test-utils.js'
 
 test.describe('Studio Sidebar', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguage(page, 'en')
+    await forceBackendRender(page)
     await goToStudio(page)
   })
 
@@ -13,6 +14,7 @@ test.describe('Studio Sidebar', () => {
   })
 
   test('clicking mode tab switches mode', async ({ sidebar }) => {
+    await sidebar.waitForRenderOutput()
     await sidebar.selectMode('grid')
     const active = await sidebar.getActiveMode()
     expect(active).toBe('grid')
@@ -42,6 +44,7 @@ test.describe('Studio Sidebar', () => {
   })
 
   test('clicking preset applies parameter values', async ({ sidebar }) => {
+    await sidebar.waitForRenderOutput()
     await sidebar.applyPreset('Large')
     await expect(sidebar.sliderValue('width')).toHaveText('150', { timeout: 10000 })
   })
@@ -67,6 +70,7 @@ test.describe('Studio Sidebar', () => {
   })
 
   test('clicking value enters edit mode', async ({ page, sidebar }) => {
+    await sidebar.waitForRenderOutput()
     await sidebar.sliderValue('width').click()
     await expect(page.locator('input[type="number"]')).toBeVisible()
   })
@@ -77,6 +81,7 @@ test.describe('Studio Sidebar', () => {
   })
 
   test('value is clamped to min/max', async ({ sidebar }) => {
+    await sidebar.waitForRenderOutput()
     await sidebar.editSliderValue('width', 9999)
     // Should be clamped to max (200) — wait for React to re-render with clamped value
     await expect(sidebar.sliderValue('width')).toHaveText('200', { timeout: 10000 })
@@ -129,11 +134,13 @@ test.describe('Studio Sidebar', () => {
   // <TabsContent value="view">, so #color-<part> is absent until that tab is
   // selected — the sidebar defaults to "config".
   test('color picker renders for parts', async ({ sidebar }) => {
+    await sidebar.waitForRenderOutput()
     await sidebar.selectSection('view')
     await expect(sidebar.colorInput('body')).toBeVisible()
   })
 
   test('color picker accepts value', async ({ sidebar }) => {
+    await sidebar.waitForRenderOutput()
     await sidebar.selectSection('view')
     // Native <input type="color"> is tested via its render and accessibility
     // (Playwright cannot programmatically open the OS color picker dialog)
@@ -147,43 +154,6 @@ test.describe('Studio Sidebar', () => {
   // Action buttons
   test('generate button is enabled', async ({ sidebar }) => {
     expect(await sidebar.isGenerateDisabled()).toBe(false)
-  })
-
-  test('generate button shows "Processing..." when loading', async ({ page, sidebar }) => {
-    // Wait for initial auto-render to settle
-    await page.waitForTimeout(1000)
-    // Replace render mock with a slow response to catch the loading state
-    await page.unroute('**/api/render-stream')
-    await page.route('**/api/render-stream', async (route) => {
-      await new Promise(r => setTimeout(r, 5000))
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100,"phase":"Done"}\n\n' })
-    })
-    await page.unroute('**/api/render')
-    await page.route('**/api/render', async (route) => {
-      await new Promise(r => setTimeout(r, 5000))
-      route.abort()
-    })
-    // Change a param to bust the render cache (auto-render cached the initial result)
-    await sidebar.editSliderValue('width', 99)
-    // The debounced auto-render fires with the slow mock, showing Processing...
-    await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 5000 })
-  })
-
-  test('cancel button appears during render', async ({ page, sidebar }) => {
-    // Set up slow mock so the render doesn't complete instantly
-    await page.unroute('**/api/render-stream')
-    await page.route('**/api/render-stream', async (route) => {
-      await new Promise(r => setTimeout(r, 5000))
-      route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100,"phase":"Done"}\n\n' })
-    })
-    // Change param to bust render cache
-    await sidebar.editSliderValue('width', 88)
-    await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
-  })
-
-  test('verify button is disabled when no parts rendered', async ({ sidebar }) => {
-    // Initially no parts, verify should be disabled
-    expect(await sidebar.verifyButton.isDisabled()).toBe(true)
   })
 
   test('reset button reverts params to defaults', async ({ sidebar }) => {
@@ -201,5 +171,78 @@ test.describe('Studio Sidebar', () => {
       await page.waitForTimeout(200)
       // Should toggle between basic and advanced
     }
+  })
+})
+
+
+test('verification follows the completed render output', async ({ page, sidebar }) => {
+  await setLanguage(page, 'en')
+  await forceBackendRender(page)
+  // Install before navigation: the default mock auto-renders a part, so an
+  // assertion about an initially empty scene races that valid result.
+  let emptyResponseSent = false
+  await page.route('**/api/render-stream', async (route) => {
+    if (emptyResponseSent) return route.fallback()
+    await route.fulfill({
+      contentType: 'text/event-stream',
+      body: 'data: {"event":"complete","parts":[]}\n\n',
+    })
+    emptyResponseSent = true
+  })
+  await goToStudio(page)
+  await expect.poll(() => emptyResponseSent).toBe(true)
+  await sidebar.waitForRenderState('idle')
+  await expect(sidebar.verifyButton).toBeDisabled()
+
+  // A different configuration misses the empty result's cache and uses the
+  // original successful mock. Verification must become available only then.
+  await sidebar.editSliderValue('width', 99)
+  await sidebar.waitForRenderOutput()
+  await expect(sidebar.verifyButton).toBeEnabled()
+})
+
+
+test.describe('Studio Sidebar held render', () => {
+  test.beforeEach(async ({ page, sidebar }) => {
+    await setLanguage(page, 'en')
+    await forceBackendRender(page)
+    await goToStudio(page)
+    await sidebar.waitForRenderOutput()
+  })
+
+  async function withHeldRender(page, assertion) {
+    let releaseRender = () => { }
+    const renderHeld = new Promise(resolve => { releaseRender = resolve })
+    await page.unroute('**/api/render-stream')
+    await page.route('**/api/render-stream', async (route) => {
+      await renderHeld
+      await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"progress":100,"phase":"Done"}\n\n' })
+    })
+    await page.unroute('**/api/render')
+    await page.route('**/api/render', async (route) => {
+      await renderHeld
+      await route.abort()
+    })
+    try {
+      await assertion()
+    } finally {
+      releaseRender()
+    }
+  }
+
+  test('generate button shows "Processing..." when loading', async ({ page, sidebar }) => {
+    await withHeldRender(page, async () => {
+      await sidebar.editSliderValue('width', 99)
+      await sidebar.waitForRenderState('rendering')
+      await expect(page.locator('button', { hasText: /Processing|Procesando/ })).toBeVisible({ timeout: 5000 })
+    })
+  })
+
+  test('cancel button appears during render', async ({ page, sidebar }) => {
+    await withHeldRender(page, async () => {
+      await sidebar.editSliderValue('width', 88)
+      await sidebar.waitForRenderState('rendering')
+      await expect(sidebar.cancelButton).toBeVisible({ timeout: 5000 })
+    })
   })
 })

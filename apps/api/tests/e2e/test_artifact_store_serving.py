@@ -178,6 +178,10 @@ class TestFilesystemDefaultIsByteIdentical:
 
         assert got.status_code == expected.status_code == 200
         assert got.data == expected.data == MESH
+        # Mesh MIME is canonical across OS registries; other headers stay identical.
+        expected.headers["Content-Type"] = "model/stl"
+        expected.headers["Accept-Ranges"] = "bytes"
+        assert got.headers["Content-Type"] == "model/stl"
         assert _comparable(got.headers) == _comparable(expected.headers)
         # Spelled out, because these are what a generic byte stream would lose:
         assert got.headers["Content-Type"] == expected.headers["Content-Type"]
@@ -233,6 +237,10 @@ class TestFilesystemDefaultIsByteIdentical:
 
         assert got.status_code == expected.status_code == 200
         assert got.data == expected.data == MESH
+        # Mesh MIME is canonical across OS registries; other headers stay identical.
+        expected.headers["Content-Type"] = "model/stl"
+        expected.headers["Accept-Ranges"] = "bytes"
+        assert got.headers["Content-Type"] == "model/stl"
         assert _comparable(got.headers) == _comparable(expected.headers)
         assert got.headers["Content-Disposition"] == f"attachment; filename={ARTIFACT}"
 
@@ -402,9 +410,8 @@ class TestValidatorsAndRanges:
         assert got.headers.get("ETag")
         assert got.headers.get("Last-Modified")
         assert got.headers["Content-Length"] == str(len(MESH))
-        # And no `Accept-Ranges`: Werkzeug's `send_file` only advertises range
-        # support on a response that actually is one, so neither backend does.
-        assert "Accept-Ranges" not in got.headers
+        # Both stores support byte ranges independent of the Werkzeug version.
+        assert got.headers["Accept-Ranges"] == "bytes"
 
     def test_the_validator_is_stable_across_requests(self, backend):
         client, _store, _kind = backend

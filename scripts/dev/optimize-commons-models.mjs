@@ -21,8 +21,13 @@
  *   <slug>.lod0.glb   ≤ meshes.lod0Triangles / meshes.lod0Bytes   (--lod0 selection;
  *                     skipped when it would add no triangles over lod1)
  *   <slug>.<animation>.<index>.glb   keyframes at lod0 settings, ≤ meshes.keyframeBytes
+ *                                    (a frame byte-identical to the base or to an
+ *                                    earlier frame is not written; the manifest
+ *                                    points its entry at the file that exists)
  *
- * Budgets come from `apps/landing/perf-budgets.json` (`meshes` block). When the
+ * Budgets come from `apps/landing/perf-budgets.json` (`meshes` block; a
+ * `meshes.exceptions` map may raise them for one slug, with a written reason,
+ * which the manifest then records on that entry — see validateExceptions). When the
  * triangle budget alone does not bring a file under its byte budget, the
  * triangle target is lowered further (reported as such) until it fits or hits
  * the floor. Anything still over budget is listed; `--strict` turns that into
@@ -64,6 +69,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -243,13 +249,70 @@ export function loadBudgets(file) {
       throw new UsageError(`${file}: meshes.${key} must be a positive number`);
     }
   }
+  validateExceptions(meshes.exceptions, file);
   return meshes;
+}
+
+/**
+ * `meshes.exceptions`: per-cartridge overrides of the byte/triangle budgets,
+ * each with a written reason — for the mesh that cannot meet the block above
+ * without a change the pipeline cannot make yet (the first: a lattice whose
+ * simplification floors at 12,365 triangles / 28 KB against the 12 KB lod1
+ * cap, 2026-09-19). The override applies to that slug's target only and is
+ * recorded on its manifest entry, so a budget kept by exception is never
+ * mistaken for one kept outright. Keys beside the budget keys and `reason`
+ * are rejected: an exception must not smuggle anything else in.
+ */
+export function validateExceptions(exceptions, file = 'perf-budgets.json') {
+  if (exceptions === undefined) return {};
+  if (!exceptions || typeof exceptions !== 'object' || Array.isArray(exceptions)) {
+    throw new UsageError(`${file}: meshes.exceptions must be an object keyed by slug`);
+  }
+  const out = {};
+  for (const [slug, spec] of Object.entries(exceptions)) {
+    if (slug.startsWith('_')) continue; // `_comment`
+    if (!SLUG_RE.test(slug)) throw new UsageError(`${file}: meshes.exceptions has an invalid slug "${slug}"`);
+    if (!spec || typeof spec !== 'object' || Array.isArray(spec)) {
+      throw new UsageError(`${file}: meshes.exceptions.${slug} must be an object`);
+    }
+    if (typeof spec.reason !== 'string' || !spec.reason.trim()) {
+      throw new UsageError(`${file}: meshes.exceptions.${slug} needs a written reason`);
+    }
+    const overrides = {};
+    for (const [key, value] of Object.entries(spec)) {
+      if (key === 'reason' || key.startsWith('_')) continue;
+      if (!BUDGET_KEYS.includes(key)) throw new UsageError(`${file}: meshes.exceptions.${slug}.${key} is not a budget key`);
+      if (!(Number.isFinite(value) && value > 0)) throw new UsageError(`${file}: meshes.exceptions.${slug}.${key} must be a positive number`);
+      overrides[key] = value;
+    }
+    if (!Object.keys(overrides).length) throw new UsageError(`${file}: meshes.exceptions.${slug} overrides nothing`);
+    out[slug] = { ...overrides, reason: spec.reason.trim() };
+  }
+  return out;
+}
+
+/**
+ * The targets for one slug: the block's numbers, with that slug's exception
+ * applied. `exception` is null when none applies, else `{ ...overrides, reason }`.
+ */
+export function targetsFor(budgets, slug) {
+  const exception = validateExceptions(budgets.exceptions)[slug] ?? null;
+  const pick = (key) => (exception && exception[key] !== undefined ? exception[key] : budgets[key]);
+  return {
+    exception,
+    lod1: { triangles: pick('lod1Triangles'), bytes: pick('lod1Bytes') },
+    lod0: { triangles: pick('lod0Triangles'), bytes: pick('lod0Bytes') },
+    frame: { triangles: pick('lod0Triangles'), bytes: pick('keyframeBytes') },
+  };
 }
 
 /** The budgets as the manifest records them: the block minus its `_comment`-style annotations. */
 export function manifestBudgets(meshes) {
   const out = {};
-  for (const [key, value] of Object.entries(meshes)) if (!key.startsWith('_')) out[key] = value;
+  for (const [key, value] of Object.entries(meshes)) {
+    if (key.startsWith('_') || key === 'exceptions') continue; // exceptions are recorded on the entry they apply to
+    out[key] = value;
+  }
   return out;
 }
 
@@ -608,6 +671,8 @@ export function buildManifest({ generated, sourceKind, commonsPin, budgets, entr
     const files = [entry.lod1, entry.lod0, ...entry.frames].filter(Boolean);
     if (!files.length) continue;
     const model = { slug, size: Math.min(...files.map((f) => f.bytes)) };
+    // A budget kept by exception says so on the entry: the overrides and why.
+    if (entry.budget) model.budget = { ...entry.budget };
     if (entry.lod1) model.lod1 = { file: entry.lod1.file, bytes: entry.lod1.bytes, triangles: entry.lod1.triangles };
     if (entry.lod0) model.lod0 = { file: entry.lod0.file, bytes: entry.lod0.bytes, triangles: entry.lod0.triangles };
     if (entry.frames.length) {
@@ -639,8 +704,10 @@ const fmtInt = (n) => Number(n).toLocaleString('en-US');
 const pct = (bytes, budget) => `${Math.round(((bytes - budget) / budget) * 100)}%`;
 
 function statusOf(row) {
+  if (row.sameAs) return `= ${row.sameAs}`;
   if (!row.withinBytes) return `OVER +${pct(row.afterBytes, row.budgetBytes)}`;
   const notes = [];
+  if (row.exception) notes.push('by exception');
   if (row.byteCapped) notes.push('byte-capped');
   if (!row.reachedTriangleBudget) notes.push('triangles over budget');
   return notes.length ? `ok (${notes.join(', ')})` : 'ok';
@@ -781,19 +848,27 @@ export async function run({
     `${sourceKind === 'legacy-glb' ? 'Legacy inputs' : 'Raw inputs'}: ${inputs.length} file(s) in ${path.relative(cwd, ctx.inDir) || '.'} → ${path.relative(cwd, ctx.outDir) || '.'} (lod0: ${lod0.mode}, ${lod0.slugs.size} slug(s))`,
   );
 
-  const targets = {
-    lod1: { triangles: budgets.lod1Triangles, bytes: budgets.lod1Bytes },
-    lod0: { triangles: budgets.lod0Triangles, bytes: budgets.lod0Bytes },
-    frame: { triangles: budgets.lod0Triangles, bytes: budgets.keyframeBytes },
+  const targetsCache = new Map();
+  const targetsOf = (slug) => {
+    if (!targetsCache.has(slug)) targetsCache.set(slug, targetsFor(budgets, slug));
+    return targetsCache.get(slug);
   };
 
   const planned = []; // { name, bytes, row }
+  // `${slug}:${sha256}` → the output already planned with exactly these bytes.
+  // A keyframe that comes out byte-identical to the base or to an earlier
+  // frame (a sweep parked on the same grid step, run 35460054814: 11 of 245)
+  // is not written again; its manifest entry points at the file that exists.
+  const seenBytes = new Map();
   const rows = [];
   const failures = [];
   let rawBytesTotal = 0;
   const entries = new Map();
   const entryFor = (slug) => {
-    if (!entries.has(slug)) entries.set(slug, { lod1: null, lod0: null, frames: [] });
+    if (!entries.has(slug)) {
+      const { exception } = targetsOf(slug);
+      entries.set(slug, { lod1: null, lod0: null, frames: [], budget: exception });
+    }
     return entries.get(slug);
   };
 
@@ -803,6 +878,7 @@ export async function run({
     try {
       rawBytes = fs.readFileSync(input.file);
       rawBytesTotal += rawBytes.length;
+      const targets = targetsOf(input.slug);
       const wanted =
         input.kind === 'frame'
           ? { frame: targets.frame }
@@ -822,7 +898,11 @@ export async function run({
       const built = result.outputs[target];
       if (!built) continue;
       const name = outputNameFor(input, target);
+      const targets = targetsOf(input.slug);
       const budget = targets[target];
+      const digest = `${input.slug}:${createHash('sha256').update(built.bytes).digest('hex')}`;
+      const sameAs = target === 'frame' ? (seenBytes.get(digest) ?? null) : null;
+      if (!seenBytes.has(digest)) seenBytes.set(digest, name);
       const row = {
         slug: input.slug,
         target: input.kind === 'frame' ? `${input.animation}#${input.index}` : target,
@@ -836,15 +916,19 @@ export async function run({
         withinBytes: built.withinBytes,
         byteCapped: built.byteCapped,
         reachedTriangleBudget: built.reachedTriangleBudget,
+        exception: targets.exception ? targets.exception.reason : null,
+        sameAs,
       };
       rows.push(row);
-      planned.push({ name, bytes: built.bytes, row });
-      const record = { file: name, bytes: built.bytes.length, triangles: built.triangles };
+      if (!sameAs) planned.push({ name, bytes: built.bytes, row });
+      const record = { file: sameAs ?? name, bytes: built.bytes.length, triangles: built.triangles };
       const entry = entryFor(input.slug);
       if (target === 'frame') entry.frames.push({ ...record, animation: input.animation, index: input.index });
       else entry[target] = record;
       info(
-        `  ${name.padEnd(44)} ${fmtInt(result.before.bytes).padStart(10)} B → ${fmtInt(built.bytes.length).padStart(8)} B  ${fmtInt(result.before.triangles).padStart(8)} → ${fmtInt(built.triangles).padStart(6)} tris  ${statusOf(row)}`,
+        sameAs
+          ? `  ${name.padEnd(44)} = ${sameAs} (identical bytes; not written)`
+          : `  ${name.padEnd(44)} ${fmtInt(result.before.bytes).padStart(10)} B → ${fmtInt(built.bytes.length).padStart(8)} B  ${fmtInt(result.before.triangles).padStart(8)} → ${fmtInt(built.triangles).padStart(6)} tris  ${statusOf(row)}`,
       );
     }
   }
@@ -928,8 +1012,10 @@ export async function run({
     fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `${renderMarkdownReport(rows, totals)}\n`);
   }
 
-  const offenders = rows.filter((r) => !r.withinBytes);
-  const shortfalls = rows.filter((r) => r.withinBytes && !r.reachedTriangleBudget);
+  // Aliased frames are the same bytes as a row already counted.
+  const written = rows.filter((r) => !r.sameAs);
+  const offenders = written.filter((r) => !r.withinBytes);
+  const shortfalls = written.filter((r) => r.withinBytes && !r.reachedTriangleBudget);
   if (shortfalls.length) {
     logError(`NOTE: ${shortfalls.length} output(s) stayed over the triangle budget (topology limits the simplifier): ${shortfalls.map((r) => r.file).join(', ')}`);
   }

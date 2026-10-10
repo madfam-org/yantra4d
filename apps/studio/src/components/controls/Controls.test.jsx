@@ -657,3 +657,18 @@ describe('Controls', () => {
   })
 })
 
+
+
+it('selects the intended preset when two engines share a label', () => {
+  const presets = [
+    { id: 'small_parts_bin', label: { en: 'Small Parts Bin' }, mode: 'bin', values: { grid_x: 2 } },
+    { id: 'small_bin_scad', label: { en: 'Small Parts Bin' }, mode: 'cup', values: { width_units: 2 } },
+  ]
+  const onApplyPreset = vi.fn()
+  renderControls({ presets, onApplyPreset })
+  expect(screen.getAllByRole('button', { name: 'Small Parts Bin', exact: true })).toHaveLength(2)
+  fireEvent.click(screen.getByTestId('preset-small_parts_bin'))
+  expect(onApplyPreset).toHaveBeenLastCalledWith(presets[0])
+  fireEvent.click(screen.getByTestId('preset-small_bin_scad'))
+  expect(onApplyPreset).toHaveBeenLastCalledWith(presets[1])
+})

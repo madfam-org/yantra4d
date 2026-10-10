@@ -19,8 +19,9 @@
  *   'init-error' - the module would not instantiate, or the bundle would not mount
  *   'oom'        - the tab ran out of memory
  *   'timeout'    - enforced by the caller (see below), never raised here
+ *   'kernel-error' - the browser geometry kernel asserted
  *   'scad-error' - OpenSCAD compiled the model and rejected it
- * Only the first three are worth retrying on the server. A SCAD syntax error is
+ * Only the first four are worth retrying on the server. A SCAD syntax error is
  * the same source code either way: retrying it server-side spends a quota unit
  * to reproduce the identical message.
  *
@@ -37,7 +38,7 @@
 
 import { createOpenSCAD } from 'openscad-wasm'
 import type { OpenSCAD } from 'openscad-wasm'
-import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
+import { detectPhase, isLogWorthy, isKernelFailureDiagnostic } from '../../lib/openscad-phases'
 import {
   planBundleFsLayout,
   FONTCONFIG_PATH,
@@ -53,7 +54,7 @@ declare const self: {
   onmessage: ((ev: MessageEvent) => void) | null
 }
 
-export type RenderFailureKind = 'init-error' | 'oom' | 'timeout' | 'scad-error'
+export type RenderFailureKind = 'init-error' | 'oom' | 'timeout' | 'kernel-error' | 'scad-error'
 
 type WorkerMessageIn =
   | { type: 'init'; bundle: WasmBundle }
@@ -102,7 +103,7 @@ function classifyThrown(err: unknown): RenderFailureKind {
   return 'init-error'
 }
 
-async function createFreshInstance(mountBundle: boolean): Promise<InstanceWithEnv> {
+async function createFreshInstance(mountBundle: boolean, onDiagnostic?: (text: string) => void): Promise<InstanceWithEnv> {
   const plan = mountBundle ? layout : null
   const wrapper = await createOpenSCAD({
     noInitialRun: true,
@@ -124,6 +125,7 @@ async function createFreshInstance(mountBundle: boolean): Promise<InstanceWithEn
       ? [(mod: InstanceWithEnv) => mountLayout(mod, plan)]
       : undefined,
     printErr: (text: string) => {
+      onDiagnostic?.(text)
       const phase = detectPhase(text)
       if (phase || isLogWorthy(text)) {
         self.postMessage({ type: 'progress', phase, line: text } satisfies WorkerMessageOut)
@@ -248,14 +250,21 @@ async function handleRender(
   }
 
   const outFile = '/output.stl'
+  let kernelFailure = false
   let instance: InstanceWithEnv
   try {
-    instance = await createFreshInstance(true)
+    instance = await createFreshInstance(true, text => {
+      // CGAL assertions are kernel failures, not parser/model validation.
+      // Server OpenSCAD may use a different kernel/version and can recover.
+      if (isKernelFailureDiagnostic(text)) {
+        kernelFailure = true
+      }
+    })
   } catch (e) {
     self.postMessage({
       type: 'error',
       message: (e as Error).message || String(e),
-      kind: classifyThrown(e),
+      kind: kernelFailure ? 'kernel-error' : classifyThrown(e),
     } satisfies WorkerMessageOut)
     return
   }
@@ -271,12 +280,12 @@ async function handleRender(
     const exitCode = instance.callMain(buildArgs(entryPath, params, renderMode, outFile))
 
     if (exitCode !== 0) {
-      // OpenSCAD ran and rejected the model. The same source would be rejected
-      // identically on the server, so this kind never triggers a fallback.
+      // Syntax errors stay local; a diagnosed kernel assertion may recover
+      // with the server kernel.
       self.postMessage({
         type: 'error',
         message: `OpenSCAD exited with code ${exitCode}`,
-        kind: 'scad-error',
+        kind: kernelFailure ? 'kernel-error' : 'scad-error',
       } satisfies WorkerMessageOut)
       return
     }
@@ -287,7 +296,7 @@ async function handleRender(
     self.postMessage({
       type: 'error',
       message: (e as Error).message || String(e),
-      kind: classifyThrown(e),
+      kind: kernelFailure ? 'kernel-error' : classifyThrown(e),
     } satisfies WorkerMessageOut)
   }
 }

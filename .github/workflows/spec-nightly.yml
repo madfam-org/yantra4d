@@ -24,6 +24,10 @@ on:
           Leave blank for a real sweep.
         required: false
         default: ""
+      report_to_issue:
+        description: "Update the tracking issue after this manual run"
+        type: boolean
+        default: false
 
 jobs:
   full-render-sweep:
@@ -44,17 +48,22 @@ jobs:
       # the issue open/update/close path can be exercised without spending hours
       # of kernel time — and without inventing a fake failure in a real
       # cartridge. Every heavy step below is skipped on a fixture run.
+      # Manual runs report only when report_to_issue is explicitly enabled.
       - name: Reporter dry run (fixture, no rendering)
         if: inputs.report_fixture != ''
         env:
           GH_TOKEN: ${{ github.token }}
           GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}
+          REPORT_FIXTURE: ${{ inputs.report_fixture }}
+          REPORT_TO_ISSUE: ${{ inputs.report_to_issue }}
         run: |
-          fixture="${{ inputs.report_fixture }}"
+          fixture="$REPORT_FIXTURE"
           test -f "$fixture" || { echo "::error::fixture $fixture not found"; exit 1; }
           python3 .github/scripts/nightly_report.py --selftest "$fixture"
-          python3 .github/scripts/nightly_report.py \
-            --log "$fixture" --workflow "spec-nightly full render sweep (FIXTURE)"
+          if [ "$REPORT_TO_ISSUE" = "true" ]; then
+            python3 .github/scripts/nightly_report.py \
+              --log "$fixture" --workflow "spec-nightly full render sweep (FIXTURE)"
+          fi
 
       - uses: actions/setup-python@v5
         if: inputs.report_fixture == ''
@@ -64,7 +73,7 @@ jobs:
         if: inputs.report_fixture == ''
         # Same keystone SHA as ci.yml's spec-conformance job and both commons'
         # SPEC_PIN — never a floating tag; the repo is public, no token needed.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@3aa57133186573b26279417f8de59b6c47ed9027"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@142db1802bbf9e1135ceae6c9c531c469f2d295b"
       - name: Keystone's vendored graph engine matches this repo's
         # The reverse half of the graph-engine drift guard (Wave D / G-SPEC). The
         # keystone renders `.graph.json` cartridges by transpiling them with a
@@ -83,14 +92,22 @@ jobs:
 
       - name: Full render sweep
         id: sweep
+        shell: bash
         if: inputs.report_fixture == ''
         run: |
-          # default shell is bash -e -o pipefail: don't abort before the summary
+          # Explicit bash enables pipefail; an implicit shell only uses -e.
+          dirs=()
+          for manifest in projects/*/project.json; do
+            [ -f "$manifest" ] && dirs+=("${manifest%/project.json}")
+          done
+          [ "${#dirs[@]}" -gt 0 ] || { echo "::error::No cartridges found"; exit 1; }
           status=0
-          y4d-spec check --render --parity projects/*/ | tee sweep-report.txt || status=$?
+          y4d-spec check --render --parity --require-openscad \
+            --openscad-path "$PWD/libs" --openscad-path "$PWD/projects" \
+            "${dirs[@]}" 2>&1 | tee sweep-report.txt || status=$?
           echo "### y4d-spec nightly render sweep" >> "$GITHUB_STEP_SUMMARY"
           tail -1 sweep-report.txt >> "$GITHUB_STEP_SUMMARY"
-          grep "FAIL" sweep-report.txt | head -40 >> "$GITHUB_STEP_SUMMARY" || true
+          awk '/FAIL/ && shown++ < 40' sweep-report.txt >> "$GITHUB_STEP_SUMMARY" || true
           exit $status
 
       # A red sweep opens or updates the ONE tracking issue labelled
@@ -99,7 +116,7 @@ jobs:
       # Reporting never fails the sweep: the script exits 0 after an
       # `::error::` annotation if it cannot reach the API.
       - name: Report the red sweep to its tracking issue
-        if: failure() && steps.sweep.outcome == 'failure'
+        if: failure() && steps.sweep.outcome == 'failure' && (github.event_name != 'workflow_dispatch' || inputs.report_to_issue)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}
@@ -115,7 +132,7 @@ jobs:
         # a job whose sweep step never ran (a fixture dispatch, or any future
         # skip) must not clear an alert it did not re-verify. "Did not run" and
         # "passed" must never look the same.
-        if: success() && steps.sweep.outcome == 'success'
+        if: success() && steps.sweep.outcome == 'success' && (github.event_name != 'workflow_dispatch' || inputs.report_to_issue)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_TOKEN_FALLBACK: ${{ secrets.MADFAM_BOT_PAT }}

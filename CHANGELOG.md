@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Changed
+- **Sandboxed cartridge scripts: relative imports are refused.** Re-vendored the
+  shared `commons_sandbox` core 1.1.0 from Fashion Cabinet
+  (`packages/commons-sandbox`, branch `chore/fc-render-env`): both import guards
+  refuse any import with `level > 0` (a cartridge script runs as `__main__` with no
+  package), the core gains the allowlist mechanism (`make_allowlist_import`),
+  `minimal_child_env` and `set_process_nondumpable`. `cq_sandbox` keeps
+  Yantra4D's list and curated-sibling rule and delegates the mechanism to the core.
+  `sandbox.lock.json` re-pinned. Commons check: 524 cartridge scripts at
+  solid-hyperobjects `7de3a32e` (514 at the submodule pin) import only admitted
+  packages; none uses a relative import.
+
 ### Added
 - **Graph Engine Wave D: Expressions, Select, Reflect, Polyline And Bounded Revolve**
   — graph format 1.1, built as far as the Voron 2.4 assembly A printed parts need

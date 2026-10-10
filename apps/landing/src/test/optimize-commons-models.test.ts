@@ -376,12 +376,13 @@ describe('run — raw inputs', () => {
     expect(code).toBe(EXIT_OK)
 
     const files = fs.readdirSync(modelsDir(repo)).sort()
+    // sweep.0 is the same small mesh as the base and comes out byte-identical to
+    // motor-mount.lod1.glb, so it is not written twice (its manifest entry points there).
     expect(files).toEqual([
       'gridfinity.lod0.glb',
       'gridfinity.lod1.glb',
       'manifest.json',
       'motor-mount.lod1.glb',
-      'motor-mount.sweep.0.glb',
       'motor-mount.sweep.1.glb',
       'raw',
     ])
@@ -411,6 +412,8 @@ describe('run — raw inputs', () => {
     expect(motorMount.lod0).toBeUndefined()
     expect(motorMount.frames.map((f: { index: number }) => f.index)).toEqual([0, 1])
     expect(Object.keys(motorMount.frames[0])).toEqual(['animation', 'index', 'file', 'bytes', 'triangles'])
+    // Frame 0 came out byte-identical to the base: its entry points at the lod1 file, nothing was written twice.
+    expect(motorMount.frames[0]).toMatchObject({ animation: 'sweep', index: 0, file: 'motor-mount.lod1.glb', bytes: motorMount.lod1.bytes })
     expect(motorMount.frames[1]).toMatchObject({ animation: 'sweep', index: 1, file: 'motor-mount.sweep.1.glb' })
     expect(motorMount.frames[1].triangles).toBeLessThanOrEqual(BUDGETS.lod0Triangles)
     expect(motorMount.size).toBe(Math.min(motorMount.lod1.bytes, ...motorMount.frames.map((f: { bytes: number }) => f.bytes)))
@@ -467,6 +470,45 @@ describe('run — raw inputs', () => {
     // The block as this repo declares it (lod1 at 200 B), never the exceptions map.
     expect(manifest.budgets).toEqual(manifestBudgets({ ...BUDGETS, lod1Bytes: 200 }))
     expect(manifest.budgets).not.toHaveProperty('exceptions')
+  })
+
+  it('writes identical keyframes once and points every entry at the file that exists', async () => {
+    // Two frames of a sweep parked on the same grid step: the same bytes, one file.
+    const repo = makeRepo({
+      raw: { 'planet.glb': dense, 'planet.count.0.glb': small, 'planet.count.1.glb': small, 'planet.count.2.glb': dense },
+    })
+    const { code, out, err } = await optimize(repo)
+    expect(err).toEqual([])
+    expect(code).toBe(EXIT_OK)
+    // planet has frames, so it is a hero cartridge and gets a lod0 at the same settings frames use:
+    // frame 2 (the dense mesh) comes out byte-identical to that lod0 and aliases to it as well.
+    const files = fs.readdirSync(modelsDir(repo)).sort()
+    expect(files).toEqual(['manifest.json', 'planet.count.0.glb', 'planet.lod0.glb', 'planet.lod1.glb', 'raw'])
+    const [planet] = readManifest(repo).models
+    expect(planet.frames.map((f: { index: number; file: string }) => [f.index, f.file])).toEqual([
+      [0, 'planet.count.0.glb'],
+      [1, 'planet.count.0.glb'],
+      [2, 'planet.lod0.glb'],
+    ])
+    expect(planet.frames[2].bytes).toBe(planet.lod0.bytes)
+    expect(planet.frames[1].bytes).toBe(planet.frames[0].bytes)
+    expect(out.join('\n')).toMatch(/planet\.count\.1\.glb\s+= planet\.count\.0\.glb \(identical bytes; not written\)/)
+    expect(out.join('\n')).toMatch(/3 input\(s\)|4 input\(s\)/)
+    expect(out.join('\n')).toMatch(/3 output\(s\)/) // lod1, lod0 and the one distinct frame file
+
+    // A second run over the same inputs is a no-op for --check: the alias is stable.
+    const check = await optimize(repo, ['--check'])
+    expect(check.code).toBe(EXIT_OK)
+  })
+
+  it('does not count an aliased frame as a second budget breach', async () => {
+    const budgets = { ...BUDGETS, keyframeBytes: 200 }
+    const repo = makeRepo({ budgets, raw: { 'planet.glb': small, 'planet.count.0.glb': dense, 'planet.count.1.glb': dense } })
+    const strict = await optimize(repo, ['--strict'])
+    expect(strict.code).toBe(EXIT_BUDGET)
+    expect(strict.err.join('\n')).toMatch(/ERROR: 1 output\(s\) over their byte budget/)
+    expect(strict.err.join('\n')).toContain('planet.count.0.glb')
+    expect(strict.err.join('\n')).not.toContain('planet.count.1.glb')
   })
 
   it('rejects a malformed exceptions map as a usage error, before touching any file', async () => {

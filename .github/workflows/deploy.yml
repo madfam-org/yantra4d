@@ -19,8 +19,21 @@ env:
   REGISTRY: ghcr.io
   IMAGE_BASE: madfam-org/yantra4d
 
+# Serial, and never cancels a run in progress: a publication that has started
+# its rollout always finishes it (#84).
+#
+# GitHub keeps at most ONE pending run per group, and a newer run REPLACES it.
+# Since main CI runs once per commit and in parallel (ci.yml's concurrency),
+# CI completions can arrive out of merge order. A completion for a commit that
+# is no longer main HEAD is refused by the source gate anyway (its `head_sha`
+# differs from GITHUB_SHA, which is main HEAD when the event fires), but if it
+# shared this group it would still REPLACE the pending publication of the
+# current HEAD, and the newest source would never ship. So such a run goes to a
+# group of its own: it fails the gate in seconds, beside the real queue rather
+# than in it. Manual dispatch and current-HEAD completions share the serial
+# group, where the newest pending run is always the one that survives.
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: ${{ (github.event_name != 'workflow_run' || github.event.workflow_run.head_sha == github.sha) && format('deploy-{0}', github.ref) || format('deploy-superseded-{0}', github.run_id) }}
   cancel-in-progress: false
 
 # Every job below picks its runner the same way: the repository variable
@@ -872,7 +885,11 @@ jobs:
     name: Post-Deploy Health Check
     runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
     needs: [commit-digests, build-backend]
-    timeout-minutes: 10
+    # Above the 12-minute readiness window in scripts/ci/wait_for_render_release.py
+    # (DEFAULT_TIMEOUT_S, with the deploy runs it was measured from), plus room
+    # for checkout and one last 15 s probe, so the script's own verdict is what
+    # the run reports rather than a job kill.
+    timeout-minutes: 15
     # A skipped build is normal for frontend-only publication.
     if: always() && needs.commit-digests.result == 'success'
     steps:

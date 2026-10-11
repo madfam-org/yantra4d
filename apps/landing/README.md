@@ -202,6 +202,17 @@ probe would demote it again on software rendering.
   scores are the `lighthouse` block. Open the matching `.html` in
   `.lighthouseci/` for the audit details.
 
+## Crawl files
+
+`/robots.txt` and `/sitemap.xml` are built by `src/pages/robots.txt.ts` and
+`src/pages/sitemap.xml.ts` from the page list in `src/lib/crawl.ts`;
+`/llms.txt` is the static `public/llms.txt`. The sitemap lists only this host's
+own pages (the hyperobject configurators live on app.yantra4d.com).
+`src/lib/crawl.test.ts` fails when a page is added under `src/pages/` without
+updating that list. `nginx.conf` serves `.txt`/`.xml` as files and answers a
+missing one with 404 instead of the SPA's `index.html`. llms.txt links the
+pricing section and never states prices.
+
 ## License
 
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](../../LICENSE) file for more details.

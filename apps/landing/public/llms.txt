@@ -1,0 +1,15 @@
+# Yantra4D
+
+> Yantra4D is an open-source parametric 3D design platform by Innovaciones MADFAM. Makers pick an open hardware design, change any dimension with sliders and toggles in the browser, and export an STL (or STEP, for cartridges that support it) with no install and no account. Creators turn OpenSCAD or CadQuery models into configurators anyone can use and share by link. The commons of open cartridges is free; paid tiers fund the servers that render, verify and manufacture it. The platform is AGPLv3 and the designs are CERN-OHL-W.
+
+## Links
+
+- [Pricing](https://yantra4d.com/en/#pricing): the Explorer, Essentials and Pro tiers
+- [Studio](https://app.yantra4d.com): the open configurator; browse the commons and customize a design without an account
+- [Hyperobjects](https://yantra4d.com/en/concepts/hyperobjects/): what a parametric hyperobject is
+- [Common Denominator Geometry](https://yantra4d.com/en/concepts/common-denominator/): the standard interfaces that let designs fit together
+- [The commons](https://yantra4d.com/en/concepts/commons/): the open catalog of cartridges
+- [Docs](https://github.com/madfam-org/yantra4d/tree/main/docs): public documentation
+- [Source code](https://github.com/madfam-org/yantra4d)
+- [Contact](https://madfam.io/en/contact): Innovaciones MADFAM, including white-label licensing
+- [Español](https://yantra4d.com/): the Spanish site

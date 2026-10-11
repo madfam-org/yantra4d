@@ -39,7 +39,7 @@ Render caches are scoped to published renderer builds; see [release cache identi
 
 [Native dropdown values](docs/guides/troubleshooting.md#numeric-dropdowns-change-native-geometry) retain the declared numeric or string option type; direct CLI comparisons must also match the platform checkbox encoding.
 
-[Viewer resource ownership](docs/architecture/viewer-resource-ownership.md) documents the 32 MiB/16-entry CPU cache, per-consumer geometry, GLTF and animated-grid cleanup, and the limits of these budgets.
+[Viewer resource ownership](docs/architecture/viewer-resource-ownership.md) documents the separate 32 MiB/16-entry artifact and assembly caches, per-consumer geometry, GLTF and animated-grid cleanup, and the limits of these budgets.
 
 [Publication source acceptance](docs/operations/release-source-gate.md) describes the exact-main CI gate, stale-source pin refusal and runtime verification boundary.
 

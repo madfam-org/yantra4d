@@ -33,6 +33,6 @@ Viewer artifact loading has independent completion and lifecycle guarantees. See
 
 ## Publication source acceptance
 
-[Viewer resource ownership](docs/architecture/viewer-resource-ownership.md) documents the 32 MiB/16-entry CPU cache, per-consumer geometry, GLTF and animated-grid cleanup, and the limits of these budgets.
+[Viewer resource ownership](docs/architecture/viewer-resource-ownership.md) documents the separate 32 MiB/16-entry artifact and assembly caches, per-consumer geometry, GLTF and animated-grid cleanup, and the limits of these budgets.
 
 [Publication source acceptance](docs/operations/release-source-gate.md) describes the exact-main CI gate, stale-source pin refusal and runtime verification boundary.

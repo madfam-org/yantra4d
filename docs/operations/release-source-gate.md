@@ -28,6 +28,31 @@ source. The signed images may exist in the registry, but publication is incomple
 Wait for the new main's CI and publish that accepted source; do not bypass the
 check or describe a built image as deployed.
 
+## Rapid merges
+
+Main CI runs once per commit, in parallel (`ci.yml` concurrency is keyed by
+SHA for pushes). A per-ref group used to let each merge replace the previous
+merge's queued run, which then ended `cancelled` with no jobs, so no main run
+completed until main sat still (2026-10-05: runs 37281285346, 37281782300,
+37301695719, 37304680865).
+
+The publisher stays serial and never cancels a run in progress. When several
+main CI runs finish:
+
+- a completion for the current main HEAD joins the serial `deploy-<ref>` group.
+  GitHub keeps one pending run per group, so the newest pending publication
+  replaces an older pending one, and a rollout already in progress finishes;
+- a completion for a commit that is no longer main HEAD runs in a group of its
+  own and fails the gate in seconds, so it cannot replace the pending
+  publication of the newest source;
+- a publication whose builds finish after main moved refuses to pin (above).
+  Its commits stay inside the next accepted publication's diff, because change
+  detection starts from the last successful publication.
+
+The newest accepted source is therefore the one that ends up live. The
+post-deploy readiness window is 12 minutes (`scripts/ci/wait_for_render_release.py`,
+measured runs cited there).
+
 The gate establishes source acceptance, not runtime readiness, deployment
 availability or geometry correctness. Follow the [render release verification
 contract](render-artifact-storage.md#cache-identity-across-releases), inspect the

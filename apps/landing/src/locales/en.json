@@ -156,7 +156,8 @@
     },
     "pro": {
       "name": "Pro",
-      "price": "{proPrice} MXN/mo",
+      "price": "{proPrice} MXN/mo, VAT included",
+      "priceNet": "{proPrice} MXN/mo + VAT",
       "priceAtCheckout": "Price shown at checkout",
       "badge": "Recommended",
       "f1": "{proRenders} server renders per hour",

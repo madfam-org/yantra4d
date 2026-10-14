@@ -156,7 +156,8 @@
     },
     "pro": {
       "name": "Pro",
-      "price": "{proPrice} MXN/mes",
+      "price": "{proPrice} MXN/mes, IVA incluido",
+      "priceNet": "{proPrice} MXN/mes + IVA",
       "priceAtCheckout": "Precio al pagar",
       "badge": "Recomendado",
       "f1": "{proRenders} renders en servidor por hora",

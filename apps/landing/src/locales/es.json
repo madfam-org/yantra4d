@@ -156,7 +156,8 @@
     },
     "pro": {
       "name": "Pro",
-      "price": "desde $9/mes",
+      "price": "{proPrice} MXN/mes",
+      "priceAtCheckout": "Precio al pagar",
       "badge": "Recomendado",
       "f1": "{proRenders} renders en servidor por hora",
       "f2": "Todos los formatos de exportación, incluido STEP",

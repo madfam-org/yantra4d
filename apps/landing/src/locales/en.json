@@ -156,7 +156,8 @@
     },
     "pro": {
       "name": "Pro",
-      "price": "from $9/mo",
+      "price": "{proPrice} MXN/mo",
+      "priceAtCheckout": "Price shown at checkout",
       "badge": "Recommended",
       "f1": "{proRenders} server renders per hour",
       "f2": "All export formats, including STEP",

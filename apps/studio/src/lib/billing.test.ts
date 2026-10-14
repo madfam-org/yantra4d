@@ -9,10 +9,11 @@ describe('getCheckoutUrl', () => {
   })
 
   it('sends the registered plan id for the top tier, which is NOT the tier name', () => {
-    // The tier is `premium`; the SKU dhanam registered is still
-    // `yantra4d_madfam`. Deriving the plan id from the tier name would point
+    // The tier is `premium`; Dhanam's catalog sells it as `studio` (owner
+    // ruling 2026-10-14). Deriving the plan id from the tier name would point
     // checkout at a plan that does not exist.
-    expect(planOf(getCheckoutUrl('premium'))).toBe('yantra4d_madfam')
+    expect(planOf(getCheckoutUrl('premium'))).toBe('yantra4d_studio')
+    expect(planOf(getCheckoutUrl('premium'))).not.toBe('yantra4d_madfam')
   })
 
   it('defaults to pro', () => {

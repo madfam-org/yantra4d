@@ -52,7 +52,7 @@ export default function UpgradeDialog({ isOpen, onClose, feature }: UpgradeDialo
                 <div className="mt-2 rounded-md border border-border p-3">
                     <div className="flex items-baseline justify-between">
                         <span className="font-medium">{t("tier.pro_plan_name") || "Yantra4D Pro"}</span>
-                        <span className="text-sm text-muted-foreground">{t("tier.pro_price") || "from $9/mo"}</span>
+                        <span className="text-sm text-muted-foreground">{t("tier.pro_price") || "Price on the plans page"}</span>
                     </div>
                     <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
                         <li>{t("tier.perk_renders") || "More server renders, all export formats"}</li>

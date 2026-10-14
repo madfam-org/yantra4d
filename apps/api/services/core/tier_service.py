@@ -52,6 +52,15 @@ TIER_OVERRIDES_ENV = "TIER_OVERRIDES"
 # the canonical name.
 LEGACY_TIER_MAP = {"basic": "essentials", "madfam": "premium"}
 
+# Dhanam catalog tier slug -> canonical tier name (owner ruling 2026-10-14).
+#
+# Dhanam's catalog sells yantra4d as creator / pro / studio, and checkout plan
+# ids are ``yantra4d_<slug>``. Whichever string reaches the claim, a paying
+# customer must land on the tier they bought: an unknown name fails closed to
+# essentials with no error anywhere. These are current names, not deprecated
+# ones, so they resolve silently (no deprecation notice).
+CATALOG_TIER_MAP = {"creator": "essentials", "studio": "premium"}
+
 # Which deprecated names have already been announced this process. The aliases
 # sit on the hot path (every render, every /api/me), and one warning per
 # request would bury the notice it exists to make visible.
@@ -196,6 +205,9 @@ def _normalize_tier(tier: str) -> str:
     The deprecation note is emitted at most once per process per alias: the
     name is still supported, so this is a nudge, not an incident.
     """
+    catalog = CATALOG_TIER_MAP.get(tier)
+    if catalog:
+        return catalog
     normalized = LEGACY_TIER_MAP.get(tier)
     if normalized:
         if tier not in _alias_notices_seen:
@@ -362,9 +374,9 @@ def describe_entitlement(auth_claims: dict | None) -> dict:
 
     hint = ""
     if isinstance(raw, str) and raw.startswith("yantra4d_"):
-        # Normalise the candidate: the registered SKU is `yantra4d_madfam`, and
-        # without this the rename would stop recognising the very plan id this
-        # hint exists to catch.
+        # Normalise the candidate: plan ids carry catalog slugs
+        # (`yantra4d_studio`) or the legacy `yantra4d_madfam`, and without this
+        # the hint would stop recognising the very plan ids it exists to catch.
         candidate = _normalize_tier(raw.removeprefix("yantra4d_"))
         if candidate in TIER_HIERARCHY:
             hint = (

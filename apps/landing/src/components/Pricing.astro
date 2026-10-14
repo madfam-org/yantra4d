@@ -10,8 +10,9 @@
 // + all formats + CadQuery + GitHub + print dispatch. The pro price is read
 // from Dhanam's public catalog at build time, the amount checkout charges
 // (owner rulings G1-1 and 2026-10-14; the old "from $9/mo" copy was never a
-// validated price). Checkout is Dhanam's hosted page with the same query
-// contract as apps/studio/src/lib/billing.ts.
+// validated price): IVA included when the catalog sends `grossPrices`, else
+// the net labelled "+ IVA" (lib/dhanam-catalog.ts). Checkout is Dhanam's
+// hosted page with the same query contract as apps/studio/src/lib/billing.ts.
 import { COMMONS_STATS, TIER_FACTS } from '../data/projects';
 import { fetchMonthlyMxnPrice } from '../lib/dhanam-catalog';
 import { fillTemplate } from '../lib/i18n';
@@ -27,10 +28,15 @@ const APP_URL = 'https://app.yantra4d.com';
 const facts = { cartridges: COMMONS_STATS.cartridges, ...TIER_FACTS };
 const fill = (s: string | undefined) => fillTemplate(s ?? '', facts);
 
-// Never a typed figure: without a catalog price the card says it is shown at checkout.
+// Never a typed figure: without a catalog price the card says it is shown at
+// checkout. Never a bare net figure: `price` carries "IVA incluido" for the
+// gross, `priceNet` carries "+ IVA" while the catalog sends only the net.
 const proPrice = await fetchMonthlyMxnPrice('pro');
+const proPriceTemplate = proPrice?.ivaIncluded
+  ? (t?.pricing?.pro?.price ?? '{proPrice} MXN/mes, IVA incluido')
+  : (t?.pricing?.pro?.priceNet ?? '{proPrice} MXN/mes + IVA');
 const proPriceText = proPrice
-  ? fillTemplate(t?.pricing?.pro?.price ?? '{proPrice} MXN/mes', { proPrice })
+  ? fillTemplate(proPriceTemplate, { proPrice: proPrice.text })
   : (t?.pricing?.pro?.priceAtCheckout ?? 'Precio al pagar');
 ---
 

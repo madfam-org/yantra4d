@@ -93,7 +93,7 @@ describe('generated figures exist for every placeholder the copy uses', () => {
           if (path.startsWith('galleryUi.')) continue
           // Prices are bound at build time from Dhanam's catalog
           // (lib/dhanam-catalog.ts), never from generated landing data.
-          if (path === 'pricing.pro.price' && key === 'proPrice') continue
+          if ((path === 'pricing.pro.price' || path === 'pricing.pro.priceNet') && key === 'proPrice') continue
           expect(key in stats || key in tiers, `${path} uses {${key}} which no generated figure provides`).toBe(true)
         }
       }

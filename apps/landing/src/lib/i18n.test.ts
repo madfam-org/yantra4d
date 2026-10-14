@@ -115,11 +115,27 @@ describe('i18n', () => {
       // Owner ruling 2026-10-14: the card shows what Dhanam's checkout charges.
       for (const locale of ['en', 'es'] as const) {
         const tr = getTranslations(locale) as {
-          pricing: { pro: { price: string; priceAtCheckout: string } }
+          pricing: { pro: { price: string; priceNet: string; priceAtCheckout: string } }
         }
-        expect(tr.pricing.pro.price).toContain('{proPrice}')
-        expect(tr.pricing.pro.price).not.toMatch(/\$\s?\d/)
+        for (const s of [tr.pricing.pro.price, tr.pricing.pro.priceNet]) {
+          expect(s).toContain('{proPrice}')
+          expect(s).not.toMatch(/\$\s?\d/)
+        }
         expect(tr.pricing.pro.priceAtCheckout).not.toMatch(/\d/)
+      }
+    })
+
+    it('pro pricing says whether IVA is included, never a bare net figure', () => {
+      // LFPC Art. 7 Bis: the total price, taxes included. `price` is the gross
+      // from Dhanam's `grossPrices`; `priceNet` is the fallback while the
+      // catalog sends only the net.
+      const labels = { es: ['IVA incluido', '+ IVA'], en: ['VAT included', '+ VAT'] } as const
+      for (const locale of ['en', 'es'] as const) {
+        const tr = getTranslations(locale) as {
+          pricing: { pro: { price: string; priceNet: string } }
+        }
+        expect(tr.pricing.pro.price).toContain(labels[locale][0])
+        expect(tr.pricing.pro.priceNet).toContain(labels[locale][1])
       }
     })
   })

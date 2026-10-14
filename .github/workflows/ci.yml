@@ -6,10 +6,19 @@ on:
   pull_request:
     branches: [main]
 
-# Every job below runs on the shared self-hosted pool (madfam-runners-blue), and
-# the e2e matrix alone is eleven shards. Without a concurrency group, each push to
-# an open PR stacked a full new run on the pool while the superseded run kept
-# going — on 2026-09-02 four open PRs queued 20–60 min per job for that reason.
+# Runners (R116, ruled 2026-10-05): this repository is public, so every job here
+# runs on GitHub-hosted ubuntu-24.04 and never on MADFAM's self-hosted ARC pool.
+# Each `runs-on` is the ADR-010 expression enclii and janua use: the org variable
+# ARC_BOOTSTRAP_COMPLETE is not visible to public repositories, so it resolves to
+# `ubuntu-24.04`. The render lanes install what the ARC image used to carry (the
+# pinned OpenSCAD snapshot and the libraries OCP links) through
+# .github/actions/render-env.
+#
+# The e2e matrix alone is eleven shards. Without a concurrency group, each push to
+# an open PR stacked a full new run on the runners while the superseded run kept
+# going — on 2026-09-02 four open PRs queued 20–60 min per job for that reason
+# (then on the self-hosted pool; GitHub-hosted runners have an org-wide cap on
+# concurrent jobs instead).
 # One group per PR (or per ref for pushes): a new PR head cancels the run it
 # supersedes; pushes to main never cancel each other, so every merged commit
 # still gets its own complete run. deploy.yml has the same shape.
@@ -99,7 +108,7 @@ jobs:
   # pull_request nor push. The only way to skip anything is a filter that ran
   # and answered exactly "false".
   changes:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     permissions:
       contents: read
@@ -196,7 +205,7 @@ jobs:
   studio:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 20
     defaults:
       run:
@@ -264,7 +273,7 @@ jobs:
   landing:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     # 15 → 25 for the quality gates below: a Chromium install (about a minute
     # cold), 55 Playwright tests on a single worker and nine Lighthouse runs.
     # Measured on a laptop (2026-09-19): 8.7 min of Playwright with no retries
@@ -375,9 +384,13 @@ jobs:
     # to the pod it lands on (`npm run lhci` → scripts/ci/landing-lighthouse-
     # cpu.mjs). Not gated on the matrix passing: `!cancelled()` runs it after
     # a red shard too; it only needs the node to be quiet.
+    #
+    # Since R116 (2026-10-05) these jobs run on GitHub-hosted runners, one VM
+    # per job, so the shards no longer share this audit's CPU. The wait on
+    # `e2e` is kept as it was; dropping it is a separate change.
     needs: [landing, e2e]
     if: ${{ !cancelled() && needs.landing.result == 'success' }}
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     defaults:
       run:
@@ -429,7 +442,7 @@ jobs:
   admin:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     defaults:
       run:
@@ -476,7 +489,7 @@ jobs:
   backend:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     defaults:
       run:
@@ -492,17 +505,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # OCP (cadquery's kernel) dlopens libGL at import; the ARC runner image
-      # ships without it, so cq_runner subprocesses died with "CadQuery is not
-      # installed (libGL.so.1: cannot open shared object file)". The parity and
-      # e2e-audit jobs never hit this only because their openscad apt install
-      # pulls libGL transitively.
-      - name: Install the OCP runtime libraries
-        run: |
-          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
-          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
-          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 libgl1 libglu1-mesa libxrender1 libxcursor1 libxft2 libxinerama1 libxext6
+      # OCP (cadquery's kernel) dlopens libGL at import; without it cq_runner
+      # subprocesses die with "CadQuery is not installed (libGL.so.1: cannot
+      # open shared object file)". And the suite's OpenSCAD tests — the BOSL2
+      # smoke in tests/integration/test_submodule_smoke.py among them — skip
+      # when no `openscad` is on PATH. The ARC image supplied both; on a hosted
+      # runner this action does, with the snapshot the platform renders on.
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner imports it)
         run: pip install -e ../../packages/commons-sandbox
@@ -593,7 +603,7 @@ jobs:
           - { project: webkit,   shard: 3, shards: 4 }
           - { project: webkit,   shard: 4, shards: 4 }
           - { project: mobile,   shard: 1, shards: 1 }
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 30
     defaults:
       run:
@@ -615,13 +625,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # The pinned OpenSCAD snapshot, not apt's: Ubuntu 24.04 ships 2021.01,
+      # which cannot render the pinned BOSL2 (see .github/actions/render-env).
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       - name: Install backend dependencies
         working-directory: apps/api
         run: |
-          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
-          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
-          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad
           pip install -r requirements.txt
           pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
       - name: Start backend
@@ -724,7 +734,7 @@ jobs:
     # stays pending behind it (seen twice on 2026-09-02). There is also nothing
     # to merge when the matrix was never scheduled.
     if: ${{ !cancelled() && needs.changes.outputs.code == 'true' }}
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     defaults:
       run:
@@ -758,7 +768,7 @@ jobs:
   test-geometric-parity:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 30
     defaults:
       run:
@@ -773,12 +783,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install OpenSCAD
-        run: |
-          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
-          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
-          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad
+      # The pinned OpenSCAD snapshot, not apt's: parity is measured against the
+      # engine the platform renders with (see .github/actions/render-env).
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner subprocess imports it)
         run: pip install -e ../../packages/commons-sandbox
@@ -786,7 +794,7 @@ jobs:
         run: python3 tests/scripts/geometric_regression.py --tolerance 0.05
 
   manifest-sync:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -820,7 +828,7 @@ jobs:
   # network, no submodules, a few seconds. It runs on no-code changes
   # too: it costs nothing and it guards the machinery that skipping relies on.
   ci-scripts:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -843,7 +851,7 @@ jobs:
         run: ./scripts/ci/tests/test_registry_login.sh
 
   manifest-validation:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -928,7 +936,7 @@ jobs:
   # Its own job rather than a step in `studio`: it needs Python, not Node, and
   # it should fail in seconds instead of after a 15-minute build.
   i18n-audit:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -945,7 +953,7 @@ jobs:
   # PR #50 — full commons at failures=0), so a failure here is a regression,
   # not backlog.
   spec-conformance:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     # A shared-library pin can legitimately select the complete commons.
     timeout-minutes: 360
     steps:
@@ -959,6 +967,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # The render pass below runs `--require-openscad` (and cadquery needs
+      # libGL). It never installed either: the ARC image carried them on PATH.
+      # A hosted runner does not, so the pinned snapshot comes from here.
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       # [geometry] pulls cadquery 2.7 + trimesh for the --render pass below.
       - name: Install hyperobjects-spec
         # Pinned to the same keystone SHA the commons CI pins (SPEC_PIN in
@@ -1041,7 +1054,7 @@ jobs:
         run: python3 scripts/qa/check_spec_graph_vendor.py
 
   metadata-consistency:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -1062,7 +1075,7 @@ jobs:
         run: python3 scripts/qa/check_licenses.py --strict-all
 
   openapi-validation:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -1087,7 +1100,7 @@ jobs:
 
   ai-integration:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     defaults:
       run:
@@ -1102,6 +1115,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # Same backend import surface as the `backend` job, so the same runtime
+      # libraries the ARC image used to supply.
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       - run: pip install -r requirements.txt
       - run: pip install pytest
       - name: Run AI integration tests
@@ -1153,7 +1170,7 @@ jobs:
       - openapi-validation
       - spec-conformance
       - i18n-audit
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
       - name: Dependency results

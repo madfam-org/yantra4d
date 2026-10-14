@@ -31,7 +31,10 @@ on:
 
 jobs:
   full-render-sweep:
-    runs-on: madfam-runners-blue
+    # R116 (ruled 2026-10-05): a public repository runs on GitHub-hosted
+    # runners. ARC_BOOTSTRAP_COMPLETE is not visible to public repositories, so
+    # this resolves to ubuntu-24.04 (the ADR-010 expression enclii and janua use).
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 360
     permissions:
       contents: read
@@ -69,6 +72,11 @@ jobs:
         if: inputs.report_fixture == ''
         with:
           python-version: "3.12"
+      # `--require-openscad` below found OpenSCAD on the ARC image's PATH; a
+      # hosted runner has none, so the pinned snapshot comes from here.
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        if: inputs.report_fixture == ''
+        uses: ./.github/actions/render-env
       - name: Install hyperobjects-spec
         if: inputs.report_fixture == ''
         # Same keystone SHA as ci.yml's spec-conformance job and both commons'

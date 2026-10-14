@@ -230,13 +230,14 @@ on `workflow_dispatch` with:
 | `slugs` | *(empty = whole catalog)* | Render only these, `--force`d. A limited run never passes `--clean` to the optimizer, so the other cartridges' LODs stay. |
 | `lod0` | `hero` | Passed straight to the optimizer's `--lod0`. |
 
-What it does, on `madfam-runners-blue` (ADR-010), 120 min budget:
+What it does, on GitHub-hosted `ubuntu-24.04` (R116: public repositories stay on
+GitHub-hosted runners), 120 min budget:
 
 1. Checks out with `submodules: true` + `MADFAM_BOT_PAT` (the public commons
    comes in; the `update = none` client mounts stay out), sets up Python 3.12
    and Node 22.
-2. Installs OpenSCAD, Redis and the backend exactly as `ci.yml`'s `e2e` job
-   does, then starts Redis, `python app.py` (`AUTH_ENABLED=false`,
+2. Installs the pinned OpenSCAD snapshot (`.github/actions/render-env`), Redis
+   and the backend exactly as `ci.yml`'s `e2e` job does, then starts Redis, `python app.py` (`AUTH_ENABLED=false`,
    `HARNESS_TIER=premium`, `RATE_LIMIT_ENABLED=false`) and the render worker,
    waiting on `/api/health` for both.
 3. Computes the cache key: the digest of every cartridge directory folded with

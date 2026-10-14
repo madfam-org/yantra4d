@@ -71,9 +71,10 @@ concurrency:
 
 jobs:
   prerender:
-    # ADR-010: every job runs on MADFAM-operated runners; there is no
-    # GitHub-hosted arm.
-    runs-on: madfam-runners-blue
+    # R116 (ruled 2026-10-05): a public repository runs on GitHub-hosted
+    # runners. ARC_BOOTSTRAP_COMPLETE is not visible to public repositories, so
+    # this resolves to ubuntu-24.04 (the ADR-010 expression enclii and janua use).
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 120
     steps:
       # One level of submodules + the PAT brings the public commons in; the
@@ -108,13 +109,17 @@ jobs:
           cache-dependency-path: apps/landing/package-lock.json
 
       # ── Backend, directly on the runner (mirrors ci.yml › e2e and e2e-audit.yml) ──
-      - name: Install OpenSCAD, Redis and backend dependencies
+      # The pinned OpenSCAD snapshot, not apt's: Ubuntu 24.04 ships 2021.01,
+      # which cannot render the pinned BOSL2 (see .github/actions/render-env).
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
+
+      - name: Install Redis and backend dependencies
         working-directory: apps/api
         run: |
           # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
-          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
-          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad redis-server
+          # (render-env above already refreshed the package index.)
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 redis-server
           pip install -r requirements.txt
           pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
 

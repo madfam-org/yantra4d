@@ -24,13 +24,21 @@ concurrency:
   cancel-in-progress: false
 
 # Every job below picks its runner the same way: the repository variable
-# DEPLOY_RUNNER_LABEL when the operator has set one, otherwise the shared pool
-# madfam-runners-blue this workflow has always used.
+# DEPLOY_RUNNER_LABEL when the operator has set one, otherwise the R116 default
+# (ruled 2026-10-05: public repositories run on GitHub-hosted runners). The
+# default is the ADR-010 expression enclii and janua use — the org variable
+# ARC_BOOTSTRAP_COMPLETE is not visible to public repositories, so it resolves
+# to `ubuntu-24.04`. Nothing here needs the cluster: images go to GHCR and
+# Docker Hub, signing is keyless through GitHub's OIDC issuer, the digest pin is
+# a git push that ArgoCD picks up, and the health check polls the public
+# https://api.yantra4d.com. This workflow also never runs pull-request code: it
+# starts from a main-branch push's CI (checked by require_source_ci.py) or from
+# workflow_dispatch.
 #
-# Why: a production deploy and a pull request's ten-shard browser matrix compete
-# for the same pool, and the deploy loses. On 2026-09-02 deploy #540's Build
-# Studio was queued from 04:01Z past 04:30Z behind roughly a hundred PR shard
-# jobs, and because this workflow's concurrency group is serial by design
+# Why the override exists: a production deploy and a pull request's ten-shard
+# browser matrix competed for the same self-hosted pool, and the deploy lost.
+# On 2026-09-02 deploy #540's Build Studio was queued from 04:01Z past 04:30Z
+# behind roughly a hundred PR shard jobs, and because this workflow's concurrency group is serial by design
 # (cancel-in-progress: false), deploy #542 then waited behind #540 — a shipping
 # path held up for close to an hour by work that cannot block shipping.
 # ci.yml's docs-only path filter removes a large share of that PR load; this
@@ -39,12 +47,11 @@ concurrency:
 #
 # The shape follows ADR-010 (internal-devops decisions/): an operator-supplied
 # override in front of the canonical arm, the same superset form the enclii
-# reusable build-publish.yml uses for `inputs.build_runner`. Both arms are
-# MADFAM-operated runners — this workflow has no GitHub-hosted fallback and
-# gains none here, which is stricter than ADR-010 requires, not looser.
+# reusable build-publish.yml uses for `inputs.build_runner`.
 #
-# Unset or empty resolves to madfam-runners-blue, so today's behaviour is
-# unchanged until the variable exists. The variable holds ONE runner label.
+# Unset or empty resolves to the R116 default above. While the variable names a
+# self-hosted label, deploys keep running there; deleting it is what moves them
+# to GitHub-hosted runners. The variable holds ONE runner label.
 
 # ---------------------------------------------------------------------------
 # Change detection is measured from the LAST SUCCESSFUL DEPLOY, not from the
@@ -86,7 +93,7 @@ jobs:
     name: Detect Changes
     # Reject bad/failed triggers inside the gate, rather than skipping this job:
     # a green all-skipped workflow must never become the successful-deploy base.
-    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     permissions:
       contents: read
       # Reading this workflow's own run history to find the last successful
@@ -252,7 +259,7 @@ jobs:
 
   build-backend:
     name: Build Backend
-    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     needs: detect-changes
     if: needs.detect-changes.outputs.backend == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -402,7 +409,7 @@ jobs:
 
   build-studio:
     name: Build Studio
-    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     needs: detect-changes
     if: needs.detect-changes.outputs.studio == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -531,7 +538,7 @@ jobs:
 
   build-landing:
     name: Build Landing
-    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     needs: detect-changes
     if: needs.detect-changes.outputs.landing == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -690,7 +697,7 @@ jobs:
 
   build-admin:
     name: Build Admin
-    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     needs: detect-changes
     if: needs.detect-changes.outputs.admin == 'true' || github.event.inputs.force_deploy == 'true'
     permissions:
@@ -802,7 +809,7 @@ jobs:
 
   commit-digests:
     name: Commit Image Digests
-    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     needs: [detect-changes, build-backend, build-studio, build-landing, build-admin]
     if: |
       always() &&
@@ -870,7 +877,7 @@ jobs:
 
   verify-deploy:
     name: Post-Deploy Health Check
-    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     needs: [commit-digests, build-backend]
     timeout-minutes: 10
     # A skipped build is normal for frontend-only publication.
@@ -891,7 +898,7 @@ jobs:
 
   lifecycle-events:
     name: Report Lifecycle Events
-    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || 'madfam-runners-blue' }}
+    runs-on: ${{ vars.DEPLOY_RUNNER_LABEL != '' && vars.DEPLOY_RUNNER_LABEL || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     needs: [build-backend, build-studio, build-landing, build-admin]
     if: always()
     steps:

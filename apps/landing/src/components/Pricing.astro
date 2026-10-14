@@ -7,10 +7,13 @@
 // Tier facts mirror apps/api/tiers.json (the entitlement source of truth):
 // guest 10 renders/hr · essentials 30 + 3MF/OBJ (free with an account — an
 // authenticated user without a billing claim resolves to essentials) · pro 150
-// + all formats + CadQuery + GitHub + print dispatch. The pro price is the
-// product's existing "from $9/mo" copy. Checkout is Dhanam's hosted page with
-// the same query contract as apps/studio/src/lib/billing.ts.
+// + all formats + CadQuery + GitHub + print dispatch. The pro price is read
+// from Dhanam's public catalog at build time, the amount checkout charges
+// (owner rulings G1-1 and 2026-10-14; the old "from $9/mo" copy was never a
+// validated price). Checkout is Dhanam's hosted page with the same query
+// contract as apps/studio/src/lib/billing.ts.
 import { COMMONS_STATS, TIER_FACTS } from '../data/projects';
+import { fetchMonthlyMxnPrice } from '../lib/dhanam-catalog';
 import { fillTemplate } from '../lib/i18n';
 
 const { t } = Astro.props;
@@ -23,6 +26,12 @@ const APP_URL = 'https://app.yantra4d.com';
 // A missing figure leaves its `{placeholder}` visible on purpose.
 const facts = { cartridges: COMMONS_STATS.cartridges, ...TIER_FACTS };
 const fill = (s: string | undefined) => fillTemplate(s ?? '', facts);
+
+// Never a typed figure: without a catalog price the card says it is shown at checkout.
+const proPrice = await fetchMonthlyMxnPrice('pro');
+const proPriceText = proPrice
+  ? fillTemplate(t?.pricing?.pro?.price ?? '{proPrice} MXN/mes', { proPrice })
+  : (t?.pricing?.pro?.priceAtCheckout ?? 'Precio al pagar');
 ---
 
 <section id="pricing" class="cv-auto py-24 px-6">
@@ -67,7 +76,7 @@ const fill = (s: string | undefined) => fillTemplate(s ?? '', facts);
           {t?.pricing?.pro?.badge ?? 'Recomendado'}
         </span>
         <h3 class="text-xl font-bold mb-1">{t?.pricing?.pro?.name ?? 'Pro'}</h3>
-        <div class="text-3xl font-bold mb-4">{t?.pricing?.pro?.price ?? 'desde $9/mes'}</div>
+        <div class="text-3xl font-bold mb-4">{proPriceText}</div>
         <ul class="space-y-2 text-sm text-muted-foreground mb-8 flex-1">
           <li>{fill(t?.pricing?.pro?.f1)}</li>
           <li>{t?.pricing?.pro?.f2 ?? ''}</li>

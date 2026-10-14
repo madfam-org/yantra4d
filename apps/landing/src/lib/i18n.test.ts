@@ -111,9 +111,16 @@ describe('i18n', () => {
       )
     })
 
-    it('pro pricing carries the product price copy', () => {
-      const en = getTranslations('en') as { pricing: { pro: { price: string } } }
-      expect(en.pricing.pro.price).toContain('$9')
+    it('pro pricing is bound to the Dhanam catalog price, never a typed figure', () => {
+      // Owner ruling 2026-10-14: the card shows what Dhanam's checkout charges.
+      for (const locale of ['en', 'es'] as const) {
+        const tr = getTranslations(locale) as {
+          pricing: { pro: { price: string; priceAtCheckout: string } }
+        }
+        expect(tr.pricing.pro.price).toContain('{proPrice}')
+        expect(tr.pricing.pro.price).not.toMatch(/\$\s?\d/)
+        expect(tr.pricing.pro.priceAtCheckout).not.toMatch(/\d/)
+      }
     })
   })
 

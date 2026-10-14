@@ -26,7 +26,10 @@ permissions:
 
 jobs:
   bump:
-    runs-on: madfam-runners-blue
+    # R116 (ruled 2026-10-05): a public repository runs on GitHub-hosted
+    # runners. ARC_BOOTSTRAP_COMPLETE is not visible to public repositories, so
+    # this resolves to ubuntu-24.04 (the ADR-010 expression enclii and janua use).
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4

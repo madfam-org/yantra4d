@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { BufferGeometry, Scene } from 'three'
 // @ts-expect-error three.js examples lack type declarations in this project's TS config
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -11,6 +11,29 @@ interface WorkerMessage {
   success: boolean
   geometryData: STLPayload
   error?: string
+}
+
+export interface WorkerLoaderOptions {
+  /**
+   * Wire THREE's meshopt decoder on the GLTF loader before parsing. The
+   * landing's prerendered GLBs are EXT_meshopt_compression; server renders are
+   * not. The decoder (~20 KB) is imported on first use, in its own chunk.
+   */
+  meshopt?: boolean
+  /** Called instead of `console.error` when the load fails (a silent preview). */
+  onError?: (error: unknown) => void
+}
+
+interface MeshoptDecoderLike { supported: boolean; ready: Promise<void> }
+
+let meshoptDecoder: Promise<MeshoptDecoderLike> | null = null
+
+/** One shared decoder import; a failed import is retried on the next request. */
+function loadMeshoptDecoder(): Promise<MeshoptDecoderLike> {
+    meshoptDecoder ??= import('three/examples/jsm/libs/meshopt_decoder.module.js')
+        .then(module => module.MeshoptDecoder as MeshoptDecoderLike)
+        .catch(error => { meshoptDecoder = null; throw error })
+    return meshoptDecoder
 }
 
 interface WorkerLoaderResult {
@@ -107,9 +130,13 @@ function loadSTL(url: string): Promise<STLPayload> {
 }
 
 /** Load the current request; this effect owns all displayed Three.js resources. */
-export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean = false): WorkerLoaderResult {
+export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean = false, options: WorkerLoaderOptions = {}): WorkerLoaderResult {
+    const meshopt = options.meshopt === true
     // Identity distinguishes A/B/A transitions and never resurrects disposed A.
-    const request = useMemo(() => ({ url, isGLTF }), [url, isGLTF])
+    const request = useMemo(() => ({ url, isGLTF, meshopt }), [url, isGLTF, meshopt])
+    // The latest handler, without making it part of the request identity.
+    const onErrorRef = useRef(options.onError)
+    useEffect(() => { onErrorRef.current = options.onError })
     const [result, setResult] = useState<(WorkerLoaderResult & { request: typeof request }) | null>(null)
     // Drop the state reference too, including when a URL is cleared indefinitely.
     // The previous effect still owns its cleanup until React commits this change.
@@ -119,12 +146,20 @@ export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean 
         if (!request.url) return
         let active = true
         let release: (() => void) | undefined
-        const reportError = (error: unknown) => { if (active) console.error('[WorkerLoader]', error) }
+        const reportError = (error: unknown) => {
+            if (!active) return
+            if (onErrorRef.current) onErrorRef.current(error)
+            else console.error('[WorkerLoader]', error)
+        }
         if (request.isGLTF) {
             const loader = new GLTFLoader()
             const auth = bearerHeaderForSameOrigin(request.url)
             if (auth) loader.setRequestHeader({ Authorization: auth })
-            loader.loadAsync(request.url).then((data: GLTF) => {
+            const url = request.url
+            const ready = request.meshopt
+                ? loadMeshoptDecoder().then(decoder => { loader.setMeshoptDecoder(decoder) })
+                : Promise.resolve()
+            ready.then(() => loader.loadAsync(url)).then((data: GLTF) => {
                 if (!active) { disposeGLTF(data); return }
                 let geometry: BufferGeometry | null = null
                 try {

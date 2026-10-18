@@ -12,6 +12,8 @@ import { useUnitSystem } from '../../hooks/system/useUnitSystem'
 import { useIsDesktop } from '../../hooks/system/useMediaQuery'
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
 import { evaluateSafeFormula } from '../../lib/safeFormula'
+import { usePrerenderedPreview } from '../../hooks/render/usePrerenderedPreview'
+import { differsFromPrerenderedDefault } from '../../lib/prerenderedPreview'
 
 interface RenderStatusChipProps {
   loading: boolean
@@ -43,6 +45,35 @@ function RenderStatusChip({ loading, progress, progressPhase, parts, t }: Render
   }
 
   return null
+}
+
+interface PrerenderedPreviewBadgeProps {
+  commonsPin: string | null
+  changed: boolean
+  t: (key: string, params?: Record<string, string | number>) => string
+}
+
+/** Says what the stage shows while nothing has rendered: the defaults, prerendered. */
+function PrerenderedPreviewBadge({ commonsPin, changed, t }: PrerenderedPreviewBadgeProps) {
+  return (
+    <div
+      data-testid="prerendered-preview-badge"
+      role="status"
+      className="absolute top-2 left-1/2 -translate-x-1/2 z-10 max-w-[calc(100%-2rem)] px-3 py-1.5 bg-card/95 border border-border rounded-lg text-xs text-center pointer-events-none"
+    >
+      <div className="font-medium">{t('preview.prerendered_label')}</div>
+      {commonsPin && (
+        <div className="text-[10px] text-muted-foreground">
+          {t('preview.prerendered_pin', { pin: commonsPin.slice(0, 7) })}
+        </div>
+      )}
+      {changed && (
+        <div data-testid="prerendered-preview-changed" className="mt-0.5 text-amber-600 dark:text-amber-400">
+          {t('preview.params_changed')}
+        </div>
+      )}
+    </div>
+  )
 }
 
 interface ComparisonSlot {
@@ -87,6 +118,19 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   } = useProject()
 
   const { t } = useLanguage()
+  // Prerendered default mesh from the landing (lib/prerenderedPreview.ts): shown
+  // until the first real render arrives, for every tier.
+  const prerendered = usePrerenderedPreview(projectSlug)
+  const previewUrl = parts.length === 0 ? prerendered.current?.url ?? null : null
+  const previewChanged = useMemo(() => {
+    if (!previewUrl) return false
+    const m = manifest as { modes?: Array<{ id?: string }>; parameters?: Array<{ id?: string; default?: unknown }> } | null
+    // The same defaults ManifestProvider.getDefaultParams builds, and what the
+    // prerender pipeline renders: the first mode with an empty parameter set.
+    const defaults: Record<string, unknown> = {}
+    for (const p of m?.parameters ?? []) if (p?.id) defaults[p.id] = p.default
+    return differsFromPrerenderedDefault(mode, m?.modes?.[0]?.id, params ?? {}, defaults)
+  }, [previewUrl, manifest, mode, params])
   // Same 1024px breakpoint as the `lg:` classes below, so the mounted tree and
   // the visible tree are always the same one. App.tsx makes the identical call.
   const isDesktop = useIsDesktop()
@@ -196,7 +240,12 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
         physicsFrames={physicsFrames}
         formatDimension={formatDim}
         unit={unit}
+        prerenderedPreviewUrl={previewUrl}
+        onPrerenderedPreviewError={prerendered.reportFailure}
       />
+      {previewUrl && !loading && (
+        <PrerenderedPreviewBadge commonsPin={prerendered.current?.commonsPin ?? null} changed={previewChanged} t={t} />
+      )}
       <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
       {/* Simulation tools. The stress map and the parameter search are
           estimates; physics needs a solver backend on the server. */}

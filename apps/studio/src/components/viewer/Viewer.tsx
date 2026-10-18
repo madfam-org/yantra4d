@@ -24,6 +24,7 @@ import AsyncEdges from './AsyncEdges'
 import ViewerPerformance, { CompileGate, InvalidateOnCommit, KeepRendering } from './ViewerPerformance'
 import { MAX_DPR, useRenderScale } from '../../lib/viewerQuality'
 import type { GhostVariants } from './GhostGeometryOverlay'
+import { PRERENDERED_PREVIEW_PART } from '../../lib/prerenderedPreview'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
@@ -118,14 +119,18 @@ interface ModelProps {
     isDark: boolean
     stressData?: Record<string, unknown> | null
     physicsFrames?: boolean[] | null
+    /** The GLB is meshopt-compressed (the landing's prerendered previews). */
+    meshopt?: boolean
+    /** Replaces the loader's console.error when the mesh cannot be loaded. */
+    onLoadError?: (error: unknown) => void
 }
 
-const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark, stressData }: ModelProps) => {
+const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark, stressData, meshopt, onLoadError }: ModelProps) => {
     const bareUrl = (url || '').split('?')[0].toLowerCase()
     const isGLTF = isGlb || bareUrl.endsWith('.gltf') || bareUrl.endsWith('.glb')
 
     // Asynchronously loads geometries; .stl via WebWorker, .gltf natively.
-    const { geometry: geom, scene: gltfScene } = useWorkerLoader(url, isGLTF)
+    const { geometry: geom, scene: gltfScene } = useWorkerLoader(url, isGLTF, { meshopt, onError: onLoadError })
 
     useEffect(() => {
         if (geom && onGeometry) onGeometry(partType, geom)
@@ -396,9 +401,16 @@ interface ViewerProps {
     unit?: string
     stressData?: Record<string, unknown> | null
     physicsFrames?: boolean[] | null
+    /**
+     * A prerendered GLB of the cartridge's default configuration, shown only
+     * while `parts` is empty (nothing has rendered yet). A real render replaces it.
+     */
+    prerenderedPreviewUrl?: string | null
+    /** The preview could not be loaded; the caller decides what to try next. */
+    onPrerenderedPreviewError?: (url: string) => void
 }
 
-const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null }, ref) => {
+const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedPreviewUrl = null, onPrerenderedPreviewError, colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null }, ref) => {
     const geometriesRef = React.useRef<Record<string, THREE.BufferGeometry>>({})
     const prevCenterRef = React.useRef<number[] | null>(null)
     const prevMaxDimRef = React.useRef<number | null>(null)
@@ -501,6 +513,9 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
             setCenterOfMass([0, 0, 0])
         }
 
+        // The prerendered preview frames the camera above, but it is a picture of
+        // the defaults, not a render: no print estimate or model info from it.
+        if (PRERENDERED_PREVIEW_PART in geometriesRef.current) return
         onGeometryStats?.({
             total: { volumeMm3: totalVolume, boundingBox: mergedBox, triangleCount: Math.round(totalTriangles) },
             parts: perPartStats,
@@ -966,6 +981,24 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                     </group>
                                 )}
                             </>
+                        ) : prerenderedPreviewUrl ? (
+                            <group>
+                                <Model
+                                    key={prerenderedPreviewUrl}
+                                    url={prerenderedPreviewUrl}
+                                    isGlb
+                                    meshopt
+                                    partType={PRERENDERED_PREVIEW_PART}
+                                    color={defaultColor}
+                                    wireframe={wireframe}
+                                    glass={false}
+                                    onGeometry={handleGeometry}
+                                    onGeometryRemove={handleGeometryRemove}
+                                    onLoadError={() => onPrerenderedPreviewError?.(prerenderedPreviewUrl)}
+                                    highlightMode="normal"
+                                    isDark={isDark}
+                                />
+                            </group>
                         ) : null}
                     </Suspense>
                     <InvalidateOnCommit />

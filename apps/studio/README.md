@@ -211,9 +211,22 @@ afterwards and rendered a 19,073-byte STL when the same assignment happened in
 
 The Studio depends on [`@madfam/geom-core`](https://github.com/madfam-org/geom-core)
 0.2.0, the shared mesh-analysis library of the geometry factories ("mesh in,
-numbers out"), pinned to the GitHub Release tarball with its `sha512` integrity
-in `package-lock.json`. It is the first consumer step of the R8 adoption plan
+numbers out"). It is the first consumer step of the R8 adoption plan
 (internal-devops `audits/2026-09-04-geom-core-yantra4d-usage.md`, PR-3).
+
+**Where the package comes from.** The source is the GitHub Release asset
+<https://github.com/madfam-org/geom-core/releases/download/v0.2.0/madfam-geom-core-0.2.0.tgz>.
+A byte-identical copy is committed at `vendor/madfam-geom-core-0.2.0.tgz` and
+installed as `file:vendor/madfam-geom-core-0.2.0.tgz`, with its `sha512` in
+`package-lock.json`, so the Studio image build needs no network for it (a
+release-URL dependency failed with `read ECONNRESET` on the deploy runner
+pool). npm does not verify a `file:` tarball's lockfile integrity, so
+`scripts/dev/check-geom-core-vendor.mjs` does: CI (`ci.yml` › studio,
+GitHub-hosted) checks package.json ↔ lockfile ↔ vendored file ↔ release asset,
+and the Dockerfile runs it with `--offline` (no release download) before
+`npm install`. To bump: download the new release asset into `vendor/`, delete
+the old one, point `package.json` at it, `npm install --legacy-peer-deps`, and
+run `node ../../scripts/dev/check-geom-core-vendor.mjs`.
 
 | | Flag off (default) | Flag on |
 |---|---|---|

@@ -223,6 +223,11 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
+      # The vendored @madfam/geom-core tarball (apps/studio/vendor/) must be the
+      # release asset byte for byte and match the lockfile integrity; npm does not
+      # check a file: tarball's integrity. Needs network: GitHub-hosted only.
+      - name: Check the vendored geom-core tarball against its release asset
+        run: node "$GITHUB_WORKSPACE/scripts/dev/check-geom-core-vendor.mjs"
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}

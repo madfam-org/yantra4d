@@ -41,7 +41,7 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
 
 - geom-core (C++ mesh analysis + WASM bindings) — consumed behind flags, default off:
   - Studio browser path (#248, #252, on `main`): `@madfam/geom-core` 0.2.0 (the release
-    tarball vendored in-repo and verified against the release digest; single-threaded WASM,
+    tarball vendored at `apps/studio/vendor/` and verified against the release digest; single-threaded WASM,
     no cross-origin isolation needed) behind `VITE_GEOM_CORE_BROWSER` / `?geomcore=1` for
     mesh volume, signed volume, bounding box (min/max), centroid and STL face count,
     differential-tested against the TypeScript implementations that remain the default

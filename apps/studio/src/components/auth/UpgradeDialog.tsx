@@ -16,6 +16,8 @@ interface UpgradeDialogProps {
     isOpen: boolean
     onClose: (open: boolean) => void
     feature: string
+    /** Free things the visitor can do right now instead (engine gate). */
+    alternatives?: string[]
 }
 
 /**
@@ -27,7 +29,7 @@ interface UpgradeDialogProps {
  * not exist — and the only component that called the checkout builder
  * (UpgradeModal) was never mounted anywhere.
  */
-export default function UpgradeDialog({ isOpen, onClose, feature }: UpgradeDialogProps) {
+export default function UpgradeDialog({ isOpen, onClose, feature, alternatives = [] }: UpgradeDialogProps) {
     const { t } = useLanguage();
     const { user } = useAuth();
 
@@ -48,6 +50,15 @@ export default function UpgradeDialog({ isOpen, onClose, feature }: UpgradeDialo
                         {t("tier.upgrade_desc_2") || "Upgrade your plan to access:"} <strong className="text-foreground">{feature}</strong>.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
+
+                {alternatives.length > 0 && (
+                    <div data-testid="upgrade-free-alternatives" className="mt-2 rounded-md bg-muted/50 p-3">
+                        <div className="text-sm font-medium">{t("tier.free_alternatives_title")}</div>
+                        <ul className="mt-1 space-y-1 text-xs text-muted-foreground">
+                            {alternatives.map(text => <li key={text}>{text}</li>)}
+                        </ul>
+                    </div>
+                )}
 
                 <div className="mt-2 rounded-md border border-border p-3">
                     <div className="flex items-baseline justify-between">

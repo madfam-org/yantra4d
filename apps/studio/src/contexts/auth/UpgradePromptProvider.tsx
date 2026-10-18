@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import UpgradeDialog from '../../components/auth/UpgradeDialog';
 
-import { UpgradePromptContext } from './UpgradePromptContext';
+import { UpgradePromptContext, type UpgradePromptOptions } from './UpgradePromptContext';
 
 interface UpgradePromptProviderProps {
     children: React.ReactNode
@@ -10,25 +10,27 @@ interface UpgradePromptProviderProps {
 export function UpgradePromptProvider({ children }: UpgradePromptProviderProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [feature, setFeature] = useState('');
+    const [alternatives, setAlternatives] = useState<string[]>([]);
 
-    const triggerUpgradePrompt = useCallback((feature?: string) => {
+    const triggerUpgradePrompt = useCallback((feature?: string, options?: UpgradePromptOptions) => {
         // Callers pass the specific thing the user just reached for —
         // "Premium Export Formats (STEP)", "CadQuery Cloud Rendering" — and
         // this used to discard it and hardcode 'a Pro feature', so every
         // upsell was generic. Show what they actually wanted.
         setFeature(feature || 'a Pro feature');
+        setAlternatives(options?.alternatives ?? []);
         setIsOpen(true);
     }, []);
 
     const closeUpgradePrompt = useCallback(() => {
         setIsOpen(false);
-        setTimeout(() => setFeature(''), 300); // Clear after animation
+        setTimeout(() => { setFeature(''); setAlternatives([]) }, 300); // Clear after animation
     }, []);
 
     return (
         <UpgradePromptContext.Provider value={{ triggerUpgradePrompt, closeUpgradePrompt }}>
             {children}
-            <UpgradeDialog isOpen={isOpen} onClose={closeUpgradePrompt} feature={feature} />
+            <UpgradeDialog isOpen={isOpen} onClose={closeUpgradePrompt} feature={feature} alternatives={alternatives} />
         </UpgradePromptContext.Provider>
     );
 }

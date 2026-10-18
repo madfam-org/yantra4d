@@ -9,6 +9,10 @@ import {
 } from '../../services/engine/renderService'
 import type { RenderCancelTarget } from '../../services/engine/renderService'
 import { useUpgradePrompt } from '../system/useUpgradePrompt'
+import { useTier } from '../system/useTier'
+import { engineGateFor, modesAllowedForTier } from '../../lib/engineGate'
+import { peekPrerenderedPreview } from '../../lib/prerenderedPreview'
+import { effectiveModeEngine, type ModeEngineManifest } from '../../services/engine/renderPlacement'
 import * as idbCache from '../../services/cache/renderCache'
 
 const INITIAL_PROGRESS = 5
@@ -95,6 +99,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
   const [progress, setProgress] = useState(0)
   const [progressPhase, setProgressPhase] = useState('')
   const { triggerUpgradePrompt } = useUpgradePrompt()
+  const { tier, limits } = useTier()
 
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [pendingEstimate, setPendingEstimate] = useState(0)
@@ -181,6 +186,29 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
       }
     }
 
+    // Tier gate, BEFORE the estimate: a tier without this mode's engine (guest
+    // and essentials have no CadQuery) used to confirm a "~2 minutes" warning
+    // and then get an HTTP 403 with an empty stage. Ask first, from the limits
+    // /api/me already returned; unknown limits fall through to the server.
+    const gate = engineGateFor(manifest as unknown as ModeEngineManifest, mode, limits)
+    if (!gate.allowed) {
+      // Nobody asked for an automatic render: no prompt, no log line per edit.
+      if (automatic) return
+      const engineName = t(`tier.engine_${gate.engine}`)
+      setLogs(prev => prev + `\n${t('tier.engine_gated_log', { engine: engineName })}`)
+      const alternatives: string[] = []
+      if (peekPrerenderedPreview(project)) alternatives.push(t('tier.free_alt_preview'))
+      const engineManifest = manifest as unknown as ModeEngineManifest
+      const openscadModes = modesAllowedForTier(engineManifest, limits)
+        .filter(id => effectiveModeEngine(engineManifest, id) === 'openscad')
+      const renders = limits?.backend_renders_per_hour
+      if (openscadModes.length > 0 && typeof renders === 'number' && renders > 0) {
+        alternatives.push(t(tier === 'guest' ? 'tier.free_alt_openscad_guest' : 'tier.free_alt_openscad', { renders }))
+      }
+      triggerUpgradePrompt(engineName, { alternatives })
+      return
+    }
+
     if (!forceRender) {
       const estimate = estimateRenderTime(mode, params, manifest as unknown as Parameters<typeof estimateRenderTime>[2])
       const threshold = manifest.estimate_constants?.warning_threshold_seconds || 60
@@ -260,7 +288,8 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
         const msg = isProGate
           ? t("tier.upgrade_cloud_render")
           : (e as Error).message;
-        setLogs(prev => prev + `\n${t("log.error")} ${msg}`)
+        // The paywall is not an error: say what the plan includes, without "Error:".
+        setLogs(prev => prev + (isProGate ? `\n${msg}` : `\n${t("log.error")} ${msg}`))
 
         if (isProGate) {
           triggerUpgradePrompt('CadQuery Cloud Rendering')
@@ -277,7 +306,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
         setProgress(0)
       }, LOADING_RESET_DELAY_MS)
     }
-  }, [mode, params, manifest, t, getCacheKey, project, exportFormat, renderRevision, triggerUpgradePrompt])
+  }, [mode, params, manifest, t, getCacheKey, project, exportFormat, renderRevision, triggerUpgradePrompt, tier, limits])
 
   const handleCancelGenerate = useCallback(async () => {
     if (abortControllerRef.current) {

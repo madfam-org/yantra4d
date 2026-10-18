@@ -13,6 +13,7 @@ import { useImageExport } from '../render/useImageExport'
 import { useRender } from '../render/useRender'
 import { useKeyboardShortcuts } from '../editor/useKeyboardShortcuts'
 import { inferPreviewHint } from '../../lib/previewHintInference'
+import { isParameterInMode, parameterModes } from '../../lib/parameterModes'
 import { useParameterPreviewCache } from '../render/useParameterPreviewCache'
 import { sourceRevision } from '../../services/cache/sourceRevision'
 
@@ -240,7 +241,7 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
         // 1. Clean up parameters that shouldn't leak into the new mode
         if (manifest?.parameters) {
           manifest.parameters.forEach((p: ParamDef) => {
-            if (p.visible_in_modes && !p.visible_in_modes.includes(newMode)) {
+            if (!isParameterInMode(p, newMode)) {
               next[p.id] = p.default !== undefined ? p.default : 0
             }
           })
@@ -418,7 +419,7 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
   useEffect(() => {
     if (!modes || modes.length === 0) return
     const visibilityParams = manifest.parameters.filter(
-      (p: ParamDef) => p.group === 'visibility' && (p.visible_in_modes || []).includes(mode)
+      (p: ParamDef) => p.group === 'visibility' && (parameterModes(p) || []).includes(mode)
     )
     if (visibilityParams.length > 0 && visibilityParams.every((p: ParamDef) => !params[p.id])) {
       return

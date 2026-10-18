@@ -232,6 +232,43 @@ describe('StudioHeader', () => {
     expect(screen.getByText('Commons')).toBeInTheDocument()
   })
 
+  // Live on app.yantra4d.com (2026-10-18): gridfinity's badge read
+  // "Domain: undefined". Cartridges flag the badge in project.hyperobject but
+  // declare the domain in the top-level hyperobject block.
+  it('reads the commons badge domain from the top-level hyperobject block', () => {
+    useProject.mockReturnValue({
+      ...baseProjectContext,
+      manifest: {
+        project: { name: 'Gridfinity', hyperobject: { is_hyperobject: true } },
+        hyperobject: { domain: 'household' },
+      },
+    })
+    render(<StudioHeader {...defaultProps} />)
+    expect(screen.getByText('Commons')).toHaveAttribute('title', 'Domain: household')
+  })
+
+  it('omits the commons badge title when no domain is declared', () => {
+    useProject.mockReturnValue({
+      ...baseProjectContext,
+      manifest: { project: { name: 'Test Project', hyperobject: { is_hyperobject: true } } },
+    })
+    render(<StudioHeader {...defaultProps} />)
+    const badge = screen.getByText('Commons')
+    expect(badge).not.toHaveAttribute('title')
+    expect(document.body.innerHTML).not.toContain('undefined')
+  })
+
+  it('keeps a domain declared in project.hyperobject', () => {
+    useProject.mockReturnValue({
+      ...baseProjectContext,
+      manifest: {
+        project: { name: 'Test Project', hyperobject: { is_hyperobject: true, domain: 'hardware' } },
+      },
+    })
+    render(<StudioHeader {...defaultProps} />)
+    expect(screen.getByText('Commons')).toHaveAttribute('title', 'Domain: hardware')
+  })
+
   it('does not show commons badge when hyperobject is false', () => {
     useProject.mockReturnValue({
       ...baseProjectContext,

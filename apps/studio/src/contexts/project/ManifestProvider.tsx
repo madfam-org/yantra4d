@@ -5,6 +5,7 @@ import fallbackManifest from "../../config/fallback-manifest.json"
 import { getApiBase } from "../../services/core/backendDetection"
 import { apiFetch } from "../../services/core/apiClient"
 import { useAuth } from "../auth/AuthProvider"
+import { isParameterInMode } from "../../lib/parameterModes"
 
 interface ManifestMode {
   id: string
@@ -271,9 +272,7 @@ export function ManifestProvider({ children }: ManifestProviderProps) {
   const getMode = useCallback((modeId: string) => manifest.modes.find((m) => m.id === modeId), [manifest])
 
   const getParametersForMode = useCallback((modeId: string) =>
-    manifest.parameters.filter(
-      (p) => !p.visible_in_modes || p.visible_in_modes.includes(modeId)
-    ), [manifest])
+    manifest.parameters.filter((p) => isParameterInMode(p, modeId)), [manifest])
 
   const getPartColors = useCallback((modeId: string) => {
     const mode = getMode(modeId)

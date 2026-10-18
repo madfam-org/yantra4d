@@ -828,6 +828,18 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
     })
   })
 
+  it('a parameter scoped by `modes` (not visible_in_modes) is reset the same way', () => {
+    // The manifest schema accepts either field; gridfinity scopes its bin
+    // params with `modes` alone. Reading only visible_in_modes left them
+    // global, so they leaked into every other mode.
+    withManifestParams([{ id: 'only_default', default: 7, modes: ['default'] }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { result.current.setParams(prev => ({ ...prev, only_default: 99 })) })
+      act(() => { hashNav.onHashChange({ mode: { id: 'grid' }, preset: null }) })
+      expect(result.current.params.only_default).toBe(7)
+    })
+  })
+
   it('a parameter with no mode scope survives a mode change', () => {
     withManifestParams([{ id: 'shared', default: 1 }], () => {
       const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
@@ -923,6 +935,22 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
       renderHook(() => useProjectParams({ viewerRef: {} }))
       act(() => { vi.advanceTimersByTime(2000) })
       // With nothing visible there is no geometry to produce.
+      expect(mockHandleGenerate).not.toHaveBeenCalled()
+    } finally {
+      mockManifest.parameters = saved
+      vi.useRealTimers()
+    }
+  })
+
+  it('a visibility parameter scoped by `modes` also gates the auto-render', () => {
+    vi.useFakeTimers()
+    const saved = mockManifest.parameters
+    mockManifest.parameters = [
+      { id: 'show_body', group: 'visibility', modes: ['default'], default: false },
+    ]
+    try {
+      renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { vi.advanceTimersByTime(2000) })
       expect(mockHandleGenerate).not.toHaveBeenCalled()
     } finally {
       mockManifest.parameters = saved

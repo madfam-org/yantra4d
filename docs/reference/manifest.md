@@ -79,7 +79,7 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
       "group": "visibility",                // Optional grouping (renders with header)
       "visibility_level": "basic",           // Optional: "basic" (default) or "advanced"
       "parent": "show_walls",               // Optional: parent param ID (for hierarchy)
-      "visible_in_modes": ["unit", "assembly"],  // Which modes show this parameter
+      "visible_in_modes": ["unit", "assembly"],  // Which modes show this parameter (`modes` is accepted as the same list; visible_in_modes wins if both)
       "widget": {                            // Optional: custom widget type
         "type": "color-gradient"             // "color-gradient" or "component-picker"
         // If type="component-picker", add: "catalog": "nopscadlib/ball_bearings"

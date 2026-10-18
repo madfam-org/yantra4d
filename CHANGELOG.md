@@ -789,6 +789,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   introduced.
 
 ### Fixed
+- **Switching Mode Left the Previous Mode's Controls on Screen** — the Studio's
+  mode filter read only `visible_in_modes`, but the manifest schema also scopes a
+  parameter with `modes`, and 3979 parameters across 465 pinned cartridges use
+  `modes` alone. Those rendered in every mode: gridfinity `bin` → `cup` showed the
+  bin sliders above the cup ones, with duplicate width/depth/height/wall/floor
+  sliders (live, 2026-10-18). `apps/studio/src/lib/parameterModes.ts` now answers
+  "is this parameter in this mode" for the Design panel, the mode-switch reset and
+  the visibility auto-render gate. The Commons badge title also reads the domain
+  from the top-level `hyperobject` block and is omitted, not "Domain: undefined",
+  when none is declared.
 - **The Landing Gallery Under-Reported the Commons and Listed a Private Cartridge**
   — `apps/landing/src/data/projects.ts` is generated from the manifests and
   committed, and nothing checked it. It had drifted to 328 entries against a

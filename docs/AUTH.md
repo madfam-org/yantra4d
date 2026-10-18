@@ -503,14 +503,16 @@ Anonymous callers never qualify — there is no identity to check.
 ### What is gated
 
 Project listing (private entries are dropped before the `unlisted` filter),
-manifest, meta, parts, storefront and share, downloads and exports, render /
+catalog search and facets (`/api/catalog/search`, `/api/catalog/facets`: private
+entries leave the results, the facet counts and `catalog_count`), manifest, meta, parts, storefront and share, downloads and exports, render /
 render-stream / render-cancel, verify, bom / datasheet / assembly / animations /
 cart, fork, editor and git routes, analysis, simulation, the Cotiza export, the
 analytics summary, and `/static/<slug>_preview_*` render artifacts.
 
 Responses that depend on who is asking are never shared-cached: the private
-manifest is served `private, no-store` with no ETag, and the project list drops
-to `private, no-store` as soon as any project in it is private.
+manifest is served `private, no-store` with no ETag, and the project list and
+the catalog search and facets drop to `private, no-store` as soon as any project
+in the catalogue is private.
 
 The `/static` gate is a `before_request` hook, so it runs ahead of the view on
 every request to that prefix — including a conditional or ranged one. An
@@ -711,7 +713,9 @@ Symptoms map one-to-one:
 4. Verify without touching a secret (`<private-slug>` is any slug listed in
    `PRIVATE_PROJECTS`): `curl -s -o /dev/null -w '%{http_code}'
    https://api.yantra4d.com/api/projects/<private-slug>/manifest` → `403`
-   anonymously; the same request with an authorized bearer → `200`; the Studio
+   anonymously; the same request with an authorized bearer → `200`;
+   `curl -s 'https://api.yantra4d.com/api/catalog/search?q=<private-slug>'`
+   → `"total": 0` anonymously; the Studio
    at `/project/<private-slug>` shows the locked screen anonymously and renders
    after an authorized sign-in.
 

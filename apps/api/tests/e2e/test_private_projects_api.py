@@ -223,6 +223,69 @@ class TestProjectListing:
         assert res.headers["Cache-Control"] == "private, no-store"
 
 
+class TestCatalogSearch:
+    """/api/catalog/search and /api/catalog/facets apply the /api/projects rule.
+
+    Production 2026-10-18: an anonymous catalog search listed a private
+    cartridge with its name, description and tags, and counted it in
+    catalog_count, while its manifest answered project_locked.
+    """
+
+    def _slugs(self, res):
+        return {r["slug"] for r in res.get_json()["results"]}
+
+    def test_anonymous_search_does_not_list_the_private_project(self, client):
+        res = client.get("/api/catalog/search")
+        assert res.status_code == 200
+        body = res.get_json()
+        assert self._slugs(res) == {PUBLIC_SLUG}
+        assert body["total"] == 1
+        assert body["catalog_count"] == 1
+
+    def test_a_text_query_cannot_find_it_either(self, client):
+        res = client.get("/api/catalog/search?q=secret")
+        assert res.get_json()["total"] == 0
+
+    def test_unentitled_user_does_not_see_it(self, client):
+        res = client.get("/api/catalog/search", headers=auth("tok-essentials"))
+        assert PRIVATE_SLUG not in self._slugs(res)
+
+    def test_top_tier_sees_it(self, client):
+        res = client.get("/api/catalog/search", headers=auth("tok-premium"))
+        assert self._slugs(res) == {PUBLIC_SLUG, PRIVATE_SLUG}
+        assert res.get_json()["catalog_count"] == 2
+
+    def test_granted_email_sees_it(self, client, monkeypatch):
+        monkeypatch.setenv(
+            PROJECT_ACCESS_GRANTS_ENV,
+            json.dumps({PRIVATE_SLUG: ["guest-of-honour@example.com"]}),
+        )
+        res = client.get("/api/catalog/search", headers=auth("tok-granted"))
+        assert PRIVATE_SLUG in self._slugs(res)
+
+    def test_env_forced_private_is_hidden_too(self, client, monkeypatch):
+        monkeypatch.setenv(PRIVATE_PROJECTS_ENV, PUBLIC_SLUG)
+        res = client.get("/api/catalog/search")
+        assert self._slugs(res) == set()
+
+    def test_internal_fields_never_reach_the_wire(self, client):
+        res = client.get("/api/catalog/search", headers=auth("tok-premium"))
+        for record in res.get_json()["results"]:
+            assert not [k for k in record if k.startswith("_")]
+
+    def test_a_caller_dependent_search_is_not_shared_cached(self, client):
+        res = client.get("/api/catalog/search")
+        assert res.headers["Cache-Control"] == "private, no-store"
+
+    def test_anonymous_facets_do_not_count_it(self, client):
+        res = client.get("/api/catalog/facets")
+        assert res.status_code == 200
+        assert res.get_json()["count"] == 1
+        assert res.headers["Cache-Control"] == "private, no-store"
+        top = client.get("/api/catalog/facets", headers=auth("tok-premium"))
+        assert top.get_json()["count"] == 2
+
+
 class TestOtherProjectRoutes:
     def test_meta_is_gated(self, client):
         assert client.get(f"/api/projects/{PRIVATE_SLUG}/meta").status_code == 403

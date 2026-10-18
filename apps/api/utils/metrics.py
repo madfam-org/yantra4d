@@ -55,6 +55,16 @@ try:
         "Currently active AI chat sessions",
     )
 
+    # MESH_ORACLE=both (services/engine/mesh_metrics.py): one increment per
+    # metric on which trimesh and geom-core disagree. Named exactly as the
+    # geom-core programme specifies, without the yantra4d_ prefix, so every
+    # consumer of geom-core reports parity under the same series.
+    MESH_ORACLE_PARITY_MISMATCH = Counter(
+        "mesh_oracle_parity_mismatch",
+        "Mesh metrics on which the trimesh and geom-core oracles disagree",
+        ["metric"],
+    )
+
     _PROMETHEUS_AVAILABLE = True
 
 except ImportError:
@@ -78,6 +88,7 @@ except ImportError:
     CACHE_HITS = _Noop()
     CACHE_MISSES = _Noop()
     AI_SESSIONS_ACTIVE = _Noop()
+    MESH_ORACLE_PARITY_MISMATCH = _Noop()
     _PROMETHEUS_AVAILABLE = False
 
 

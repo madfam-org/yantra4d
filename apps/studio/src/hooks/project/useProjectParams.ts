@@ -15,6 +15,8 @@ import { useKeyboardShortcuts } from '../editor/useKeyboardShortcuts'
 import { inferPreviewHint } from '../../lib/previewHintInference'
 import { isParameterInMode, parameterModes } from '../../lib/parameterModes'
 import { useParameterPreviewCache } from '../render/useParameterPreviewCache'
+import { backgroundRendersAllowed } from '../../lib/serverRenderBudget'
+import { useTier } from '../system/useTier'
 import { sourceRevision } from '../../services/cache/sourceRevision'
 
 const RENDER_DEBOUNCE_MS = 500
@@ -485,10 +487,14 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
     modes,
   })
 
-  // Cached geometry variants for parameter preview ghost overlay
+  // Cached geometry variants for parameter preview ghost overlay. Missing
+  // variants are rendered in the background only on an unlimited server-render
+  // budget: each one spends the visitor's hourly quota.
+  const { limits: tierLimits } = useTier()
   const { cachedVariants, preRenderStatus } = useParameterPreviewCache({
     manifest: manifest as Parameters<typeof useParameterPreviewCache>[0]['manifest'],
     mode, params, parts, loading, project: projectSlug,
+    backgroundRenders: backgroundRendersAllowed(tierLimits),
   })
 
   return {

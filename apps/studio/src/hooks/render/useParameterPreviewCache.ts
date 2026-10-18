@@ -44,6 +44,11 @@ interface UseParameterPreviewCacheOptions {
   parts: RenderPart[]
   loading: boolean
   project?: string
+  /**
+   * Whether missing variants may be rendered in the background. Off unless the
+   * caller says so: see `backgroundRendersAllowed` (lib/serverRenderBudget).
+   */
+  backgroundRenders?: boolean
 }
 
 interface UseParameterPreviewCacheResult {
@@ -52,12 +57,13 @@ interface UseParameterPreviewCacheResult {
 }
 
 /**
- * After a render completes, idle-pre-render the top dimensional params
- * at their min and max values into IDB. On hover, if cached variants exist,
- * they are returned for ghost geometry overlay rendering.
+ * After a render completes, look up the top dimensional params at their min
+ * and max values in IDB; on hover, cached variants are returned for the ghost
+ * geometry overlay. Missing variants are rendered in the background only when
+ * `backgroundRenders` is true (see `backgroundRendersAllowed` in lib/serverRenderBudget).
  */
 export function useParameterPreviewCache({
-  manifest, mode, params, parts, loading, project
+  manifest, mode, params, parts, loading, project, backgroundRenders = false
 }: UseParameterPreviewCacheOptions): UseParameterPreviewCacheResult {
   const [cachedVariants, setCachedVariants] = useState<Map<string, CachedVariantParts>>(new Map())
   const [preRenderStatus, setPreRenderStatus] = useState('idle')
@@ -127,8 +133,9 @@ export function useParameterPreviewCache({
       setCachedVariants(newVariants)
       setPreRenderStatus('done')
 
-      // Background pre-render missing variants (one at a time)
-      if (controller.signal.aborted) return
+      // Background pre-render missing variants (one at a time). Each one is a
+      // metered server render, so only when the budget is unlimited.
+      if (controller.signal.aborted || !backgroundRenders) return
       setPreRenderStatus('rendering')
 
       for (const paramDef of hotParams) {
@@ -173,7 +180,7 @@ export function useParameterPreviewCache({
       cancelIdleCallback(idleId)
       controller.abort()
     }
-  }, [parts.length, loading, mode, params, manifest, project, getDimensionalParams])
+  }, [parts.length, loading, mode, params, manifest, project, getDimensionalParams, backgroundRenders])
 
   // Cleanup blob URLs on unmount or variant change
   useEffect(() => {

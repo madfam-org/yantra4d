@@ -979,3 +979,15 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
   })
 })
 
+describe('useProjectParams: ghost-preview variants and the render quota', () => {
+  it('does not let the preview cache render in the background on a metered or unknown budget', async () => {
+    const { useParameterPreviewCache } = await import('../render/useParameterPreviewCache')
+    vi.mocked(useParameterPreviewCache).mockClear()
+    renderHook(() => useProjectParams({ viewerRef: {} }))
+    const calls = vi.mocked(useParameterPreviewCache).mock.calls
+    expect(calls.length).toBeGreaterThan(0)
+    // No TierProvider here: limits are unknown, which must count as metered.
+    for (const [options] of calls) expect(options.backgroundRenders).toBe(false)
+  })
+})
+

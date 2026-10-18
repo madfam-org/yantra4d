@@ -20,12 +20,12 @@
  * the TypeScript result they would have produced with the flag off.
  */
 
-import type { Analyzer, GeomCoreModule, Vec3 } from '@madfam/geom-core/wasm'
+import type { Analyzer, GeomCoreModule, GeomCoreOptions, Vec3 } from '@madfam/geom-core/wasm'
 
 /** Release this Studio pins (apps/studio/package.json). */
-export const GEOM_CORE_VERSION = '0.1.0'
+export const GEOM_CORE_VERSION = '0.2.0'
 
-/** Upper bound for module initialisation; a stuck pthread pool must not hang the Studio. */
+/** Upper bound for module initialisation; a stuck download or compile must not hang the Studio. */
 const LOAD_TIMEOUT_MS = 10_000
 
 export function parseGeomCoreFlag(value: string | null | undefined): boolean | null {
@@ -84,22 +84,6 @@ function runningUnderNode(): boolean {
   return Boolean(proc?.versions?.node)
 }
 
-/**
- * Why this page cannot start the geom-core WASM, or null when it can.
- *
- * geom-core 0.1.0 ships a threaded Emscripten build: it allocates shared
- * WebAssembly memory and starts a 4-worker pthread pool at initialisation.
- * Browsers only allow shared memory on cross-origin-isolated pages
- * (COOP `same-origin` + COEP `require-corp`), which the Studio is not today.
- */
-export function geomCoreBrowserBlocker(): string | null {
-  if (runningUnderNode()) return null
-  if ((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated !== true) {
-    return `@madfam/geom-core ${GEOM_CORE_VERSION} is a threaded WASM build (shared memory + pthread pool) and this page is not cross-origin isolated (COOP/COEP)`
-  }
-  return null
-}
-
 function withTimeout<T>(promise: Promise<T>, ms: number, what: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(`${what} did not finish within ${ms} ms`)), ms)
@@ -110,26 +94,25 @@ function withTimeout<T>(promise: Promise<T>, ms: number, what: string): Promise<
   })
 }
 
-/** Last message the WASM wrote to stderr, folded into thrown errors. */
-let lastWasmError = ''
-
+/**
+ * geom-core 0.2.0's default `./wasm` entry is a single-threaded ES-module
+ * build (no SharedArrayBuffer, no worker pool), so it needs no cross-origin
+ * isolation and loads on the Studio's pages as they are served today. The
+ * threaded build is the separate `@madfam/geom-core/threaded` entry, which the
+ * Studio does not use.
+ */
 async function instantiate(): Promise<GeomCoreModule> {
-  const blocker = geomCoreBrowserBlocker()
-  if (blocker) throw new Error(blocker)
-
-  const { default: GeomCore } = await import('@madfam/geom-core/wasm')
-  const options: Record<string, unknown> = {
-    print: () => { /* the analyzer logs every load; keep the console clean */ },
-    printErr: (msg: string) => { lastWasmError = String(msg) },
-  }
+  const { default: createGeomCore } = await import('@madfam/geom-core/wasm')
+  const options: GeomCoreOptions = {}
   if (!runningUnderNode()) {
-    // In the browser the Emscripten loader cannot find its .wasm next to a
-    // bundled chunk; Vite emits it as an asset (alias in vite.config.js).
+    // Vite emits the package's `.wasm` (export `./wasm-binary`) as a hashed
+    // asset; hand its URL to the Emscripten loader. Under Node (Vitest) the
+    // loader reads the file from node_modules itself.
     const { default: wasmUrl } = await import('@madfam/geom-core/wasm-binary?url')
     options.locateFile = (path: string) => (path.endsWith('.wasm') ? wasmUrl : path)
   }
   return withTimeout(
-    (GeomCore as unknown as (o: Record<string, unknown>) => Promise<GeomCoreModule>)(options),
+    createGeomCore(options),
     LOAD_TIMEOUT_MS,
     `@madfam/geom-core ${GEOM_CORE_VERSION} initialisation`,
   )
@@ -143,7 +126,12 @@ export function loadGeomCore(): Promise<GeomCoreModule> {
   if (!modulePromise) {
     state = 'loading'
     modulePromise = instantiate().then(
-      (mod) => { state = 'ready'; failureReason = null; return mod },
+      (mod) => {
+        state = 'ready'
+        failureReason = null
+        console.info(`[geom-core] ${GEOM_CORE_VERSION} WASM active (single-threaded); mesh metrics come from geom-core`)
+        return mod
+      },
       (err) => { reportGeomCoreFailure(err); throw err },
     )
   }
@@ -153,21 +141,25 @@ export function loadGeomCore(): Promise<GeomCoreModule> {
 export interface GeomCoreSTLMetrics {
   /** Triangles the analyzer read. */
   faceCount: number
-  /** Bounding-box extents [x, y, z] in mm. geom-core reports extents, not min/max. */
+  /** Axis-aligned bounding box in mm, straight from `getBoundingBox()`. */
+  bbox: { min: [number, number, number]; max: [number, number, number] }
+  /** Bounding-box extents [x, y, z] in mm (`max - min`). */
   size: [number, number, number]
   /** |signed volume| in mm³ (divergence theorem, same method as printEstimator). */
   volumeMm3: number
+  /** Signed volume in mm³: negative when the closed surface is inside out. */
+  signedVolumeMm3: number
   /** Volumetric centroid in mm; the origin when |volume| < 1e-9 (same rule as printEstimator). */
   centroid: Vec3
 }
 
+const xyz = (v: Vec3): [number, number, number] => [v.x, v.y, v.z]
+
 function withAnalyzer<T>(mod: GeomCoreModule, bytes: Uint8Array, fn: (a: Analyzer) => T): T {
   const analyzer = new mod.Analyzer()
   try {
-    lastWasmError = ''
-    if (!analyzer.loadSTLFromBytes(bytes)) {
-      throw new Error(`geom-core could not read the STL${lastWasmError ? `: ${lastWasmError}` : ''}`)
-    }
+    // Returns true or throws GeomCoreSTLError ("geom-core could not read the STL: <reason>").
+    analyzer.loadSTLFromBytes(bytes)
     return fn(analyzer)
   } finally {
     analyzer.delete()
@@ -177,12 +169,14 @@ function withAnalyzer<T>(mod: GeomCoreModule, bytes: Uint8Array, fn: (a: Analyze
 /** Analyse a binary STL with geom-core. Throws (never returns a partial result) on failure. */
 export function analyzeSTLBytes(mod: GeomCoreModule, bytes: Uint8Array): GeomCoreSTLMetrics {
   return withAnalyzer(mod, bytes, (a) => {
-    const s = a.getBoundingBox()
+    const box = a.getBoundingBox()
     const c = a.getCentroid()
     return {
       faceCount: a.getTriangleCount(),
-      size: [s.x, s.y, s.z],
+      bbox: { min: xyz(box.min), max: xyz(box.max) },
+      size: xyz(box.size),
       volumeMm3: a.getVolume(),
+      signedVolumeMm3: a.getSignedVolume(),
       centroid: { x: c.x, y: c.y, z: c.z },
     }
   })

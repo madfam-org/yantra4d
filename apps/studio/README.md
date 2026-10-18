@@ -226,7 +226,8 @@ de la configuración por defecto") with the commons pin it was rendered from.
   `/models/manifest.json` and `/models/*.glb` with
   `Access-Control-Allow-Origin` for `https://app.yantra4d.com` and
   `http://localhost:*` / `http://127.0.0.1:*` (`apps/landing/nginx.conf`,
-  held by `scripts/tests/test_nginx_models_cors.py`).
+  held by `scripts/tests/test_nginx_models_cors.py`), and the Studio CSP
+  lists `https://yantra4d.com` in `connect-src` (the loader's fetch).
 - **What the Studio does** (`src/lib/prerenderedPreview.ts`,
   `src/hooks/render/usePrerenderedPreview.ts`): fetches the manifest once per
   hour per tab (five minutes after a failure), loads `lod0` when the manifest

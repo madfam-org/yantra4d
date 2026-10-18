@@ -20,12 +20,12 @@ export interface PrerenderedPreviewState {
  * lod0 first, lod1 when lod0 is absent from the manifest or fails to load.
  * Failures are silent: the stage simply stays as it was.
  */
-export function usePrerenderedPreview(slug: string | null | undefined, enabled: boolean = true): PrerenderedPreviewState {
+export function usePrerenderedPreview(slug: string | null | undefined): PrerenderedPreviewState {
   const [info, setInfo] = useState<{ slug: string; preview: PrerenderedPreviewInfo | null } | null>(null)
   const [failed, setFailed] = useState<ReadonlySet<string>>(() => new Set())
 
   useEffect(() => {
-    if (!slug || !enabled) return
+    if (!slug) return
     let active = true
     const base = resolveModelsBase()
     loadPrerenderManifest(base).then(manifest => {
@@ -34,13 +34,13 @@ export function usePrerenderedPreview(slug: string | null | undefined, enabled: 
       setFailed(new Set())
     })
     return () => { active = false }
-  }, [slug, enabled])
+  }, [slug])
 
   const reportFailure = useCallback((url: string) => {
     setFailed(prev => (prev.has(url) ? prev : new Set([...prev, url])))
   }, [])
 
-  const preview = enabled && info && info.slug === slug ? info.preview : null
+  const preview = info && info.slug === slug ? info.preview : null
   const candidate = preview?.candidates.find(c => !failed.has(c.url)) ?? null
   return {
     current: preview && candidate

@@ -1,4 +1,5 @@
 import { Text, Line } from '@react-three/drei'
+import { STUDIO_LABEL_FONT } from '@/lib/studioFonts'
 
 const AXIS_LENGTH = 100
 const TICK_INTERVAL = 10
@@ -37,6 +38,7 @@ const AxisLine = ({ direction, color, label }: AxisLineProps) => {
           <Line points={[tickStart, tickEnd] as [number, number, number][]} color={color} lineWidth={1} />
           <Text
             position={pos}
+            font={STUDIO_LABEL_FONT}
             fontSize={3}
             color={color}
             anchorX="center"
@@ -46,7 +48,7 @@ const AxisLine = ({ direction, color, label }: AxisLineProps) => {
           </Text>
         </group>
       ))}
-      <Text position={labelPos} fontSize={5} color={color} anchorX="center" anchorY="middle" fontWeight="bold">
+      <Text position={labelPos} font={STUDIO_LABEL_FONT} fontSize={5} color={color} anchorX="center" anchorY="middle">
         {label}
       </Text>
     </group>

@@ -25,7 +25,12 @@ import logging
 
 from flask import Blueprint, jsonify, request
 
-from services.core.catalog_index import get_catalog, search_catalog
+from services.core.catalog_index import (
+    get_catalog,
+    hidden_for_caller,
+    search_catalog,
+    visible_facets,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +60,9 @@ def catalog_search():
     if sort not in ("name", "recent", "complexity"):
         sort = "name"
 
+    # Private cartridges follow /api/projects: hidden unless this caller may view
+    # them, and then the answer depends on the caller, so no shared cache.
+    hidden, any_private = hidden_for_caller()
     result = search_catalog(
         q=request.args.get("q", ""),
         domain=_arg("domain"),
@@ -69,17 +77,30 @@ def catalog_search():
         sort=sort,
         limit=limit,
         offset=offset,
+        hidden=hidden,
     )
     resp = jsonify(result)
-    # Safe to cache briefly at the edge; the index self-invalidates on project changes.
-    resp.headers["Cache-Control"] = "public, max-age=120"
+    resp.headers["Cache-Control"] = _cache_control(any_private)
     return resp
+
+
+def _cache_control(any_private: bool) -> str:
+    """Brief edge cache for a caller-independent answer; none once privacy applies.
+
+    The index self-invalidates on project changes, so 120 s is safe for a public
+    catalog. With any private record the answer depends on who is asking, and a
+    shared cache would hand one caller's view to the next (same rule as
+    /api/projects).
+    """
+    return "private, no-store" if any_private else "public, max-age=120"
 
 
 @catalog_search_bp.route("/api/catalog/facets", methods=["GET"])
 def catalog_facets():
     """Global facet value→count maps + total count, for building navigation chrome."""
     cat = get_catalog()
-    resp = jsonify({"facets": cat["facets"], "count": cat["count"]})
-    resp.headers["Cache-Control"] = "public, max-age=120"
+    hidden, any_private = hidden_for_caller(cat)
+    facets, count = visible_facets(cat, hidden)
+    resp = jsonify({"facets": facets, "count": count})
+    resp.headers["Cache-Control"] = _cache_control(any_private)
     return resp

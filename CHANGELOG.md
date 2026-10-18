@@ -14,6 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Mesh oracle seam with an optional geom-core backend** (lane G4, 2026-10-18).
+  `apps/api/services/engine/mesh_metrics.py` (`MeshOracle`: `TrimeshOracle`,
+  `GeomCoreOracle`) now answers the Cotiza quote export's volume/area/bbox and,
+  under a geom-core mode, observes integrity at render completion in the worker.
+  `MESH_ORACLE=trimesh` (default, unchanged behaviour) | `geomcore` | `both`
+  (trimesh numbers returned, `mesh_oracle_parity` log records,
+  `mesh_oracle_parity_mismatch_total{metric}`). The geom-core wheel is installed
+  only with `--build-arg GEOM_CORE_WHEEL_URL` + `GEOM_CORE_WHEEL_SHA256`; a
+  non-required `mesh-oracle-differential` CI job runs the differential suite
+  against the v0.1.0 cp311 wheel. See docs/guides/production-checklist.md
+  "Mesh oracle (geom-core)".
 - **Graph Engine Wave D: Expressions, Select, Reflect, Polyline And Bounded Revolve**
   — graph format 1.1, built as far as the Voron 2.4 assembly A printed parts need
   (lane P8-ENGINE, 2026-10-04).

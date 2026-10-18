@@ -1,0 +1,59 @@
+name: CodeQL
+
+# Static analysis for the two languages this repository ships: the Studio,
+# landing, admin, docs and SDK frontends (javascript-typescript) and the Flask
+# API plus the CI scripts (python). Code scanning is free on public
+# repositories. Results land in the Security tab; this workflow is not part of
+# `ci-success`, so a new alert does not block a merge (A1 D-10, 2026-10-18).
+#
+# Runner: GitHub-hosted, same ADR-010 expression as ci.yml (R116: public repo,
+# never the self-hosted pool). Every `uses:` is pinned to a commit SHA with the
+# tag in a trailing comment; Dependabot's github-actions ecosystem bumps both.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Mondays 07:17 UTC: weekly re-scan with the latest CodeQL queries.
+    - cron: "17 7 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: codeql-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, python]
+    steps:
+      # No submodules: the commons (projects/), the vendored OpenSCAD libs and
+      # the private cartridges are other repositories with their own scanning.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          config: |
+            paths-ignore:
+              - "**/node_modules/**"
+              - "**/dist/**"
+              - "**/build/**"
+              - "**/*.min.js"
+      - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          category: "/language:${{ matrix.language }}"

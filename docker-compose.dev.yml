@@ -98,7 +98,7 @@ services:
       PROJECTS_DIR: /app/projects
       USER_PROJECTS_DIR: /app/user-projects
       OPENSCADPATH: /app/libs:/app/libs/dotSCAD/src:/app/projects
-      VERIFY_SCRIPT: /app/backend/tests/verify_design.py
+      VERIFY_SCRIPT: /app/backend/tests/scripts/verify_design.py
       AUTH_ENABLED: "false"
       RATE_LIMIT_ENABLED: "false"
       RATE_LIMIT_STORAGE: "redis://redis:6379"

@@ -82,7 +82,7 @@ The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()`,
 | `VITE_API_BASE` | `http://localhost:5000` | Backend API base URL |
 | `VITE_RENDER_MODE` | _(unset)_ | Pins the render path to `backend` or `wasm` for the whole build. Any other value is ignored. |
 | `VITE_PRERENDER_MODELS_BASE` | _(unset)_ | Where the [prerendered previews](#prerendered-previews) are read from. Unset: `/models/` on `yantra4d.com`, `https://yantra4d.com/models/` everywhere else. |
-| `VITE_GEOM_CORE_BROWSER` | _(unset = off)_ | Experimental: `1` routes mesh volume/bbox/centroid and STL face count/bbox through the `@madfam/geom-core` WASM. Per-session override: `?geomcore=1\|0`. See [Geometry core (WASM)](#geometry-core-wasm--experimental). |
+| `VITE_GEOM_CORE_BROWSER` | _(unset = off)_ | Experimental: `1` routes mesh volume/bbox/centroid and STL face count/bbox through the `@madfam/geom-core` 0.2.0 WASM (single-threaded; no COOP/COEP needed). Per-session override: `?geomcore=1\|0`. See [Geometry core (WASM)](#geometry-core-wasm--experimental). |
 
 ### Render Placement
 
@@ -262,61 +262,116 @@ Unknown limits fall through to the server, which still answers 403 as before.
 ### Geometry core (WASM) — experimental
 
 The Studio depends on [`@madfam/geom-core`](https://github.com/madfam-org/geom-core)
-0.1.0, the shared mesh-analysis library of the geometry factories ("mesh in,
-numbers out"), pinned to the GitHub Release tarball with its `sha512` integrity
-in `package-lock.json`. It is the first consumer step of the R8 adoption plan
+0.2.0, the shared mesh-analysis library of the geometry factories ("mesh in,
+numbers out"). It is the first consumer step of the R8 adoption plan
 (internal-devops `audits/2026-09-04-geom-core-yantra4d-usage.md`, PR-3).
+
+**Where the package comes from.** The source is the GitHub Release asset
+<https://github.com/madfam-org/geom-core/releases/download/v0.2.0/madfam-geom-core-0.2.0.tgz>.
+A byte-identical copy is committed at `vendor/madfam-geom-core-0.2.0.tgz` and
+installed as `file:vendor/madfam-geom-core-0.2.0.tgz`, with its `sha512` in
+`package-lock.json`, so the Studio image build needs no network for it (a
+release-URL dependency failed with `read ECONNRESET` on the deploy runner
+pool). npm does not verify a `file:` tarball's lockfile integrity, so
+`scripts/dev/check-geom-core-vendor.mjs` does: CI (`ci.yml` › studio,
+GitHub-hosted) checks package.json ↔ lockfile ↔ vendored file ↔ release asset,
+and the Dockerfile runs it with `--offline` (no release download) before
+`npm install`. To bump: download the new release asset into `vendor/`, delete
+the old one, point `package.json` at it, `npm install --legacy-peer-deps`, and
+run `node ../../scripts/dev/check-geom-core-vendor.mjs`.
 
 | | Flag off (default) | Flag on |
 |---|---|---|
 | Viewer volume / bbox / centroid (`Viewer.tsx` → `lib/meshMetrics.ts`) | `printEstimator.ts`, unchanged | geom-core per geometry, once loaded; TypeScript until then |
 | Verify face count / bbox (`verifyService.ts`) | `stl-utils.ts`, unchanged | geom-core; output gains a `Geometry core:` line |
-| Triangle soup for manifold-3d, print-time model | TypeScript | TypeScript (geom-core does not return vertex arrays or min/max — its browser binding reports bbox *extents*) |
+| Triangle soup for manifold-3d (CSG, manifold check), print-time model | TypeScript | TypeScript (manifold-3d stays the browser CSG engine) |
 | WASM download | never | lazily, on first use |
+
+`analyzeSTLBytes()` (`src/lib/geomCoreBrowser.ts`) returns the face count, the
+bounding box `min`/`max`/`size` straight from `getBoundingBox()`, the absolute
+volume (`getVolume()`), the signed volume (`getSignedVolume()`, negative for an
+inside-out surface) and the centroid.
 
 **Turning it on.** Precedence, read once at page load (`src/lib/geomCoreBrowser.ts`):
 `?geomcore=1|0` (also `true/false/on/off`) for one session, then
 `VITE_GEOM_CORE_BROWSER=1` for a whole build, then off.
 
-**Failures are visible.** When the WASM cannot run, the first failure is logged
+**It runs on today's pages.** geom-core 0.2.0's default `./wasm` entry is a
+*single-threaded* ES-module build: no `SharedArrayBuffer`, no worker pool, so no
+cross-origin isolation (COOP/COEP) and no nginx change. (0.1.0 was a threaded
+build that browsers refuse without isolation; the loader used to stop there.
+The threaded build is now the opt-in `@madfam/geom-core/threaded` entry, which
+the Studio does not use.) When geom-core is active the console shows one line:
+`[geom-core] 0.2.0 WASM active (single-threaded); mesh metrics come from geom-core`.
+
+**Failures are visible.** When the WASM cannot load (download, compile or a
+10 s initialisation bound), the first failure is logged
 (`[geom-core] WASM path unavailable, using the TypeScript path: …`),
 `getGeomCoreBrowserStatus()` reports `state: 'failed'` with the reason, verify
 prints it, and every number falls back to the TypeScript result the flag-off
-path produces. Initialisation is bounded at 10 s.
+path produces. A malformed STL throws `GeomCoreSTLError`
+(`geom-core could not read the STL: <reason>`).
 
-**Not ready to flip in production.** geom-core 0.1.0 ships a *threaded*
-Emscripten build: it allocates shared WebAssembly memory and starts a 4-worker
-pthread pool at load. Browsers only allow that on cross-origin-isolated pages
-(COOP `same-origin` + COEP `require-corp`), which the Studio is not, and the
-pool's worker script URL is not resolvable from inside a bundled chunk. With the
-flag on in a browser today the loader stops at the isolation check and the
-Studio stays on TypeScript. Flipping the flag needs a single-threaded browser
-build of geom-core (or cross-origin isolation plus a worker-URL option) — a
-geom-core change, tracked in the PR that added this section.
+**How the WASM is served.** The loader imports the package's own `.wasm`
+through its `./wasm-binary` export (`@madfam/geom-core/wasm-binary?url`), so
+`vite build` emits it as a hashed asset (`dist/assets/geom-core-*.wasm`, byte
+for byte the package's file) and the loader passes that URL through
+`locateFile`. No Vite alias is involved. The loader JS is its own lazy chunk;
+neither is referenced by `index.html` or the default entry. Under Node (Vitest)
+the loader reads the `.wasm` from `node_modules` itself.
 
-**How the WASM is served.** The package exports only `.` and `./wasm`, and the
-Emscripten loader cannot find its `.wasm` next to a bundled chunk.
-`geom-core-wasm.alias.js` (used by `vite.config.js` and `vitest.config.js`)
-maps the virtual specifier `@madfam/geom-core/wasm-binary?url` to the file next
-to the exported loader, so `vite build` emits it as a hashed asset
-(`dist/assets/geom-core-*.wasm`) and the loader passes that URL through
-`locateFile`. The loader JS is its own lazy chunk; neither is referenced by the
-default entry. Under Node (Vitest) the loader reads the `.wasm` from
-`node_modules` itself.
+| Build output (`npm run build`) | 0.1.0 (threaded) | 0.2.0 (single-threaded) |
+|---|---:|---:|
+| Entry `index-*.js` | 978.67 kB (gzip 299.45) | 978.53 kB (gzip 299.43) |
+| Lazy geom-core loader chunk | 44.92 kB (gzip 18.33) | 39.70 kB (gzip 16.05) |
+| Lazy `geom-core-*.wasm` | 259.32 kB (gzip 99.19) | 252.62 kB (gzip 95.52) |
+| `__vite-browser-external` stub | 0.13 kB | gone |
 
 **Differential tests.** `src/lib/geomCore.differential.{node,jsdom}.test.js`
 run the same suite (`src/lib/__fixtures__/geomCoreDifferentialSuite.js`) under
 both Vitest environments against the real WASM: every `stl-utils` and
 `printEstimator` test fixture plus offset, inside-out, two-body, curved and
-sub-threshold meshes. Gates: volume 1e-9 relative, bbox and centroid 1e-9 mm
-(observed worst 2.6e-14 and 1.4e-14). `meshMetrics.test.js` and
+sub-threshold meshes — volume, bbox extents and min/max (against `stl-utils`
+and three.js), signed volume (against `printEstimator`'s sum before its
+`Math.abs`), centroid, face count and `getIndices()` length, and the three
+malformed-STL rejections. Gates: volume 1e-9 relative, lengths 1e-9 mm
+(observed worst 2.6e-14 and 1.4e-14). `geomCore.noIsolation.jsdom.test.js`
+runs the loader's browser branch with `SharedArrayBuffer` deleted,
+`crossOriginIsolated === false` and `Worker` trapped. `meshMetrics.test.js` and
 `verifyService.geomCore.test.js` prove the flag-off path returns exactly the
 TypeScript results and main's verify output, and never imports the package.
 
 ```bash
-npx vitest run src/lib/geomCore.differential src/lib/meshMetrics.test.js \
+npx vitest run src/lib/geomCore src/lib/meshMetrics.test.js \
   src/lib/geomCoreBrowser.test.js src/services/engine/verifyService.geomCore.test.js
 ```
+
+#### Soak plan (flag off → on)
+
+1. **Cohort today: `?geomcore=1`.** Anyone (support, the owner, a tester) opens
+   a Studio link with `?geomcore=1`, e.g.
+   `https://studio.yantra4d.com/project/gridfinity?geomcore=1`. Nothing else
+   changes for other visitors. Check the console for the `WASM active` line and
+   the absence of `WASM path unavailable`; compare the model-info numbers with
+   the same link without the parameter.
+2. **Nightly evidence.** The browser audit (`.github/workflows/e2e-audit.yml`,
+   `--project=audit`) runs the Gridfinity journey
+   `?geomcore=1: geom-core WASM loads without cross-origin isolation and model info renders`
+   (`e2e/tests/23-browser-audit/gridfinity.spec.js`) against a real backend and
+   a real Chromium: it renders `bin`, asserts `crossOriginIsolated === false`,
+   exactly one `WASM active` line, no fallback warning, and the model info. A
+   failure opens or updates the `e2e-audit-failure` issue like any audit test.
+3. **Flip on the next Studio deploy, only after (2) is green.** The variable
+   is read at build time and the Studio image does not pass it yet, so the
+   flip is a small PR: `ARG`/`ENV VITE_GEOM_CORE_BROWSER` in
+   `apps/studio/Dockerfile` and `VITE_GEOM_CORE_BROWSER=1` in the Studio
+   image's `build-args` in `.github/workflows/deploy.yml`, merged for the first
+   Studio deploy after the nightly has run the journey green — the owner's
+   decision. `?geomcore=0` stays the per-session escape hatch, and reverting
+   that PR on the next deploy is the rollback.
+4. **After the flip.** The TypeScript implementations stay as the differential
+   oracle; removing them is a separate change once the flag has been on for a
+   release.
 
 ### Updating the Fallback Manifest
 

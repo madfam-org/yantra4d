@@ -54,6 +54,87 @@ ends of one store. Artifacts are always streamed through the API and never
 redirected to a bucket URL — a redirect would bypass the private-artifact gate
 and the download access checks, which parse the artifact *name*.
 
+### Mesh oracle (geom-core) (optional)
+
+Mesh analysis — the watertight/manifold verdict, quote volume, surface area,
+bounding box — goes through one seam, `services/engine/mesh_metrics.py`
+(`MeshOracle`). The default **is** today's trimesh code
+(`mesh_integrity.assess` plus trimesh's `volume`/`area`/`bounds`), so leaving
+this unset changes nothing. The alternative backend is
+[geom-core](https://github.com/madfam-org/geom-core), the shared C++ mesh
+library of the geometry factories, whose integrity check is a port of
+`mesh_integrity.py`.
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `MESH_ORACLE` | `trimesh` | `trimesh` — today's code. `geomcore` — geom-core answers. `both` — both run, **trimesh's numbers are returned**, every metric logs a `mesh_oracle_parity {json}` record (`slug`, `mode`, `metric`, `trimesh`, `geomcore`, `delta`, `match`) and each disagreement increments `mesh_oracle_parity_mismatch_total{metric}`. An unknown value, or `geomcore`/`both` without the wheel installed, logs an **error** once per process and runs on trimesh |
+
+Where the seam is wired:
+
+- **Cotiza quote export** (`routes/integrations/cotiza_export.py`): volume,
+  surface area, bbox. Trimesh stays the default. geom-core computes surface
+  area as a plain triangle sum; trimesh's `area` is the same sum, and the
+  differential suite holds them to 1e-6 relative.
+- **Render completion** (`apps/worker/render_worker.py`, both the sync and the
+  stream path): under `geomcore` or `both` only, the worker assesses the
+  finished mesh and logs the verdict (`mesh_oracle render integrity …`).
+  Observation only — a render is never rejected. Under the default nothing is
+  loaded, so the render path does exactly the work it did before. The worker
+  serves no `/metrics`, so render-time parity is in the worker's logs; the
+  counter is scraped from the API (quote export).
+- Not in the seam: wall thickness and overhang (`/analyze/*`) return
+  per-vertex/per-face arrays that geom-core does not expose to Python; the
+  print estimator is the Studio's TypeScript (`apps/studio/src/lib/printEstimator.ts`,
+  geom-core's WASM path, lane G3).
+
+Known differences the parity soak measures (asserted in
+`apps/api/tests/unit/test_mesh_oracle_differential.py`, not hidden by a
+tolerance): geom-core welds exactly coincident vertices on load, so an
+in-memory, never-welded mesh can differ (unwelded soup: same verdict, no merge
+tolerance reported; two touching shells: two closed bodies to trimesh, a
+non-manifold contact to geom-core). Every file the API reads goes through
+`trimesh.load`, which welds first, so both agree on loaded files — including all
+15 reference exports in `projects/*/exports/`. Centroids of open surfaces
+differ (neither has a volumetric centroid; no caller reads one). geom-core is handed a
+binary STL of the loaded mesh, i.e. float32 vertices, so float deltas of order
+1e-8 relative are expected and sit far inside the 1e-6 parity tolerance.
+
+**Installing the wheel.** geom-core is not on PyPI. It ships as GitHub Release
+wheels, one per CPython version, and is installed only when the image is built
+with both build args (the SHA-256 is mandatory with the URL; a mismatch fails
+the build):
+
+```bash
+docker build -f apps/api/Dockerfile \
+  --build-arg GEOM_CORE_WHEEL_URL=https://github.com/madfam-org/geom-core/releases/download/v0.1.0/geom_core-0.1.0-cp3XX-cp3XX-linux_x86_64.whl \
+  --build-arg GEOM_CORE_WHEEL_SHA256=<sha256 from the release asset> .
+```
+
+The production image is `python:3.12-slim`, so it needs a **cp312** wheel —
+`geom_core-0.1.0-cp312-cp312-linux_x86_64.whl` once a geom-core release ships
+one. v0.1.0 ships cp38, cp39, cp310 and cp311 Linux wheels only (plus a
+"universal2" macOS wheel for 3.10/3.11 that is in fact arm64-only), so today
+the build arg cannot be used with this image: pip refuses a cp311 wheel on 3.12
+and the build fails, visibly. CI's `mesh-oracle-differential` job therefore
+runs on Python 3.11 with
+`https://github.com/madfam-org/geom-core/releases/download/v0.1.0/geom_core-0.1.0-cp311-cp311-linux_x86_64.whl`
+(sha256 `6a286ba8365c98f238eca2fca8008eb3d646586d87e49ce6c6ca8c141c5590e1`).
+
+**Flip plan.**
+
+1. **Parity soak** — a geom-core release with a cp312 wheel; build the image
+   with the two build args; set `MESH_ORACLE=both` on the API and the
+   render-worker. Watch `mesh_oracle_parity_mismatch_total` and the
+   `mesh_oracle_parity` / `mesh_oracle render integrity` log lines; every
+   mismatch is either a geom-core bug (fix there, new release) or a documented
+   difference (add it to the differential suite).
+2. **Default geomcore** — with the counter flat over the soak, set
+   `MESH_ORACLE=geomcore`, then make it the default in `mesh_metrics.py`
+   (`DEFAULT_MODE`) and install the wheel unconditionally.
+3. **Remove the duplicates** — only then delete the trimesh metric code and
+   `services/engine/mesh_integrity.py`; `mesh_integrity.py` stays until step 3,
+   because it is the oracle the differential suite measures geom-core against.
+
 ### AI Features (optional)
 
 | Variable | Default | Purpose |

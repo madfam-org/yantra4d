@@ -245,7 +245,7 @@ If Redis is unreachable, Flask-Limiter will log a warning and fall back to in-me
 | `OPENSCAD_PATH` | `/usr/bin/openscad` | Path to OpenSCAD binary |
 | `SCAD_DIR` | — | Single-project SCAD directory (legacy) |
 | `PROJECTS_DIR` | `projects/` | Multi-project root directory |
-| `VERIFY_SCRIPT` | `tests/verify_design.py` | Path to verification script |
+| `VERIFY_SCRIPT` | `apps/api/tests/scripts/verify_design.py` (image: `/app/tests/scripts/verify_design.py`) | Path to verification script |
 | `CORS_ORIGINS` | `http://localhost:5173` | Allowed CORS origins |
 | `VITE_API_BASE` | `http://localhost:5000` | Studio → backend URL |
 | `AI_PROVIDER` | `anthropic` | AI provider: `anthropic` or `openai` |

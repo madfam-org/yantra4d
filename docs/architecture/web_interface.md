@@ -451,7 +451,7 @@ Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 | `OPENSCAD_PATH` | `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD` | Path to OpenSCAD binary |
 | `LIBS_DIR` | `libs/` (at repo root) | Directory containing global OpenSCAD libraries (BOSL2, NopSCADlib, etc.) |
 | `OPENSCADPATH` | value of `LIBS_DIR` | OpenSCAD library search path, injected into render subprocesses |
-| `VERIFY_SCRIPT` | `../../tests/verify_design.py` | Path to verification script |
+| `VERIFY_SCRIPT` | `apps/api/tests/scripts/verify_design.py` | Path to verification script |
 | `FLASK_DEBUG` | `false` | Enable Flask debug mode |
 | `PORT` | `5000` | Backend server port |
 | `HOST` | `0.0.0.0` | Backend bind address |

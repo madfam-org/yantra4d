@@ -151,3 +151,70 @@ class TestVerifyAPI:
             assert res.status_code == 200
             data = res.get_json()
             assert data["passed"] is True
+
+
+# Geometry checks only: an icosphere has downward faces, so the default
+# printability stage (overhang) would fail it for reasons unrelated to the path.
+GEOMETRY_ONLY = {
+    "stages": {
+        "geometry": {
+            "checks": {
+                "watertight": {"enabled": True},
+                "body_count": {"enabled": True, "expected": 1},
+                "facet_count": {"enabled": True, "min_facets": 400},
+            }
+        }
+    }
+}
+
+
+class TestVerifyRunsTheRealScript:
+    """No subprocess mock: the route launches the configured verifier on a real STL.
+
+    The mocked tests above pass whatever VERIFY_SCRIPT names, which is how a
+    stale path shipped. Only trimesh + numpy are needed (no OpenSCAD, no
+    CadQuery): the STL is generated here, not rendered.
+    """
+
+    def _stage(self, tmp_path, monkeypatch, mesh):
+        from config import Config
+
+        project_json = tmp_path / "test-project" / "project.json"
+        manifest = json.loads(project_json.read_text())
+        manifest["verification"] = GEOMETRY_ONLY
+        project_json.write_text(json.dumps(manifest))
+
+        static_dir = tmp_path / "static"
+        static_dir.mkdir(exist_ok=True)
+        monkeypatch.setattr(Config, "STATIC_DIR", static_dir)
+        mesh.export(static_dir / "test-project_preview_main.stl")
+
+    def test_known_good_stl_passes(self, client, tmp_path, monkeypatch):
+        trimesh = pytest.importorskip("trimesh")
+        self._stage(tmp_path, monkeypatch, trimesh.creation.icosphere(subdivisions=3, radius=10.0))
+
+        res = client.post("/api/verify", json={"mode": "default", "project": "test-project"})
+
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["passed"] is True, data["output"]
+        assert data["status"] == "success"
+        assert data["parts_checked"] == 1
+        assert "[PASS] watertight: watertight" in data["output"]
+        assert "[PASS] body_count: 1 body" in data["output"]
+        assert "[PASS] facet_count: 1280 facets" in data["output"]
+
+    def test_two_bodies_fail_the_body_count(self, client, tmp_path, monkeypatch):
+        trimesh = pytest.importorskip("trimesh")
+        a = trimesh.creation.icosphere(subdivisions=3, radius=5.0)
+        b = trimesh.creation.icosphere(subdivisions=3, radius=5.0)
+        b.apply_translation([30.0, 0.0, 0.0])
+        self._stage(tmp_path, monkeypatch, trimesh.util.concatenate([a, b]))
+
+        res = client.post("/api/verify", json={"mode": "default", "project": "test-project"})
+
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["passed"] is False
+        assert data["status"] == "failure"
+        assert "[FAIL] body_count: 2 bodies (expected 1)" in data["output"]

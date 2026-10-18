@@ -72,28 +72,25 @@ describe('flag ON: accessors return the cached WASM metrics', () => {
 
   it('a failing WASM load is visible and leaves the TypeScript numbers in place', async () => {
     vi.stubEnv('VITE_GEOM_CORE_BROWSER', '1')
+    // A load error the browser can really raise (a corrupt or wrongly served .wasm).
+    vi.doMock('@madfam/geom-core/wasm', () => ({
+      default: () => Promise.reject(new Error('WebAssembly.instantiate(): expected magic word 00 61 73 6d')),
+    }))
     const { meshMetrics, browser } = await freshModules()
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const g = toBufferGeometry(MESH_FIXTURES[6])
-    // A real failure: a browser page that is not cross-origin isolated. The
-    // blocker is checked synchronously inside prefetch, so the stub only has
-    // to cover the call itself.
-    vi.stubGlobal('process', { ...globalThis.process, versions: { ...globalThis.process.versions, node: undefined } })
-    vi.stubGlobal('crossOriginIsolated', false)
-    let pending
     try {
-      pending = meshMetrics.prefetchGeomCoreMetrics(g)
+      await expect(meshMetrics.prefetchGeomCoreMetrics(g)).resolves.toBe(false)
+      expect(warn).toHaveBeenCalledTimes(1)
+      expect(warn.mock.calls[0][0]).toMatch(/using the TypeScript path: WebAssembly\.instantiate\(\): expected magic word/)
+      expect(browser.getGeomCoreBrowserStatus()).toMatchObject({ state: 'failed', reason: expect.stringMatching(/expected magic word/) })
+      expect(meshMetrics.cachedGeomCoreMetrics(g)).toBeNull()
+      expect(meshMetrics.meshVolumeMm3(g)).toBe(printEstimator.computeVolumeMm3(g))
+      expect(meshMetrics.meshBoundingBox(g)).toStrictEqual(printEstimator.computeBoundingBox(g))
     } finally {
-      vi.unstubAllGlobals()
+      warn.mockRestore()
+      vi.doUnmock('@madfam/geom-core/wasm')
     }
-    await expect(pending).resolves.toBe(false)
-    expect(warn).toHaveBeenCalledTimes(1)
-    expect(warn.mock.calls[0][0]).toMatch(/not cross-origin isolated/)
-    expect(browser.getGeomCoreBrowserStatus()).toMatchObject({ state: 'failed', reason: expect.stringMatching(/COOP\/COEP/) })
-    expect(meshMetrics.cachedGeomCoreMetrics(g)).toBeNull()
-    expect(meshMetrics.meshVolumeMm3(g)).toBe(printEstimator.computeVolumeMm3(g))
-    expect(wasmImports.count).toBe(0)
-    warn.mockRestore()
   })
 
   it('skips a geometry without positions without reporting a failure', async () => {

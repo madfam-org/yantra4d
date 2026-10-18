@@ -87,22 +87,7 @@
     </style>
   </head>
   <body>
-    <script>
-      ;(function() {
-        try {
-          var theme = localStorage.getItem('vite-ui-theme')
-          if (theme === 'dark' || (!theme || theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark')
-          } else {
-            document.documentElement.classList.add('light')
-          }
-        } catch (e) {
-          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark')
-          }
-        }
-      })()
-    </script>
+    <script src="/theme-init.js"></script>
     <div id="yantra4d-splash" role="status" aria-label="Loading Yantra4D Studio">
       <svg class="yantra4d-splash__logo" width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="32" height="32" rx="6" fill="#3B82F6"/>

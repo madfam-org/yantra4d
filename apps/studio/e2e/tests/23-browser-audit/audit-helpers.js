@@ -325,8 +325,10 @@ export async function assertStudioLoaded(page, slug = '') {
 /**
  * Navigate to a real project and wait for manifest + UI to load.
  */
-export async function goToRealProject(page, slug, expectedName) {
-  await page.goto(`/project/${slug}`)
+export async function goToRealProject(page, slug, expectedName, { query = '' } = {}) {
+  // `query` (e.g. '?geomcore=1') is for the opt-in journeys: the Studio reads
+  // its `?render=` / `?geomcore=` toggles once, at page load.
+  await page.goto(`/project/${slug}${query}`)
   await page.waitForSelector('header', { timeout: 15_000 })
   await page.locator('header h1', { hasText: expectedName })
     .waitFor({ timeout: 15_000 })

@@ -201,6 +201,25 @@ test.describe('Gridfinity — Browser Audit', () => {
     await expect(dimText.first()).toBeVisible({ timeout: 5000 })
   })
 
+  // Opt-in journey for the geom-core soak (apps/studio/README.md › Geometry
+  // core): the same render with `?geomcore=1`, on a page that is not
+  // cross-origin isolated. geom-core 0.2.0's single-threaded WASM must load,
+  // say so once, and leave the model info rendering; a fallback warning fails
+  // the case, so the nightly reports a broken WASM path instead of hiding it.
+  test('?geomcore=1: geom-core WASM loads without cross-origin isolation and model info renders', async ({ page, sidebar }) => {
+    const geomCoreLines = []
+    page.on('console', (msg) => {
+      if (msg.text().startsWith('[geom-core]')) geomCoreLines.push(`${msg.type()}: ${msg.text()}`)
+    })
+    await goToRealProject(page, 'gridfinity', PROJECT_NAME, { query: '?geomcore=1' })
+    expect(await page.evaluate(() => window.crossOriginIsolated)).toBe(false)
+    await clickGenerateWithWarning(sidebar, page)
+    await waitForRenderDone(page, 120_000)
+    await expect(page.locator('text=/\\d+.*\\u00d7.*\\d+/').first()).toBeVisible({ timeout: 5000 })
+    await expect.poll(() => geomCoreLines.filter((l) => l.startsWith('info: [geom-core] 0.2.0 WASM active')).length, { timeout: 15_000 }).toBe(1)
+    expect(geomCoreLines.filter((l) => l.includes('WASM path unavailable'))).toEqual([])
+  })
+
   test('camera views switch correctly', async ({ page, sidebar }) => {
     await goToRealProject(page, 'gridfinity', PROJECT_NAME)
     await clickGenerateWithWarning(sidebar, page)

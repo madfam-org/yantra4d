@@ -13,6 +13,12 @@ psycopg2-binary~=2.9
 gunicorn>=23.0.0,<24
 python-dotenv~=1.0
 trimesh~=4.0
+# geom-core (optional mesh oracle, MESH_ORACLE=geomcore|both) is deliberately
+# NOT listed: it is not on PyPI yet. The Dockerfile installs it from a GitHub
+# Release wheel only when built with --build-arg GEOM_CORE_WHEEL_URL=... (and
+# GEOM_CORE_WHEEL_SHA256); unset, the API runs on trimesh exactly as before.
+# Locally: pip install https://github.com/madfam-org/geom-core/releases/download/v0.1.0/geom_core-0.1.0-cp311-cp311-linux_x86_64.whl
+# (pick the wheel for your Python). See docs/guides/production-checklist.md.
 lxml>=4.9
 numpy>=1.24
 networkx~=3.0

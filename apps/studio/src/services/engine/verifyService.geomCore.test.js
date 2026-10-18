@@ -72,10 +72,10 @@ describe('verify (client) with the geom-core flag', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     vi.doMock('../../lib/geomCoreBrowser', async (importOriginal) => ({
       ...(await importOriginal()),
-      loadGeomCore: () => Promise.reject(new Error('page is not cross-origin isolated')),
+      loadGeomCore: () => Promise.reject(new Error('WebAssembly.instantiate(): expected magic word 00 61 73 6d')),
     }))
     const result = await runVerify()
-    expect(result.output).toContain('  Geometry core: TypeScript (geom-core unavailable: page is not cross-origin isolated)\n  Faces: 12\n  Bounding box: 1.00 x 2.00 x 3.00 mm')
+    expect(result.output).toContain('  Geometry core: TypeScript (geom-core unavailable: WebAssembly.instantiate(): expected magic word 00 61 73 6d)\n  Faces: 12\n  Bounding box: 1.00 x 2.00 x 3.00 mm')
     expect(result.passed).toBe(true)
     expect(warn).toHaveBeenCalledTimes(1)
   })

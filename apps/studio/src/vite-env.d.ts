@@ -15,7 +15,7 @@ interface ImportMetaEnv {
   readonly VITE_GEOM_CORE_BROWSER?: string
 }
 
-/** Virtual specifier for the geom-core .wasm asset (geom-core-wasm.alias.js). */
+/** The geom-core `.wasm` (package export `./wasm-binary`) as a Vite asset URL. */
 declare module '@madfam/geom-core/wasm-binary?url' {
   const url: string
   export default url

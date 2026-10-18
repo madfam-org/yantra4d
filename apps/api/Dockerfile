@@ -73,6 +73,26 @@ COPY apps/api/requirements.txt ./backend/
 COPY apps/worker/ /app/worker/
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
+# Optional geom-core mesh oracle (services/engine/mesh_metrics.py, flag
+# MESH_ORACLE). Unset by default, so the image is unchanged. geom-core is not on
+# PyPI: it ships as GitHub Release wheels, one per CPython version, and pip
+# refuses a wheel built for another one — so the URL must name the wheel for
+# THIS image's Python (python:3.12 → a cp312 wheel; v0.1.0 has cp38–cp311 only,
+# see "Mesh oracle (geom-core)" in docs/guides/production-checklist.md).
+# The SHA-256 is required whenever the URL is set, the same pinning the
+# OpenSCAD snapshot above gets.
+ARG GEOM_CORE_WHEEL_URL=
+ARG GEOM_CORE_WHEEL_SHA256=
+RUN if [ -n "${GEOM_CORE_WHEEL_URL}" ]; then \
+      [ -n "${GEOM_CORE_WHEEL_SHA256}" ] || { echo "GEOM_CORE_WHEEL_SHA256 is required with GEOM_CORE_WHEEL_URL" >&2; exit 1; }; \
+      whl="/tmp/$(basename "${GEOM_CORE_WHEEL_URL}")"; \
+      wget -q "${GEOM_CORE_WHEEL_URL}" -O "${whl}" && \
+      echo "${GEOM_CORE_WHEEL_SHA256}  ${whl}" | sha256sum -c - && \
+      pip install --no-cache-dir "${whl}" && \
+      python -c "import geom_core_py; print('geom-core', geom_core_py.__version__)" && \
+      rm -f "${whl}"; \
+    fi
+
 # The shared sandbox core the cq_runner subprocess imports (one source with FC).
 COPY packages/commons-sandbox /app/packages/commons-sandbox
 RUN pip install --no-cache-dir /app/packages/commons-sandbox
@@ -119,7 +139,7 @@ ENV PRIVATE_PROJECTS_DIR=/app/private-projects
 # with it. See docs/operations/user-projects-storage.md.
 ENV USER_PROJECTS_DIR=/app/user-projects
 ENV OPENSCADPATH=/app/libs:/app/libs/dotSCAD/src:/app/projects
-ENV VERIFY_SCRIPT=/app/tests/verify_design.py
+ENV VERIFY_SCRIPT=/app/tests/scripts/verify_design.py
 
 # Expose port
 EXPOSE 5000

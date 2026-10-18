@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 import fs from 'fs'
 import path from 'path'
-import { geomCoreWasmAlias } from './geom-core-wasm.alias.js'
 
 // Custom plugin to keep fallback manifest continuously in sync with the flagship project (Gridfinity)
 function writeFallbackManifest(src, dest) {
@@ -54,12 +53,9 @@ export default defineConfig({
   ].filter(Boolean),
   base: '/',
   resolve: {
-    alias: [
-      { find: '@', replacement: '/src' },
-      // Experimental geom-core WASM (VITE_GEOM_CORE_BROWSER): lets the lazy
-      // loader import the package's .wasm as a hashed asset URL.
-      geomCoreWasmAlias,
-    ],
+    alias: {
+      "@": "/src",
+    },
   },
   server: {
     proxy: {

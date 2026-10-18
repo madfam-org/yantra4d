@@ -9,6 +9,7 @@ import logging
 import sys
 from pathlib import Path
 from types import SimpleNamespace
+from typing import ClassVar
 
 import numpy as np
 import pytest
@@ -24,7 +25,6 @@ from services.engine.mesh_metrics import (
     TrimeshOracle,
 )
 from utils.metrics import MESH_ORACLE_PARITY_MISMATCH
-
 
 # ---------------------------------------------------------------------------
 # Synthetic meshes
@@ -110,7 +110,7 @@ class TestTrimeshOracle:
 # ---------------------------------------------------------------------------
 
 class _FakeAnalyzer:
-    loaded: list = []
+    loaded: ClassVar[list] = []
 
     def load_stl(self, path):
         data = Path(path).read_bytes()

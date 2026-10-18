@@ -118,7 +118,7 @@ class TrimeshOracle:
         return tuple(float(c) for c in mesh.center_mass)
 
     def body_count(self, mesh):
-        return int(len(mesh.split(only_watertight=False)))
+        return len(mesh.split(only_watertight=False))
 
 
 def geom_core_module():
@@ -299,7 +299,7 @@ def _compare(slug, metric, primary_fn, secondary_fn):
     value = primary_fn()
     try:
         other = secondary_fn()
-    except Exception as exc:  # noqa: BLE001 — a failing secondary is data, not a crash
+    except Exception as exc:
         other = f"error: {type(exc).__name__}: {exc}"
     record_parity(slug, metric, value, other)
     return value
@@ -353,7 +353,7 @@ def integrity(mesh, scale_hint: float | None = None, slug: str | None = None, *,
         return verdict
     try:
         other = second.integrity(mesh, scale_hint)
-    except Exception as exc:  # noqa: BLE001 — see _compare
+    except Exception as exc:
         record_parity(slug, "integrity", verdict.summary, f"error: {type(exc).__name__}: {exc}")
         return verdict
     for field_name in INTEGRITY_FIELDS:
@@ -376,7 +376,7 @@ def observe_render(path: str, slug: str | None = None, part: str | None = None) 
     try:
         mesh = trimesh.load(path, force="mesh")
         verdict = integrity(mesh, slug=label)
-    except Exception as exc:  # noqa: BLE001 — observation must not break a render
+    except Exception as exc:
         logger.warning("mesh_oracle render integrity for %s skipped: %s", label, exc)
         return None
     logger.info("mesh_oracle render integrity %s: %s", label, verdict.summary)

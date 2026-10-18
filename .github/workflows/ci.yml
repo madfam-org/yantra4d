@@ -803,6 +803,12 @@ jobs:
   mesh-oracle-differential:
     needs: changes
     if: needs.changes.outputs.code == 'true'
+    # Leaving it out of ci-success is not enough: deploy.yml's source gate
+    # (scripts/ci/require_source_ci.py) requires the whole CI run to conclude
+    # `success`, so a red job here would still block a release. Its failures
+    # stay visible on the job; they just do not fail the run. Remove this line
+    # and add the job to ci-success when the flip plan reaches step 2.
+    continue-on-error: true
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 20
     env:

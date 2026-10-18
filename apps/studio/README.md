@@ -82,6 +82,7 @@ The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()`,
 | `VITE_API_BASE` | `http://localhost:5000` | Backend API base URL |
 | `VITE_RENDER_MODE` | _(unset)_ | Pins the render path to `backend` or `wasm` for the whole build. Any other value is ignored. |
 | `VITE_PRERENDER_MODELS_BASE` | _(unset)_ | Where the [prerendered previews](#prerendered-previews) are read from. Unset: `/models/` on `yantra4d.com`, `https://yantra4d.com/models/` everywhere else. |
+| `VITE_GEOM_CORE_BROWSER` | _(unset = off)_ | Experimental: `1` routes mesh volume/bbox/centroid and STL face count/bbox through the `@madfam/geom-core` WASM. Per-session override: `?geomcore=1\|0`. See [Geometry core (WASM)](#geometry-core-wasm--experimental). |
 
 ### Render Placement
 
@@ -257,6 +258,65 @@ exist: the prerendered default, and the cartridge's OpenSCAD modes with the
 plan's hourly render quota. Nothing is sent to `/api/render`, and nothing is
 logged as an error. An automatic render of a gated mode is skipped quietly.
 Unknown limits fall through to the server, which still answers 403 as before.
+
+### Geometry core (WASM) — experimental
+
+The Studio depends on [`@madfam/geom-core`](https://github.com/madfam-org/geom-core)
+0.1.0, the shared mesh-analysis library of the geometry factories ("mesh in,
+numbers out"), pinned to the GitHub Release tarball with its `sha512` integrity
+in `package-lock.json`. It is the first consumer step of the R8 adoption plan
+(internal-devops `audits/2026-09-04-geom-core-yantra4d-usage.md`, PR-3).
+
+| | Flag off (default) | Flag on |
+|---|---|---|
+| Viewer volume / bbox / centroid (`Viewer.tsx` → `lib/meshMetrics.ts`) | `printEstimator.ts`, unchanged | geom-core per geometry, once loaded; TypeScript until then |
+| Verify face count / bbox (`verifyService.ts`) | `stl-utils.ts`, unchanged | geom-core; output gains a `Geometry core:` line |
+| Triangle soup for manifold-3d, print-time model | TypeScript | TypeScript (geom-core does not return vertex arrays or min/max — its browser binding reports bbox *extents*) |
+| WASM download | never | lazily, on first use |
+
+**Turning it on.** Precedence, read once at page load (`src/lib/geomCoreBrowser.ts`):
+`?geomcore=1|0` (also `true/false/on/off`) for one session, then
+`VITE_GEOM_CORE_BROWSER=1` for a whole build, then off.
+
+**Failures are visible.** When the WASM cannot run, the first failure is logged
+(`[geom-core] WASM path unavailable, using the TypeScript path: …`),
+`getGeomCoreBrowserStatus()` reports `state: 'failed'` with the reason, verify
+prints it, and every number falls back to the TypeScript result the flag-off
+path produces. Initialisation is bounded at 10 s.
+
+**Not ready to flip in production.** geom-core 0.1.0 ships a *threaded*
+Emscripten build: it allocates shared WebAssembly memory and starts a 4-worker
+pthread pool at load. Browsers only allow that on cross-origin-isolated pages
+(COOP `same-origin` + COEP `require-corp`), which the Studio is not, and the
+pool's worker script URL is not resolvable from inside a bundled chunk. With the
+flag on in a browser today the loader stops at the isolation check and the
+Studio stays on TypeScript. Flipping the flag needs a single-threaded browser
+build of geom-core (or cross-origin isolation plus a worker-URL option) — a
+geom-core change, tracked in the PR that added this section.
+
+**How the WASM is served.** The package exports only `.` and `./wasm`, and the
+Emscripten loader cannot find its `.wasm` next to a bundled chunk.
+`geom-core-wasm.alias.js` (used by `vite.config.js` and `vitest.config.js`)
+maps the virtual specifier `@madfam/geom-core/wasm-binary?url` to the file next
+to the exported loader, so `vite build` emits it as a hashed asset
+(`dist/assets/geom-core-*.wasm`) and the loader passes that URL through
+`locateFile`. The loader JS is its own lazy chunk; neither is referenced by the
+default entry. Under Node (Vitest) the loader reads the `.wasm` from
+`node_modules` itself.
+
+**Differential tests.** `src/lib/geomCore.differential.{node,jsdom}.test.js`
+run the same suite (`src/lib/__fixtures__/geomCoreDifferentialSuite.js`) under
+both Vitest environments against the real WASM: every `stl-utils` and
+`printEstimator` test fixture plus offset, inside-out, two-body, curved and
+sub-threshold meshes. Gates: volume 1e-9 relative, bbox and centroid 1e-9 mm
+(observed worst 2.6e-14 and 1.4e-14). `meshMetrics.test.js` and
+`verifyService.geomCore.test.js` prove the flag-off path returns exactly the
+TypeScript results and main's verify output, and never imports the package.
+
+```bash
+npx vitest run src/lib/geomCore.differential src/lib/meshMetrics.test.js \
+  src/lib/geomCoreBrowser.test.js src/services/engine/verifyService.geomCore.test.js
+```
 
 ### Updating the Fallback Manifest
 

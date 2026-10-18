@@ -14,7 +14,9 @@ import { ErrorBoundary } from '../feedback/ErrorBoundary'
 import SceneController, { type SceneControllerHandle } from './SceneController'
 import NumberedAxes from './NumberedAxes'
 import AnimatedGrid from './AnimatedGrid'
-import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../../lib/printEstimator'
+import { computeCentroid } from '../../lib/printEstimator'
+import { meshVolumeMm3, meshBoundingBox, cachedGeomCoreMetrics, prefetchGeomCoreMetrics } from '../../lib/meshMetrics'
+import { isGeomCoreBrowserEnabled } from '../../lib/geomCoreBrowser'
 import ClippingPlane from './ClippingPlane'
 import MeasureTool from './MeasureTool'
 import ThicknessOverlay from './ThicknessOverlay'
@@ -39,6 +41,9 @@ const SCENE_UP_VECTOR: [number, number, number] = [0, 0, 1]   // Z-up coordinate
 /** Volumetric centroid per geometry: O(triangles), so computed once, not on every viewer render. */
 const centroidCache = new WeakMap<THREE.BufferGeometry, { x: number; y: number; z: number }>()
 function centroidOf(geometry: THREE.BufferGeometry) {
+    // geom-core WASM result, only when VITE_GEOM_CORE_BROWSER / ?geomcore=1 is on and it has run.
+    const fromGeomCore = cachedGeomCoreMetrics(geometry)
+    if (fromGeomCore) return fromGeomCore.centroid
     let centroid = centroidCache.get(geometry)
     if (!centroid) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferGeometry structurally matches GeometryLike
@@ -430,7 +435,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
         for (const [partType, geom] of Object.entries(geometriesRef.current)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const geomAny = geom as any
-            const vol = computeVolumeMm3(geomAny)
+            const vol = meshVolumeMm3(geomAny)
             totalVolume += vol
 
             // Count triangles from geometry
@@ -444,7 +449,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
             weightedCenterSum.y += centroid.y * vol
             weightedCenterSum.z += centroid.z * vol
 
-            const bbox = computeBoundingBox(geomAny)
+            const bbox = meshBoundingBox(geomAny)
 
             // Collect individual part stats for per-part print estimates
             perPartStats[partType] = { volumeMm3: vol, boundingBox: bbox }
@@ -526,6 +531,12 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
         geometriesRef.current[partType] = geometry
         geometry.computeBoundingBox()
         recalculateSceneStats()
+        if (isGeomCoreBrowserEnabled()) {
+            // Experimental: re-derive the stats from geom-core's WASM once it has analysed this part.
+            void prefetchGeomCoreMetrics(geometry).then((cached) => {
+                if (cached && geometriesRef.current[partType] === geometry) recalculateSceneStats()
+            })
+        }
     }, [recalculateSceneStats])
 
     const handleGeometryRemove = useCallback((partType: string) => {

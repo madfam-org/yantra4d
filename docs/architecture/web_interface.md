@@ -318,7 +318,7 @@ src/
 │   └── ThemeProvider.jsx          # Light/Dark/System theme
 ├── hooks/
 │   ├── useRender.ts               # Render orchestration: generate, cancel (including on pagehide/unmount and when a new render supersedes one), cache, confirm
-│   ├── useParameterPreviewCache.js # Idle pre-render of min/max param variants into IDB cache
+│   ├── useParameterPreviewCache.js # min/max param variants from the IDB cache; background renders only on an unlimited budget
 │   ├── useConstraints.js          # Manifest constraint evaluation (rule + severity + applies_to)
 │   ├── useImageExport.js          # PNG snapshot export for camera views
 │   ├── useLocalStoragePersistence.js # Debounced localStorage sync

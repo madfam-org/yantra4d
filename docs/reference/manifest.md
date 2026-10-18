@@ -354,11 +354,11 @@ Explicit `preview_hint` overrides auto-inference. Use it when the label doesn't 
 
 ### Cached geometry ghost overlay
 
-After a render completes, the studio idle-pre-renders the top 3 dimensional parameters at their min and max values into IndexedDB. On hover, if cached variants exist, semi-transparent purple (`#a855f7`) ghost meshes appear alongside the directional arrows, showing the actual geometry at min/max bounds without requiring a new render.
+After a render completes, the studio looks up the top 3 dimensional parameters at their min and max values in IndexedDB. On hover, if cached variants exist, semi-transparent purple (`#a855f7`) ghost meshes appear alongside the directional arrows, showing the actual geometry at min/max bounds without requiring a new render. Missing variants are rendered in the background (one server render each, up to 6 per completed render) only when the visitor's server-render budget is unlimited (`backend_renders_per_hour: -1`); on a metered tier (guest, essentials, pro) they would spend the hourly quota the visitor's own renders need, so the studio shows the arrows alone.
 
 - **Breathing animation**: opacity cycles between 0.08 and 0.16 at 0.5 Hz
 - **Reduced motion**: when `prefers-reduced-motion: reduce` is active, ghost meshes use static 0.12 opacity (no animation)
-- **Background pre-renders** run only when the UI is idle (via `requestIdleCallback`) and never compete with user-initiated renders
+- **Background pre-renders** (unlimited budgets only) run when the UI is idle (via `requestIdleCallback`), one at a time, and are cancelled by the next parameter or mode change
 - **Cache key**: same IDB cache used by the render pipeline (`renderCache.ts`), keyed by `project + mode + params + format`
 
 ### Example

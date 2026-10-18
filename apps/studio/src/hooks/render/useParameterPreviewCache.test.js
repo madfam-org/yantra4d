@@ -199,7 +199,7 @@ describe('useParameterPreviewCache', () => {
     expect(idbCache.makeCacheKey.mock.calls.length).toBeLessThanOrEqual(6)
   })
 
-  it('triggers background renderParts for uncached variants', async () => {
+  it('triggers background renderParts for uncached variants when background renders are allowed', async () => {
     idbCache.get.mockResolvedValue(null) // cache miss
     renderParts.mockResolvedValue([{ type: 'base', url: '/render/base-min.glb' }])
 
@@ -211,6 +211,7 @@ describe('useParameterPreviewCache', () => {
         parts: [{ type: 'base', url: '/render/base.glb' }],
         loading: false,
         project: 'test',
+        backgroundRenders: true,
       })
     )
 
@@ -219,6 +220,56 @@ describe('useParameterPreviewCache', () => {
 
     expect(renderParts).toHaveBeenCalled()
     expect(idbCache.put).toHaveBeenCalled()
+  })
+
+  it('never renders in the background by default (a metered budget pays for each one)', async () => {
+    idbCache.get.mockResolvedValue(null) // cache miss on every variant
+    renderParts.mockResolvedValue([{ type: 'base', url: '/render/base-min.glb' }])
+
+    const { result } = renderHook(() =>
+      useParameterPreviewCache({
+        manifest: makeManifest([
+          dimensionalParam('grid_x', 1, 6),
+          dimensionalParam('grid_y', 1, 6),
+          dimensionalParam('grid_z', 1, 12),
+        ]),
+        mode: 'cup',
+        params: { grid_x: 2, grid_y: 1, grid_z: 3 },
+        parts: [{ type: 'base', url: '/render/base.glb' }],
+        loading: false,
+        project: 'gridfinity',
+      })
+    )
+
+    await act(async () => { await new Promise(r => setTimeout(r, 50)) })
+
+    // The IDB lookup still runs (free), but no server render is spent.
+    expect(idbCache.get).toHaveBeenCalled()
+    expect(renderParts).not.toHaveBeenCalled()
+    expect(idbCache.put).not.toHaveBeenCalled()
+    expect(result.current.preRenderStatus).toBe('done')
+  })
+
+  it('still restores variants already in IDB when background renders are off', async () => {
+    const fakeBlob = new Blob(['test'], { type: 'model/gltf-binary' })
+    idbCache.get.mockResolvedValue([{ type: 'base', blob: fakeBlob }])
+
+    const { result } = renderHook(() =>
+      useParameterPreviewCache({
+        manifest: makeManifest([dimensionalParam('width', 10, 100)]),
+        mode: 'unit',
+        params: { width: 50 },
+        parts: [{ type: 'base', url: '/render/base.glb' }],
+        loading: false,
+        project: 'test',
+        backgroundRenders: false,
+      })
+    )
+
+    await act(async () => { await new Promise(r => setTimeout(r, 10)) })
+
+    expect(result.current.cachedVariants.get('width').min).toBeDefined()
+    expect(renderParts).not.toHaveBeenCalled()
   })
 
   it('cancels pre-render on cleanup', async () => {

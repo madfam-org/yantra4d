@@ -126,7 +126,7 @@ jobs:
       # the fail-closed path for no reason.
       - name: Check out for the push diff
         if: github.event_name == 'push'
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
@@ -159,7 +159,7 @@ jobs:
         # Pinned to the commit the v3 tag resolves to (v3.0.4). deploy.yml still
         # tracks the mutable `v3` tag; pinning is the direction to move in, not a
         # disagreement with that job.
-        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         with:
           # Ignored on pull_request (the action uses the PR base via the API);
           # on push it is a commit SHA and the diff is taken against it.
@@ -211,14 +211,14 @@ jobs:
       run:
         working-directory: apps/studio
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Initialize the pinned commons for consumer contract tests
         # ManifestProvider.fasteners.test.jsx reads the actual cartridge pin.
         # Only its public root is needed; do not clone nested CAD libraries or
         # private project mounts for a Studio test.
         working-directory: ${{ github.workspace }}
         run: git submodule update --init --depth=1 -- projects
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -290,8 +290,8 @@ jobs:
       run:
         working-directory: apps/landing
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -331,7 +331,7 @@ jobs:
       #    cache — same shape as the studio's e2e cache above.
       - name: Cache Playwright browsers
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-landing-chromium-${{ hashFiles('apps/landing/package-lock.json') }}
@@ -347,7 +347,7 @@ jobs:
       #    audit measures the build the two gates above measured.
       - name: Upload the built site for the Lighthouse job
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: landing-dist
           path: apps/landing/dist/
@@ -362,7 +362,7 @@ jobs:
       # job: Playwright writes its report for the tests that did run when it is
       # interrupted, and a run that hit the cap is exactly one worth reading.
       - name: Upload Playwright report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: ${{ failure() || cancelled() }}
         with:
           name: landing-playwright-report
@@ -396,15 +396,15 @@ jobs:
       run:
         working-directory: apps/landing
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/landing/package-lock.json
       - run: npm ci
       - name: Download the built site
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: landing-dist
           path: apps/landing/dist/
@@ -413,7 +413,7 @@ jobs:
       # e2e suite measured with (lighthouserc.cjs falls back to the same path
       # when CHROME_PATH is unset, e.g. on a laptop).
       - name: Cache Playwright browsers
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-landing-chromium-${{ hashFiles('apps/landing/package-lock.json') }}
@@ -428,7 +428,7 @@ jobs:
       # .lighthouseci/ holds every run as .json and .html; the .html next to a
       # failing .json has the waterfall. Failure-only, 14 days.
       - name: Upload Lighthouse CI results
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: ${{ failure() || cancelled() }}
         with:
           name: landing-lighthouseci
@@ -448,8 +448,8 @@ jobs:
       run:
         working-directory: apps/admin
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -495,14 +495,14 @@ jobs:
       run:
         working-directory: apps/api
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           fetch-depth: 1
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       # OCP (cadquery's kernel) dlopens libGL at import; without it cq_runner
@@ -609,8 +609,8 @@ jobs:
       run:
         working-directory: apps/studio
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -622,7 +622,7 @@ jobs:
       # Without a backend every request proxy-errors, the specs retry until the
       # job hits its timeout, and the whole matrix reports red for a reason that
       # has nothing to do with the change under test.
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       # The pinned OpenSCAD snapshot, not apt's: Ubuntu 24.04 ships 2021.01,
@@ -678,7 +678,7 @@ jobs:
       - name: Build studio
         run: npm run build
       - name: Cache Playwright browsers
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ matrix.project }}-${{ hashFiles('apps/studio/package-lock.json') }}
@@ -697,14 +697,14 @@ jobs:
       # report is what anyone reads afterwards. 5 projects x 3 shards is ~1,700
       # of these artifacts against the org quota for no post-run value.
       - name: Upload blob report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: blob-${{ matrix.project }}-${{ matrix.shard }}
           path: apps/studio/blob-report/
           retention-days: 1
       - name: Upload backend log
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
           name: backend-log-${{ matrix.project }}-${{ matrix.shard }}
@@ -712,7 +712,7 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
       - name: Upload visual regression diffs
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
           name: visual-regression-diffs-${{ matrix.project }}-${{ matrix.shard }}
@@ -740,8 +740,8 @@ jobs:
       run:
         working-directory: apps/studio
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -749,14 +749,14 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: apps/studio/all-blobs
           pattern: blob-*
           merge-multiple: true
       - name: Merge shard reports
         run: npx playwright merge-reports --reporter=html,list ./all-blobs
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: playwright-report-merged
@@ -774,13 +774,13 @@ jobs:
       run:
         working-directory: apps/api
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       # The pinned OpenSCAD snapshot, not apt's: parity is measured against the
@@ -797,13 +797,13 @@ jobs:
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: Check manifest sync
@@ -831,7 +831,7 @@ jobs:
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Deploy change-detection base resolver
         run: ./scripts/ci/tests/test_last_successful_deploy_sha.sh
       # The npm audit gate: an outage of the registry's advisory endpoint must
@@ -854,13 +854,13 @@ jobs:
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - run: pip install jsonschema
@@ -892,7 +892,7 @@ jobs:
       # does not call it an incomplete checkout. It exits 2 if a *public*
       # cartridge submodule failed to come in, so a bad checkout fails the job
       # instead of quietly redefining what "complete" means.
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
       - name: Landing project list matches the manifests
@@ -939,8 +939,8 @@ jobs:
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: Audit studio i18n (locale parity + hardcoded-string ratchet)
@@ -957,14 +957,14 @@ jobs:
     # A shared-library pin can legitimately select the complete commons.
     timeout-minutes: 360
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
           fetch-depth: 0
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       # The render pass below runs `--require-openscad` (and cadquery needs
@@ -1057,13 +1057,13 @@ jobs:
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: Run metadata consistency audit
@@ -1078,8 +1078,8 @@ jobs:
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - run: pip install openapi-spec-validator
@@ -1106,13 +1106,13 @@ jobs:
       run:
         working-directory: apps/api
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       # Same backend import surface as the `backend` job, so the same runtime

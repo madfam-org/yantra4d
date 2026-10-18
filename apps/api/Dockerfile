@@ -119,7 +119,7 @@ ENV PRIVATE_PROJECTS_DIR=/app/private-projects
 # with it. See docs/operations/user-projects-storage.md.
 ENV USER_PROJECTS_DIR=/app/user-projects
 ENV OPENSCADPATH=/app/libs:/app/libs/dotSCAD/src:/app/projects
-ENV VERIFY_SCRIPT=/app/tests/verify_design.py
+ENV VERIFY_SCRIPT=/app/tests/scripts/verify_design.py
 
 # Expose port
 EXPOSE 5000

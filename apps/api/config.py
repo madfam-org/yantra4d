@@ -243,7 +243,7 @@ class AppConfig:
         default_fonts = parent / "libs" / "yantra4d" / "fonts"
         self.FONTS_DIR = Path(os.getenv("FONTS_DIR", default_fonts))
 
-        default_verify = self.BASE_DIR / "tests" / "verify_design.py"
+        default_verify = self.BASE_DIR / "tests" / "scripts" / "verify_design.py"
         self.VERIFY_SCRIPT = Path(os.getenv("VERIFY_SCRIPT", default_verify))
 
         self.JANUA_JWKS_URL = os.getenv("JANUA_JWKS_URL", f"{self.JANUA_ISSUER}/.well-known/jwks.json")

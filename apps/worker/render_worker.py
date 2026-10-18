@@ -25,7 +25,7 @@ from manifest import get_manifest, invalidate_cache
 from services.core.implicit_engine import run_render as run_implicit_render
 from services.core.implicit_engine import stream_render as stream_implicit_render
 from services.editor.git_operations import git_archive_head
-from services.engine import generator_output, render_orchestrator
+from services.engine import generator_output, mesh_metrics, render_orchestrator
 from services.engine.cadquery_engine import build_cadquery_command
 from services.engine.cadquery_engine import run_render as run_cadquery_render
 from services.engine.cadquery_engine import stream_render as stream_cadquery_render
@@ -485,6 +485,9 @@ def _render_sync_task(task):
         serve_path, _serve_filename, viewer_filename = _post_render_convert(
             output_path, output_filename, part, payload['stl_prefix'], actual_format, export_format
         )
+        # Observation only, and a no-op under the default MESH_ORACLE=trimesh:
+        # see services/engine/mesh_metrics.py.
+        mesh_metrics.observe_render(output_path, slug=project_slug, part=part)
 
         # Size is read before publishing: under an object store the local copy
         # is scratch and is gone by the time the cache entry is written.
@@ -633,6 +636,7 @@ def process_stream_task(task):
                     serve_path, _serve_filename, viewer_filename = _post_render_convert(
                         output_path, output_filename, part, payload['stl_prefix'], actual_format, export_format
                     )
+                    mesh_metrics.observe_render(output_path, slug=project_slug, part=part)
                     try:
                         size_bytes = os.path.getsize(serve_path)
                     except OSError:

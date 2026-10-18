@@ -793,6 +793,61 @@ jobs:
       - name: Run Geometric Regression Parity Tests
         run: python3 tests/scripts/geometric_regression.py --tolerance 0.05
 
+  # geom-core mesh oracle (apps/api/services/engine/mesh_metrics.py): the
+  # differential suite, which skips everywhere else because the wheel is not
+  # in requirements.txt (geom-core is not on PyPI). NOT required yet — it is
+  # deliberately absent from ci-success's needs until the parity soak in
+  # docs/guides/production-checklist.md "Mesh oracle (geom-core)" is done.
+  # Python 3.11 because geom-core v0.1.0 ships cp38–cp311 Linux wheels only
+  # (the API image is 3.12); move to 3.12 with the first cp312 release.
+  mesh-oracle-differential:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    # Leaving it out of ci-success is not enough: deploy.yml's source gate
+    # (scripts/ci/require_source_ci.py) requires the whole CI run to conclude
+    # `success`, so a red job here would still block a release. Its failures
+    # stay visible on the job; they just do not fail the run. Remove this line
+    # and add the job to ci-success when the flip plan reaches step 2.
+    continue-on-error: true
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
+    timeout-minutes: 20
+    env:
+      GEOM_CORE_WHEEL_URL: https://github.com/madfam-org/geom-core/releases/download/v0.1.0/geom_core-0.1.0-cp311-cp311-linux_x86_64.whl
+      GEOM_CORE_WHEEL_SHA256: 6a286ba8365c98f238eca2fca8008eb3d646586d87e49ce6c6ca8c141c5590e1
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29). `projects` carries the reference
+          # exports the differential suite also compares on.
+          submodules: true
+          fetch-depth: 1
+          token: ${{ secrets.MADFAM_BOT_PAT }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt pytest
+      - name: Install the geom-core wheel (pinned by SHA-256)
+        run: |
+          whl="$RUNNER_TEMP/$(basename "$GEOM_CORE_WHEEL_URL")"
+          curl -fsSL "$GEOM_CORE_WHEEL_URL" -o "$whl"
+          echo "$GEOM_CORE_WHEEL_SHA256  $whl" | sha256sum -c -
+          pip install "$whl"
+          # Fail here, not as a silent skip in the suite, if the wheel is broken.
+          python -c "import geom_core_py; print('geom-core', geom_core_py.__version__)"
+      - name: Differential and seam tests (MESH_ORACLE=both)
+        env:
+          MESH_ORACLE: both
+        run: >-
+          pytest -rs
+          tests/unit/test_mesh_oracle_differential.py
+          tests/unit/test_mesh_metrics.py
+          tests/unit/test_mesh_integrity.py
+          tests/test_cotiza_export.py
+
   manifest-sync:
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15

@@ -39,8 +39,14 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
 
 ### Upstream dependencies (this repo consumes)
 
-- geom-core (C++ geometry analysis + WASM bindings) — **planned, not yet wired**;
-  geometry is currently implemented in-house (Python SDF engine + OpenSCAD/CadQuery)
+- geom-core (C++ mesh analysis + WASM bindings) — the Studio consumes
+  `@madfam/geom-core` 0.1.0 (pinned release tarball) **behind a flag on the browser
+  path** (`VITE_GEOM_CORE_BROWSER` / `?geomcore=1`, default off): mesh volume, bounding
+  box, centroid and STL face count, differential-tested against the TypeScript
+  implementations that remain the default
+  ([apps/studio/README.md](apps/studio/README.md#geometry-core-wasm--experimental)).
+  The API path is not wired yet (R8 PR-4). Geometry *generation* stays in-house
+  (Python SDF engine + OpenSCAD/CadQuery)
 - postgres (catalog, user designs)
 - cloudflare R2 (asset storage) — **planned, not yet wired**; render artifacts are
   currently written to ephemeral local disk (garbage-collected), not R2

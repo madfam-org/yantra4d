@@ -11,9 +11,8 @@ expect.extend(toHaveNoViolations)
 
 // Partial mock of the manifest context: keeps the REAL provider/hook behavior for
 // every test, but lets a single test force an empty parameter set so we can exercise
-// Controls' "no parameters" empty-state branch. The dual-kernel Gridfinity fallback
-// manifest has base params with no `visible_in_modes`, so they render for every mode
-// (even unknown ones) — there is no genuinely param-less mode to select otherwise.
+// Controls' "no parameters" empty-state branch without depending on how the
+// Gridfinity fallback manifest happens to scope its parameters.
 // `params` replaces the parameter list for the rendered mode, and `manifest`
 // shallow-patches the manifest itself. Both are needed to reach control types the
 // Gridfinity fallback manifest does not contain — component pickers, material

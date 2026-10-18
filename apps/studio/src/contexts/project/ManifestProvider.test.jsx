@@ -25,9 +25,9 @@ function TestConsumer() {
   if (loading) return <div data-testid="loading">loading</div>
 
   const binMode = getMode('bin')
-  // The fallback manifest is synced from projects/gridfinity/project.json, which
-  // is CadQuery-only since 2026-09-04: modes are `bin` and `baseplate`, and no
-  // parameter declares visible_in_modes any more, so every mode sees all ten.
+  // The fallback manifest is synced from projects/gridfinity/project.json:
+  // CadQuery modes `bin`/`baseplate` scope their params with `modes`, the
+  // OpenSCAD modes with `visible_in_modes`.
   const baseplateParams = getParametersForMode('baseplate')
   const defaults = getDefaultParams()
   const colors = getDefaultColors()
@@ -255,12 +255,14 @@ describe('ManifestProvider', () => {
     await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument())
 
     const baseplateParamIds = screen.getByTestId('baseplate-params').textContent.split(',')
-    // width_units/depth_units/height_units were the OpenSCAD trio, scoped by
-    // visible_in_modes; they left with the OpenSCAD modes. Nothing in the
-    // cartridge declares visible_in_modes now, so the filter is a pass-through
-    // and every parameter reaches every mode — assert that, not a stale scope.
+    // gridfinity scopes its CadQuery params with `modes` and its OpenSCAD
+    // params with `visible_in_modes`; the filter honours both. Reading only
+    // `visible_in_modes` let the bin-only grid_z/wall into baseplate (and into
+    // cup, live on 2026-10-18).
     expect(baseplateParamIds).toContain('bp_thickness')
     expect(baseplateParamIds).toContain('grid_x')
+    expect(baseplateParamIds).not.toContain('grid_z')
+    expect(baseplateParamIds).not.toContain('wall')
     expect(baseplateParamIds).not.toContain('width_units')
   })
 

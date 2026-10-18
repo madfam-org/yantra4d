@@ -150,6 +150,22 @@ when that file exists, else every manifest under `projects/*` with an
 
 Files are addressed relative to the manifest (`/models/<file>` on the site).
 
+### Who reads it
+
+- The landing gallery and 3D carousel, same-origin
+  (`apps/landing/src/lib/models-manifest.ts`).
+- The Studio, cross-origin from `app.yantra4d.com`: the
+  [prerendered default preview](../../apps/studio/README.md#prerendered-previews)
+  shown on project open, `lod0` first and `lod1` as fallback. The landing nginx
+  sends `Access-Control-Allow-Origin` (plus `Vary: Origin`) for the Studio and
+  local dev origins on `/models/manifest.json` and `/models/*.glb` only; the
+  security headers and `immutable` caching are unchanged there.
+
+Because the Studio shows these meshes as "the default configuration", a stale
+manifest is visible to every Studio visitor, not only on the landing: refresh
+it (dispatch the workflow below with `open_pr`) after cartridges are added or
+their defaults change.
+
 ## Running it locally
 
 Prerequisites: `npm ci` in `apps/landing` (the optimizer resolves

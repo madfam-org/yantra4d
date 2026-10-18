@@ -346,7 +346,7 @@
       "forkTitle": "Fork & Adapt",
       "forkDesc": "Derivative works are encouraged, not restricted.",
       "copyleftTitle": "Copyleft Licensed",
-      "copyleftDesc": "Designs carry CERN-OHL-W, a strong-reciprocal hardware licence: improve one and the improvement stays open. The platform itself is AGPLv3.",
+      "copyleftDesc": "Designs carry CERN-OHL-W, the weakly reciprocal CERN hardware licence: changes to a design stay open, and the design can still go into a product next to parts under other licences. The platform itself is AGPLv3.",
       "globalTitle": "Global Standards",
       "globalDesc": "Language agnostic, metric-first, universally compatible.",
       "joinTitle": "Join the Movement",

@@ -170,5 +170,19 @@ describe('i18n', () => {
       expect(es.hyperCommons.whyBody).not.toContain('on your desk')
     })
   })
-})
 
+  describe('design licence copy', () => {
+    // The commons concept page called CERN-OHL-W "strong-reciprocal" (V1 visitor
+    // journey, 2026-10-18). W is the weakly reciprocal variant; S is the strong one.
+    it('describes CERN-OHL-W as weakly reciprocal in both locales', () => {
+      const en = getTranslations('en').concepts.commons.copyleftDesc
+      const es = getTranslations('es').concepts.commons.copyleftDesc
+      expect(en).toContain('CERN-OHL-W')
+      expect(es).toContain('CERN-OHL-W')
+      expect(en).toMatch(/weakly reciprocal/)
+      expect(es).toMatch(/reciprocidad débil/)
+      expect(en).not.toMatch(/strong/i)
+      expect(es).not.toMatch(/fuerte/i)
+    })
+  })
+})

@@ -39,4 +39,29 @@ describe('ConfirmRenderDialog', () => {
     screen.getByText('Cancel').click()
     expect(onCancel).toHaveBeenCalled()
   })
+
+  it('says the time in the visitor\'s language', () => {
+    // Production 2026-10-18: «Se estima que este renderizado tardará ~2 minutes».
+    render(
+      <LanguageProvider defaultLanguage="es">
+        <ConfirmRenderDialog open={true} onConfirm={() => {}} onCancel={() => {}} estimatedTime={120} />
+      </LanguageProvider>
+    )
+    expect(screen.getByText('~2 minutos')).toBeInTheDocument()
+    expect(screen.queryByText(/minutes/)).not.toBeInTheDocument()
+  })
+
+  it('uses the singular for one minute and localizes seconds', () => {
+    const { unmount } = renderWithProviders(
+      <ConfirmRenderDialog open={true} onConfirm={() => {}} onCancel={() => {}} estimatedTime={60} />
+    )
+    expect(screen.getByText('~1 minute')).toBeInTheDocument()
+    unmount()
+    render(
+      <LanguageProvider defaultLanguage="es">
+        <ConfirmRenderDialog open={true} onConfirm={() => {}} onCancel={() => {}} estimatedTime={30} />
+      </LanguageProvider>
+    )
+    expect(screen.getByText('~30 segundos')).toBeInTheDocument()
+  })
 })

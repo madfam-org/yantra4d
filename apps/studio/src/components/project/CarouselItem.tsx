@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState, useEffect } from 'react'
+import { Component, Suspense, useRef, useMemo, useState, useEffect, type ReactNode } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Image, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
@@ -17,6 +17,55 @@ interface CarouselItemProps {
     position: [number, number, number]
     gap: number
     index?: number
+}
+
+/**
+ * The mode the active item may live-render, or null when there is none.
+ *
+ * The catalog's search records carry `mode_count` but no `modes`, so the old
+ * `modes?.[0]?.id || 'default'` sent every active item to the API as mode
+ * "default": HTTP 400 invalid_mode_id_default, a red wireframe box, and one
+ * token of the visitor's render quota per item scrolled to. Without a real
+ * mode the item keeps showing its thumbnail.
+ */
+export function liveRenderMode(project: { modes?: Array<{ id?: string }> }): string | null {
+    const id = project.modes?.[0]?.id
+    return typeof id === 'string' && id.length > 0 ? id : null
+}
+
+interface CarouselAssetBoundaryProps {
+    slug: string
+    children: ReactNode
+}
+
+/**
+ * Isolates one carousel item's asset loads (thumbnail texture, live GLB).
+ *
+ * drei's <Image> and useGLTF throw when an asset cannot be loaded, and nothing
+ * between them and the catalog's top-level ErrorBoundary caught it, so one
+ * missing thumbnail replaced the whole 3D catalog with "Something went wrong".
+ * On production that happened on open: ten commons manifests point at a
+ * /projects/<slug>.webp the Studio image does not ship, and the first of them
+ * (ab-drive) sorts first. A failed item now renders nothing; the rest of the
+ * carousel keeps working. It also never shows the boundary's DOM fallback,
+ * which cannot live inside an R3F scene.
+ */
+class CarouselAssetBoundary extends Component<CarouselAssetBoundaryProps, { failed: boolean }> {
+    state = { failed: false }
+
+    static getDerivedStateFromError(): { failed: boolean } {
+        return { failed: true }
+    }
+
+    componentDidCatch(error: Error): void {
+        console.warn(`Carousel item "${this.props.slug}" could not load an asset:`, error?.message)
+    }
+
+    render() {
+        // The local Suspense keeps a loading texture from suspending the whole
+        // scene (and the catalog's «Cargando proyectos…» fallback with it).
+        return this.state.failed ? null : <Suspense fallback={null}>{this.props.children}</Suspense>
+    }
 }
 
 export default function CarouselItem({ project, position, gap }: CarouselItemProps) {
@@ -63,6 +112,8 @@ export default function CarouselItem({ project, position, gap }: CarouselItemPro
     // Only attempt to load complex 3D geometry if active or hovered to save system resources.
 
     // We'll construct a mock parameters object from defaults just to get a mesh output
+    const liveMode = liveRenderMode(project)
+
     const defaults = useMemo(() => {
         const d: Record<string, unknown> = {}
         if (project.parameters) {
@@ -77,19 +128,23 @@ export default function CarouselItem({ project, position, gap }: CarouselItemPro
         <group ref={groupRef} position={position}>
 
             {/* If Not Active, show highly optimized Thumbnail Plane */}
-            {(!isActive && project.thumbnail) && (
-                <Image
-                    url={project.thumbnail}
-                    transparent
-                    opacity={1}
-                    scale={[3, 2, 1]}
-                    radius={0.1}
-                />
+            {((!isActive || !liveMode) && project.thumbnail) && (
+                <CarouselAssetBoundary key={`thumb:${project.thumbnail}`} slug={project.slug}>
+                    <Image
+                        url={project.thumbnail}
+                        transparent
+                        opacity={1}
+                        scale={[3, 2, 1]}
+                        radius={0.1}
+                    />
+                </CarouselAssetBoundary>
             )}
 
             {/* If Active (or fallback no-thumbnail), try to render Live Model */}
-            {isActive && (
-                <LiveModel project={project} defaults={defaults} />
+            {isActive && liveMode && (
+                <CarouselAssetBoundary key="live" slug={project.slug}>
+                    <LiveModel project={project} mode={liveMode} defaults={defaults} />
+                </CarouselAssetBoundary>
             )}
         </group>
     )
@@ -97,10 +152,11 @@ export default function CarouselItem({ project, position, gap }: CarouselItemPro
 
 interface LiveModelProps {
     project: ProjectData
+    mode: string
     defaults: Record<string, unknown>
 }
 
-function LiveModel({ project, defaults }: LiveModelProps) {
+function LiveModel({ project, mode, defaults }: LiveModelProps) {
     const [renderResult, setRenderResult] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -108,7 +164,7 @@ function LiveModel({ project, defaults }: LiveModelProps) {
         let cancelled = false
 
         renderParts(
-            project.modes?.[0]?.id || 'default',
+            mode,
             defaults,
             project as never, // manifest
             { project: project.slug }
@@ -131,7 +187,7 @@ function LiveModel({ project, defaults }: LiveModelProps) {
         return () => {
             cancelled = true
         }
-    }, [project, defaults])
+    }, [project, mode, defaults])
 
     if (loading) {
         return (

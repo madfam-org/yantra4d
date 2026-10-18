@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { ScrollControls, Scroll, useScroll, Environment, ContactShadows } from '@react-three/drei'
+import { useNavigate } from 'react-router-dom'
 import { ENVIRONMENT_HDRI_PATH, environmentFile } from '@/lib/environmentPresets'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import CarouselItem from './CarouselItem'
@@ -79,6 +80,7 @@ interface ProjectCarousel3DProps {
 
 export default function ProjectCarousel3D({ projects = [] }: ProjectCarousel3DProps) {
     const { t, language } = useLanguage()
+    const navigate = useNavigate()
     const loc = (val: unknown) => (typeof val === 'object' && val !== null) ? ((val as Record<string, string>)[language] || (val as Record<string, string>).en || '') : (val as string || '')
     const [activeIndex, setActiveIndex] = useState(0)
     const gap = 4
@@ -111,6 +113,7 @@ export default function ProjectCarousel3D({ projects = [] }: ProjectCarousel3DPr
                             t={t}
                             index={activeIndex}
                             total={projects.length}
+                            onOpen={(slug) => navigate(`/project/${slug}`)}
                         />
                     </Scroll>
                 </ScrollControls>

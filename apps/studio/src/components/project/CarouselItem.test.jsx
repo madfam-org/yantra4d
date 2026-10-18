@@ -9,7 +9,11 @@ vi.mock('@react-three/fiber', () => ({
 
 // Mock Drei
 vi.mock('@react-three/drei', () => ({
-    Image: (props) => <div data-testid="drei-image" data-url={props.url} />,
+    Image: (props) => {
+        // drei's <Image> throws when its texture cannot be loaded
+        if (props.url.includes('missing')) throw new Error(`Could not load ${props.url}: undefined`)
+        return <div data-testid="drei-image" data-url={props.url} />
+    },
     useGLTF: () => ({ scene: null }),
 }))
 
@@ -34,7 +38,7 @@ vi.mock('../../services/engine/renderService', () => ({
     renderParts: vi.fn(() => Promise.resolve([])),
 }))
 
-import CarouselItem from './CarouselItem'
+import CarouselItem, { liveRenderMode } from './CarouselItem'
 
 const MOCK_PROJECT = {
     slug: 'test-model',
@@ -94,5 +98,33 @@ describe('CarouselItem', () => {
             />
         )
         expect(container).toBeTruthy()
+    })
+
+    it('drops a thumbnail that cannot load instead of crashing the carousel', () => {
+        // Production 2026-10-18: /projects/ab-drive.webp is not shipped, and the
+        // whole 3D catalog showed "Could not load /projects/ab-drive.webp".
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+        const broken = { ...MOCK_PROJECT, slug: 'ab-drive', thumbnail: '/projects/missing.webp' }
+        const { queryByTestId } = render(
+            <>
+                <CarouselItem project={broken} position={[4, 0, 0]} gap={4} />
+                <CarouselItem project={{ ...MOCK_PROJECT, slug: 'ok' }} position={[8, 0, 0]} gap={4} />
+            </>
+        )
+        // The broken item renders nothing; its neighbour still renders its thumbnail.
+        expect(queryByTestId('drei-image')).toHaveAttribute('data-url', '/thumbs/test.png')
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('ab-drive'), expect.stringContaining('missing.webp'))
+        warn.mockRestore()
+        error.mockRestore()
+    })
+
+    it('live-renders only with a real mode id (catalog records carry none)', () => {
+        // Production 2026-10-18: every active item POSTed mode "default" and got
+        // HTTP 400 invalid_mode_id_default, a red box and a spent render token.
+        expect(liveRenderMode({ slug: 'a', mode_count: 3 })).toBeNull()
+        expect(liveRenderMode({ slug: 'a', modes: [] })).toBeNull()
+        expect(liveRenderMode({ slug: 'a', modes: [{ id: '' }] })).toBeNull()
+        expect(liveRenderMode({ slug: 'a', modes: [{ id: 'cup' }, { id: 'lid' }] })).toBe('cup')
     })
 })

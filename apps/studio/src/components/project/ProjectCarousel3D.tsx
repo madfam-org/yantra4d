@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { ScrollControls, Scroll, useScroll, Environment, ContactShadows } from '@react-three/drei'
+import { ENVIRONMENT_HDRI_PATH, environmentFile } from '@/lib/environmentPresets'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import CarouselItem from './CarouselItem'
 import CarouselUIOverlay from './CarouselUIOverlay'
@@ -114,7 +115,7 @@ export default function ProjectCarousel3D({ projects = [] }: ProjectCarousel3DPr
                     </Scroll>
                 </ScrollControls>
 
-                <Environment preset="city" />
+                <Environment files={environmentFile('city')} path={ENVIRONMENT_HDRI_PATH} />
                 <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2} far={4.5} />
             </Canvas>
         </div>

@@ -2,6 +2,7 @@ import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImp
 import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, Html } from '@react-three/drei'
+import { ENVIRONMENT_HDRI_PATH, environmentFile } from '@/lib/environmentPresets'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { useWorkerLoader } from '../../hooks/render/useWorkerLoader'
@@ -759,7 +760,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
                         <OrthographicCamera makeDefault position={initialCameraPos} zoom={50} up={SCENE_UP_VECTOR} />
                     )}
 
-                    <Environment preset={environmentPreset as 'city' | 'sunset' | 'dawn' | 'night' | 'warehouse' | 'forest' | 'apartment' | 'studio' | 'lobby' | 'park'} />
+                    <Environment files={environmentFile(environmentPreset)} path={ENVIRONMENT_HDRI_PATH} />
                     <ambientLight intensity={0.3 * lightIntensity} />
                     <pointLight position={[10, 10, 10]} intensity={0.5 * lightIntensity} />
 

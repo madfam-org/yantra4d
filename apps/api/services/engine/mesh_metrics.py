@@ -26,7 +26,11 @@ Known, documented differences (the parity soak measures them, it does not hide
 them): geom-core welds exactly coincident vertices on load, so for a mesh that
 arrives as unwelded triangle soup it can report "watertight" with no merge
 tolerance where ``mesh_integrity.assess`` reports the same verdict *after* a
-tolerance merge. Wall thickness and overhang stay on the trimesh analyzers:
+tolerance merge; and two shells that touch without shared vertices (an
+in-memory concatenation never welded) are two closed bodies to trimesh but a
+non-manifold contact to geom-core. Every file the API reads goes through
+``trimesh.load``, which welds first, so both agree on loaded files. Wall
+thickness and overhang stay on the trimesh analyzers:
 their HTTP contract returns per-vertex/per-face arrays, which geom-core does
 not expose to Python.
 
@@ -39,6 +43,7 @@ import logging
 import math
 import os
 import tempfile
+import weakref
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -133,8 +138,17 @@ class GeomCoreOracle:
         self._gc = module or geom_core_module()
         if self._gc is None:
             raise RuntimeError("geom-core is not installed (no geom_core_py module)")
+        # One parse per mesh, not one per metric: (weakref to mesh, analyzer).
+        self._last: tuple[weakref.ref, Any] | None = None
 
     def _analyzer(self, mesh):
+        if self._last is not None and self._last[0]() is mesh:
+            return self._last[1]
+        analyzer = self._load(mesh)
+        self._last = (weakref.ref(mesh), analyzer)
+        return analyzer
+
+    def _load(self, mesh):
         if not isinstance(mesh, trimesh.Trimesh) or len(mesh.faces) == 0:
             raise ValueError("geom-core needs a non-empty triangle mesh")
         analyzer = self._gc.Analyzer()

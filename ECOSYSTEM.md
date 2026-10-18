@@ -40,13 +40,14 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
 ### Upstream dependencies (this repo consumes)
 
 - geom-core (C++ mesh analysis + WASM bindings) — consumed behind flags, default off:
-  - Studio browser path (#248, on `main`): `@madfam/geom-core` 0.1.0 (pinned release
-    tarball) behind `VITE_GEOM_CORE_BROWSER` / `?geomcore=1` for mesh volume, bounding
-    box, centroid and STL face count, differential-tested against the TypeScript
-    implementations that remain the default
+  - Studio browser path (#248, #252, on `main`): `@madfam/geom-core` 0.2.0 (the release
+    tarball vendored in-repo and verified against the release digest; single-threaded WASM,
+    no cross-origin isolation needed) behind `VITE_GEOM_CORE_BROWSER` / `?geomcore=1` for
+    mesh volume, signed volume, bounding box (min/max), centroid and STL face count,
+    differential-tested against the TypeScript implementations that remain the default
     ([apps/studio/README.md](apps/studio/README.md#geometry-core-wasm--experimental)).
-  - API mesh-oracle seam (#251, in review, not on `main` yet): `MESH_ORACLE` selects
-    trimesh (default), the geom-core wheel, or both with parity metrics.
+  - API mesh-oracle seam (#251, on `main`): `MESH_ORACLE` selects trimesh (default), the
+    geom-core wheel, or both with parity metrics.
   - Geometry *generation* stays in-house (Python SDF engine + OpenSCAD/CadQuery).
 - postgres (catalog, user designs)
 - cloudflare R2 (asset storage) — **planned, not yet wired**; render artifacts are

@@ -9,7 +9,11 @@ vi.mock('@react-three/fiber', () => ({
 
 // Mock Drei
 vi.mock('@react-three/drei', () => ({
-    Image: (props) => <div data-testid="drei-image" data-url={props.url} />,
+    Image: (props) => {
+        // drei's <Image> throws when its texture cannot be loaded
+        if (props.url.includes('missing')) throw new Error(`Could not load ${props.url}: undefined`)
+        return <div data-testid="drei-image" data-url={props.url} />
+    },
     useGLTF: () => ({ scene: null }),
 }))
 
@@ -94,5 +98,24 @@ describe('CarouselItem', () => {
             />
         )
         expect(container).toBeTruthy()
+    })
+
+    it('drops a thumbnail that cannot load instead of crashing the carousel', () => {
+        // Production 2026-10-18: /projects/ab-drive.webp is not shipped, and the
+        // whole 3D catalog showed "Could not load /projects/ab-drive.webp".
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+        const broken = { ...MOCK_PROJECT, slug: 'ab-drive', thumbnail: '/projects/missing.webp' }
+        const { queryByTestId } = render(
+            <>
+                <CarouselItem project={broken} position={[4, 0, 0]} gap={4} />
+                <CarouselItem project={{ ...MOCK_PROJECT, slug: 'ok' }} position={[8, 0, 0]} gap={4} />
+            </>
+        )
+        // The broken item renders nothing; its neighbour still renders its thumbnail.
+        expect(queryByTestId('drei-image')).toHaveAttribute('data-url', '/thumbs/test.png')
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('ab-drive'), expect.stringContaining('missing.webp'))
+        warn.mockRestore()
+        error.mockRestore()
     })
 })

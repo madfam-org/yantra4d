@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState, useEffect } from 'react'
+import { Component, useRef, useMemo, useState, useEffect, type ReactNode } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Image, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
@@ -17,6 +17,39 @@ interface CarouselItemProps {
     position: [number, number, number]
     gap: number
     index?: number
+}
+
+interface CarouselAssetBoundaryProps {
+    slug: string
+    children: ReactNode
+}
+
+/**
+ * Isolates one carousel item's asset loads (thumbnail texture, live GLB).
+ *
+ * drei's <Image> and useGLTF throw when an asset cannot be loaded, and nothing
+ * between them and the catalog's top-level ErrorBoundary caught it, so one
+ * missing thumbnail replaced the whole 3D catalog with "Something went wrong".
+ * On production that happened on open: ten commons manifests point at a
+ * /projects/<slug>.webp the Studio image does not ship, and the first of them
+ * (ab-drive) sorts first. A failed item now renders nothing; the rest of the
+ * carousel keeps working. It also never shows the boundary's DOM fallback,
+ * which cannot live inside an R3F scene.
+ */
+class CarouselAssetBoundary extends Component<CarouselAssetBoundaryProps, { failed: boolean }> {
+    state = { failed: false }
+
+    static getDerivedStateFromError(): { failed: boolean } {
+        return { failed: true }
+    }
+
+    componentDidCatch(error: Error): void {
+        console.warn(`Carousel item "${this.props.slug}" could not load an asset:`, error?.message)
+    }
+
+    render() {
+        return this.state.failed ? null : this.props.children
+    }
 }
 
 export default function CarouselItem({ project, position, gap }: CarouselItemProps) {
@@ -78,18 +111,22 @@ export default function CarouselItem({ project, position, gap }: CarouselItemPro
 
             {/* If Not Active, show highly optimized Thumbnail Plane */}
             {(!isActive && project.thumbnail) && (
-                <Image
-                    url={project.thumbnail}
-                    transparent
-                    opacity={1}
-                    scale={[3, 2, 1]}
-                    radius={0.1}
-                />
+                <CarouselAssetBoundary key={`thumb:${project.thumbnail}`} slug={project.slug}>
+                    <Image
+                        url={project.thumbnail}
+                        transparent
+                        opacity={1}
+                        scale={[3, 2, 1]}
+                        radius={0.1}
+                    />
+                </CarouselAssetBoundary>
             )}
 
             {/* If Active (or fallback no-thumbnail), try to render Live Model */}
             {isActive && (
-                <LiveModel project={project} defaults={defaults} />
+                <CarouselAssetBoundary key="live" slug={project.slug}>
+                    <LiveModel project={project} defaults={defaults} />
+                </CarouselAssetBoundary>
             )}
         </group>
     )

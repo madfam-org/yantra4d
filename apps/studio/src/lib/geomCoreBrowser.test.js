@@ -25,7 +25,7 @@ describe('VITE_GEOM_CORE_BROWSER flag', () => {
     vi.stubEnv('VITE_GEOM_CORE_BROWSER', '')
     const m = await freshModule()
     expect(m.isGeomCoreBrowserEnabled()).toBe(false)
-    expect(m.getGeomCoreBrowserStatus()).toEqual({ enabled: false, state: 'off', version: '0.1.0', reason: null })
+    expect(m.getGeomCoreBrowserStatus()).toEqual({ enabled: false, state: 'off', version: '0.2.0', reason: null })
   })
 
   it('turns on from the build-time env', async () => {
@@ -49,28 +49,39 @@ describe('VITE_GEOM_CORE_BROWSER flag', () => {
   })
 })
 
-describe('browser blocker (threaded 0.1.0 build)', () => {
-  it('names cross-origin isolation when the page is not isolated', async () => {
-    const m = await freshModule()
-    vi.stubGlobal('process', { ...globalThis.process, versions: { ...globalThis.process.versions, node: undefined } })
-    vi.stubGlobal('crossOriginIsolated', false)
-    try {
-      expect(m.geomCoreBrowserBlocker()).toMatch(/not cross-origin isolated \(COOP\/COEP\)/)
-    } finally {
-      vi.unstubAllGlobals()
-    }
+describe('loadGeomCore (0.2.0 single-threaded build)', () => {
+  afterEach(() => {
+    vi.doUnmock('@madfam/geom-core/wasm')
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
-  it('does not block a cross-origin-isolated page or Node', async () => {
+  it('logs exactly one console.info line when geom-core becomes active', async () => {
+    vi.stubEnv('VITE_GEOM_CORE_BROWSER', '1')
     const m = await freshModule()
-    expect(m.geomCoreBrowserBlocker()).toBeNull()
-    vi.stubGlobal('process', { ...globalThis.process, versions: { ...globalThis.process.versions, node: undefined } })
-    vi.stubGlobal('crossOriginIsolated', true)
-    try {
-      expect(m.geomCoreBrowserBlocker()).toBeNull()
-    } finally {
-      vi.unstubAllGlobals()
-    }
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {})
+    const mod = await m.loadGeomCore()
+    await m.loadGeomCore() // cached: no second line
+    expect(typeof mod.Analyzer).toBe('function')
+    expect(info).toHaveBeenCalledTimes(1)
+    expect(info.mock.calls[0][0]).toBe('[geom-core] 0.2.0 WASM active (single-threaded); mesh metrics come from geom-core')
+    expect(m.getGeomCoreBrowserStatus()).toMatchObject({ state: 'ready', reason: null })
+  })
+
+  it('gives up after 10 s on an initialisation that never settles', async () => {
+    vi.stubEnv('VITE_GEOM_CORE_BROWSER', '1')
+    vi.doMock('@madfam/geom-core/wasm', () => ({ default: () => new Promise(() => {}) }))
+    const m = await freshModule()
+    await import('@madfam/geom-core/wasm') // resolve the mocked module before faking time
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    let settled = null
+    m.loadGeomCore().then(() => { settled = 'resolved' }, (err) => { settled = err })
+    for (let i = 0; i < 40 && settled === null; i++) await vi.advanceTimersByTimeAsync(500)
+    expect(settled).toBeInstanceOf(Error)
+    expect(settled.message).toBe('@madfam/geom-core 0.2.0 initialisation did not finish within 10000 ms')
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(m.getGeomCoreBrowserStatus()).toMatchObject({ state: 'failed', reason: settled.message })
   })
 })
 

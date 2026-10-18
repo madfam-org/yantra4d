@@ -3,10 +3,14 @@ import { act, cleanup, renderHook } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { Scene, Mesh, BoxGeometry, MeshStandardMaterial, Texture } from 'three'
 
-const { loadAsync, bearerHeaderForSameOrigin } = vi.hoisted(() => ({ loadAsync: vi.fn(), bearerHeaderForSameOrigin: vi.fn() }))
-vi.mock('three/examples/jsm/loaders/GLTFLoader', () => ({
-  GLTFLoader: class { loadAsync = loadAsync; setRequestHeader = vi.fn() },
+const { loadAsync, bearerHeaderForSameOrigin, setMeshoptDecoder, meshoptDecoder } = vi.hoisted(() => ({
+  loadAsync: vi.fn(), bearerHeaderForSameOrigin: vi.fn(), setMeshoptDecoder: vi.fn(),
+  meshoptDecoder: { supported: true, ready: Promise.resolve() },
 }))
+vi.mock('three/examples/jsm/loaders/GLTFLoader', () => ({
+  GLTFLoader: class { loadAsync = loadAsync; setRequestHeader = vi.fn(); setMeshoptDecoder = setMeshoptDecoder },
+}))
+vi.mock('three/examples/jsm/libs/meshopt_decoder.module.js', () => ({ MeshoptDecoder: meshoptDecoder }))
 vi.mock('../../lib/januaSso', () => ({ bearerHeaderForSameOrigin }))
 
 let useWorkerLoader, workers
@@ -34,6 +38,7 @@ beforeEach(async () => {
   workers = []
   vi.stubGlobal('Worker', MockWorker)
   loadAsync.mockReset()
+  setMeshoptDecoder.mockReset()
   bearerHeaderForSameOrigin.mockReset().mockReturnValue(null)
   vi.spyOn(console, 'error').mockImplementation(() => {})
   ;({ useWorkerLoader } = await import('./useWorkerLoader'))
@@ -236,5 +241,36 @@ describe('consumer-owned viewer resources', () => {
     view.unmount()
     await act(async () => complete(data))
     expect(release).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('prerendered previews (meshopt, silent failure)', () => {
+  it('wires the meshopt decoder on the loader before loading', async () => {
+    const data = scene()
+    loadAsync.mockImplementation(async () => {
+      expect(setMeshoptDecoder).toHaveBeenCalledWith(meshoptDecoder)
+      return data
+    })
+    const { result } = renderHook(() => useWorkerLoader('https://yantra4d.com/models/gridfinity.lod1.glb', true, { meshopt: true }))
+    await act(async () => {})
+    expect(loadAsync).toHaveBeenCalledWith('https://yantra4d.com/models/gridfinity.lod1.glb')
+    expect(result.current.scene).toBe(data.scene)
+  })
+
+  it('leaves server GLBs without the decoder', async () => {
+    loadAsync.mockResolvedValue(scene())
+    renderHook(() => useWorkerLoader('render.glb', true))
+    await act(async () => {})
+    expect(setMeshoptDecoder).not.toHaveBeenCalled()
+  })
+
+  it('reports a failed load to onError instead of console.error', async () => {
+    const failure = new Error('HTTP 404')
+    loadAsync.mockRejectedValue(failure)
+    const onError = vi.fn()
+    renderHook(() => useWorkerLoader('https://yantra4d.com/models/x.lod0.glb', true, { meshopt: true, onError }))
+    await act(async () => {})
+    expect(onError).toHaveBeenCalledWith(failure)
+    expect(console.error).not.toHaveBeenCalled()
   })
 })

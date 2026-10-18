@@ -156,10 +156,14 @@ export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean 
             const auth = bearerHeaderForSameOrigin(request.url)
             if (auth) loader.setRequestHeader({ Authorization: auth })
             const url = request.url
-            const ready = request.meshopt
-                ? loadMeshoptDecoder().then(decoder => { loader.setMeshoptDecoder(decoder) })
-                : Promise.resolve()
-            ready.then(() => loader.loadAsync(url)).then((data: GLTF) => {
+            // Without meshopt the load starts synchronously, exactly as before.
+            const loading: Promise<GLTF> = request.meshopt
+                ? loadMeshoptDecoder().then(decoder => {
+                    loader.setMeshoptDecoder(decoder)
+                    return loader.loadAsync(url)
+                })
+                : loader.loadAsync(url)
+            loading.then((data: GLTF) => {
                 if (!active) { disposeGLTF(data); return }
                 let geometry: BufferGeometry | null = null
                 try {

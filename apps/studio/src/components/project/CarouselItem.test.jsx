@@ -38,7 +38,7 @@ vi.mock('../../services/engine/renderService', () => ({
     renderParts: vi.fn(() => Promise.resolve([])),
 }))
 
-import CarouselItem from './CarouselItem'
+import CarouselItem, { liveRenderMode } from './CarouselItem'
 
 const MOCK_PROJECT = {
     slug: 'test-model',
@@ -117,5 +117,14 @@ describe('CarouselItem', () => {
         expect(warn).toHaveBeenCalledWith(expect.stringContaining('ab-drive'), expect.stringContaining('missing.webp'))
         warn.mockRestore()
         error.mockRestore()
+    })
+
+    it('live-renders only with a real mode id (catalog records carry none)', () => {
+        // Production 2026-10-18: every active item POSTed mode "default" and got
+        // HTTP 400 invalid_mode_id_default, a red box and a spent render token.
+        expect(liveRenderMode({ slug: 'a', mode_count: 3 })).toBeNull()
+        expect(liveRenderMode({ slug: 'a', modes: [] })).toBeNull()
+        expect(liveRenderMode({ slug: 'a', modes: [{ id: '' }] })).toBeNull()
+        expect(liveRenderMode({ slug: 'a', modes: [{ id: 'cup' }, { id: 'lid' }] })).toBe('cup')
     })
 })

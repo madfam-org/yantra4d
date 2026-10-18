@@ -30,9 +30,14 @@ vi.mock('./CarouselItem', () => ({
 }))
 
 vi.mock('./CarouselUIOverlay', () => ({
-    default: ({ project }) => (
-        <div data-testid="carousel-overlay">{project?.name}</div>
+    default: ({ project, onOpen }) => (
+        <button type="button" data-testid="carousel-overlay" onClick={() => onOpen?.(project.slug)}>{project?.name}</button>
     ),
+}))
+
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', () => ({
+    useNavigate: () => mockNavigate,
 }))
 
 import ProjectCarousel3D from './ProjectCarousel3D'
@@ -63,5 +68,11 @@ describe('ProjectCarousel3D', () => {
         render(<ProjectCarousel3D projects={MOCK_PROJECTS} />)
         expect(screen.getByTestId('carousel-overlay')).toBeInTheDocument()
         expect(screen.getByText('Model A')).toBeInTheDocument()
+    })
+
+    it('hands the overlay a client-side navigation to the project', () => {
+        render(<ProjectCarousel3D projects={MOCK_PROJECTS} />)
+        screen.getByTestId('carousel-overlay').click()
+        expect(mockNavigate).toHaveBeenCalledWith('/project/model-a')
     })
 })

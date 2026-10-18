@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Settings2, ArrowRight } from 'lucide-react'
@@ -20,9 +19,19 @@ interface CarouselUIOverlayProps {
     index: number
     total: number
     t?: (key: string) => string
+    /** Client-side navigation to the project, supplied by a component inside the Router. */
+    onOpen?: (slug: string) => void
 }
 
-export default function CarouselUIOverlay({ project, loc, index, total }: CarouselUIOverlayProps) {
+/**
+ * The 3D carousel's HTML layer. drei's `<Scroll html>` mounts it in a separate
+ * React root, which carries none of the app's contexts, so a react-router
+ * `<Link>` here threw "Cannot destructure property 'basename' of
+ * useContext(...)" and took the carousel down. The button is a plain link;
+ * `onOpen` (from ProjectCarousel3D, which is inside the Router) keeps the
+ * navigation client-side, and modifier clicks still open a new tab.
+ */
+export default function CarouselUIOverlay({ project, loc, index, total, onOpen }: CarouselUIOverlayProps) {
     if (!project) return null
 
     return (
@@ -86,12 +95,19 @@ export default function CarouselUIOverlay({ project, loc, index, total }: Carous
 
                     <CardFooter className="pt-0 border-t border-border/40 mt-4 flex items-center justify-between">
                         <p className="text-xs text-muted-foreground italic">Live 3D Rendering Active</p>
-                        <Link to={`/project/${project.slug}`}>
+                        <a
+                            href={`/project/${project.slug}`}
+                            onClick={(event) => {
+                                if (!onOpen || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+                                event.preventDefault()
+                                onOpen(project.slug)
+                            }}
+                        >
                             <Button className="gap-2 shrink-0 group">
                                 Open Studio
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </Button>
-                        </Link>
+                        </a>
                     </CardFooter>
                 </Card>
             </div>

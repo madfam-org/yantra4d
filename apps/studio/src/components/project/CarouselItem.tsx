@@ -1,4 +1,4 @@
-import { Component, useRef, useMemo, useState, useEffect, type ReactNode } from 'react'
+import { Component, Suspense, useRef, useMemo, useState, useEffect, type ReactNode } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Image, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
@@ -17,6 +17,20 @@ interface CarouselItemProps {
     position: [number, number, number]
     gap: number
     index?: number
+}
+
+/**
+ * The mode the active item may live-render, or null when there is none.
+ *
+ * The catalog's search records carry `mode_count` but no `modes`, so the old
+ * `modes?.[0]?.id || 'default'` sent every active item to the API as mode
+ * "default": HTTP 400 invalid_mode_id_default, a red wireframe box, and one
+ * token of the visitor's render quota per item scrolled to. Without a real
+ * mode the item keeps showing its thumbnail.
+ */
+export function liveRenderMode(project: { modes?: Array<{ id?: string }> }): string | null {
+    const id = project.modes?.[0]?.id
+    return typeof id === 'string' && id.length > 0 ? id : null
 }
 
 interface CarouselAssetBoundaryProps {
@@ -48,7 +62,9 @@ class CarouselAssetBoundary extends Component<CarouselAssetBoundaryProps, { fail
     }
 
     render() {
-        return this.state.failed ? null : this.props.children
+        // The local Suspense keeps a loading texture from suspending the whole
+        // scene (and the catalog's «Cargando proyectos…» fallback with it).
+        return this.state.failed ? null : <Suspense fallback={null}>{this.props.children}</Suspense>
     }
 }
 
@@ -96,6 +112,8 @@ export default function CarouselItem({ project, position, gap }: CarouselItemPro
     // Only attempt to load complex 3D geometry if active or hovered to save system resources.
 
     // We'll construct a mock parameters object from defaults just to get a mesh output
+    const liveMode = liveRenderMode(project)
+
     const defaults = useMemo(() => {
         const d: Record<string, unknown> = {}
         if (project.parameters) {
@@ -110,7 +128,7 @@ export default function CarouselItem({ project, position, gap }: CarouselItemPro
         <group ref={groupRef} position={position}>
 
             {/* If Not Active, show highly optimized Thumbnail Plane */}
-            {(!isActive && project.thumbnail) && (
+            {((!isActive || !liveMode) && project.thumbnail) && (
                 <CarouselAssetBoundary key={`thumb:${project.thumbnail}`} slug={project.slug}>
                     <Image
                         url={project.thumbnail}
@@ -123,9 +141,9 @@ export default function CarouselItem({ project, position, gap }: CarouselItemPro
             )}
 
             {/* If Active (or fallback no-thumbnail), try to render Live Model */}
-            {isActive && (
+            {isActive && liveMode && (
                 <CarouselAssetBoundary key="live" slug={project.slug}>
-                    <LiveModel project={project} defaults={defaults} />
+                    <LiveModel project={project} mode={liveMode} defaults={defaults} />
                 </CarouselAssetBoundary>
             )}
         </group>
@@ -134,10 +152,11 @@ export default function CarouselItem({ project, position, gap }: CarouselItemPro
 
 interface LiveModelProps {
     project: ProjectData
+    mode: string
     defaults: Record<string, unknown>
 }
 
-function LiveModel({ project, defaults }: LiveModelProps) {
+function LiveModel({ project, mode, defaults }: LiveModelProps) {
     const [renderResult, setRenderResult] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -145,7 +164,7 @@ function LiveModel({ project, defaults }: LiveModelProps) {
         let cancelled = false
 
         renderParts(
-            project.modes?.[0]?.id || 'default',
+            mode,
             defaults,
             project as never, // manifest
             { project: project.slug }
@@ -168,7 +187,7 @@ function LiveModel({ project, defaults }: LiveModelProps) {
         return () => {
             cancelled = true
         }
-    }, [project, defaults])
+    }, [project, mode, defaults])
 
     if (loading) {
         return (

@@ -27,6 +27,7 @@ from flask_cors import CORS
 
 from config import Config
 from extensions import db, limiter, migrate
+from routes.core.api_docs import api_docs_bp
 from routes.core.client_config import client_config_bp
 from routes.core.config_route import config_bp
 from routes.core.health import health_bp
@@ -304,6 +305,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(render_bp)
     app.register_blueprint(health_bp)
+    app.register_blueprint(api_docs_bp)
     app.register_blueprint(verify_bp)
     app.register_blueprint(config_bp)
     app.register_blueprint(manifest_bp)

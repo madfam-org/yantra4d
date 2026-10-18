@@ -188,6 +188,8 @@ jobs:
               - 'private-projects/**'
               - 'libs/**'
               - 'packages/schemas/**'
+              # Served by the API as /api/openapi.json (copied into the image).
+              - 'docs/reference/openapi.yaml'
             studio:
               - 'apps/studio/**'
               - 'packages/**'

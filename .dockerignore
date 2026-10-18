@@ -4,6 +4,8 @@ node_modules/
 apps/*/node_modules/
 packages/*/node_modules/
 docs/
+# ...except the OpenAPI document the API serves at /api/openapi.json.
+!docs/reference/openapi.yaml
 .DS_Store
 *.stl
 !projects/*/exports/models/*.stl

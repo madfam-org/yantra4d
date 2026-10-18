@@ -31,6 +31,8 @@ paho-mqtt~=2.1
 cadquery==2.8.0
 cascadio~=0.0.17
 openapi-schema-validator~=0.6.2
+# Parses docs/reference/openapi.yaml for /api/openapi.json (routes/core/api_docs.py).
+PyYAML>=6.0,<7
 scikit-image~=0.22
 rtree~=1.2
 prometheus-client~=0.21

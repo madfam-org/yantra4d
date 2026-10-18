@@ -48,7 +48,11 @@ globalThis.__resetMediaQueries = () => {
   mediaQueryOverrides.clear()
 }
 
-Object.defineProperty(window, 'matchMedia', {
+// Window-only stubs: skipped for files that opt into `// @vitest-environment node`
+// (the geom-core differential suite runs there too).
+const hasWindow = typeof window !== 'undefined'
+
+if (hasWindow) Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query) => ({
     matches: mediaQueryOverrides.has(query) ? mediaQueryOverrides.get(query) : false,
@@ -68,7 +72,7 @@ class ResizeObserverStub {
   unobserve() {}
   disconnect() {}
 }
-window.ResizeObserver = window.ResizeObserver || ResizeObserverStub
+if (hasWindow) window.ResizeObserver = window.ResizeObserver || ResizeObserverStub
 
 // URL.createObjectURL / revokeObjectURL are not available in jsdom
 if (typeof URL.createObjectURL === 'undefined') {

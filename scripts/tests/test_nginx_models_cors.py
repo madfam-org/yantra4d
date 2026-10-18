@@ -126,6 +126,7 @@ def test_studio_csp_lets_the_studio_fetch_the_landing_models():
     snippet = (REPO / "apps" / "studio" / "nginx-security-headers.conf").read_text()
     csp = re.search(r'Content-Security-Policy "([^"]+)"', snippet).group(1)
     connect = next(d.split()[1:] for d in (p.strip() for p in csp.split(";")) if d.startswith("connect-src "))
-    assert "https://yantra4d.com" in connect
+    # Exact token match (not a substring test): CodeQL py/incomplete-url-substring-sanitization.
+    assert any(src == "https://yantra4d.com" for src in connect), connect
     assert not any("*" in src for src in connect), "connect-src must name origins, not wildcards"
 

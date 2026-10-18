@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import { resolve, dirname } from 'path'
 import { createRequire } from 'module'
 import { fileURLToPath } from 'url'
-import { geomCoreWasmAlias } from './geom-core-wasm.alias.js'
 
 // Use real @janua/react-sdk if installed, otherwise fall back to test stub
 let januaAlias
@@ -18,11 +17,10 @@ try {
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: [
-      { find: '@', replacement: '/src' },
-      ...(januaAlias ? [{ find: '@janua/react-sdk', replacement: januaAlias }] : []),
-      geomCoreWasmAlias,
-    ],
+    alias: {
+      '@': '/src',
+      ...(januaAlias ? { '@janua/react-sdk': januaAlias } : {}),
+    },
   },
   test: {
     environment: 'jsdom',

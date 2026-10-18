@@ -12,6 +12,7 @@ from collections.abc import Callable
 from services.engine.cq_pool import cq_pool
 from services.engine.engine_guard import worker_only
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, communicate_cancellable
+from services.engine.render_limits import describe_exit, limited_env, render_preexec_fn
 from services.engine.render_log import sanitize_render_log, scrub_render_log
 from utils.project_resolver import curated_project_roots
 
@@ -195,12 +196,14 @@ def _run_render(
         if is_cancelled is None:
             result = subprocess.run(
                 cmd, check=True, capture_output=True, text=True,
-                timeout=RENDER_TIMEOUT_S, env=_cadquery_env()
+                timeout=RENDER_TIMEOUT_S, env=limited_env(_cadquery_env()),
+                preexec_fn=render_preexec_fn(),
             )
             return True, result.stdout + result.stderr
 
         process = _cq_process_manager.start(
-            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=_cadquery_env())
+            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                             env=limited_env(_cadquery_env()), preexec_fn=render_preexec_fn())  # noqa: PLW1509 (setrlimit only; see render_limits)
         )
         kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
         kill_timer.start()
@@ -217,7 +220,8 @@ def _run_render(
 
         if process.returncode != 0:
             logger.error("CadQuery failed with code %s", process.returncode)
-            return False, stdout_text
+            reason = describe_exit(process.returncode)
+            return False, f"{stdout_text}\n{reason}" if reason else stdout_text
 
         return True, stdout_text
     except subprocess.TimeoutExpired:
@@ -225,7 +229,8 @@ def _run_render(
         return False, f"Render timed out after {RENDER_TIMEOUT_S} seconds"
     except subprocess.CalledProcessError as e:
         logger.error("CadQuery failed: %s%s", e.stdout, e.stderr)
-        return False, e.stdout + e.stderr
+        reason = describe_exit(e.returncode)
+        return False, (e.stdout or "") + (e.stderr or "") + (f"\n{reason}" if reason else "")
     except Exception:
         logger.exception("CadQuery render error")
         return False, "CadQuery render error"
@@ -251,7 +256,8 @@ def stream_render(
 
     try:
         process = _cq_process_manager.start(
-            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=_cadquery_env())
+            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                             env=limited_env(_cadquery_env()), preexec_fn=render_preexec_fn())  # noqa: PLW1509 (setrlimit only; see render_limits)
         )
         kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
         kill_timer.start()

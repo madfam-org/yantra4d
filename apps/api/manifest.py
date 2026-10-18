@@ -354,6 +354,16 @@ def resolve_part_config(base_config: dict, part_id: str) -> dict:
     return {"stages": result}
 
 
+class ManifestNotFoundError(RuntimeError):
+    """No ``project.json`` exists for the requested slug.
+
+    A ``RuntimeError`` subclass so every existing ``except RuntimeError`` keeps
+    catching it, while callers that must tell "the caller named a project that
+    does not exist" (a 404) apart from "the manifest on disk is broken" (a 500)
+    can catch this one alone.
+    """
+
+
 def _manifest_not_found_message(slug: str | None) -> str:
     """The 404 body for a manifest that is not there — slug only, never a path.
 
@@ -519,7 +529,7 @@ class ManifestService:
             # The path is still logged: it is the useful half server-side, and
             # logs are not the response body.
             logger.error(f"Manifest not found: {manifest_path}")
-            raise RuntimeError(_manifest_not_found_message(slug))
+            raise ManifestNotFoundError(_manifest_not_found_message(slug))
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON in manifest {manifest_path}: {e}")
             raise RuntimeError(f"Project manifest contains invalid JSON: {e}")

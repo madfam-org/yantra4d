@@ -19,6 +19,8 @@ servers:
 tags:
   - name: health
     description: Service health and readiness
+  - name: meta
+    description: Machine-readable descriptions of this API
   - name: projects
     description: Project listing, manifests, forking, and static assets
   - name: manifest
@@ -79,6 +81,14 @@ components:
           example: error
         error:
           type: string
+        error_code:
+          type: string
+          description: Machine-readable code, e.g. project_not_found, invalid_parameter
+        request_id:
+          type: string
+        parameter:
+          type: string
+          description: The offending parameter id (invalid_parameter only)
       required: [status, error]
 
     ProjectLocked:
@@ -646,6 +656,42 @@ paths:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
 
+  /api/openapi.json:
+    get:
+      tags: [meta]
+      summary: This OpenAPI document, as JSON
+      description: |
+        Serves docs/reference/openapi.yaml, the document the openapi-validation
+        CI job validates. 503 when the deployment does not carry it.
+      operationId: getOpenApiDocument
+      responses:
+        "200":
+          description: The OpenAPI 3.1 document
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [openapi, info, paths]
+        "503":
+          description: The document is missing from this deployment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/llms.txt:
+    get:
+      tags: [meta]
+      summary: Plain-text API guide for language-model agents
+      operationId: getLlmsTxt
+      responses:
+        "200":
+          description: Where the contract is, the public routes, and the error shape
+          content:
+            text/plain:
+              schema:
+                type: string
+
   /api/health/ready:
     get:
       tags: [health]
@@ -1118,6 +1164,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EstimateResponse"
+        "404":
+          description: Unknown project (error_code project_not_found)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/render:
     post:
@@ -1151,7 +1203,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RenderResponse"
         "400":
-          description: Invalid mode or SCAD file
+          description: Invalid mode or SCAD file, or a numeric parameter that is not a finite number (error_code invalid_parameter, with `parameter`)
           content:
             application/json:
               schema:
@@ -1162,6 +1214,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProjectLocked"
+        "404":
+          description: Unknown project (error_code project_not_found)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/render-stream:
     post:
@@ -1200,6 +1258,18 @@ paths:
                   (with an empty `job_ids`) and again as each part is queued,
                   carrying every job id issued so far. Pass either field to
                   `POST /api/render-cancel` to cancel this render and no other.
+        "400":
+          description: Invalid mode or SCAD file, or a numeric parameter that is not a finite number (error_code invalid_parameter, with `parameter`)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Unknown project (error_code project_not_found)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/render-cancel:
     post:

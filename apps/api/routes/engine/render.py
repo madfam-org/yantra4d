@@ -12,7 +12,7 @@ from flask import Blueprint, Response, jsonify, request
 
 import rate_limits
 from extensions import limiter
-from manifest import get_manifest
+from manifest import ManifestNotFoundError, get_manifest
 from middleware.auth import (
     effective_tier,
     export_format_denied_response,
@@ -38,8 +38,9 @@ from services.engine.render_orchestrator import (
     render_parts_stream,
     render_parts_sync,
     resolve_engine_config,
+    unknown_project_error,
 )
-from utils.route_helpers import error_response, handle_exceptions, require_json_body
+from utils.route_helpers import error_response, handle_exceptions, payload_error_response, require_json_body
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +135,10 @@ def estimate_render_time():
     if denied is not None:
         return denied
 
-    manifest = get_manifest(project_slug)
+    try:
+        manifest = get_manifest(project_slug)
+    except ManifestNotFoundError as exc:
+        return payload_error_response(unknown_project_error(project_slug, exc))
     mode_id = data.get('mode')
     scad_file = data.get('scad_file')
 
@@ -185,7 +189,7 @@ def render_stl():
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
-        return error_response(payload.message, 400)
+        return payload_error_response(payload)
 
     # Gate on the tier's export_formats list — the same source the UI unlocks
     # buttons from — rather than the blanket premium_export boolean over a
@@ -246,7 +250,7 @@ def render_stl_stream():
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
-        return error_response(payload.message, 400)
+        return payload_error_response(payload)
 
     tier = _effective_tier()
     # Gate on the tier's export_formats list — the same source the UI unlocks

@@ -37,7 +37,8 @@ def safe_join_path(base_dir: str, filename: str) -> Path | None:
     return resolved
 
 
-def error_response(message: str, status_code: int = 500, error_code: str | None = None):
+def error_response(message: str, status_code: int = 500, error_code: str | None = None,
+                   extra: dict | None = None):
     """Return a standardized JSON error response with request tracing.
 
     Args:
@@ -45,14 +46,31 @@ def error_response(message: str, status_code: int = 500, error_code: str | None 
         status_code: HTTP status code (default 500).
         error_code: Machine-readable code. When *None* one is auto-derived
             from *message* (lowercased, spaces to underscores, non-alnum stripped).
+        extra: Additional fields (e.g. ``{"parameter": "width"}``). They never
+            replace ``status``/``error``/``error_code``/``request_id``.
     """
     request_id = getattr(g, "request_id", None)
     logger.error("[%s] [%s] %s", status_code, request_id or "-", message)
     derived_code = error_code if error_code is not None else _derive_error_code(message)
-    body: dict = {"status": "error", "error": message, "error_code": derived_code}
+    body: dict = {**(extra or {}), "status": "error", "error": message, "error_code": derived_code}
     if request_id:
         body["request_id"] = request_id
     return jsonify(body), status_code
+
+
+def payload_error_response(err):
+    """Answer a ``RenderPayloadError`` with its own status, code and details.
+
+    Duck-typed (message / status_code / error_code / details) so this module
+    does not import the render orchestrator.
+    """
+    details = err.details() if callable(getattr(err, "details", None)) else None
+    return error_response(
+        err.message,
+        getattr(err, "status_code", 400),
+        error_code=getattr(err, "error_code", None),
+        extra=details,
+    )
 
 
 def require_json_body(f):

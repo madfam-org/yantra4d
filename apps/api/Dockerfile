@@ -88,6 +88,9 @@ COPY private-projects/ ./private-projects/
 COPY libs/ ./libs/
 COPY apps/api/tests/ ./tests/
 COPY apps/api/ ./backend/
+# Served as /api/openapi.json (routes/core/api_docs.py): the same document the
+# openapi-validation CI job validates. .dockerignore re-includes this one file.
+COPY docs/reference/openapi.yaml ./docs/reference/openapi.yaml
 
 # Install project-bundled fonts into system fontconfig (belt-and-suspenders:
 # the runtime FONTCONFIG_FILE env var also handles this, but having fonts

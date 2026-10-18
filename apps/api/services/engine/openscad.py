@@ -17,6 +17,7 @@ from pathlib import Path
 from config import Config
 from manifest import get_manifest
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, RenderResult, communicate_cancellable
+from services.engine.render_limits import describe_exit, limited_env, render_preexec_fn
 
 logger = logging.getLogger(__name__)
 
@@ -432,7 +433,7 @@ def run_render(
         if is_cancelled is None:
             result = subprocess.run(
                 cmd, check=True, capture_output=True, text=True,
-                timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path)
+                timeout=RENDER_TIMEOUT_S, env=limited_env(_openscad_env(scad_path)), preexec_fn=render_preexec_fn()
             )
             duration_ms = (time.monotonic() - t0) * 1000
             # After successful STL render, also produce 3MF for color-preserving viewer delivery
@@ -441,7 +442,7 @@ def run_render(
                 threemf_cmd = [threemf_path if arg == output_path else arg for arg in cmd]
                 try:
                     subprocess.run(threemf_cmd, check=True, capture_output=True, text=True,
-                                   timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
+                                   timeout=RENDER_TIMEOUT_S, env=limited_env(_openscad_env(scad_path)), preexec_fn=render_preexec_fn())
                     logger.info(f"Color-preserving 3MF also generated: {threemf_path}")
                 except Exception:
                     pass  # 3MF is optional — STL viewer fallback still works
@@ -450,7 +451,7 @@ def run_render(
 
         process = _process_manager.start(
             subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=_openscad_env(scad_path)
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=limited_env(_openscad_env(scad_path)), preexec_fn=render_preexec_fn()  # noqa: PLW1509 (setrlimit only; see render_limits)
             )
         )
         kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())
@@ -474,6 +475,9 @@ def run_render(
 
         if process.returncode != 0:
             logger.error(f"OpenSCAD failed with code {process.returncode}: {stderr}")
+            reason = describe_exit(process.returncode)
+            if reason:
+                stderr = f"{stderr or ''}\n{reason}"
             return RenderResult(success=False, stderr=stderr, output_path=output_path, duration_ms=duration_ms)
 
         if output_path and output_path.endswith('.stl'):
@@ -481,7 +485,7 @@ def run_render(
             threemf_cmd = [threemf_path if arg == output_path else arg for arg in cmd]
             try:
                 subprocess.run(threemf_cmd, check=True, capture_output=True, text=True,
-                               timeout=RENDER_TIMEOUT_S, env=_openscad_env(scad_path))
+                               timeout=RENDER_TIMEOUT_S, env=limited_env(_openscad_env(scad_path)), preexec_fn=render_preexec_fn())
                 logger.info(f"Color-preserving 3MF also generated: {threemf_path}")
             except Exception:
                 pass  # 3MF is optional — STL viewer fallback still works
@@ -524,7 +528,7 @@ def stream_render(cmd: list, part: str, part_base: float, part_weight: float, in
         # deadlock before writing progress or exiting.
         logger.info(f"Streaming OpenSCAD (CWD: {os.getcwd()}): {_sanitize_cmd_for_log(cmd)}")
         process = _process_manager.start(
-            subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL, text=True, env=_openscad_env(scad_path))
+            subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL, text=True, env=limited_env(_openscad_env(scad_path)), preexec_fn=render_preexec_fn())  # noqa: PLW1509 (setrlimit only; see render_limits)
         )
 
         kill_timer = threading.Timer(RENDER_TIMEOUT_S, lambda: process.kill())

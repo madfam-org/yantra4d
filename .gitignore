@@ -97,3 +97,6 @@ apps/landing/public/models/raw/
 # User-authored cartridges (forks, imports, onboarding) written by a local
 # API run. Config.USER_PROJECTS_DIR defaults here outside a container.
 /user-projects/
+
+# Ad-hoc test-run output (was tracked as apps/studio/test_out.txt)
+apps/studio/test_out.txt

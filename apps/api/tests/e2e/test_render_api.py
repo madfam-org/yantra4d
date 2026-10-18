@@ -241,9 +241,12 @@ class TestEstimateEdgeCases:
         assert data["num_parts"] == 2  # grid mode has 2 parts
 
     def test_estimate_missing_project(self, client):
-        """Estimate with non-existent project raises unhandled RuntimeError."""
-        with pytest.raises(RuntimeError, match="Project manifest not found"):
-            client.post("/api/estimate", json={"project": "no-such-project", "mode": "single"})
+        """Estimate with a non-existent project answers 404, not an unhandled RuntimeError."""
+        res = client.post("/api/estimate", json={"project": "no-such-project", "mode": "single"})
+        assert res.status_code == 404
+        body = res.get_json()
+        assert body["error_code"] == "project_not_found"
+        assert "Project manifest not found" in body["error"]
 
     def test_estimate_non_json_body(self, client):
         """Estimate with non-JSON content type returns 415."""

@@ -79,7 +79,7 @@ under `apps/api/tests/fixtures/cartridges/`; client-private cartridges mount und
 
 ### 1. Running Verification
 ```bash
-python3 tests/verify_design.py
+python3 tests/scripts/verify_design.py
 ```
 
 ### 3. Launching Yantra4D

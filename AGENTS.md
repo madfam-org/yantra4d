@@ -186,7 +186,7 @@ packages/
 | `scripts/qa/refresh_fc_consumers.py` | Vendors and checks the Fashion Cabinet consumers back-edge; `--check` fails CI when a parameter rename breaks a garment | RARELY |
 | `docs/interfaces/fashion-cabinet-consumers.snapshot.json` | Vendored, commit-pinned copy of Fashion Cabinet's published `yantra4d-consumers.json` -- refresh with the script above, never by hand | **NEVER** |
 | `packages/schemas/project-manifest.schema.json` | JSON Schema for project.json | RARELY |
-| `apps/api/tests/verify_design.py` | STL quality checker script | RARELY |
+| `apps/api/tests/scripts/verify_design.py` | STL quality checker script | RARELY |
 | `apps/api/pyproject.toml` | pytest + coverage config | RARELY |
 | `apps/api/tiers.json` | Tier definitions (renders, exports, features per tier) | RARELY |
 | `apps/api/middleware/auth.py` | JWT auth + tier gating + post-auth user upsert middleware | RARELY |
@@ -321,7 +321,7 @@ docker compose down         # stop
 ```
 
 ### Verify design
-POST `/api/verify` with `{mode}` -- runs `apps/api/tests/verify_design.py` on rendered STLs.
+POST `/api/verify` with `{mode}` -- runs `apps/api/tests/scripts/verify_design.py` on rendered STLs.
 
 ## API Quick Reference
 

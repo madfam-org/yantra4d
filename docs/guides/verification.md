@@ -1,12 +1,12 @@
 # Verification Suite Documentation
 
-The project maintains a rigorous quality assurance process using the config-driven verification engine `tests/verify_design.py`.
+The project maintains a rigorous quality assurance process using the config-driven verification engine `tests/scripts/verify_design.py`.
 
 The verification engine uses `trimesh` to analyze exported STL geometry. Checks are organized into **manufacturing stages** (`geometry`, `printability`, `assembly_fit`), configurable per **mode** and per **part** from `project.json`.
 
 ## Two verification systems, and which one gates CI
 
-This page documents `tests/verify_design.py`, the **in-repo, manifest-driven** suite invoked
+This page documents `tests/scripts/verify_design.py`, the **in-repo, manifest-driven** suite invoked
 by `POST /api/verify` and the Studio's "Run Verification Suite" button. It is not the gate a
 cartridge has to clear to merge.
 
@@ -50,15 +50,15 @@ lane G-SPEC in [`ROADMAP.md`](../../ROADMAP.md#the-node-based-geometry-programme
 
 For Hyperobjects, an additional **Geometric Parity** check compares output across the OpenSCAD and CadQuery engines. The check CI enforces is `tests/scripts/geometric_regression.py` (the `test-geometric-parity` job). `scripts/qa/verify_parity.py` is a separate, local-only tool for the same comparison; no workflow runs it, and as of 2026-09-02 (after #115) it reports 18 of 28 comparable mode pairs passing — see [dual-engine.md](../architecture/dual-engine.md#the-geometric-parity-guarantee).
 
-## Script: `tests/verify_design.py`
+## Script: `tests/scripts/verify_design.py`
 
 ### Usage
 ```bash
 # Verify with built-in defaults (backward compat)
-python3 tests/verify_design.py path/to/model.stl
+python3 tests/scripts/verify_design.py path/to/model.stl
 
 # Verify with explicit config (used by backend route)
-python3 tests/verify_design.py path/to/model.stl '{"stages": {...}}'
+python3 tests/scripts/verify_design.py path/to/model.stl '{"stages": {...}}'
 ```
 
 ### Exit Codes

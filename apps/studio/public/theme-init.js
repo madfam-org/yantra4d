@@ -11,7 +11,7 @@
     } else {
       document.documentElement.classList.add('light')
     }
-  } catch (e) {
+  } catch {
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.documentElement.classList.add('dark')
     }

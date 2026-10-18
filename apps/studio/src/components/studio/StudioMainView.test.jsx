@@ -21,7 +21,7 @@ vi.mock('@/components/ui/resizable', () => ({
 
 vi.mock('../viewer/Viewer', () => ({
   default: React.forwardRef(function MockViewer(props) {
-    return <div data-testid="viewer" data-loading={props.loading} data-has-cached-variants={props.cachedVariants ? 'true' : 'false'} />
+    return <div data-testid="viewer" data-loading={props.loading} data-has-cached-variants={props.cachedVariants ? 'true' : 'false'} data-preview-url={props.prerenderedPreviewUrl ?? ''} />
   }),
 }))
 
@@ -43,6 +43,12 @@ vi.mock('./ModelInfoPanel', () => ({
     // child, so surface it for assertions rather than rendering a bare stub.
     return <div data-testid="model-info" data-total-pieces={props.totalPieceCount ?? ''} />
   },
+}))
+
+// The prerendered default preview; null unless a test sets one.
+const { previewState } = vi.hoisted(() => ({ previewState: { current: null, reportFailure: () => {} } }))
+vi.mock('../../hooks/render/usePrerenderedPreview', () => ({
+  usePrerenderedPreview: () => previewState,
 }))
 
 // Mock Contexts
@@ -123,6 +129,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   useProject.mockReturnValue(baseContext)
   useLanguage.mockReturnValue({ t })
+  previewState.current = null
   // Most of this spec asserts the desktop structure (resizable panels, the
   // always-open console, the estimate strip), so desktop is the default.
   setViewport('desktop')
@@ -514,3 +521,52 @@ describe('StudioMainView', () => {
   })
 })
 
+describe('prerendered default preview', () => {
+  const PREVIEW_URL = 'https://yantra4d.com/models/gridfinity.lod1.glb'
+  const manifest = {
+    modes: [{ id: 'bin' }, { id: 'grid' }],
+    parameters: [{ id: 'width', default: 2 }, { id: 'label', default: 'A' }],
+  }
+  const atDefaults = { ...baseContext, manifest, mode: 'bin', params: { width: 2, label: 'A' } }
+  const viewerUrl = () => screen.getAllByTestId('viewer')[0].getAttribute('data-preview-url')
+
+  beforeEach(() => {
+    previewState.current = { url: PREVIEW_URL, lod: 'lod1', slug: 'gridfinity', commonsPin: 'f2c578f78037c37f0f29fe0571b946aeeb45bc0f', generated: null }
+  })
+
+  it('shows the prerendered mesh, labelled, while nothing has rendered', () => {
+    useProject.mockReturnValue(atDefaults)
+    render(<StudioMainView />)
+    expect(viewerUrl()).toBe(PREVIEW_URL)
+    expect(screen.getByTestId('prerendered-preview-badge')).toHaveTextContent('preview.prerendered_label')
+    expect(screen.getByTestId('prerendered-preview-badge')).toHaveTextContent('preview.prerendered_pin')
+    expect(screen.queryByTestId('prerendered-preview-changed')).not.toBeInTheDocument()
+  })
+
+  it('is replaced by a real render result', () => {
+    useProject.mockReturnValue(atDefaults)
+    const { rerender } = render(<StudioMainView />)
+    expect(viewerUrl()).toBe(PREVIEW_URL)
+    useProject.mockReturnValue({ ...atDefaults, parts: [{ type: 'bin', url: 'blob:real' }] })
+    rerender(<StudioMainView />)
+    expect(viewerUrl()).toBe('')
+    expect(screen.queryByTestId('prerendered-preview-badge')).not.toBeInTheDocument()
+  })
+
+  it('hints to Generate once a parameter or the mode moves off the defaults', () => {
+    useProject.mockReturnValue({ ...atDefaults, params: { width: 3, label: 'A' } })
+    const { rerender } = render(<StudioMainView />)
+    expect(screen.getByTestId('prerendered-preview-changed')).toHaveTextContent('preview.params_changed')
+    useProject.mockReturnValue({ ...atDefaults, mode: 'grid' })
+    rerender(<StudioMainView />)
+    expect(screen.getByTestId('prerendered-preview-changed')).toBeInTheDocument()
+  })
+
+  it('shows nothing when the manifest has no preview for the cartridge', () => {
+    previewState.current = null
+    useProject.mockReturnValue(atDefaults)
+    render(<StudioMainView />)
+    expect(viewerUrl()).toBe('')
+    expect(screen.queryByTestId('prerendered-preview-badge')).not.toBeInTheDocument()
+  })
+})

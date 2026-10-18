@@ -105,5 +105,17 @@ describe('UpgradeDialog', () => {
         const links = [...document.querySelectorAll('a')].map(a => a.getAttribute('href'))
         expect(links).toContain('https://yantra4d.com/#pricing')
     })
-})
 
+    it('names the free alternatives when the caller passes them', () => {
+        render(<UpgradeDialog {...defaultProps} feature="CadQuery engine" alternatives={['Prerendered default shown', 'OpenSCAD modes render free']} />)
+        const box = screen.getByTestId('upgrade-free-alternatives')
+        expect(box).toHaveTextContent('tier.free_alternatives_title')
+        expect(box).toHaveTextContent('Prerendered default shown')
+        expect(box).toHaveTextContent('OpenSCAD modes render free')
+    })
+
+    it('shows no alternatives box without alternatives', () => {
+        render(<UpgradeDialog {...defaultProps} />)
+        expect(screen.queryByTestId('upgrade-free-alternatives')).not.toBeInTheDocument()
+    })
+})

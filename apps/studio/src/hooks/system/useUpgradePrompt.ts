@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { UpgradePromptContext } from '../../contexts/auth/UpgradePromptContext';
+import { UpgradePromptContext, type UpgradePromptOptions } from '../../contexts/auth/UpgradePromptContext';
 
 interface UpgradePromptHook {
-  triggerUpgradePrompt: (feature?: string) => void
+  triggerUpgradePrompt: (feature?: string, options?: UpgradePromptOptions) => void
   closeUpgradePrompt: () => void
 }
 

@@ -68,6 +68,8 @@ The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()`,
 | `src/hooks/render/useWorkerLoader.ts` | Loads a rendered mesh (GLB via `GLTFLoader`, STL via a Web Worker); attaches the bearer for same-origin, gated artifacts |
 | `src/services/cache/renderCache.ts` | IndexedDB L2 cache of rendered parts; authenticates artifact fetches and never caches a non-OK response |
 | `src/services/engine/renderPlacement.ts` | The pure placement policy — the precedence table above lives here |
+| `src/lib/prerenderedPreview.ts` | Landing model manifest (cached 1 h) and the prerendered default preview for a slug — see [Prerendered previews](#prerendered-previews) |
+| `src/lib/engineGate.ts` | Whether the tier's limits allow a mode's engine, asked before the render estimate |
 | `src/services/engine/renderCapability.ts` | Device capability probe (`capable` / `limited` / `incapable`), cached in `localStorage` |
 | `src/components/editor/graph/GraphEditor.tsx` | Writable node-graph editor for `.graph.json` sources — see [Authoring graph cartridges](../../docs/guides/graph-cartridges.md#editing-a-graph-in-studio) |
 | `src/lib/graph/` | The graph document model (`graphDocument`), expressions and declarations (`graphExpressions`), manifest bindings (`graphBindings`) and layout (`graphLayout`) |
@@ -79,6 +81,7 @@ The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()`,
 |----------|---------|-------------|
 | `VITE_API_BASE` | `http://localhost:5000` | Backend API base URL |
 | `VITE_RENDER_MODE` | _(unset)_ | Pins the render path to `backend` or `wasm` for the whole build. Any other value is ignored. |
+| `VITE_PRERENDER_MODELS_BASE` | _(unset)_ | Where the [prerendered previews](#prerendered-previews) are read from. Unset: `/models/` on `yantra4d.com`, `https://yantra4d.com/models/` everywhere else. |
 | `VITE_GEOM_CORE_BROWSER` | _(unset = off)_ | Experimental: `1` routes mesh volume/bbox/centroid and STL face count/bbox through the `@madfam/geom-core` 0.2.0 WASM (single-threaded; no COOP/COEP needed). Per-session override: `?geomcore=1\|0`. See [Geometry core (WASM)](#geometry-core-wasm--experimental). |
 
 ### Render Placement
@@ -206,6 +209,55 @@ search-path form) failed with "Can't open include file" when `ENV` was set
 afterwards and rendered a 19,073-byte STL when the same assignment happened in
 `preRun`. `FONTCONFIG_FILE` happens to survive the late assignment;
 `OPENSCADPATH` does not.
+
+### Prerendered previews
+
+On project open the viewer shows the cartridge's **default configuration,
+prerendered** — before anything has rendered, for every tier. It is labelled
+"Prerendered preview of the default configuration" (es: "Vista prerenderizada
+de la configuración por defecto") with the commons pin it was rendered from.
+
+- **Where the meshes come from.** The landing's model pipeline
+  ([guide](../../docs/guides/landing-models-pipeline.md)):
+  `.github/workflows/prerender-commons.yml` renders every public cartridge at
+  its first mode with default parameters, and the optimizer writes
+  meshopt-compressed `<slug>.lod1.glb` (≤ 12 KiB) / `<slug>.lod0.glb`
+  (≤ 60 KiB) plus `manifest.json` (v2) to `apps/landing/public/models/`,
+  served as `yantra4d.com/models/…`. The landing nginx answers
+  `/models/manifest.json` and `/models/*.glb` with
+  `Access-Control-Allow-Origin` for `https://app.yantra4d.com` and
+  `http://localhost:*` / `http://127.0.0.1:*` (`apps/landing/nginx.conf`,
+  held by `scripts/tests/test_nginx_models_cors.py`), and the Studio CSP
+  lists `https://yantra4d.com` in `connect-src` (the loader's fetch).
+- **What the Studio does** (`src/lib/prerenderedPreview.ts`,
+  `src/hooks/render/usePrerenderedPreview.ts`): fetches the manifest once per
+  hour per tab (five minutes after a failure), loads `lod0` when the manifest
+  has it and `lod1` otherwise or when `lod0` fails, through `useWorkerLoader`
+  with THREE's meshopt decoder (its own ~22 kB chunk, imported only for a
+  preview). Every failure is silent: no manifest, a slug it does not list, a
+  network or CORS error, a bad mesh — the stage just stays empty, nothing is
+  logged.
+- **Lifetime.** The preview stays until the first real render result, which
+  replaces it. When the mode or a declared parameter differs from the
+  defaults, the label adds "Parameters changed — press Generate to render".
+  The preview never feeds print estimates or model info.
+- **Staleness.** The manifest trails the commons: it lists what the last
+  pipeline run rendered, at its `source.commons_pin`. A cartridge added since
+  has no preview, and one changed since shows its old default until the
+  monthly run (or a `workflow_dispatch` with `open_pr`) refreshes the files
+  and that PR is merged.
+
+### Tier gate before the estimate
+
+`useRender.handleGenerate` asks `src/lib/engineGate.ts` whether the tier can
+run the selected mode's engine (`effectiveModeEngine` above × the
+`cadquery_engine` / `graph_engine` flags in the `/api/me` limits) **before**
+the long-render estimate. A tier without it (guest and essentials have no
+CadQuery) gets the upgrade prompt first, naming the free alternatives that
+exist: the prerendered default, and the cartridge's OpenSCAD modes with the
+plan's hourly render quota. Nothing is sent to `/api/render`, and nothing is
+logged as an error. An automatic render of a gated mode is skipped quietly.
+Unknown limits fall through to the server, which still answers 403 as before.
 
 ### Geometry core (WASM) — experimental
 

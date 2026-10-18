@@ -86,7 +86,10 @@ export default defineConfig({
           if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
             return 'vendor-react'
           }
-          if (id.includes('node_modules/three/')) {
+          // The meshopt decoder is imported dynamically with the prerendered
+          // preview (useWorkerLoader); left out of vendor-three it gets its own
+          // lazy chunk instead of riding in the eager one.
+          if (id.includes('node_modules/three/') && !id.includes('meshopt_decoder')) {
             return 'vendor-three'
           }
           if (id.includes('node_modules/@react-three/')) {

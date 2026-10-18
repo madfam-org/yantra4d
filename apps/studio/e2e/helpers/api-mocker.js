@@ -199,6 +199,16 @@ export async function mockAllAPIs(page) {
     route.fulfill({ json: { status: 'ok', openscad: true } })
   })
 
+  // The prerendered-preview manifest (src/lib/prerenderedPreview.ts) lives on
+  // the landing, https://yantra4d.com/models/. Answer it here with an empty v2
+  // manifest so mocked suites never depend on that host or show a preview.
+  await page.route('**/models/manifest.json', (route) => {
+    route.fulfill({
+      json: { version: 2, models: [] },
+      headers: { 'Access-Control-Allow-Origin': '*' },
+    })
+  })
+
   await page.route('**/api/render', (route) => {
     route.fulfill({
       contentType: 'model/stl',

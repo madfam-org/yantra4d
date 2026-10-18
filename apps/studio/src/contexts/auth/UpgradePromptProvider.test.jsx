@@ -5,8 +5,8 @@ import { useContext } from 'react'
 // The dialog itself has its own spec; here it is a probe that surfaces the
 // feature string the provider passes down.
 vi.mock('../../components/auth/UpgradeDialog', () => ({
-    default: ({ isOpen, feature }) =>
-        isOpen ? <div data-testid="dialog" data-feature={feature} /> : null,
+    default: ({ isOpen, feature, alternatives }) =>
+        isOpen ? <div data-testid="dialog" data-feature={feature} data-alternatives={(alternatives ?? []).join('|')} /> : null,
 }))
 
 import { UpgradePromptProvider } from './UpgradePromptProvider'
@@ -41,5 +41,15 @@ describe('UpgradePromptProvider', () => {
         )
         fireEvent.click(screen.getByText('go'))
         expect(screen.getByTestId('dialog')).toHaveAttribute('data-feature', 'a Pro feature')
+    })
+
+    it('passes the free alternatives through to the dialog', () => {
+        function AltTrigger() {
+            const { triggerUpgradePrompt } = useContext(UpgradePromptContext)
+            return <button onClick={() => triggerUpgradePrompt('CadQuery engine', { alternatives: ['a', 'b'] })}>alt</button>
+        }
+        render(<UpgradePromptProvider><AltTrigger /></UpgradePromptProvider>)
+        fireEvent.click(screen.getByText('alt'))
+        expect(screen.getByTestId('dialog')).toHaveAttribute('data-alternatives', 'a|b')
     })
 })

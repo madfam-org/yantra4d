@@ -20,9 +20,13 @@ interface ConfirmRenderDialogProps {
 export default function ConfirmRenderDialog({ open, onConfirm, onCancel, estimatedTime }: ConfirmRenderDialogProps) {
     const { t } = useLanguage()
     const minutes = Math.ceil(estimatedTime / 60)
+    // Localized: the English unit inside a translated sentence read
+    // «tardará ~2 minutes» on the Spanish Studio.
     const timeDisplay = estimatedTime >= 60
-        ? `~${minutes} minute${minutes > 1 ? 's' : ''}`
-        : `~${Math.round(estimatedTime)} seconds`
+        ? (minutes > 1
+            ? t("dialog.render_time_minutes", { count: minutes })
+            : t("dialog.render_time_one_minute"))
+        : t("dialog.render_time_seconds", { count: Math.round(estimatedTime) })
 
     return (
         <AlertDialog open={open}>

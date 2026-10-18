@@ -48,6 +48,7 @@ from utils.project_resolver import find_project_dir, resolve_project_dir
 from utils.route_helpers import (
     error_response,
     handle_exceptions,
+    payload_error_response,
     require_json_body,
 )
 from utils.validators import require_valid_slug
@@ -341,7 +342,7 @@ def render_head(slug):
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
-        return error_response(payload.message, 400)
+        return payload_error_response(payload)
 
     # The tier @require_tier already admitted this caller at (the top tier
     # when auth is off), so the engine gate agrees with the route gate.

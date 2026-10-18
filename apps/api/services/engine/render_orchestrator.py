@@ -5,6 +5,7 @@ and post-render conversions. Eliminates duplication between sync/stream paths.
 """
 import json
 import logging
+import math
 import os
 import time
 import uuid
@@ -12,7 +13,7 @@ import uuid
 import redis
 
 from config import Config
-from manifest import get_manifest, resolve_within_dir
+from manifest import ManifestNotFoundError, get_manifest, resolve_within_dir
 from services.engine import generator_output
 from services.engine.format_converter import convert_mesh, stl_to_glb
 from services.engine.openscad import validate_params
@@ -105,11 +106,59 @@ def _strict_payload_enabled() -> bool:
 # ──────────────────────────────────────────────
 
 class RenderPayloadError:
-    """Structured error from payload resolution."""
+    """Structured error from payload resolution.
 
-    def __init__(self, message: str, bad_name: str | None = None):
+    ``status_code`` and ``error_code`` let the routes answer with the right
+    status and a stable machine code. The defaults (400, code derived from the
+    message) are what every payload error answered with before they existed.
+    """
+
+    def __init__(self, message: str, bad_name: str | None = None,
+                 status_code: int = 400, error_code: str | None = None):
         self.message = message
         self.bad_name = bad_name
+        self.status_code = status_code
+        self.error_code = error_code
+
+    def details(self) -> dict | None:
+        """Extra response fields: the offending parameter for ``invalid_parameter``."""
+        if self.error_code == "invalid_parameter" and self.bad_name:
+            return {"parameter": self.bad_name}
+        return None
+
+
+def unknown_project_error(slug: str | None, exc: Exception) -> RenderPayloadError:
+    """The 404 for a render/estimate request naming a project that does not exist."""
+    return RenderPayloadError(str(exc), bad_name=slug, status_code=404, error_code="project_not_found")
+
+
+def invalid_numeric_parameter(manifest, raw_params) -> RenderPayloadError | None:
+    """A 400 for the first declared numeric (slider) parameter whose value is not a finite number.
+
+    ``validate_params`` drops such a value and the engine renders the default,
+    so the caller got HTTP 200 and a different object than it asked for. A
+    request is refused here instead, naming the parameter. ``None`` (JSON
+    null) is left alone: it means "not supplied", and the default applies.
+    Booleans keep their historical numeric reading (``float(True) == 1.0``).
+    """
+    if not isinstance(raw_params, dict):
+        return None
+    defs = {p["id"]: p for p in (getattr(manifest, "parameters", None) or [])
+            if isinstance(p, dict) and "id" in p}
+    for key, value in raw_params.items():
+        defn = defs.get(key)
+        if defn is None or defn.get("type", "slider") != "slider" or value is None:
+            continue
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            number = None
+        if number is None or not math.isfinite(number):
+            return RenderPayloadError(
+                f"Parameter '{key}' must be a finite number",
+                bad_name=key, status_code=400, error_code="invalid_parameter",
+            )
+    return None
 
 
 def _request_origin() -> str:
@@ -135,7 +184,10 @@ def resolve_render_context(data: dict):
     mode's ``scad_file``, or — in a user cartridge — its declared ``graph_file``.
     """
     project_slug = data.get('project')
-    manifest = get_manifest(project_slug)
+    try:
+        manifest = get_manifest(project_slug)
+    except ManifestNotFoundError as exc:
+        return unknown_project_error(project_slug, exc)
     mode_id = data.get('mode')
     scad_filename = data.get('scad_file')
 
@@ -236,6 +288,10 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
             _request_origin(),
         )
         raw_params = data
+
+    invalid = invalid_numeric_parameter(get_manifest(project_slug or None), raw_params)
+    if invalid is not None:
+        return invalid
 
     # Validation, optional full-default injection, the legacy target_material
     # compensation injection (read from the resolved container, so a flattened

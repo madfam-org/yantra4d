@@ -1,9 +1,12 @@
 ---
 // Static hosts need links and dismissal, not an eager React runtime. Share the
 // vendored platform/style contract so the Astro and React hosts stay aligned.
-import { DEFAULT_ECOSYSTEM_PLATFORMS } from './vendor/ecosystem-banner/platforms';
 import { BANNER_STYLES } from './vendor/ecosystem-banner/presentation';
-const list = DEFAULT_ECOSYSTEM_PLATFORMS.filter(p => p.keyword && p.name && p.url);
+import { ecosystemBannerEntries } from '../lib/ecosystem-banner';
+import { SITE_ORIGIN } from '../lib/env';
+// Built once per deploy, so the origin is this site's canonical host, not the
+// request: own-site links carry utm_source=<that host>. Dev builds stay untagged.
+const list = ecosystemBannerEntries(import.meta.env.DEV ? undefined : new URL(SITE_ORIGIN).hostname);
 ---
 <style is:global set:html={BANNER_STYLES} />
 <div hidden data-ecosystem-banner role="complementary"
@@ -14,7 +17,7 @@ const list = DEFAULT_ECOSYSTEM_PLATFORMS.filter(p => p.keyword && p.name && p.ur
     <span aria-hidden="true" class="madfam-eco-banner__separator">/</span>
     <div class="madfam-eco-banner__viewport"><div class="madfam-eco-banner__track">
       {list.map((platform) => (
-        <a href={platform.url} target="_blank" rel="noopener noreferrer"
+        <a href={platform.href} target="_blank" rel={platform.rel}
           title={`${platform.keyword}: ${platform.name}`} class="madfam-eco-banner__item">
           <span class="madfam-eco-banner__keyword">{platform.keyword}:</span>
           <span class="madfam-eco-banner__name">{platform.name}</span>

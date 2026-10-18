@@ -118,3 +118,14 @@ def test_no_other_location_sends_cors_and_nothing_sends_a_wildcard():
     for header, body in _blocks(text, "location"):
         if header not in MODELS_LOCATIONS:
             assert "Access-Control-Allow-Origin" not in body, f"location {header} sends CORS"
+
+
+def test_studio_csp_lets_the_studio_fetch_the_landing_models():
+    # GLTFLoader and the manifest fetch are `connect-src`; without the landing
+    # origin there the browser blocks them before CORS is even consulted.
+    snippet = (REPO / "apps" / "studio" / "nginx-security-headers.conf").read_text()
+    csp = re.search(r'Content-Security-Policy "([^"]+)"', snippet).group(1)
+    connect = next(d.split()[1:] for d in (p.strip() for p in csp.split(";")) if d.startswith("connect-src "))
+    assert "https://yantra4d.com" in connect
+    assert not any("*" in src for src in connect), "connect-src must name origins, not wildcards"
+

@@ -6,6 +6,7 @@
 
 import { isBackendAvailable, getApiBase } from '../core/backendDetection'
 import { parseSTL, getBoundingBox } from '../../lib/stl-utils'
+import { isGeomCoreBrowserEnabled, loadGeomCore, analyzeSTLBytes, reportGeomCoreFailure, type GeomCoreSTLMetrics } from '../../lib/geomCoreBrowser'
 import { apiFetch } from '../core/apiClient'
 
 const API_BASE: string = getApiBase()
@@ -68,13 +69,32 @@ async function verifyClient(parts: PartInput[]): Promise<VerifyResult> {
       const response = await fetch(part.url)
       if (!response.ok) throw new Error(`Failed to fetch STL for ${part.type}: HTTP ${response.status}`)
       const buffer = await response.arrayBuffer()
-      const { vertices, faces, faceCount } = parseSTL(buffer)
+      // The triangle soup for manifold-3d always comes from the TypeScript parser.
+      const { vertices, faces, faceCount: tsFaceCount } = parseSTL(buffer)
+      let faceCount = tsFaceCount
+      let bboxSize = getBoundingBox(vertices).size
+
+      // Experimental (VITE_GEOM_CORE_BROWSER / ?geomcore=1): face count and
+      // bounding box from geom-core's WASM; the TypeScript numbers stand in,
+      // visibly, when it cannot run.
+      if (isGeomCoreBrowserEnabled()) {
+        let fromGeomCore: GeomCoreSTLMetrics | null = null
+        try {
+          fromGeomCore = analyzeSTLBytes(await loadGeomCore(), new Uint8Array(buffer))
+        } catch (err) {
+          outputLines.push(`  Geometry core: TypeScript (geom-core unavailable: ${reportGeomCoreFailure(err)})`)
+        }
+        if (fromGeomCore) {
+          faceCount = fromGeomCore.faceCount
+          bboxSize = fromGeomCore.size
+          outputLines.push('  Geometry core: geom-core WASM')
+        }
+      }
 
       outputLines.push(`  Faces: ${faceCount}`)
 
       // Bounding box check
-      const bbox = getBoundingBox(vertices)
-      outputLines.push(`  Bounding box: ${bbox.size.map(v => v.toFixed(2)).join(' x ')} mm`)
+      outputLines.push(`  Bounding box: ${bboxSize.map(v => v.toFixed(2)).join(' x ')} mm`)
       partResult.checks.push({ name: 'geometry', passed: faceCount > 0 })
 
       // Manifold check using manifold-3d

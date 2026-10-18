@@ -127,6 +127,8 @@ def test_nginx_accepts_the_config(app, tmp_path):
     snippet.write_text((REPO / "apps" / app / "nginx-security-headers.conf").read_text())
     server = (REPO / "apps" / app / "nginx.conf").read_text().replace(SNIPPET_PATH, str(snippet))
     server = server.replace("proxy_pass http://yantra4d-backend", "proxy_pass http://127.0.0.1:9")
+    # `nginx -t` binds the listen socket; a CI runner is not root, so not :80.
+    server = re.sub(r"listen\s+80;", "listen 127.0.0.1:18080;", server)
     conf = tmp_path / "nginx.conf"
     conf.write_text(
         f"pid {tmp_path}/nginx.pid; error_log {tmp_path}/error.log;\n"

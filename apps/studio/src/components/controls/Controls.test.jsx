@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import Controls from './Controls'
 import { renderWithProviders } from '../../test/render-with-providers'
@@ -671,4 +672,69 @@ it('selects the intended preset when two engines share a label', () => {
   expect(onApplyPreset).toHaveBeenLastCalledWith(presets[0])
   fireEvent.click(screen.getByTestId('preset-small_bin_scad'))
   expect(onApplyPreset).toHaveBeenLastCalledWith(presets[1])
+})
+
+// Live on app.yantra4d.com (2026-10-18, main a86327bd): /project/gridfinity
+// opened in `bin`, switched to `cup`, and the Design panel showed BOTH sets —
+// the bin sliders above the cup ones, with duplicate "Width (units)" sliders
+// and two "Finger slide" checkboxes. gridfinity scopes its bin params with
+// `modes: [...]` and its cup params with `visible_in_modes: [...]`; the Studio
+// honoured only the second, so every `modes`-scoped param counted as global.
+// This manifest mixes the two fields the same way, through the REAL
+// ManifestProvider (served by fetch), so the real mode filter is under test.
+describe('Controls mode switch with mode-scoped parameters', () => {
+  const twoModeManifest = {
+    project: { slug: 'two-mode', name: 'Two mode' },
+    modes: [
+      { id: 'a', label: { en: 'Mode A' }, scad_file: 'a.scad', parts: ['body'] },
+      { id: 'b', label: { en: 'Mode B' }, scad_file: 'b.scad', parts: ['body'] },
+    ],
+    parts: [{ id: 'body', color: '#4a90d9', render_mode: 0 }],
+    parameters: [
+      { id: 'a_width', type: 'slider', label: { en: 'Width (units)' }, default: 2, min: 1, max: 10, step: 1, modes: ['a'] },
+      { id: 'a_slide', type: 'checkbox', label: { en: 'Finger slide' }, default: false, modes: ['a'] },
+      { id: 'b_width', type: 'slider', label: { en: 'Width (units)' }, default: 2, min: 1, max: 10, step: 1, visible_in_modes: ['b'] },
+      { id: 'b_slide', type: 'checkbox', label: { en: 'Finger slide' }, default: false, visible_in_modes: ['b'] },
+      { id: 'b_only', type: 'slider', label: { en: 'Chambers' }, default: 1, min: 1, max: 5, step: 1, modes: ['b'] },
+      { id: 'shared', type: 'slider', label: { en: 'Resolution' }, default: 32, min: 8, max: 64, step: 1 },
+    ],
+  }
+
+  function ModeSwitchHarness() {
+    const [mode, setMode] = useState('a')
+    return (
+      <>
+        <button type="button" onClick={() => setMode('b')}>switch to b</button>
+        <Controls
+          params={{ a_width: 2, a_slide: false, b_width: 2, b_slide: false, b_only: 1, shared: 32 }}
+          setParams={vi.fn()}
+          mode={mode}
+        />
+      </>
+    )
+  }
+
+  it("drops the previous mode's controls and leaves no duplicate labels", async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      if (String(url).includes('/api/projects/two-mode/manifest')) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(twoModeManifest) })
+      }
+      return Promise.reject(new Error('no backend'))
+    })
+    renderWithProviders(<ModeSwitchHarness />, { initialEntries: ['/project/two-mode'] })
+
+    // Mode A: only its own scoped controls plus the unscoped one.
+    await waitFor(() => expect(screen.getByText('Resolution')).toBeInTheDocument())
+    expect(screen.getAllByText('Width (units)')).toHaveLength(1)
+    expect(screen.getAllByText('Finger slide')).toHaveLength(1)
+    expect(screen.queryByText('Chambers')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'switch to b' }))
+
+    // Mode B: the `modes`-scoped A controls are gone, B's are shown once each.
+    await waitFor(() => expect(screen.getByText('Chambers')).toBeInTheDocument())
+    expect(screen.getAllByText('Width (units)')).toHaveLength(1)
+    expect(screen.getAllByText('Finger slide')).toHaveLength(1)
+    expect(screen.getByText('Resolution')).toBeInTheDocument()
+  })
 })

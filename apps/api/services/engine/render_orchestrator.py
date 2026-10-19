@@ -132,6 +132,24 @@ def unknown_project_error(slug: str | None, exc: Exception) -> RenderPayloadErro
     return RenderPayloadError(str(exc), bad_name=slug, status_code=404, error_code="project_not_found")
 
 
+def missing_project_error(slug) -> RenderPayloadError | None:
+    """The 404 when ``slug`` names a project that does not exist, else None.
+
+    Resolved through the same ``get_manifest`` lookup ``resolve_render_context``
+    uses, so the up-front check and the render path cannot disagree about
+    whether a project exists. A non-string or empty slug is "no project named"
+    (the default cartridge resolves) and is not checked. A manifest that exists
+    but is broken raises as it always has; that is not the caller's error.
+    """
+    if not isinstance(slug, str) or not slug:
+        return None
+    try:
+        get_manifest(slug)
+    except ManifestNotFoundError as exc:
+        return unknown_project_error(slug, exc)
+    return None
+
+
 def invalid_numeric_parameter(manifest, raw_params) -> RenderPayloadError | None:
     """A 400 for the first declared numeric (slider) parameter whose value is not a finite number.
 

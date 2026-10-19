@@ -6,6 +6,8 @@ packages/*/node_modules/
 docs/
 # ...except the OpenAPI document the API serves at /api/openapi.json.
 !docs/reference/openapi.yaml
+# ...and the public-cartridge list the Studio builds its sitemap from.
+!docs/commons-catalog.json
 .DS_Store
 *.stl
 !projects/*/exports/models/*.stl

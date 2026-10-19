@@ -30,6 +30,9 @@ RUN node /app/scripts/dev/check-geom-core-vendor.mjs --offline
 # --legacy-peer-deps: @janua/react-sdk requires react@^18, project uses React 19
 RUN npm install --legacy-peer-deps
 COPY packages/ /app/packages/
+# The public-cartridge list the build turns into sitemap.xml / robots.txt /
+# llms.txt (vite.config.js `crawl-files`; a missing catalog fails the build).
+COPY docs/commons-catalog.json /app/docs/commons-catalog.json
 COPY apps/studio/ ./
 RUN npm run build
 

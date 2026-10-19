@@ -82,6 +82,8 @@ The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()`,
 | `VITE_API_BASE` | `http://localhost:5000` | Backend API base URL |
 | `VITE_RENDER_MODE` | _(unset)_ | Pins the render path to `backend` or `wasm` for the whole build. Any other value is ignored. |
 | `VITE_PRERENDER_MODELS_BASE` | _(unset)_ | Where the [prerendered previews](#prerendered-previews) are read from. Unset: `/models/` on `yantra4d.com`, `https://yantra4d.com/models/` everywhere else. |
+| `STUDIO_SITE_ORIGIN` | `https://app.yantra4d.com` | Build-time only: the origin the [crawl files](#crawl-files-robotstxt-sitemapxml-llmstxt) are written for. |
+| `STUDIO_COMMONS_CATALOG` | `../../docs/commons-catalog.json` | Build-time only: the public-cartridge list the sitemap is built from. |
 | `VITE_GEOM_CORE_BROWSER` | _(unset = off)_ | Experimental: `1` routes mesh volume/bbox/centroid and STL face count/bbox through the `@madfam/geom-core` 0.2.0 WASM (single-threaded; no COOP/COEP needed). Per-session override: `?geomcore=1\|0`. See [Geometry core (WASM)](#geometry-core-wasm--experimental). |
 
 ### Render Placement
@@ -372,6 +374,22 @@ npx vitest run src/lib/geomCore src/lib/meshMetrics.test.js \
 4. **After the flip.** The TypeScript implementations stay as the differential
    oracle; removing them is a separate change once the flag has been on for a
    release.
+
+### Crawl files (robots.txt, sitemap.xml, llms.txt)
+
+`npm run build` writes `dist/robots.txt`, `dist/sitemap.xml` and `dist/llms.txt`
+(the `crawl-files` plugin in `vite.config.js`, pure builders in
+`src/lib/crawlFiles.js`) from `docs/commons-catalog.json`, the generated list of
+public cartridges that CI keeps in step with the commons pin. The sitemap lists
+`/`, `/projects` and one `/project/<slug>` per public cartridge; client-private
+cartridges are never in the catalog. robots.txt allows the pages, disallows the
+proxied `/api/` and the render artifacts under `/static/`, and names the sitemap.
+llms.txt points at the API's and the landing's llms.txt. A missing or empty
+catalog fails the build. The Docker build copies the catalog in, and a change to
+it rebuilds the Studio on deploy (`scripts/tests/test_studio_crawl_files_packaging.py`).
+nginx serves the three as exact-match locations, so they are never the SPA
+fallback. Cloudflare's managed content-signals block is prepended at the edge,
+as it is on yantra4d.com.
 
 ### Updating the Fallback Manifest
 

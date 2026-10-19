@@ -193,6 +193,9 @@ jobs:
             studio:
               - 'apps/studio/**'
               - 'packages/**'
+              # The Studio's sitemap.xml / llms.txt are built from it, so a
+              # commons bump (which regenerates it) must rebuild the Studio.
+              - 'docs/commons-catalog.json'
             landing:
               # The landing gallery is generated from the cartridge manifests
               # (see "Regenerate the projects list" below), so a commons bump

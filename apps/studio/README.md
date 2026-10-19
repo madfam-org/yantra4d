@@ -82,7 +82,7 @@ The helpers `getStoredAccessToken()`, `hasStoredJanuaSession()`,
 | `VITE_API_BASE` | `http://localhost:5000` | Backend API base URL |
 | `VITE_RENDER_MODE` | _(unset)_ | Pins the render path to `backend` or `wasm` for the whole build. Any other value is ignored. |
 | `VITE_PRERENDER_MODELS_BASE` | _(unset)_ | Where the [prerendered previews](#prerendered-previews) are read from. Unset: `/models/` on `yantra4d.com`, `https://yantra4d.com/models/` everywhere else. |
-| `VITE_GEOM_CORE_BROWSER` | _(unset = off)_ | Experimental: `1` routes mesh volume/bbox/centroid and STL face count/bbox through the `@madfam/geom-core` 0.2.0 WASM (single-threaded; no COOP/COEP needed). Per-session override: `?geomcore=1\|0`. See [Geometry core (WASM)](#geometry-core-wasm--experimental). |
+| `VITE_GEOM_CORE_BROWSER` | _(unset = off)_ | Experimental: `1` routes mesh volume/bbox/centroid and STL face count/bbox through the `@madfam/geom-core` 0.2.0 WASM (single-threaded; no COOP/COEP needed). Per-session override: `?geomcore=1\|0`. The production image takes it from the repository variable `STUDIO_GEOM_CORE_BROWSER` (`deploy.yml` build-arg; unset = off). See [Geometry core (WASM)](#geometry-core-wasm--experimental). |
 
 ### Render Placement
 
@@ -362,13 +362,25 @@ npx vitest run src/lib/geomCore src/lib/meshMetrics.test.js \
    exactly one `WASM active` line, no fallback warning, and the model info. A
    failure opens or updates the `e2e-audit-failure` issue like any audit test.
 3. **Flip on the next Studio deploy, only after (2) is green.** The variable
-   is read at build time and the Studio image does not pass it yet, so the
-   flip is a small PR: `ARG`/`ENV VITE_GEOM_CORE_BROWSER` in
-   `apps/studio/Dockerfile` and `VITE_GEOM_CORE_BROWSER=1` in the Studio
-   image's `build-args` in `.github/workflows/deploy.yml`, merged for the first
-   Studio deploy after the nightly has run the journey green — the owner's
-   decision. `?geomcore=0` stays the per-session escape hatch, and reverting
-   that PR on the next deploy is the rollback.
+   is read at build time. `apps/studio/Dockerfile` declares
+   `ARG`/`ENV VITE_GEOM_CORE_BROWSER` (empty default = off) and the Studio
+   image's `build-args` in `.github/workflows/deploy.yml` pass
+   `VITE_GEOM_CORE_BROWSER=${{ vars.STUDIO_GEOM_CORE_BROWSER }}`
+   (`scripts/tests/test_studio_build_args.py` pins that path). The flip is the
+   owner's decision and needs no code change:
+
+   ```bash
+   gh variable set STUDIO_GEOM_CORE_BROWSER -R madfam-org/yantra4d --body 1
+   ```
+
+   Setting the variable does **not** rebuild the Studio. The next Studio build
+   picks it up: a merge that touches `apps/studio/**`, or a deploy dispatch
+   with `force_deploy` (which rebuilds every service). Check the deployed
+   bundle with a page load **without** `?geomcore=1`: the console shows the
+   `WASM active` line. `?geomcore=0` stays the per-session escape hatch.
+   **Rollback:** `gh variable delete STUDIO_GEOM_CORE_BROWSER -R madfam-org/yantra4d`
+   (or set it to `0`), then the next Studio build; until that build the
+   per-session `?geomcore=0` is the only off switch.
 4. **After the flip.** The TypeScript implementations stay as the differential
    oracle; removing them is a separate change once the flag has been on for a
    release.

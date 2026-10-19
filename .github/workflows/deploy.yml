@@ -488,6 +488,12 @@ jobs:
           cache-to: type=gha,scope=studio,mode=max,ignore-error=true
           provenance: false
           sbom: false
+          # VITE_GEOM_CORE_BROWSER comes from the repository variable
+          # STUDIO_GEOM_CORE_BROWSER: unset/empty = geom-core WASM off (default),
+          # `1` = on for this build. Setting the variable does not rebuild the
+          # Studio by itself: the next Studio build (an apps/studio change, or
+          # workflow_dispatch with force_deploy) picks it up. Soak and rollback:
+          # apps/studio/README.md, "Soak plan (flag off → on)".
           build-args: |
             VITE_RENDER_BUILD_ID=${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
             VITE_API_BASE=https://api.yantra4d.com
@@ -495,6 +501,7 @@ jobs:
             VITE_JANUA_CLIENT_ID=${{ steps.janua_client.outputs.client_id }}
             VITE_JANUA_REDIRECT_URI=https://app.yantra4d.com
             VITE_DHANAM_CHECKOUT_URL=https://app.dhan.am/checkout
+            VITE_GEOM_CORE_BROWSER=${{ vars.STUDIO_GEOM_CORE_BROWSER }}
             NPM_MADFAM_TOKEN=${{ secrets.NPM_MADFAM_TOKEN }}
 
       - name: Install cosign (checksum binary — the installer action dies on ARC runners)

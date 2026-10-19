@@ -14,12 +14,18 @@ ARG VITE_JANUA_REDIRECT_URI
 # Dhanam checkout base for the upgrade CTA (lib/billing.ts); defaults to the
 # canonical https://app.dhan.am/checkout when unset.
 ARG VITE_DHANAM_CHECKOUT_URL
+# geom-core WASM mesh metrics (src/lib/geomCoreBrowser.ts): empty = off, `1` = on
+# for the whole build; `?geomcore=1|0` still overrides per session. deploy.yml
+# passes the repository variable STUDIO_GEOM_CORE_BROWSER (unset = empty = off),
+# so the soak flip is a variable change plus a Studio rebuild, not a code change.
+ARG VITE_GEOM_CORE_BROWSER=
 ARG NPM_MADFAM_TOKEN
 ENV VITE_API_BASE=${VITE_API_BASE}
 ENV VITE_JANUA_BASE_URL=${VITE_JANUA_BASE_URL}
 ENV VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID}
 ENV VITE_JANUA_REDIRECT_URI=${VITE_JANUA_REDIRECT_URI}
 ENV VITE_DHANAM_CHECKOUT_URL=${VITE_DHANAM_CHECKOUT_URL}
+ENV VITE_GEOM_CORE_BROWSER=${VITE_GEOM_CORE_BROWSER}
 COPY apps/studio/package.json apps/studio/package-lock.json apps/studio/.npmrc ./
 # @madfam/geom-core is installed from the tarball vendored in the repo (no
 # network on the deploy pool). npm does not check a file: tarball's lockfile

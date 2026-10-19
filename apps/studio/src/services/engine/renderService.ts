@@ -1222,10 +1222,25 @@ export function estimateRenderTime(
   const numParts = modeConfig.parts.length
   const estimate = constants.base_time + (units * constants.per_unit) + (numParts * constants.per_part)
 
-  // The browser is typically slower than native.
-  const effective: Placement = placement
-    ?? _placementBySlug.get(manifestSlug(manifest))
-    ?? (isBrowserRenderPossible() ? 'browser' : 'server')
+  // WHERE this render will run, when the caller did not say. Asked of the same
+  // placement table the render itself goes through (`previewPlacement`), per
+  // MODE, so the estimate describes the render the visitor will actually wait
+  // for. The old guess was "the browser, if this device could run one" (or the
+  // last decision for the SLUG), which put the WASM multiplier on renders the
+  // table then sent to the server:
+  //   - every CadQuery / graph / implicit mode, which has no browser kernel
+  //     (gridfinity `bin`: 25 s declared x4 = 100 s > 90 s, a "~2 minutes"
+  //     warning on the flagship's default view);
+  //   - OpenSCAD modes whose browser estimate is over the browser budget, which
+  //     rule 9 hands to the server (motor-mount: 25 s x3 = 75 s > 60 s, a
+  //     "~2 minutes" warning for a render that took 2.1 s on the server).
+  // Measured 2026-10-18 against api.yantra4d.com, one anonymous server render
+  // each (geo-stab H1): motor-mount 2.08 s, gear-reducer 3.87 s, julia-vase
+  // 1.20 s, spiral-planter 9.63 s, portacosas 1.70 s; the manifests' own server
+  // constants predict 25 / 85 / 22 / 31 / 43 s. Those constants live in each
+  // cartridge's manifest (the commons repo); this function no longer multiplies
+  // their error by a browser factor the render never pays.
+  const effective: Placement = placement ?? previewPlacement(manifest, mode, params).placement
   if (effective === 'browser') {
     return estimate * (constants.wasm_multiplier || 3)
   }

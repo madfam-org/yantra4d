@@ -27,8 +27,9 @@ function resolveTranslation(lang: string, key: string): string {
     return locales[lang]?.[key] || locales.en?.[key] || key
 }
 
-/** Language codes the Studio ships a locale file for. */
-export const SUPPORTED_LANGUAGES: readonly string[] = Object.keys(locales)
+/** Language codes a locale file is loaded for (config/languages lists the same
+ *  six with their display names for the switcher). */
+const SHIPPED_LANGUAGES: readonly string[] = Object.keys(locales)
 
 /**
  * The first of the browser's preferred languages the Studio has a locale for,
@@ -46,7 +47,7 @@ export function browserPreferredLanguage(
     const candidates = [...(nav.languages ?? []), nav.language ?? '']
     for (const tag of candidates) {
         const primary = String(tag || '').trim().toLowerCase().split(/[-_]/)[0]
-        if (primary && SUPPORTED_LANGUAGES.includes(primary)) return primary
+        if (primary && SHIPPED_LANGUAGES.includes(primary)) return primary
     }
     return null
 }

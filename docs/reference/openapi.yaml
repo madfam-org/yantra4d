@@ -1165,7 +1165,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/EstimateResponse"
         "404":
-          description: Unknown project (error_code project_not_found)
+          description: Unknown project (error_code project_not_found). Answered before the rate limiter, so it spends no token from the caller's bucket
           content:
             application/json:
               schema:
@@ -1215,7 +1215,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProjectLocked"
         "404":
-          description: Unknown project (error_code project_not_found)
+          description: Unknown project (error_code project_not_found). Answered before the rate limiter, so it spends no token from the caller's bucket
           content:
             application/json:
               schema:
@@ -1265,7 +1265,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         "404":
-          description: Unknown project (error_code project_not_found)
+          description: Unknown project (error_code project_not_found). Answered before the rate limiter, so it spends no token from the caller's bucket
           content:
             application/json:
               schema:

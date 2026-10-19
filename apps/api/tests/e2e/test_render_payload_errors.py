@@ -104,3 +104,50 @@ class TestValidPayloadsStillResolve:
                 "parameters": {"label_text": "abc", "not_declared": "abc"},
             })
         assert not isinstance(payload, RenderPayloadError), getattr(payload, "message", payload)
+
+
+class TestUnknownProjectSpendsNoRateLimitToken:
+    """An unknown project is answered before the limiter, so it costs no token.
+
+    The conftest disables Flask-Limiter for every test; these turn it back on
+    with auth enabled, so an anonymous caller is a guest (10 server renders an
+    hour, 200 estimates) and its bucket is keyed by IP.
+    """
+
+    @pytest.fixture
+    def limited_client(self, request, monkeypatch):
+        from config import Config
+        from extensions import limiter
+        monkeypatch.setattr(Config, "AUTH_ENABLED", True)
+        # Enabled BEFORE the app is built: a disabled limiter skips its storage
+        # set-up in init_app, and there is then no bucket to count or reset.
+        limiter.enabled = True
+        client = request.getfixturevalue("client")
+        limiter.reset()
+        yield client
+        limiter.reset()
+
+    @pytest.mark.parametrize("route", ["/api/render", "/api/render-stream"])
+    def test_unknown_project_404s_never_exhaust_the_render_bucket(self, limited_client, route):
+        from services.core.tier_service import get_render_limit
+        guest_limit = get_render_limit("guest")
+        assert guest_limit > 0, "the test needs a capped guest tier"
+        for _ in range(guest_limit + 2):
+            res = limited_client.post(route, json={"project": "no-such-project", "mode": "single", "parameters": {}})
+            _assert_error_shape(res, 404, "project_not_found")
+            assert "X-RateLimit-Remaining" not in res.headers, "the limiter was consulted for a 404"
+
+    def test_unknown_project_estimates_leave_the_bucket_untouched(self, limited_client):
+        for _ in range(3):
+            res = limited_client.post("/api/estimate", json={"project": "no-such-project", "mode": "single"})
+            _assert_error_shape(res, 404, "project_not_found")
+        res = limited_client.post("/api/estimate", json={"project": SLUG, "mode": "single"})
+        assert res.status_code == 200, res.get_data(as_text=True)
+        limit = int(res.headers["X-RateLimit-Limit"])
+        # The known project's estimate is the first request the bucket saw.
+        assert int(res.headers["X-RateLimit-Remaining"]) == limit - 1
+
+    def test_a_known_project_is_still_rate_limited(self, limited_client):
+        res = limited_client.post("/api/estimate", json={"project": SLUG, "mode": "single"})
+        assert res.status_code == 200
+        assert "X-RateLimit-Remaining" in res.headers

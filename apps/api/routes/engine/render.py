@@ -5,6 +5,7 @@ Handles /api/estimate, /api/render, /api/render-stream endpoints.
 Route-level concerns only: request parsing, auth, rate limiting, and response
 formatting. All render logic is delegated to the render orchestrator service.
 """
+import functools
 import json
 import logging
 
@@ -111,6 +112,35 @@ def _render_limit_exempt() -> bool:
     return is_unlimited(_project_render_limit())
 
 
+def _known_project_before_limit(f):
+    """Answer an unknown ``project`` with its 404 BEFORE the rate limiter runs.
+
+    The limiter decorators count a request against the caller's hourly bucket
+    as soon as they are reached, and the not-found used to be discovered only
+    inside the view, after that. A typo'd or stale slug therefore spent a
+    render token on a request that never rendered anything (geo-stab V1, F13:
+    a guest's ``X-RateLimit-Remaining`` fell on unknown-project 404s).
+
+    Only a request that names a project is checked here; one without a
+    ``project`` resolves the default cartridge, exactly as before. A manifest
+    that exists but is broken is not a caller error and is left to the view,
+    which answers it the way it always has. The body is read with
+    ``silent=True`` so a non-JSON body still reaches ``require_json_body`` and
+    gets its own 400.
+    """
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        body = request.get_json(silent=True)
+        slug = body.get("project") if isinstance(body, dict) else None
+        if isinstance(slug, str) and slug:
+            try:
+                get_manifest(slug)
+            except ManifestNotFoundError as exc:
+                return payload_error_response(unknown_project_error(slug, exc))
+        return f(*args, **kwargs)
+    return decorated
+
+
 def _rate_limit_key() -> str:
     """Return a per-user or per-IP rate limit bucket key."""
     claims = getattr(request, "auth_claims", None)
@@ -122,6 +152,7 @@ def _rate_limit_key() -> str:
 @render_bp.route('/api/estimate', methods=['POST'])
 @optional_auth
 @require_render_scope
+@_known_project_before_limit
 @limiter.limit(rate_limits.ESTIMATE)
 @require_json_body
 def estimate_render_time():
@@ -176,6 +207,7 @@ def estimate_render_time():
 @render_bp.route('/api/render', methods=['POST'])
 @optional_auth
 @require_render_scope
+@_known_project_before_limit
 @limiter.limit(_get_tiered_limit, key_func=_rate_limit_key, exempt_when=_render_limit_exempt)
 @require_json_body
 @handle_exceptions
@@ -239,6 +271,7 @@ def render_stl():
 @render_bp.route('/api/render-stream', methods=['POST'])
 @optional_auth
 @require_render_scope
+@_known_project_before_limit
 @limiter.limit(_get_tiered_limit, key_func=_rate_limit_key, exempt_when=_render_limit_exempt)
 @require_json_body
 def render_stl_stream():

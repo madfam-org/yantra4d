@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import StudioHeader from './StudioHeader'
+import enLocale from '../../locales/en.json'
+import esLocale from '../../locales/es.json'
 
 // Mock dependencies
 vi.mock('../../contexts/system/LanguageProvider', () => ({
@@ -73,6 +75,16 @@ const baseLanguageContext = {
   setLanguage: vi.fn(),
   t: (key) => key,
 }
+
+/** A language context that translates with a real locale file. */
+const realLanguageContext = (language, locale) => ({
+  language,
+  setLanguage: vi.fn(),
+  t: (key, params) => Object.entries(params ?? {}).reduce(
+    (str, [k, v]) => str.replaceAll(`{${k}}`, String(v)),
+    locale[key] ?? key,
+  ),
+})
 
 const basePlatformContext = {
   platformName: '',
@@ -243,8 +255,23 @@ describe('StudioHeader', () => {
         hyperobject: { domain: 'household' },
       },
     })
+    useLanguage.mockReturnValue(realLanguageContext('en', enLocale))
     render(<StudioHeader {...defaultProps} />)
-    expect(screen.getByText('Commons')).toHaveAttribute('title', 'Domain: household')
+    expect(screen.getByText('Commons')).toHaveAttribute('title', 'Domain: Household')
+  })
+
+  // geo-stab V1 F8: the badge said "Domain: household" in every language.
+  it('says the commons badge domain in the visitor language', () => {
+    useProject.mockReturnValue({
+      ...baseProjectContext,
+      manifest: {
+        project: { name: 'Gridfinity', hyperobject: { is_hyperobject: true } },
+        hyperobject: { domain: 'household' },
+      },
+    })
+    useLanguage.mockReturnValue(realLanguageContext('es', esLocale))
+    render(<StudioHeader {...defaultProps} />)
+    expect(screen.getByText('Commons')).toHaveAttribute('title', 'Dominio: Hogar')
   })
 
   it('omits the commons badge title when no domain is declared', () => {
@@ -265,7 +292,9 @@ describe('StudioHeader', () => {
         project: { name: 'Test Project', hyperobject: { is_hyperobject: true, domain: 'hardware' } },
       },
     })
+    useLanguage.mockReturnValue(realLanguageContext('en', enLocale))
     render(<StudioHeader {...defaultProps} />)
+    // Not in the domain vocabulary: no key, so the code is shown as written.
     expect(screen.getByText('Commons')).toHaveAttribute('title', 'Domain: hardware')
   })
 

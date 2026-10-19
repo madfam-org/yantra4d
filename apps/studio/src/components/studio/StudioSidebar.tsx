@@ -206,19 +206,19 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
         <TabsList className="grid w-full grid-cols-4 h-11 bg-muted/60">
           <TabsTrigger value="config" className="flex items-center gap-2 text-xs">
             <Settings2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Design</span>
+            <span className="hidden sm:inline">{t('sidebar.tab.design')}</span>
           </TabsTrigger>
           <TabsTrigger value="view" className="flex items-center gap-2 text-xs">
             <AreaChart className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">View</span>
+            <span className="hidden sm:inline">{t('sidebar.tab.view')}</span>
           </TabsTrigger>
           <TabsTrigger value="analysis" className="flex items-center gap-2 text-xs">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">BOM</span>
+            <span className="hidden sm:inline">{t('sidebar.tab.bom')}</span>
           </TabsTrigger>
           <TabsTrigger value="export" className="flex items-center gap-2 text-xs">
             <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">{t('sidebar.tab.export')}</span>
           </TabsTrigger>
         </TabsList>
         <ModeTabs className="hidden lg:block" />

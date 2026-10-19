@@ -402,6 +402,18 @@ npx playwright test --project=audit     # Browser audit: REAL backend + real
 python3 ../../scripts/qa/i18n_audit.py
 ```
 
+Catalog facet values arrive from the API as codes (`household`, `bolt_pattern`,
+`intermediate`, `cadquery`) and stay codes in the filter query; the chips, the
+active-filter pills, the card difficulty badge and the header's Commons badge
+title show them through `src/lib/facetLabels.ts` (`projects.filter.domain.*`,
+`.geometry.*`, `.difficulty.*`, `.engine.*`, `.material.*`). `standard` values are
+author text and are shown as written. `src/lib/facetLabels.test.ts` reads the
+manifest schema's `domain`, `geometry_type`, `difficulty` and `engine` enums and
+fails when any value lacks a key in one of the six locales, so a new vocabulary
+word ships with its translations. Adding keys moves the locale-coverage row of
+`docs/strategy/VALUE-EXTRACTION-AUDIT.md`: refresh it with
+`python3 ../../scripts/qa/value_extraction_audit.py --write`.
+
 The nightly browser audit suite documents its own harness, skip helpers and
 assertion conventions in
 [`e2e/tests/23-browser-audit/README.md`](e2e/tests/23-browser-audit/README.md).

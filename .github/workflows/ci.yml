@@ -803,8 +803,9 @@ jobs:
   # in requirements.txt (geom-core is not on PyPI). NOT required yet — it is
   # deliberately absent from ci-success's needs until the parity soak in
   # docs/guides/production-checklist.md "Mesh oracle (geom-core)" is done.
-  # Python 3.11 because geom-core v0.1.0 ships cp38–cp311 Linux wheels only
-  # (the API image is 3.12); move to 3.12 with the first cp312 release.
+  # Python 3.12 and the cp312 wheel: the same interpreter as the API image and
+  # the same wheel deploy.yml bakes into it (scripts/tests/test_geom_core_wheel_pin.py
+  # keeps the two pins equal). v0.1.0 had no cp312 wheel; v0.2.0 does.
   mesh-oracle-differential:
     needs: changes
     if: needs.changes.outputs.code == 'true'
@@ -817,8 +818,8 @@ jobs:
     runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 20
     env:
-      GEOM_CORE_WHEEL_URL: https://github.com/madfam-org/geom-core/releases/download/v0.1.0/geom_core-0.1.0-cp311-cp311-linux_x86_64.whl
-      GEOM_CORE_WHEEL_SHA256: 6a286ba8365c98f238eca2fca8008eb3d646586d87e49ce6c6ca8c141c5590e1
+      GEOM_CORE_WHEEL_URL: https://github.com/madfam-org/geom-core/releases/download/v0.2.0/geom_core-0.2.0-cp312-cp312-linux_x86_64.whl
+      GEOM_CORE_WHEEL_SHA256: cb386870f56e468d4d59cc0504977b50d8e81b6e0b91ebecd0e0ecc26975633d
     defaults:
       run:
         working-directory: apps/api
@@ -833,7 +834,7 @@ jobs:
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - run: pip install -r requirements.txt pytest
       - name: Install the geom-core wheel (pinned by SHA-256)
         run: |

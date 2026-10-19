@@ -358,8 +358,18 @@ jobs:
         with:
           context: .
           file: ./apps/api/Dockerfile
+          # geom-core wheel for the mesh-oracle parity soak (MESH_ORACLE=both in
+          # k8s/production/yantra4d-backend-deployment.yaml). The image is
+          # python:3.12-slim, so the wheel is cp312; the SHA-256 is the release
+          # asset's digest and the Dockerfile fails the build on a mismatch or
+          # when the wheel does not import. Keep it equal to ci.yml's
+          # mesh-oracle-differential pin (scripts/tests/test_geom_core_wheel_pin.py).
+          # Rollback of the soak is MESH_ORACLE back to trimesh; removing these
+          # two lines only removes the wheel from the next image.
           build-args: |
             RENDER_BUILD_ID=${{ steps.render-identity.outputs.value }}
+            GEOM_CORE_WHEEL_URL=https://github.com/madfam-org/geom-core/releases/download/v0.2.0/geom_core-0.2.0-cp312-cp312-linux_x86_64.whl
+            GEOM_CORE_WHEEL_SHA256=cb386870f56e468d4d59cc0504977b50d8e81b6e0b91ebecd0e0ecc26975633d
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

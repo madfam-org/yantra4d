@@ -131,6 +131,19 @@ spec:
               value: "https://app.yantra4d.com"
             - name: ANALYTICS_DB_PATH
               value: "/app/backend/data/.analytics.db"
+            # ── Mesh oracle parity soak (geom-core) ────────────────
+            # `both`: trimesh still answers (the numbers callers get do not
+            # change); geom-core runs beside it, every metric logs a
+            # `mesh_oracle_parity {json}` line and each disagreement increments
+            # mesh_oracle_parity_mismatch_total{metric} on /metrics. Needs the
+            # image built with the geom-core wheel (deploy.yml build-args); on
+            # an image without it each API process logs one ERROR and runs on trimesh.
+            # Rollback: set this to "trimesh" (or delete it) and let Argo sync.
+            # Soak criterion and checklist: docs/guides/production-checklist.md
+            # "Mesh oracle (geom-core)". The render-worker below stays on the
+            # default on purpose (same section, "Why not the render worker yet").
+            - name: MESH_ORACLE
+              value: "both"
             # ── Render artifact storage ────────────────────────────
             # Where finished renders live. `fs` is the render-output emptyDir
             # below — today's behaviour, and the default. `s3` puts them in an

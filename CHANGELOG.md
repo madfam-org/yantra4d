@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Studio geom-core flag from a repository variable** (lane H6, 2026-10-19).
+  `apps/studio/Dockerfile` declares `ARG`/`ENV VITE_GEOM_CORE_BROWSER` (empty =
+  off) and `deploy.yml` passes `VITE_GEOM_CORE_BROWSER=${{ vars.STUDIO_GEOM_CORE_BROWSER }}`
+  to the Studio image, so the soak flip is `gh variable set` plus a Studio
+  rebuild, not a code change. Unset (today) builds the same bundle as before.
+  `scripts/tests/test_studio_build_args.py` fails when a `VITE_*` build-arg is
+  not declared and exported before `npm run build`. apps/studio/README.md
+  "Soak plan (flag off → on)" has the flip and the rollback.
 - **Mesh oracle seam with an optional geom-core backend** (lane G4, 2026-10-18).
   `apps/api/services/engine/mesh_metrics.py` (`MeshOracle`: `TrimeshOracle`,
   `GeomCoreOracle`) now answers the Cotiza quote export's volume/area/bbox and,

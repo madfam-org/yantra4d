@@ -101,39 +101,112 @@ binary STL of the loaded mesh, i.e. float32 vertices, so float deltas of order
 
 **Installing the wheel.** geom-core is not on PyPI. It ships as GitHub Release
 wheels, one per CPython version, and is installed only when the image is built
-with both build args (the SHA-256 is mandatory with the URL; a mismatch fails
-the build):
+with both build args (the SHA-256 is mandatory with the URL; a mismatch, or a
+wheel that does not import, fails the build):
 
 ```bash
 docker build -f apps/api/Dockerfile \
-  --build-arg GEOM_CORE_WHEEL_URL=https://github.com/madfam-org/geom-core/releases/download/v0.1.0/geom_core-0.1.0-cp3XX-cp3XX-linux_x86_64.whl \
-  --build-arg GEOM_CORE_WHEEL_SHA256=<sha256 from the release asset> .
+  --build-arg GEOM_CORE_WHEEL_URL=https://github.com/madfam-org/geom-core/releases/download/v0.2.0/geom_core-0.2.0-cp312-cp312-linux_x86_64.whl \
+  --build-arg GEOM_CORE_WHEEL_SHA256=cb386870f56e468d4d59cc0504977b50d8e81b6e0b91ebecd0e0ecc26975633d .
 ```
 
-The production image is `python:3.12-slim`, so it needs a **cp312** wheel —
-`geom_core-0.1.0-cp312-cp312-linux_x86_64.whl` once a geom-core release ships
-one. v0.1.0 ships cp38, cp39, cp310 and cp311 Linux wheels only (plus a
-"universal2" macOS wheel for 3.10/3.11 that is in fact arm64-only), so today
-the build arg cannot be used with this image: pip refuses a cp311 wheel on 3.12
-and the build fails, visibly. CI's `mesh-oracle-differential` job therefore
-runs on Python 3.11 with
-`https://github.com/madfam-org/geom-core/releases/download/v0.1.0/geom_core-0.1.0-cp311-cp311-linux_x86_64.whl`
-(sha256 `6a286ba8365c98f238eca2fca8008eb3d646586d87e49ce6c6ca8c141c5590e1`).
+The production image is `python:3.12-slim`, so it needs a **cp312** wheel; pip
+refuses a wheel for another interpreter and the build fails, visibly. v0.1.0
+had no cp312 wheel; v0.2.0 does. `deploy.yml` (build-backend) passes exactly
+this URL and digest, and CI's `mesh-oracle-differential` job installs the same
+wheel on Python 3.12; `scripts/tests/test_geom_core_wheel_pin.py` fails when
+the two pins differ or the wheel's CPython tag does not match the image.
+
+The v0.2.0 Linux wheels are tagged plain `linux_x86_64`, not `manylinux`: the
+extension needs `GLIBCXX_3.4.32` (GCC 13's libstdc++) and `GLIBC_2.32`. The
+current `python:3.12-slim` (Debian trixie) has both; a Debian bookworm base
+(`GLIBCXX_3.4.30`) would fail the build's import check. geom-core's next
+release is meant to ship `manylinux_2_28` wheels, which remove this constraint.
+
+**Bumping geom-core.** Change the URL and the SHA-256 in both `deploy.yml`
+(build-backend `build-args`) and `ci.yml` (`mesh-oracle-differential` `env`),
+taking the digest from the release asset
+(`gh release view vX.Y.Z -R madfam-org/geom-core --json assets`).
 
 **Flip plan.**
 
-1. **Parity soak** — a geom-core release with a cp312 wheel; build the image
-   with the two build args; set `MESH_ORACLE=both` on the API and the
-   render-worker. Watch `mesh_oracle_parity_mismatch_total` and the
-   `mesh_oracle_parity` / `mesh_oracle render integrity` log lines; every
-   mismatch is either a geom-core bug (fix there, new release) or a documented
-   difference (add it to the differential suite).
+1. **Parity soak** — the image is built with the two build args and the
+   **backend container** runs `MESH_ORACLE=both`
+   (`k8s/production/yantra4d-backend-deployment.yaml`). Watch
+   `mesh_oracle_parity_mismatch_total` and the `mesh_oracle_parity` log lines;
+   every mismatch is either a geom-core bug (fix there, new release) or a
+   documented difference (add it to the differential suite).
 2. **Default geomcore** — with the counter flat over the soak, set
    `MESH_ORACLE=geomcore`, then make it the default in `mesh_metrics.py`
    (`DEFAULT_MODE`) and install the wheel unconditionally.
 3. **Remove the duplicates** — only then delete the trimesh metric code and
    `services/engine/mesh_integrity.py`; `mesh_integrity.py` stays until step 3,
    because it is the oracle the differential suite measures geom-core against.
+
+**What the API soak covers.** On the backend container the seam runs only in
+the Cotiza quote export (`POST /api/projects/<slug>/cotiza-quote-request`), which
+computes the metrics before it calls Cotiza. So the soak compares
+`volume_mm3`, `surface_area_mm2` and `bbox_mm`, once per export; it never
+compares the integrity verdict or the body count (those run only in the
+worker's `observe_render`, and the body count is not a compared metric in
+yantra4d at all). Its sample size is the export traffic, which may be small;
+the success criterion below therefore needs a minimum number of samples.
+
+**Soak success criterion (proposed; the owner confirms it).** The geom-core
+decision record (internal-devops
+`decisions/2026-10-18-geom-core-shared-mesh-analysis-layer.md`) does not set
+one; this is the coordinator's proposal for step 1 → step 2:
+
+- at least 7 days with the wheel-built image serving and `MESH_ORACLE=both`;
+- at least 200 quote exports (each logs one `mesh_oracle_parity` record per
+  metric) across at least 20 distinct slugs; if real traffic is lower, the
+  owner decides whether to drive exports for the commons slugs (the production
+  manifest sets no `COTIZA_API_URL` today, so such a call computes the metrics
+  and then fails at the Cotiza step without creating a quote);
+- zero records with `"match": false`, or every one explained by a geom-core fix
+  (released and re-soaked) or by a documented difference added to
+  `test_mesh_oracle_differential.py`;
+- no `geom-core wheel` / unknown-mode ERROR lines after the first minute of each
+  pod (the wheel imports in every gunicorn worker);
+- p95 latency of the quote export no worse than before the soak.
+
+The default flip (step 2) also waits for the owner's ruling on the geom-core
+body-count definition, although this API does not compare body counts (the
+ruling decides what geom-core's `get_body_count()` means for every consumer).
+
+**Reading the counter.** gunicorn runs `WEB_CONCURRENCY` (4) workers and
+`prometheus_client` is not in multiprocess mode, so each `/metrics` scrape
+reads one worker's counter: a mismatch shows up, but `increase()` undercounts
+and can step down when the scrape lands on another worker. The log lines are
+the count of record; the counter is the alarm. An alert for the platform
+Prometheus (this repo has no PrometheusRule; the in-cluster scrape is the
+Service annotation in `k8s/production/yantra4d-backend-service.yaml`; the
+namespace label's name depends on that scrape job's relabelling):
+
+```yaml
+- alert: Yantra4dMeshOracleParityMismatch
+  expr: sum by (metric) (max_over_time(mesh_oracle_parity_mismatch_total{namespace="yantra4d"}[1h])) > 0
+  labels: {severity: warning, service: yantra4d-backend}
+  annotations:
+    summary: "trimesh and geom-core disagree on {{ $labels.metric }} (MESH_ORACLE=both soak)"
+    description: >-
+      Read the mesh_oracle_parity log lines with "match": false; each one is a
+      geom-core bug or a documented difference. Rollback: MESH_ORACLE=trimesh.
+```
+
+**Why not the render worker yet.** `observe_render` runs synchronously at the
+end of every render under `both`: it reloads the finished mesh and runs both
+integrity checks. Measured on an x86_64 Mac (Python 3.12, geom-core 0.2.0,
+icospheres): 82k faces +0.37 s and ~170 MB peak RSS; 328k faces +1.7 s and
+~380 MB; 1.3M faces +7.5 s and ~1.15 GB. The worker's limit is 2Gi and the
+commons has multi-million-face renders (the chainmail panel is 2.5M faces), so
+the worker needs a face-count cap on `observe_render` (or a higher limit)
+before it joins the soak. Its parity would be logs only: the worker serves no
+`/metrics`.
+
+**Rollback.** `MESH_ORACLE` back to `trimesh` (or removed) in the backend
+Deployment; Argo syncs it and the API stops loading geom-core. The wheel can
+stay in the image: unused, it changes nothing.
 
 ### AI Features (optional)
 

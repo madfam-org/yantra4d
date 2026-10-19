@@ -14,6 +14,7 @@ import { SUPPORTED_LANGUAGES } from '../../config/languages'
 import { useProjectMeta } from '../../hooks/project/useProjectMeta'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { facetValueLabel } from '../../lib/facetLabels'
 import { useTheme } from '../../contexts/system/ThemeProvider'
 import { usePlatform } from '../../contexts/system/PlatformProvider'
 import { useIsMobile } from '../../hooks/system/useMediaQuery'
@@ -108,7 +109,7 @@ export default function StudioHeader({
             )}
             <h1 className="text-lg font-bold tracking-tight truncate max-w-[8rem] xs:max-w-[10rem] sm:max-w-none" title={manifest.project.name as string}>{manifest.project.name as React.ReactNode}</h1>
             {(manifest.project.hyperobject as Record<string, unknown> | undefined)?.is_hyperobject && (
-              <span className="hidden xs:inline-flex items-center rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-500 ring-1 ring-inset ring-blue-500/20 shrink-0" title={hyperobjectDomain ? `Domain: ${hyperobjectDomain}` : undefined}>
+              <span className="hidden xs:inline-flex items-center rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-500 ring-1 ring-inset ring-blue-500/20 shrink-0" title={hyperobjectDomain ? t('header.domain_title', { domain: facetValueLabel('domain', hyperobjectDomain, t) }) : undefined}>
                 Commons
               </span>
             )}

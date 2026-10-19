@@ -298,8 +298,9 @@ describe('StudioSidebar', () => {
     const modeTabs = screen.getAllByRole('tab', { name: /full|plate/i })
     expect(modeTabs.length).toBeGreaterThan(0)
 
-    // Click "View" section tab — mode tabs should still be present
-    const viewTab = screen.getAllByText('View')[0]
+    // Click "View" section tab — mode tabs should still be present (the mocked
+    // t() returns the key)
+    const viewTab = screen.getAllByText('sidebar.tab.view')[0]
     fireEvent.click(viewTab)
     const modeTabsAfter = screen.getAllByRole('tab', { name: /full|plate/i })
     expect(modeTabsAfter.length).toBeGreaterThan(0)

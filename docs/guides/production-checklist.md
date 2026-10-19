@@ -135,7 +135,16 @@ taking the digest from the release asset
    (`k8s/production/yantra4d-backend-deployment.yaml`). Watch
    `mesh_oracle_parity_mismatch_total` and the `mesh_oracle_parity` log lines;
    every mismatch is either a geom-core bug (fix there, new release) or a
-   documented difference (add it to the differential suite).
+   documented difference (add it to the differential suite). **Starting it:**
+   a change to `deploy.yml` alone does not rebuild the backend (its
+   change filter is `apps/api/**`, `apps/worker/**`, the commons, `libs/**`…),
+   while Argo applies the manifest at once. Until a backend build carries the
+   wheel, each API process logs one ERROR (`MESH_ORACLE=both` without the
+   wheel) and runs on trimesh. The wheel arrives with the next backend build:
+   any backend-path merge, or the owner's
+   `gh workflow run deploy.yml -R madfam-org/yantra4d --ref main -f force_deploy=true`
+   (rebuilds every service). The soak clock starts when the API logs no
+   wheel ERROR after a rollout.
 2. **Default geomcore** — with the counter flat over the soak, set
    `MESH_ORACLE=geomcore`, then make it the default in `mesh_metrics.py`
    (`DEFAULT_MODE`) and install the wheel unconditionally.

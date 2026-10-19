@@ -27,6 +27,31 @@ function resolveTranslation(lang: string, key: string): string {
     return locales[lang]?.[key] || locales.en?.[key] || key
 }
 
+/** Language codes a locale file is loaded for (config/languages lists the same
+ *  six with their display names for the switcher). */
+const SHIPPED_LANGUAGES: readonly string[] = Object.keys(locales)
+
+/**
+ * The first of the browser's preferred languages the Studio has a locale for,
+ * matched on the primary subtag (`en-US` -> `en`, `pt-BR` -> `pt`), or null.
+ *
+ * `navigator.languages` is the visitor's ordered list; `navigator.language`
+ * is the fallback for browsers that only expose one. Never throws: a missing
+ * or odd `navigator` (SSR, a locked-down embed) is simply "no preference".
+ */
+export function browserPreferredLanguage(
+    nav: { languages?: readonly string[]; language?: string } | null =
+        typeof navigator === 'undefined' ? null : navigator,
+): string | null {
+    if (!nav) return null
+    const candidates = [...(nav.languages ?? []), nav.language ?? '']
+    for (const tag of candidates) {
+        const primary = String(tag || '').trim().toLowerCase().split(/[-_]/)[0]
+        if (primary && SHIPPED_LANGUAGES.includes(primary)) return primary
+    }
+    return null
+}
+
 export function LanguageProvider({
     children,
     defaultLanguage = "es",

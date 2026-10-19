@@ -25,7 +25,7 @@ ErrorBoundary → BrowserRouter → ThemeProvider → AuthProvider → TierProvi
 
 - **AuthProvider**: "Sign in with Janua" (OIDC + PKCE, see [Client authentication](#client-authentication)). Bridges the `@janua/react-sdk` session into `useAuth()`.
 - **ManifestProvider**: Fetches manifest from API; falls back to `src/config/fallback-manifest.json`.
-- **ManifestAwareLanguageProvider**: UI chrome translations only (buttons, log messages, phase labels). Parameter labels and tooltips come from the manifest.
+- **ManifestAwareLanguageProvider**: UI chrome translations only (buttons, log messages, phase labels). Parameter labels and tooltips come from the manifest. Opening language: the visitor's stored choice (`localStorage['yantra4d-lang']`, written only by the language toggle), else the first of the browser's `navigator.languages` the Studio ships a locale for (es, en, pt, fr, de, zh; `en-US` → `en`), else Spanish.
 - **TierProvider / UpgradePromptProvider**: entitlement tier and paywall prompts.
 - **ThemeProvider**: Light / Dark / System theme persistence.
 

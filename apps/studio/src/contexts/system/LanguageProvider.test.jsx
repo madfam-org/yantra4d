@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
-import { LanguageProvider, useLanguage } from './LanguageProvider'
+import { LanguageProvider, useLanguage, browserPreferredLanguage } from './LanguageProvider'
+import ManifestAwareLanguageProvider from './ManifestAwareLanguageProvider'
 
 function TestConsumer() {
   const { language, setLanguage, t } = useLanguage()
@@ -248,5 +249,78 @@ describe('LanguageProvider', () => {
       </LanguageProvider>
     )
     expect(screen.getByTestId('no-params').textContent).toBe('Generate')
+  })
+})
+
+
+// The Studio mounts ManifestAwareLanguageProvider; it picks the default from
+// the browser. src/test/setup.js pins a Spanish browser for the whole suite.
+describe('ManifestAwareLanguageProvider: the browser language when nothing is stored', () => {
+  beforeEach(() => localStorage.clear())
+  afterEach(() => globalThis.__resetBrowserLanguages())
+
+  function renderStudio() {
+    return render(
+      <ManifestAwareLanguageProvider>
+        <TestConsumer />
+      </ManifestAwareLanguageProvider>
+    )
+  }
+
+  it('opens in English for an en-US browser with no stored choice', () => {
+    globalThis.__setBrowserLanguages(['en-US', 'en'])
+    renderStudio()
+    expect(screen.getByTestId('lang').textContent).toBe('en')
+    expect(screen.getByTestId('text').textContent).toBe('Generate')
+    expect(document.documentElement.lang).toBe('en')
+  })
+
+  it('opens in Spanish for a Spanish browser', () => {
+    renderStudio()
+    expect(screen.getByTestId('lang').textContent).toBe('es')
+  })
+
+  it('does not store the browser guess, only an explicit choice', () => {
+    globalThis.__setBrowserLanguages(['en-US'])
+    renderStudio()
+    expect(localStorage.getItem('yantra4d-lang')).toBeNull()
+    act(() => screen.getByText('ES').click())
+    expect(localStorage.getItem('yantra4d-lang')).toBe('es')
+  })
+
+  it('lets the stored choice (yantra4d-lang) win over the browser language', () => {
+    globalThis.__setBrowserLanguages(['en-US', 'en'])
+    localStorage.setItem('yantra4d-lang', 'es')
+    renderStudio()
+    expect(screen.getByTestId('lang').textContent).toBe('es')
+  })
+
+  it('takes the first supported language in the browser order', () => {
+    globalThis.__setBrowserLanguages(['ja-JP', 'pt-BR', 'en'])
+    renderStudio()
+    expect(screen.getByTestId('lang').textContent).toBe('pt')
+  })
+
+  it('falls back to Spanish when no browser language is supported', () => {
+    globalThis.__setBrowserLanguages(['ja-JP', 'ko'])
+    renderStudio()
+    expect(screen.getByTestId('lang').textContent).toBe('es')
+  })
+})
+
+describe('browserPreferredLanguage', () => {
+  it('matches on the primary subtag, case-insensitively', () => {
+    expect(browserPreferredLanguage({ languages: ['EN-gb'] })).toBe('en')
+    expect(browserPreferredLanguage({ languages: ['zh_Hans_CN'] })).toBe('zh')
+  })
+
+  it('uses navigator.language when languages is absent', () => {
+    expect(browserPreferredLanguage({ language: 'fr-CA' })).toBe('fr')
+  })
+
+  it('answers null for no navigator or nothing supported', () => {
+    expect(browserPreferredLanguage(null)).toBeNull()
+    expect(browserPreferredLanguage({ languages: [], language: '' })).toBeNull()
+    expect(browserPreferredLanguage({ languages: ['ja'] })).toBeNull()
   })
 })

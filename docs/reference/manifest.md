@@ -200,17 +200,27 @@ The project manifest (`projects/{slug}/project.json`) is the single source of tr
   ],
 
   "estimate_constants": {
-    "base_time": 5,       // Base seconds for any render
-    "per_unit": 1.5,      // Added per unit (grid cell or fixed count)
+    "base_time": 1.5,     // Base SERVER seconds for any render
+    "per_unit": 0.25,     // Added per unit (grid cell or fixed count)
     "fn_factor": 64,      // OpenSCAD $fn resolution factor
-    "per_part": 8,        // Added per part in the mode
-    "wasm_multiplier": 3, // Multiplier applied to browser (WASM) estimates
+    "per_part": 0.25,     // Added per part in the mode
+    "wasm_multiplier": 3, // Applied only when the render runs in the browser (WASM)
     "warning_threshold_seconds": 60, // Above this estimate: confirm a user-initiated
                                      // render, skip an automatic one with a notice
     "wasm_timeout_seconds": 120      // Optional: ceiling on one browser render (default 120)
   }
 }
 ```
+
+The estimate is `base_time + units × per_unit + parts × per_part` server seconds,
+times `wasm_multiplier` only for a render the placement table keeps in the browser.
+The Studio asks the same table the render goes through, so a CadQuery, graph or
+implicit mode, or an OpenSCAD render whose browser estimate is over the browser
+budget (and therefore goes to the server), is estimated as a server render.
+The values above are the scaffold `services/core/manifest_generator.py` writes.
+They were fitted on 2026-10-18 to five live OpenSCAD server renders (1.2 to 9.6 s):
+the old scaffold (5 / 2 / 8) over-predicted those renders 3× to 25×. Measure your
+own cartridge and override them; mesh-heavy geometry is not captured by either term.
 
 ## Render placement: `render.server_only` vs `project.force_backend`
 

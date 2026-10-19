@@ -83,7 +83,7 @@ jobs:
       # build-landing, and never `recursive` — see "Submodule depth" at the
       # top of .github/workflows/ci.yml).
       - name: Checkout code
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
@@ -98,11 +98,11 @@ jobs:
             exit 1
           }
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -246,7 +246,7 @@ jobs:
       # 500, or every retry starts from zero.
       - name: Restore raw renders
         id: raw-cache
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: apps/landing/public/models/raw
           key: commons-raw-v1-${{ steps.key.outputs.digest }}
@@ -276,7 +276,7 @@ jobs:
 
       - name: Save raw renders
         if: always() && steps.raw-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: apps/landing/public/models/raw
           key: commons-raw-v1-${{ steps.key.outputs.digest }}
@@ -308,7 +308,7 @@ jobs:
           npm run models:optimize -- "${args[@]}"
 
       - name: Upload the optimized models
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: commons-models-${{ github.run_id }}
@@ -319,7 +319,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload backend and worker logs
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure() || steps.render.outcome == 'failure'
         with:
           name: commons-models-logs-${{ github.run_id }}
@@ -333,7 +333,7 @@ jobs:
       - name: Create PR
         id: create-pr
         if: github.event_name == 'workflow_dispatch' && inputs.open_pr
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           # The org setting "Allow GitHub Actions to create and approve pull
           # requests" is OFF, so the default GITHUB_TOKEN is refused here no

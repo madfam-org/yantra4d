@@ -36,6 +36,7 @@ from services.engine.render_orchestrator import (
     cancel_render_jobs,
     cancel_request,
     extract_render_payload,
+    missing_project_error,
     render_parts_stream,
     render_parts_sync,
     resolve_engine_config,
@@ -132,11 +133,14 @@ def _known_project_before_limit(f):
     def decorated(*args, **kwargs):
         body = request.get_json(silent=True)
         slug = body.get("project") if isinstance(body, dict) else None
-        if isinstance(slug, str) and slug:
-            try:
-                get_manifest(slug)
-            except ManifestNotFoundError as exc:
-                return payload_error_response(unknown_project_error(slug, exc))
+        try:
+            missing = missing_project_error(slug)
+        except Exception:
+            # A broken manifest: the view meets the same error on its own
+            # lookup and answers it through its usual handler.
+            missing = None
+        if missing is not None:
+            return payload_error_response(missing)
         return f(*args, **kwargs)
     return decorated
 

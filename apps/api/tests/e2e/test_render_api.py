@@ -159,6 +159,9 @@ class TestTierEnforcementRender:
         assert res.status_code == 403
         assert "requires Pro tier" in res.get_json()["error"]
 
+    # The payload is mocked, but the request still names the fixture's real
+    # cartridge: an unknown project is answered with its 404 before the rate
+    # limiter, ahead of every gate these tests exercise.
     def _payload(self, fmt):
         return {
             "parts": ["m"], "export_format": fmt, "params": {}, "scad_path": "mock",
@@ -180,7 +183,7 @@ class TestTierEnforcementRender:
         monkeypatch.setattr("routes.engine.render.resolve_engine_config",
                             lambda *args: (None, None, None, ("passed format gate", 418)))
 
-        res = client.post("/api/render", json={"project": "os"})
+        res = client.post("/api/render", json={"project": "test-project"})
         assert res.status_code == 418
         assert "passed format gate" in res.get_json()["error"]
 
@@ -189,7 +192,7 @@ class TestTierEnforcementRender:
                             lambda *args: self._payload("step"))
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "essentials")
 
-        res = client.post("/api/render", json={"project": "os"})
+        res = client.post("/api/render", json={"project": "test-project"})
         assert res.status_code == 403
         assert "requires Pro tier" in res.get_json()["error"]
 
@@ -197,7 +200,7 @@ class TestTierEnforcementRender:
         monkeypatch.setattr("routes.engine.render.extract_render_payload",
                             lambda *args: self._payload("dwg"))
 
-        res = client.post("/api/render", json={"project": "os"})
+        res = client.post("/api/render", json={"project": "test-project"})
         assert res.status_code == 403
         assert "not available" in res.get_json()["error"]
 

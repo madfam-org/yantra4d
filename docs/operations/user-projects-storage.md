@@ -77,6 +77,10 @@ read-write at `/app/user-projects` in **both** containers of the
   only new writable path.
 - **Ownership:** the pod runs as UID 1001 with `fsGroup: 1001`. The volume is
   group-writable for that group, so the non-root process can create cartridges.
+- **ServiceAccount token:** not mounted (`automountServiceAccountToken: false`
+  in `k8s/production/yantra4d-backend-deployment.yaml`). The pod does not call
+  the Kubernetes API. A change that needs the API adds its RBAC binding and
+  turns the mount back on in the same change.
 - **Size:** 2 Gi, a convention rather than a measured limit. The whole commons
   is about 25 MB and its largest cartridge about 2.2 MB, so 2 Gi holds roughly a
   thousand forks of the largest cartridge. A GitHub import is a full clone with

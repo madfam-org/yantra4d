@@ -1,10 +1,11 @@
 """Yantra4D's import policy for CadQuery cartridge scripts.
 
-The shared ``commons_sandbox`` core is dependency-free and kernel-agnostic, so
-its import guard is a *denylist* (``BLOCKED_MODULES``): it refuses a fixed set of
-capability-granting modules and lets everything else through. That core is
-vendored here under a byte-hash lock and must not be hand-edited, so this module
-tightens the policy in Yantra4D's own runner layer instead.
+The shared ``commons_sandbox`` core is dependency-free and kernel-agnostic. Its
+default import guard is a *denylist* (``BLOCKED_MODULES``); since core 1.1.0 it
+also carries the allowlist mechanism (``make_allowlist_import``), and both guards
+refuse relative imports. The core is vendored here under a byte-hash lock and is
+changed only by re-vendoring, so this module owns only Yantra4D's *policy*: the
+list below and the curated-sibling rule. The mechanism is the core's.
 
 A denylist is only as complete as its author's imagination. A CadQuery cartridge
 needs a small, knowable set of modules — the kernel, the standard numeric and
@@ -40,6 +41,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from commons_sandbox import BLOCKED_MODULES, build_sandbox_builtins
+from commons_sandbox import make_allowlist_import as core_make_allowlist_import
 
 # Top-level package names a CadQuery cartridge may import. Derived from a scan of
 # the public commons (see the module docstring). Pure-computation standard-library
@@ -107,26 +109,16 @@ def make_allowlist_import(
     """An ``__import__`` replacement that admits only known-safe packages.
 
     An import is admitted when its top-level package is in ``ALLOWED_IMPORTS`` or
-    names a cartridge on a curated root; everything else is refused. Relative
-    imports (``level > 0``, i.e. ``from . import x`` inside a cartridge package)
-    are admitted so a multi-file cartridge keeps working — the module they resolve
-    to is itself re-checked by this same guard.
+    names a cartridge on a curated root; everything else is refused. The guard is
+    the shared core's ``make_allowlist_import``, so ``BLOCKED_MODULES`` always wins
+    and a relative import is refused: a cartridge script runs as ``__main__`` with
+    no package, so it has no legitimate one.
     """
-    base = build_sandbox_builtins(product_label)
-    real_import = base["__import__"]
-
-    def _allowlist_import(name, globals=None, locals=None, fromlist=(), level=0):
-        if level and level > 0:
-            # Intra-package relative import; the resolved module is re-guarded.
-            return real_import(name, globals, locals, fromlist, level)
-        top = name.split(".")[0]
-        if top in ALLOWED_IMPORTS or _is_curated_cartridge(top, curated_roots):
-            return real_import(name, globals, locals, fromlist, level)
-        raise ImportError(
-            f"Import of '{name}' is not allowed in {product_label}"
-        )
-
-    return _allowlist_import
+    return core_make_allowlist_import(
+        product_label,
+        ALLOWED_IMPORTS,
+        allow=lambda top: _is_curated_cartridge(top, curated_roots),
+    )
 
 
 def build_cq_sandbox_builtins(

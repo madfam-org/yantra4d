@@ -15,7 +15,7 @@ This roadmap outlines the strategic path towards a world-class hyperobject commo
 - [x] **P0.6 — CI Stability Remediation (2026-05-14):** Node 22 CI runtime, private submodule checkout credentials, backend migration drift repair, high-severity npm audit gates, Studio safe formula migration, and mobile responsive Playwright stabilization shipped in `2b0c397`.
 - [ ] **P0.7 — Post-Push GitHub Actions Confirmation:** Verify all workflows on `main` pass after `2b0c397`.
 - [ ] **P0.8 — Production Browser Stability Audit:** Validate `yantra4d.com`, `app.yantra4d.com`, `api.yantra4d.com`, and `admin.yantra4d.com` through browser-usable flows.
-- [ ] **P0.9 — Tablaco End-to-End Render Stability:** Confirm Tablaco project discovery, manifest load, browser parameter updates, render, fallback, export, BOM, and quote handoff where enabled.
+- [ ] **P0.9 — Client-Private Cartridge End-to-End Render Stability:** Confirm the client-private cartridge's project discovery, manifest load, browser parameter updates, render, fallback, export, BOM, and quote handoff where enabled.
 - [ ] **P1.6 — Full Playwright Audit Closure:** Run the broader production-like browser audit suite beyond the mobile responsive project.
 - [ ] **P1.7 — Remaining Dependency Cleanup:** Safely resolve low/moderate Landing/Admin advisories through planned framework and dev-tool upgrades.
 - [ ] **P1.8 — Auth-Enabled Production Smoke:** Validate tiers, CORS, Redis cache, database persistence, webhooks, and graceful render degradation with production-like settings.
@@ -45,7 +45,7 @@ This roadmap outlines the strategic path towards a world-class hyperobject commo
 >   `{ all: true }` body #83 requires. Closure still means a green audit run, which has not
 >   happened yet.
 > - **P0.7 / P0.8 / P0.9 / P1.7 / P1.8** are left unchecked and unchanged: no verification of
->   post-push workflow status, live production browser flows, the Tablaco end-to-end path, the
+>   post-push workflow status, live production browser flows, the private-cartridge end-to-end path, the
 >   dependency backlog, or an auth-enabled production smoke was performed for this re-baseline.
 
 ---
@@ -170,7 +170,7 @@ Decentralizing the Yantra4D Commons so every hyperobject project is a sovereign,
 
 ## Upcoming Sprints
 
-> Local stability gates are green after commit `2b0c397`: high-severity npm audits passed for Studio, Landing, and Admin; Studio focused tests passed; backend migration drift and coverage passed; mobile responsive Playwright passed. Full production stability still requires post-push GitHub Actions confirmation and live browser validation of Yantra4D plus Tablaco.
+> Local stability gates are green after commit `2b0c397`: high-severity npm audits passed for Studio, Landing, and Admin; Studio focused tests passed; backend migration drift and coverage passed; mobile responsive Playwright passed. Full production stability still requires post-push GitHub Actions confirmation and live browser validation of Yantra4D plus the client-private cartridge.
 
 ---
 
@@ -194,7 +194,7 @@ Each federated project repo has its own CI to catch regressions independently of
 - [x] ~~**GitHub Actions template:** Reusable `.github/workflows/project-ci-reusable.yml`~~ — RETIRED by RFC 0038 P2. There are no federated cartridge repos left to give CI to; the commons repo has one CI lane of its own.
 - [x] ~~**Propagate to the federated repos:** `scripts/ci/propagate_project_ci.{sh,py}`~~ — RETIRED with the above, along with `scripts/propagate_ci.sh`.
 - [x] ~~**Submodule update automation:** `.github/workflows/project-ci.yml` + `bump-submodule.yml` + `update-submodules.yml`~~ — RETIRED and replaced by ONE `.github/workflows/bump-commons-pin.yml`, which opens a PR when `solid-hyperobjects` main moves ahead of the pin. Issue #69's dormant 33-repo bump loop is retired by construction.
-- [x] **`tablaco` exclusion hardening:** `update = none` in `.gitmodules` confirmed — public clones skip the private repo.
+- [x] **Client-private cartridge exclusion hardening:** `update = none` in `.gitmodules` confirmed — public clones skip the private repo.
 
 ---
 
@@ -237,24 +237,24 @@ The BOM API (`routes/bom.py`) and `BomPanel.jsx` already exist, and `supplier_ur
 
 ---
 
-### Sprint 16.1 — Tablaco Verified Quote Relay (Selva -> Yantra4D -> Cotiza -> ForgeSight)
+### Sprint 16.1 — Private-Cartridge Verified Quote Relay (Selva -> Yantra4D -> Cotiza -> ForgeSight)
 _Integration: Selva agent quote generation, Cotiza Studio tenant quote creation, and ForgeSight verified market data._
 
 Yantra4D must act as a truthful project and geometry relay. It should not invent pricing truth, downgrade verified downstream results, or hide the reason a quote is not client-ready.
 
 - [x] **Strict market verification propagation:** Forward `require_market_verified` as a top-level Cotiza request field for `/api/projects/<slug>/cotiza-quote-request`.
 - [x] **Market context preservation:** Preserve Cotiza `market_verified`, `market_context`, `pricing_source`, `fallback_reason`, and `needs_review` in the Yantra4D response.
-- [x] **Tablaco quote fixture:** Add a canonical `tablaco/unit` fixture with known parameters, geometry metadata, material, process, quantity, and currency.
-- [ ] **Authenticated smoke path:** Verify pro-tier Selva/Janua credentials can render and request a Tablaco quote without bypassing tier policy.
+- [x] **Private-cartridge quote fixture:** Add a canonical unit-mode fixture for the client-private cartridge with known parameters, geometry metadata, material, process, quantity, and currency.
+- [ ] **Authenticated smoke path:** Verify pro-tier Selva/Janua credentials can render and request a quote for the client-private cartridge without bypassing tier policy.
 - [x] **Fail-closed behavior:** If Cotiza or ForgeSight cannot verify market data while strict mode is requested, return a non-client-ready response with the blocking reason.
-- [x] **Runbook coverage:** Document the live Tablaco quote flow and how Enclii verifies it without direct production container access.
+- [x] **Runbook coverage:** Document the live private-cartridge quote flow and how Enclii verifies it without direct production container access.
 
 ---
 
 ### Sprint 16.2 — Platform Stability Closure: Browser, CI, and Production Confidence
 _Dependency: Sprint 16.1 can proceed in parallel, but production stability claims depend on this closure sprint._
 
-This sprint closes the gap between locally validated stability and production-grade confidence. The objective is not to add new surface area; it is to prove the existing Yantra4D platform and Tablaco experience are stable across CI, browser, backend, auth, and deployment boundaries.
+This sprint closes the gap between locally validated stability and production-grade confidence. The objective is not to add new surface area; it is to prove the existing Yantra4D platform and the client-private cartridge experience are stable across CI, browser, backend, auth, and deployment boundaries.
 
 - [x] **CI hotfix shipped:** Commit `2b0c397` removed the unsafe Studio formula dependency, hardened CI/runtime assumptions, repaired backend migration drift, and stabilized mobile responsive Playwright checks.
 - [x] **High-severity npm gate:** Studio, Landing, and Admin pass `npm audit --audit-level=high`.
@@ -264,7 +264,7 @@ This sprint closes the gap between locally validated stability and production-gr
 - [x] **Mobile responsive browser project:** Playwright mobile project passes with 22 passing tests and 2 intentional skips.
 - [ ] **GitHub Actions post-push confirmation:** Verify all workflows are green on `main` for `2b0c397` or newer.
 - [ ] **Live production browser audit:** Exercise `yantra4d.com`, `app.yantra4d.com`, `api.yantra4d.com`, and `admin.yantra4d.com` in desktop and mobile browsers.
-- [ ] **Tablaco browser render proof:** Validate Tablaco loads from the browser, exposes expected controls, renders successfully, degrades cleanly on backend failure/rate limit, and exports usable artifacts.
+- [ ] **Private-cartridge browser render proof:** Validate the client-private cartridge loads from the browser, exposes expected controls, renders successfully, degrades cleanly on backend failure/rate limit, and exports usable artifacts.
 - [ ] **Full E2E audit suite:** Run the real-backend/OpenSCAD Playwright audit project and capture screenshots/artifacts under `audit/` only when intentionally updating audit baselines. _(2026-09-02: the nightly `e2e-audit.yml` now executes this suite without Docker since #76; results are being reconciled under #79. Same item as P1.6 — see the status notes at the top of this file.)_
 - [ ] **Production-like backend smoke:** Validate Redis L2 render cache, auth-enabled tier behavior, database persistence, CORS origins, webhook HMAC rejection/acceptance, OpenSCAD availability, and render timeout handling.
 - [ ] **Dependency modernization backlog:** Resolve remaining low/moderate advisories through deliberate Astro/Vitest/Vite upgrade work rather than force upgrades in hotfix mode.
@@ -275,7 +275,7 @@ Exit criteria:
 
 - All GitHub Actions required checks are green on `main`.
 - Live browser audit shows no blocking console errors, broken navigation, failed core API calls, or unusable responsive layouts.
-- Tablaco browser path works end to end for the supported public/pro-tier flow.
+- The client-private cartridge's browser path works end to end for the supported public/pro-tier flow.
 - Backend production-like smoke covers auth, render, cache, persistence, and webhook boundaries.
 - Remaining advisories are either resolved or explicitly accepted with owner, severity, and target sprint.
 
@@ -284,14 +284,14 @@ Exit criteria:
 ### Sprint 17 — Production Physics Readiness & Generative Optimization
 _Integration: **[PPF Contact Solver](https://github.com/st-tech/ppf-contact-solver)** (SIGGRAPH Asia 2024)._
 
-Transition the current mock simulation pipeline to full GPU-accelerated production readiness for compliant hyperobjects.
+Take the simulation pipeline from "no solver" (today the physics endpoint answers 501 `physics_solver_unavailable`) to GPU-accelerated production readiness for compliant hyperobjects.
 
 - [ ] **Infrastructure Provisioning:**
     - Deploy NVIDIA `g6.2xlarge` or `g6e.2xlarge` GPU instances with CUDA 12.8+.
     - Authenticate registry access to `ghcr.io/st-tech/ppf-contact-solver-compiled`.
     - Configure static storage (S3 or mounted volume) for persistent PLY frame sequences.
 - [ ] **Backend Simulation Hardening:**
-    - Replace mock `time.sleep` loops in `simulation_tasks.py` with real `subprocess` execution of generated PPF Python scripts.
+    - Register a solver backend with `configure_physics_solver` (`simulation_tasks.py`) that executes the generated PPF Python scripts. The timed mock loop is gone; without a backend the endpoint answers 501.
     - Implement real-time STL path resolution in `script_generator.py` for concrete CAD-to-SOLVER mesh injection.
     - Migrate from background threads to Celery `@celery.task(queue="gpu_tasks")` for distributed job management.
 - [ ] **Optimizer Physical Intelligence:**
@@ -332,7 +332,7 @@ rows sum past 500; re-taken 2026-09-06, the numbers below had been left at a 495
 The API serves 500 projects — the published cartridges, and only those. Since
 RFC 0038 P2 the `cq-hyperobject-test` engine fixture is vendored under
 `apps/api/tests/fixtures/cartridges/` instead of sitting in `projects/`, and the
-client-private `tablaco` cartridges mount at `private-projects/` (served only to
+client-private cartridges mount at `private-projects/` (served only to
 authorized identities, and excluded from the catalog).
 
 - [x] **Per-mode engine resolution:** `ManifestService.mode_engine(mode_id)` resolves the
@@ -396,7 +396,7 @@ verified scripts to use as oracles.**
 | Coverage | **2 of 500** cartridges are graphs (`flange-plate`, `spacer-block`), hand-authored as references |
 | Expressibility | **134 / 494 (27 %)** mechanically expressible today; six more node types (revolve, loft, sweep, text, point array, free-form profile) reach **369 (75 %)**; seven more reach 390 (79 %); **104** need low-level `Solid`/`Wire`/`Face` (86) or `Assembly` (21) work and are not node-expressible without an escape hatch. The single biggest unlock is the free-form profile node — **218** cartridges use polyline/arc paths |
 | Verification hole | the keystone is **blind to graphs**: `y4d-spec` renders `.py`/`.cq`/`.scad` only, so the two graph cartridges have no render bar, no watertight/body-count check and no nightly row |
-| Studio | the graph view is **read-only** (`ScadEditor.tsx` Text/Graph toggle + validation panel); the mutation model exists, but no palette, drag-to-connect, parameter editing or save path calls it |
+| Studio | ~~the graph view is **read-only**~~ — **writable since 2026-10-04 (P8-STUDIO, G-EDITOR):** catalog-driven palette, drag-to-connect with socket type and loop checks, literal / manifest-binding / expression params, declarations panel, live validation linked to nodes, render preview, export, and fork-only save (`PUT .../manifest/bindings` for bindings). See `docs/guides/graph-cartridges.md` › Editing a graph in Studio |
 | Expressions | **none.** A node input is a literal or a bound manifest parameter, never `width / 2 - wall` — see `docs/guides/graph-cartridges.md` |
 
 ### Wave D — foundation
@@ -408,17 +408,27 @@ as a graph passes the same bar as its script. Effort ≈ 6 lanes._
   `.graph.json` and the renderer transpiles through the same `graph_engine` code (shared as
   a package or vendored with a pinned catalog), judged exactly like a script. **This comes
   first: until it exists, growing graph coverage grows _unverified_ surface.**
-- [ ] **G-EXPR:** `{"expr": "..."}` socket inputs evaluated at transpile time against the
+- [x] **G-EXPR:** `{"expr": "..."}` socket inputs evaluated at transpile time against the
   bound parameters, on the same dialect the constraints use
   (`apps/studio/src/lib/safeFormula.ts`). Without it a graph is a *frozen* script — every
   derived dimension becomes a constant and parametricity is lost.
+  _Landed 2026-10-04 (Voron programme, lane P8-ENGINE), as graph format 1.1: top-level
+  `parameters` (manifest ids with defaults and an option `map`) and ordered `derived`
+  values; float/count/condition inputs take `{"expr"}`. Expressions are parsed at
+  transpile time and re-emitted from the syntax tree; a 3,068-formula differential run
+  against safeFormula.ts found no disagreement._
 - [ ] **G-LIST:** a `list`/`points` socket type plus range/series/repeat nodes —
   Grasshopper's data trees, deliberately scoped to one level.
 - [ ] **G-NODES-1:** free-form profile path (line/arc/spline segments) — the 218-cartridge
-  unlock — plus the point-array socket.
+  unlock — plus the point-array socket. _Partial 2026-10-04: `profile_polyline` (closed
+  line segments, coordinates may be expressions) and the `select`/`reflect` nodes, built
+  as far as the Voron assembly A parts need. Arcs, splines and the point-array socket remain._
 - [ ] **G-NODES-2:** loft, sweep, **bounded** revolve, and text with `fontPath`. Revolve
   needs a memory-bounded design: an unbounded revolve OOM-killed the render worker during
-  bring-up, which is why it is absent today.
+  bring-up, which is why it is absent today. _Partial 2026-10-04: bounded `revolve`
+  landed (angle in (0, 360], axis in the profile plane, no axis crossing, 1000 mm reach,
+  valid positive-volume result; see `docs/guides/graph-cartridges.md`). Loft, sweep and
+  text remain._
 - [ ] **G-DEADPARAM:** keystone rule — a declared parameter must be referenced by every
   source that lists it. OpenSCAD silently accepts unknown `-D` parameters, so three manifest
   parameters were never consumed by their sources; a graph cannot have that bug (an unbound
@@ -448,9 +458,13 @@ _Exit criterion: a designer builds a new Tier-A hyperobject in the Studio withou
 script, and it passes the bar. Effort ≈ 6 lanes. G-EDITOR can start after Wave D — it only
 needs the schema stable._
 
-- [ ] **G-EDITOR:** palette, drag-to-connect through the existing `connect()` (which already
+- [x] **G-EDITOR:** palette, drag-to-connect through the existing `connect()` (which already
   refuses type mismatches and cycles), node-parameter editing, node positions in `meta`, and
-  a save path. React Flow is MIT and already a dependency.
+  a save path. React Flow is MIT and already a dependency. _Done 2026-10-04 (P8-STUDIO): saves
+  only to a fork (or an imported repo), never a commons cartridge; manifest bindings through
+  the fork-only `PUT /api/projects/<slug>/manifest/bindings`; expression inputs render when
+  the catalog marks a param `"expr": true` (G-EXPR). Not built: an in-Studio "propose to the
+  commons as a PR" flow — export the `.graph.json` or fork instead._
 - [ ] **G-PREVIEW:** per-node preview by rendering the sub-graph up to the selected node —
   the transpiler already emits in topological order, so cutting emission at node N is
   cheap, and the render queue already exists. Server round-trips first; OCCT-wasm only if

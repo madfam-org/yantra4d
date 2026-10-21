@@ -21,9 +21,18 @@ ENV VITE_JANUA_CLIENT_ID=${VITE_JANUA_CLIENT_ID}
 ENV VITE_JANUA_REDIRECT_URI=${VITE_JANUA_REDIRECT_URI}
 ENV VITE_DHANAM_CHECKOUT_URL=${VITE_DHANAM_CHECKOUT_URL}
 COPY apps/studio/package.json apps/studio/package-lock.json apps/studio/.npmrc ./
+# @madfam/geom-core is installed from the tarball vendored in the repo (no
+# network on the deploy pool). npm does not check a file: tarball's lockfile
+# integrity, so the script does, before the install.
+COPY apps/studio/vendor/ ./vendor/
+COPY scripts/dev/check-geom-core-vendor.mjs /app/scripts/dev/
+RUN node /app/scripts/dev/check-geom-core-vendor.mjs --offline
 # --legacy-peer-deps: @janua/react-sdk requires react@^18, project uses React 19
 RUN npm install --legacy-peer-deps
 COPY packages/ /app/packages/
+# The public-cartridge list the build turns into sitemap.xml / robots.txt /
+# llms.txt (vite.config.js `crawl-files`; a missing catalog fails the build).
+COPY docs/commons-catalog.json /app/docs/commons-catalog.json
 COPY apps/studio/ ./
 RUN npm run build
 
@@ -31,5 +40,6 @@ RUN npm run build
 FROM nginx:alpine
 COPY --from=builder /app/apps/studio/dist /usr/share/nginx/html
 COPY apps/studio/nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/studio/nginx-security-headers.conf /etc/nginx/snippets/security-headers.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

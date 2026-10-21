@@ -69,6 +69,7 @@ function Capture() {
       data-testid="job-state"
       data-physics-id={String(ctx.physicsJobId)}
       data-physics-progress={String(ctx.physicsProgress)}
+      data-physics-unavailable={String(ctx.physicsUnavailable)}
       data-opt-id={String(ctx.optimizationJobId)}
       data-opt-progress={String(ctx.optimizationProgress)}
     />
@@ -184,7 +185,27 @@ describe('ProjectProvider', () => {
 
     await act(async () => { await captured.ctx.handleRunPhysics() })
     expect(jobState('data-physics-id')).toBe('null')
+    // A refusal without the solver error code is not read as "no solver".
+    expect(jobState('data-physics-unavailable')).toBe('false')
     spy.mockRestore()
+  })
+
+  it('a server without a physics solver disables physics instead of retrying', async () => {
+    const fetchSpy = mockFetchSequence([{
+      ok: false,
+      body: { status: 'error', error_code: 'physics_solver_unavailable', error: 'Physics simulation is not available' },
+    }])
+    renderProvider()
+
+    await act(async () => { await captured.ctx.handleRunPhysics() })
+    expect(jobState('data-physics-unavailable')).toBe('true')
+    expect(jobState('data-physics-id')).toBe('null')
+
+    // Once refused, a second click does not call the server again. (The fetch
+    // spy is shared across this file, so count from here.)
+    const callsAfterRefusal = fetchSpy.mock.calls.length
+    await act(async () => { await captured.ctx.handleRunPhysics() })
+    expect(fetchSpy.mock.calls.length).toBe(callsAfterRefusal)
   })
 
   it('a failed physics job stops polling instead of spinning forever', async () => {
@@ -210,7 +231,7 @@ describe('ProjectProvider', () => {
     expect(jobState('data-opt-id')).toBe('opt-1')
   })
 
-  it('running FEA records the returned simulation', async () => {
+  it('running the stress estimate records the returned simulation', async () => {
     mockFetchSequence([{ body: { status: 'success', simulation: { max_stress: 12 } } }])
     renderProvider()
 

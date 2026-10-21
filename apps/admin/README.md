@@ -6,7 +6,7 @@ Internal admin dashboard for managing the Yantra4D platform.
 
 - **Project Management**: List all projects with metadata (modes, parameters, SCAD file count, modification dates)
 - **Project Flags**: Toggle `is_demo` and `is_hyperobject` flags on any project (writes directly to manifest)
-- **Tablaco Link Panel**: View and copy the public storefront URL for the Tablaco project
+- **Client Storefront Link Panel**: View and copy the public storefront URL for the client-private cartridge
 - **Authentication**: Janua-based auth with role gating (`admin` role required for write operations)
 
 ## Not Implemented (Intentionally Deferred)

@@ -36,7 +36,9 @@ import threading
 import time
 from collections.abc import Callable
 
+from services.engine.engine_guard import worker_only
 from services.engine.render_engine import RENDER_TIMEOUT_S
+from services.engine.render_limits import cpu_limit_seconds, limited_env, render_preexec_fn
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +86,15 @@ def worker_startup_timeout() -> int:
     return _env_int("YANTRA4D_CQ_WORKER_START_TIMEOUT_S", 120, minimum=1)
 
 
+def pool_worker_cpu_budget() -> int:
+    """RLIMIT_CPU for a warm worker: per-render ceiling x jobs before recycling (0 = none)."""
+    per_render = cpu_limit_seconds()
+    jobs = max_jobs_per_worker()
+    if per_render <= 0 or jobs <= 0:
+        return 0
+    return per_render * jobs
+
+
 class _Worker:
     """One persistent cq_runner subprocess."""
 
@@ -97,7 +108,13 @@ class _Worker:
             # JSON-lines stream we parse on stdout.
             stderr=subprocess.PIPE,
             text=True,
-            env=env,
+            env=limited_env(env),
+            # RLIMIT_CPU counts every job a persistent worker serves, so the
+            # worker gets a lifetime budget of one render's ceiling per job
+            # it may serve before recycling (none when it never recycles; the
+            # per-job wall-clock timeout still applies). RLIMIT_AS is per
+            # process and applies as for a one-shot render.
+            preexec_fn=render_preexec_fn(cpu_seconds=pool_worker_cpu_budget()),  # noqa: PLW1509 (setrlimit only; see render_limits)
             bufsize=1,
         )
 
@@ -268,6 +285,7 @@ class CadQueryPool:
 
     # -- public API --------------------------------------------------------
 
+    @worker_only
     def submit(
         self,
         script_path: str,

@@ -4,7 +4,7 @@
 **Method**: Playwright MCP browser automation (navigate, interact, screenshot, report)
 **Dev servers**: Studio `:5173`, Landing `:4321`, API `:5000`
 **Auth**: Disabled (madfam tier for all users)
-**Projects tested**: custom-msh (6 modes, 16 params, 6 presets, glass parts, assembly), tablaco (36 params, hierarchical checkboxes, text inputs, grid mode, assembly steps)
+**Projects tested**: custom-msh (6 modes, 16 params, 6 presets, glass parts, assembly), one client-private cartridge (36 params, hierarchical checkboxes, text inputs, grid mode, assembly steps)
 
 ## Viewport Matrix
 
@@ -49,17 +49,17 @@
 - **Viewport**: All viewports tested
 - **Page**: Studio (all projects)
 - **Severity**: Medium
-- **Description**: Setting language to Spanish on custom-msh, then navigating to tablaco via the project selector, resets the language to English. Language preference is not persisted in localStorage or URL state across project changes. Confirmed at 1280x900, 768x1024, 375x812.
+- **Description**: Setting language to Spanish on custom-msh, then navigating to the client-private cartridge via the project selector, resets the language to English. Language preference is not persisted in localStorage or URL state across project changes. Confirmed at 1280x900, 768x1024, 375x812.
 
-### ISSUE-5: Tablaco render fails from browser (OpenSCAD exit code 1)
+### ISSUE-5: Private-cartridge render fails from browser (OpenSCAD exit code 1)
 - **Viewport**: All viewports tested
-- **Page**: Studio tablaco
+- **Page**: Studio (client-private cartridge)
 - **Severity**: High
-- **Description**: Tablaco unit mode auto-render fails with "Error: OpenSCAD exited with code 1" in the console bar. The 3D viewer shows only the grid/axes with no model geometry. However, the same render works via `curl` to the API directly. This suggests a parameter mismatch between what the frontend sends (auto-render on page load) and what the backend expects. Needs investigation of the request payload.
+- **Description**: The client-private cartridge's unit-mode auto-render fails with "Error: OpenSCAD exited with code 1" in the console bar. The 3D viewer shows only the grid/axes with no model geometry. However, the same render works via `curl` to the API directly. This suggests a parameter mismatch between what the frontend sends (auto-render on page load) and what the backend expects. Needs investigation of the request payload.
 
 ### ISSUE-6: "Edit Assembly Guide" button not translated
 - **Viewport**: All
-- **Page**: Studio tablaco (controls sheet)
+- **Page**: Studio, client-private cartridge (controls sheet)
 - **Severity**: Low
 - **Description**: The "Edit Assembly Guide" button at the bottom of the controls sheet remains in English regardless of language setting.
 
@@ -97,7 +97,7 @@
 - **Viewport**: Mobile Portrait (375x812)
 - **Page**: Studio (all projects)
 - **Severity**: Medium
-- **Description**: At 375px width, the studio header shows the "desarrollado con" / "Yantra4D" byline text that should be hidden, causing visual clutter. The project title "Tablaco S..." gets truncated (acceptable) but the byline text creates unnecessary noise.
+- **Description**: At 375px width, the studio header shows the "desarrollado con" / "Yantra4D" byline text that should be hidden, causing visual clutter. The project title gets truncated (acceptable) but the byline text creates unnecessary noise.
 
 ### ISSUE-13: Mode tab icons in Sheet lack visible labels at 375px
 - **Viewport**: Mobile Portrait (375x812)
@@ -121,7 +121,7 @@
 
 | Severity | Count | Issues |
 |----------|-------|--------|
-| **High** | 2 | ISSUE-1 (assembly render failures), ISSUE-5 (tablaco render fails) |
+| **High** | 2 | ISSUE-1 (assembly render failures), ISSUE-5 (private-cartridge render fails) |
 | **Medium** | 4 | ISSUE-3 (stale model info), ISSUE-4 (language persistence), ISSUE-10 (header overlap), ISSUE-12 (header cramped 375px) |
 | **Low** | 8 | ISSUE-2, ISSUE-6, ISSUE-7, ISSUE-9, ISSUE-11, ISSUE-13, ISSUE-14, ISSUE-15 |
 | **Visual** | 1 | ISSUE-9 (part of Low) |
@@ -152,7 +152,7 @@
 - Mode tabs render as compact icons in Sheet
 - "More actions" overflow menu with all toolbar actions
 - Camera view uses `<select>` dropdown (correct mobile pattern)
-- Text input (tablaco "Bottom Letter") has adequate touch target
+- Text input (the client-private cartridge's text field) has adequate touch target
 - Checkbox hierarchy renders properly
 
 ### Mobile Landscape (812x375)
@@ -171,25 +171,25 @@
 
 ## Screenshots
 
-All screenshots saved in `audit/` directory at repo root:
+All screenshots saved in `audit/` directory at repo root (`<private-slug>` stands for the client-private cartridge's slug):
 - `E1-projects-gallery-desktop.png`
 - `E2-custom-msh-desktop-holder.png`, `E2-custom-msh-assembly-desktop.png`
-- `E3-tablaco-desktop-unit.png`
+- `E3-<private-slug>-desktop-unit.png`
 - `E4-landing-desktop.png`
 - `D1-custom-msh-tablet-landscape.png`
 - `C1-custom-msh-tablet-portrait-full.png`, `C1-custom-msh-sheet-open.png`
-- `C2-tablaco-tablet-portrait.png`
+- `C2-<private-slug>-tablet-portrait.png`
 - `C3-landing-tablet-portrait.png`
 - `A1-projects-gallery-mobile.png`
 - `A2-custom-msh-mobile.png`, `A2-custom-msh-sheet-mobile.png`, `A2-custom-msh-overflow-menu.png`
-- `A3-tablaco-mobile.png`, `A3-tablaco-sheet-mobile.png`
+- `A3-<private-slug>-mobile.png`, `A3-<private-slug>-sheet-mobile.png`
 - `A4-landing-mobile.png`, `A4-landing-mobile-menu.png`
 - `B1-custom-msh-landscape.png`, `B1-custom-msh-sheet-landscape.png`
 - `B3-landing-landscape.png`
 
 ## Recommended Fix Priority
 
-1. **ISSUE-5** (High): Investigate tablaco render failure — compare frontend auto-render payload vs working curl payload
+1. **ISSUE-5** (High): Investigate the private-cartridge render failure — compare frontend auto-render payload vs working curl payload
 2. **ISSUE-1** (High): Debug box_base/box_lid OpenSCAD failures in assembly mode
 3. **ISSUE-4** (Medium): Persist language preference in localStorage, restore on project navigation
 4. **ISSUE-10 + ISSUE-12** (Medium): Hide "powered by" byline below `lg:` breakpoint; fix header element overlap at 768px
@@ -211,7 +211,7 @@ Remediated on 2026-03-04. Summary of fixes applied:
 | **ISSUE-2** | **Won't fix** | Three.js internal GL warnings — no user impact, suppression would require patching Three.js |
 | **ISSUE-3** | **Fixed** | `setMode()` in `useProjectParams.js` now calls `setPrintEstimate(null)` to clear stale model info on mode switch |
 | **ISSUE-4** | **Fixed** | `ManifestAwareLanguageProvider.jsx` rewritten to use global `yantra4d-lang` localStorage key instead of per-project key |
-| **ISSUE-5** | **Partial** | Removed `"star": 8` typo from `rows`/`cols` params in `projects/tablaco/project.json`. Full render failure requires live server debugging |
+| **ISSUE-5** | **Partial** | Removed `"star": 8` typo from `rows`/`cols` params in the client-private cartridge's `project.json` (then under `projects/`). Full render failure requires live server debugging |
 | **ISSUE-6** | **Fixed** | "Edit Assembly Guide" button now uses `t('btn.edit_assembly')` i18n key |
 | **ISSUE-7** | **Fixed** | All header/toolbar buttons now use `t()` calls: `btn.ai_open`, `btn.ai_close`, `btn.synthesize`, `btn.fork_edit`, `btn.editor_open`, `btn.editor_close` |
 | **ISSUE-8** | **Fixed** | Replaced `grep -oP` with POSIX `grep | sed` in `scripts/prerender-carousel.sh` for macOS compatibility |
@@ -226,7 +226,7 @@ Remediated on 2026-03-04. Summary of fixes applied:
 ### Files Modified
 
 - `projects/custom-msh/assembly.scad` — ISSUE-1
-- `projects/tablaco/project.json` — ISSUE-5
+- the client-private cartridge's `project.json` (then under `projects/`) — ISSUE-5
 - `apps/studio/src/contexts/system/ManifestAwareLanguageProvider.jsx` — ISSUE-4
 - `apps/studio/src/contexts/system/LanguageProvider.jsx` — ISSUE-15
 - `apps/studio/src/components/studio/StudioHeader.jsx` — ISSUE-7, ISSUE-10, ISSUE-12

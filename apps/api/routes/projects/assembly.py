@@ -16,6 +16,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from middleware.auth import require_tier
+from routes.editor.editor import require_writable_cartridge
 from services.core.assembly_generator import (
     generate_assembly_steps,
     merge_assembly_steps,
@@ -77,8 +78,9 @@ def get_assembly_steps(slug: str, project_dir):
 @assembly_bp.route("/api/projects/<slug>/assembly-steps/write", methods=["POST"])
 @require_valid_slug
 @require_tier("pro")
-@require_project()
 @require_project_access
+@require_writable_cartridge
+@require_project()
 def write_assembly_steps(slug: str, project_dir):
     """
     Write auto-generated assembly steps back into project.json.

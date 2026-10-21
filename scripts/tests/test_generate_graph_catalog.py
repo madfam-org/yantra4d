@@ -121,8 +121,8 @@ def test_bindability_follows_the_kind_not_the_parameter_name():
 
 def test_catalog_carries_defaults_alongside_kinds(synthetic):
     params = synthetic["nodes"]["widget"]["params"]
-    assert params["height"] == {"kind": "float", "default": 10.0, "bindable": True}
-    assert params["plane"] == {"kind": "plane", "default": "XY", "bindable": False}
+    assert params["height"] == {"kind": "float", "default": 10.0, "bindable": True, "expr": True}
+    assert params["plane"] == {"kind": "plane", "default": "XY", "bindable": False, "expr": False}
 
 
 def test_catalog_carries_the_engine_limits_and_planes(synthetic):
@@ -130,6 +130,11 @@ def test_catalog_carries_the_engine_limits_and_planes(synthetic):
         "max_nodes": graph_engine.MAX_NODES,
         "max_outputs": graph_engine.MAX_OUTPUTS,
         "max_pattern_count": graph_engine.MAX_PATTERN_COUNT,
+        "max_parameters": graph_engine.MAX_GRAPH_PARAMETERS,
+        "max_derived": graph_engine.MAX_DERIVED,
+        "max_map_entries": graph_engine.MAX_MAP_ENTRIES,
+        "max_polyline_points": graph_engine.MAX_POLYLINE_POINTS,
+        "max_revolve_extent_mm": graph_engine.MAX_REVOLVE_EXTENT,
     }
     assert synthetic["planes"] == sorted(graph_engine._PLANES)
     assert synthetic["graph_file_suffix"] == graph_engine.GRAPH_FILE_SUFFIX
@@ -225,3 +230,42 @@ def test_the_committed_catalogs_match_the_engine():
     for path in lane.OUTPUT_PATHS:
         assert path.is_file(), f"{path} is missing"
         assert path.read_text() == text, f"{path} is stale"
+
+
+# --- expressions (G-EXPR) ------------------------------------------------------
+
+def test_expression_contract_matches_the_studio_dialect(synthetic):
+    """Studio evaluates the same formulas with safeFormula.ts; the limits must agree."""
+    assert synthetic["expression"] == {
+        "dialect": "safeFormula",
+        "dialect_source": "apps/studio/src/lib/safeFormula.ts",
+        "max_length": 256,
+        "max_tokens": 128,
+        "identifiers": ["parameters", "derived"],
+    }
+    source = (REPO / "apps" / "studio" / "src" / "lib" / "safeFormula.ts").read_text()
+    assert "const MAX_FORMULA_LENGTH = 256" in source
+    assert "const MAX_TOKENS = 128" in source
+
+
+def test_structural_params_never_take_expressions(synthetic):
+    params = synthetic["nodes"]["widget"]["params"]
+    for name in ("edges", "plane", "axis"):
+        assert params[name]["expr"] is False, f"{name} must stay literal"
+    assert params["height"]["expr"] is True
+    assert params["copies"]["expr"] is True
+
+
+def test_every_kind_in_the_real_engine_is_described():
+    catalog = lane.build_catalog()
+    used = {
+        p["kind"] for node in catalog["nodes"].values() for p in node["params"].values()
+    }
+    assert used <= set(catalog["param_kinds"])
+    for kind in STRUCTURAL_KINDS:
+        assert catalog["param_kinds"][kind] == {
+            **catalog["param_kinds"][kind], "bindable": False, "expr": False,
+        }
+    # condition and points take expressions but never a manifest binding.
+    assert catalog["param_kinds"]["condition"]["bindable"] is False
+    assert catalog["param_kinds"]["points"]["bindable"] is False

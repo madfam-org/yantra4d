@@ -104,4 +104,31 @@ describe('CarouselUIOverlay', () => {
         const link = screen.getByText('Open Studio').closest('a')
         expect(link).toHaveAttribute('href', '/project/test-model')
     })
+
+    it('renders outside any Router (drei <Scroll html> mounts it in its own React root)', () => {
+        // Production 2026-10-18: a react-router <Link> here threw "Cannot destructure
+        // property 'basename' of useContext(...)" and took the 3D catalog down.
+        render(<CarouselUIOverlay {...defaultProps} />)
+        expect(screen.getByText('Open Studio').closest('a')).toHaveAttribute('href', '/project/test-model')
+    })
+
+    it('opens the project client-side through onOpen', () => {
+        const onOpen = vi.fn()
+        render(<CarouselUIOverlay {...defaultProps} onOpen={onOpen} />)
+        const link = screen.getByText('Open Studio').closest('a')
+        const plain = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 })
+        link.dispatchEvent(plain)
+        expect(onOpen).toHaveBeenCalledWith('test-model')
+        expect(plain.defaultPrevented).toBe(true)
+    })
+
+    it('leaves modifier clicks to the browser (open in a new tab)', () => {
+        const onOpen = vi.fn()
+        render(<CarouselUIOverlay {...defaultProps} onOpen={onOpen} />)
+        const link = screen.getByText('Open Studio').closest('a')
+        const newTab = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0, metaKey: true })
+        link.dispatchEvent(newTab)
+        expect(onOpen).not.toHaveBeenCalled()
+        expect(newTab.defaultPrevented).toBe(false)
+    })
 })

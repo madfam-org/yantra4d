@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://yantra4d.com/schemas/graph.schema.json",
   "title": "Yantra4D Graph Document",
-  "description": "Node-graph geometry document (.graph.json) compiled by the graph engine into a sandboxed CadQuery script. Version 1.x. The enforcing validator is apps/api/services/engine/graph_engine.py — it additionally checks socket types, cycles, and value ranges; this schema is the public contract for authoring tools and the studio editor.",
+  "description": "Node-graph geometry document (.graph.json) compiled by the graph engine into a sandboxed CadQuery script. Version 1.x; 1.1 adds expressions (parameters, derived, {\"expr\": ...} inputs) and the select, reflect, profile_polyline and revolve nodes. The enforcing validator is apps/api/services/engine/graph_engine.py — it additionally checks socket types, cycles, and value ranges; this schema is the public contract for authoring tools and the studio editor.",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "nodes", "outputs"],
@@ -21,6 +21,47 @@
     "meta": {
       "type": "object",
       "description": "Free-form authoring metadata. Ignored by the renderer."
+    },
+    "parameters": {
+      "type": "object",
+      "maxProperties": 128,
+      "description": "The manifest parameters this graph's expressions read, keyed by manifest parameter id. The render injects the manifest value; `default` is used when nothing is injected. `map` turns non-numeric select options into numbers (a numeric option such as \"608\" reads as a number without one). Every declared parameter must be read by some expression.",
+      "propertyNames": { "$ref": "#/$defs/identifier" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["default"],
+        "properties": {
+          "default": {
+            "oneOf": [
+              { "type": "number" },
+              { "type": "boolean" },
+              { "$ref": "#/$defs/optionValue" }
+            ]
+          },
+          "map": {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 64,
+            "propertyNames": { "$ref": "#/$defs/optionValue" },
+            "additionalProperties": { "type": "number" }
+          }
+        }
+      }
+    },
+    "derived": {
+      "type": "array",
+      "maxItems": 256,
+      "description": "Named intermediate values, evaluated in order. Each expression may read declared parameters and earlier derived ids. Every derived id must be read by some later expression.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "expr"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "expr": { "$ref": "#/$defs/exprSource" }
+        }
+      }
     },
     "nodes": {
       "type": "array",
@@ -41,8 +82,39 @@
       "type": "string",
       "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
     },
-    "float": { "type": "number" },
-    "count": { "type": "integer", "minimum": 1, "maximum": 200 },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+    "optionValue": { "type": "string", "pattern": "^[A-Za-z0-9_.\\- ]{0,64}$" },
+    "exprSource": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "An expression in the safeFormula dialect (apps/studio/src/lib/safeFormula.ts): numbers, identifiers, + - * / %, comparisons, && || !, ?: and parentheses; at most 256 characters and 128 tokens."
+    },
+    "expr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expr"],
+      "properties": { "expr": { "$ref": "#/$defs/exprSource" } }
+    },
+    "float": { "oneOf": [{ "type": "number" }, { "$ref": "#/$defs/expr" }] },
+    "count": {
+      "oneOf": [
+        { "type": "integer", "minimum": 1, "maximum": 200 },
+        { "$ref": "#/$defs/expr" }
+      ]
+    },
+    "condition": { "oneOf": [{ "type": "boolean" }, { "$ref": "#/$defs/expr" }] },
+    "points": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 256,
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": { "$ref": "#/$defs/float" }
+      }
+    },
     "plane": { "type": "string", "enum": ["XY", "XZ", "YZ"] },
     "selector": { "type": "string", "maxLength": 120 },
     "shapeInput": {
@@ -60,12 +132,13 @@
         "id": { "$ref": "#/$defs/nodeId" },
         "type": {
           "type": "string",
-          "description": "Node types produce either a solid or a profile. Profiles (profile_*) are 2D sketches consumed only by extrude.",
+          "description": "Node types produce either a solid or a profile. Profiles (profile_*) are 2D sketches consumed only by extrude or revolve, each by exactly one node.",
           "enum": [
             "box", "cylinder", "sphere",
-            "profile_rect", "profile_circle", "profile_polygon", "extrude",
+            "profile_rect", "profile_circle", "profile_polygon", "profile_polyline",
+            "extrude", "revolve",
             "union", "cut", "intersect",
-            "translate", "rotate", "mirror",
+            "translate", "rotate", "mirror", "reflect", "select",
             "pattern_linear", "pattern_polar",
             "fillet", "chamfer", "shell", "hole"
           ]
@@ -186,6 +259,71 @@
                 "type": "object", "additionalProperties": false,
                 "required": ["profile"],
                 "properties": { "profile": { "$ref": "#/$defs/nodeId" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "profile_polyline" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "points": { "$ref": "#/$defs/points" },
+                  "plane": { "$ref": "#/$defs/plane" }
+                }
+              },
+              "inputs": { "$ref": "#/$defs/noInputs" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "revolve" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "angle": { "$ref": "#/$defs/float" },
+                  "axis": { "type": "string", "enum": ["x", "y", "z"] }
+                }
+              },
+              "inputs": {
+                "type": "object", "additionalProperties": false,
+                "required": ["profile"],
+                "properties": { "profile": { "$ref": "#/$defs/nodeId" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "reflect" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": { "plane": { "$ref": "#/$defs/plane" } }
+              },
+              "inputs": { "$ref": "#/$defs/shapeInput" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "select" } } },
+          "then": {
+            "properties": {
+              "params": {
+                "type": "object", "additionalProperties": false,
+                "properties": { "when": { "$ref": "#/$defs/condition" } }
+              },
+              "inputs": {
+                "type": "object", "additionalProperties": false,
+                "required": ["if_true", "if_false"],
+                "properties": {
+                  "if_true": { "$ref": "#/$defs/nodeId" },
+                  "if_false": { "$ref": "#/$defs/nodeId" }
+                }
               }
             }
           }

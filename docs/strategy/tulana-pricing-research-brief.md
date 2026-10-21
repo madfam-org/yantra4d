@@ -37,9 +37,10 @@ Tulana SKU keys use the double-underscore convention.
   Caveat: the hardcoded fallback is USD with **no FX conversion**; quotes are
   only trustworthy on the live path.
 - **Legacy anchor**: the $9/mo copy (above).
-- **Pilot customer**: tablaco — the documented verified-quote flow
-  (`docs/guides/tablaco-verified-quote-flow.md`) gives a real B2B reference
-  case for `yantra4d__whitelabel` and `yantra4d__fulfillment_take`.
+- **Pilot customer**: a client-private cartridge engagement — the documented
+  verified-quote flow (the "Private-Cartridge Verified Quote Flow" runbook under
+  `docs/guides/`) gives a real B2B reference case for `yantra4d__whitelabel`
+  and `yantra4d__fulfillment_take`.
 - **Cost side**: per-tier backend render quotas map to real server cost;
   318/324 commons cartridges can only render server-side, so the paywall is
   structural, not artificial — relevant to value-communication research.
@@ -75,6 +76,6 @@ benchmarking outputs from before that fix should not seed these SKUs.
 
 Per SKU: recommended price point(s) with the evidence trail, tested
 alternatives, sensitivity to the tier deltas above, and — for
-`yantra4d__fulfillment_take` — the take-rate band the tablaco pilot supports.
+`yantra4d__fulfillment_take` — the take-rate band the client pilot supports.
 Those figures then flow into: dhanam plan configuration, the landing pricing
 copy (both locales), the upgrade-dialog copy, and the white-label collateral.

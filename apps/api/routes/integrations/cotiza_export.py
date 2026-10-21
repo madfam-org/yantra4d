@@ -8,7 +8,9 @@ Endpoints:
       Cotiza (digifab-quoting) API.
 
 Environment:
-  COTIZA_API_URL    -- Base URL of the Cotiza API (default: http://localhost:4000)
+  COTIZA_API_URL    -- Bare origin of the Cotiza API, with no /api/v1 suffix
+                       (default: http://localhost:4000). Quote requests go to
+                       {COTIZA_API_URL}/quotes/from-yantra4d.
   COTIZA_API_KEY    -- API key for authenticating with Cotiza
 """
 
@@ -23,6 +25,7 @@ import rate_limits
 from extensions import limiter
 from middleware.auth import require_tier
 from services.core.project_access import require_project_access
+from services.engine import mesh_metrics
 from services.engine.render_artifacts import MESH_EXTENSIONS, find_latest_render_key
 from services.storage import local_artifact
 from utils.project_resolver import find_project_dir
@@ -39,6 +42,8 @@ cotiza_export_bp = Blueprint("cotiza_export", __name__)
 COTIZA_API_URL = os.getenv("COTIZA_API_URL", "http://localhost:4000")
 COTIZA_API_KEY = os.getenv("COTIZA_API_KEY", "")
 COTIZA_TIMEOUT_SECONDS = int(os.getenv("COTIZA_TIMEOUT_SECONDS", "30"))
+# The path Cotiza serves the import on, relative to the bare API origin.
+COTIZA_QUOTE_PATH = "/quotes/from-yantra4d"
 
 # Supported mesh extensions in preference order — one definition, in
 # services.engine.render_artifacts, now that the lookup is shared.
@@ -88,8 +93,12 @@ def _load_manifest(slug: str) -> dict | None:
     return json.loads(p.read_text())
 
 
-def _extract_geometry_metrics(mesh_path: str) -> dict:
-    """Extract volume and surface area from a mesh file using trimesh.
+def _extract_geometry_metrics(mesh_path: str, slug: str | None = None) -> dict:
+    """Extract volume, surface area and bbox from a mesh file.
+
+    trimesh loads the file (any format); the numbers come from the mesh
+    oracle ``MESH_ORACLE`` selects (services/engine/mesh_metrics.py) —
+    trimesh by default, exactly as before; geom-core or both under the flag.
 
     Returns a dict with keys: volume_cm3, surface_area_cm2, bounding_box_mm.
     Falls back to zeros if trimesh is unavailable or the mesh cannot be loaded.
@@ -99,21 +108,16 @@ def _extract_geometry_metrics(mesh_path: str) -> dict:
 
         mesh = trimesh.load(mesh_path, force="mesh")
 
-        # trimesh returns volume in the mesh's native units (mm^3 for STL)
-        volume_mm3 = abs(mesh.volume) if mesh.is_volume else 0.0
-        surface_area_mm2 = mesh.area
+        # Native units (mm for STL): volume mm^3 (0 unless a closed solid),
+        # area mm^2, bbox extents mm.
+        metrics = mesh_metrics.quote_metrics(mesh, slug=slug)
 
         # Convert to cm^3 and cm^2
-        volume_cm3 = volume_mm3 / 1000.0
-        surface_area_cm2 = surface_area_mm2 / 100.0
+        volume_cm3 = metrics.volume_mm3 / 1000.0
+        surface_area_cm2 = metrics.surface_area_mm2 / 100.0
 
-        # Bounding box in mm
-        bounds = mesh.bounds  # shape (2, 3) -- min and max corners
-        bbox_mm = {
-            "x": float(bounds[1][0] - bounds[0][0]),
-            "y": float(bounds[1][1] - bounds[0][1]),
-            "z": float(bounds[1][2] - bounds[0][2]),
-        }
+        x, y, z = metrics.bbox_mm
+        bbox_mm = {"x": x, "y": y, "z": z}
 
         return {
             "volume_cm3": round(volume_cm3, 4),
@@ -236,7 +240,7 @@ def _build_quote_request_payload(
 ) -> dict:
     """Assemble the quote request payload for the Cotiza API.
 
-    The payload is structured to match what ``POST /api/v1/quotes/from-yantra4d``
+    The payload is structured to match what ``POST /quotes/from-yantra4d``
     expects on the Cotiza side.
     """
     # Extract material from request body, fall back to manifest defaults
@@ -301,7 +305,7 @@ def _send_to_cotiza(payload: dict, auth_token: str | None = None) -> dict:
     Returns the JSON response body on success.
     Raises RuntimeError on network or HTTP errors.
     """
-    url = f"{COTIZA_API_URL}/api/v1/quotes/from-yantra4d"
+    url = f"{COTIZA_API_URL.rstrip('/')}{COTIZA_QUOTE_PATH}"
     headers = {"Content-Type": "application/json"}
 
     if COTIZA_API_KEY:
@@ -360,7 +364,7 @@ def create_cotiza_quote_request(slug: str):
       2. Finds the latest rendered mesh (or triggers a render if needed).
       3. Extracts volume, surface area, and bounding box from the mesh.
       4. Assembles a structured quote request payload.
-      5. Sends the payload to Cotiza's ``POST /api/v1/quotes/from-yantra4d``.
+      5. Sends the payload to Cotiza's ``POST /quotes/from-yantra4d``.
       6. Returns the Cotiza response (created quote details).
 
     Returns 201 on successful quote creation with the Cotiza response.
@@ -396,7 +400,7 @@ def create_cotiza_quote_request(slug: str):
                 "Please render the model first via POST /api/render.",
                 409,
             )
-        geometry = _extract_geometry_metrics(str(mesh_path))
+        geometry = _extract_geometry_metrics(str(mesh_path), slug=slug)
 
     if geometry["volume_cm3"] <= 0 and geometry["surface_area_cm2"] <= 0:
         logger.warning(

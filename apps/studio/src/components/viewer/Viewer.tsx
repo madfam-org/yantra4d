@@ -2,6 +2,7 @@ import React, { Suspense, useState, useEffect, useMemo, memo, forwardRef, useImp
 import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, Grid, Environment, Edges, Bounds, GizmoHelper, GizmoViewport, Html } from '@react-three/drei'
+import { ENVIRONMENT_HDRI_PATH, environmentFile } from '@/lib/environmentPresets'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { useWorkerLoader } from '../../hooks/render/useWorkerLoader'
@@ -14,13 +15,19 @@ import { ErrorBoundary } from '../feedback/ErrorBoundary'
 import SceneController, { type SceneControllerHandle } from './SceneController'
 import NumberedAxes from './NumberedAxes'
 import AnimatedGrid from './AnimatedGrid'
-import { computeVolumeMm3, computeBoundingBox, computeCentroid } from '../../lib/printEstimator'
+import { computeCentroid } from '../../lib/printEstimator'
+import { meshVolumeMm3, meshBoundingBox, cachedGeomCoreMetrics, prefetchGeomCoreMetrics } from '../../lib/meshMetrics'
+import { isGeomCoreBrowserEnabled } from '../../lib/geomCoreBrowser'
 import ClippingPlane from './ClippingPlane'
 import MeasureTool from './MeasureTool'
 import ThicknessOverlay from './ThicknessOverlay'
 import OverhangOverlay from './OverhangOverlay'
 import ParameterPreviewOverlay from './ParameterPreviewOverlay'
+import AsyncEdges from './AsyncEdges'
+import ViewerPerformance, { CompileGate, InvalidateOnCommit, KeepRendering } from './ViewerPerformance'
+import { MAX_DPR, useRenderScale } from '../../lib/viewerQuality'
 import type { GhostVariants } from './GhostGeometryOverlay'
+import { PRERENDERED_PREVIEW_PART } from '../../lib/prerenderedPreview'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
@@ -31,6 +38,21 @@ const CAMERA_FOV_MOBILE = 60
 const ORBIT_MIN_DISTANCE_MM = 0.5
 const ORBIT_MAX_DISTANCE_MM = 5000  // far enough for large assemblies (mm)
 const SCENE_UP_VECTOR: [number, number, number] = [0, 0, 1]   // Z-up coordinate system
+
+/** Volumetric centroid per geometry: O(triangles), so computed once, not on every viewer render. */
+const centroidCache = new WeakMap<THREE.BufferGeometry, { x: number; y: number; z: number }>()
+function centroidOf(geometry: THREE.BufferGeometry) {
+    // geom-core WASM result, only when VITE_GEOM_CORE_BROWSER / ?geomcore=1 is on and it has run.
+    const fromGeomCore = cachedGeomCoreMetrics(geometry)
+    if (fromGeomCore) return fromGeomCore.centroid
+    let centroid = centroidCache.get(geometry)
+    if (!centroid) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferGeometry structurally matches GeometryLike
+        centroid = computeCentroid(geometry as any)
+        centroidCache.set(geometry, centroid)
+    }
+    return centroid
+}
 
 type HighlightMode = 'normal' | 'highlight' | 'ghost' | 'hidden' | 'preview'
 
@@ -103,14 +125,18 @@ interface ModelProps {
     isDark: boolean
     stressData?: Record<string, unknown> | null
     physicsFrames?: boolean[] | null
+    /** The GLB is meshopt-compressed (the landing's prerendered previews). */
+    meshopt?: boolean
+    /** Replaces the loader's console.error when the mesh cannot be loaded. */
+    onLoadError?: (error: unknown) => void
 }
 
-const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark, stressData }: ModelProps) => {
+const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark, stressData, meshopt, onLoadError }: ModelProps) => {
     const bareUrl = (url || '').split('?')[0].toLowerCase()
     const isGLTF = isGlb || bareUrl.endsWith('.gltf') || bareUrl.endsWith('.glb')
 
     // Asynchronously loads geometries; .stl via WebWorker, .gltf natively.
-    const { geometry: geom, scene: gltfScene } = useWorkerLoader(url, isGLTF)
+    const { geometry: geom, scene: gltfScene } = useWorkerLoader(url, isGLTF, { meshopt, onError: onLoadError })
 
     useEffect(() => {
         if (geom && onGeometry) onGeometry(partType, geom)
@@ -195,6 +221,7 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
     if (glass) {
         const glassOpacity = wireframe ? 0.1 : 0.35
         return (
+            <CompileGate signature={geom.uuid}>
             <mesh geometry={geom}>
                 <meshPhysicalMaterial
                     key={`glass-${wireframe}`}
@@ -208,8 +235,9 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                     thickness={2}
                     depthWrite={false}
                 />
-                <Edges threshold={30} color={color} />
+                <AsyncEdges geometry={geom} threshold={30} color={color} />
             </mesh>
+            </CompileGate>
         )
     }
 
@@ -218,14 +246,15 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
     // If it's a native GLTF scene and we have no material overrides (like wireframe/ghost), render the rich scene!
     if (gltfScene && !wireframe && !isGhost && !glass) {
         return (
-            <group>
+            <CompileGate signature={geom.uuid}>
                 <primitive object={gltfScene} />
-                {!isGhost && <Edges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
-            </group>
+                {!isGhost && <AsyncEdges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
+            </CompileGate>
         )
     }
 
     return (
+        <CompileGate signature={geom.uuid}>
         <mesh geometry={geom}>
             <meshStandardMaterial
                 key={`${wireframe}-${highlightMode}`}
@@ -238,8 +267,9 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                 emissiveIntensity={emissiveIntensity}
                 depthWrite={!isGhost}
             />
-            {!isGhost && <Edges threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
+            {!isGhost && <AsyncEdges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
         </mesh>
+        </CompileGate>
     )
 }
 
@@ -377,9 +407,16 @@ interface ViewerProps {
     unit?: string
     stressData?: Record<string, unknown> | null
     physicsFrames?: boolean[] | null
+    /**
+     * A prerendered GLB of the cartridge's default configuration, shown only
+     * while `parts` is empty (nothing has rendered yet). A real render replaces it.
+     */
+    prerenderedPreviewUrl?: string | null
+    /** The preview could not be loaded; the caller decides what to try next. */
+    onPrerenderedPreviewError?: (url: string) => void
 }
 
-const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null }, ref) => {
+const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedPreviewUrl = null, onPrerenderedPreviewError, colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null }, ref) => {
     const geometriesRef = React.useRef<Record<string, THREE.BufferGeometry>>({})
     const prevCenterRef = React.useRef<number[] | null>(null)
     const prevMaxDimRef = React.useRef<number | null>(null)
@@ -399,7 +436,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
         for (const [partType, geom] of Object.entries(geometriesRef.current)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const geomAny = geom as any
-            const vol = computeVolumeMm3(geomAny)
+            const vol = meshVolumeMm3(geomAny)
             totalVolume += vol
 
             // Count triangles from geometry
@@ -407,13 +444,13 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                 ? geom.index.count / 3
                 : (geom.attributes?.position?.count || 0) / 3
             totalTriangles += triCount
-            const centroid = computeCentroid(geomAny)
+            const centroid = centroidOf(geom)
 
             weightedCenterSum.x += centroid.x * vol
             weightedCenterSum.y += centroid.y * vol
             weightedCenterSum.z += centroid.z * vol
 
-            const bbox = computeBoundingBox(geomAny)
+            const bbox = meshBoundingBox(geomAny)
 
             // Collect individual part stats for per-part print estimates
             perPartStats[partType] = { volumeMm3: vol, boundingBox: bbox }
@@ -482,6 +519,9 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
             setCenterOfMass([0, 0, 0])
         }
 
+        // The prerendered preview frames the camera above, but it is a picture of
+        // the defaults, not a render: no print estimate or model info from it.
+        if (PRERENDERED_PREVIEW_PART in geometriesRef.current) return
         onGeometryStats?.({
             total: { volumeMm3: totalVolume, boundingBox: mergedBox, triangleCount: Math.round(totalTriangles) },
             parts: perPartStats,
@@ -492,6 +532,12 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
         geometriesRef.current[partType] = geometry
         geometry.computeBoundingBox()
         recalculateSceneStats()
+        if (isGeomCoreBrowserEnabled()) {
+            // Experimental: re-derive the stats from geom-core's WASM once it has analysed this part.
+            void prefetchGeomCoreMetrics(geometry).then((cached) => {
+                if (cached && geometriesRef.current[partType] === geometry) recalculateSceneStats()
+            })
+        }
     }, [recalculateSceneStats])
 
     const handleGeometryRemove = useCallback((partType: string) => {
@@ -603,6 +649,9 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
     const bgColor = isDark ? '#09090b' : '#f4f4f5'
     const isMobile = useIsMobile()
     const fov = useResponsiveFov()
+    const renderScale = useRenderScale()
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR) * renderScale
+    const [reducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
 
     return (
         <div
@@ -614,6 +663,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
             // wait on "idle" instead of guessing at the overlay's visibility.
             data-testid="viewer-root"
             data-render-state={loading ? 'rendering' : 'idle'}
+            data-render-scale={renderScale}
         >
             <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
 
@@ -700,20 +750,22 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
             </div>
 
             <ErrorBoundary t={t}>
-                <Canvas shadows className="h-full w-full" camera={{ position: initialCameraPos, fov, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true, localClippingEnabled: clippingEnabled }}>
+                <Canvas shadows frameloop="demand" dpr={dpr} className="h-full w-full" camera={{ position: initialCameraPos, fov, up: SCENE_UP_VECTOR }} gl={{ preserveDrawingBuffer: true, localClippingEnabled: clippingEnabled }}>
                     <color attach="background" args={[bgColor]} />
+                    <ViewerPerformance />
+                    <KeepRendering active={(animating && mode === 'grid') || !!hoveredParam} />
                     <SceneController ref={sceneRef} cameraViews={cameraViews} />
 
                     {orthoCamera && (
                         <OrthographicCamera makeDefault position={initialCameraPos} zoom={50} up={SCENE_UP_VECTOR} />
                     )}
 
-                    <Environment preset={environmentPreset as 'city' | 'sunset' | 'dawn' | 'night' | 'warehouse' | 'forest' | 'apartment' | 'studio' | 'lobby' | 'park'} />
+                    <Environment files={environmentFile(environmentPreset)} path={ENVIRONMENT_HDRI_PATH} />
                     <ambientLight intensity={0.3 * lightIntensity} />
                     <pointLight position={[10, 10, 10]} intensity={0.5 * lightIntensity} />
 
                     {/* @ts-expect-error target accepts number[] at runtime */}
-                    <OrbitControls makeDefault up={SCENE_UP_VECTOR} minDistance={ORBIT_MIN_DISTANCE_MM} maxDistance={ORBIT_MAX_DISTANCE_MM} target={centerOfMass} />
+                    <OrbitControls makeDefault enableDamping={!reducedMotion} up={SCENE_UP_VECTOR} minDistance={ORBIT_MIN_DISTANCE_MM} maxDistance={ORBIT_MAX_DISTANCE_MM} target={centerOfMass} />
                     <Grid
                         infiniteGrid
                         sectionSize={unit === 'in' ? 25.4 : 10}
@@ -803,8 +855,8 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                 {parts.filter(p => structuralPartIds.includes(p.type)).map((part) => {
                                                     const partDef = manifest?.parts?.find(p => p.id === part.type)
                                                     const geom = geometriesRef.current[part.type]
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferGeometry structurally matches GeometryLike
-                                                    const centroidVec = geom ? new Vector3(computeCentroid(geom as any).x, computeCentroid(geom as any).y, computeCentroid(geom as any).z) : null
+                                                    const centroid = geom ? centroidOf(geom) : null
+                                                    const centroidVec = centroid ? new Vector3(centroid.x, centroid.y, centroid.z) : null
                                                     const displacement: [number, number, number] = explodeFactor > 0 && centroidVec
                                                         ? centroidVec.sub(new Vector3(...centerOfMass)).multiplyScalar(explodeFactor).toArray() as [number, number, number]
                                                         : [0, 0, 0]
@@ -865,8 +917,8 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                                 {parts.filter(p => !structuralPartIds.includes(p.type)).map((part) => {
                                                     const partDef = manifest?.parts?.find(p => p.id === part.type)
                                                     const geom = geometriesRef.current[part.type]
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BufferGeometry structurally matches GeometryLike
-                                                    const centroidVec = geom ? new Vector3(computeCentroid(geom as any).x, computeCentroid(geom as any).y, computeCentroid(geom as any).z) : null
+                                                    const centroid = geom ? centroidOf(geom) : null
+                                                    const centroidVec = centroid ? new Vector3(centroid.x, centroid.y, centroid.z) : null
                                                     const displacement: [number, number, number] = explodeFactor > 0 && centroidVec
                                                         ? centroidVec.sub(new Vector3(...centerOfMass)).multiplyScalar(explodeFactor).toArray() as [number, number, number]
                                                         : [0, 0, 0]
@@ -941,8 +993,27 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], colors, wire
                                     </group>
                                 )}
                             </>
+                        ) : prerenderedPreviewUrl ? (
+                            <group>
+                                <Model
+                                    key={prerenderedPreviewUrl}
+                                    url={prerenderedPreviewUrl}
+                                    isGlb
+                                    meshopt
+                                    partType={PRERENDERED_PREVIEW_PART}
+                                    color={defaultColor}
+                                    wireframe={wireframe}
+                                    glass={false}
+                                    onGeometry={handleGeometry}
+                                    onGeometryRemove={handleGeometryRemove}
+                                    onLoadError={() => onPrerenderedPreviewError?.(prerenderedPreviewUrl)}
+                                    highlightMode="normal"
+                                    isDark={isDark}
+                                />
+                            </group>
                         ) : null}
                     </Suspense>
+                    <InvalidateOnCommit />
                 </Canvas>
             </ErrorBoundary>
         </div>

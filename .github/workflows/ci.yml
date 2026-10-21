@@ -6,10 +6,19 @@ on:
   pull_request:
     branches: [main]
 
-# Every job below runs on the shared self-hosted pool (madfam-runners-blue), and
-# the e2e matrix alone is ten shards. Without a concurrency group, each push to
-# an open PR stacked a full new run on the pool while the superseded run kept
-# going — on 2026-09-02 four open PRs queued 20–60 min per job for that reason.
+# Runners (R116, ruled 2026-10-05): this repository is public, so every job here
+# runs on GitHub-hosted ubuntu-24.04 and never on MADFAM's self-hosted ARC pool.
+# Each `runs-on` is the ADR-010 expression enclii and janua use: the org variable
+# ARC_BOOTSTRAP_COMPLETE is not visible to public repositories, so it resolves to
+# `ubuntu-24.04`. The render lanes install what the ARC image used to carry (the
+# pinned OpenSCAD snapshot and the libraries OCP links) through
+# .github/actions/render-env.
+#
+# The e2e matrix alone is eleven shards. Without a concurrency group, each push to
+# an open PR stacked a full new run on the runners while the superseded run kept
+# going — on 2026-09-02 four open PRs queued 20–60 min per job for that reason
+# (then on the self-hosted pool; GitHub-hosted runners have an org-wide cap on
+# concurrent jobs instead).
 # One group per PR (or per ref for pushes): a new PR head cancels the run it
 # supersedes; pushes to main never cancel each other, so every merged commit
 # still gets its own complete run. deploy.yml has the same shape.
@@ -99,7 +108,7 @@ jobs:
   # pull_request nor push. The only way to skip anything is a filter that ran
   # and answered exactly "false".
   changes:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     permissions:
       contents: read
@@ -117,7 +126,7 @@ jobs:
       # the fail-closed path for no reason.
       - name: Check out for the push diff
         if: github.event_name == 'push'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
@@ -196,30 +205,37 @@ jobs:
   studio:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 20
     defaults:
       run:
         working-directory: apps/studio
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Initialize the pinned commons for consumer contract tests
         # ManifestProvider.fasteners.test.jsx reads the actual cartridge pin.
         # Only its public root is needed; do not clone nested CAD libraries or
         # private project mounts for a Studio test.
         working-directory: ${{ github.workspace }}
         run: git submodule update --init --depth=1 -- projects
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/studio/package-lock.json
+      # The vendored @madfam/geom-core tarball (apps/studio/vendor/) must be the
+      # release asset byte for byte and match the lockfile integrity; npm does not
+      # check a file: tarball's integrity. Needs network: GitHub-hosted only.
+      - name: Check the vendored geom-core tarball against its release asset
+        run: node "$GITHUB_WORKSPACE/scripts/dev/check-geom-core-vendor.mjs"
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      # Blocking: anything that reaches a user's browser.
+      # Blocking: anything that reaches a user's browser. Through the gate
+      # script so a registry outage (retried, then a loud warning) is told
+      # apart from a finding (fails closed) — see scripts/ci/npm_audit_gate.sh.
       - name: Audit runtime dependencies
-        run: npm audit --audit-level=high --omit=dev
+        run: bash "$GITHUB_WORKSPACE/scripts/ci/npm_audit_gate.sh" --audit-level=high --omit=dev
       # Advisory: build-time tooling (vite, vitest, astro) never ships, so a CVE
       # there must not block a deploy — but it stays visible in the log.
       - name: Audit build tooling (advisory)
@@ -262,7 +278,7 @@ jobs:
   landing:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     # 15 → 25 for the quality gates below: a Chromium install (about a minute
     # cold), 55 Playwright tests on a single worker and nine Lighthouse runs.
     # Measured on a laptop (2026-09-19): 8.7 min of Playwright with no retries
@@ -279,16 +295,18 @@ jobs:
       run:
         working-directory: apps/landing
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/landing/package-lock.json
       - run: npm ci
-      # Blocking: anything that reaches a user's browser.
+      # Blocking: anything that reaches a user's browser. Through the gate
+      # script so a registry outage (retried, then a loud warning) is told
+      # apart from a finding (fails closed) — see scripts/ci/npm_audit_gate.sh.
       - name: Audit runtime dependencies
-        run: npm audit --audit-level=high --omit=dev
+        run: bash "$GITHUB_WORKSPACE/scripts/ci/npm_audit_gate.sh" --audit-level=high --omit=dev
       # Advisory: build-time tooling (astro, sharp) never ships, so a CVE there
       # must not block a deploy — but it stays visible in the log.
       - name: Audit build tooling (advisory)
@@ -318,7 +336,7 @@ jobs:
       #    cache — same shape as the studio's e2e cache above.
       - name: Cache Playwright browsers
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-landing-chromium-${{ hashFiles('apps/landing/package-lock.json') }}
@@ -334,7 +352,7 @@ jobs:
       #    audit measures the build the two gates above measured.
       - name: Upload the built site for the Lighthouse job
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: landing-dist
           path: apps/landing/dist/
@@ -349,7 +367,7 @@ jobs:
       # job: Playwright writes its report for the tests that did run when it is
       # interrupted, and a run that hit the cap is exactly one worth reading.
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ failure() || cancelled() }}
         with:
           name: landing-playwright-report
@@ -360,7 +378,7 @@ jobs:
 
   landing-lighthouse:
     # Lighthouse's timing budgets are CPU measurements, and the ARC pods share
-    # their node with the ten e2e shards above. While the matrix runs, one
+    # their node with the eleven e2e shards above. While the matrix runs, one
     # pod's BenchmarkIndex swings 937–1782 within minutes and total-blocking-
     # time swings with it for the SAME build: 985 → 974 ms, 1504 → 123 ms,
     # 1782 → 91 ms (ci run 35460027219); at a calibrated 3.4× the runs still
@@ -371,23 +389,27 @@ jobs:
     # to the pod it lands on (`npm run lhci` → scripts/ci/landing-lighthouse-
     # cpu.mjs). Not gated on the matrix passing: `!cancelled()` runs it after
     # a red shard too; it only needs the node to be quiet.
+    #
+    # Since R116 (2026-10-05) these jobs run on GitHub-hosted runners, one VM
+    # per job, so the shards no longer share this audit's CPU. The wait on
+    # `e2e` is kept as it was; dropping it is a separate change.
     needs: [landing, e2e]
     if: ${{ !cancelled() && needs.landing.result == 'success' }}
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     defaults:
       run:
         working-directory: apps/landing
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/landing/package-lock.json
       - run: npm ci
       - name: Download the built site
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: landing-dist
           path: apps/landing/dist/
@@ -396,7 +418,7 @@ jobs:
       # e2e suite measured with (lighthouserc.cjs falls back to the same path
       # when CHROME_PATH is unset, e.g. on a laptop).
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-landing-chromium-${{ hashFiles('apps/landing/package-lock.json') }}
@@ -411,7 +433,7 @@ jobs:
       # .lighthouseci/ holds every run as .json and .html; the .html next to a
       # failing .json has the waterfall. Failure-only, 14 days.
       - name: Upload Lighthouse CI results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ failure() || cancelled() }}
         with:
           name: landing-lighthouseci
@@ -425,14 +447,14 @@ jobs:
   admin:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     defaults:
       run:
         working-directory: apps/admin
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
@@ -440,9 +462,11 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      # Blocking: anything that reaches a user's browser.
+      # Blocking: anything that reaches a user's browser. Through the gate
+      # script so a registry outage (retried, then a loud warning) is told
+      # apart from a finding (fails closed) — see scripts/ci/npm_audit_gate.sh.
       - name: Audit runtime dependencies
-        run: npm audit --audit-level=high --omit=dev --legacy-peer-deps
+        run: bash "$GITHUB_WORKSPACE/scripts/ci/npm_audit_gate.sh" --audit-level=high --omit=dev --legacy-peer-deps
       # Advisory: build-time tooling (vite, vitest) never ships, so a CVE there
       # must not block a deploy — but it stays visible in the log.
       - name: Audit build tooling (advisory)
@@ -470,33 +494,30 @@ jobs:
   backend:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     defaults:
       run:
         working-directory: apps/api
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           fetch-depth: 1
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
-      # OCP (cadquery's kernel) dlopens libGL at import; the ARC runner image
-      # ships without it, so cq_runner subprocesses died with "CadQuery is not
-      # installed (libGL.so.1: cannot open shared object file)". The parity and
-      # e2e-audit jobs never hit this only because their openscad apt install
-      # pulls libGL transitively.
-      - name: Install the OCP runtime libraries
-        run: |
-          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
-          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
-          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 libgl1 libglu1-mesa libxrender1 libxcursor1 libxft2 libxinerama1 libxext6
+      # OCP (cadquery's kernel) dlopens libGL at import; without it cq_runner
+      # subprocesses die with "CadQuery is not installed (libGL.so.1: cannot
+      # open shared object file)". And the suite's OpenSCAD tests — the BOSL2
+      # smoke in tests/integration/test_submodule_smoke.py among them — skip
+      # when no `openscad` is on PATH. The ARC image supplied both; on a hosted
+      # runner this action does, with the snapshot the platform renders on.
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       - run: pip install -r requirements.txt
       - name: Install the shared sandbox core (cq_runner imports it)
         run: pip install -e ../../packages/commons-sandbox
@@ -567,6 +588,11 @@ jobs:
     # worker count, which would run WebGL-heavy viewer specs concurrently on one
     # runner and trade a known problem for a flaky one. Mobile only matches the
     # responsive suite (28 specs, ~4 min) so it stays unsharded.
+    #
+    # WebKit runs the same specs about twice as slowly on this pool: on
+    # 2026-10-09 its thirds took 27–31 min against the 30 min cap, and the cap
+    # cancelled one (GitHub reports a timed-out job as cancelled), while the
+    # chromium and firefox thirds took 15–21 min. WebKit is sharded four ways.
     strategy:
       fail-fast: false
       matrix:
@@ -577,18 +603,19 @@ jobs:
           - { project: firefox,  shard: 1, shards: 3 }
           - { project: firefox,  shard: 2, shards: 3 }
           - { project: firefox,  shard: 3, shards: 3 }
-          - { project: webkit,   shard: 1, shards: 3 }
-          - { project: webkit,   shard: 2, shards: 3 }
-          - { project: webkit,   shard: 3, shards: 3 }
+          - { project: webkit,   shard: 1, shards: 4 }
+          - { project: webkit,   shard: 2, shards: 4 }
+          - { project: webkit,   shard: 3, shards: 4 }
+          - { project: webkit,   shard: 4, shards: 4 }
           - { project: mobile,   shard: 1, shards: 1 }
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/studio
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
@@ -600,16 +627,16 @@ jobs:
       # Without a backend every request proxy-errors, the specs retry until the
       # job hits its timeout, and the whole matrix reports red for a reason that
       # has nothing to do with the change under test.
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
+      # The pinned OpenSCAD snapshot, not apt's: Ubuntu 24.04 ships 2021.01,
+      # which cannot render the pinned BOSL2 (see .github/actions/render-env).
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       - name: Install backend dependencies
         working-directory: apps/api
         run: |
-          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
-          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
-          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad
           pip install -r requirements.txt
           pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
       - name: Start backend
@@ -656,7 +683,7 @@ jobs:
       - name: Build studio
         run: npm run build
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ matrix.project }}-${{ hashFiles('apps/studio/package-lock.json') }}
@@ -675,14 +702,14 @@ jobs:
       # report is what anyone reads afterwards. 5 projects x 3 shards is ~1,700
       # of these artifacts against the org quota for no post-run value.
       - name: Upload blob report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: blob-${{ matrix.project }}-${{ matrix.shard }}
           path: apps/studio/blob-report/
           retention-days: 1
       - name: Upload backend log
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
         with:
           name: backend-log-${{ matrix.project }}-${{ matrix.shard }}
@@ -690,7 +717,7 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
       - name: Upload visual regression diffs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
         with:
           name: visual-regression-diffs-${{ matrix.project }}-${{ matrix.shard }}
@@ -712,14 +739,14 @@ jobs:
     # stays pending behind it (seen twice on 2026-09-02). There is also nothing
     # to merge when the matrix was never scheduled.
     if: ${{ !cancelled() && needs.changes.outputs.code == 'true' }}
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     defaults:
       run:
         working-directory: apps/studio
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
@@ -727,14 +754,14 @@ jobs:
       - run: npm ci --legacy-peer-deps
         env:
           NPM_MADFAM_TOKEN: ${{ secrets.NPM_MADFAM_TOKEN }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           path: apps/studio/all-blobs
           pattern: blob-*
           merge-multiple: true
       - name: Merge shard reports
         run: npx playwright merge-reports --reporter=html,list ./all-blobs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: playwright-report-merged
@@ -746,8 +773,52 @@ jobs:
   test-geometric-parity:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # One level, NOT `recursive` — see "Submodule depth" at the top of
+          # .github/workflows/ci.yml (G29).
+          submodules: true
+          token: ${{ secrets.MADFAM_BOT_PAT }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      # The pinned OpenSCAD snapshot, not apt's: parity is measured against the
+      # engine the platform renders with (see .github/actions/render-env).
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
+      - run: pip install -r requirements.txt
+      - name: Install the shared sandbox core (cq_runner subprocess imports it)
+        run: pip install -e ../../packages/commons-sandbox
+      - name: Run Geometric Regression Parity Tests
+        run: python3 tests/scripts/geometric_regression.py --tolerance 0.05
+
+  # geom-core mesh oracle (apps/api/services/engine/mesh_metrics.py): the
+  # differential suite, which skips everywhere else because the wheel is not
+  # in requirements.txt (geom-core is not on PyPI). NOT required yet — it is
+  # deliberately absent from ci-success's needs until the parity soak in
+  # docs/guides/production-checklist.md "Mesh oracle (geom-core)" is done.
+  # Python 3.11 because geom-core v0.1.0 ships cp38–cp311 Linux wheels only
+  # (the API image is 3.12); move to 3.12 with the first cp312 release.
+  mesh-oracle-differential:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    # Leaving it out of ci-success is not enough: deploy.yml's source gate
+    # (scripts/ci/require_source_ci.py) requires the whole CI run to conclude
+    # `success`, so a red job here would still block a release. Its failures
+    # stay visible on the job; they just do not fail the run. Remove this line
+    # and add the job to ci-success when the flip plan reaches step 2.
+    continue-on-error: true
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
+    timeout-minutes: 20
+    env:
+      GEOM_CORE_WHEEL_URL: https://github.com/madfam-org/geom-core/releases/download/v0.1.0/geom_core-0.1.0-cp311-cp311-linux_x86_64.whl
+      GEOM_CORE_WHEEL_SHA256: 6a286ba8365c98f238eca2fca8008eb3d646586d87e49ce6c6ca8c141c5590e1
     defaults:
       run:
         working-directory: apps/api
@@ -755,35 +826,44 @@ jobs:
       - uses: actions/checkout@v4
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
-          # .github/workflows/ci.yml (G29).
+          # .github/workflows/ci.yml (G29). `projects` carries the reference
+          # exports the differential suite also compares on.
           submodules: true
+          fetch-depth: 1
           token: ${{ secrets.MADFAM_BOT_PAT }}
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Install OpenSCAD
+          python-version: "3.11"
+      - run: pip install -r requirements.txt pytest
+      - name: Install the geom-core wheel (pinned by SHA-256)
         run: |
-          # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
-          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
-          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad
-      - run: pip install -r requirements.txt
-      - name: Install the shared sandbox core (cq_runner subprocess imports it)
-        run: pip install -e ../../packages/commons-sandbox
-      - name: Run Geometric Regression Parity Tests
-        run: python3 tests/scripts/geometric_regression.py --tolerance 0.05
+          whl="$RUNNER_TEMP/$(basename "$GEOM_CORE_WHEEL_URL")"
+          curl -fsSL "$GEOM_CORE_WHEEL_URL" -o "$whl"
+          echo "$GEOM_CORE_WHEEL_SHA256  $whl" | sha256sum -c -
+          pip install "$whl"
+          # Fail here, not as a silent skip in the suite, if the wheel is broken.
+          python -c "import geom_core_py; print('geom-core', geom_core_py.__version__)"
+      - name: Differential and seam tests (MESH_ORACLE=both)
+        env:
+          MESH_ORACLE: both
+        run: >-
+          pytest -rs
+          tests/unit/test_mesh_oracle_differential.py
+          tests/unit/test_mesh_metrics.py
+          tests/unit/test_mesh_integrity.py
+          tests/test_cotiza_export.py
 
   manifest-sync:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Check manifest sync
@@ -808,12 +888,16 @@ jobs:
   # network, no submodules, a few seconds. It runs on no-code changes
   # too: it costs nothing and it guards the machinery that skipping relies on.
   ci-scripts:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Deploy change-detection base resolver
         run: ./scripts/ci/tests/test_last_successful_deploy_sha.sh
+      # The npm audit gate: an outage of the registry's advisory endpoint must
+      # retry and then warn, a finding must still fail the job.
+      - name: npm audit gate
+        run: ./scripts/ci/tests/test_npm_audit_gate.sh
       # The registry login is the other piece of deploy.yml that is a shell
       # script rather than an action, and for the same reason: an action that
       # cannot retry loses a whole build job — and with it the deploy — to one
@@ -827,16 +911,16 @@ jobs:
         run: ./scripts/ci/tests/test_registry_login.sh
 
   manifest-validation:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - run: pip install jsonschema
@@ -868,7 +952,7 @@ jobs:
       # does not call it an incomplete checkout. It exits 2 if a *public*
       # cartridge submodule failed to come in, so a bad checkout fails the job
       # instead of quietly redefining what "complete" means.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
       - name: Landing project list matches the manifests
@@ -912,11 +996,11 @@ jobs:
   # Its own job rather than a step in `studio`: it needs Python, not Node, and
   # it should fail in seconds instead of after a 15-minute build.
   i18n-audit:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Audit studio i18n (locale parity + hardcoded-string ratchet)
@@ -929,27 +1013,32 @@ jobs:
   # PR #50 — full commons at failures=0), so a failure here is a regression,
   # not backlog.
   spec-conformance:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     # A shared-library pin can legitimately select the complete commons.
     timeout-minutes: 360
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
+      # The render pass below runs `--require-openscad` (and cadquery needs
+      # libGL). It never installed either: the ARC image carried them on PATH.
+      # A hosted runner does not, so the pinned snapshot comes from here.
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       # [geometry] pulls cadquery 2.7 + trimesh for the --render pass below.
       - name: Install hyperobjects-spec
         # Pinned to the same keystone SHA the commons CI pins (SPEC_PIN in
         # solid-hyperobjects / soft-hyperobjects), never a floating tag: the bar
         # the platform clears must be the bar the commons cleared. The repo is
         # public (2026-09-05), so no token is needed to fetch it.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@3ff3736e5989f381ebc841a4af38ff43cd9d0b51"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@142db1802bbf9e1135ceae6c9c531c469f2d295b"
       - name: Structural conformance (full commons)
         shell: bash
         run: |
@@ -1025,16 +1114,16 @@ jobs:
         run: python3 scripts/qa/check_spec_graph_vendor.py
 
   metadata-consistency:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Run metadata consistency audit
@@ -1046,11 +1135,11 @@ jobs:
         run: python3 scripts/qa/check_licenses.py --strict-all
 
   openapi-validation:
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - run: pip install openapi-spec-validator
@@ -1071,21 +1160,25 @@ jobs:
 
   ai-integration:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 10
     defaults:
       run:
         working-directory: apps/api
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
+      # Same backend import surface as the `backend` job, so the same runtime
+      # libraries the ARC image used to supply.
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
       - run: pip install -r requirements.txt
       - run: pip install pytest
       - name: Run AI integration tests
@@ -1137,7 +1230,7 @@ jobs:
       - openapi-validation
       - spec-conformance
       - i18n-audit
-    runs-on: madfam-runners-blue
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 5
     steps:
       - name: Dependency results

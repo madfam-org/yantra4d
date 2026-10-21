@@ -1,10 +1,12 @@
 import { bearerHeaderForSameOrigin } from '../../lib/januaSso'
+import { sourceRevision } from './sourceRevision'
 /**
  * IndexedDB-backed persistent render cache.
  *
  * DB:    "yantra4d-render-cache", version 1
  * Store: "renders"
- * Key:   SHA-256 of canonical JSON { project, mode, params, format, revision }
+ * Key:   SHA-256 of canonical JSON { project, mode, params, format, revision, source }
+ *        (`source` is the project's in-session source revision: sourceRevision.ts)
  * Value: { parts: [{ type, arrayBuffer }], timestamp }
  * TTL:   24 hours
  * Max:   500 entries (LRU eviction by timestamp)
@@ -75,7 +77,11 @@ export async function makeCacheKey(
   format: string = 'stl',
   revision: string = ''
 ): Promise<string> {
-  return hashKey({ project, mode, params, format, revision, client: import.meta.env.VITE_RENDER_BUILD_ID || import.meta.url })
+  return hashKey({
+    project, mode, params, format, revision,
+    source: sourceRevision(project),
+    client: import.meta.env.VITE_RENDER_BUILD_ID || import.meta.url,
+  })
 }
 
 /**

@@ -60,3 +60,25 @@ export async function deleteFile(slug: string, path: string): Promise<FileWriteR
   if (!res.ok) throw new Error((await res.json()).error || 'Failed to delete file')
   return res.json()
 }
+
+export interface GraphBindingsResponse {
+  bindings: Record<string, string | string[]>
+}
+
+/**
+ * Set (string or list) or clear (null) the `binding` of existing manifest
+ * parameters. The server only accepts this on a fork and validates the result
+ * against the project's graph sources; the error it returns says why not.
+ */
+export async function updateGraphBindings(
+  slug: string,
+  bindings: Record<string, string | string[] | null>,
+): Promise<GraphBindingsResponse> {
+  const res = await apiFetch(`${base()}/api/projects/${slug}/manifest/bindings`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ bindings }),
+  })
+  if (!res.ok) throw new Error((await res.json()).error || 'Failed to save bindings')
+  return res.json()
+}

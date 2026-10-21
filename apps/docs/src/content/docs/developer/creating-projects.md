@@ -149,7 +149,7 @@ Each parameter entry defines a UI control and a value passed to the SCAD file du
 
 ### Visibility control
 
-- **`visible_in_modes`**: Array of mode IDs where this parameter appears. Omit to show in all modes.
+- **`visible_in_modes`**: Array of mode IDs where this parameter appears. `modes` is accepted as the same list (`visible_in_modes` wins when both are set). Omit both to show in all modes.
 - **`visibility_level`**: Set to `"advanced"` to hide behind the Basic/Advanced toggle. Default is `"basic"`.
 - **`parent`**: ID of a parent parameter. The child is only visible when the parent checkbox is checked.
 

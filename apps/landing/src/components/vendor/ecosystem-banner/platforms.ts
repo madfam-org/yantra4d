@@ -27,10 +27,41 @@ export const DEFAULT_ECOSYSTEM_PLATFORMS: readonly EcosystemPlatform[] = [
   { keyword: 'LEGAL OPS', name: 'Tezca', url: 'https://tezca.mx' },
   { keyword: 'PHYGITAL FABRICATION', name: 'Yantra4D', url: 'https://yantra4d.com' },
   { keyword: 'QUOTING ENGINE', name: 'Cotiza', url: 'https://cotiza.studio' },
-  { keyword: 'INDUSTRY INTELLIGENCE', name: 'Forge Sight', url: 'https://forgesight.quest' },
+  { keyword: 'INDUSTRY INTELLIGENCE', name: 'Forge Sight', url: 'https://forgesight.app' },
   { keyword: 'MANUFACTURING', name: 'Pravara', url: 'https://mes.madfam.io' },
   { keyword: 'GAMES', name: 'Rondelio', url: 'https://rondel.io' },
   { keyword: 'ROUTING & LOGISTICS', name: 'RouteCraft', url: 'https://routecraft.app' },
   { keyword: 'CLIENT PORTAL & CRM', name: 'PhyndCRM', url: 'https://phynd.app' },
   // { keyword: 'PARAMETRIC CAD', name: 'Sim4D', url: 'https://sim4d.io' },                    // 2026-05-04: connection refused
 ] as const;
+
+/**
+ * Registrable domains a cross-property link treats as MADFAM-owned (`links.ts`).
+ * Mirrors `MADFAM_OWNED_DOMAINS` in `@madfam/ecosystem-banner` 0.3.0, which derives
+ * it from the product projection (2026-10-09 revision) plus `madfam.io`; the apex
+ * covers every `*.madfam.io` product host.
+ */
+export const MADFAM_OWNED_DOMAINS: readonly string[] = [
+  'madfam.io',
+  'enclii.dev',
+  'janua.dev',
+  'selva.town',
+  'forgesight.app',
+  'dhan.am',
+  'fortuna.tube',
+  'rondel.io',
+  'karafiel.mx',
+  'tezca.mx',
+  'avala.studio',
+  'yantra4d.com',
+  'cotiza.studio',
+  'phynd.app',
+  'ceq.lol',
+  'kalya.app',
+  'nauta.quest',
+  'fashioncabi.net',
+  'factl.as',
+  'routecraft.app',
+  'telesia.quest',
+  'madf.am',
+];

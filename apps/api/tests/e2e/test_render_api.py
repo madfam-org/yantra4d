@@ -159,6 +159,9 @@ class TestTierEnforcementRender:
         assert res.status_code == 403
         assert "requires Pro tier" in res.get_json()["error"]
 
+    # The payload is mocked, but the request still names the fixture's real
+    # cartridge: an unknown project is answered with its 404 before the rate
+    # limiter, ahead of every gate these tests exercise.
     def _payload(self, fmt):
         return {
             "parts": ["m"], "export_format": fmt, "params": {}, "scad_path": "mock",
@@ -180,7 +183,7 @@ class TestTierEnforcementRender:
         monkeypatch.setattr("routes.engine.render.resolve_engine_config",
                             lambda *args: (None, None, None, ("passed format gate", 418)))
 
-        res = client.post("/api/render", json={"project": "os"})
+        res = client.post("/api/render", json={"project": "test-project"})
         assert res.status_code == 418
         assert "passed format gate" in res.get_json()["error"]
 
@@ -189,7 +192,7 @@ class TestTierEnforcementRender:
                             lambda *args: self._payload("step"))
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *args: "essentials")
 
-        res = client.post("/api/render", json={"project": "os"})
+        res = client.post("/api/render", json={"project": "test-project"})
         assert res.status_code == 403
         assert "requires Pro tier" in res.get_json()["error"]
 
@@ -197,7 +200,7 @@ class TestTierEnforcementRender:
         monkeypatch.setattr("routes.engine.render.extract_render_payload",
                             lambda *args: self._payload("dwg"))
 
-        res = client.post("/api/render", json={"project": "os"})
+        res = client.post("/api/render", json={"project": "test-project"})
         assert res.status_code == 403
         assert "not available" in res.get_json()["error"]
 
@@ -241,9 +244,12 @@ class TestEstimateEdgeCases:
         assert data["num_parts"] == 2  # grid mode has 2 parts
 
     def test_estimate_missing_project(self, client):
-        """Estimate with non-existent project raises unhandled RuntimeError."""
-        with pytest.raises(RuntimeError, match="Project manifest not found"):
-            client.post("/api/estimate", json={"project": "no-such-project", "mode": "single"})
+        """Estimate with a non-existent project answers 404, not an unhandled RuntimeError."""
+        res = client.post("/api/estimate", json={"project": "no-such-project", "mode": "single"})
+        assert res.status_code == 404
+        body = res.get_json()
+        assert body["error_code"] == "project_not_found"
+        assert "Project manifest not found" in body["error"]
 
     def test_estimate_non_json_body(self, client):
         """Estimate with non-JSON content type returns 415."""
@@ -295,7 +301,7 @@ class TestRenderPayloadValidation:
 class TestDualEngineRouting:
     """Tests for the dual-engine fallback: OpenSCAD -> CadQuery when format requires it."""
 
-    def _setup_dual_engine_mocks(self, monkeypatch, export_format, has_cq_file=True):
+    def _setup_dual_engine_mocks(self, monkeypatch, export_format, has_cq_file=True, cq_file="main.py"):
         """Wire up monkeypatches for dual-engine fallback tests.
 
         Returns the list used to track which engine actually rendered (populated
@@ -307,7 +313,7 @@ class TestDualEngineRouting:
             "estimate": {"base_units": 1, "formula": "constant"},
         }
         if has_cq_file:
-            mode_config["cq_file"] = "main.py"
+            mode_config["cq_file"] = cq_file
 
         # _extract_render_payload is mocked so no real file I/O is needed
         monkeypatch.setattr("routes.engine.render.extract_render_payload", lambda *args: {
@@ -343,6 +349,20 @@ class TestDualEngineRouting:
 
         monkeypatch.setattr("routes.engine.render.render_parts_sync", fake_render_parts_sync)
         return engine_calls
+
+    # -- A cq_file outside the cartridge is refused ---------------------------
+
+    @pytest.mark.parametrize("cq_file", [
+        "../other/main.py", "/etc/evil.py", "main.py\nimport os", "main\x01.py",
+    ])
+    def test_cq_file_outside_cartridge_is_refused(self, client, monkeypatch, cq_file):
+        engine_calls = self._setup_dual_engine_mocks(monkeypatch, "step", cq_file=cq_file)
+        res = client.post("/api/render", json={
+            "project": "dual-test", "mode": "unit", "export_format": "step",
+        })
+        assert res.status_code == 400
+        assert "cartridge directory" in res.get_json()["error"]
+        assert engine_calls == []
 
     # -- Fallback activates when cq_file is present --------------------------
 

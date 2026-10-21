@@ -12,6 +12,8 @@ import { useUnitSystem } from '../../hooks/system/useUnitSystem'
 import { useIsDesktop } from '../../hooks/system/useMediaQuery'
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
 import { evaluateSafeFormula } from '../../lib/safeFormula'
+import { usePrerenderedPreview } from '../../hooks/render/usePrerenderedPreview'
+import { differsFromPrerenderedDefault } from '../../lib/prerenderedPreview'
 
 interface RenderStatusChipProps {
   loading: boolean
@@ -43,6 +45,35 @@ function RenderStatusChip({ loading, progress, progressPhase, parts, t }: Render
   }
 
   return null
+}
+
+interface PrerenderedPreviewBadgeProps {
+  commonsPin: string | null
+  changed: boolean
+  t: (key: string, params?: Record<string, string | number>) => string
+}
+
+/** Says what the stage shows while nothing has rendered: the defaults, prerendered. */
+function PrerenderedPreviewBadge({ commonsPin, changed, t }: PrerenderedPreviewBadgeProps) {
+  return (
+    <div
+      data-testid="prerendered-preview-badge"
+      role="status"
+      className="absolute top-2 left-1/2 -translate-x-1/2 z-10 max-w-[calc(100%-2rem)] px-3 py-1.5 bg-card/95 border border-border rounded-lg text-xs text-center pointer-events-none"
+    >
+      <div className="font-medium">{t('preview.prerendered_label')}</div>
+      {commonsPin && (
+        <div className="text-[10px] text-muted-foreground">
+          {t('preview.prerendered_pin', { pin: commonsPin.slice(0, 7) })}
+        </div>
+      )}
+      {changed && (
+        <div data-testid="prerendered-preview-changed" className="mt-0.5 text-amber-600 dark:text-amber-400">
+          {t('preview.params_changed')}
+        </div>
+      )}
+    </div>
+  )
 }
 
 interface ComparisonSlot {
@@ -82,11 +113,24 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     shortcutHelpOpen, setShortcutHelpOpen,
     manifest, projectSlug,
     stressData, stressSimulationActive, handleRunFEA,
-    physicsJobId, physicsProgress, physicsFrames, handleRunPhysics,
+    physicsJobId, physicsProgress, physicsFrames, physicsUnavailable, handleRunPhysics,
     optimizationJobId, optimizationProgress, optimizationLogs, handleOptimizeTopology
   } = useProject()
 
   const { t } = useLanguage()
+  // Prerendered default mesh from the landing (lib/prerenderedPreview.ts): shown
+  // until the first real render arrives, for every tier.
+  const prerendered = usePrerenderedPreview(projectSlug)
+  const previewUrl = parts.length === 0 ? prerendered.current?.url ?? null : null
+  const previewChanged = useMemo(() => {
+    if (!previewUrl) return false
+    const m = manifest as { modes?: Array<{ id?: string }>; parameters?: Array<{ id?: string; default?: unknown }> } | null
+    // The same defaults ManifestProvider.getDefaultParams builds, and what the
+    // prerender pipeline renders: the first mode with an empty parameter set.
+    const defaults: Record<string, unknown> = {}
+    for (const p of m?.parameters ?? []) if (p?.id) defaults[p.id] = p.default
+    return differsFromPrerenderedDefault(mode, m?.modes?.[0]?.id, params ?? {}, defaults)
+  }, [previewUrl, manifest, mode, params])
   // Same 1024px breakpoint as the `lg:` classes below, so the mounted tree and
   // the visible tree are always the same one. App.tsx makes the identical call.
   const isDesktop = useIsDesktop()
@@ -196,37 +240,52 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
         physicsFrames={physicsFrames}
         formatDimension={formatDim}
         unit={unit}
+        prerenderedPreviewUrl={previewUrl}
+        onPrerenderedPreviewError={prerendered.reportFailure}
       />
+      {previewUrl && !loading && (
+        <PrerenderedPreviewBadge commonsPin={prerendered.current?.commonsPin ?? null} changed={previewChanged} t={t} />
+      )}
       <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
-      {/* FEA Overlay Trigger */}
+      {/* Simulation tools. The stress map and the parameter search are
+          estimates; physics needs a solver backend on the server. */}
       {mode && parts.length > 0 && !loading && (
-        <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2">
+        <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2 max-w-[220px]">
           {physicsJobId ? (
             <div className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-card border border-border">
-              Simulating Physics... {Math.round(physicsProgress)}%
+              {t('sim.physics_running', { progress: Math.round(physicsProgress) })}
             </div>
           ) : (
-            <button 
+            <button
+              type="button"
               onClick={handleRunPhysics}
-              disabled={physicsFrames !== null}
-              className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors ${physicsFrames !== null ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'}`}
+              disabled={physicsFrames !== null || physicsUnavailable}
+              aria-describedby={physicsUnavailable ? 'physics-unavailable-note' : undefined}
+              className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors disabled:cursor-not-allowed ${physicsFrames !== null ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'} ${physicsUnavailable ? 'opacity-60' : ''}`}
             >
-              {physicsFrames !== null ? 'Physics Baked' : 'Run Full Physics'}
+              {physicsFrames !== null ? t('sim.physics_done') : t('sim.physics_run')}
             </button>
           )}
+          {physicsUnavailable && (
+            <p id="physics-unavailable-note" className="px-2 py-1 text-[10px] leading-snug rounded bg-card/90 text-muted-foreground border border-border">
+              {t('sim.physics_unavailable')}
+            </p>
+          )}
 
-          <button 
+          <button
+            type="button"
             onClick={handleRunFEA}
             disabled={stressSimulationActive}
+            title={t('sim.stress_note')}
             className={`px-3 py-1.5 text-xs font-semibold rounded shadow transition-colors ${stressSimulationActive ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted border border-border'}`}
           >
-            {stressSimulationActive ? 'FEA Stress Active' : 'Show Stress Map (Fast)'}
+            {stressSimulationActive ? t('sim.stress_active') : t('sim.stress_run')}
           </button>
-          
-          {/* Topo Optimization UI */}
+
+          {/* Heuristic parameter estimate */}
           {optimizationJobId ? (
             <div className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-purple-900 border border-purple-500 text-white flex flex-col gap-1 max-w-[200px]">
-              <div>AI Optimizer... {Math.round(optimizationProgress)}%</div>
+              <div>{t('sim.optimize_running', { progress: Math.round(optimizationProgress) })}</div>
               {optimizationLogs.length > 0 && (
                 <div className="text-[10px] opacity-80 truncate">
                   {optimizationLogs[optimizationLogs.length - 1]}
@@ -234,14 +293,15 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
               )}
             </div>
           ) : (
-            <button 
+            <button
+              type="button"
               onClick={handleOptimizeTopology}
+              title={t('sim.optimize_note')}
               className="px-3 py-1.5 text-xs font-semibold rounded shadow bg-purple-600 text-white hover:bg-purple-500 border border-purple-400 transition-colors"
             >
-              AI Topo Optimization
+              {t('sim.optimize_run')}
             </button>
           )}
-
         </div>
       )}
       {!loading && parts.length > 0 && (

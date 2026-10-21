@@ -192,7 +192,7 @@ class TestValidateRepo:
 
 class TestImportRepo:
     @patch("services.editor.github_import.clone_repo")
-    def test_import_success(self, mock_clone, tmp_path, monkeypatch):
+    def test_import_success(self, mock_clone, tmp_path, monkeypatch, user_projects_dir):
         from config import Config
         monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
 
@@ -204,8 +204,10 @@ class TestImportRepo:
         manifest = {"project": {"thumbnail": "thumb.png", "tags": ["test"], "difficulty": "beginner", "name": "Test"}}
         result = import_repo("https://github.com/u/r", "test-import", manifest)
         assert result["success"] is True
-        assert (tmp_path / "test-import" / "project.json").exists()
-        assert (tmp_path / "test-import" / "project.meta.json").exists()
+        # Imports land in the user-projects root, never in the commons.
+        assert (user_projects_dir / "test-import" / "project.json").exists()
+        assert (user_projects_dir / "test-import" / "project.meta.json").exists()
+        assert not (tmp_path / "test-import").exists()
 
     @patch("services.editor.github_import.clone_repo", return_value=True)
     def test_import_already_exists(self, mock_clone, tmp_path, monkeypatch):

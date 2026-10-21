@@ -6,8 +6,8 @@ renders, real downloads, real axe passes. Everything else under `e2e/tests/`
 mocks the API, and the default browser projects exclude this directory via
 `testIgnore` in `playwright.config.js`.
 
-Specs: `gridfinity.spec.js`, `custom-msh.spec.js`, `tablaco.spec.js`
-(client-private), `cross-cutting.spec.js`, `responsive.spec.js` (375×812).
+Specs: `gridfinity.spec.js`, `custom-msh.spec.js`, a spec for the client-private
+cartridge, `cross-cutting.spec.js`, `responsive.spec.js` (375×812).
 Shared helpers: `audit-helpers.js`.
 
 ## How it runs in CI
@@ -69,7 +69,7 @@ existing server on `:5173`.
 - `hasProject(slug)` / `skipUnlessProject(test, slug)` skip a **single test**
   with a stated reason.
 - `PUBLIC_AUDIT_SLUGS` = `gridfinity`, `custom-msh` — in every checkout.
-  `PRIVATE_AUDIT_SLUGS` = `tablaco` — a client-private `update = none`
+  `PRIVATE_AUDIT_SLUGS` holds the client-private slug — an `update = none`
   submodule, absent from a normal checkout, present only when the workflow is
   dispatched with `include_private_projects=true` (`MADFAM_BOT_PAT`). Its specs
   report SKIPPED with that reason rather than failing on a 404.
@@ -197,7 +197,7 @@ the audit sets no pin, so what it exercises depends on the cartridge:
 | gridfinity | any download of `step` / `3mf` | **server**, hard | the browser kernel writes only STL — rule 4 |
 | gridfinity | `cup`, `baseplate_scad`, `lid` | depends on the runner | OpenSCAD, no `render.server_only` |
 | custom-msh | all six modes | depends on the runner | OpenSCAD, no `render.server_only` |
-| tablaco | all modes | depends on the runner | OpenSCAD, no `render.server_only` |
+| client-private | all modes | depends on the runner | OpenSCAD, no `render.server_only` |
 
 **The server-render coverage is real and it rests on gridfinity.** Its default
 mode is CadQuery, which has no browser kernel, so every gridfinity render,

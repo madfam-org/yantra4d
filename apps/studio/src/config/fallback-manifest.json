@@ -1496,13 +1496,8 @@
     "stages": {
       "geometry": {
         "checks": {
-          "watertight": {
-            "enabled": true
-          },
-          "body_count": {
-            "enabled": true,
-            "expected": 1
-          }
+          "watertight": { "enabled": true },
+          "body_count": { "enabled": true, "expected": 1 }
         }
       }
     }

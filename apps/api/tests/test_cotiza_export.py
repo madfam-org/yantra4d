@@ -338,6 +338,20 @@ class TestSendToCotiza:
         headers = call_kwargs.kwargs.get("headers") or call_kwargs[1].get("headers")
         assert headers["Authorization"] == "Bearer tok-abc"
 
+    @pytest.mark.parametrize("origin", ["https://cotiza.example", "https://cotiza.example/"])
+    @patch("routes.integrations.cotiza_export.requests.post")
+    def test_posts_to_the_served_quote_path(self, mock_post, origin, monkeypatch):
+        """Cotiza serves the import at /quotes/from-yantra4d on the bare origin."""
+        monkeypatch.setattr("routes.integrations.cotiza_export.COTIZA_API_URL", origin)
+        mock_resp = MagicMock()
+        mock_resp.status_code = 201
+        mock_resp.json.return_value = {"quote_id": "q-1"}
+        mock_post.return_value = mock_resp
+
+        _send_to_cotiza({"source": "yantra4d"})
+
+        assert mock_post.call_args.args[0] == "https://cotiza.example/quotes/from-yantra4d"
+
     @patch("routes.integrations.cotiza_export.requests.post")
     def test_timeout_raises_runtime_error(self, mock_post):
         mock_post.side_effect = requests.exceptions.Timeout("timed out")

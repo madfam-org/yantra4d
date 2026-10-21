@@ -6,6 +6,9 @@ import { useManifest } from './ManifestProvider'
 import { useLanguage } from '../system/LanguageProvider'
 import SplashScreen from '../../components/feedback/SplashScreen'
 
+// Stable error code the API returns when no physics solver backend is configured.
+const PHYSICS_SOLVER_UNAVAILABLE = 'physics_solver_unavailable'
+
 type ProjectParamsReturn = ReturnType<typeof useProjectParams>
 type ProjectActionsReturn = ReturnType<typeof useProjectActions>
 type AssemblyGuideReturn = ReturnType<typeof useAssemblyGuide>
@@ -68,20 +71,21 @@ export interface ProjectContextValue {
   overhangThreshold: ProjectParamsReturn['overhangThreshold']
   setOverhangThreshold: ProjectParamsReturn['setOverhangThreshold']
 
-  // FEA
+  // Stress estimate (geometry-derived proxy, not a finite-element solve)
   stressData: Record<string, unknown> | null
   setStressData: React.Dispatch<React.SetStateAction<Record<string, unknown> | null>>
   stressSimulationActive: boolean
   setStressSimulationActive: React.Dispatch<React.SetStateAction<boolean>>
   handleRunFEA: () => Promise<void>
 
-  // Physics (PPF Contact Solver morph targets)
+  // Physics (PPF Contact Solver). Unavailable until the server has a solver.
   physicsJobId: string | null
   physicsProgress: number
   physicsFrames: boolean[] | null
+  physicsUnavailable: boolean
   handleRunPhysics: () => Promise<void>
 
-  // Topology Optimization
+  // Heuristic parameter estimate (no stress solver runs)
   optimizationJobId: string | null
   optimizationProgress: number
   optimizationLogs: string[]
@@ -193,7 +197,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     manifest: projectParams.manifest,
   })
 
-  // 4. FEA integration
+  // 4. Stress estimate: a geometry-derived proxy, not a finite-element solve
   const [stressData, setStressData] = useState<Record<string, unknown> | null>(null)
   const [stressSimulationActive, setStressSimulationActive] = useState<boolean>(false)
 
@@ -213,7 +217,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
         setStressData(data.simulation)
         setStressSimulationActive(true)
       } else {
-        console.error('FEA Failed:', data.error)
+        console.error('Stress estimate failed:', data.error)
         setStressSimulationActive(false)
         setStressData(null)
       }
@@ -224,12 +228,16 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     }
   }
 
-  // 5. Advanced Physics (PPF Contact Solver Integration)
+  // 5. Physics (PPF Contact Solver). The server refuses with
+  // `physics_solver_unavailable` until a solver backend is configured; the
+  // control then stays disabled instead of retrying.
   const [physicsJobId, setPhysicsJobId] = useState<string | null>(null)
   const [physicsProgress, setPhysicsProgress] = useState<number>(0)
   const [physicsFrames, setPhysicsFrames] = useState<boolean[] | null>(null)
+  const [physicsUnavailable, setPhysicsUnavailable] = useState<boolean>(false)
 
   const handleRunPhysics = async () => {
+    if (physicsUnavailable) return
     try {
       projectParams.setLoading(true)
       const res = await fetch(`/api/projects/${projectSlug}/simulate/physics`, {
@@ -239,13 +247,17 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
         },
         body: JSON.stringify({ 
           parts: projectParams.parts, 
-          kinematics: manifest?.kinematics || {}
+          // `manifest` is not in scope here; reading it threw a ReferenceError
+          // before the request was ever sent.
+          kinematics: (projectParams.manifest as Record<string, unknown> | null | undefined)?.kinematics || {}
         })
       })
       const data = await res.json()
       if (res.ok && data.job_id) {
         setPhysicsJobId(data.job_id)
         setPhysicsProgress(0)
+      } else if (data?.error_code === PHYSICS_SOLVER_UNAVAILABLE) {
+        setPhysicsUnavailable(true)
       } else {
         console.error("Failed to start physics:", data.error)
       }
@@ -285,7 +297,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     return () => clearInterval(interval)
   }, [physicsJobId, projectSlug])
 
-  // 6. Generative Topology Optimization
+  // 6. Heuristic parameter estimate: a deterministic rule, not an optimization proof
   const [optimizationJobId, setOptimizationJobId] = useState<string | null>(null)
   const [optimizationProgress, setOptimizationProgress] = useState<number>(0)
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([])
@@ -332,7 +344,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
           if (data.logs) setOptimizationLogs(data.logs)
           
           if (data.best_params) {
-            // Apply winning parameters!
+            // Apply the estimate's parameters; the user can undo them
             projectParams.setParams(data.best_params)
             setTimeout(() => projectParams.handleGenerate(), 500)
           }
@@ -406,7 +418,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     overhangThreshold: projectParams.overhangThreshold,
     setOverhangThreshold: projectParams.setOverhangThreshold,
 
-    // FEA
+    // Stress estimate
     stressData,
     setStressData,
     stressSimulationActive,
@@ -417,9 +429,10 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     physicsJobId,
     physicsProgress,
     physicsFrames,
+    physicsUnavailable,
     handleRunPhysics,
 
-    // Topology Optimization
+    // Heuristic parameter estimate
     optimizationJobId,
     optimizationProgress,
     optimizationLogs,

@@ -186,6 +186,61 @@ describe('estimateRenderTime', () => {
     expect(partsTerm / total).toBeLessThan(0.2)
   })
 
+  // ---------------------------------------------------------------------------
+  // Placement. Live 2026-10-18 (geo-stab V1/H1): an OpenSCAD render that took
+  // 2.08 s on the server was preceded by a "~2 minutes" long-render warning,
+  // because the estimate assumed the BROWSER (x wasm_multiplier) while the
+  // placement table sent the render to the server. Without an explicit
+  // placement the estimate now asks the same table the render goes through.
+  // ---------------------------------------------------------------------------
+  // motor-mount's real constants and mode shape (commons pin 8317c17).
+  const motorMount = {
+    project: { slug: 'motor-mount' },
+    parts: [{ id: 'mount', render_mode: 0 }, { id: 'nema_reference', render_mode: 0 }],
+    modes: [{ id: 'mount', scad_file: 'motor_mount.scad', parts: ['mount', 'nema_reference'], estimate: { base_units: 2, formula: 'constant' } }],
+    estimate_constants: { base_time: 5, per_unit: 2, per_part: 8, wasm_multiplier: 3, warning_threshold_seconds: 60 },
+  }
+  // gridfinity's shape: a CadQuery project with an OpenSCAD mode beside it.
+  const dualEngine = {
+    project: { slug: 'gridfinity' },
+    engine: 'cadquery',
+    parts: [{ id: 'bin', render_mode: 0 }, { id: 'cup', render_mode: 0 }],
+    modes: [
+      { id: 'bin', scad_file: 'gridfinity.py', parts: ['bin'], estimate: { base_units: 1, formula: 'constant' } },
+      { id: 'cup', scad_file: 'cup.scad', engine: 'openscad', parts: ['cup'], estimate: { base_units: 1, formula: 'constant' } },
+    ],
+    estimate_constants: { base_time: 10, per_unit: 3, per_part: 12, wasm_multiplier: 4, warning_threshold_seconds: 90 },
+  }
+
+  it('estimates a server-only engine as a server render, even when the visitor prefers the browser', () => {
+    pinBrowser()
+    // 10 + 3 + 12 = 25 s declared; the old guess said 25 x 4 = 100 s > 90 s.
+    expect(renderService.estimateRenderTime('bin', {}, dualEngine)).toBe(25)
+    expect(renderService.estimateRenderTime('bin', {}, dualEngine)).toBeLessThan(90)
+  })
+
+  it('estimates an over-budget OpenSCAD render where the placement table sends it: the server', () => {
+    // 25 s x 3 = 75 s in the browser is over the device budget (rule 9), so the
+    // render goes to the server and the visitor waits for the server's 25 s.
+    expect(renderService.previewPlacement(motorMount, 'mount', {}).placement).toBe('server')
+    expect(renderService.estimateRenderTime('mount', {}, motorMount)).toBe(25)
+    expect(renderService.estimateRenderTime('mount', {}, motorMount))
+      .toBeLessThan(motorMount.estimate_constants.warning_threshold_seconds)
+  })
+
+  it('keeps the browser multiplier when the render really runs in the browser', () => {
+    pinBrowser()
+    expect(renderService.previewPlacement(motorMount, 'mount', {}).placement).toBe('browser')
+    expect(renderService.estimateRenderTime('mount', {}, motorMount)).toBe(75)
+    // An OpenSCAD mode of a dual-engine cartridge is a browser render too.
+    expect(renderService.estimateRenderTime('cup', {}, dualEngine)).toBe(100)
+  })
+
+  it('still answers the explicit question the placement table asks', () => {
+    expect(renderService.estimateRenderTime('mount', {}, motorMount, 'browser')).toBe(75)
+    expect(renderService.estimateRenderTime('mount', {}, motorMount, 'server')).toBe(25)
+  })
+
   it('reports no observed time before a render has run, never zero', () => {
     // "Not measured yet" must not be readable as "took no time" — that confusion
     // is what let a 1,714x overshoot look like a working estimator.
@@ -233,12 +288,17 @@ describe('estimateRenderTime', () => {
 
   it('defaults to the BROWSER estimate, because the browser is where renders go', () => {
     // This is the visible edge of the product change: with no placement chosen
-    // yet, the number the app quotes is the one for the visitor's own machine.
+    // yet, the number the app quotes is the one for the visitor's own machine,
+    // when the placement table keeps the render there. Here 3 s x 2 = 6 s is
+    // inside even a `limited` device's 15 s budget. (Over budget, rule 9 sends
+    // the render to the server and the server estimate is quoted: see the
+    // motor-mount case above.)
     const wasmManifest = {
       modes: [{ id: 'unit', parts: ['main'], estimate: { base_units: 1, formula: 'constant' } }],
-      estimate_constants: { base_time: 5, per_unit: 1.5, per_part: 8, wasm_multiplier: 2 },
+      estimate_constants: { base_time: 1, per_unit: 1, per_part: 1, wasm_multiplier: 2 },
     }
-    expect(renderService.estimateRenderTime('unit', {}, wasmManifest)).toBe(29)
+    expect(renderService.previewPlacement(wasmManifest, 'unit', {}).placement).toBe('browser')
+    expect(renderService.estimateRenderTime('unit', {}, wasmManifest)).toBe(6)
   })
 })
 

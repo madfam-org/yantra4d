@@ -34,6 +34,22 @@ if (typeof sessionStorage === 'undefined' || typeof sessionStorage.clear !== 'fu
   Object.defineProperty(globalThis, 'sessionStorage', { value: createStoragePolyfill(), writable: true })
 }
 
+// A Spanish-speaking browser for the whole suite. jsdom reports `en-US`, and the
+// LanguageProvider now opens in the browser's language when the visitor has no
+// stored choice, so without this every test that renders the default UI would
+// silently switch to English. Spanish is the Studio's default audience; the
+// tests of the browser-language rule (LanguageProvider.test.jsx) set their own
+// languages per test with `globalThis.__setBrowserLanguages`.
+const DEFAULT_BROWSER_LANGUAGES = ['es-MX', 'es']
+globalThis.__setBrowserLanguages = (languages) => {
+  // Node-environment suites (`*.node.test.js`) have no window to configure.
+  if (typeof window === 'undefined') return
+  Object.defineProperty(window.navigator, 'languages', { value: languages, configurable: true })
+  Object.defineProperty(window.navigator, 'language', { value: languages[0] ?? '', configurable: true })
+}
+globalThis.__resetBrowserLanguages = () => globalThis.__setBrowserLanguages(DEFAULT_BROWSER_LANGUAGES)
+globalThis.__resetBrowserLanguages()
+
 // Configurable matchMedia mock — allows tests to simulate mobile/tablet viewports.
 // Usage in tests:
 //   globalThis.__setMediaQuery('(max-width: 767px)', true)  // simulate mobile
@@ -48,7 +64,11 @@ globalThis.__resetMediaQueries = () => {
   mediaQueryOverrides.clear()
 }
 
-Object.defineProperty(window, 'matchMedia', {
+// Window-only stubs: skipped for files that opt into `// @vitest-environment node`
+// (the geom-core differential suite runs there too).
+const hasWindow = typeof window !== 'undefined'
+
+if (hasWindow) Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query) => ({
     matches: mediaQueryOverrides.has(query) ? mediaQueryOverrides.get(query) : false,
@@ -68,7 +88,7 @@ class ResizeObserverStub {
   unobserve() {}
   disconnect() {}
 }
-window.ResizeObserver = window.ResizeObserver || ResizeObserverStub
+if (hasWindow) window.ResizeObserver = window.ResizeObserver || ResizeObserverStub
 
 // URL.createObjectURL / revokeObjectURL are not available in jsdom
 if (typeof URL.createObjectURL === 'undefined') {

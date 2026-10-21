@@ -25,6 +25,7 @@ const mockTarget = { ...makeVec(), set: vi.fn(), copy: vi.fn(), clone: vi.fn(() 
 const mockControls = { target: mockTarget, update: vi.fn() }
 const mockGl = { render: vi.fn(), domElement: { toDataURL: vi.fn(() => 'data:image/png;base64,mock') } }
 const mockScene = {}
+const mockInvalidate = vi.fn()
 
 vi.mock('@react-three/fiber', () => ({
   useThree: vi.fn(() => ({
@@ -32,6 +33,7 @@ vi.mock('@react-three/fiber', () => ({
     camera: mockCamera,
     scene: mockScene,
     controls: mockControls,
+    invalidate: mockInvalidate,
   })),
   useFrame: vi.fn((cb) => { frameCallback = cb }),
 }))
@@ -134,5 +136,18 @@ describe('SceneController', () => {
     ref.current.animateTo([50, 50, 50], null, 0.5)
     frameCallback(null, 0.25)
     expect(mockCamera.updateProjectionMatrix).toHaveBeenCalled()
+  })
+
+  it('requests frames while a camera move runs and stops when it ends (demand rendering)', () => {
+    const ref = createRef()
+    render(<SceneController ref={ref} cameraViews={[]} />)
+    ref.current.animateTo([10, 0, 0], [0, 0, 0], 0.5)
+    expect(mockInvalidate).toHaveBeenCalledTimes(1)
+    frameCallback(null, 0.1)
+    expect(mockInvalidate).toHaveBeenCalledTimes(2)
+    frameCallback(null, 1.0)
+    expect(mockInvalidate).toHaveBeenCalledTimes(2)
+    ref.current.setCameraView('missing')
+    expect(mockInvalidate).toHaveBeenCalledTimes(3)
   })
 })

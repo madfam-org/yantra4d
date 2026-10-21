@@ -44,6 +44,16 @@ vi.mock('../../contexts/system/ThemeProvider', () => ({
   useTheme: () => ({ theme: 'light' }),
 }))
 
+vi.mock('../../contexts/system/LanguageProvider', () => ({
+  useLanguage: () => ({ t: (key) => key }),
+}))
+
+// The graph save path is covered by ScadEditor.graph.test.jsx.
+vi.mock('../../hooks/project/useProjectMeta', () => ({ useProjectMeta: () => null }))
+vi.mock('../../hooks/editor/useGraphPersistence', () => ({
+  useGraphPersistence: () => ({ status: 'idle', error: null, schedule: vi.fn(), saveNow: vi.fn(), cancel: vi.fn() }),
+}))
+
 vi.mock('../../lib/scad-language', () => ({
   registerScadLanguage: vi.fn(),
   SCAD_LANGUAGE_ID: 'openscad',

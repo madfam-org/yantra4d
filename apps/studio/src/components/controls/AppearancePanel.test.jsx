@@ -3,6 +3,9 @@ import { screen, fireEvent } from '@testing-library/react'
 import AppearancePanel from './AppearancePanel'
 import { renderWithProviders } from '../../test/render-with-providers'
 
+// The render-quality section has its own tests (ViewerQualityPanel.test.jsx).
+vi.mock('../viewer/ViewerQualityPanel', () => ({ default: () => null }))
+
 function renderAppearancePanel(props = {}) {
     const defaultProps = {
         mode: 'bin',

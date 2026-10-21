@@ -5,6 +5,7 @@ Handles /api/estimate, /api/render, /api/render-stream endpoints.
 Route-level concerns only: request parsing, auth, rate limiting, and response
 formatting. All render logic is delegated to the render orchestrator service.
 """
+import functools
 import json
 import logging
 
@@ -12,7 +13,7 @@ from flask import Blueprint, Response, jsonify, request
 
 import rate_limits
 from extensions import limiter
-from manifest import get_manifest
+from manifest import ManifestNotFoundError, get_manifest
 from middleware.auth import (
     effective_tier,
     export_format_denied_response,
@@ -28,17 +29,20 @@ from services.core.tier_service import (
     is_unlimited,
     resolve_tier,
 )
+from services.engine.generator_output import envelope_fields
 from services.engine.render_orchestrator import (
     RenderPayloadError,
     cancel_all_renders,
     cancel_render_jobs,
     cancel_request,
     extract_render_payload,
+    missing_project_error,
     render_parts_stream,
     render_parts_sync,
     resolve_engine_config,
+    unknown_project_error,
 )
-from utils.route_helpers import error_response, handle_exceptions, require_json_body
+from utils.route_helpers import error_response, handle_exceptions, payload_error_response, require_json_body
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +113,38 @@ def _render_limit_exempt() -> bool:
     return is_unlimited(_project_render_limit())
 
 
+def _known_project_before_limit(f):
+    """Answer an unknown ``project`` with its 404 BEFORE the rate limiter runs.
+
+    The limiter decorators count a request against the caller's hourly bucket
+    as soon as they are reached, and the not-found used to be discovered only
+    inside the view, after that. A typo'd or stale slug therefore spent a
+    render token on a request that never rendered anything (geo-stab V1, F13:
+    a guest's ``X-RateLimit-Remaining`` fell on unknown-project 404s).
+
+    Only a request that names a project is checked here; one without a
+    ``project`` resolves the default cartridge, exactly as before. A manifest
+    that exists but is broken is not a caller error and is left to the view,
+    which answers it the way it always has. The body is read with
+    ``silent=True`` so a non-JSON body still reaches ``require_json_body`` and
+    gets its own 400.
+    """
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        body = request.get_json(silent=True)
+        slug = body.get("project") if isinstance(body, dict) else None
+        try:
+            missing = missing_project_error(slug)
+        except Exception:
+            # A broken manifest: the view meets the same error on its own
+            # lookup and answers it through its usual handler.
+            missing = None
+        if missing is not None:
+            return payload_error_response(missing)
+        return f(*args, **kwargs)
+    return decorated
+
+
 def _rate_limit_key() -> str:
     """Return a per-user or per-IP rate limit bucket key."""
     claims = getattr(request, "auth_claims", None)
@@ -120,6 +156,7 @@ def _rate_limit_key() -> str:
 @render_bp.route('/api/estimate', methods=['POST'])
 @optional_auth
 @require_render_scope
+@_known_project_before_limit
 @limiter.limit(rate_limits.ESTIMATE)
 @require_json_body
 def estimate_render_time():
@@ -133,7 +170,10 @@ def estimate_render_time():
     if denied is not None:
         return denied
 
-    manifest = get_manifest(project_slug)
+    try:
+        manifest = get_manifest(project_slug)
+    except ManifestNotFoundError as exc:
+        return payload_error_response(unknown_project_error(project_slug, exc))
     mode_id = data.get('mode')
     scad_file = data.get('scad_file')
 
@@ -171,6 +211,7 @@ def estimate_render_time():
 @render_bp.route('/api/render', methods=['POST'])
 @optional_auth
 @require_render_scope
+@_known_project_before_limit
 @limiter.limit(_get_tiered_limit, key_func=_rate_limit_key, exempt_when=_render_limit_exempt)
 @require_json_body
 @handle_exceptions
@@ -184,7 +225,7 @@ def render_stl():
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
-        return error_response(payload.message, 400)
+        return payload_error_response(payload)
 
     # Gate on the tier's export_formats list — the same source the UI unlocks
     # buttons from — rather than the blanket premium_export boolean over a
@@ -222,6 +263,8 @@ def render_stl():
         # Echoed so a caller can correlate — and, when it supplied its own,
         # confirm the handle it can cancel with.
         "request_id": payload.get("request_id"),
+        # GOC-1 (additive): {format_version, complete, variables_sha256}.
+        **envelope_fields(payload),
     })
     for k, v in _make_rate_limit_headers(tier).items():
         resp.headers[k] = v
@@ -232,6 +275,7 @@ def render_stl():
 @render_bp.route('/api/render-stream', methods=['POST'])
 @optional_auth
 @require_render_scope
+@_known_project_before_limit
 @limiter.limit(_get_tiered_limit, key_func=_rate_limit_key, exempt_when=_render_limit_exempt)
 @require_json_body
 def render_stl_stream():
@@ -243,7 +287,7 @@ def render_stl_stream():
     payload = extract_render_payload(data)
 
     if isinstance(payload, RenderPayloadError):
-        return error_response(payload.message, 400)
+        return payload_error_response(payload)
 
     tier = _effective_tier()
     # Gate on the tier's export_formats list — the same source the UI unlocks

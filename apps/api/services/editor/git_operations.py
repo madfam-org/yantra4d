@@ -7,6 +7,7 @@ Token injection uses GIT_ASKPASS — credentials never touch .git/config.
 import logging
 import os
 import re
+import shutil
 import stat
 import subprocess
 import tempfile
@@ -16,6 +17,31 @@ logger = logging.getLogger(__name__)
 
 GIT_TIMEOUT = 60
 
+#: The error every git operation reports when the binary is missing.
+GIT_UNAVAILABLE = "git unavailable"
+
+
+class GitUnavailableError(RuntimeError):
+    """The ``git`` binary is not installed or not on PATH.
+
+    Version control is an optional capability of the editor: callers that can
+    proceed without it (saving a file) catch this and carry on; the explicit
+    git routes answer 503.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(GIT_UNAVAILABLE)
+
+
+def git_available() -> bool:
+    """Whether a ``git`` binary is on PATH. Not cached: PATH is the truth."""
+    return shutil.which("git") is not None
+
+
+def git_unavailable_result() -> dict:
+    """The structured failure every wrapper returns when git is missing."""
+    return {"success": False, "error": GIT_UNAVAILABLE, "git_unavailable": True}
+
 
 def _sanitize_git_output(text: str) -> str:
     """Strip embedded credentials from git output before logging."""
@@ -23,7 +49,11 @@ def _sanitize_git_output(text: str) -> str:
 
 
 def _run_git(project_dir: Path, args: list[str], timeout: int = GIT_TIMEOUT, env: dict | None = None) -> subprocess.CompletedProcess:
-    """Run a git command in the project directory."""
+    """Run a git command in the project directory.
+
+    Raises ``GitUnavailableError`` (not a bare ``FileNotFoundError``) when the
+    binary is missing, so callers can tell "no git" from any other failure.
+    """
     try:
         return subprocess.run(
             ["git"] + args,
@@ -36,6 +66,13 @@ def _run_git(project_dir: Path, args: list[str], timeout: int = GIT_TIMEOUT, env
         )
     except subprocess.TimeoutExpired:
         logger.warning("Git command timed out after %ds: %s", timeout, " ".join(args[:2]))
+        raise
+    except FileNotFoundError as exc:
+        # cwd is checked by the caller's resolver; a missing executable is the
+        # case left. Distinguish it anyway: a vanished cwd must not read as
+        # "git is not installed".
+        if not git_available():
+            raise GitUnavailableError() from exc
         raise
 
 
@@ -83,10 +120,19 @@ def _get_remote_url(project_dir: Path) -> str | None:
 
 
 def git_init(project_dir: Path) -> dict:
-    """Initialize a git repo if .git doesn't exist. git init + add all + initial commit."""
+    """Initialize a git repo if .git doesn't exist. git init + add all + initial commit.
+
+    Never raises for a missing binary: returns ``git_unavailable_result()``.
+    """
     if (project_dir / ".git").is_dir():
         return {"success": True, "already_initialized": True}
+    try:
+        return _git_init(project_dir)
+    except GitUnavailableError:
+        return git_unavailable_result()
 
+
+def _git_init(project_dir: Path) -> dict:
     result = _run_git(project_dir, ["init"])
     if result.returncode != 0:
         return {"success": False, "error": f"git init failed: {result.stderr.strip()}"}
@@ -190,6 +236,8 @@ def git_show_head(project_dir: Path, filepath: str) -> dict:
 
 def git_archive_head(project_dir: Path, target_dir: Path) -> dict:
     """Extract the entire HEAD tree into target_dir."""
+    if not git_available():
+        return git_unavailable_result()
     try:
         # Provide output directory
         target_dir.mkdir(parents=True, exist_ok=True)

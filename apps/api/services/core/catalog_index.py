@@ -155,6 +155,10 @@ def _build_record(slug: str, data: dict, mtime: float) -> dict:
         "modified_ms": int(mtime * 1000),
         "unlisted": bool(proj.get("unlisted", False)),
         "_haystack": haystack,
+        # The manifest's own privacy block, kept so a search can apply the same
+        # view rule as /api/projects (services.core.project_access). Internal:
+        # stripped from the wire like _haystack.
+        "_access_control": data.get("access_control"),
     }
 
 
@@ -232,6 +236,53 @@ def get_catalog(force: bool = False) -> dict:
     return _cache
 
 
+def hidden_for_caller(cat: dict | None = None) -> tuple[frozenset[str], bool]:
+    """``(hidden_slugs, any_private)`` for the current request.
+
+    The catalog is built once for everybody, so privacy is applied per request,
+    by the same rule as /api/projects (``filter_visible_projects``): a private
+    record (manifest ``access_control.view == "private"`` or forced private by
+    configuration) is hidden unless ``can_view_project`` admits this caller.
+    The flag says whether the answer depends on who is asking, which decides
+    whether a response may sit in a shared cache. Claims are decoded only when
+    a private record exists.
+    """
+    from services.core.project_access import (
+        can_view_project,
+        ensure_optional_auth,
+        is_private_project,
+    )
+
+    cat = cat or get_catalog()
+    private = [
+        r for r in cat["records"]
+        if is_private_project(r["slug"], {"access_control": r.get("_access_control")})
+    ]
+    if not private:
+        return frozenset(), False
+    claims = ensure_optional_auth()
+    hidden = frozenset(
+        r["slug"] for r in private
+        if not can_view_project(r["slug"], {"access_control": r.get("_access_control")}, claims)
+    )
+    return hidden, True
+
+
+def visible_records(cat: dict, hidden: frozenset[str]) -> list[dict]:
+    """Catalog records minus the ones hidden from this caller."""
+    if not hidden:
+        return cat["records"]
+    return [r for r in cat["records"] if r["slug"] not in hidden]
+
+
+def visible_facets(cat: dict, hidden: frozenset[str]) -> tuple[dict, int]:
+    """``(facets, count)`` over the records this caller may see."""
+    if not hidden:
+        return cat["facets"], cat["count"]
+    records = visible_records(cat, hidden)
+    return _compute_facets(records), len(records)
+
+
 def invalidate_catalog() -> None:
     """Drop the cache so the next get_catalog() rebuilds (call after edits)."""
     global _cache, _cache_sig
@@ -261,15 +312,19 @@ def search_catalog(
     sort: str = "name",
     limit: int = 60,
     offset: int = 0,
+    hidden: frozenset[str] = frozenset(),
 ) -> dict:
     """Filter + rank + paginate the catalog. All matching is in-process over the cache.
 
     Text `q`: whitespace-split, AND semantics (every term must appear in the haystack).
     Facet params are exact-match filters. Returns the page plus post-filter facet counts
     so the UI can show how many results each remaining facet value would yield.
+    `hidden` (from ``hidden_for_caller``) drops private records this caller may not
+    view from the results, the facets and ``catalog_count``.
     """
     cat = get_catalog()
-    rows = [r for r in cat["records"] if not r["unlisted"]]
+    records = visible_records(cat, hidden)
+    rows = [r for r in records if not r["unlisted"]]
 
     if hyperobject_only:
         rows = [r for r in rows if r["is_hyperobject"]]
@@ -301,8 +356,8 @@ def search_catalog(
     rows = sorted(rows, key=keyfn)
 
     page = rows[offset: offset + limit]
-    # strip the internal haystack from the wire payload
-    results = [{k: v for k, v in r.items() if k != "_haystack"} for r in page]
+    # strip the internal fields (_haystack, _access_control) from the wire payload
+    results = [{k: v for k, v in r.items() if not k.startswith("_")} for r in page]
 
     return {
         "results": results,
@@ -310,5 +365,5 @@ def search_catalog(
         "limit": limit,
         "offset": offset,
         "facets": facets,
-        "catalog_count": cat["count"],
+        "catalog_count": len(records),
     }

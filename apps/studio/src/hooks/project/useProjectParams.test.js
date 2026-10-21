@@ -88,23 +88,26 @@ const mockHandleGenerate = vi.fn()
 const { renderState } = vi.hoisted(() => ({ renderState: { parts: [] } }))
 
 vi.mock('../render/useRender', () => ({
-  useRender: () => ({
-    parts: renderState.parts,
-    setParts: mockSetParts,
-    logs: '',
-    setLogs: vi.fn(),
-    loading: false,
-    progress: 0,
-    progressPhase: '',
-    checkCache: mockCheckCache,
-    evictCache: vi.fn(),
-    showConfirmDialog: false,
-    pendingEstimate: null,
-    handleGenerate: mockHandleGenerate,
-    handleCancelGenerate: vi.fn(),
-    handleConfirmRender: vi.fn(),
-    handleCancelRender: vi.fn(),
-  }),
+  useRender: (options) => {
+    renderState.options = options
+    return {
+      parts: renderState.parts,
+      setParts: mockSetParts,
+      logs: '',
+      setLogs: vi.fn(),
+      loading: false,
+      progress: 0,
+      progressPhase: '',
+      checkCache: mockCheckCache,
+      evictCache: vi.fn(),
+      showConfirmDialog: false,
+      pendingEstimate: null,
+      handleGenerate: mockHandleGenerate,
+      handleCancelGenerate: vi.fn(),
+      handleConfirmRender: vi.fn(),
+      handleCancelRender: vi.fn(),
+    }
+  },
 }))
 
 vi.mock('../editor/useKeyboardShortcuts', () => ({
@@ -117,6 +120,25 @@ vi.mock('../render/useParameterPreviewCache', () => ({
     preRenderStatus: 'idle',
   })),
 }))
+
+describe('useProjectParams: a saved source edit misses the L1 render cache', () => {
+  it('moves the cache key without re-running the auto-render effect', async () => {
+    const { bumpSourceRevision } = await import('../../services/cache/sourceRevision')
+    const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+    const getCacheKey = renderState.options.getCacheKey
+    const before = getCacheKey('default', {})
+
+    bumpSourceRevision('slug')
+
+    // Read at call time: the same function now answers a different key, so the
+    // post-save preview cannot be served the pre-edit parts from L1 …
+    expect(renderState.options.getCacheKey('default', {})).not.toBe(before)
+    // … and the key function's identity is unchanged, so the bump alone does not
+    // queue a second (automatic) render behind the forced one the save issues.
+    expect(renderState.options.getCacheKey).toBe(getCacheKey)
+    expect(result.current).toBeDefined()
+  })
+})
 
 describe('useProjectParams', () => {
   it('toggles grid preset', () => {
@@ -806,6 +828,18 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
     })
   })
 
+  it('a parameter scoped by `modes` (not visible_in_modes) is reset the same way', () => {
+    // The manifest schema accepts either field; gridfinity scopes its bin
+    // params with `modes` alone. Reading only visible_in_modes left them
+    // global, so they leaked into every other mode.
+    withManifestParams([{ id: 'only_default', default: 7, modes: ['default'] }], () => {
+      const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { result.current.setParams(prev => ({ ...prev, only_default: 99 })) })
+      act(() => { hashNav.onHashChange({ mode: { id: 'grid' }, preset: null }) })
+      expect(result.current.params.only_default).toBe(7)
+    })
+  })
+
   it('a parameter with no mode scope survives a mode change', () => {
     withManifestParams([{ id: 'shared', default: 1 }], () => {
       const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
@@ -908,6 +942,22 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
     }
   })
 
+  it('a visibility parameter scoped by `modes` also gates the auto-render', () => {
+    vi.useFakeTimers()
+    const saved = mockManifest.parameters
+    mockManifest.parameters = [
+      { id: 'show_body', group: 'visibility', modes: ['default'], default: false },
+    ]
+    try {
+      renderHook(() => useProjectParams({ viewerRef: {} }))
+      act(() => { vi.advanceTimersByTime(2000) })
+      expect(mockHandleGenerate).not.toHaveBeenCalled()
+    } finally {
+      mockManifest.parameters = saved
+      vi.useRealTimers()
+    }
+  })
+
   it('disabling overhang analysis clears the data it produced', () => {
     const { result } = renderHook(() => useProjectParams({ viewerRef: {} }))
     act(() => { result.current.setOverhangEnabled(true) })
@@ -926,6 +976,18 @@ describe('useProjectParams — parameter carry-over on mode switch', () => {
       expect.stringContaining('/analyze/overhang'), expect.anything()
     )
     spy.mockRestore()
+  })
+})
+
+describe('useProjectParams: ghost-preview variants and the render quota', () => {
+  it('does not let the preview cache render in the background on a metered or unknown budget', async () => {
+    const { useParameterPreviewCache } = await import('../render/useParameterPreviewCache')
+    vi.mocked(useParameterPreviewCache).mockClear()
+    renderHook(() => useProjectParams({ viewerRef: {} }))
+    const calls = vi.mocked(useParameterPreviewCache).mock.calls
+    expect(calls.length).toBeGreaterThan(0)
+    // No TierProvider here: limits are unknown, which must count as metered.
+    for (const [options] of calls) expect(options.backgroundRenders).toBe(false)
   })
 })
 

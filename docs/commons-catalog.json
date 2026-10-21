@@ -2,14 +2,14 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 502,
-    "with_cdg_interfaces": 492,
-    "with_commons_license": 502,
+    "cartridges": 512,
+    "with_cdg_interfaces": 502,
+    "with_commons_license": 512,
     "dual_engine": 20
   },
   "domains": {
     "household": 126,
-    "industrial": 109,
+    "industrial": 119,
     "commercial": 76,
     "wearable": 72,
     "medical": 44,
@@ -60,11 +60,26 @@
     "19mm/20mm dog hole",
     "2\" (Ø50 mm) and 3\" (Ø76 mm) net-cup rim seat",
     "2/3in net cup",
+    "20 x 20 mm VTX pattern; the foot's two bolts use one 20 mm row (bolt_span 20, across the lean)",
     "20-55 mm belt webbing channel",
     "20/25/38mm webbing",
     "20/25mm compass",
     "20/25mm webbing",
+    "2020 6 mm slot (MISUMI HFS5): a 5.8 tongue 2 high on the pad's top face, along the C",
     "2020 T-slot (6 mm slot)",
+    "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+    "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+    "2020 series-5 slot (6 mm opening); D's bottom face rests on the saddle; the frame sits 10 from D's end (its slot station)",
+    "2020 series-5 slot (6 mm opening); the arm bears on the rear beam's top face, at the slot station 10 from its end",
+    "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+    "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+    "2020 series-5 slot (6 mm opening); the end face bears on the horizontal's side, 10 from its butted end",
+    "2020 series-5 slot (6 mm opening); the heel bears on the upright's inner face, 30 below its top",
+    "2020 series-5 slot (6 mm opening); the mount face bears on the extrusion face",
+    "2020 series-5 slot (6 mm opening); the plate's underside bears on the bed extrusion's top face, 10 from its butted end",
+    "2020 series-5 slot (6 mm opening); the plate's underside bears on the horizontal's top face",
+    "2020 series-5 slot (6 mm opening); the top face bears on the horizontal's bottom face, 10 from its butted end",
+    "2020 series-5 slot (6 mm opening); the top face bears on the perpendicular horizontal's bottom face, 10 from its butted end",
     "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
     "20mm T-slot (2020)",
     "24T Futaba / 25T Spektrum",
@@ -89,6 +104,8 @@
     "34 mm flask neck OD (250/500 mL)",
     "38-400 continuous-thread finish",
     "4 in safety-pattern hasp (No.8/M4 screws)",
+    "4 × M3 heat-set inserts on a 20 mm square (the MGN12H's pattern, HIWIN); the plate's front face, framed at the pattern's centre",
+    "4 × M3 on a 20 mm square (HIWIN MGN12H B 20 × C 20); the proxy's back face, framed at the pattern's centre; M3 screws through the proxy into the carriage's threads",
     "4/6mm pneumatic tube",
     "5/8-27 mic thread",
     "5/8in (16mm) baby pin",
@@ -96,6 +113,7 @@
     "52mm/60mm gauge",
     "550 paracord (~4mm)",
     "58/54/51mm basket",
+    "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
     "6-10mm shaft",
     "6-12mm shaft",
     "6-30 mm seed Ø series (maize ~8-12, common bean ~10-14, squash ~12-18)",
@@ -105,12 +123,16 @@
     "608 bearing OD 22 mm / plain shaft bore",
     "60° V-groove bench block",
     "60° lever-indicator dovetail",
+    "625 bearing (5 × 16 × 5) in a Ø16.2 pocket 5 deep, face A flush with the opening face, a 1.5 mm shoulder with a Ø10 hole behind it",
     "6mm dia × 2mm N52 neodymium",
     "70-450 / 86-450 mason CT finish",
+    "8 mm ground shaft (shaft-8mm) at shaft_dia 8",
     "8 mm indicator stem (Mitutoyo Series 2 / AGD Group 2)",
     "8 mm indicator stem (Mitutoyo Series 2)",
     "830-pt breadboard",
+    "9 mm GT2 belt end (Gates 2MR, B 1.52, T 0.76): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed on the slot wall the back bears on, at the jaw entrance and mid-width",
     "90mm petri",
+    "A 6 mm groove 2.5 deep along z for a 5.8 tongue, as a 2020 slot's opening (MISUMI HFS5); framed on the backer's face",
     "ANSI-SLAS microplate 9 mm pitch",
     "ANSI/BHMA A156.2 deadbolt strike, 1 in bore",
     "ANSI/SLAS 1-2004 & 4-2004 (9mm pitch)",
@@ -140,7 +162,10 @@
     "ETA 2824-2 (25.6 mm / 11.5 ligne)",
     "ETA/standard calibre band (ligne = 2.2558 mm)",
     "Erlenmeyer/beaker body Ø70-108 mm",
+    "FPV camera body, nano 14 / micro 19 / mini 21 mm class; the camera's front (lens) face seats on the floor and looks out through the lens aperture",
+    "FPV frame camera side plate, outer face, on the camera side-screw axis",
     "FPV micro/nano cam (nano 14 / micro 19 / mini 21 mm)",
+    "Flight-controller stack 30.5x30.5 M3 / 20x20 M3 / 20x20 M2",
     "French cleat 45 deg",
     "GHT 3/4",
     "GHT 3/4 / M22-M24 aerator",
@@ -157,10 +182,14 @@
     "Gridfinity baseplate socket (0.25 mm clearance)",
     "Gridfinity stacking-lip profile (0.8/1.8/2.15 mm chamfer stack, ~4.75 mm)",
     "H1Z2Z2-K 4-6 mm2 solar lead OD series",
+    "HIWIN MGN12H top: 4 × M3 on 20 × 20; the plate's back face, M3x8 SHCS through it into the block",
+    "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along), M3x3 threads; the joint's underside, M3x8 screws through it",
+    "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along); the plate's face, M3 screws through it",
     "IEC 60061 E26 / E27 (7 TPI)",
     "ISO 15 (608/625/6900)",
     "ISO 15 (623/625/6900)",
     "ISO 15 (625/608)",
+    "ISO 15 deep-groove ball bearing outer-ring seat (608: 8 x 22 x 7)",
     "ISO 23509",
     "ISO 23509 bevel and hypoid gear geometry",
     "ISO 261 / ISO 965",
@@ -182,6 +211,20 @@
     "ISO 53 / DIN 867 involute tooth form",
     "ISO 7045 M3",
     "ISO 7045 M4",
+    "ISO 7380-1 M5x10 button head on the back wall's outer face, 4.5 behind D's back face (5.5 of the screw passes into the nut)",
+    "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the C's top face (5.5 of the screw passes into the nut)",
+    "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the beam's top face",
+    "ISO 7380-1 M5x10 button head on the pad's underside (10 − 4.5 into the T-nut)",
+    "ISO 7380-1 M5x10 button head on the plate's top face (10 − plate_t into the T-nut)",
+    "ISO 7380-1 M5x10 button head, head on the counterbore floor (10 − 4.5 = 5.5 into the T-nut)",
+    "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the F695 stack; the stack the other belt's teeth run on, turning it from its Y run into its rear run",
+    "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the F695 stack; the stack the own belt's back runs on, bending the rear run round the pulley",
+    "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the GT2 20T idler's axle, screwed into a Ø4.2 pilot (guide pp. 98, 100)",
+    "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the toothed idler's axle, cut into a Ø4.2 pilot in the boss",
+    "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the stack; the screw is the stack's axle and cuts its thread in a Ø4.2 pilot below the stack (guide pp. 97, 99: the stack on a screw into plastic)",
+    "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+    "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm",
+    "ISO 7380-1 M5x30 button head, head on the counterbore floor",
     "ISO 8037-1 (25.4x76.2mm)",
     "ISO 8037-1:2003",
     "ISO 8536 gravity infusion set (nominal 15-22 mm body)",
@@ -204,6 +247,16 @@
     "M46-M82 x 0.75",
     "M49-M82 x 0.75",
     "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+    "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
+    "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
+    "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+    "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+    "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+    "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+    "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+    "M5 screw through the pad into an M5 T-nut in a 2020 6 mm slot; framed on the pad's top face, which bears on the C's bottom face",
+    "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+    "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on",
     "M5/M6",
     "MC4",
     "MC4 PV connector body, Ø16 mm nominal barrel",
@@ -216,8 +269,12 @@
     "Multiboard 25 mm",
     "Multiconnect / GOEWS",
     "NATO accessory rail",
+    "NEMA 17 face (4 × M3 on 31, Ø22 pilot) under the motor plate, motor hanging below, inboard of the C; clearance holes, the M3 screws from above",
+    "NEMA 17 face: 31 mm square of M3 holes as slots ±2 along x for the loop tension, Ø23 pilot slot",
     "NEMA 17/23",
     "NEMA 17/23/34",
+    "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+    "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the top face",
     "NEMA motor face spec",
     "NPS schedule 40 steel pipe OD (3, 4, 5, 6, 8 in)",
     "Omron SS/D2F",
@@ -240,12 +297,15 @@
     "SD 24x32 / microSD 11x15 / CF 43x36 mm",
     "SG90/MG996R",
     "SMA / U.FL",
+    "SMA bulkhead jack, rear-mounted: shoulder on the cap underside, .250-36 thread through the exit hole (U.FL: the coax exit)",
     "SPI 20-410 / 24-410 / 28-410 (8 TPI)",
     "STEMFIE 10mm block unit",
     "STEMFIE 4mm hole on 10mm pitch",
     "STEMFIE fastener spec",
     "T-slot / 3/4in miter",
     "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
+    "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+    "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
     "T8 leadscrew (8 mm major, 2 mm pitch, 8 mm lead)",
     "T8 trapezoidal / M8 metric leadscrew",
     "Thorlabs 25 mm / 1 in grid, M6 & 1/4-20",
@@ -330,6 +390,7 @@
     "internal: the closed outline — deck_length x deck_depth x (upper + lower deck thickness), corners rounded by corner_radius. An accessory that takes a device envelope mates here.",
     "internal: the closed outline — hinge_axis_length x cover_half_width x (2 x half_thickness + the hinge gap), with the opening edge rounded by corner_radius. An accessory that takes a device envelope mates here. The OPEN outline is hinge_axis_length x (cover_half_width + camera_half_width) x half_thickness.",
     "internal: the cover half's outer face and its footprint — the surface a dock, stand or cradle registers against when the device is closed.",
+    "internal: the flat end of the proxy's nozzle (Ø3); the normal is the nozzle axis, out of the tip toward the bed; x_axis along the machine's X axis",
     "internal: the lower deck's outer face and its rounded footprint — the surface a dock, stand or cradle registers against.",
     "internal: the strip of the folding panel that bends, centred on the fold axis and running the display's full width along it. What the hinge's relief is sized to give room to.",
     "iso_8559",
@@ -366,12 +427,396 @@
     "tabletop base sizes",
     "tape core",
     "tennis ball nominal Ø 67 mm (ITF)",
+    "the F695 stack's bottom face bears on its boss, 5.0 below its belt mid-plane",
+    "the F695 stack's top face bears on the roof arm's underside, 5.0 above its belt mid-plane",
+    "the stack's lower shim bears here, 5 below the stack's belt mid-plane",
+    "the stack's upper shim bears on the roof arm's underside here, 5 above the stack's belt mid-plane",
+    "the toothed idler's bottom face bears on its boss, 4.5 below its belt mid-plane",
+    "the toothed idler's face A bears on the roof arm's underside here; idler_width / 2 above its belt mid-plane",
+    "the toothed idler's face A bears on the roof arm's underside, idler_width / 2 above the belt mid-plane",
+    "the toothed idler's face B bears here",
+    "the toothed idler's face B bears on the boss, idler_width / 2 below the belt mid-plane",
+    "the toothed idler's top face bears on the roof arm's underside, 4.5 above its belt mid-plane",
+    "two-screw microswitch pattern on hole_span centres (Omron SS class at 9.5; Omron D2F at 6.5, size key omron-d2f-mount-m2)",
     "water-bottle boss",
     "whip 20 deg / cleft 35 deg / saddle 14 deg reference wedge",
     "Ø1 in (25.4 mm) / Ø25 mm optic",
     "Ø1/2 in (12.7 mm) optical post"
   ],
   "cartridges": [
+    {
+      "slug": "ab-drive",
+      "name": "A/B Drive",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "ab_drive"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "e_end",
+        "mirrored"
+      ],
+      "parameter_contracts": {
+        "e_end": {
+          "type": "slider",
+          "min": 30.0,
+          "max": 40.0,
+          "step": 0.5,
+          "modes": [
+            "ab_drive"
+          ]
+        },
+        "mirrored": {
+          "type": "checkbox",
+          "modes": [
+            "ab_drive"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable A/B drive for stacked-belt CoreXY gantries on 2020 extrusion: a standard NEMA 17, GT2 pulley, F695 bearings and M5 hardware, a pulley wrap derived from a cited teeth-in-mesh rule, and interfaces machine-checked against the extrusions and the motor it joins.",
+        "es": "Una tracción A/B abierta e imprimible para pórticos CoreXY de bandas apiladas sobre perfil 2020: un NEMA 17, una polea GT2, rodamientos F695 y tornillería M5 estándar, un abrazo de polea derivado de una regla citada de dientes engranados, e interfaces verificadas por máquina contra los perfiles y el motor que une."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "ab_drive_motor_face",
+          "label": "Motor face seat (NEMA 17)",
+          "geometry_type": "bolt_pattern",
+          "standard": "NEMA 17 face (4 × M3 on 31, Ø22 pilot) under the motor plate, motor hanging below, inboard of the C; clearance holes, the M3 screws from above",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_c_mount",
+          "label": "Screw into a T-nut in the C extrusion's top slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_c_mount_head",
+          "label": "Head seat of the C screw (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the C's top face (5.5 of the screw passes into the nut)",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_c_key",
+          "label": "Tongue in the C extrusion's top slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_e_mount",
+          "label": "Screw into a T-nut in the rear beam's top slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
+          "parameters": [
+            "mirrored",
+            "e_end"
+          ]
+        },
+        {
+          "id": "ab_drive_e_mount_head",
+          "label": "Head seat of the rear-beam screw (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the beam's top face",
+          "parameters": [
+            "mirrored",
+            "e_end"
+          ]
+        },
+        {
+          "id": "ab_drive_e_key",
+          "label": "Tongue in the rear beam's top slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the arm bears on the rear beam's top face, at the slot station 10 from its end",
+          "parameters": [
+            "mirrored",
+            "e_end"
+          ]
+        },
+        {
+          "id": "ab_drive_corner_idler_bolt",
+          "label": "Corner idler (K) axle (M5x16 BHCS) head seat",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_corner_idler_roof",
+          "label": "Corner idler (K) roof (the arm over it)",
+          "geometry_type": "surface",
+          "standard": "the toothed idler's top face bears on the roof arm's underside, 4.5 above its belt mid-plane",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_corner_idler_floor",
+          "label": "Corner idler (K) floor",
+          "geometry_type": "surface",
+          "standard": "the toothed idler's bottom face bears on its boss, 4.5 below its belt mid-plane",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_backside_bolt",
+          "label": "Backside stack (Q) axle (M5x16 BHCS) head seat",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the F695 stack; the stack the own belt's back runs on, bending the rear run round the pulley",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_backside_roof",
+          "label": "Backside stack (Q) roof (the arm over it)",
+          "geometry_type": "surface",
+          "standard": "the F695 stack's top face bears on the roof arm's underside, 5.0 above its belt mid-plane",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_backside_floor",
+          "label": "Backside stack (Q) floor",
+          "geometry_type": "surface",
+          "standard": "the F695 stack's bottom face bears on its boss, 5.0 below its belt mid-plane",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_pass_bolt",
+          "label": "Pass-through stack (S) axle (M5x16 BHCS) head seat",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the F695 stack; the stack the other belt's teeth run on, turning it from its Y run into its rear run",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_pass_roof",
+          "label": "Pass-through stack (S) roof (the arm over it)",
+          "geometry_type": "surface",
+          "standard": "the F695 stack's top face bears on the roof arm's underside, 5.0 above its belt mid-plane",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "ab_drive_pass_floor",
+          "label": "Pass-through stack (S) floor",
+          "geometry_type": "surface",
+          "standard": "the F695 stack's bottom face bears on its boss, 5.0 below its belt mid-plane",
+          "parameters": [
+            "mirrored"
+          ]
+        }
+      ],
+      "standards": [
+        "2020 series-5 slot (6 mm opening); the arm bears on the rear beam's top face, at the slot station 10 from its end",
+        "2020 series-5 slot (6 mm opening); the base bears on the C's top face behind the rail, at the slot station 10 from its rear end",
+        "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the C's top face (5.5 of the screw passes into the nut)",
+        "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the beam's top face",
+        "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the F695 stack; the stack the other belt's teeth run on, turning it from its Y run into its rear run",
+        "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the F695 stack; the stack the own belt's back runs on, bending the rear run round the pulley",
+        "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the toothed idler; the GT2 20T 6 mm idler that turns the diagonal from the pulley into the outer run",
+        "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
+        "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+        "NEMA 17 face (4 × M3 on 31, Ø22 pilot) under the motor plate, motor hanging below, inboard of the C; clearance holes, the M3 screws from above",
+        "the F695 stack's bottom face bears on its boss, 5.0 below its belt mid-plane",
+        "the F695 stack's top face bears on the roof arm's underside, 5.0 above its belt mid-plane",
+        "the toothed idler's bottom face bears on its boss, 4.5 below its belt mid-plane",
+        "the toothed idler's top face bears on the roof arm's underside, 4.5 above its belt mid-plane"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "ab-drive/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set ab-drive"
+      }
+    },
+    {
+      "slug": "ab-front-idler",
+      "name": "A/B Front Idler",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "front_idler"
+      ],
+      "parts": 1,
+      "parameters": 3,
+      "parameter_ids": [
+        "idler_y",
+        "idler_width",
+        "mirrored"
+      ],
+      "parameter_contracts": {
+        "idler_y": {
+          "type": "slider",
+          "min": 25.5,
+          "max": 27.0,
+          "step": 0.5,
+          "modes": [
+            "front_idler"
+          ]
+        },
+        "idler_width": {
+          "type": "slider",
+          "min": 6.0,
+          "max": 10.0,
+          "step": 0.5,
+          "modes": [
+            "front_idler"
+          ]
+        },
+        "mirrored": {
+          "type": "checkbox",
+          "modes": [
+            "front_idler"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable front idler for stacked-belt CoreXY gantries on 2020 extrusion: it uses off-the-shelf M5 screws, T-nuts and a GT2 toothed idler, its belt runs are derived from cited belt and pulley data, and its interfaces are machine-checked against the extrusion it mounts on.",
+        "es": "Una polea loca frontal abierta e imprimible para pórticos CoreXY de bandas apiladas sobre perfil 2020: usa tornillos M5, tuercas en T y una polea GT2 estándar, sus tramos de banda se derivan de datos citados de banda y polea, y sus interfaces se verifican por máquina contra el perfil donde se monta."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "front_idler_top_mount",
+          "label": "Screw into a T-nut in the C extrusion's top slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "front_idler_top_mount_head",
+          "label": "Head seat of the C screw (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the C's top face (5.5 of the screw passes into the nut)",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "front_idler_top_key",
+          "label": "Tongue in the C extrusion's top slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "front_idler_idler_bolt",
+          "label": "Idler axle (M5x16 BHCS) head seat",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the toothed idler's axle, cut into a Ø4.2 pilot in the boss",
+          "parameters": [
+            "mirrored",
+            "idler_y",
+            "idler_width"
+          ]
+        },
+        {
+          "id": "front_idler_idler_roof",
+          "label": "Idler roof (the arm over the idler)",
+          "geometry_type": "surface",
+          "standard": "the toothed idler's face A bears on the roof arm's underside, idler_width / 2 above the belt mid-plane",
+          "parameters": [
+            "mirrored",
+            "idler_y",
+            "idler_width"
+          ]
+        },
+        {
+          "id": "front_idler_idler_floor",
+          "label": "Idler floor (the boss top)",
+          "geometry_type": "surface",
+          "standard": "the toothed idler's face B bears on the boss, idler_width / 2 below the belt mid-plane",
+          "parameters": [
+            "mirrored",
+            "idler_y",
+            "idler_width"
+          ]
+        }
+      ],
+      "standards": [
+        "2020 series-5 slot (6 mm opening); the block bears on the C's top face, at the slot station 10 from its front end",
+        "ISO 7380-1 M5x10 button head on the counterbore floor, 4.5 above the C's top face (5.5 of the screw passes into the nut)",
+        "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the toothed idler's axle, cut into a Ø4.2 pilot in the boss",
+        "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+        "the toothed idler's face A bears on the roof arm's underside, idler_width / 2 above the belt mid-plane",
+        "the toothed idler's face B bears on the boss, idler_width / 2 below the belt mid-plane"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "ab-front-idler/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set ab-front-idler"
+      }
+    },
     {
       "slug": "aerator-adapter",
       "name": "Faucet Aerator Adapter",
@@ -3751,7 +4196,8 @@
           "standard": "internal",
           "parameters": [
             "strap_w",
-            "pack_l"
+            "pack_l",
+            "pad_thick"
           ]
         },
         {
@@ -4298,6 +4744,159 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set bed-corner"
+      }
+    },
+    {
+      "slug": "bed-extrusion-mount",
+      "name": "Bed Extrusion Mount",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "bed_mount"
+      ],
+      "parts": 1,
+      "parameters": 3,
+      "parameter_ids": [
+        "screw_offset",
+        "stem_length",
+        "plate_t"
+      ],
+      "parameter_contracts": {
+        "screw_offset": {
+          "type": "slider",
+          "min": 8.0,
+          "max": 30.0,
+          "step": 0.5,
+          "modes": [
+            "bed_mount"
+          ]
+        },
+        "stem_length": {
+          "type": "slider",
+          "min": 15.0,
+          "max": 40.0,
+          "step": 0.5,
+          "modes": [
+            "bed_mount"
+          ]
+        },
+        "plate_t": {
+          "type": "slider",
+          "min": 4.0,
+          "max": 5.0,
+          "step": 0.25,
+          "modes": [
+            "bed_mount"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable joint for a printer's bed supports on 2020 extrusion: it uses only M5 screws and T-nuts, so a builder can print, replace or adapt it without a proprietary bracket, and its interfaces are machine-checked against both extrusions it joins.",
+        "es": "Una unión abierta e imprimible para los soportes de cama de una impresora sobre perfil 2020: usa solo tornillos M5 y tuercas en T, de modo que quien la arma puede imprimirla, reponerla o adaptarla sin escuadras propietarias, y sus interfaces se verifican por máquina contra los dos perfiles que une."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "bed_mount_frame_a",
+          "label": "Frame screw A into a T-nut in the horizontal's top slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "parameters": [
+            "screw_offset"
+          ]
+        },
+        {
+          "id": "bed_mount_frame_b",
+          "label": "Frame screw B into a T-nut in the horizontal's top slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "parameters": [
+            "screw_offset"
+          ]
+        },
+        {
+          "id": "bed_mount_bed",
+          "label": "Bed screw into a T-nut in the bed extrusion's top slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face",
+          "parameters": []
+        },
+        {
+          "id": "bed_mount_frame_a_head",
+          "label": "Head seat of frame screw A (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head on the plate's top face (10 − plate_t into the T-nut)",
+          "parameters": [
+            "screw_offset",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "bed_mount_frame_b_head",
+          "label": "Head seat of frame screw B (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head on the plate's top face (10 − plate_t into the T-nut)",
+          "parameters": [
+            "screw_offset",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "bed_mount_bed_head",
+          "label": "Head seat of the bed screw (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head on the plate's top face (10 − plate_t into the T-nut)",
+          "parameters": [
+            "plate_t"
+          ]
+        },
+        {
+          "id": "bed_mount_frame_key",
+          "label": "Tongue in the horizontal's top slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the plate's underside bears on the horizontal's top face",
+          "parameters": []
+        },
+        {
+          "id": "bed_mount_bed_key",
+          "label": "Tongue in the bed extrusion's top slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the plate's underside bears on the bed extrusion's top face, 10 from its butted end",
+          "parameters": []
+        }
+      ],
+      "standards": [
+        "2020 series-5 slot (6 mm opening); the plate's underside bears on the bed extrusion's top face, 10 from its butted end",
+        "2020 series-5 slot (6 mm opening); the plate's underside bears on the horizontal's top face",
+        "ISO 7380-1 M5x10 button head on the plate's top face (10 − plate_t into the T-nut)",
+        "M5 screw through the plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm top slot; framed on the plate's underside, which bears on the extrusion's top face"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "bed-extrusion-mount/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set bed-extrusion-mount"
       }
     },
     {
@@ -14291,9 +14890,21 @@
             "slot_len",
             "foot_len"
           ]
+        },
+        {
+          "id": "extrusion_bracket_foot_slot",
+          "label": "Foot seat on the extrusion slot (extrusion bracket)",
+          "geometry_type": "profile",
+          "standard": "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "parameters": [
+            "foot_len",
+            "mount_d"
+          ]
         }
       ],
-      "standards": [],
+      "standards": [
+        "2020 T-slot extrusion, M5 T-nuts on the slot centre-line"
+      ],
       "source": {
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
         "manifest": "chain-mount/project.json",
@@ -18046,6 +18657,228 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set corner-clamp"
+      }
+    },
+    {
+      "slug": "corner-idler-bracket",
+      "name": "Corner Idler Bracket",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "corner_idler"
+      ],
+      "parts": 1,
+      "parameters": 10,
+      "parameter_ids": [
+        "idler_width",
+        "idler_od",
+        "idler_clear",
+        "idler_offset",
+        "idler_drop",
+        "front_arm",
+        "mount_grip",
+        "mount_pitch",
+        "heel_reach",
+        "mirrored"
+      ],
+      "parameter_contracts": {
+        "idler_width": {
+          "type": "slider",
+          "min": 9.0,
+          "max": 18.0,
+          "step": 0.5,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "idler_od": {
+          "type": "slider",
+          "min": 12.0,
+          "max": 22.0,
+          "step": 0.5,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "idler_clear": {
+          "type": "slider",
+          "min": 0.2,
+          "max": 1.0,
+          "step": 0.05,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "idler_offset": {
+          "type": "slider",
+          "min": 13.0,
+          "max": 40.0,
+          "step": 0.5,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "idler_drop": {
+          "type": "slider",
+          "min": 20.0,
+          "max": 60.0,
+          "step": 0.5,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "front_arm": {
+          "type": "slider",
+          "min": 3.0,
+          "max": 6.0,
+          "step": 0.5,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "mount_grip": {
+          "type": "slider",
+          "min": 22.0,
+          "max": 26.5,
+          "step": 0.5,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "mount_pitch": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 60.0,
+          "step": 1.0,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "heel_reach": {
+          "type": "slider",
+          "min": 15.0,
+          "max": 20.0,
+          "step": 0.5,
+          "modes": [
+            "corner_idler"
+          ]
+        },
+        "mirrored": {
+          "type": "checkbox",
+          "modes": [
+            "corner_idler"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable corner idler for belt-driven machines built on 2020 extrusion: it uses off-the-shelf M5 screws, T-nuts and a standard GT2 idler, so a builder can replace or adapt it without a proprietary part, and its interfaces are machine-checked against the frame it mounts on.",
+        "es": "Una polea loca de esquina abierta e imprimible para máquinas con banda sobre perfil 2020: usa tornillos M5, tuercas en T y una polea GT2 estándar, de modo que quien la arma puede reponerla o adaptarla sin piezas propietarias, y sus interfaces se verifican por máquina contra el marco donde se monta."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "corner_idler_mount_a",
+          "label": "Mount screw A into a T-nut in the horizontal's slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "corner_idler_mount_b",
+          "label": "Mount screw B into a T-nut in the horizontal's slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "parameters": [
+            "mirrored",
+            "mount_pitch"
+          ]
+        },
+        {
+          "id": "corner_idler_mount_a_head",
+          "label": "Head seat of mount screw A (M5x30 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x30 button head, head on the counterbore floor",
+          "parameters": [
+            "mirrored",
+            "mount_grip"
+          ]
+        },
+        {
+          "id": "corner_idler_mount_b_head",
+          "label": "Head seat of mount screw B (M5x30 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x30 button head, head on the counterbore floor",
+          "parameters": [
+            "mirrored",
+            "mount_grip",
+            "mount_pitch"
+          ]
+        },
+        {
+          "id": "corner_idler_corner_key",
+          "label": "Corner tongue in the perpendicular horizontal's slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the end face bears on the horizontal's side, 10 from its butted end",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "corner_idler_upright_key",
+          "label": "Heel tongue in the upright's slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the heel bears on the upright's inner face, 30 below its top",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "corner_idler_idler_bolt",
+          "label": "Idler axle screw (M5x30 BHCS) head seat",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm",
+          "parameters": [
+            "mirrored",
+            "idler_offset",
+            "idler_drop"
+          ]
+        }
+      ],
+      "standards": [
+        "2020 series-5 slot (6 mm opening); the end face bears on the horizontal's side, 10 from its butted end",
+        "2020 series-5 slot (6 mm opening); the heel bears on the upright's inner face, 30 below its top",
+        "ISO 7380-1 M5x30 button head through the front arm; the screw is the GT2 idler's axle and cuts its thread in the rear arm",
+        "ISO 7380-1 M5x30 button head, head on the counterbore floor",
+        "M5 screw through the bracket into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "corner-idler-bracket/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set corner-idler-bracket"
       }
     },
     {
@@ -25523,10 +26356,34 @@
             "slot_len",
             "foot_len"
           ]
+        },
+        {
+          "id": "extrusion_endstop_foot_slot",
+          "label": "Foot seat on the extrusion slot (extrusion endstop)",
+          "geometry_type": "profile",
+          "standard": "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "parameters": [
+            "foot_len",
+            "mount_d"
+          ]
+        },
+        {
+          "id": "extrusion_endstop_switch_face",
+          "label": "Microswitch seat on the upstand (extrusion endstop)",
+          "geometry_type": "bolt_pattern",
+          "standard": "two-screw microswitch pattern on hole_span centres (Omron SS class at 9.5; Omron D2F at 6.5, size key omron-d2f-mount-m2)",
+          "parameters": [
+            "foot_len",
+            "plate_t",
+            "hole_span",
+            "switch_hole"
+          ]
         }
       ],
       "standards": [
-        "Omron SS/D2F"
+        "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+        "Omron SS/D2F",
+        "two-screw microswitch pattern on hole_span centres (Omron SS class at 9.5; Omron D2F at 6.5, size key omron-d2f-mount-m2)"
       ],
       "source": {
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
@@ -29137,7 +29994,7 @@
         "clip"
       ],
       "parts": 3,
-      "parameters": 11,
+      "parameters": 12,
       "parameter_ids": [
         "connector",
         "stalk_h",
@@ -29149,7 +30006,8 @@
         "bolt_span",
         "tube_d",
         "tube_len",
-        "clip_gap"
+        "clip_gap",
+        "jack_body_d"
       ],
       "parameter_contracts": {
         "connector": {
@@ -29263,6 +30121,15 @@
           "modes": [
             "clip"
           ]
+        },
+        "jack_body_d": {
+          "type": "slider",
+          "min": 6.0,
+          "max": 14.0,
+          "step": 0.5,
+          "modes": [
+            "sma_bracket"
+          ]
         }
       },
       "export_formats": [
@@ -29304,10 +30171,33 @@
             "bolt_d",
             "clip_gap"
           ]
+        },
+        {
+          "id": "sma_bracket_jack_seat",
+          "label": "Rear-mounted jack seat (cap underside)",
+          "geometry_type": "thread",
+          "standard": "SMA bulkhead jack, rear-mounted: shoulder on the cap underside, .250-36 thread through the exit hole (U.FL: the coax exit)",
+          "parameters": [
+            "connector",
+            "stalk_h",
+            "back_angle",
+            "jack_body_d"
+          ]
+        },
+        {
+          "id": "sma_bracket_foot",
+          "label": "Foot on a 20 x 20 VTX seat (one row)",
+          "geometry_type": "bolt_pattern",
+          "standard": "20 x 20 mm VTX pattern; the foot's two bolts use one 20 mm row (bolt_span 20, across the lean)",
+          "parameters": [
+            "bolt_span"
+          ]
         }
       ],
       "standards": [
-        "SMA / U.FL"
+        "20 x 20 mm VTX pattern; the foot's two bolts use one 20 mm row (bolt_span 20, across the lean)",
+        "SMA / U.FL",
+        "SMA bulkhead jack, rear-mounted: shoulder on the cap underside, .250-36 thread through the exit hole (U.FL: the coax exit)"
       ],
       "source": {
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
@@ -29335,17 +30225,19 @@
         "naked_mount"
       ],
       "parts": 3,
-      "parameters": 9,
+      "parameters": 11,
       "parameter_ids": [
         "cam_size",
         "tilt",
+        "cam_len",
         "lens_hole",
         "wall",
         "cam_clear",
         "base_h",
         "mount_width",
         "tab_thick",
-        "tab_hole_d"
+        "tab_hole_d",
+        "ear_reach"
       ],
       "parameter_contracts": {
         "cam_size": {
@@ -29366,6 +30258,17 @@
           "min": 0.0,
           "max": 55.0,
           "step": 1,
+          "modes": [
+            "cage",
+            "tilt_mount",
+            "naked_mount"
+          ]
+        },
+        "cam_len": {
+          "type": "slider",
+          "min": 10.0,
+          "max": 30.0,
+          "step": 0.5,
           "modes": [
             "cage",
             "tilt_mount",
@@ -29444,6 +30347,17 @@
             "tilt_mount",
             "naked_mount"
           ]
+        },
+        "ear_reach": {
+          "type": "slider",
+          "min": 6.0,
+          "max": 40.0,
+          "step": 0.5,
+          "modes": [
+            "cage",
+            "tilt_mount",
+            "naked_mount"
+          ]
         }
       },
       "export_formats": [
@@ -29478,17 +30392,134 @@
         },
         {
           "id": "frame_mount_tabs",
-          "label": "Frame Mount Tabs",
+          "label": "Frame Mount Ears",
           "geometry_type": "bolt_pattern",
           "standard": "internal",
           "parameters": [
             "mount_width",
             "tab_thick",
+            "tab_hole_d",
+            "ear_reach"
+          ]
+        },
+        {
+          "id": "cage_cradle_floor",
+          "label": "Cradle floor (cage)",
+          "geometry_type": "pocket",
+          "standard": "FPV camera body, nano 14 / micro 19 / mini 21 mm class; the camera's front (lens) face seats on the floor and looks out through the lens aperture",
+          "parameters": [
+            "cam_size",
+            "cam_len",
+            "cam_clear",
+            "tilt"
+          ]
+        },
+        {
+          "id": "tilt_mount_cradle_floor",
+          "label": "Cradle floor (tilt bracket)",
+          "geometry_type": "pocket",
+          "standard": "FPV camera body, nano 14 / micro 19 / mini 21 mm class; the camera's front (lens) face seats on the floor and looks out through the lens aperture",
+          "parameters": [
+            "cam_size",
+            "cam_len",
+            "cam_clear",
+            "tilt"
+          ]
+        },
+        {
+          "id": "cage_ear_left",
+          "label": "Ear on the frame's left side plate (cage)",
+          "geometry_type": "bolt_pattern",
+          "standard": "FPV frame camera side plate, outer face, on the camera side-screw axis",
+          "parameters": [
+            "mount_width",
+            "ear_reach",
+            "cam_size",
+            "cam_clear",
+            "wall",
+            "tilt",
+            "tab_hole_d"
+          ]
+        },
+        {
+          "id": "cage_ear_right",
+          "label": "Ear on the frame's right side plate (cage)",
+          "geometry_type": "bolt_pattern",
+          "standard": "FPV frame camera side plate, outer face, on the camera side-screw axis",
+          "parameters": [
+            "mount_width",
+            "ear_reach",
+            "cam_size",
+            "cam_clear",
+            "wall",
+            "tilt",
+            "tab_hole_d"
+          ]
+        },
+        {
+          "id": "tilt_mount_ear_left",
+          "label": "Ear on the frame's left side plate (tilt bracket)",
+          "geometry_type": "bolt_pattern",
+          "standard": "FPV frame camera side plate, outer face, on the camera side-screw axis",
+          "parameters": [
+            "mount_width",
+            "ear_reach",
+            "cam_size",
+            "cam_clear",
+            "wall",
+            "tilt",
+            "tab_hole_d"
+          ]
+        },
+        {
+          "id": "tilt_mount_ear_right",
+          "label": "Ear on the frame's right side plate (tilt bracket)",
+          "geometry_type": "bolt_pattern",
+          "standard": "FPV frame camera side plate, outer face, on the camera side-screw axis",
+          "parameters": [
+            "mount_width",
+            "ear_reach",
+            "cam_size",
+            "cam_clear",
+            "wall",
+            "tilt",
+            "tab_hole_d"
+          ]
+        },
+        {
+          "id": "naked_mount_ear_left",
+          "label": "Ear on the frame's left side plate (naked mount)",
+          "geometry_type": "bolt_pattern",
+          "standard": "FPV frame camera side plate, outer face, on the camera side-screw axis",
+          "parameters": [
+            "mount_width",
+            "ear_reach",
+            "cam_size",
+            "cam_clear",
+            "wall",
+            "tilt",
+            "tab_hole_d"
+          ]
+        },
+        {
+          "id": "naked_mount_ear_right",
+          "label": "Ear on the frame's right side plate (naked mount)",
+          "geometry_type": "bolt_pattern",
+          "standard": "FPV frame camera side plate, outer face, on the camera side-screw axis",
+          "parameters": [
+            "mount_width",
+            "ear_reach",
+            "cam_size",
+            "cam_clear",
+            "wall",
+            "tilt",
             "tab_hole_d"
           ]
         }
       ],
       "standards": [
+        "FPV camera body, nano 14 / micro 19 / mini 21 mm class; the camera's front (lens) face seats on the floor and looks out through the lens aperture",
+        "FPV frame camera side plate, outer face, on the camera side-screw axis",
         "FPV micro/nano cam (nano 14 / micro 19 / mini 21 mm)"
       ],
       "source": {
@@ -38857,10 +39888,33 @@
             "press_fit",
             "width"
           ]
+        },
+        {
+          "id": "flat_idler_bearing_seat",
+          "label": "Bearing seat entrance (flat idler)",
+          "geometry_type": "socket",
+          "standard": "ISO 15 deep-groove ball bearing outer-ring seat (608: 8 x 22 x 7)",
+          "parameters": [
+            "bearing",
+            "width",
+            "press_fit"
+          ]
+        },
+        {
+          "id": "round_idler_bearing_seat",
+          "label": "Bearing seat entrance (round-groove idler)",
+          "geometry_type": "socket",
+          "standard": "ISO 15 deep-groove ball bearing outer-ring seat (608: 8 x 22 x 7)",
+          "parameters": [
+            "bearing",
+            "width",
+            "press_fit"
+          ]
         }
       ],
       "standards": [
-        "608 bearing (ISO 15 — 8×22×7)"
+        "608 bearing (ISO 15 — 8×22×7)",
+        "ISO 15 deep-groove ball bearing outer-ring seat (608: 8 x 22 x 7)"
       ],
       "source": {
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
@@ -47433,7 +48487,7 @@
         "cabinet_drawer"
       ],
       "parts": 10,
-      "parameters": 28,
+      "parameters": 29,
       "parameter_ids": [
         "slide_standard",
         "custom_slide_length",
@@ -47443,6 +48497,7 @@
         "wall",
         "tolerance_xy",
         "tolerance_z",
+        "fit_clearance_slide",
         "density",
         "lid_snap",
         "tray_columns",
@@ -47554,6 +48609,17 @@
             "slide_box",
             "slide_tray",
             "staining_rack_cq"
+          ]
+        },
+        "fit_clearance_slide": {
+          "type": "slider",
+          "min": 0.0,
+          "max": 1.0,
+          "step": 0.01,
+          "visible_in_modes": [
+            "box",
+            "staining_rack",
+            "cabinet_drawer"
           ]
         },
         "density": {
@@ -47809,12 +48875,15 @@
         "main"
       ],
       "parts": 1,
-      "parameters": 4,
+      "parameters": 7,
       "parameter_ids": [
         "slide_standard",
         "custom_slide_length",
         "custom_slide_width",
-        "custom_slide_thickness"
+        "custom_slide_thickness",
+        "scale_comp_x",
+        "scale_comp_y",
+        "scale_comp_z"
       ],
       "parameter_contracts": {
         "slide_standard": {
@@ -47840,6 +48909,24 @@
           "min": 0.1,
           "max": 3.0,
           "step": 0.01
+        },
+        "scale_comp_x": {
+          "type": "slider",
+          "min": 0.9,
+          "max": 1.1,
+          "step": 0.001
+        },
+        "scale_comp_y": {
+          "type": "slider",
+          "min": 0.9,
+          "max": 1.1,
+          "step": 0.001
+        },
+        "scale_comp_z": {
+          "type": "slider",
+          "min": 0.9,
+          "max": 1.1,
+          "step": 0.001
         }
       },
       "export_formats": [
@@ -49593,7 +50680,9 @@
           "parameters": [
             "arm_width",
             "arm_thick",
-            "clamp_wall"
+            "clamp_wall",
+            "plate_thick",
+            "iso_gap"
           ]
         }
       ],
@@ -50858,10 +51947,58 @@
             "base_bolt_d",
             "base_len"
           ]
+        },
+        {
+          "id": "flat_bracket_motor_face",
+          "label": "Motor face seat (flat bracket)",
+          "geometry_type": "bolt_pattern",
+          "standard": "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the top face",
+          "parameters": [
+            "nema",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "extrusion_mount_foot_slot",
+          "label": "Foot seat on the extrusion slot (extrusion mount)",
+          "geometry_type": "profile",
+          "standard": "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+          "parameters": [
+            "base_len"
+          ]
+        },
+        {
+          "id": "l_bracket_motor_face",
+          "label": "Motor face seat (L-bracket)",
+          "geometry_type": "bolt_pattern",
+          "standard": "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+          "parameters": [
+            "nema",
+            "margin",
+            "base_len",
+            "base_t",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "extrusion_mount_motor_face",
+          "label": "Motor face seat (extrusion mount)",
+          "geometry_type": "bolt_pattern",
+          "standard": "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+          "parameters": [
+            "nema",
+            "margin",
+            "base_len",
+            "base_t",
+            "plate_t"
+          ]
         }
       ],
       "standards": [
-        "NEMA 17/23"
+        "2020 T-slot extrusion, M5 T-nuts on the slot centre-line",
+        "NEMA 17/23",
+        "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the outer face",
+        "NEMA ICS 16 face (frame size 17 / 23), clearance holes, motor on the top face"
       ],
       "source": {
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
@@ -54096,15 +55233,17 @@
         "cadquery"
       ],
       "dual_engine": false,
-      "modes": 3,
+      "modes": 4,
       "mode_ids": [
         "plate",
         "standoffs",
-        "spacer"
+        "spacer",
+        "fc_stack"
       ],
-      "parts": 3,
-      "parameters": 9,
+      "parts": 4,
+      "parameters": 10,
       "parameter_ids": [
+        "stack_pattern",
         "pattern",
         "rect_w",
         "rect_d",
@@ -54116,6 +55255,17 @@
         "plate_t"
       ],
       "parameter_contracts": {
+        "stack_pattern": {
+          "type": "select",
+          "modes": [
+            "fc_stack"
+          ],
+          "options": [
+            "30.5x30.5-m3",
+            "20x20-m3",
+            "20x20-m2"
+          ]
+        },
         "pattern": {
           "type": "select",
           "modes": [
@@ -54185,7 +55335,8 @@
           "modes": [
             "plate",
             "standoffs",
-            "spacer"
+            "spacer",
+            "fc_stack"
           ]
         },
         "screw_size": {
@@ -54207,7 +55358,8 @@
           "max": 6.0,
           "step": 0.2,
           "modes": [
-            "plate"
+            "plate",
+            "fc_stack"
           ]
         }
       },
@@ -54254,9 +55406,30 @@
             "screw_size",
             "standoff_h"
           ]
+        },
+        {
+          "id": "fc_stack_underside",
+          "label": "FC Stack Plate Underside",
+          "geometry_type": "bolt_pattern",
+          "standard": "Flight-controller stack 30.5x30.5 M3 / 20x20 M3 / 20x20 M2",
+          "parameters": [
+            "stack_pattern"
+          ]
+        },
+        {
+          "id": "fc_stack_top",
+          "label": "FC stack seat (standoff tops)",
+          "geometry_type": "bolt_pattern",
+          "standard": "Flight-controller stack 30.5x30.5 M3 / 20x20 M3 / 20x20 M2",
+          "parameters": [
+            "stack_pattern",
+            "plate_t",
+            "standoff_h"
+          ]
         }
       ],
       "standards": [
+        "Flight-controller stack 30.5x30.5 M3 / 20x20 M3 / 20x20 M2",
         "ISO metric (M2/M2.5/M3)"
       ],
       "source": {
@@ -59621,6 +60794,17 @@
           "parameters": [
             "motor_pattern",
             "prop_dia",
+            "hub_bore",
+            "ring_height"
+          ]
+        },
+        {
+          "id": "hub_underside",
+          "label": "Hub Underside",
+          "geometry_type": "bolt_pattern",
+          "standard": "16x16 / 19x19 / 9x9 brushless motor mount",
+          "parameters": [
+            "motor_pattern",
             "hub_bore"
           ]
         },
@@ -63297,13 +64481,14 @@
         "cadquery"
       ],
       "dual_engine": false,
-      "modes": 3,
+      "modes": 4,
       "mode_ids": [
         "bracket",
         "bearing_bracket",
-        "bracket_pair"
+        "bracket_pair",
+        "extrusion_bracket"
       ],
-      "parts": 3,
+      "parts": 4,
       "parameters": 11,
       "parameter_ids": [
         "shaft_dia",
@@ -63327,7 +64512,8 @@
           "modes": [
             "bracket",
             "bearing_bracket",
-            "bracket_pair"
+            "bracket_pair",
+            "extrusion_bracket"
           ]
         },
         "open_slot": {
@@ -63352,7 +64538,8 @@
           "modes": [
             "bracket",
             "bearing_bracket",
-            "bracket_pair"
+            "bracket_pair",
+            "extrusion_bracket"
           ]
         },
         "web_thick": {
@@ -63363,7 +64550,8 @@
           "modes": [
             "bracket",
             "bearing_bracket",
-            "bracket_pair"
+            "bracket_pair",
+            "extrusion_bracket"
           ]
         },
         "web_width": {
@@ -63374,7 +64562,8 @@
           "modes": [
             "bracket",
             "bearing_bracket",
-            "bracket_pair"
+            "bracket_pair",
+            "extrusion_bracket"
           ]
         },
         "foot_len": {
@@ -63385,7 +64574,8 @@
           "modes": [
             "bracket",
             "bearing_bracket",
-            "bracket_pair"
+            "bracket_pair",
+            "extrusion_bracket"
           ]
         },
         "foot_thick": {
@@ -63396,7 +64586,8 @@
           "modes": [
             "bracket",
             "bearing_bracket",
-            "bracket_pair"
+            "bracket_pair",
+            "extrusion_bracket"
           ]
         },
         "mount": {
@@ -63419,7 +64610,8 @@
           "modes": [
             "bracket",
             "bearing_bracket",
-            "bracket_pair"
+            "bracket_pair",
+            "extrusion_bracket"
           ]
         },
         "pair_gap": {
@@ -63481,11 +64673,35 @@
           "parameters": [
             "mount"
           ]
+        },
+        {
+          "id": "extrusion_bracket_shaft_bore",
+          "label": "2020 Axle Bracket Shaft Bore",
+          "geometry_type": "socket",
+          "standard": "8 mm ground shaft (shaft-8mm) at shaft_dia 8",
+          "parameters": [
+            "shaft_dia",
+            "mount_height",
+            "web_thick"
+          ]
+        },
+        {
+          "id": "extrusion_bracket_foot_slot",
+          "label": "2020 Axle Bracket Foot on the Slot",
+          "geometry_type": "profile",
+          "standard": "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+          "parameters": [
+            "foot_len",
+            "web_width",
+            "mount_dia"
+          ]
         }
       ],
       "standards": [
         "2020 T-slot (6 mm slot)",
-        "608 bearing OD 22 mm / plain shaft bore"
+        "2020 T-slot extrusion, 6 mm slot; the key in the slot opening, M5 screws into T-nuts on the slot line",
+        "608 bearing OD 22 mm / plain shaft bore",
+        "8 mm ground shaft (shaft-8mm) at shaft_dia 8"
       ],
       "source": {
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
@@ -79176,6 +80392,156 @@
       }
     },
     {
+      "slug": "toolhead-proxy",
+      "name": "Toolhead Proxy",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "toolhead_proxy"
+      ],
+      "parts": 1,
+      "parameters": 8,
+      "parameter_ids": [
+        "body_w",
+        "band_w",
+        "body_d",
+        "body_top",
+        "band_top",
+        "body_drop",
+        "nozzle_drop",
+        "nozzle_reach"
+      ],
+      "parameter_contracts": {
+        "body_w": {
+          "type": "slider",
+          "min": 30.0,
+          "max": 90.0,
+          "step": 1.0,
+          "modes": [
+            "toolhead_proxy"
+          ]
+        },
+        "band_w": {
+          "type": "slider",
+          "min": 26.0,
+          "max": 90.0,
+          "step": 1.0,
+          "modes": [
+            "toolhead_proxy"
+          ]
+        },
+        "body_d": {
+          "type": "slider",
+          "min": 30.0,
+          "max": 90.0,
+          "step": 1.0,
+          "modes": [
+            "toolhead_proxy"
+          ]
+        },
+        "body_top": {
+          "type": "slider",
+          "min": 12.0,
+          "max": 80.0,
+          "step": 1.0,
+          "modes": [
+            "toolhead_proxy"
+          ]
+        },
+        "band_top": {
+          "type": "slider",
+          "min": -12.0,
+          "max": 60.0,
+          "step": 0.5,
+          "modes": [
+            "toolhead_proxy"
+          ]
+        },
+        "body_drop": {
+          "type": "slider",
+          "min": 12.0,
+          "max": 160.0,
+          "step": 1.0,
+          "modes": [
+            "toolhead_proxy"
+          ]
+        },
+        "nozzle_drop": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 180.0,
+          "step": 1.0,
+          "modes": [
+            "toolhead_proxy"
+          ]
+        },
+        "nozzle_reach": {
+          "type": "slider",
+          "min": 6.0,
+          "max": 84.0,
+          "step": 1.0,
+          "modes": [
+            "toolhead_proxy"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open stand-in body for a printer toolhead, so a machine's digital twin can show and collision-check a toolhead and pose its nozzle tip without copying a GPL design: every size is a declared, adjustable convention, and the mount and nozzle frames are machine-checked against the rendered body.",
+        "es": "Un cuerpo sustituto abierto para el cabezal de una impresora, de modo que el gemelo digital de una máquina pueda mostrar y verificar colisiones de un cabezal y posicionar la punta de su boquilla sin copiar un diseño GPL: cada tamaño es una convención declarada y ajustable, y los marcos de montaje y de boquilla se verifican por máquina contra el cuerpo renderizado."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": false
+      },
+      "cdg_interfaces": [
+        {
+          "id": "toolhead_proxy_mount",
+          "label": "Mount face on the X carriage's toolhead face",
+          "geometry_type": "bolt_pattern",
+          "standard": "4 × M3 on a 20 mm square (HIWIN MGN12H B 20 × C 20); the proxy's back face, framed at the pattern's centre; M3 screws through the proxy into the carriage's threads",
+          "parameters": []
+        },
+        {
+          "id": "nozzle_tip",
+          "label": "Nozzle tip: the point the machine positions",
+          "geometry_type": "boss",
+          "standard": "internal: the flat end of the proxy's nozzle (Ø3); the normal is the nozzle axis, out of the tip toward the bed; x_axis along the machine's X axis",
+          "parameters": [
+            "nozzle_drop",
+            "nozzle_reach"
+          ]
+        }
+      ],
+      "standards": [
+        "4 × M3 on a 20 mm square (HIWIN MGN12H B 20 × C 20); the proxy's back face, framed at the pattern's centre; M3 screws through the proxy into the carriage's threads",
+        "internal: the flat end of the proxy's nozzle (Ø3); the normal is the nozzle axis, out of the tip toward the bed; x_axis along the machine's X axis"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "toolhead-proxy/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set toolhead-proxy"
+      }
+    },
+    {
       "slug": "torus-knot",
       "name": "Torus Knot Sculpture",
       "domain": null,
@@ -81088,10 +82454,33 @@
             "slot_fit_clearance",
             "screw_size"
           ]
+        },
+        {
+          "id": "corner_bracket_leg_a",
+          "label": "Leg A seat on the extrusion slot (corner bracket)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "parameters": [
+            "slot_series",
+            "bracket_leg",
+            "bracket_thick"
+          ]
+        },
+        {
+          "id": "corner_bracket_leg_b",
+          "label": "Leg B seat on the extrusion slot (corner bracket)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)",
+          "parameters": [
+            "slot_series",
+            "bracket_leg",
+            "bracket_thick"
+          ]
         }
       ],
       "standards": [
-        "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)"
+        "T-slot 20/30/40 series (e.g. Bosch Rexroth / OpenBuilds / Misumi HFS)",
+        "T-slot extrusion slot, adjustable bolt slot on the slot centre-line (2020: 6 mm slot)"
       ],
       "source": {
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
@@ -81229,10 +82618,80 @@
             "width",
             "bolt_dia"
           ]
+        },
+        {
+          "id": "corner_2way_leg_x",
+          "label": "Horizontal leg seat on the extrusion slot (two-way brace)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "parameters": [
+            "series"
+          ]
+        },
+        {
+          "id": "corner_2way_leg_z",
+          "label": "Vertical leg seat on the extrusion slot (two-way brace)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "parameters": [
+            "series"
+          ]
+        },
+        {
+          "id": "corner_gusset_leg_x",
+          "label": "Horizontal leg seat on the extrusion slot (gusseted brace)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "parameters": [
+            "series"
+          ]
+        },
+        {
+          "id": "corner_gusset_leg_z",
+          "label": "Vertical leg seat on the extrusion slot (gusseted brace)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "parameters": [
+            "series"
+          ]
+        },
+        {
+          "id": "corner_3way_arm_x",
+          "label": "X-arm seat on the extrusion slot (three-way vertex)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "parameters": [
+            "series",
+            "width",
+            "bolt_dia"
+          ]
+        },
+        {
+          "id": "corner_3way_arm_y",
+          "label": "Y-arm seat on the extrusion slot (three-way vertex)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "parameters": [
+            "series",
+            "width",
+            "bolt_dia"
+          ]
+        },
+        {
+          "id": "corner_3way_arm_z",
+          "label": "Z-arm seat on the extrusion slot (three-way vertex)",
+          "geometry_type": "profile",
+          "standard": "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)",
+          "parameters": [
+            "series",
+            "width",
+            "bolt_dia"
+          ]
         }
       ],
       "standards": [
-        "2020/2040 extrusion (20 mm module, 6 mm slot, M5)"
+        "2020/2040 extrusion (20 mm module, 6 mm slot, M5)",
+        "T-slot extrusion slot, one bolt on the slot centre-line (2020/2040: 6 mm slot, M5)"
       ],
       "source": {
         "repo": "https://github.com/madfam-org/solid-hyperobjects",
@@ -86738,6 +88197,406 @@
       }
     },
     {
+      "slug": "x-carriage",
+      "name": "X Carriage",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "x_carriage"
+      ],
+      "parts": 1,
+      "parameters": 10,
+      "parameter_ids": [
+        "belt_line",
+        "belt_a_level",
+        "belt_b_level",
+        "clamp_x",
+        "teeth_toward_toolhead",
+        "jaw_length",
+        "post_d",
+        "slot_w",
+        "plate_t",
+        "toolhead_y"
+      ],
+      "parameter_contracts": {
+        "belt_line": {
+          "type": "slider",
+          "min": 15.0,
+          "max": 40.0,
+          "step": 0.5,
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "belt_a_level": {
+          "type": "slider",
+          "min": 22.0,
+          "max": 70.0,
+          "step": 0.5,
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "belt_b_level": {
+          "type": "slider",
+          "min": 22.0,
+          "max": 70.0,
+          "step": 0.5,
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "clamp_x": {
+          "type": "slider",
+          "min": 12.0,
+          "max": 30.0,
+          "step": 0.5,
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "teeth_toward_toolhead": {
+          "type": "checkbox",
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "jaw_length": {
+          "type": "slider",
+          "min": 6.0,
+          "max": 16.0,
+          "step": 0.5,
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "post_d": {
+          "type": "slider",
+          "min": 4.0,
+          "max": 8.0,
+          "step": 0.5,
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "slot_w": {
+          "type": "slider",
+          "min": 2.3,
+          "max": 3.2,
+          "step": 0.05,
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "plate_t": {
+          "type": "slider",
+          "min": 6.0,
+          "max": 14.0,
+          "step": 0.5,
+          "modes": [
+            "x_carriage"
+          ]
+        },
+        "toolhead_y": {
+          "type": "slider",
+          "min": 26.0,
+          "max": 40.0,
+          "step": 0.5,
+          "modes": [
+            "x_carriage"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable X carriage for stacked-belt CoreXY gantries: it holds standard 6 mm GT2 belts with no screws on the belt, takes an off-the-shelf MGN12H block, follows the gantry's belt geometry through its parameters, and its interfaces (the block, the toolhead face and the four belt anchors) are machine-checked against the rendered part.",
+        "es": "Un carro X abierto e imprimible para pórticos CoreXY de bandas apiladas: sujeta bandas GT2 estándar de 6 mm sin tornillos sobre la banda, usa un bloque MGN12H comercial, sigue la geometría de banda del pórtico mediante sus parámetros, y sus interfaces (el bloque, la cara de cabezal y los cuatro anclajes de banda) se verifican por máquina contra la pieza renderizada."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "x_carriage_block",
+          "label": "Mounting face on the MGN12H block",
+          "geometry_type": "bolt_pattern",
+          "standard": "HIWIN MGN12H top: 4 × M3 on 20 × 20; the plate's back face, M3x8 SHCS through it into the block",
+          "parameters": []
+        },
+        {
+          "id": "x_carriage_toolhead",
+          "label": "Toolhead face",
+          "geometry_type": "bolt_pattern",
+          "standard": "4 × M3 heat-set inserts on a 20 mm square (the MGN12H's pattern, HIWIN); the plate's front face, framed at the pattern's centre",
+          "parameters": [
+            "toolhead_y",
+            "plate_t"
+          ]
+        },
+        {
+          "id": "x_carriage_belt_a_xp",
+          "label": "A belt jaw, +x end: the end that comes in from +x",
+          "geometry_type": "profile",
+          "standard": "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
+          "parameters": [
+            "clamp_x",
+            "belt_a_level",
+            "belt_line",
+            "teeth_toward_toolhead"
+          ]
+        },
+        {
+          "id": "x_carriage_belt_a_xn",
+          "label": "A belt jaw, −x end: the end that comes in from −x",
+          "geometry_type": "profile",
+          "standard": "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
+          "parameters": [
+            "clamp_x",
+            "belt_a_level",
+            "belt_line",
+            "teeth_toward_toolhead"
+          ]
+        },
+        {
+          "id": "x_carriage_belt_b_xp",
+          "label": "B belt jaw, +x end: the end that comes in from +x",
+          "geometry_type": "profile",
+          "standard": "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
+          "parameters": [
+            "clamp_x",
+            "belt_b_level",
+            "belt_line",
+            "teeth_toward_toolhead"
+          ]
+        },
+        {
+          "id": "x_carriage_belt_b_xn",
+          "label": "B belt jaw, −x end: the end that comes in from −x",
+          "geometry_type": "profile",
+          "standard": "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
+          "parameters": [
+            "clamp_x",
+            "belt_b_level",
+            "belt_line",
+            "teeth_toward_toolhead"
+          ]
+        }
+      ],
+      "standards": [
+        "4 × M3 heat-set inserts on a 20 mm square (the MGN12H's pattern, HIWIN); the plate's front face, framed at the pattern's centre",
+        "6 mm GT2 belt end (Gates 2MR: B 1.52, T 0.76; SDP/SI U 0.254): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed at the jaw entrance on the belt's pitch line (B − T − U = 0.506 off the wall its back bears on) and its mid-width; the path anchor of ASM-1 §9",
+        "HIWIN MGN12H top: 4 × M3 on 20 × 20; the plate's back face, M3x8 SHCS through it into the block"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "x-carriage/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set x-carriage"
+      }
+    },
+    {
+      "slug": "xy-joint",
+      "name": "XY Joint",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "xy_joint"
+      ],
+      "parts": 1,
+      "parameters": 3,
+      "parameter_ids": [
+        "idler_width",
+        "d_end",
+        "mirrored"
+      ],
+      "parameter_contracts": {
+        "idler_width": {
+          "type": "slider",
+          "min": 6.0,
+          "max": 10.0,
+          "step": 0.5,
+          "modes": [
+            "xy_joint"
+          ]
+        },
+        "d_end": {
+          "type": "slider",
+          "min": 8.0,
+          "max": 13.0,
+          "step": 0.5,
+          "modes": [
+            "xy_joint"
+          ]
+        },
+        "mirrored": {
+          "type": "checkbox",
+          "modes": [
+            "xy_joint"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable XY joint for stacked-belt CoreXY gantries built from 2020 extrusion and miniature rails: it takes only off-the-shelf M5 screws, T-nuts, F695 bearings and a standard GT2 idler, its belt geometry is derived from cited belt and bearing data, and its interfaces are machine-checked against the rail block and the beam it joins.",
+        "es": "Una unión XY abierta e imprimible para pórticos CoreXY de bandas apiladas hechos con perfil 2020 y rieles miniatura: solo usa tornillos M5, tuercas en T, rodamientos F695 y una polea GT2 estándar, su geometría de banda se deriva de datos citados de banda y rodamiento, y sus interfaces se verifican por máquina contra el bloque del riel y la viga que une."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "xy_joint_carriage",
+          "label": "Mounting face on the MGN9H block",
+          "geometry_type": "bolt_pattern",
+          "standard": "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along), M3x3 threads; the joint's underside, M3x8 screws through it",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "xy_joint_beam_key",
+          "label": "Tongue in the X beam's bottom slot (D's end)",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); D's bottom face rests on the saddle; the frame sits 10 from D's end (its slot station)",
+          "parameters": [
+            "mirrored",
+            "d_end"
+          ]
+        },
+        {
+          "id": "xy_joint_beam_mount",
+          "label": "Screw into a T-nut in the X beam's back slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
+          "parameters": [
+            "mirrored",
+            "d_end"
+          ]
+        },
+        {
+          "id": "xy_joint_beam_mount_head",
+          "label": "Head seat of the back-slot screw (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head on the back wall's outer face, 4.5 behind D's back face (5.5 of the screw passes into the nut)",
+          "parameters": [
+            "mirrored",
+            "d_end"
+          ]
+        },
+        {
+          "id": "xy_joint_stack_bolt",
+          "label": "F695 stack axle (M5x16 BHCS) head seat",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the stack; the screw is the stack's axle and cuts its thread in a Ø4.2 pilot below the stack (guide pp. 97, 99: the stack on a screw into plastic)",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "xy_joint_stack_roof",
+          "label": "Stack roof (the arm over the stack)",
+          "geometry_type": "surface",
+          "standard": "the stack's upper shim bears on the roof arm's underside here, 5 above the stack's belt mid-plane",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "xy_joint_stack_floor",
+          "label": "Stack floor",
+          "geometry_type": "surface",
+          "standard": "the stack's lower shim bears here, 5 below the stack's belt mid-plane",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "xy_joint_idler_bolt",
+          "label": "Toothed idler axle (M5x16 BHCS) head seat",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the GT2 20T idler's axle, screwed into a Ø4.2 pilot (guide pp. 98, 100)",
+          "parameters": [
+            "mirrored",
+            "idler_width"
+          ]
+        },
+        {
+          "id": "xy_joint_idler_roof",
+          "label": "Idler roof (the arm over the idler)",
+          "geometry_type": "surface",
+          "standard": "the toothed idler's face A bears on the roof arm's underside here; idler_width / 2 above its belt mid-plane",
+          "parameters": [
+            "mirrored",
+            "idler_width"
+          ]
+        },
+        {
+          "id": "xy_joint_idler_floor",
+          "label": "Idler floor",
+          "geometry_type": "surface",
+          "standard": "the toothed idler's face B bears here",
+          "parameters": [
+            "mirrored",
+            "idler_width"
+          ]
+        }
+      ],
+      "standards": [
+        "2020 series-5 slot (6 mm opening); D's bottom face rests on the saddle; the frame sits 10 from D's end (its slot station)",
+        "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along), M3x3 threads; the joint's underside, M3x8 screws through it",
+        "ISO 7380-1 M5x10 button head on the back wall's outer face, 4.5 behind D's back face (5.5 of the screw passes into the nut)",
+        "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the idler; the GT2 20T idler's axle, screwed into a Ø4.2 pilot (guide pp. 98, 100)",
+        "ISO 7380-1 M5x16 button head on the 3 mm roof arm over the stack; the screw is the stack's axle and cuts its thread in a Ø4.2 pilot below the stack (guide pp. 97, 99: the stack on a screw into plastic)",
+        "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
+        "the stack's lower shim bears here, 5 below the stack's belt mid-plane",
+        "the stack's upper shim bears on the roof arm's underside here, 5 above the stack's belt mid-plane",
+        "the toothed idler's face A bears on the roof arm's underside here; idler_width / 2 above its belt mid-plane",
+        "the toothed idler's face B bears here"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "xy-joint/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set xy-joint"
+      }
+    },
+    {
       "slug": "yarn-guide",
       "name": "Yarn / Cone Guide",
       "domain": "household",
@@ -86862,6 +88721,509 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set yarn-guide"
+      }
+    },
+    {
+      "slug": "z-belt-clamp",
+      "name": "Z Belt Clamp",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "z_belt_clamp"
+      ],
+      "parts": 1,
+      "parameters": 4,
+      "parameter_ids": [
+        "jaw_length",
+        "post_d",
+        "slot_w",
+        "base_t"
+      ],
+      "parameter_contracts": {
+        "jaw_length": {
+          "type": "slider",
+          "min": 10.0,
+          "max": 24.0,
+          "step": 0.5,
+          "modes": [
+            "z_belt_clamp"
+          ]
+        },
+        "post_d": {
+          "type": "slider",
+          "min": 4.0,
+          "max": 10.0,
+          "step": 0.5,
+          "modes": [
+            "z_belt_clamp"
+          ]
+        },
+        "slot_w": {
+          "type": "slider",
+          "min": 2.3,
+          "max": 3.2,
+          "step": 0.05,
+          "modes": [
+            "z_belt_clamp"
+          ]
+        },
+        "base_t": {
+          "type": "slider",
+          "min": 2.5,
+          "max": 8.0,
+          "step": 0.5,
+          "modes": [
+            "z_belt_clamp"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable belt clamp for machines that hang an axis on GT2 belts: it holds a standard 9 mm belt with no screws or proprietary parts, so a builder can print, replace or adapt it, and its interfaces are machine-checked against the extrusion and the belt they meet.",
+        "es": "Una abrazadera de banda abierta e imprimible para máquinas que cuelgan un eje de bandas GT2: sujeta una banda estándar de 9 mm sin tornillos ni piezas propietarias, de modo que quien la arma puede imprimirla, reponerla o adaptarla, y sus interfaces se verifican por máquina contra el perfil y la banda que tocan."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "z_belt_clamp_mount",
+          "label": "Mount screw into a T-nut in the extrusion's slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face",
+          "parameters": []
+        },
+        {
+          "id": "z_belt_clamp_mount_head",
+          "label": "Head seat of the mount screw (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head, head on the counterbore floor (10 − 4.5 = 5.5 into the T-nut)",
+          "parameters": []
+        },
+        {
+          "id": "z_belt_clamp_key",
+          "label": "Tongue in the extrusion's slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the mount face bears on the extrusion face",
+          "parameters": []
+        },
+        {
+          "id": "z_belt_clamp_upper",
+          "label": "Upper jaw: the belt end from the top idler",
+          "geometry_type": "profile",
+          "standard": "9 mm GT2 belt end (Gates 2MR, B 1.52, T 0.76): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed on the slot wall the back bears on, at the jaw entrance and mid-width",
+          "parameters": [
+            "jaw_length",
+            "post_d",
+            "slot_w",
+            "base_t"
+          ]
+        },
+        {
+          "id": "z_belt_clamp_lower",
+          "label": "Lower jaw: the belt end from the Z drive",
+          "geometry_type": "profile",
+          "standard": "9 mm GT2 belt end (Gates 2MR, B 1.52, T 0.76): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed on the slot wall the back bears on, at the jaw entrance and mid-width",
+          "parameters": [
+            "jaw_length",
+            "post_d",
+            "slot_w",
+            "base_t"
+          ]
+        }
+      ],
+      "standards": [
+        "2020 series-5 slot (6 mm opening); the mount face bears on the extrusion face",
+        "9 mm GT2 belt end (Gates 2MR, B 1.52, T 0.76): down a slot two plies wide, round the post and back beside itself, teeth into teeth; framed on the slot wall the back bears on, at the jaw entrance and mid-width",
+        "ISO 7380-1 M5x10 button head, head on the counterbore floor (10 − 4.5 = 5.5 into the T-nut)",
+        "M5 screw through the clamp into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the mount face"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "z-belt-clamp/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set z-belt-clamp"
+      }
+    },
+    {
+      "slug": "z-drive-housing",
+      "name": "Z Drive Housing",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "z_drive"
+      ],
+      "parts": 1,
+      "parameters": 6,
+      "parameter_ids": [
+        "belt_offset",
+        "belt_plane",
+        "center_distance",
+        "big_pulley_od",
+        "mount_pitch",
+        "mirrored"
+      ],
+      "parameter_contracts": {
+        "belt_offset": {
+          "type": "slider",
+          "min": 10.0,
+          "max": 30.0,
+          "step": 0.5,
+          "modes": [
+            "z_drive"
+          ]
+        },
+        "belt_plane": {
+          "type": "slider",
+          "min": 12.0,
+          "max": 29.0,
+          "step": 0.5,
+          "modes": [
+            "z_drive"
+          ]
+        },
+        "center_distance": {
+          "type": "slider",
+          "min": 38.8,
+          "max": 42.8,
+          "step": 0.05,
+          "modes": [
+            "z_drive"
+          ]
+        },
+        "big_pulley_od": {
+          "type": "slider",
+          "min": 50.0,
+          "max": 60.0,
+          "step": 0.5,
+          "modes": [
+            "z_drive"
+          ]
+        },
+        "mount_pitch": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 30.0,
+          "step": 1.0,
+          "modes": [
+            "z_drive"
+          ]
+        },
+        "mirrored": {
+          "type": "checkbox",
+          "modes": [
+            "z_drive"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable belt-reduction Z drive for machines built on 2020 extrusion: it uses an off-the-shelf NEMA 17, standard GT2 pulleys and belts, 625 bearings, M5 screws and T-nuts, so a builder can repair or adapt it without a proprietary part, and its interfaces are machine-checked against the frame, the bearings and the motor they meet.",
+        "es": "Un accionamiento Z con reducción por banda, abierto e imprimible, para máquinas sobre perfil 2020: usa un NEMA 17 comercial, poleas y bandas GT2 estándar, rodamientos 625, tornillos M5 y tuercas en T, de modo que quien lo arma puede repararlo o adaptarlo sin piezas propietarias, y sus interfaces se verifican por máquina contra el marco, los rodamientos y el motor que tocan."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "z_drive_mount_a",
+          "label": "Mount screw A into a T-nut in the horizontal's bottom slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_drive_mount_b",
+          "label": "Mount screw B into a T-nut in the horizontal's bottom slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+          "parameters": [
+            "mirrored",
+            "mount_pitch"
+          ]
+        },
+        {
+          "id": "z_drive_mount_a_head",
+          "label": "Head seat of mount screw A (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head, head on the counterbore floor (10 − 4.5 = 5.5 into the T-nut)",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_drive_mount_b_head",
+          "label": "Head seat of mount screw B (M5x10 BHCS)",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head, head on the counterbore floor (10 − 4.5 = 5.5 into the T-nut)",
+          "parameters": [
+            "mirrored",
+            "mount_pitch"
+          ]
+        },
+        {
+          "id": "z_drive_slot_key",
+          "label": "Tongue in the horizontal's bottom slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the top face bears on the horizontal's bottom face, 10 from its butted end",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_drive_corner_key",
+          "label": "Tongue in the perpendicular horizontal's bottom slot",
+          "geometry_type": "profile",
+          "standard": "2020 series-5 slot (6 mm opening); the top face bears on the perpendicular horizontal's bottom face, 10 from its butted end",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_drive_bearing_a",
+          "label": "Bearing seat A (wall A, frame side of the Z pulley)",
+          "geometry_type": "socket",
+          "standard": "625 bearing (5 × 16 × 5) in a Ø16.2 pocket 5 deep, face A flush with the opening face, a 1.5 mm shoulder with a Ø10 hole behind it",
+          "parameters": [
+            "mirrored",
+            "belt_offset",
+            "belt_plane",
+            "big_pulley_od"
+          ]
+        },
+        {
+          "id": "z_drive_bearing_b",
+          "label": "Bearing seat B (wall B, between the Z pulley and the 80-tooth pulley)",
+          "geometry_type": "socket",
+          "standard": "625 bearing (5 × 16 × 5) in a Ø16.2 pocket 5 deep, face A flush with the opening face, a 1.5 mm shoulder with a Ø10 hole behind it",
+          "parameters": [
+            "mirrored",
+            "belt_offset",
+            "belt_plane",
+            "big_pulley_od"
+          ]
+        },
+        {
+          "id": "z_drive_bearing_c",
+          "label": "Bearing seat C (wall C, beyond the 80-tooth pulley)",
+          "geometry_type": "socket",
+          "standard": "625 bearing (5 × 16 × 5) in a Ø16.2 pocket 5 deep, face A flush with the opening face, a 1.5 mm shoulder with a Ø10 hole behind it",
+          "parameters": [
+            "mirrored",
+            "belt_offset",
+            "belt_plane",
+            "big_pulley_od"
+          ]
+        },
+        {
+          "id": "z_drive_motor_face",
+          "label": "NEMA 17 motor face on wall C (16-tooth pulley into the 80-tooth pulley's plane)",
+          "geometry_type": "bolt_pattern",
+          "standard": "NEMA 17 face: 31 mm square of M3 holes as slots ±2 along x for the loop tension, Ø23 pilot slot",
+          "parameters": [
+            "mirrored",
+            "belt_offset",
+            "belt_plane",
+            "big_pulley_od",
+            "center_distance"
+          ]
+        }
+      ],
+      "standards": [
+        "2020 series-5 slot (6 mm opening); the top face bears on the horizontal's bottom face, 10 from its butted end",
+        "2020 series-5 slot (6 mm opening); the top face bears on the perpendicular horizontal's bottom face, 10 from its butted end",
+        "625 bearing (5 × 16 × 5) in a Ø16.2 pocket 5 deep, face A flush with the opening face, a 1.5 mm shoulder with a Ø10 hole behind it",
+        "ISO 7380-1 M5x10 button head, head on the counterbore floor (10 − 4.5 = 5.5 into the T-nut)",
+        "M5 screw through the housing's top plate into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in a 2020 6 mm slot; framed on the top face, which bears on the horizontal's bottom face",
+        "NEMA 17 face: 31 mm square of M3 holes as slots ±2 along x for the loop tension, Ø23 pilot slot"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "z-drive-housing/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set z-drive-housing"
+      }
+    },
+    {
+      "slug": "z-joint",
+      "name": "Z Joint",
+      "domain": "industrial",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "z_joint"
+      ],
+      "parts": 1,
+      "parameters": 3,
+      "parameter_ids": [
+        "c_inboard",
+        "c_end",
+        "mirrored"
+      ],
+      "parameter_contracts": {
+        "c_inboard": {
+          "type": "slider",
+          "min": 21.0,
+          "max": 45.0,
+          "step": 0.5,
+          "modes": [
+            "z_joint"
+          ]
+        },
+        "c_end": {
+          "type": "slider",
+          "min": 0.0,
+          "max": 60.0,
+          "step": 0.5,
+          "modes": [
+            "z_joint"
+          ]
+        },
+        "mirrored": {
+          "type": "checkbox",
+          "modes": [
+            "z_joint"
+          ]
+        }
+      },
+      "export_formats": [
+        "stl",
+        "3mf",
+        "step",
+        "glb",
+        "gltf",
+        "obj"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "An open, printable Z joint for flying-gantry printers: it ties a gantry corner to its Z rail and carries the Z belt clamp, with every interface machine-checked against the rail block, the extrusion and the clamp it meets, so a builder can print, replace or adapt it.",
+        "es": "Una unión Z abierta e imprimible para impresoras de pórtico volante: une una esquina del pórtico a su riel Z y lleva la abrazadera de banda Z, con cada interfaz verificada por máquina contra el carro del riel, el perfil y la abrazadera que toca, de modo que quien la arma puede imprimirla, reponerla o adaptarla."
+      },
+      "material_awareness": {
+        "shrinkage_compensation": false,
+        "recycled_material_toggle": false,
+        "tolerance_by_material": true
+      },
+      "cdg_interfaces": [
+        {
+          "id": "z_joint_carriage",
+          "label": "Mounting face on the Z rail's MGN9H block",
+          "geometry_type": "bolt_pattern",
+          "standard": "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along); the plate's face, M3 screws through it",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_joint_clamp_mount",
+          "label": "Z belt clamp's M5x10, threaded into the backer's pilot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_joint_clamp_slot",
+          "label": "Groove for the Z belt clamp's tongue",
+          "geometry_type": "profile",
+          "standard": "A 6 mm groove 2.5 deep along z for a 5.8 tongue, as a 2020 slot's opening (MISUMI HFS5); framed on the backer's face",
+          "parameters": [
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_joint_c_key",
+          "label": "Tongue in the gantry C extrusion's bottom slot",
+          "geometry_type": "profile",
+          "standard": "2020 6 mm slot (MISUMI HFS5): a 5.8 tongue 2 high on the pad's top face, along the C",
+          "parameters": [
+            "c_inboard",
+            "c_end",
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_joint_c_mount",
+          "label": "M5 into a T-nut in the C's bottom slot",
+          "geometry_type": "bolt_pattern",
+          "standard": "M5 screw through the pad into an M5 T-nut in a 2020 6 mm slot; framed on the pad's top face, which bears on the C's bottom face",
+          "parameters": [
+            "c_inboard",
+            "c_end",
+            "mirrored"
+          ]
+        },
+        {
+          "id": "z_joint_c_mount_head",
+          "label": "Head seat of the pad's M5x10 BHCS",
+          "geometry_type": "socket",
+          "standard": "ISO 7380-1 M5x10 button head on the pad's underside (10 − 4.5 into the T-nut)",
+          "parameters": [
+            "c_inboard",
+            "c_end",
+            "mirrored"
+          ]
+        }
+      ],
+      "standards": [
+        "2020 6 mm slot (MISUMI HFS5): a 5.8 tongue 2 high on the pad's top face, along the C",
+        "A 6 mm groove 2.5 deep along z for a 5.8 tongue, as a 2020 slot's opening (MISUMI HFS5); framed on the backer's face",
+        "HIWIN MGN9H top: 4 × M3 on 15 (across) × 16 (along); the plate's face, M3 screws through it",
+        "ISO 7380-1 M5x10 button head on the pad's underside (10 − 4.5 into the T-nut)",
+        "M5 screw through the pad into an M5 T-nut in a 2020 6 mm slot; framed on the pad's top face, which bears on the C's bottom face",
+        "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on"
+      ],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "z-joint/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set z-joint"
       }
     },
     {

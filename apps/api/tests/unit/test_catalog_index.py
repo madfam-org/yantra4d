@@ -11,8 +11,10 @@ import pytest
 
 from services.core.catalog_index import (
     get_catalog,
+    hidden_for_caller,
     invalidate_catalog,
     search_catalog,
+    visible_facets,
 )
 
 
@@ -270,3 +272,37 @@ def test_endpoint_facets(tmp_path):
     assert body["count"] == 2
     domains = {f["value"] for f in body["facets"]["domain"]}
     assert domains == {"medical", "industrial"}
+
+
+def _make_private(project_dir):
+    pj = project_dir / "project.json"
+    manifest = json.loads(pj.read_text())
+    manifest["access_control"] = {"view": "private"}
+    pj.write_text(json.dumps(manifest))
+
+
+def test_hidden_slugs_leave_results_facets_and_catalog_count(tmp_path):
+    _write(tmp_path, "open-a", domain="medical")
+    _make_private(_write(tmp_path, "closed-b", domain="industrial"))
+    res = search_catalog(hidden=frozenset({"closed-b"}))
+    assert [r["slug"] for r in res["results"]] == ["open-a"]
+    assert res["total"] == 1
+    assert res["catalog_count"] == 1
+    assert {f["value"] for f in res["facets"]["domain"]} == {"medical"}
+    facets, count = visible_facets(get_catalog(), frozenset({"closed-b"}))
+    assert count == 1
+    assert {f["value"] for f in facets["domain"]} == {"medical"}
+
+
+def test_internal_fields_are_stripped_from_results(tmp_path):
+    _make_private(_write(tmp_path, "closed-c"))
+    res = search_catalog()
+    assert res["results"] and not [k for r in res["results"] for k in r if k.startswith("_")]
+
+
+def test_hidden_for_caller_without_private_records_is_caller_independent(tmp_path):
+    from app import create_app
+    _write(tmp_path, "open-d")
+    with create_app().test_request_context("/api/catalog/search"):
+        assert hidden_for_caller() == (frozenset(), False)
+

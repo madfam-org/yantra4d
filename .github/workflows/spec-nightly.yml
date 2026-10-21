@@ -31,13 +31,16 @@ on:
 
 jobs:
   full-render-sweep:
-    runs-on: madfam-runners-blue
+    # R116 (ruled 2026-10-05): a public repository runs on GitHub-hosted
+    # runners. ARC_BOOTSTRAP_COMPLETE is not visible to public repositories, so
+    # this resolves to ubuntu-24.04 (the ADR-010 expression enclii and janua use).
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 360
     permissions:
       contents: read
       issues: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # One level, NOT `recursive` — see "Submodule depth" at the top of
           # .github/workflows/ci.yml (G29).
@@ -65,15 +68,20 @@ jobs:
               --log "$fixture" --workflow "spec-nightly full render sweep (FIXTURE)"
           fi
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         if: inputs.report_fixture == ''
         with:
           python-version: "3.12"
+      # `--require-openscad` below found OpenSCAD on the ARC image's PATH; a
+      # hosted runner has none, so the pinned snapshot comes from here.
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        if: inputs.report_fixture == ''
+        uses: ./.github/actions/render-env
       - name: Install hyperobjects-spec
         if: inputs.report_fixture == ''
         # Same keystone SHA as ci.yml's spec-conformance job and both commons'
         # SPEC_PIN — never a floating tag; the repo is public, no token needed.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@3ff3736e5989f381ebc841a4af38ff43cd9d0b51"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@142db1802bbf9e1135ceae6c9c531c469f2d295b"
       - name: Keystone's vendored graph engine matches this repo's
         # The reverse half of the graph-engine drift guard (Wave D / G-SPEC). The
         # keystone renders `.graph.json` cartridges by transpiling them with a

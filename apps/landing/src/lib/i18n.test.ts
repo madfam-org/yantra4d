@@ -111,9 +111,32 @@ describe('i18n', () => {
       )
     })
 
-    it('pro pricing carries the product price copy', () => {
-      const en = getTranslations('en') as { pricing: { pro: { price: string } } }
-      expect(en.pricing.pro.price).toContain('$9')
+    it('pro pricing is bound to the Dhanam catalog price, never a typed figure', () => {
+      // Owner ruling 2026-10-14: the card shows what Dhanam's checkout charges.
+      for (const locale of ['en', 'es'] as const) {
+        const tr = getTranslations(locale) as {
+          pricing: { pro: { price: string; priceNet: string; priceAtCheckout: string } }
+        }
+        for (const s of [tr.pricing.pro.price, tr.pricing.pro.priceNet]) {
+          expect(s).toContain('{proPrice}')
+          expect(s).not.toMatch(/\$\s?\d/)
+        }
+        expect(tr.pricing.pro.priceAtCheckout).not.toMatch(/\d/)
+      }
+    })
+
+    it('pro pricing says whether IVA is included, never a bare net figure', () => {
+      // LFPC Art. 7 Bis: the total price, taxes included. `price` is the gross
+      // from Dhanam's `grossPrices`; `priceNet` is the fallback while the
+      // catalog sends only the net.
+      const labels = { es: ['IVA incluido', '+ IVA'], en: ['VAT included', '+ VAT'] } as const
+      for (const locale of ['en', 'es'] as const) {
+        const tr = getTranslations(locale) as {
+          pricing: { pro: { price: string; priceNet: string } }
+        }
+        expect(tr.pricing.pro.price).toContain(labels[locale][0])
+        expect(tr.pricing.pro.priceNet).toContain(labels[locale][1])
+      }
     })
   })
 
@@ -147,5 +170,19 @@ describe('i18n', () => {
       expect(es.hyperCommons.whyBody).not.toContain('on your desk')
     })
   })
-})
 
+  describe('design licence copy', () => {
+    // The commons concept page called CERN-OHL-W "strong-reciprocal" (V1 visitor
+    // journey, 2026-10-18). W is the weakly reciprocal variant; S is the strong one.
+    it('describes CERN-OHL-W as weakly reciprocal in both locales', () => {
+      const en = getTranslations('en').concepts.commons.copyleftDesc
+      const es = getTranslations('es').concepts.commons.copyleftDesc
+      expect(en).toContain('CERN-OHL-W')
+      expect(es).toContain('CERN-OHL-W')
+      expect(en).toMatch(/weakly reciprocal/)
+      expect(es).toMatch(/reciprocidad débil/)
+      expect(en).not.toMatch(/strong/i)
+      expect(es).not.toMatch(/fuerte/i)
+    })
+  })
+})

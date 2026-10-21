@@ -42,6 +42,8 @@ import {
   parseInputName,
   resolveLod0Selection,
   run,
+  targetsFor,
+  validateExceptions,
 } from '../../../../scripts/dev/optimize-commons-models.mjs'
 
 // ─── Synthetic geometry ─────────────────────────────────────────────────────
@@ -374,12 +376,13 @@ describe('run — raw inputs', () => {
     expect(code).toBe(EXIT_OK)
 
     const files = fs.readdirSync(modelsDir(repo)).sort()
+    // sweep.0 is the same small mesh as the base and comes out byte-identical to
+    // motor-mount.lod1.glb, so it is not written twice (its manifest entry points there).
     expect(files).toEqual([
       'gridfinity.lod0.glb',
       'gridfinity.lod1.glb',
       'manifest.json',
       'motor-mount.lod1.glb',
-      'motor-mount.sweep.0.glb',
       'motor-mount.sweep.1.glb',
       'raw',
     ])
@@ -409,6 +412,8 @@ describe('run — raw inputs', () => {
     expect(motorMount.lod0).toBeUndefined()
     expect(motorMount.frames.map((f: { index: number }) => f.index)).toEqual([0, 1])
     expect(Object.keys(motorMount.frames[0])).toEqual(['animation', 'index', 'file', 'bytes', 'triangles'])
+    // Frame 0 came out byte-identical to the base: its entry points at the lod1 file, nothing was written twice.
+    expect(motorMount.frames[0]).toMatchObject({ animation: 'sweep', index: 0, file: 'motor-mount.lod1.glb', bytes: motorMount.lod1.bytes })
     expect(motorMount.frames[1]).toMatchObject({ animation: 'sweep', index: 1, file: 'motor-mount.sweep.1.glb' })
     expect(motorMount.frames[1].triangles).toBeLessThanOrEqual(BUDGETS.lod0Triangles)
     expect(motorMount.size).toBe(Math.min(motorMount.lod1.bytes, ...motorMount.frames.map((f: { bytes: number }) => f.bytes)))
@@ -442,6 +447,77 @@ describe('run — raw inputs', () => {
     expect(fs.existsSync(path.join(modelsDir(repo), 'gridfinity.lod1.glb'))).toBe(true)
     expect(readManifest(repo).models[0].lod1.bytes).toBeGreaterThan(200)
     expect(strict.out.join('\n')).toMatch(/OVER \+\d+%/)
+  })
+
+  it('a budget kept by exception passes --strict and is recorded on the manifest entry', async () => {
+    // Same floor as above; the exception raises gridfinity's lod1 cap, with a reason, and nothing else.
+    const reason = 'test lattice: the simplifier floors above 200 B'
+    const budgets = { ...BUDGETS, lod1Bytes: 200, exceptions: { gridfinity: { lod1Bytes: 65536, reason } } }
+    const repo = makeRepo({ budgets, raw: { 'gridfinity.glb': dense, 'motor-mount.glb': small } })
+    const strict = await optimize(repo, ['--strict'])
+    // gridfinity passes by exception; motor-mount still breaks the 200 B block budget.
+    expect(strict.code).toBe(EXIT_BUDGET)
+    expect(strict.err.join('\n')).toMatch(/ERROR: 1 output\(s\) over their byte budget/)
+    expect(strict.err.join('\n')).toContain('motor-mount.lod1.glb')
+    expect(strict.err.join('\n')).not.toContain('gridfinity.lod1.glb')
+    expect(strict.out.join('\n')).toMatch(/gridfinity\.lod1\.glb.*ok \(by exception/)
+    const manifest = readManifest(repo)
+    const gridfinity = manifest.models.find((m: { slug: string }) => m.slug === 'gridfinity')
+    const motorMount = manifest.models.find((m: { slug: string }) => m.slug === 'motor-mount')
+    expect(gridfinity.budget).toEqual({ lod1Bytes: 65536, reason })
+    expect(gridfinity.lod1.bytes).toBeGreaterThan(200)
+    expect(motorMount).not.toHaveProperty('budget')
+    // The block as this repo declares it (lod1 at 200 B), never the exceptions map.
+    expect(manifest.budgets).toEqual(manifestBudgets({ ...BUDGETS, lod1Bytes: 200 }))
+    expect(manifest.budgets).not.toHaveProperty('exceptions')
+  })
+
+  it('writes identical keyframes once and points every entry at the file that exists', async () => {
+    // Two frames of a sweep parked on the same grid step: the same bytes, one file.
+    const repo = makeRepo({
+      raw: { 'planet.glb': dense, 'planet.count.0.glb': small, 'planet.count.1.glb': small, 'planet.count.2.glb': dense },
+    })
+    const { code, out, err } = await optimize(repo)
+    expect(err).toEqual([])
+    expect(code).toBe(EXIT_OK)
+    // planet has frames, so it is a hero cartridge and gets a lod0 at the same settings frames use:
+    // frame 2 (the dense mesh) comes out byte-identical to that lod0 and aliases to it as well.
+    const files = fs.readdirSync(modelsDir(repo)).sort()
+    expect(files).toEqual(['manifest.json', 'planet.count.0.glb', 'planet.lod0.glb', 'planet.lod1.glb', 'raw'])
+    const [planet] = readManifest(repo).models
+    expect(planet.frames.map((f: { index: number; file: string }) => [f.index, f.file])).toEqual([
+      [0, 'planet.count.0.glb'],
+      [1, 'planet.count.0.glb'],
+      [2, 'planet.lod0.glb'],
+    ])
+    expect(planet.frames[2].bytes).toBe(planet.lod0.bytes)
+    expect(planet.frames[1].bytes).toBe(planet.frames[0].bytes)
+    expect(out.join('\n')).toMatch(/planet\.count\.1\.glb\s+= planet\.count\.0\.glb \(identical bytes; not written\)/)
+    expect(out.join('\n')).toMatch(/3 input\(s\)|4 input\(s\)/)
+    expect(out.join('\n')).toMatch(/3 output\(s\)/) // lod1, lod0 and the one distinct frame file
+
+    // A second run over the same inputs is a no-op for --check: the alias is stable.
+    const check = await optimize(repo, ['--check'])
+    expect(check.code).toBe(EXIT_OK)
+  })
+
+  it('does not count an aliased frame as a second budget breach', async () => {
+    const budgets = { ...BUDGETS, keyframeBytes: 200 }
+    const repo = makeRepo({ budgets, raw: { 'planet.glb': small, 'planet.count.0.glb': dense, 'planet.count.1.glb': dense } })
+    const strict = await optimize(repo, ['--strict'])
+    expect(strict.code).toBe(EXIT_BUDGET)
+    expect(strict.err.join('\n')).toMatch(/ERROR: 1 output\(s\) over their byte budget/)
+    expect(strict.err.join('\n')).toContain('planet.count.0.glb')
+    expect(strict.err.join('\n')).not.toContain('planet.count.1.glb')
+  })
+
+  it('rejects a malformed exceptions map as a usage error, before touching any file', async () => {
+    const budgets = { ...BUDGETS, exceptions: { gridfinity: { lod1Bytes: 65536 } } } // no reason
+    const repo = makeRepo({ budgets, raw: { 'gridfinity.glb': small } })
+    const result = await optimize(repo)
+    expect(result.code).toBe(EXIT_USAGE)
+    expect(result.err.join('\n')).toMatch(/meshes\.exceptions\.gridfinity needs a written reason/)
+    expect(fs.existsSync(path.join(modelsDir(repo), 'manifest.json'))).toBe(false)
   })
 
   it('appends the report to $GITHUB_STEP_SUMMARY when set', async () => {
@@ -632,5 +708,62 @@ describe('buildManifest', () => {
     expect(manifest.models[0].frames.map((f: { file: string }) => f.file)).toEqual(['alpha.a.2.glb', 'alpha.a.10.glb', 'alpha.b.1.glb'])
     expect(manifest.models[1]).toEqual({ slug: 'zeta', size: 10, lod1: { file: 'zeta.lod1.glb', bytes: 10, triangles: 5 } })
     expect(manifest.source).toEqual({ kind: 'render-api', commons_pin: null })
+  })
+})
+
+describe('budget exceptions (meshes.exceptions)', () => {
+  const lattice = {
+    lod1Bytes: 32768,
+    reason: 'a lattice: the simplifier floors at 12,365 triangles / 28 KB; needs a smaller preview instance',
+  }
+
+  it('validates the map: slug keys, a written reason, budget keys only, positive numbers', () => {
+    expect(validateExceptions(undefined)).toEqual({})
+    expect(validateExceptions({ _comment: 'why', 'implicit-lattice-hyperobject': lattice })).toEqual({
+      'implicit-lattice-hyperobject': { lod1Bytes: 32768, reason: lattice.reason },
+    })
+    expect(() => validateExceptions([])).toThrow(/must be an object keyed by slug/)
+    expect(() => validateExceptions({ 'Not A Slug': lattice })).toThrow(/invalid slug/)
+    expect(() => validateExceptions({ lattice: { lod1Bytes: 32768 } })).toThrow(/written reason/)
+    expect(() => validateExceptions({ lattice: { lod1Bytes: 32768, reason: '   ' } })).toThrow(/written reason/)
+    expect(() => validateExceptions({ lattice: { reason: 'r', lod1Kilobytes: 3 } })).toThrow(/not a budget key/)
+    expect(() => validateExceptions({ lattice: { reason: 'r', lod1Bytes: 0 } })).toThrow(/positive number/)
+    expect(() => validateExceptions({ lattice: { reason: 'r' } })).toThrow(/overrides nothing/)
+  })
+
+  it('targetsFor applies the override to that slug only and reports the exception', () => {
+    const budgets = { ...BUDGETS, exceptions: { lattice } }
+    const forLattice = targetsFor(budgets, 'lattice')
+    expect(forLattice.lod1).toEqual({ triangles: BUDGETS.lod1Triangles, bytes: 32768 })
+    expect(forLattice.lod0).toEqual({ triangles: BUDGETS.lod0Triangles, bytes: BUDGETS.lod0Bytes })
+    expect(forLattice.frame).toEqual({ triangles: BUDGETS.lod0Triangles, bytes: BUDGETS.keyframeBytes })
+    expect(forLattice.exception).toEqual({ lod1Bytes: 32768, reason: lattice.reason })
+    const forOther = targetsFor(budgets, 'gridfinity')
+    expect(forOther.lod1).toEqual({ triangles: BUDGETS.lod1Triangles, bytes: BUDGETS.lod1Bytes })
+    expect(forOther.exception).toBeNull()
+    expect(targetsFor(BUDGETS, 'lattice').exception).toBeNull()
+  })
+
+  it('the manifest keeps the block scalar and records the exception on the entry', () => {
+    const budgets = { ...BUDGETS, exceptions: { lattice } }
+    expect(manifestBudgets(budgets)).toEqual(manifestBudgets(BUDGETS))
+    expect(manifestBudgets(budgets)).not.toHaveProperty('exceptions')
+    const entries = new Map([
+      [
+        'lattice',
+        {
+          lod1: { file: 'lattice.lod1.glb', bytes: 28316, triangles: 12365 },
+          lod0: null,
+          frames: [],
+          budget: { lod1Bytes: 32768, reason: lattice.reason },
+        },
+      ],
+      ['plain', { lod1: { file: 'plain.lod1.glb', bytes: 900, triangles: 300 }, lod0: null, frames: [], budget: null }],
+    ])
+    const manifest = buildManifest({ generated: 'g', sourceKind: 'render-api', commonsPin: null, budgets, entries })
+    const [latticeModel, plainModel] = manifest.models
+    expect(latticeModel.budget).toEqual({ lod1Bytes: 32768, reason: lattice.reason })
+    expect(plainModel).not.toHaveProperty('budget')
+    expect(manifest.budgets).not.toHaveProperty('exceptions')
   })
 })

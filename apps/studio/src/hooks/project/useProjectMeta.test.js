@@ -9,7 +9,7 @@ vi.mock('../../services/core/apiClient', () => ({
   apiFetch: vi.fn(),
 }))
 
-import { useProjectMeta } from './useProjectMeta'
+import { canWriteCartridge, useProjectMeta } from './useProjectMeta'
 import { apiFetch } from '../../services/core/apiClient'
 
 beforeEach(() => {
@@ -50,5 +50,14 @@ describe('useProjectMeta', () => {
     await waitFor(() => {
       expect(result.current).toBeNull()
     })
+  })
+})
+
+describe('canWriteCartridge', () => {
+  it('is true only when the API said so', () => {
+    expect(canWriteCartridge({ can_write: true })).toBe(true)
+    expect(canWriteCartridge({ can_write: false })).toBe(false)
+    expect(canWriteCartridge({ source: { type: 'fork' } })).toBe(false)
+    expect(canWriteCartridge(null)).toBe(false)
   })
 })

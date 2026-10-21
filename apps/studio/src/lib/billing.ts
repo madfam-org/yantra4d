@@ -23,14 +23,15 @@ type PaidTier = 'pro' | 'premium';
  * An explicit table, never `yantra4d_${tier}`. Two reasons, both from ADR-006:
  * the plan id and the tier name are different namespaces (Decision 5 — writing
  * a plan id into the `yantra4d_tier` claim seats a paying customer in
- * essentials with no error anywhere), and the top tier's SKU is still
- * `yantra4d_madfam` because the SKU slug lives in tulana's catalog and was not
- * part of the `madfam` -> `premium` tier rename. Deriving one from the other
- * would have silently pointed checkout at a plan that does not exist.
+ * essentials with no error anywhere), and the top tier is sold as `studio` in
+ * Dhanam's catalog (owner ruling 2026-10-14; the old `yantra4d_madfam` id has
+ * no catalog entry, so Dhanam's checkout sends it to Kalya). Deriving one from
+ * the other would point checkout at a plan that does not exist. The api maps
+ * the catalog names back (`studio` -> premium) in tier_service.CATALOG_TIER_MAP.
  */
 const CHECKOUT_PLAN_IDS: Record<PaidTier, string> = {
   pro: 'yantra4d_pro',
-  premium: 'yantra4d_madfam',
+  premium: 'yantra4d_studio',
 };
 
 /**

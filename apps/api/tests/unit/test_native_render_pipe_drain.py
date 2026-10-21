@@ -23,8 +23,16 @@ def test_output_larger_than_pipe_capacity_completes(engine):
                 'sys.stderr.write("e"*262144); sys.stderr.flush()')]
     success, output = engine.run_render(command, is_cancelled=lambda: False)
     assert success, 'the child only writes output and exits; waiting before reading deadlocks it'
-    assert output.endswith('e'*262144)
-    assert len(output) == (524288 if engine is cadquery_engine else 262144)
+    if engine is cadquery_engine:
+        # The CadQuery log returned to the caller is bounded (render_log); the
+        # drain still has to consume all 512 KiB for the child to exit.
+        from services.engine.render_log import MAX_RENDER_LOG_CHARS
+        assert output.endswith('e' * 1024)
+        assert 'log truncated' in output
+        assert len(output) <= MAX_RENDER_LOG_CHARS + 64
+    else:
+        assert output.endswith('e'*262144)
+        assert len(output) == 262144
 
 
 def test_streaming_stdout_cannot_block_stderr_or_completion(engine):

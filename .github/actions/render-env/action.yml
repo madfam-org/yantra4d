@@ -1,0 +1,112 @@
+name: Render environment
+description: >-
+  Installs the commons render environment on a GitHub-hosted runner: the
+  OpenSCAD snapshot apps/api/Dockerfile pins (same version, same SHA-256, the
+  same AppImage extraction) and the shared libraries OpenSCAD and OCP link
+  against. Exports OPENSCAD_PATH, as the platform image does.
+
+# Why this exists (R116, ruled 2026-10-05): this repository is public, so its
+# workflows run on GitHub-hosted ubuntu-24.04, not on MADFAM's ARC pool. The
+# ARC runner image bakes this environment in (madfam-org/enclii,
+# infra/docker/arc-runner/Dockerfile, "Render environment (G16)") and every
+# render lane here leaned on that without saying so: the spec lanes never
+# installed OpenSCAD at all, and the lanes that ran `apt-get install openscad`
+# got Ubuntu's 2021.01 in /usr/bin but rendered with the image's snapshot,
+# which shadows it in /usr/local/bin. A hosted runner has neither, and
+# Ubuntu's 2021.01 cannot render the pinned BOSL2. So this action installs what
+# the ARC image carries, and nothing else.
+#
+# ONE SOURCE OF TRUTH. The version and checksum are read from the ARG lines of
+# apps/api/Dockerfile, which ci.yml's spec-conformance job already holds equal
+# to hyperobjects-spec's y4d_spec.render_environment (scripts/qa/
+# check_render_env.py, G33). Bump the Dockerfile and this follows; there is no
+# third copy to forget.
+#
+# The package list mirrors the ARC image's render block: the spec's
+# APT_PACKAGES and CI_EXTRA_APT_PACKAGES, plus the X libraries OCP (CadQuery's
+# kernel) dlopens at import.
+#
+# The AppImage (~80 MB) is kept in the Actions cache, so a CI run's dozen render
+# jobs do not each fetch it from files.openscad.org. A restored copy is
+# checksummed exactly like a fresh download before anything runs it.
+
+outputs:
+  openscad-version:
+    description: The OpenSCAD snapshot that was installed.
+    value: ${{ steps.pin.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Read the OpenSCAD pin from apps/api/Dockerfile
+      id: pin
+      shell: bash
+      run: |
+        set -euo pipefail
+        dockerfile="$GITHUB_WORKSPACE/apps/api/Dockerfile"
+        version=$(sed -n 's/^ARG OPENSCAD_VERSION=\([0-9][0-9.]*\)[[:space:]]*$/\1/p' "$dockerfile")
+        sha256=$(sed -n 's/^ARG OPENSCAD_SHA256=\([0-9a-f]\{64\}\)[[:space:]]*$/\1/p' "$dockerfile")
+        if [ -z "$version" ] || [ -z "$sha256" ]; then
+          echo "::error title=Render environment::could not read ARG OPENSCAD_VERSION / OPENSCAD_SHA256 from apps/api/Dockerfile"
+          exit 1
+        fi
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+        echo "sha256=$sha256" >> "$GITHUB_OUTPUT"
+
+    - name: Restore the OpenSCAD AppImage
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: ${{ runner.temp }}/openscad-appimage
+        key: openscad-appimage-${{ steps.pin.outputs.version }}-${{ steps.pin.outputs.sha256 }}
+
+    - name: Install the render libraries
+      shell: bash
+      run: |
+        set -euo pipefail
+        # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
+        sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
+        sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
+        sudo apt-get install -y --no-install-recommends \
+          -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 \
+          libgl1 libglu1-mesa libglib2.0-0t64 libharfbuzz0b libegl1 libwayland-client0 \
+          libxrender1 libxcursor1 libxft2 libxinerama1 libxext6 \
+          libcomerr2 libgpg-error0 fonts-liberation fontconfig xvfb
+
+    - name: Install OpenSCAD ${{ steps.pin.outputs.version }}
+      shell: bash
+      env:
+        OPENSCAD_VERSION: ${{ steps.pin.outputs.version }}
+        OPENSCAD_SHA256: ${{ steps.pin.outputs.sha256 }}
+        APPIMAGE_DIR: ${{ runner.temp }}/openscad-appimage
+        EXTRACT_DIR: ${{ runner.temp }}/openscad
+      run: |
+        set -euo pipefail
+        appimage="$APPIMAGE_DIR/OpenSCAD-${OPENSCAD_VERSION}-x86_64.AppImage"
+        if [ ! -f "$appimage" ]; then
+          mkdir -p "$APPIMAGE_DIR"
+          # --fail: without it a 404 body is written to the file and only the
+          # checksum below would notice a moved artifact.
+          curl -fsSL --retry 3 --retry-delay 5 \
+            "https://files.openscad.org/snapshots/OpenSCAD-${OPENSCAD_VERSION}-x86_64.AppImage" \
+            -o "$appimage.part"
+          mv "$appimage.part" "$appimage"
+        fi
+        if ! echo "${OPENSCAD_SHA256}  ${appimage}" | sha256sum -c -; then
+          rm -f "$appimage"
+          echo "::error title=Render environment::OpenSCAD AppImage checksum mismatch"
+          exit 1
+        fi
+        chmod +x "$appimage"
+        # AppImages need FUSE to run in place; extracting does not, and is what
+        # the platform and ARC images do.
+        rm -rf "$EXTRACT_DIR"
+        mkdir -p "$EXTRACT_DIR"
+        (cd "$EXTRACT_DIR" && "$appimage" --appimage-extract > /dev/null)
+        sudo ln -sf "$EXTRACT_DIR/squashfs-root/AppRun" /usr/local/bin/openscad
+        echo "OPENSCAD_PATH=/usr/local/bin/openscad" >> "$GITHUB_ENV"
+        resolved=$(command -v openscad)
+        if [ "$resolved" != "/usr/local/bin/openscad" ]; then
+          echo "::error title=Render environment::openscad resolves to $resolved, not the pinned snapshot"
+          exit 1
+        fi
+        openscad --version 2>&1 | head -n1

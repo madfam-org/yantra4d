@@ -42,7 +42,7 @@ class TestAnalyzeAPI:
 
 
 class TestCreateAPI:
-    def test_create_project(self, client, tmp_path):
+    def test_create_project(self, client, tmp_path, user_projects_dir):
         manifest = {
             "project": {"thumbnail": "thumb.png", "tags": ["test"], "difficulty": "beginner", "name": "New Project", "slug": "new-project", "version": "1.0.0"},
             "modes": [{"id": "default", "scad_file": "main.scad", "label": {"en": "Default"}, "parts": ["main"], "estimate": {"base_units": 1, "formula": "constant"}}],
@@ -58,11 +58,11 @@ class TestCreateAPI:
         assert res.status_code == 201
         result = res.get_json()
         assert result["slug"] == "new-project"
-        # Verify files written to PROJECTS_DIR (which is tmp_path via conftest)
-        from config import Config
-        project_dir = Config.PROJECTS_DIR / "new-project"
+        # Written into the user-projects root, never into the commons.
+        project_dir = user_projects_dir / "new-project"
         assert (project_dir / "project.json").exists()
         assert (project_dir / "main.scad").exists()
+        assert not (tmp_path / "new-project").exists()
 
     def test_create_duplicate_slug_409(self, client, tmp_path):
         # Create a project dir so it already exists

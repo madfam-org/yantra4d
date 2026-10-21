@@ -127,6 +127,7 @@ backend/
 | `/api/projects/<slug>/fork` | POST | 10/hr | Fork a project (copies files to new slug, pro+) |
 | `/api/projects/<slug>/files` | GET | 120/hr | List SCAD files in a project (pro+) |
 | `/api/projects/<slug>/files/<path>` | GET/PUT/DELETE | 120/hr | Read/write/delete SCAD files (pro+) |
+| `/api/projects/<slug>/manifest/bindings` | PUT | 120/hr | Set/clear graph `binding` on existing manifest parameters; fork only, validated against the graph sources (pro+) |
 | `/api/projects/<slug>/git/status` | GET | 60/hr | Git working tree status (pro+) |
 | `/api/projects/<slug>/git/diff` | GET | 60/hr | Unified diff (pro+) |
 | `/api/projects/<slug>/git/log` | GET | 60/hr | Recent commit history (pro+) |
@@ -317,7 +318,7 @@ src/
 │   └── ThemeProvider.jsx          # Light/Dark/System theme
 ├── hooks/
 │   ├── useRender.ts               # Render orchestration: generate, cancel (including on pagehide/unmount and when a new render supersedes one), cache, confirm
-│   ├── useParameterPreviewCache.js # Idle pre-render of min/max param variants into IDB cache
+│   ├── useParameterPreviewCache.js # min/max param variants from the IDB cache; background renders only on an unlimited budget
 │   ├── useConstraints.js          # Manifest constraint evaluation (rule + severity + applies_to)
 │   ├── useImageExport.js          # PNG snapshot export for camera views
 │   ├── useLocalStoragePersistence.js # Debounced localStorage sync
@@ -450,7 +451,7 @@ Access: http://localhost:3000 (frontend) / http://localhost:5000 (backend)
 | `OPENSCAD_PATH` | `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD` | Path to OpenSCAD binary |
 | `LIBS_DIR` | `libs/` (at repo root) | Directory containing global OpenSCAD libraries (BOSL2, NopSCADlib, etc.) |
 | `OPENSCADPATH` | value of `LIBS_DIR` | OpenSCAD library search path, injected into render subprocesses |
-| `VERIFY_SCRIPT` | `../../tests/verify_design.py` | Path to verification script |
+| `VERIFY_SCRIPT` | `apps/api/tests/scripts/verify_design.py` | Path to verification script |
 | `FLASK_DEBUG` | `false` | Enable Flask debug mode |
 | `PORT` | `5000` | Backend server port |
 | `HOST` | `0.0.0.0` | Backend bind address |

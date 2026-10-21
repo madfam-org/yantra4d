@@ -15,6 +15,7 @@ import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkl
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useTier } from '../../hooks/system/useTier'
+import { canWriteCartridge, useProjectMeta } from '../../hooks/project/useProjectMeta'
 
 interface ActionDockProps {
   compareMode?: boolean
@@ -171,6 +172,8 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
     setHoveredParamId,
   } = useProject()
   const { tier } = useTier()
+  // Assembly editing writes the cartridge: offer it only where this caller may.
+  const canWrite = canWriteCartridge(useProjectMeta(projectSlug ?? null))
 
   const { t } = useLanguage()
 
@@ -203,19 +206,19 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
         <TabsList className="grid w-full grid-cols-4 h-11 bg-muted/60">
           <TabsTrigger value="config" className="flex items-center gap-2 text-xs">
             <Settings2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Design</span>
+            <span className="hidden sm:inline">{t('sidebar.tab.design')}</span>
           </TabsTrigger>
           <TabsTrigger value="view" className="flex items-center gap-2 text-xs">
             <AreaChart className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">View</span>
+            <span className="hidden sm:inline">{t('sidebar.tab.view')}</span>
           </TabsTrigger>
           <TabsTrigger value="analysis" className="flex items-center gap-2 text-xs">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">BOM</span>
+            <span className="hidden sm:inline">{t('sidebar.tab.bom')}</span>
           </TabsTrigger>
           <TabsTrigger value="export" className="flex items-center gap-2 text-xs">
             <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">{t('sidebar.tab.export')}</span>
           </TabsTrigger>
         </TabsList>
         <ModeTabs className="hidden lg:block" />
@@ -309,7 +312,7 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
           {showAssemblyGuide && <AssemblyView onStepChange={handleAssemblyStepChange} />}
 
           {/* Assembly editor toggle */}
-          {(hasAssemblySteps || mode === 'assembly') && (
+          {canWrite && (hasAssemblySteps || mode === 'assembly') && (
             <Button
               variant="outline"
               size="sm"

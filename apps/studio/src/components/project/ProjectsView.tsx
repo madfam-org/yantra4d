@@ -10,6 +10,7 @@ import {
 import { apiFetch } from '../../services/core/apiClient'
 import { getApiBase } from '../../services/core/backendDetection'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { facetValueLabel } from '../../lib/facetLabels'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -128,17 +129,6 @@ type FacetKey = 'domain' | 'geometry_type' | 'standard' | 'material' | 'difficul
 
 const FACET_ORDER: FacetKey[] = ['domain', 'geometry_type', 'standard', 'material', 'difficulty', 'engine']
 
-/**
- * Material-awareness facet values are raw capability-flag names from the API
- * (stable, used verbatim as the `material` query param). Map each to a localized
- * chip label; unknown / non-material facet values fall through to the raw value.
- */
-const MATERIAL_CAPABILITY_I18N: Record<string, string> = {
-  tolerance_by_material: 'projects.filter.material.tolerance_by_material',
-  shrinkage_compensation: 'projects.filter.material.shrinkage_compensation',
-  recycled_material_toggle: 'projects.filter.material.recycled_material_toggle',
-}
-
 /** API sort values keyed by the select control value. */
 const SORT_OPTIONS = ['name', 'recent', 'complexity'] as const
 type SortOption = (typeof SORT_OPTIONS)[number]
@@ -203,10 +193,9 @@ function FacetSection({ facetKey, title, values, active, onToggle }: FacetSectio
       <ul className="flex flex-wrap gap-1.5">
         {shown.map((fv) => {
           const isActive = active.includes(fv.value)
-          // Material facet values are raw capability flags → show a localized label;
-          // every other facet renders its value verbatim.
-          const labelKey = facetKey === 'material' ? MATERIAL_CAPABILITY_I18N[fv.value] : undefined
-          const label = labelKey ? t(labelKey) : fv.value
+          // Coded facet values (domain, geometry, difficulty, engine, material)
+          // get a localized label; `standard` is author text, shown as written.
+          const label = facetValueLabel(facetKey, fv.value, t)
           return (
             <li key={fv.value}>
               <button
@@ -311,7 +300,7 @@ function ProjectCard({ project, displayName, description, t }: ProjectCardProps)
                 DIFFICULTY_COLORS[project.difficulty] || 'bg-muted text-foreground'
               }`}
             >
-              {t(`projects.filter.difficulty.${project.difficulty}`) || project.difficulty}
+              {facetValueLabel('difficulty', project.difficulty, t)}
             </span>
           )}
         </div>
@@ -532,13 +521,9 @@ export default function ProjectsView() {
     [t],
   )
 
-  // Localize a facet value for display (active-filter pills). Only the material
-  // facet carries coded values; everything else is already human-readable.
-  const facetValueLabel = useCallback(
-    (facet: FacetKey, value: string) => {
-      const key = facet === 'material' ? MATERIAL_CAPABILITY_I18N[value] : undefined
-      return key ? t(key) : value
-    },
+  // Localize a facet value for display (active-filter pills), as the chips do.
+  const pillValueLabel = useCallback(
+    (facet: FacetKey, value: string) => facetValueLabel(facet, value, t),
     [t],
   )
 
@@ -785,7 +770,7 @@ export default function ProjectsView() {
               ·
             </span>
             {activePills.map((pill) => {
-              const pillLabel = facetValueLabel(pill.facet, pill.value)
+              const pillLabel = pillValueLabel(pill.facet, pill.value)
               return (
                 <button
                   key={`${pill.facet}-${pill.value}`}

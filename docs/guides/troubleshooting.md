@@ -245,7 +245,7 @@ If Redis is unreachable, Flask-Limiter will log a warning and fall back to in-me
 | `OPENSCAD_PATH` | `/usr/bin/openscad` | Path to OpenSCAD binary |
 | `SCAD_DIR` | — | Single-project SCAD directory (legacy) |
 | `PROJECTS_DIR` | `projects/` | Multi-project root directory |
-| `VERIFY_SCRIPT` | `tests/verify_design.py` | Path to verification script |
+| `VERIFY_SCRIPT` | `apps/api/tests/scripts/verify_design.py` (image: `/app/tests/scripts/verify_design.py`) | Path to verification script |
 | `CORS_ORIGINS` | `http://localhost:5173` | Allowed CORS origins |
 | `VITE_API_BASE` | `http://localhost:5000` | Studio → backend URL |
 | `AI_PROVIDER` | `anthropic` | AI provider: `anthropic` or `openai` |
@@ -359,8 +359,9 @@ retain their existing implementations.
 
 ### Controls that do not affect the selected mode
 
-The Studio filters parameters with `visible_in_modes`; an omitted list makes a
-control visible in every mode. Authors must scope controls to the modes that
+The Studio filters parameters by their mode list: `visible_in_modes`, or
+`modes` when `visible_in_modes` is absent (the schema accepts both, and most
+cartridges use `modes`). Omitting both makes a control visible in every mode. Authors must scope controls to the modes that
 consume them, including shared dimensions. The [fastener cartridge](https://github.com/madfam-org/solid-hyperobjects/blob/main/fasteners/docs/README.md)
 separates CadQuery styles from OpenSCAD numeric styles and bolt dimensions from
 nut dimensions. Its [consumer regression](../../apps/studio/src/contexts/project/ManifestProvider.fasteners.test.jsx)

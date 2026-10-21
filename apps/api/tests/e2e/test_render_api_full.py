@@ -253,5 +253,6 @@ class TestEstimateEdgeCases:
         assert "estimated_seconds" in data
 
     def test_estimate_nonexistent_project(self, client):
-        with pytest.raises(RuntimeError, match="not found"):
-            client.post("/api/estimate", json={"project": "no-such-project"})
+        res = client.post("/api/estimate", json={"project": "no-such-project"})
+        assert res.status_code == 404
+        assert res.get_json()["error_code"] == "project_not_found"

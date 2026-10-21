@@ -171,3 +171,43 @@ def test_production_hosts_are_refused(api):
 def test_local_api_is_accepted_and_normalised():
     assert rcm.check_api_base("http://localhost:5000/") == "http://localhost:5000"
     assert rcm.check_api_base("http://127.0.0.1:5000") == "http://127.0.0.1:5000"
+
+
+def test_keyframes_snap_to_the_parameter_grid_like_the_slider():
+    # motor-mount as shipped: nema_size min 17 / max 34 / step 6. Linear
+    # interpolation gave 17, 21, 26, 30, 34 and the script mapped 21/26/30 to
+    # its default — four identical frames (run 35460054814).
+    manifest = {
+        "modes": [{"id": "mount"}],
+        "parameters": [
+            {"id": "nema_size", "type": "slider", "min": 17, "max": 34, "step": 6},
+            {"id": "wall_thickness", "type": "slider", "min": 3, "max": 8, "step": 0.5},
+        ],
+        "animations": [
+            {"id": "nema-sweep", "from_state": {"nema_size": 17}, "to_state": {"nema_size": 34}, "frames": 5},
+            {"id": "wall-sweep", "from_state": {"wall_thickness": 3}, "to_state": {"wall_thickness": 8}, "frames": 5},
+        ],
+    }
+    items = rcm.frame_items("motor-mount", manifest)
+    assert [i["parameters"]["nema_size"] for i in items[:5]] == [17, 23, 29, 29, 34]
+    assert all(isinstance(i["parameters"]["nema_size"], int) for i in items[:5])
+    # Integer interpolation lands on the 0.5 grid already; nothing changes, ints stay ints.
+    assert [i["parameters"]["wall_thickness"] for i in items[5:]] == [3, 4, 6, 7, 8]
+    assert all(isinstance(i["parameters"]["wall_thickness"], int) for i in items[5:])
+
+
+def test_snap_to_parameter_grid_clamps_and_leaves_the_rest_alone():
+    defs = [
+        {"id": "teeth", "min": 8, "max": 40, "step": 4},
+        {"id": "gap", "min": 0.0, "max": 1.0, "step": 0.25},
+        {"id": "label", "type": "text"},
+        {"id": "no_step", "min": 0, "max": 10},
+    ]
+    out = rcm.snap_to_parameter_grid(
+        {"teeth": 41, "gap": 0.6, "label": "x", "no_step": 3.3, "lid": True, "undeclared": 2.2}, defs
+    )
+    assert out == {"teeth": 40, "gap": 0.5, "label": "x", "no_step": 3.3, "lid": True, "undeclared": 2.2}
+    assert isinstance(out["teeth"], int)
+    assert rcm.snap_to_parameter_grid({"teeth": 9}, defs) == {"teeth": 8}
+    assert rcm.snap_to_parameter_grid({"teeth": -5}, defs) == {"teeth": 8}
+    assert rcm.snap_to_parameter_grid({"teeth": 12}, None) == {"teeth": 12}

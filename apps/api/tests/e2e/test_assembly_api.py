@@ -14,10 +14,18 @@ def app(tmp_path):
     }
     (project_dir / "project.json").write_text(json.dumps(manifest))
     (project_dir / "main.scad").write_text("cube();")
+    # A fork: assembly steps are written into only forks and imported repos (a built-in
+    # commons cartridge is read-only — see test_read_only_cartridges_api.py).
+    (project_dir / "project.meta.json").write_text(json.dumps({"source": {"type": "fork", "forked_from": "x"}}))
     
     from app import create_app
     flask_app = create_app()
     flask_app.config["TESTING"] = True
+    # Local development mode (auth off + debugger on): the same unlock that
+    # opens private projects lets any caller write forks and imports, so these
+    # tests exercise write mechanics without minting identities. Ownership is
+    # covered in test_cartridge_ownership_api.py.
+    flask_app.debug = True
     
     # Needs PROJECTS_DIR setup like conftest
     flask_app.config["PROJECTS_DIR"] = tmp_path

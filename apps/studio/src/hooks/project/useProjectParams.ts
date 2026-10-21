@@ -13,7 +13,11 @@ import { useImageExport } from '../render/useImageExport'
 import { useRender } from '../render/useRender'
 import { useKeyboardShortcuts } from '../editor/useKeyboardShortcuts'
 import { inferPreviewHint } from '../../lib/previewHintInference'
+import { isParameterInMode, parameterModes } from '../../lib/parameterModes'
 import { useParameterPreviewCache } from '../render/useParameterPreviewCache'
+import { backgroundRendersAllowed } from '../../lib/serverRenderBudget'
+import { useTier } from '../system/useTier'
+import { sourceRevision } from '../../services/cache/sourceRevision'
 
 const RENDER_DEBOUNCE_MS = 500
 
@@ -239,7 +243,7 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
         // 1. Clean up parameters that shouldn't leak into the new mode
         if (manifest?.parameters) {
           manifest.parameters.forEach((p: ParamDef) => {
-            if (p.visible_in_modes && !p.visible_in_modes.includes(newMode)) {
+            if (!isParameterInMode(p, newMode)) {
               next[p.id] = p.default !== undefined ? p.default : 0
             }
           })
@@ -334,7 +338,9 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
     for (const param of manifest.parameters) {
       if (p[param.id] !== undefined) keyObj[param.id] = p[param.id]
     }
-    return JSON.stringify({ project: projectSlug, revision: renderRevision, format: exportFormat, mode: m, params: keyObj })
+    // `source` is read at call time: a saved source edit (sourceRevision.ts)
+    // must miss this cache without re-running the auto-render effect below.
+    return JSON.stringify({ project: projectSlug, revision: renderRevision, source: sourceRevision(projectSlug), format: exportFormat, mode: m, params: keyObj })
   }, [manifest, projectSlug, renderRevision, exportFormat])
 
   // Render hook
@@ -415,7 +421,7 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
   useEffect(() => {
     if (!modes || modes.length === 0) return
     const visibilityParams = manifest.parameters.filter(
-      (p: ParamDef) => p.group === 'visibility' && (p.visible_in_modes || []).includes(mode)
+      (p: ParamDef) => p.group === 'visibility' && (parameterModes(p) || []).includes(mode)
     )
     if (visibilityParams.length > 0 && visibilityParams.every((p: ParamDef) => !params[p.id])) {
       return
@@ -481,10 +487,14 @@ export function useProjectParams({ viewerRef }: UseProjectParamsOptions) {
     modes,
   })
 
-  // Cached geometry variants for parameter preview ghost overlay
+  // Cached geometry variants for parameter preview ghost overlay. Missing
+  // variants are rendered in the background only on an unlimited server-render
+  // budget: each one spends the visitor's hourly quota.
+  const { limits: tierLimits } = useTier()
   const { cachedVariants, preRenderStatus } = useParameterPreviewCache({
     manifest: manifest as Parameters<typeof useParameterPreviewCache>[0]['manifest'],
     mode, params, parts, loading, project: projectSlug,
+    backgroundRenders: backgroundRendersAllowed(tierLimits),
   })
 
   return {

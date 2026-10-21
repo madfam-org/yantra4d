@@ -54,6 +54,17 @@ RUN apt-get update && \
   ln -sf /opt/squashfs-root/AppRun /usr/local/bin/openscad && \
   rm -rf /var/lib/apt/lists/*
 
+# Platform tool for the editor's version control, deliberately OUTSIDE the
+# render environment: it does not affect geometry, and check_render_env.py
+# compares only the render install above with y4d_spec.render_environment.
+# The editor's history on a cartridge's first save, commit/diff/log, GitHub
+# import/sync and render-HEAD shell out to it. Both the API and the
+# render-worker container run this image; without it those features answer
+# 503 and saves proceed untracked.
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends git && \
+  rm -rf /var/lib/apt/lists/*
+
 # Set working directory
 WORKDIR /app
 
@@ -61,6 +72,26 @@ WORKDIR /app
 COPY apps/api/requirements.txt ./backend/
 COPY apps/worker/ /app/worker/
 RUN pip install --no-cache-dir -r backend/requirements.txt
+
+# Optional geom-core mesh oracle (services/engine/mesh_metrics.py, flag
+# MESH_ORACLE). Unset by default, so the image is unchanged. geom-core is not on
+# PyPI: it ships as GitHub Release wheels, one per CPython version, and pip
+# refuses a wheel built for another one — so the URL must name the wheel for
+# THIS image's Python (python:3.12 → a cp312 wheel; v0.1.0 has cp38–cp311 only,
+# see "Mesh oracle (geom-core)" in docs/guides/production-checklist.md).
+# The SHA-256 is required whenever the URL is set, the same pinning the
+# OpenSCAD snapshot above gets.
+ARG GEOM_CORE_WHEEL_URL=
+ARG GEOM_CORE_WHEEL_SHA256=
+RUN if [ -n "${GEOM_CORE_WHEEL_URL}" ]; then \
+      [ -n "${GEOM_CORE_WHEEL_SHA256}" ] || { echo "GEOM_CORE_WHEEL_SHA256 is required with GEOM_CORE_WHEEL_URL" >&2; exit 1; }; \
+      whl="/tmp/$(basename "${GEOM_CORE_WHEEL_URL}")"; \
+      wget -q "${GEOM_CORE_WHEEL_URL}" -O "${whl}" && \
+      echo "${GEOM_CORE_WHEEL_SHA256}  ${whl}" | sha256sum -c - && \
+      pip install --no-cache-dir "${whl}" && \
+      python -c "import geom_core_py; print('geom-core', geom_core_py.__version__)" && \
+      rm -f "${whl}"; \
+    fi
 
 # The shared sandbox core the cq_runner subprocess imports (one source with FC).
 COPY packages/commons-sandbox /app/packages/commons-sandbox
@@ -77,6 +108,9 @@ COPY private-projects/ ./private-projects/
 COPY libs/ ./libs/
 COPY apps/api/tests/ ./tests/
 COPY apps/api/ ./backend/
+# Served as /api/openapi.json (routes/core/api_docs.py): the same document the
+# openapi-validation CI job validates. .dockerignore re-includes this one file.
+COPY docs/reference/openapi.yaml ./docs/reference/openapi.yaml
 
 # Install project-bundled fonts into system fontconfig (belt-and-suspenders:
 # the runtime FONTCONFIG_FILE env var also handles this, but having fonts
@@ -100,8 +134,12 @@ ENV PORT=5000
 ENV HOST=0.0.0.0
 ENV PROJECTS_DIR=/app/projects
 ENV PRIVATE_PROJECTS_DIR=/app/private-projects
+# User-authored cartridges (forks, imports, onboarding). Mount a persistent
+# volume here; without one, writes land in the container layer and are lost
+# with it. See docs/operations/user-projects-storage.md.
+ENV USER_PROJECTS_DIR=/app/user-projects
 ENV OPENSCADPATH=/app/libs:/app/libs/dotSCAD/src:/app/projects
-ENV VERIFY_SCRIPT=/app/tests/verify_design.py
+ENV VERIFY_SCRIPT=/app/tests/scripts/verify_design.py
 
 # Expose port
 EXPOSE 5000
@@ -115,7 +153,7 @@ WORKDIR /app/backend
 
 # Create non-root user
 # UID 1001 must match K8s deployment runAsUser
-RUN mkdir -p /app/backend/data && \
+RUN mkdir -p /app/backend/data /app/user-projects && \
     useradd -r -u 1001 -s /bin/false yantra4d && chown -R yantra4d:yantra4d /app
 USER yantra4d
 

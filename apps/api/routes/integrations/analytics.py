@@ -33,12 +33,15 @@ def track_event() -> tuple[Response, int]:
     if not event_type:
         return error_response("Missing event type", 400, error_code="missing_event_type")
 
-    allowed_events = {"render", "export", "preset_apply", "mode_switch", "share", "verify"}
+    # `landing_tier`: the marketing site reports which rendering tier it decided
+    # (still / lite / full) and why, once per session, with no identifier —
+    # see apps/landing/src/lib/rum.ts. `project` is the literal "landing".
+    allowed_events = {"render", "export", "preset_apply", "mode_switch", "share", "verify", "landing_tier"}
     if event_type not in allowed_events:
         return error_response(f"Unknown event type: {event_type}", 400, error_code="unknown_event_type")
 
     # Sanitize event_data: whitelist known keys, limit size
-    ALLOWED_DATA_KEYS = {"mode", "preset", "format", "parts", "project", "duration_ms", "params"}
+    ALLOWED_DATA_KEYS = {"mode", "preset", "format", "parts", "project", "duration_ms", "params", "tier", "source", "lang", "path"}
     if event_data:
         if not isinstance(event_data, dict):
             return error_response("event data must be an object", 400, error_code="invalid_event_data")

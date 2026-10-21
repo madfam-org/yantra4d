@@ -150,6 +150,22 @@ when that file exists, else every manifest under `projects/*` with an
 
 Files are addressed relative to the manifest (`/models/<file>` on the site).
 
+### Who reads it
+
+- The landing gallery and 3D carousel, same-origin
+  (`apps/landing/src/lib/models-manifest.ts`).
+- The Studio, cross-origin from `app.yantra4d.com`: the
+  [prerendered default preview](../../apps/studio/README.md#prerendered-previews)
+  shown on project open, `lod0` first and `lod1` as fallback. The landing nginx
+  sends `Access-Control-Allow-Origin` (plus `Vary: Origin`) for the Studio and
+  local dev origins on `/models/manifest.json` and `/models/*.glb` only; the
+  security headers and `immutable` caching are unchanged there.
+
+Because the Studio shows these meshes as "the default configuration", a stale
+manifest is visible to every Studio visitor, not only on the landing: refresh
+it (dispatch the workflow below with `open_pr`) after cartridges are added or
+their defaults change.
+
 ## Running it locally
 
 Prerequisites: `npm ci` in `apps/landing` (the optimizer resolves
@@ -230,13 +246,14 @@ on `workflow_dispatch` with:
 | `slugs` | *(empty = whole catalog)* | Render only these, `--force`d. A limited run never passes `--clean` to the optimizer, so the other cartridges' LODs stay. |
 | `lod0` | `hero` | Passed straight to the optimizer's `--lod0`. |
 
-What it does, on `madfam-runners-blue` (ADR-010), 120 min budget:
+What it does, on GitHub-hosted `ubuntu-24.04` (R116: public repositories stay on
+GitHub-hosted runners), 120 min budget:
 
 1. Checks out with `submodules: true` + `MADFAM_BOT_PAT` (the public commons
    comes in; the `update = none` client mounts stay out), sets up Python 3.12
    and Node 22.
-2. Installs OpenSCAD, Redis and the backend exactly as `ci.yml`'s `e2e` job
-   does, then starts Redis, `python app.py` (`AUTH_ENABLED=false`,
+2. Installs the pinned OpenSCAD snapshot (`.github/actions/render-env`), Redis
+   and the backend exactly as `ci.yml`'s `e2e` job does, then starts Redis, `python app.py` (`AUTH_ENABLED=false`,
    `HARNESS_TIER=premium`, `RATE_LIMIT_ENABLED=false`) and the render worker,
    waiting on `/api/health` for both.
 3. Computes the cache key: the digest of every cartridge directory folded with

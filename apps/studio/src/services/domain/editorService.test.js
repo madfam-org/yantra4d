@@ -8,7 +8,7 @@ vi.mock('../core/apiClient', () => ({
   apiFetch: vi.fn(),
 }))
 
-import { listFiles, readFile, writeFile, createFile, deleteFile } from './editorService'
+import { listFiles, readFile, writeFile, createFile, deleteFile, updateGraphBindings } from './editorService'
 import { apiFetch } from '../core/apiClient'
 
 beforeEach(() => {
@@ -117,5 +117,24 @@ describe('fallback error messages', () => {
   it('deleteFile throws fallback', async () => {
     apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
     await expect(deleteFile('proj', 'f.scad')).rejects.toThrow('Failed to delete file')
+  })
+})
+
+describe('updateGraphBindings', () => {
+  it('sends PUT with exactly {bindings}', async () => {
+    apiFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({ bindings: { r: 'outline.r' } }) })
+    const result = await updateGraphBindings('fork', { r: 'outline.r', h: null })
+    expect(result).toEqual({ bindings: { r: 'outline.r' } })
+    expect(apiFetch).toHaveBeenCalledWith(
+      'http://localhost:5000/api/projects/fork/manifest/bindings',
+      expect.objectContaining({ method: 'PUT', body: JSON.stringify({ bindings: { r: 'outline.r', h: null } }) }),
+    )
+  })
+
+  it('throws the server reason, or a fallback', async () => {
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({ error: 'Bindings can only be edited on your fork' }) })
+    await expect(updateGraphBindings('commons', { r: null })).rejects.toThrow('only be edited on your fork')
+    apiFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) })
+    await expect(updateGraphBindings('commons', { r: null })).rejects.toThrow('Failed to save bindings')
   })
 })

@@ -77,3 +77,43 @@ if (render_mode == 1) helper();
         param = next(p for p in result["manifest"]["parameters"] if p["id"] == "letter")
         assert param["type"] == "text"
         assert param["default"] == "A"
+
+
+# One anonymous server render each on api.yantra4d.com, 2026-10-18 (geo-stab
+# H1): (units, parts, observed seconds).
+MEASURED_2026_10_18 = {
+    "motor-mount": (2, 2, 2.08),
+    "gear-reducer": (5, 5, 3.87),
+    "julia-vase": (1, 1, 1.20),
+    "spiral-planter": (2, 2, 9.63),
+    "portacosas": (1, 6, 1.70),
+}
+
+
+class TestGeneratedEstimateConstants:
+    """The scaffolded render-time constants follow the 2026-10-18 measurement."""
+
+    def _estimate(self, constants, units, parts):
+        return constants["base_time"] + units * constants["per_unit"] + parts * constants["per_part"]
+
+    def test_generated_manifest_carries_the_fitted_constants(self, tmp_path):
+        _write_scad(tmp_path, "main.scad", "size = 20;\ncube(size);\n")
+        constants = generate_manifest(tmp_path, slug="t")["manifest"]["estimate_constants"]
+        assert constants["base_time"] == 1.5
+        assert constants["per_unit"] == 0.25
+        assert constants["per_part"] == 0.25
+        assert constants["warning_threshold_seconds"] == 60
+
+    def test_fitted_constants_stay_within_2x_over_of_every_measurement(self, tmp_path):
+        _write_scad(tmp_path, "main.scad", "size = 20;\ncube(size);\n")
+        constants = generate_manifest(tmp_path, slug="t")["manifest"]["estimate_constants"]
+        for slug, (units, parts, observed) in MEASURED_2026_10_18.items():
+            ratio = self._estimate(constants, units, parts) / observed
+            # spiral-planter (mesh-heavy) is the one under-estimate, at 0.26x.
+            assert 0.25 <= ratio <= 2.0, (slug, round(ratio, 2))
+
+    def test_none_of_the_measured_renders_would_warn(self, tmp_path):
+        _write_scad(tmp_path, "main.scad", "size = 20;\ncube(size);\n")
+        constants = generate_manifest(tmp_path, slug="t")["manifest"]["estimate_constants"]
+        for slug, (units, parts, _observed) in MEASURED_2026_10_18.items():
+            assert self._estimate(constants, units, parts) < constants["warning_threshold_seconds"], slug

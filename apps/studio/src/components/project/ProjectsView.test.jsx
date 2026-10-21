@@ -277,13 +277,31 @@ describe('ProjectsView (catalog search)', () => {
     renderWithProviders(<ProjectsView />)
     await waitForProjects()
     // Facet chips live in the desktop sidebar; their accessible name is
-    // "value count" (e.g. "grid 1"). Scope to the sidebar to avoid colliding
+    // "label count" (e.g. "Grid 1"). Scope to the sidebar to avoid colliding
     // with the "Grid view" toggle and the "Gridfinity" card title.
     const sidebar = screen.getByRole('complementary', { name: 'Filters' })
-    // "Connects via" (geometry_type) values
-    expect(within(sidebar).getByRole('button', { name: 'grid 1' })).toBeInTheDocument()
-    // "Compatible with" (standard) values
+    // "Connects via" (geometry_type) codes show their localized label
+    expect(within(sidebar).getByRole('button', { name: 'Grid 1' })).toBeInTheDocument()
+    expect(within(sidebar).getByRole('button', { name: 'Bolt pattern 1' })).toBeInTheDocument()
+    // "Compatible with" (standard) values are author text, shown as written
     expect(within(sidebar).getByRole('button', { name: 'NEMA 17 1' })).toBeInTheDocument()
+  })
+
+  // geo-stab V1 F8: the Spanish catalog showed the raw codes «household»,
+  // «intermediate», «bolt_pattern» in its filter chips.
+  it('renders coded facet values in the visitor language', async () => {
+    mockFetch()
+    renderWithProviders(<ProjectsView />, { language: 'es' })
+    await waitFor(() => expect(screen.getByText('Gridfinity Extendido')).toBeInTheDocument())
+    const sidebar = screen.getByRole('complementary', { name: 'Filtros' })
+    expect(within(sidebar).getByRole('button', { name: 'Cuadrícula 1' })).toBeInTheDocument()
+    expect(within(sidebar).getByRole('button', { name: 'Patrón de pernos 1' })).toBeInTheDocument()
+    expect(within(sidebar).getByRole('button', { name: 'Intermedio 1' })).toBeInTheDocument()
+    expect(within(sidebar).getByRole('button', { name: 'OpenSCAD 2' })).toBeInTheDocument()
+    // A domain code outside the vocabulary has no key: it shows as the code,
+    // never as a raw "projects.filter.domain.storage" key.
+    expect(within(sidebar).getByRole('button', { name: 'storage 2' })).toBeInTheDocument()
+    expect(within(sidebar).queryByRole('button', { name: /bolt_pattern|intermediate/ })).toBeNull()
   })
 
   it('clicking a facet chip triggers a refetch with that facet param', async () => {
@@ -292,8 +310,9 @@ describe('ProjectsView (catalog search)', () => {
     await waitForProjects()
 
     // "grid" is a geometry_type facet value → expect geometry_type=grid in URL
+    // The chip says "Grid"; the query still sends the code.
     const sidebar = screen.getByRole('complementary', { name: 'Filters' })
-    fireEvent.click(within(sidebar).getByRole('button', { name: 'grid 1' }))
+    fireEvent.click(within(sidebar).getByRole('button', { name: 'Grid 1' }))
 
     await waitFor(() => {
       expect(searchUrls(spy).some((u) => u.includes('geometry_type=grid'))).toBe(true)
@@ -366,8 +385,11 @@ describe('ProjectsView (catalog search)', () => {
     mockFetch()
     renderWithProviders(<ProjectsView />)
     await waitForProjects()
-    expect(screen.getByText('Beginner')).toBeInTheDocument()
-    expect(screen.getByText('Advanced')).toBeInTheDocument()
+    // The difficulty facet chips say the same words now; look outside them.
+    const sidebar = screen.getByRole('complementary', { name: 'Filters' })
+    const outsideSidebar = (text) => screen.getAllByText(text).filter((el) => !sidebar.contains(el))
+    expect(outsideSidebar('Beginner').length).toBeGreaterThan(0)
+    expect(outsideSidebar('Advanced').length).toBeGreaterThan(0)
   })
 
   // --- Error / empty / no-results states ---

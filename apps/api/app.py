@@ -27,6 +27,7 @@ from flask_cors import CORS
 
 from config import Config
 from extensions import db, limiter, migrate
+from routes.core.api_docs import api_docs_bp
 from routes.core.client_config import client_config_bp
 from routes.core.config_route import config_bp
 from routes.core.health import health_bp
@@ -67,6 +68,7 @@ from services.storage.serving import send_static_artifact
 
 # Configure logging
 from utils.logging_config import setup_logging
+from utils.project_resolver import shadowed_user_slugs
 
 setup_logging(Config.DEBUG)
 logger = logging.getLogger(__name__)
@@ -156,8 +158,36 @@ def _check_capabilities():
     return capabilities
 
 
+def _warn_shadowed_user_projects() -> None:
+    """Log user cartridges hidden by a curated cartridge of the same slug.
+
+    Writers refuse a slug that is taken in any root, so this only happens when
+    a release adds a curated cartridge whose slug a user already took. The
+    user cartridge stays on disk but no longer resolves; an operator renames
+    it. Failing to list the root must never stop the app from starting.
+    """
+    try:
+        shadowed = shadowed_user_slugs()
+    except OSError as exc:
+        logger.warning("Could not check the user-projects root for shadowed slugs: %s", exc)
+        return
+    if shadowed:
+        logger.warning(
+            "User cartridges hidden by a curated cartridge with the same slug "
+            "(rename them in %s): %s", Config.USER_PROJECTS_DIR, ", ".join(shadowed),
+        )
+
+
 def create_app():
     """Application factory for Flask app."""
+    # Two render routes (animation frames, git render-head) run CadQuery
+    # subprocesses in this process under the same UID. Make this process
+    # non-dumpable so such a child cannot read this parent's /proc/<pid>/environ
+    # or /proc/<pid>/mem, where the broader app secrets live. Runs once per
+    # gunicorn worker (the app is imported after fork); no-op off Linux.
+    from utils.process_hardening import set_process_nondumpable
+    set_process_nondumpable()
+
     from posthog_analytics import init_posthog
     from posthog_analytics import shutdown as posthog_shutdown
     init_posthog()
@@ -275,6 +305,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(render_bp)
     app.register_blueprint(health_bp)
+    app.register_blueprint(api_docs_bp)
     app.register_blueprint(verify_bp)
     app.register_blueprint(config_bp)
     app.register_blueprint(manifest_bp)
@@ -358,6 +389,8 @@ def create_app():
     logger.info(f"Yantra4D Backend initialized - Debug: {Config.DEBUG}")
     logger.info(f"SCAD Directory: {Config.SCAD_DIR}")
     logger.info(f"Projects Directory: {Config.PROJECTS_DIR}")
+    logger.info(f"User Projects Directory: {Config.USER_PROJECTS_DIR}")
+    _warn_shadowed_user_projects()
     logger.info(f"Multi-project mode: {Config.MULTI_PROJECT}")
     logger.info(f"Render artifact store: {get_artifact_store().describe()}")
     logger.info(f"OpenSCAD Path: {Config.OPENSCAD_PATH}")

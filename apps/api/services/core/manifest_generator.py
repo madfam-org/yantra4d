@@ -5,6 +5,35 @@ from pathlib import Path
 
 from services.core.scad_analyzer import analyze_directory
 
+#: Render-time constants a generated (OpenSCAD) manifest starts with, in SERVER
+#: seconds: estimate = base_time + units * per_unit + parts * per_part, and the
+#: Studio multiplies by `wasm_multiplier` only for a render that runs in the
+#: browser (apps/studio/src/services/engine/renderService.ts::estimateRenderTime).
+#:
+#: Fitted 2026-10-18 (geo-stab H1) to one anonymous server render each of five
+#: OpenSCAD cartridges on api.yantra4d.com, wall clock from the client, cache
+#: bypassed: motor-mount 2.08 s (2 parts), gear-reducer 3.87 s (5),
+#: julia-vase 1.20 s (1), spiral-planter 9.63 s (2), portacosas 1.70 s (6).
+#: A least-squares fit in log space with per_unit tied to per_part gave 1.7 s +
+#: 0.21 s per unit and per part; rounded, these predict 0.26x-1.9x of each
+#: measurement (geometric mean 1.01x). The previous scaffold (5 / 2 / 8)
+#: predicted 3x-25x. Parts and units barely separate in five samples, and
+#: spiral-planter's 9.6 s is mesh size (65k vertices), which no term here sees:
+#: a cartridge author should still measure and override.
+#:
+#: Not refitted, because not measured: `wasm_multiplier` (browser renders) and
+#: CadQuery (a guest cannot render it). `warning_threshold_seconds` stays 60 s:
+#: with server constants that are no longer 12x high, the warning fires only
+#: for a render that is predicted to take a minute.
+DEFAULT_ESTIMATE_CONSTANTS = {
+    "base_time": 1.5,
+    "per_unit": 0.25,
+    "per_part": 0.25,
+    "fn_factor": 64,
+    "wasm_multiplier": 3,
+    "warning_threshold_seconds": 60,
+}
+
 
 def generate_manifest(directory: Path, slug: str | None = None) -> dict:
     """Analyze a directory of SCAD files and generate a draft project.json with warnings."""
@@ -142,14 +171,7 @@ def generate_manifest(directory: Path, slug: str | None = None) -> dict:
             {"id": "iso", "label": {"en": "Isometric"}, "position": [50, 50, 50]},
             {"id": "front", "label": {"en": "Front"}, "position": [0, -100, 0]},
         ],
-        "estimate_constants": {
-            "base_time": 5,
-            "per_unit": 2,
-            "per_part": 8,
-            "fn_factor": 64,
-            "wasm_multiplier": 3,
-            "warning_threshold_seconds": 60,
-        },
+        "estimate_constants": dict(DEFAULT_ESTIMATE_CONSTANTS),
     }
 
     return {

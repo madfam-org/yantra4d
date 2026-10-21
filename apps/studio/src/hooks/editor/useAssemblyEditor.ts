@@ -135,11 +135,17 @@ export function useAssemblyEditor(
   const save = useCallback(async () => {
     setSaving(true)
     try {
-      await apiFetch(`/api/projects/${projectSlug}/manifest/assembly-steps`, {
+      const res = await apiFetch(`/api/projects/${projectSlug}/manifest/assembly-steps`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ assembly_steps: steps }),
       })
+      // apiFetch resolves on any HTTP status. A refused save (e.g. 403
+      // read_only_cartridge on a built-in cartridge) must not read as saved.
+      if (!res.ok) {
+        const body = await res.json().catch(() => null) as { error?: string } | null
+        throw new Error(body?.error || `HTTP ${res.status}`)
+      }
       originalRef.current = steps
       setIsDirty(false)
       toast.success('Assembly steps saved')

@@ -4,7 +4,15 @@ import math
 import os
 import sys
 
-from commons_sandbox import build_sandbox_builtins, read_script, validate_script_path
+from commons_sandbox import read_script, validate_script_path
+
+# cq_runner is launched as a standalone script (its own directory is sys.path[0]),
+# so the sibling allowlist module imports flat; it is also importable as part of
+# the application package under services.engine for the test suite.
+try:  # pragma: no cover - exercised by both invocation styles
+    from cq_sandbox import build_cq_sandbox_builtins
+except ImportError:  # pragma: no cover
+    from services.engine.cq_sandbox import build_cq_sandbox_builtins
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +42,12 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
     print(f"Executing CadQuery script: {script_path}")
     script_content = read_script(script_path)
 
-    safe_builtins = build_sandbox_builtins("CadQuery scripts")
+    # Allowlist import policy (defence in depth over the shared core's denylist):
+    # a cartridge may import only known-safe packages and sibling cartridges on
+    # the curated roots. The engine hands those roots down in the environment.
+    curated_env = os.environ.get("YANTRA4D_CURATED_ROOTS", "")
+    curated_roots = frozenset(p for p in curated_env.split(os.pathsep) if p)
+    safe_builtins = build_cq_sandbox_builtins("CadQuery scripts", curated_roots)
 
     exec_globals = {
         "__builtins__": safe_builtins,
@@ -45,21 +58,48 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
     }
     exec_globals.update(params)
 
+    is_gltf_or_glb = export_format.upper() in ["GLTF", "GLB"]
+
+    # glTF/GLB is produced by transcoding a STEP intermediate through cascadio.
+    # The STEP path is decided BEFORE the script runs, and it is what the script
+    # sees as `--out`. Twenty-one commons cartridges (the former satellite repos:
+    # din-rail-clip, fasteners, gears, motor-mount, spiral-planter, …) carry an
+    # `if __name__ == "__main__":` block that parses that argv and calls
+    # `cq.exporters.export(res, args.out)` themselves. Handed a `.glb` path,
+    # CadQuery cannot infer an export type and raises "Unknown extensions,
+    # specify export type explicitly" inside exec — before this runner's own
+    # transcode ever ran. Handed the `.step` path, the same scripts write a
+    # perfectly good STEP, and the transcode below picks it up. (Found by the
+    # first prerender-commons run, 2026-09-19.)
+    temp_step_path = None
+    if is_gltf_or_glb:
+        import tempfile
+        try:
+            import cascadio
+        except ImportError:
+            print("Error: cascadio library is missing. Cannot export high-quality GLB.")
+            sys.exit(1)
+        with tempfile.NamedTemporaryFile(suffix=".step", delete=False) as tmp:
+            temp_step_path = tmp.name
+        # Empty on purpose: "the script wrote it" is detected by size below.
+        os.remove(temp_step_path)
+    script_out = temp_step_path if is_gltf_or_glb else output_path
+
     try:
         # Mock sys.argv so script's argparse doesn't break
         old_argv = sys.argv
-        sys.argv = [script_path, "--params", params_json, "--out", output_path]
+        sys.argv = [script_path, "--params", params_json, "--out", script_out]
 
         # Execute the script. The script should assign the final shape to an 'assembly', 'result', or 'part' variable.
         exec(script_content, exec_globals)  # noqa: S102 — sandboxed via restricted builtins
-        
+
         # Find the result
         result = None
         for var_name in ['result', 'assembly', 'part', 'show_object']:
             if var_name in exec_globals and isinstance(exec_globals[var_name], (cq.Workplane, cq.Assembly, cq.Shape)):
                 result = exec_globals[var_name]
                 break
-        
+
         if result is None:
             # Try to grab the last CadQuery object created
             for key, val in reversed(list(exec_globals.items())):
@@ -67,44 +107,40 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
                     result = val
                     break
 
-        if result is None:
+        # A script that exported itself has done the geometry's job even when it
+        # left no module-level shape behind (its `result` may live inside its
+        # `__main__` block or a function).
+        script_wrote_step = bool(
+            temp_step_path and os.path.exists(temp_step_path) and os.path.getsize(temp_step_path) > 0
+        )
+
+        if result is None and not script_wrote_step:
             print("Error: Could not find any CadQuery Workplane, Assembly, or Shape in the script to export.")
             sys.exit(1)
 
         print(f"Exporting to {export_format}: {output_path}")
-        
-        is_gltf_or_glb = export_format.upper() in ["GLTF", "GLB"]
 
         if is_gltf_or_glb:
-            import tempfile
             try:
-                import cascadio
-            except ImportError:
-                print("Error: cascadio library is missing. Cannot export high-quality GLB.")
-                sys.exit(1)
-            
-            # Export to a temporary STEP file first
-            with tempfile.NamedTemporaryFile(suffix=".step", delete=False) as tmp:
-                temp_step_path = tmp.name
-                
-            try:
-                if isinstance(result, cq.Assembly):
+                if script_wrote_step:
+                    print("Script exported its own STEP; transcoding that.")
+                elif isinstance(result, cq.Assembly):
                     result.save(temp_step_path, "STEP")
                 else:
                     cq.exporters.export(result, temp_step_path, "STEP")
-                    
+
                 print("Transcoding STEP to GLB via cascadio...")
                 # cascadio creates a far superior, optimized binary GLB mesh
                 cascadio.step_to_glb(temp_step_path, output_path)
             finally:
-                if os.path.exists(temp_step_path):
+                if temp_step_path and os.path.exists(temp_step_path):
                     os.remove(temp_step_path)
-                    
+
         elif isinstance(result, cq.Assembly):
             result.save(output_path, export_format.upper())
         else:
             cq.exporters.export(result, output_path, export_format.upper())
-            
+
         print("Rendering complete.")
 
     except Exception as e:
@@ -112,6 +148,8 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
         sys.exit(1)
     finally:
         sys.argv = old_argv
+        if temp_step_path and os.path.exists(temp_step_path):
+            os.remove(temp_step_path)
 
 def serve_forever(stdin=None, stdout=None):
     """Persistent worker mode: import CadQuery once, then serve jobs forever.

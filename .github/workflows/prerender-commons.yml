@@ -71,9 +71,10 @@ concurrency:
 
 jobs:
   prerender:
-    # ADR-010: every job runs on MADFAM-operated runners; there is no
-    # GitHub-hosted arm.
-    runs-on: madfam-runners-blue
+    # R116 (ruled 2026-10-05): a public repository runs on GitHub-hosted
+    # runners. ARC_BOOTSTRAP_COMPLETE is not visible to public repositories, so
+    # this resolves to ubuntu-24.04 (the ADR-010 expression enclii and janua use).
+    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
     timeout-minutes: 120
     steps:
       # One level of submodules + the PAT brings the public commons in; the
@@ -82,7 +83,7 @@ jobs:
       # build-landing, and never `recursive` — see "Submodule depth" at the
       # top of .github/workflows/ci.yml).
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           submodules: true
           token: ${{ secrets.MADFAM_BOT_PAT }}
@@ -97,24 +98,28 @@ jobs:
             exit 1
           }
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/landing/package-lock.json
 
       # ── Backend, directly on the runner (mirrors ci.yml › e2e and e2e-audit.yml) ──
-      - name: Install OpenSCAD, Redis and backend dependencies
+      # The pinned OpenSCAD snapshot, not apt's: Ubuntu 24.04 ships 2021.01,
+      # which cannot render the pinned BOSL2 (see .github/actions/render-env).
+      - name: Install the render environment (OpenSCAD + OCP runtime libraries)
+        uses: ./.github/actions/render-env
+
+      - name: Install Redis and backend dependencies
         working-directory: apps/api
         run: |
           # apt is bounded because an unreachable git-core PPA hung an e2e shard for 28 min on 2026-09-02 until the job timeout.
-          sudo find /etc/apt/sources.list.d -name '*git-core*' -delete || true
-          sudo timeout 300 apt-get update -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 openscad redis-server
+          # (render-env above already refreshed the package index.)
+          sudo apt-get install -y -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=3 redis-server
           pip install -r requirements.txt
           pip install -e ../../packages/commons-sandbox   # cq_runner subprocess imports it
 
@@ -241,7 +246,7 @@ jobs:
       # 500, or every retry starts from zero.
       - name: Restore raw renders
         id: raw-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: apps/landing/public/models/raw
           key: commons-raw-v1-${{ steps.key.outputs.digest }}
@@ -271,7 +276,7 @@ jobs:
 
       - name: Save raw renders
         if: always() && steps.raw-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: apps/landing/public/models/raw
           key: commons-raw-v1-${{ steps.key.outputs.digest }}
@@ -303,7 +308,7 @@ jobs:
           npm run models:optimize -- "${args[@]}"
 
       - name: Upload the optimized models
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: commons-models-${{ github.run_id }}
@@ -314,7 +319,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload backend and worker logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure() || steps.render.outcome == 'failure'
         with:
           name: commons-models-logs-${{ github.run_id }}
@@ -328,7 +333,7 @@ jobs:
       - name: Create PR
         id: create-pr
         if: github.event_name == 'workflow_dispatch' && inputs.open_pr
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         with:
           # The org setting "Allow GitHub Actions to create and approve pull
           # requests" is OFF, so the default GITHUB_TOKEN is refused here no
@@ -376,8 +381,14 @@ jobs:
 
       # Everything above uploaded and (optionally) opened the PR first, so a
       # red run still leaves the operator with the models and the summary.
+      # !cancelled(): without a status function GitHub adds success() to this
+      # condition, and success() is already false when a LATER step has failed
+      # (the PR step, on 2026-09-19, run 35460054814) — so the optimizer's
+      # --strict verdict (exit 1, one lod1 at 28 KB against 12 KB) was recorded
+      # as the step's outcome and this report was skipped; the breach reached
+      # the branch without a red verdict of its own.
       - name: Report render and optimize failures
-        if: steps.render.outcome == 'failure' || steps.optimize.outcome == 'failure'
+        if: ${{ !cancelled() && (steps.render.outcome == 'failure' || steps.optimize.outcome == 'failure') }}
         run: |
           {
             echo "## Prerender finished with failures"

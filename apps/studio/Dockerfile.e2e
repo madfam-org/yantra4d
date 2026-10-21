@@ -4,6 +4,8 @@ WORKDIR /app
 
 # Copy package files for studio
 COPY package.json package-lock.json ./
+# @madfam/geom-core installs from the vendored release tarball (file:vendor/...)
+COPY vendor/ ./vendor/
 
 # Install dependencies (use legacy-peer-deps to bypass React 19 vs 18 conflict)
 RUN npm ci --legacy-peer-deps

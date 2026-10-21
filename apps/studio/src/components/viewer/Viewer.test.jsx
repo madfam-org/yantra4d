@@ -61,6 +61,15 @@ vi.mock('@react-three/drei', () => ({
   Html: ({ children }) => <div data-testid="html-label">{children}</div>,
 }))
 
+vi.mock('./ViewerPerformance', () => ({
+  default: () => null,
+  KeepRendering: () => null,
+  InvalidateOnCommit: () => null,
+  CompileGate: ({ children }) => <>{children}</>,
+}))
+
+vi.mock('./AsyncEdges', () => ({ default: () => null }))
+
 vi.mock('three/examples/jsm/loaders/STLLoader', () => ({
   STLLoader: class { },
 }))
@@ -1232,5 +1241,48 @@ describe('Viewer', () => {
     const overlay = screen.getByTestId('parameter-preview-overlay')
     expect(overlay).toBeInTheDocument()
     expect(overlay.getAttribute('data-has-cached-variants')).toBe('true')
+  })
+})
+
+describe('Viewer prerendered default preview', () => {
+  const PREVIEW = 'https://yantra4d.com/models/gridfinity.lod1.glb'
+  const props = {
+    parts: [], colors: {}, wireframe: false, boundingBox: false, loading: false, progress: 0,
+    progressPhase: null, animating: false, setAnimating: vi.fn(), mode: 'bin', params: {},
+    assemblyActive: false, highlightedParts: [], visibleParts: [], headDiffMode: false, headParts: [],
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseWorkerLoader.mockReturnValue({ geometry: makeFakeGeometry(), scene: null })
+    mockUseTheme.mockReturnValue({ theme: 'light' })
+    mockUseManifest.mockReturnValue(defaultManifestMock)
+  })
+
+  it('loads the preview GLB with the meshopt decoder while nothing has rendered', () => {
+    render(<Viewer {...props} prerenderedPreviewUrl={PREVIEW} onGeometryStats={vi.fn()} />)
+    expect(mockUseWorkerLoader).toHaveBeenCalledWith(PREVIEW, true, expect.objectContaining({ meshopt: true }))
+  })
+
+  it('frames the preview but never reports it as render stats', () => {
+    const onGeometryStats = vi.fn()
+    render(<Viewer {...props} prerenderedPreviewUrl={PREVIEW} onGeometryStats={onGeometryStats} />)
+    expect(mockAnimateTo).toHaveBeenCalled()
+    expect(onGeometryStats).not.toHaveBeenCalled()
+  })
+
+  it('hands a failed load back to the caller, silently', () => {
+    const onError = vi.fn()
+    render(<Viewer {...props} prerenderedPreviewUrl={PREVIEW} onPrerenderedPreviewError={onError} />)
+    const options = mockUseWorkerLoader.mock.calls.find(call => call[0] === PREVIEW)[2]
+    options.onError(new Error('HTTP 404'))
+    expect(onError).toHaveBeenCalledWith(PREVIEW)
+  })
+
+  it('renders the real parts instead once a render exists', () => {
+    const onGeometryStats = vi.fn()
+    render(<Viewer {...props} parts={[{ type: 'bin', url: '/api/render/bin.stl' }]} prerenderedPreviewUrl={PREVIEW} onGeometryStats={onGeometryStats} />)
+    expect(mockUseWorkerLoader.mock.calls.some(call => call[0] === PREVIEW)).toBe(false)
+    expect(onGeometryStats).toHaveBeenCalled()
   })
 })

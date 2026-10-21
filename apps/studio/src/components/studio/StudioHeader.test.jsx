@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import StudioHeader from './StudioHeader'
+import enLocale from '../../locales/en.json'
+import esLocale from '../../locales/es.json'
 
 // Mock dependencies
 vi.mock('../../contexts/system/LanguageProvider', () => ({
@@ -32,7 +34,7 @@ vi.mock('../project/ProjectSelector', () => ({
 }))
 
 vi.mock('../../hooks/project/useProjectMeta', () => ({
-  useProjectMeta: () => ({ source: { type: 'github' } }),
+  useProjectMeta: vi.fn(() => ({ source: { type: 'github' } })),
 }))
 
 vi.mock('react-router-dom', () => ({
@@ -50,6 +52,7 @@ import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useTheme } from '../../contexts/system/ThemeProvider'
 import { usePlatform } from '../../contexts/system/PlatformProvider'
 import { useProject } from '../../contexts/project/ProjectProvider'
+import { useProjectMeta } from '../../hooks/project/useProjectMeta'
 
 const baseProjectContext = {
   manifest: { project: { name: 'Test Project' } },
@@ -73,6 +76,16 @@ const baseLanguageContext = {
   t: (key) => key,
 }
 
+/** A language context that translates with a real locale file. */
+const realLanguageContext = (language, locale) => ({
+  language,
+  setLanguage: vi.fn(),
+  t: (key, params) => Object.entries(params ?? {}).reduce(
+    (str, [k, v]) => str.replaceAll(`{${k}}`, String(v)),
+    locale[key] ?? key,
+  ),
+})
+
 const basePlatformContext = {
   platformName: '',
   platformLogo: '/logo.png',
@@ -90,6 +103,7 @@ const defaultProps = {
 beforeEach(() => {
   vi.clearAllMocks()
   useProject.mockReturnValue(baseProjectContext)
+  useProjectMeta.mockReturnValue({ source: { type: 'github' } })
   useTheme.mockReturnValue(baseThemeContext)
   useLanguage.mockReturnValue(baseLanguageContext)
   usePlatform.mockReturnValue(basePlatformContext)
@@ -230,6 +244,60 @@ describe('StudioHeader', () => {
     expect(screen.getByText('Commons')).toBeInTheDocument()
   })
 
+  // Live on app.yantra4d.com (2026-10-18): gridfinity's badge read
+  // "Domain: undefined". Cartridges flag the badge in project.hyperobject but
+  // declare the domain in the top-level hyperobject block.
+  it('reads the commons badge domain from the top-level hyperobject block', () => {
+    useProject.mockReturnValue({
+      ...baseProjectContext,
+      manifest: {
+        project: { name: 'Gridfinity', hyperobject: { is_hyperobject: true } },
+        hyperobject: { domain: 'household' },
+      },
+    })
+    useLanguage.mockReturnValue(realLanguageContext('en', enLocale))
+    render(<StudioHeader {...defaultProps} />)
+    expect(screen.getByText('Commons')).toHaveAttribute('title', 'Domain: Household')
+  })
+
+  // geo-stab V1 F8: the badge said "Domain: household" in every language.
+  it('says the commons badge domain in the visitor language', () => {
+    useProject.mockReturnValue({
+      ...baseProjectContext,
+      manifest: {
+        project: { name: 'Gridfinity', hyperobject: { is_hyperobject: true } },
+        hyperobject: { domain: 'household' },
+      },
+    })
+    useLanguage.mockReturnValue(realLanguageContext('es', esLocale))
+    render(<StudioHeader {...defaultProps} />)
+    expect(screen.getByText('Commons')).toHaveAttribute('title', 'Dominio: Hogar')
+  })
+
+  it('omits the commons badge title when no domain is declared', () => {
+    useProject.mockReturnValue({
+      ...baseProjectContext,
+      manifest: { project: { name: 'Test Project', hyperobject: { is_hyperobject: true } } },
+    })
+    render(<StudioHeader {...defaultProps} />)
+    const badge = screen.getByText('Commons')
+    expect(badge).not.toHaveAttribute('title')
+    expect(document.body.innerHTML).not.toContain('undefined')
+  })
+
+  it('keeps a domain declared in project.hyperobject', () => {
+    useProject.mockReturnValue({
+      ...baseProjectContext,
+      manifest: {
+        project: { name: 'Test Project', hyperobject: { is_hyperobject: true, domain: 'hardware' } },
+      },
+    })
+    useLanguage.mockReturnValue(realLanguageContext('en', enLocale))
+    render(<StudioHeader {...defaultProps} />)
+    // Not in the domain vocabulary: no key, so the code is shown as written.
+    expect(screen.getByText('Commons')).toHaveAttribute('title', 'Domain: hardware')
+  })
+
   it('does not show commons badge when hyperobject is false', () => {
     useProject.mockReturnValue({
       ...baseProjectContext,
@@ -276,6 +344,29 @@ describe('StudioHeader', () => {
     // Let's just verify the title reflects editorOpen state
     render(<StudioHeader {...defaultProps} editorOpen={true} />)
     expect(screen.getByTitle('btn.editor_close')).toBeInTheDocument()
+  })
+
+  describe('code button follows can_write', () => {
+    it("offers Fork to edit on someone else's fork", () => {
+      const onForkRequest = vi.fn()
+      useProjectMeta.mockReturnValue({ source: { type: 'fork' }, can_write: false, is_owner: false })
+      render(<StudioHeader {...defaultProps} onForkRequest={onForkRequest} />)
+      fireEvent.click(screen.getByTitle('btn.fork_edit'))
+      expect(onForkRequest).toHaveBeenCalled()
+    })
+
+    it('opens the editor on your own fork', () => {
+      useProjectMeta.mockReturnValue({ source: { type: 'fork' }, can_write: true, is_owner: true })
+      render(<StudioHeader {...defaultProps} />)
+      expect(screen.getByTitle('btn.editor_open')).toBeInTheDocument()
+      expect(screen.queryByTitle('btn.fork_edit')).not.toBeInTheDocument()
+    })
+
+    it('offers Fork to edit on a built-in cartridge', () => {
+      useProjectMeta.mockReturnValue({ can_write: false, is_owner: false })
+      render(<StudioHeader {...defaultProps} />)
+      expect(screen.getByTitle('btn.fork_edit')).toBeInTheDocument()
+    })
   })
 
   it('shows AI configurator title when panel is open', () => {

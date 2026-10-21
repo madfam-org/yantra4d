@@ -181,10 +181,10 @@ git submodule update --init projects libs    # what a contributor needs
 - **Weekly commons bump**: `.github/workflows/bump-commons-pin.yml` opens a PR
   when `solid-hyperobjects` main moves ahead of the pin, regenerating every
   derived artifact in the same commit. It never pushes to `main`.
-- **Client-private cartridges**: `private-projects/tablaco` and
-  `private-projects/tablaco-v2` carry `update = none` in `.gitmodules` and are
-  excluded from automated updates (managed separately via their own deployment
-  pipeline). `git submodule update` honours `update = none`, so **never add
+- **Client-private cartridges**: the two submodules under `private-projects/`
+  carry `update = none` in `.gitmodules` and are excluded from automated
+  updates (managed separately via their own deployment pipeline).
+  `git submodule update` honours `update = none`, so **never add
   `--checkout`** — that overrides it and tries to clone the private repos,
   which a normal contributor cannot read.
 

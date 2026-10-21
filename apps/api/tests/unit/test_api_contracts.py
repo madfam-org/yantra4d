@@ -247,3 +247,22 @@ class TestRenderContract:
         )
         # Should get 400 or 404 for invalid mode
         assert res.status_code in (400, 404, 500)
+
+    def test_goc1_envelope_matches_render_response(self, client, sample_project, monkeypatch):
+        """The GOC-1 fields (and viewer_url) are documented in RenderResponse."""
+        part = {
+            "type": "body", "url": "/static/contract-test_preview_0a1b2c_body.stl", "size_bytes": 12,
+            "viewer_url": "/static/contract-test_preview_0a1b2c_body.glb",
+            "sha256": "a" * 64, "media_type": "model/stl", "instance_id": "b" * 64,
+            "variables_url": "/static/contract-test_preview_0a1b2c_body.stl.variables.json",
+        }
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", lambda *a: ([part], "", (0, 1)))
+        res = client.post("/api/render", json={"project": sample_project, "mode": "default",
+                                               "parameters": {"size": 12}})
+        assert res.status_code == 200
+        body = res.get_json()
+        assert body["generator_output"]["format_version"] == "1.0.0"
+        assert_matches_schema(body, "RenderResponse")
+        for key in ("viewer_url", "sha256", "media_type", "instance_id", "variables_url"):
+            assert key in OPENAPI_SPEC["components"]["schemas"]["RenderResponse"]["properties"]["parts"]["items"][
+                "properties"]

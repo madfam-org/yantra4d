@@ -17,43 +17,155 @@
  * a bad edit immediately instead of round-tripping to a render that will fail.
  */
 import catalog from '../../config/graph-node-catalog.json'
+import { buildScope, checkExpression, expressionIdentifiers, requiredVersion, versionAtLeast11 } from './graphExpressions'
 
-export type SocketType = 'solid' | 'profile'
-export type ParamKind = 'float' | 'count' | 'selector' | 'axis' | 'plane'
+/**
+ * Socket types come from the catalog, not from this file: today `solid` and
+ * `profile`, and whatever the engine adds next. Connections are checked by
+ * equality, so a new socket type needs no change here.
+ */
+export type SocketType = string
+/** `float`, `count`, `selector`, `axis`, `plane` today; unknown kinds are edited as JSON. */
+export type ParamKind = string
+
+export interface ParamSpec {
+  kind: ParamKind
+  default: unknown
+  bindable: boolean
+  /** G-EXPR: the param accepts an `{"expr": "..."}` value. Absent means no. */
+  expr?: boolean
+}
 
 export interface NodeTypeSpec {
   output: SocketType
   inputs: Record<string, SocketType>
-  params: Record<string, { kind: ParamKind; default: number | string; bindable: boolean }>
+  params: Record<string, ParamSpec>
+}
+
+/** A param value driven by a safeFormula expression (G-EXPR). */
+export interface ExpressionValue {
+  expr: string
+}
+
+export type ParamValue = number | string | boolean | ExpressionValue | unknown[] | Record<string, unknown>
+
+export interface NodePosition {
+  x: number
+  y: number
 }
 
 export interface GraphNode {
   id: string
   type: string
-  params?: Record<string, number | string>
+  params?: Record<string, ParamValue>
   inputs?: Record<string, string>
   meta?: Record<string, unknown>
+}
+
+/** A manifest parameter an expression may read (graph version 1.1). */
+export interface DeclaredParameter {
+  default: number | string | boolean
+  /** String option → number, for select parameters whose options are not numeric. */
+  map?: Record<string, number>
+}
+
+/** A named intermediate value (graph version 1.1), evaluated in list order. */
+export interface DerivedValue {
+  id: string
+  expr: string
 }
 
 export interface GraphDoc {
   version: string
   units?: string
   meta?: Record<string, unknown>
+  parameters?: Record<string, DeclaredParameter>
+  derived?: DerivedValue[]
   nodes: GraphNode[]
   outputs: Record<string, string>
 }
 
-export const NODE_TYPES = catalog.nodes as unknown as Record<string, NodeTypeSpec>
-export const LIMITS = catalog.limits as { max_nodes: number; max_outputs: number; max_pattern_count: number }
-export const PLANES = catalog.planes as string[]
+const rawCatalog = catalog as unknown as {
+  nodes: Record<string, NodeTypeSpec>
+  limits: {
+    max_nodes: number
+    max_outputs: number
+    max_pattern_count: number
+    max_parameters?: number
+    max_derived?: number
+    max_map_entries?: number
+    max_polyline_points?: number
+    max_revolve_extent_mm?: number
+  }
+  planes: string[]
+  expression?: { dialect?: string; max_length?: number; max_tokens?: number }
+}
+
+export const NODE_TYPES = rawCatalog.nodes
+/**
+ * The engine's limits as the catalog states them. The Wave D limits fall back to
+ * the engine's own constants (graph_engine.py MAX_GRAPH_PARAMETERS, MAX_DERIVED,
+ * MAX_MAP_ENTRIES, MAX_POLYLINE_POINTS, MAX_REVOLVE_EXTENT) for a catalog
+ * generated before they were exported.
+ */
+export const LIMITS = {
+  max_parameters: 128,
+  max_derived: 256,
+  max_map_entries: 64,
+  max_polyline_points: 256,
+  max_revolve_extent_mm: 1000,
+  ...rawCatalog.limits,
+} as Required<typeof rawCatalog.limits>
+export const PLANES = rawCatalog.planes
+export const AXES = ['x', 'y', 'z']
+/** The two in-plane axes of each workplane — a revolve axis must be one of them. */
+export const PLANE_AXES: Record<string, string[]> = { XY: ['x', 'y'], XZ: ['x', 'z'], YZ: ['y', 'z'] }
+
+/**
+ * Kinds whose whole value may be `{"expr": ...}` when the catalog says `expr`.
+ * A `points` value is always a list; its catalog `expr` means each coordinate
+ * may be an expression, never the list itself.
+ */
+export function wholeValueExpressible(spec: ParamSpec | undefined): boolean {
+  return spec?.expr === true && spec.kind !== 'points'
+}
+/** Expression limits from the catalog when it declares them, else safeFormula's own. */
+export const EXPRESSION_LIMITS = {
+  max_length: rawCatalog.expression?.max_length ?? 256,
+  max_tokens: rawCatalog.expression?.max_tokens ?? 128,
+}
 
 const ID_RE = /^[A-Za-z][A-Za-z0-9_]*$/
 const VERSION_RE = /^1\.\d+(\.\d+)?$/
 
-/** A validation problem, addressed to whoever is editing the graph. */
+/**
+ * A validation problem, addressed to whoever is editing the graph. `socket`,
+ * `param` and `derivedId` say where on the node it is, so the editor can put
+ * the marker on the exact row.
+ */
 export interface GraphIssue {
   message: string
   nodeId?: string
+  socket?: string
+  param?: string
+  derivedId?: string
+}
+
+export function isExpressionValue(value: unknown): value is ExpressionValue {
+  return (
+    typeof value === 'object' && value !== null && !Array.isArray(value) &&
+    Object.keys(value).length === 1 && typeof (value as ExpressionValue).expr === 'string'
+  )
+}
+
+/** The catalog spec of one param, or undefined. */
+export function paramSpec(type: string, name: string): ParamSpec | undefined {
+  return NODE_TYPES[type]?.params[name]
+}
+
+/** Whether the catalog lets this param take an expression. */
+export function isExpressible(type: string, name: string): boolean {
+  return wholeValueExpressible(paramSpec(type, name))
 }
 
 export function nodeTypeNames(): string[] {
@@ -70,12 +182,57 @@ export function emptyGraph(): GraphDoc {
 }
 
 /** Default params for a node type, straight from the server's own defaults. */
-export function defaultParams(type: string): Record<string, number | string> {
+export function defaultParams(type: string): Record<string, ParamValue> {
   const spec = NODE_TYPES[type]
   if (!spec) return {}
-  const params: Record<string, number | string> = {}
-  for (const [name, def] of Object.entries(spec.params)) params[name] = def.default
+  const params: Record<string, ParamValue> = {}
+  for (const [name, def] of Object.entries(spec.params)) params[name] = structuredCloneValue(def.default) as ParamValue
   return params
+}
+
+function structuredCloneValue(value: unknown): unknown {
+  return typeof value === 'object' && value !== null ? JSON.parse(JSON.stringify(value)) : value
+}
+
+/**
+ * Check one literal value against its param kind — the same checks the
+ * server's `_literal` makes before it emits a number. Returns why it is
+ * wrong, or null. Unknown kinds are the engine's business, not ours.
+ */
+export function literalProblem(kind: ParamKind, value: unknown): string | null {
+  switch (kind) {
+    case 'float':
+      if (typeof value !== 'number' || !Number.isFinite(value)) return 'needs a finite number'
+      return null
+    case 'count':
+      if (typeof value !== 'number' || !Number.isInteger(value)) return 'needs a whole number'
+      if (value < 1 || value > LIMITS.max_pattern_count) return `must be between 1 and ${LIMITS.max_pattern_count}`
+      return null
+    case 'selector':
+      if (typeof value !== 'string') return 'needs an edge selector string'
+      if (value.length > 120) return 'selector is longer than 120 characters'
+      return null
+    case 'axis':
+      return AXES.includes(value as string) ? null : `must be one of ${AXES.join(', ')}`
+    case 'plane':
+      return PLANES.includes(value as string) ? null : `must be one of ${PLANES.join(', ')}`
+    case 'condition':
+      return typeof value === 'boolean' ? null : 'needs true or false (or an expression)'
+    case 'points': {
+      const max = LIMITS.max_polyline_points
+      if (!Array.isArray(value) || value.length < 3 || value.length > max) return `needs 3 to ${max} [x, y] points`
+      for (const [i, point] of value.entries()) {
+        if (!Array.isArray(point) || point.length !== 2) return `point ${i + 1} must be an [x, y] pair`
+        for (const coord of point) {
+          if (isExpressionValue(coord)) continue
+          if (typeof coord !== 'number' || !Number.isFinite(coord)) return `point ${i + 1} needs finite numbers`
+        }
+      }
+      return null
+    }
+    default:
+      return null
+  }
 }
 
 /**
@@ -121,37 +278,135 @@ export function validateGraph(doc: unknown): GraphIssue[] {
       continue
     }
     for (const name of Object.keys(node.params ?? {})) {
-      if (!(name in spec.params)) push(`"${node.type}" has no parameter "${name}".`, node.id)
+      if (!(name in spec.params)) issues.push({ message: `"${node.type}" has no parameter "${name}".`, nodeId: node.id, param: name })
     }
     const sockets = Object.keys(spec.inputs)
     const given = Object.keys(node.inputs ?? {})
     for (const socket of sockets) {
-      if (!given.includes(socket)) push(`Missing input "${socket}".`, node.id)
+      if (!given.includes(socket)) issues.push({ message: `Missing input "${socket}".`, nodeId: node.id, socket })
     }
     for (const socket of given) {
-      if (!sockets.includes(socket)) push(`"${node.type}" has no input "${socket}".`, node.id)
+      if (!sockets.includes(socket)) issues.push({ message: `"${node.type}" has no input "${socket}".`, nodeId: node.id, socket })
+    }
+    for (const [name, value] of Object.entries(node.params ?? {})) {
+      const def = spec.params[name]
+      if (!def) continue
+      if (isExpressionValue(value)) {
+        if (!wholeValueExpressible(def)) {
+          const where = def.kind === 'points' && def.expr === true ? ' as a whole — put expressions on its coordinates' : ''
+          issues.push({ message: `"${name}" does not accept an expression${where}.`, nodeId: node.id, param: name })
+        }
+        continue
+      }
+      if (def.kind === 'points' && def.expr !== true && Array.isArray(value) &&
+        value.some((p) => Array.isArray(p) && p.some(isExpressionValue))) {
+        issues.push({ message: `"${name}" does not accept expressions in its coordinates.`, nodeId: node.id, param: name })
+        continue
+      }
+      const problem = literalProblem(def.kind, value)
+      if (problem) issues.push({ message: `"${name}" ${problem}.`, nodeId: node.id, param: name })
     }
     byId.set(node.id, node)
   }
 
   // Reference targets and socket types (needs every id known first).
+  const profileConsumers = new Map<string, string>()
   for (const node of byId.values()) {
     const spec = NODE_TYPES[node.type]
     for (const [socket, ref] of Object.entries(node.inputs ?? {})) {
       if (!spec?.inputs[socket]) continue
       if (ref === node.id) {
-        push(`Input "${socket}" connects the node to itself.`, node.id)
+        issues.push({ message: `Input "${socket}" connects the node to itself.`, nodeId: node.id, socket })
         continue
       }
       const source = byId.get(ref)
       if (!source) {
-        push(`Input "${socket}" points at unknown node "${ref}".`, node.id)
+        issues.push({ message: `Input "${socket}" points at unknown node "${ref}".`, nodeId: node.id, socket })
         continue
       }
       const produced = NODE_TYPES[source.type]?.output
       if (produced && produced !== spec.inputs[socket]) {
-        push(`Input "${socket}" needs a ${spec.inputs[socket]}, but "${ref}" produces a ${produced}.`, node.id)
+        issues.push({
+          message: `Input "${socket}" needs a ${spec.inputs[socket]}, but "${ref}" produces a ${produced}.`,
+          nodeId: node.id,
+          socket,
+        })
+        continue
       }
+      if (produced === 'profile') {
+        const consumer = profileConsumers.get(ref)
+        if (consumer === undefined) profileConsumers.set(ref, node.id)
+        else if (consumer !== node.id) {
+          issues.push({
+            message: `Profile "${ref}" already feeds "${consumer}"; a profile can feed one node — duplicate the profile node.`,
+            nodeId: node.id,
+            socket,
+          })
+        }
+      }
+      const axisProblem = revolveAxisProblem(node, source)
+      if (axisProblem) issues.push({ message: axisProblem, nodeId: node.id, param: 'axis' })
+    }
+    const extentProblem = revolveExtentProblem(node, byId)
+    if (extentProblem) issues.push({ message: extentProblem, nodeId: node.id })
+    const angleProblem = revolveAngleProblem(node)
+    if (angleProblem) issues.push({ message: angleProblem, nodeId: node.id, param: 'angle' })
+  }
+
+  // G-EXPR: declarations, derived values and every expression-valued param.
+  if (requiredVersion(g) === '1.1' && !versionAtLeast11(g.version)) {
+    push('A graph that declares parameters or derived values must be version 1.1.')
+  }
+  if (g.parameters && typeof g.parameters === 'object' && Object.keys(g.parameters).length > LIMITS.max_parameters) {
+    push(`Too many declared parameters: ${Object.keys(g.parameters).length} (limit ${LIMITS.max_parameters}).`)
+  }
+  if (Array.isArray(g.derived) && g.derived.length > LIMITS.max_derived) {
+    push(`Too many derived values: ${g.derived.length} (limit ${LIMITS.max_derived}).`)
+  }
+  for (const [pid, decl] of Object.entries(g.parameters ?? {})) {
+    const entries = decl && typeof decl === 'object' && decl.map ? Object.keys(decl.map).length : 0
+    if (entries > LIMITS.max_map_entries) push(`Declared parameter "${pid}" maps ${entries} options (limit ${LIMITS.max_map_entries}).`)
+  }
+  const { scope, issues: scopeIssues } = buildScope(g)
+  issues.push(...scopeIssues)
+  const declared = g.parameters ?? {}
+  // Names some expression reads — a derived value's or a node param's. The
+  // engine refuses a declaration nothing reads (G-DEADPARAM).
+  const read = new Set<string>()
+  for (const entry of Array.isArray(g.derived) ? g.derived : []) {
+    if (typeof entry?.expr === 'string') for (const id of expressionIdentifiers(entry.expr)) read.add(id)
+  }
+  const derivedIds = (Array.isArray(g.derived) ? g.derived : []).map((d) => d?.id).filter((d): d is string => typeof d === 'string')
+  for (const node of byId.values()) {
+    const spec = NODE_TYPES[node.type]
+    for (const [name, value] of Object.entries(node.params ?? {})) {
+      const def = spec?.params[name]
+      if (!def || def.expr !== true) continue
+      const expressions: Array<{ expr: string; label: string; numeric: boolean }> = []
+      if (isExpressionValue(value) && def.kind !== 'points') {
+        expressions.push({ expr: value.expr, label: `"${name}"`, numeric: def.kind !== 'condition' })
+      } else if (def.kind === 'points' && Array.isArray(value)) {
+        value.forEach((point, i) => {
+          if (!Array.isArray(point)) return
+          point.forEach((coord, axis) => {
+            if (isExpressionValue(coord)) expressions.push({ expr: coord.expr, label: `"${name}" point ${i + 1} ${axis === 0 ? 'x' : 'y'}`, numeric: true })
+          })
+        })
+      }
+      for (const { expr, label, numeric } of expressions) {
+        for (const id of expressionIdentifiers(expr)) read.add(id)
+        const problem = expressionProblem(expr, declared, scope, derivedIds, numeric)
+        if (problem) issues.push({ message: `${label}: ${problem}.`, nodeId: node.id, param: name })
+      }
+    }
+  }
+
+  for (const id of Object.keys(declared)) {
+    if (!read.has(id)) push(`Declared parameter "${id}" is never read by any expression.`)
+  }
+  for (const entry of Array.isArray(g.derived) ? g.derived : []) {
+    if (typeof entry?.id === 'string' && !read.has(entry.id)) {
+      issues.push({ message: `Derived value "${entry.id}" is never read by any expression.`, derivedId: entry.id })
     }
   }
 
@@ -329,7 +584,7 @@ export function removeNode(doc: GraphDoc, nodeId: string): GraphDoc {
   return { ...doc, nodes, outputs }
 }
 
-export function setNodeParam(doc: GraphDoc, nodeId: string, name: string, value: number | string): GraphDoc {
+export function setNodeParam(doc: GraphDoc, nodeId: string, name: string, value: ParamValue): GraphDoc {
   return {
     ...doc,
     nodes: doc.nodes.map((n) =>
@@ -338,21 +593,69 @@ export function setNodeParam(doc: GraphDoc, nodeId: string, name: string, value:
   }
 }
 
-/** Connect source → target.socket, refusing a connection that would loop. */
-export function connect(doc: GraphDoc, targetId: string, socket: string, sourceId: string): GraphDoc {
+/** Revert a param to the catalog default by removing the stored value. */
+export function clearNodeParam(doc: GraphDoc, nodeId: string, name: string): GraphDoc {
+  return {
+    ...doc,
+    nodes: doc.nodes.map((n) => {
+      if (n.id !== nodeId || !n.params || !(name in n.params)) return n
+      const { [name]: _removed, ...rest } = n.params
+      return { ...n, params: rest }
+    }),
+  }
+}
+
+/**
+ * Where the editor drew a node. Stored in `meta`, which the renderer ignores,
+ * so moving a node never changes the geometry or the render cache key.
+ */
+export function setNodePosition(doc: GraphDoc, nodeId: string, position: NodePosition): GraphDoc {
+  const x = Math.round(position.x)
+  const y = Math.round(position.y)
+  return {
+    ...doc,
+    nodes: doc.nodes.map((n) => (n.id === nodeId ? { ...n, meta: { ...(n.meta ?? {}), position: { x, y } } } : n)),
+  }
+}
+
+/** The stored editor position of a node, if it has a valid one. */
+export function nodePosition(node: GraphNode): NodePosition | null {
+  const pos = node.meta?.position as Partial<NodePosition> | undefined
+  if (!pos || typeof pos.x !== 'number' || typeof pos.y !== 'number') return null
+  if (!Number.isFinite(pos.x) || !Number.isFinite(pos.y)) return null
+  return { x: pos.x, y: pos.y }
+}
+
+/**
+ * Why source → target.socket may not be connected, or null when it may. The
+ * same rules `connect()` enforces, as a question rather than a throw, so a
+ * drag can be refused while it is still a drag.
+ */
+export function connectionProblem(doc: GraphDoc, targetId: string, socket: string, sourceId: string): string | null {
   const target = doc.nodes.find((n) => n.id === targetId)
-  if (!target) throw new Error(`Unknown node "${targetId}"`)
+  if (!target) return `Unknown node "${targetId}"`
   const spec = NODE_TYPES[target.type]
-  if (!spec?.inputs[socket]) throw new Error(`"${target.type}" has no input "${socket}"`)
+  if (!spec?.inputs[socket]) return `"${target.type}" has no input "${socket}"`
   const source = doc.nodes.find((n) => n.id === sourceId)
-  if (!source) throw new Error(`Unknown node "${sourceId}"`)
+  if (!source) return `Unknown node "${sourceId}"`
   const produced = NODE_TYPES[source.type]?.output
   if (produced !== spec.inputs[socket]) {
-    throw new Error(`Input "${socket}" needs a ${spec.inputs[socket]}, but "${sourceId}" produces a ${produced}`)
+    return `Input "${socket}" needs a ${spec.inputs[socket]}, but "${sourceId}" produces a ${produced}`
   }
   if (wouldCycle(doc.nodes, sourceId, targetId)) {
-    throw new Error(`Connecting "${sourceId}" to "${targetId}" would create a loop`)
+    return `Connecting "${sourceId}" to "${targetId}" would create a loop`
   }
+  if (produced === 'profile') {
+    const other = doc.nodes.find((n) => n.id !== targetId && Object.values(n.inputs ?? {}).includes(sourceId))
+    if (other) return `Profile "${sourceId}" already feeds "${other.id}"; a profile can feed one node — duplicate the profile node`
+  }
+  return null
+}
+
+/** Connect source → target.socket, refusing a connection that would loop. */
+export function connect(doc: GraphDoc, targetId: string, socket: string, sourceId: string): GraphDoc {
+  const problem = connectionProblem(doc, targetId, socket, sourceId)
+  if (problem) throw new Error(problem)
   return {
     ...doc,
     nodes: doc.nodes.map((n) =>
@@ -374,6 +677,65 @@ export function disconnect(doc: GraphDoc, targetId: string, socket: string): Gra
 
 export function setOutput(doc: GraphDoc, partId: string, nodeId: string): GraphDoc {
   return { ...doc, outputs: { ...doc.outputs, [partId]: nodeId } }
+}
+
+export function removeOutput(doc: GraphDoc, partId: string): GraphDoc {
+  const { [partId]: _removed, ...rest } = doc.outputs
+  return { ...doc, outputs: rest }
+}
+
+// ── Engine rules the editor mirrors ───────────────────────────────────────────
+
+/** Why an expression cannot stand where it is, or null. */
+export function expressionProblem(
+  expr: string,
+  declared: Record<string, DeclaredParameter>,
+  scope: Record<string, number | boolean>,
+  derivedIds: string[],
+  numeric: boolean,
+): string | null {
+  if (expr.length > EXPRESSION_LIMITS.max_length) {
+    return `the expression is longer than ${EXPRESSION_LIMITS.max_length} characters`
+  }
+  const check = checkExpression(expr, declared, scope, derivedIds)
+  if (check.error) return check.error
+  if (numeric && typeof check.value !== 'number') return 'the expression gives a true/false, not a number'
+  return null
+}
+
+/** A revolve's axis must lie in its profile's plane (both are literals). */
+function revolveAxisProblem(node: GraphNode, source: GraphNode): string | null {
+  if (node.type !== 'revolve' || NODE_TYPES[source.type]?.output !== 'profile') return null
+  const axis = node.params?.axis ?? paramSpec('revolve', 'axis')?.default
+  const plane = source.params?.plane ?? paramSpec(source.type, 'plane')?.default ?? 'XY'
+  const inPlane = PLANE_AXES[plane as string]
+  if (!inPlane || typeof axis !== 'string' || !AXES.includes(axis)) return null
+  return inPlane.includes(axis) ? null : `The revolve axis "${axis}" is not in the profile's ${plane} plane.`
+}
+
+/** A literal revolve angle must be in (0, 360]; the engine checks expressions at render. */
+function revolveAngleProblem(node: GraphNode): string | null {
+  if (node.type !== 'revolve') return null
+  const angle = node.params?.angle
+  if (typeof angle !== 'number') return null
+  return angle > 0 && angle <= 360 ? null : '"angle" must be more than 0 and at most 360 degrees.'
+}
+
+/**
+ * A revolve may reach at most `max_revolve_extent_mm` from the origin. Decidable
+ * here only for a literal polyline profile; the engine checks every case at render.
+ */
+function revolveExtentProblem(node: GraphNode, byId: Map<string, GraphNode>): string | null {
+  if (node.type !== 'revolve') return null
+  const profile = byId.get(node.inputs?.profile ?? '')
+  if (!profile || profile.type !== 'profile_polyline' || !Array.isArray(profile.params?.points)) return null
+  let reach = 0
+  for (const point of profile.params.points as unknown[]) {
+    if (!Array.isArray(point) || typeof point[0] !== 'number' || typeof point[1] !== 'number') return null
+    reach = Math.max(reach, Math.hypot(point[0], point[1]))
+  }
+  const max = LIMITS.max_revolve_extent_mm
+  return reach > max ? `The profile reaches ${Math.round(reach)} mm from the origin; a revolve may reach ${max} mm.` : null
 }
 
 // ── Serialization ─────────────────────────────────────────────────────────────

@@ -234,6 +234,16 @@ def _dev_unlock_active() -> bool:
     return has_app_context() and bool(current_app.debug)
 
 
+def dev_unlock_active() -> bool:
+    """Public name for the local-development escape hatch (see ``_dev_unlock_active``).
+
+    The cartridge write guard (``routes.editor.editor``) unlocks on exactly the
+    same condition, so "auth off" means the same thing for reading a private
+    project and for writing someone's cartridge.
+    """
+    return _dev_unlock_active()
+
+
 def can_view_project(slug: str | None, manifest=None, claims: dict | None = None) -> bool:
     """Whether this caller may see a project at all.
 

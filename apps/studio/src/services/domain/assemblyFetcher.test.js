@@ -393,3 +393,45 @@ describe('fetchAssemblyGeometries — settling', () => {
     await expect(p2).resolves.toHaveLength(1)
   })
 })
+
+
+describe('assembly cache retention', () => {
+  beforeEach(() => {
+    globalThis.Worker = class {
+      listeners = new Set()
+      addEventListener(type, listener) { if (type === 'message') this.listeners.add(listener) }
+      removeEventListener(type, listener) { if (type === 'message') this.listeners.delete(listener) }
+      postMessage({ id }) {
+        queueMicrotask(() => {
+          for (const listener of [...this.listeners]) listener({data: {
+            id, success: true, geometryData: {positions: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0])},
+          }})
+        })
+      }
+      terminate() {}
+    }
+    apiFetch.mockResolvedValue({ok: true, json: async () => ({parts: [{type: 'body', url: '/body.stl'}]})})
+  })
+
+  it('evicts old parameter sets while retaining the recently viewed assembly', async () => {
+    const {fetchAssemblyGeometries} = await import('./assemblyFetcher')
+    const first = await fetchAssemblyGeometries({size: 0}, ['size'])
+    for (let size = 1; size < 16; size++) await fetchAssemblyGeometries({size}, ['size'])
+    expect(await fetchAssemblyGeometries({size: 0}, ['size'])).toBe(first)
+    await fetchAssemblyGeometries({size: 16}, ['size'])
+    expect(await fetchAssemblyGeometries({size: 0}, ['size'])).toBe(first)
+    await fetchAssemblyGeometries({size: 1}, ['size'])
+    expect(apiFetch).toHaveBeenCalledTimes(18)
+    // Active consumers can still clone their CPU source after its cache entry leaves.
+    expect(first[0].geometry.clone().getAttribute('position').count).toBe(3)
+  })
+
+  it('rejects an already cancelled caller even when its geometry is cached', async () => {
+    const {fetchAssemblyGeometries} = await import('./assemblyFetcher')
+    await fetchAssemblyGeometries({size: 1}, ['size'])
+    const controller = new AbortController()
+    controller.abort()
+    await expect(fetchAssemblyGeometries({size: 1}, ['size'], undefined, {signal: controller.signal}))
+      .rejects.toMatchObject({name: 'AbortError'})
+  })
+})

@@ -47,7 +47,9 @@ Yantra4D is a poly-kernel CAD engine: continuous SDF geometry compiler, manifest
     differential-tested against the TypeScript implementations that remain the default
     ([apps/studio/README.md](apps/studio/README.md#geometry-core-wasm--experimental)).
   - API mesh-oracle seam (#251, on `main`): `MESH_ORACLE` selects trimesh (default), the
-    geom-core wheel, or both with parity metrics.
+    geom-core wheel, or both with parity metrics. The API image bakes the v0.2.0 cp312 wheel and
+    the backend container runs `MESH_ORACLE=both` (the parity soak; trimesh still answers —
+    [docs/guides/production-checklist.md](docs/guides/production-checklist.md) "Mesh oracle (geom-core)").
   - Geometry *generation* stays in-house (Python SDF engine + OpenSCAD/CadQuery).
 - postgres (catalog, user designs)
 - cloudflare R2 (asset storage) — **planned, not yet wired**; render artifacts are

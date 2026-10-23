@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] — Sprints 13–15
 
 ### Added
+- **Mesh-oracle parity soak prepared** (lane H6, 2026-10-19). The API image is
+  built with the geom-core v0.2.0 cp312 Linux wheel (`deploy.yml` build-args,
+  release digest pinned) and the backend container runs `MESH_ORACLE=both`
+  (trimesh's numbers are still returned). The render-worker stays on the
+  default until `observe_render` has a face-count cap (measured: 1.3M faces
+  +7.5 s, ~1.15 GB). CI's `mesh-oracle-differential` job moves to Python 3.12
+  and the same wheel; `scripts/tests/test_geom_core_wheel_pin.py` keeps the
+  deploy and CI pins equal and matched to the image's interpreter. Soak
+  criterion (proposed), alert rule and rollback: docs/guides/production-checklist.md
+  "Mesh oracle (geom-core)".
 - **Mesh oracle seam with an optional geom-core backend** (lane G4, 2026-10-18).
   `apps/api/services/engine/mesh_metrics.py` (`MeshOracle`: `TrimeshOracle`,
   `GeomCoreOracle`) now answers the Cotiza quote export's volume/area/bbox and,

@@ -2,13 +2,13 @@
   "schema_version": "commons_catalog_v1",
   "upstream": "https://github.com/madfam-org/yantra4d",
   "counts": {
-    "cartridges": 512,
+    "cartridges": 586,
     "with_cdg_interfaces": 502,
-    "with_commons_license": 512,
+    "with_commons_license": 586,
     "dual_engine": 20
   },
   "domains": {
-    "household": 126,
+    "household": 200,
     "industrial": 119,
     "commercial": 76,
     "wearable": 72,
@@ -1336,6 +1336,61 @@
       }
     },
     {
+      "slug": "anklet-bell-shell",
+      "name": "Anklet bell shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 12.8,
+          "max": 19.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "anklet-bell-shell/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set anklet-bell-shell"
+      }
+    },
+    {
       "slug": "antibacklash-nut",
       "name": "Lead Screw Anti-Backlash Nut",
       "domain": "industrial",
@@ -2208,6 +2263,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set arca-plate"
+      }
+    },
+    {
+      "slug": "articulated-bar-chain-link",
+      "name": "Articulated bar link",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 20.8,
+          "max": 31.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "articulated-bar-chain-link/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set articulated-bar-chain-link"
       }
     },
     {
@@ -3768,6 +3878,116 @@
       }
     },
     {
+      "slug": "barrel-bead",
+      "name": "Barrel bead",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 11.200000000000001,
+          "max": 16.8,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "barrel-bead/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set barrel-bead"
+      }
+    },
+    {
+      "slug": "barrette-shell",
+      "name": "Barrette shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 51.2,
+          "max": 76.8,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "barrette-shell/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set barrette-shell"
+      }
+    },
+    {
       "slug": "battery-caddy",
       "name": "18650 Battery Caddy",
       "domain": "industrial",
@@ -4418,6 +4638,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set battery-pocket-frame"
+      }
+    },
+    {
+      "slug": "bayonet-clasp-shell",
+      "name": "Bayonet clasp shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 9.600000000000001,
+          "max": 14.399999999999999,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "bayonet-clasp-shell/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set bayonet-clasp-shell"
       }
     },
     {
@@ -7419,6 +7694,61 @@
       }
     },
     {
+      "slug": "body-chain-connector",
+      "name": "Body chain connector",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 19.200000000000003,
+          "max": 28.799999999999997,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "body-chain-connector/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set body-chain-connector"
+      }
+    },
+    {
       "slug": "body-form",
       "name": "Body Form",
       "domain": "industrial",
@@ -10234,6 +10564,116 @@
       }
     },
     {
+      "slug": "box-chain-link",
+      "name": "Box chain link",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 8.0,
+          "max": 12.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "box-chain-link/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set box-chain-link"
+      }
+    },
+    {
+      "slug": "box-clasp-shell",
+      "name": "Box clasp shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 14.4,
+          "max": 21.599999999999998,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "box-clasp-shell/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set box-clasp-shell"
+      }
+    },
+    {
       "slug": "boxjoint-jig",
       "name": "Box-Joint Indexing Jig",
       "domain": "industrial",
@@ -11227,6 +11667,61 @@
       }
     },
     {
+      "slug": "brooch-pin-frame",
+      "name": "Brooch pin frame",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 25.6,
+          "max": 38.4,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "brooch-pin-frame/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set brooch-pin-frame"
+      }
+    },
+    {
       "slug": "busbar-support",
       "name": "Busbar / DIN Bus Support",
       "domain": "infrastructure",
@@ -11714,6 +12209,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set buttonhole-spacer"
+      }
+    },
+    {
+      "slug": "bypass-ring",
+      "name": "Bypass ring",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "bypass-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set bypass-ring"
       }
     },
     {
@@ -12626,6 +13176,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set cable-wrap"
+      }
+    },
+    {
+      "slug": "cabochon-bezel",
+      "name": "Cabochon bezel cup",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 14.4,
+          "max": 21.599999999999998,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "cabochon-bezel/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set cabochon-bezel"
       }
     },
     {
@@ -14914,6 +15519,116 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set chain-mount"
+      }
+    },
+    {
+      "slug": "chandelier-earring-frame",
+      "name": "Chandelier earring frame",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 20.8,
+          "max": 31.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "chandelier-earring-frame/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set chandelier-earring-frame"
+      }
+    },
+    {
+      "slug": "channel-stone-setting",
+      "name": "Channel stone setting",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 19.200000000000003,
+          "max": 28.799999999999997,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "channel-stone-setting/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set channel-stone-setting"
       }
     },
     {
@@ -19027,6 +19742,171 @@
       }
     },
     {
+      "slug": "crimp-tube",
+      "name": "Crimp tube",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 3.2,
+          "max": 4.8,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "crimp-tube/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set crimp-tube"
+      }
+    },
+    {
+      "slug": "cufflink-fixed-bar",
+      "name": "Fixed bar cufflink",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 12.8,
+          "max": 19.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "cufflink-fixed-bar/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set cufflink-fixed-bar"
+      }
+    },
+    {
+      "slug": "cufflink-toggle-parts",
+      "name": "Toggle cufflink parts",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 12.8,
+          "max": 19.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "cufflink-toggle-parts/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set cufflink-toggle-parts"
+      }
+    },
+    {
       "slug": "cup-lid",
       "name": "Universal Cup Lid",
       "domain": "household",
@@ -19389,6 +20269,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set cupholder-adapter"
+      }
+    },
+    {
+      "slug": "curb-link-blank",
+      "name": "Curb link blank",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "curb-link-blank/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set curb-link-blank"
       }
     },
     {
@@ -25636,6 +26571,281 @@
       }
     },
     {
+      "slug": "ear-cuff-shell",
+      "name": "Ear cuff shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 9.600000000000001,
+          "max": 14.399999999999999,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "ear-cuff-shell/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set ear-cuff-shell"
+      }
+    },
+    {
+      "slug": "ear-tunnel-flange",
+      "name": "Ear tunnel flange",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 8.0,
+          "max": 12.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "ear-tunnel-flange/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set ear-tunnel-flange"
+      }
+    },
+    {
+      "slug": "earring-back-disc",
+      "name": "Earring back disc",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 8.0,
+          "max": 12.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "earring-back-disc/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set earring-back-disc"
+      }
+    },
+    {
+      "slug": "earring-jacket",
+      "name": "Earring jacket",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 14.4,
+          "max": 21.599999999999998,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "earring-jacket/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set earring-jacket"
+      }
+    },
+    {
+      "slug": "earring-stud-post",
+      "name": "Stud earring post",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 6.4,
+          "max": 9.6,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "earring-stud-post/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set earring-stud-post"
+      }
+    },
+    {
       "slug": "edge-guard",
       "name": "Edge Guard",
       "domain": "household",
@@ -26835,6 +28045,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set extrusion-hyperobject"
+      }
+    },
+    {
+      "slug": "faceted-bicone-bead",
+      "name": "Faceted bicone bead",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 9.600000000000001,
+          "max": 14.399999999999999,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "faceted-bicone-bead/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set faceted-bicone-bead"
       }
     },
     {
@@ -28650,6 +29915,61 @@
       }
     },
     {
+      "slug": "figure-eight-chain-link",
+      "name": "Figure-eight chain link",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 14.4,
+          "max": 21.599999999999998,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "figure-eight-chain-link/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set figure-eight-chain-link"
+      }
+    },
+    {
       "slug": "filter-step-ring",
       "name": "Lens Filter Step Ring",
       "domain": "commercial",
@@ -29091,6 +30411,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set filter-wheel"
+      }
+    },
+    {
+      "slug": "finger-armor-segment",
+      "name": "Finger armor segment",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "finger-armor-segment/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set finger-armor-segment"
       }
     },
     {
@@ -29815,6 +31190,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set flexure-mount"
+      }
+    },
+    {
+      "slug": "fluted-spacer-bead",
+      "name": "Fluted spacer bead",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 9.600000000000001,
+          "max": 14.399999999999999,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "fluted-spacer-bead/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set fluted-spacer-bead"
       }
     },
     {
@@ -37161,6 +38591,226 @@
       }
     },
     {
+      "slug": "hair-coil-sleeve",
+      "name": "Hair coil sleeve",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 12.8,
+          "max": 19.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "hair-coil-sleeve/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hair-coil-sleeve"
+      }
+    },
+    {
+      "slug": "hair-fork",
+      "name": "Hair fork",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 48.0,
+          "max": 72.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "hair-fork/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hair-fork"
+      }
+    },
+    {
+      "slug": "hair-slide-and-stick",
+      "name": "Hair slide and stick",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 51.2,
+          "max": 76.8,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "hair-slide-and-stick/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hair-slide-and-stick"
+      }
+    },
+    {
+      "slug": "hand-chain-junction",
+      "name": "Hand chain junction",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "hand-chain-junction/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hand-chain-junction"
+      }
+    },
+    {
       "slug": "handwheel",
       "name": "Machine Handwheel / Crank",
       "domain": "industrial",
@@ -38584,6 +40234,171 @@
       }
     },
     {
+      "slug": "hinged-bangle-shell",
+      "name": "Hinged bangle shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 48.0,
+          "max": 72.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "hinged-bangle-shell/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hinged-bangle-shell"
+      }
+    },
+    {
+      "slug": "hinged-locket",
+      "name": "Hinged locket shells",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 19.200000000000003,
+          "max": 28.799999999999997,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "hinged-locket/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hinged-locket"
+      }
+    },
+    {
+      "slug": "hinged-ring-shell",
+      "name": "Hinged ring shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "hinged-ring-shell/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hinged-ring-shell"
+      }
+    },
+    {
       "slug": "hitch-plug-holder",
       "name": "Hitch Plug Holder",
       "domain": "commercial",
@@ -39035,6 +40850,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hook-and-eye"
+      }
+    },
+    {
+      "slug": "hook-clasp-set",
+      "name": "Hook clasp set",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 14.4,
+          "max": 21.599999999999998,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "hook-clasp-set/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set hook-clasp-set"
       }
     },
     {
@@ -39760,6 +41630,61 @@
       }
     },
     {
+      "slug": "identity-bracelet-plate",
+      "name": "Identity bracelet plate",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 33.6,
+          "max": 50.4,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "identity-bracelet-plate/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set identity-bracelet-plate"
+      }
+    },
+    {
       "slug": "idler-608",
       "name": "608 Bearing Idler Pulley",
       "domain": "industrial",
@@ -40255,6 +42180,61 @@
       }
     },
     {
+      "slug": "inlay-channel-ring",
+      "name": "Inlay channel ring",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "inlay-channel-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set inlay-channel-ring"
+      }
+    },
+    {
       "slug": "insert-jig",
       "name": "Threaded Insert Jig",
       "domain": "industrial",
@@ -40557,6 +42537,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set instrument-hook"
+      }
+    },
+    {
+      "slug": "interlocking-puzzle-ring",
+      "name": "Notched ring pair study",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "interlocking-puzzle-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set interlocking-puzzle-ring"
       }
     },
     {
@@ -43120,6 +45155,61 @@
       }
     },
     {
+      "slug": "ladder-chain-link",
+      "name": "Ladder chain link",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "ladder-chain-link/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set ladder-chain-link"
+      }
+    },
+    {
       "slug": "ladder-lock",
       "name": "Ladder Lock",
       "domain": "wearable",
@@ -43941,6 +46031,116 @@
       }
     },
     {
+      "slug": "lapel-stick-pin",
+      "name": "Lapel stick pin blank",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 32.0,
+          "max": 48.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "lapel-stick-pin/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set lapel-stick-pin"
+      }
+    },
+    {
+      "slug": "lattice-shank-ring",
+      "name": "Lattice shank ring",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "lattice-shank-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set lattice-shank-ring"
+      }
+    },
+    {
       "slug": "leadscrew-nut",
       "name": "Lead-Screw Nut",
       "domain": "industrial",
@@ -44434,6 +46634,61 @@
       }
     },
     {
+      "slug": "leverback-earring-frame",
+      "name": "Leverback frame",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 12.8,
+          "max": 19.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "leverback-earring-frame/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set leverback-earring-frame"
+      }
+    },
+    {
       "slug": "linear-wheel",
       "name": "Linear Bushing / V-Wheel",
       "domain": "industrial",
@@ -44840,6 +47095,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set lingerie-form"
+      }
+    },
+    {
+      "slug": "linked-knuckle-ring",
+      "name": "Linked knuckle ring",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "linked-knuckle-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set linked-knuckle-ring"
       }
     },
     {
@@ -48209,6 +50519,61 @@
       }
     },
     {
+      "slug": "mesh-connector-link",
+      "name": "Mesh connector link",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "mesh-connector-link/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set mesh-connector-link"
+      }
+    },
+    {
       "slug": "mic-clip",
       "name": "Microphone Clip & Thread Adapter",
       "domain": "commercial",
@@ -50822,6 +53187,116 @@
       }
     },
     {
+      "slug": "multi-row-bead-bridge",
+      "name": "Multi-row bead bridge",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 17.6,
+          "max": 26.4,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "multi-row-bead-bridge/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set multi-row-bead-bridge"
+      }
+    },
+    {
+      "slug": "multi-strand-end-bar",
+      "name": "Multi-strand end bar",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 19.200000000000003,
+          "max": 28.799999999999997,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "multi-strand-end-bar/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set multi-strand-end-bar"
+      }
+    },
+    {
       "slug": "multiboard",
       "name": "Modular Wall Tile (25 mm Threaded Grid)",
       "domain": "commercial",
@@ -52906,6 +55381,116 @@
       }
     },
     {
+      "slug": "open-cage-pendant",
+      "name": "Open cage pendant",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 17.6,
+          "max": 26.4,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "open-cage-pendant/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set open-cage-pendant"
+      }
+    },
+    {
+      "slug": "open-hoop-earring",
+      "name": "Open hoop earring",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 17.6,
+          "max": 26.4,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "open-hoop-earring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set open-hoop-earring"
+      }
+    },
+    {
       "slug": "opener-aid",
       "name": "Opener Aid",
       "domain": "medical",
@@ -54151,6 +56736,61 @@
       }
     },
     {
+      "slug": "paperclip-chain-link",
+      "name": "Paperclip chain link",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 19.200000000000003,
+          "max": 28.799999999999997,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "paperclip-chain-link/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set paperclip-chain-link"
+      }
+    },
+    {
       "slug": "paracord-jig",
       "name": "Paracord Buckle / Jig",
       "domain": "household",
@@ -55226,6 +57866,61 @@
       }
     },
     {
+      "slug": "pave-seat-plate",
+      "name": "Pavé seat plate",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 14.4,
+          "max": 21.599999999999998,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "pave-seat-plate/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set pave-seat-plate"
+      }
+    },
+    {
       "slug": "pcb-standoff",
       "name": "PCB Standoff / Mounting Plate",
       "domain": "industrial",
@@ -56197,6 +58892,116 @@
       }
     },
     {
+      "slug": "pendant-slider",
+      "name": "Pendant slider",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "pendant-slider/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set pendant-slider"
+      }
+    },
+    {
+      "slug": "pendant-split-bail",
+      "name": "Split pendant bail",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 11.200000000000001,
+          "max": 16.8,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "pendant-split-bail/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set pendant-split-bail"
+      }
+    },
+    {
       "slug": "peristaltic-rotor",
       "name": "Peristaltic Pump Rotor",
       "domain": "hybrid",
@@ -56794,6 +59599,61 @@
       }
     },
     {
+      "slug": "petal-bead-cap",
+      "name": "Petal bead cap",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 11.200000000000001,
+          "max": 16.8,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "petal-bead-cap/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set petal-bead-cap"
+      }
+    },
+    {
       "slug": "petri-rack",
       "name": "Petri / Sample Storage Rack",
       "domain": "medical",
@@ -56937,6 +59797,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set petri-rack"
+      }
+    },
+    {
+      "slug": "photo-slide-pendant",
+      "name": "Photo slide pendant",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 24.0,
+          "max": 36.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "photo-slide-pendant/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set photo-slide-pendant"
       }
     },
     {
@@ -60631,6 +63546,61 @@
       }
     },
     {
+      "slug": "prong-stone-basket",
+      "name": "Prong stone basket",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 9.600000000000001,
+          "max": 14.399999999999999,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "prong-stone-basket/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set prong-stone-basket"
+      }
+    },
+    {
       "slug": "prop-guard",
       "name": "Prop Guard",
       "domain": "commercial",
@@ -63443,6 +66413,171 @@
       }
     },
     {
+      "slug": "reliquary-vial-pendant",
+      "name": "Vial pendant shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 17.6,
+          "max": 26.4,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "reliquary-vial-pendant/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set reliquary-vial-pendant"
+      }
+    },
+    {
+      "slug": "ribbon-crimp-terminal",
+      "name": "Ribbon crimp terminal",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 12.8,
+          "max": 19.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "ribbon-crimp-terminal/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set ribbon-crimp-terminal"
+      }
+    },
+    {
+      "slug": "ring-stone-saddle",
+      "name": "Stone saddle ring",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "ring-stone-saddle/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set ring-stone-saddle"
+      }
+    },
+    {
       "slug": "rivet",
       "name": "Rivet + Burr",
       "domain": "wearable",
@@ -63585,6 +66720,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set rivet"
+      }
+    },
+    {
+      "slug": "rivet-bracelet-link",
+      "name": "Rivet bracelet link",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 22.400000000000002,
+          "max": 33.6,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "rivet-bracelet-link/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set rivet-bracelet-link"
       }
     },
     {
@@ -64712,6 +67902,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set roller-bracket"
+      }
+    },
+    {
+      "slug": "rondelle-bead",
+      "name": "Rondelle bead",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 11.200000000000001,
+          "max": 16.8,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "rondelle-bead/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set rondelle-bead"
       }
     },
     {
@@ -67036,6 +70281,61 @@
       }
     },
     {
+      "slug": "scale-chain-link",
+      "name": "Scale chain link",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "scale-chain-link/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set scale-chain-link"
+      }
+    },
+    {
       "slug": "scara-robotics",
       "name": "Chronos-SCARA",
       "domain": "industrial",
@@ -67208,6 +70508,116 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set scara-robotics"
+      }
+    },
+    {
+      "slug": "scarf-ring-divider",
+      "name": "Scarf ring divider",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 30.400000000000002,
+          "max": 45.6,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "scarf-ring-divider/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set scarf-ring-divider"
+      }
+    },
+    {
+      "slug": "screw-clip-earring",
+      "name": "Screw clip earring frame",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 12.8,
+          "max": 19.2,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "screw-clip-earring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set screw-clip-earring"
       }
     },
     {
@@ -70462,6 +73872,61 @@
       }
     },
     {
+      "slug": "shoe-chain-anchor",
+      "name": "Shoe chain anchor",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 19.200000000000003,
+          "max": 28.799999999999997,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "shoe-chain-anchor/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set shoe-chain-anchor"
+      }
+    },
+    {
       "slug": "shoe-horn",
       "name": "Shoe Horn",
       "domain": "wearable",
@@ -73671,6 +77136,61 @@
       }
     },
     {
+      "slug": "spherical-drilled-bead",
+      "name": "Spherical drilled bead",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 9.600000000000001,
+          "max": 14.399999999999999,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "spherical-drilled-bead/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set spherical-drilled-bead"
+      }
+    },
+    {
       "slug": "spice-jar",
       "name": "Refillable Spice Jar",
       "domain": "household",
@@ -74091,6 +77611,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set spigot-adapter"
+      }
+    },
+    {
+      "slug": "spinner-ring",
+      "name": "Spinner ring",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "spinner-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set spinner-ring"
       }
     },
     {
@@ -74563,6 +78138,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set splint"
+      }
+    },
+    {
+      "slug": "split-shank-setting-ring",
+      "name": "Split shank setting ring",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "split-shank-setting-ring/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set split-shank-setting-ring"
       }
     },
     {
@@ -75788,6 +79418,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set stirrbar-rack"
+      }
+    },
+    {
+      "slug": "stopper-bead-shell",
+      "name": "Stopper bead shell",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 8.0,
+          "max": 12.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "stopper-bead-shell/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set stopper-bead-shell"
       }
     },
     {
@@ -78178,6 +81863,61 @@
       }
     },
     {
+      "slug": "tassel-cap",
+      "name": "Tassel cap",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 9.600000000000001,
+          "max": 14.399999999999999,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "tassel-cap/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set tassel-cap"
+      }
+    },
+    {
       "slug": "tendon-knuckle",
       "name": "Tendon-Driven Knuckle",
       "domain": "hybrid",
@@ -78333,6 +82073,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set tendon-knuckle"
+      }
+    },
+    {
+      "slug": "tension-stone-bridge",
+      "name": "Tension stone bridge study",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 14.4,
+          "max": 21.599999999999998,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "tension-stone-bridge/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set tension-stone-bridge"
       }
     },
     {
@@ -79345,6 +83140,61 @@
       }
     },
     {
+      "slug": "threader-earring-bar",
+      "name": "Threader earring bar",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 22.400000000000002,
+          "max": 33.6,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "threader-earring-bar/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set threader-earring-bar"
+      }
+    },
+    {
       "slug": "thumb-screw",
       "name": "Knurled Thumb Screw",
       "domain": "industrial",
@@ -79490,6 +83340,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set thumb-screw"
+      }
+    },
+    {
+      "slug": "tiara-connector",
+      "name": "Tiara connector",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 30.400000000000002,
+          "max": 45.6,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "tiara-connector/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set tiara-connector"
       }
     },
     {
@@ -79821,6 +83726,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set toggle"
+      }
+    },
+    {
+      "slug": "toggle-clasp-set",
+      "name": "Toggle clasp set",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 16.0,
+          "max": 24.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "toggle-clasp-set/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set toggle-clasp-set"
       }
     },
     {
@@ -80539,6 +84499,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set toolhead-proxy"
+      }
+    },
+    {
+      "slug": "torque-terminal",
+      "name": "Torque terminal",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 11.200000000000001,
+          "max": 16.8,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "torque-terminal/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set torque-terminal"
       }
     },
     {
@@ -87799,6 +91814,61 @@
       "clone": {
         "kind": "sparse",
         "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set wheelchair-cup"
+      }
+    },
+    {
+      "slug": "wire-guardian",
+      "name": "Wire guardian",
+      "domain": "household",
+      "engines": [
+        "cadquery"
+      ],
+      "dual_engine": false,
+      "modes": 1,
+      "mode_ids": [
+        "model"
+      ],
+      "parts": 1,
+      "parameters": 2,
+      "parameter_ids": [
+        "size",
+        "section"
+      ],
+      "parameter_contracts": {
+        "size": {
+          "type": "slider",
+          "min": 8.0,
+          "max": 12.0,
+          "step": 0.1
+        },
+        "section": {
+          "type": "slider",
+          "min": 0.85,
+          "max": 1.15,
+          "step": 0.05
+        }
+      },
+      "export_formats": [
+        "stl",
+        "step"
+      ],
+      "commons_license": "CERN-OHL-W-2.0",
+      "societal_benefit": {
+        "en": "Editable open jewellery construction with inspectable source.",
+        "es": "Construcción de joyería abierta y editable con fuentes inspeccionables."
+      },
+      "material_awareness": null,
+      "cdg_interfaces": [],
+      "standards": [],
+      "source": {
+        "repo": "https://github.com/madfam-org/solid-hyperobjects",
+        "manifest": "wire-guardian/project.json",
+        "has_cadquery": true,
+        "has_openscad": false
+      },
+      "clone": {
+        "kind": "sparse",
+        "command": "git clone --filter=blob:none --sparse https://github.com/madfam-org/solid-hyperobjects && cd solid-hyperobjects && git sparse-checkout set wire-guardian"
       }
     },
     {

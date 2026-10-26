@@ -4,8 +4,8 @@
   "generated_by": "scripts/qa/derive_mating_candidates.py",
   "status": "proposed",
   "inputs": {
-    "cartridges_scanned": 512,
-    "cartridges_public_total": 512,
+    "cartridges_scanned": 586,
+    "cartridges_public_total": 586,
     "cartridges_out_of_scope": 0,
     "scope_note": "every projects/*/project.json is read; only the client-private slugs named in PRIVATE_EXCLUDED are skipped, and since RFC 0038 P2 those are not under projects/ at all (they mount at private-projects/). The commons is one submodule, so projects/ is either fully checked out or empty; validate_manifests.py's ratchet is what refuses the empty case",
     "interfaces_declared": 1078,
@@ -22,7 +22,7 @@
     "edges": 373,
     "isolated_graph_nodes": 67,
     "density_pct_over_graph_nodes": 1.5205,
-    "density_pct_over_catalog": 0.2851,
+    "density_pct_over_catalog": 0.2176,
     "author_declared_pairs_reproduced": 167,
     "author_declared_pairs_missing": 134,
     "author_declared_pairs_without_shared_family": 111
@@ -43,7 +43,7 @@
       "graph_nodes": 222,
       "isolated_graph_nodes_after": 63,
       "density_pct_over_graph_nodes": 2.1157,
-      "density_pct_over_catalog": 0.3967
+      "density_pct_over_catalog": 0.3028
     },
     {
       "tranche": "plausible",
@@ -55,7 +55,7 @@
       "graph_nodes": 222,
       "isolated_graph_nodes_after": 52,
       "density_pct_over_graph_nodes": 2.1768,
-      "density_pct_over_catalog": 0.4082
+      "density_pct_over_catalog": 0.3115
     },
     {
       "tranche": "speculative",
@@ -67,7 +67,7 @@
       "graph_nodes": 222,
       "isolated_graph_nodes_after": 40,
       "density_pct_over_graph_nodes": 2.5804,
-      "density_pct_over_catalog": 0.4839
+      "density_pct_over_catalog": 0.3693
     }
   ],
   "rejected_interfaces": {

@@ -6,8 +6,9 @@ name: CodeQL
 # repositories. Results land in the Security tab; this workflow is not part of
 # `ci-success`, so a new alert does not block a merge (A1 D-10, 2026-10-18).
 #
-# Runner: GitHub-hosted, same ADR-010 expression as ci.yml (R116: public repo,
-# never the self-hosted pool). Every `uses:` is pinned to a commit SHA with the
+# Pull requests use standard GitHub-hosted ubuntu-24.04 regardless of the ARC
+# bootstrap variable. Main and scheduled scans retain their existing routing.
+# Every `uses:` is pinned to a commit SHA with the
 # tag in a trailing comment; Dependabot's github-actions ecosystem bumps both.
 
 on:
@@ -30,7 +31,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: ${{ vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04' }}
+    runs-on: ${{ github.event_name == 'pull_request' && 'ubuntu-24.04' || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}
     timeout-minutes: 30
     permissions:
       contents: read

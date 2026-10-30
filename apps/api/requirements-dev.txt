@@ -10,4 +10,4 @@ pytest-cov~=4.1
 # The same pin is in .github/workflows/ci.yml (the `backend` job's
 # `pip install`), and scripts/tests/test_ruff_pin.py fails if the two disagree.
 # Bump both together.
-ruff==0.16.5
+ruff==0.17.2

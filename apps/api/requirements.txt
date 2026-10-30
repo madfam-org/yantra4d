@@ -39,7 +39,7 @@ cascadio~=0.0.17
 openapi-schema-validator~=0.6.2
 # Parses docs/reference/openapi.yaml for /api/openapi.json (routes/core/api_docs.py).
 PyYAML>=6.0,<7
-scikit-image~=0.22
+scikit-image~=0.26
 rtree~=1.2
 prometheus-client~=0.21
 sentry-sdk[flask]~=2.0

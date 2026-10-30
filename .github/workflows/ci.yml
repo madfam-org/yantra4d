@@ -21,7 +21,7 @@ on:
 # supersedes; pushes to main never cancel each other, so every merged commit
 # still gets its own complete run. deploy.yml has the same shape.
 concurrency:
-  group: ci-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # The actions cache client waits SEGMENT_DOWNLOAD_TIMEOUT_MINS (default 10) for a stalled

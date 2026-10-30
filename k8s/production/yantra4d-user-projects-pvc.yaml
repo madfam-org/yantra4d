@@ -1,0 +1,37 @@
+# User-authored cartridges: forks, GitHub imports, onboarding, AI synthesis.
+# Mounted read-write at /app/user-projects in BOTH containers of the
+# yantra4d-backend pod (backend + render-worker); the release-shipped commons
+# and private roots stay on the read-only root filesystem.
+# Operator note (size, backup, restore): docs/operations/user-projects-storage.md
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yantra4d-user-projects
+  annotations:
+    # Holds user data. The Argo application prunes, and this class reclaims
+    # with Delete: removing or renaming this file must never delete the
+    # volume. Retire it deliberately (back up, then delete by hand).
+    argocd.argoproj.io/sync-options: Prune=false
+  labels:
+    app.kubernetes.io/name: yantra4d-backend
+    app.kubernetes.io/part-of: yantra4d
+    # Longhorn copies recurring-job labels from a PVC to its volume only when
+    # the PVC opts in with `source`; `default` is the cluster's recurring
+    # snapshot + off-cluster backup group. Explicit so coverage does not depend
+    # on the implicit "no labels means default" rule.
+    recurring-job.longhorn.io/source: enabled
+    recurring-job-group.longhorn.io/default: enabled
+spec:
+  # One pod, two containers, one node: RWO is sufficient. The Deployment's
+  # Recreate strategy is what keeps a second pod from contending for it.
+  accessModes:
+    - ReadWriteOnce
+  # Explicit: the backup above is a property of this storage class.
+  storageClassName: longhorn
+  resources:
+    requests:
+      # Convention, not a measured limit: the whole commons is ~25 MB and its
+      # largest cartridge ~2.2 MB, so 2Gi holds ~1000 forks of the largest one.
+      # GitHub imports carry full history and cost more. The class supports
+      # online expansion; raise this, never lower it.
+      storage: 2Gi

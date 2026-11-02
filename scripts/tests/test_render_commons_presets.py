@@ -246,3 +246,10 @@ def test_paths_and_native_environment_do_not_escape_or_inherit_secrets(tmp_path,
     assert child["PYTHONPATH"] == str(tmp_path)
     with pytest.raises(archive.ArchiveError, match="within"):
         archive.safe_file(tmp_path, "../escape.glb")
+
+
+@pytest.mark.parametrize("malformed", [None, [], {"schema": archive.SCHEMA, "factory": "solid", "entries": [None], "coverage": {"requested": ["solid/widget/small"]}}])
+def test_malformed_json_types_are_integrity_errors(tmp_path, malformed):
+    (tmp_path / "manifest.json").write_text(json.dumps(malformed))
+    with pytest.raises(archive.ArchiveError, match="malformed"):
+        archive.check_archive(tmp_path)

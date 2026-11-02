@@ -364,7 +364,7 @@ def all_assets(entry: dict):
             yield value
 
 
-def check_archive(out: Path, expected_pin: str | None = None) -> dict:
+def _check_archive(out: Path, expected_pin: str | None = None) -> dict:
     manifest = json.loads(safe_file(out, "manifest.json").read_text())
     if manifest.get("schema") != SCHEMA or manifest.get("factory") != "solid":
         raise ArchiveError("unsupported archive format/factory")
@@ -414,6 +414,16 @@ def check_archive(out: Path, expected_pin: str | None = None) -> dict:
             if path.stat().st_size != asset.get("bytes") or path.stat().st_size == 0:
                 raise ArchiveError(f"stale/empty asset size: {asset['path']}")
     return manifest
+
+
+def check_archive(out: Path, expected_pin: str | None = None) -> dict:
+    """Reject malformed manifests as integrity errors rather than type tracebacks."""
+    try:
+        return _check_archive(out, expected_pin)
+    except ArchiveError:
+        raise
+    except (AttributeError, TypeError, KeyError, ValueError, IndexError) as exc:
+        raise ArchiveError("malformed archive manifest or evidence value") from exc
 
 
 def build_archive(root: Path, pin: str, slugs: list[str], out: Path,

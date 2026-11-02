@@ -171,11 +171,12 @@ def _tail(text: str, n: int = 4) -> str:
     return " | ".join(lines[-n:])[-500:]
 
 
-def run_cadquery_part(script_path: Path, out_stl: Path, params: dict, part: str) -> tuple[bool, str]:
+def run_cadquery_part(script_path: Path, out_stl: Path, params: dict, part: str,
+                      runtime_env: dict | None = None) -> tuple[bool, str]:
     """Render one part via the production cq_runner sandbox (subprocess)."""
     cq_params = dict(params)
     cq_params["target_part"] = part  # same injection as apps/worker/render_worker.py
-    env = os.environ.copy()
+    env = os.environ.copy() if runtime_env is None else dict(runtime_env)
     prev = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = f"{PROJECTS_DIR}{os.pathsep}{prev}" if prev else str(PROJECTS_DIR)
     cmd = [sys.executable, str(CQ_RUNNER), str(script_path), str(out_stl),

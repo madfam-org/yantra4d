@@ -39,6 +39,8 @@ Render caches are scoped to published renderer builds; see [release cache identi
 
 [Native dropdown values](docs/guides/troubleshooting.md#numeric-dropdowns-change-native-geometry) retain the declared numeric or string option type; direct CLI comparisons must also match the platform checkbox encoding.
 
+[Factory preset archives](docs/reference/factory-preset-archive.md) provide an opt-in local GLB/WebP and committed-SVG feed bound to exact public commons commits, requested/resolved parameters and explicit coordinate frames.
+
 [Viewer resource ownership](docs/architecture/viewer-resource-ownership.md) documents the separate 32 MiB/16-entry artifact and assembly caches, per-consumer geometry, GLTF and animated-grid cleanup, and the limits of these budgets.
 
 [Publication source acceptance](docs/operations/release-source-gate.md) describes the exact-main CI gate, stale-source pin refusal and runtime verification boundary.

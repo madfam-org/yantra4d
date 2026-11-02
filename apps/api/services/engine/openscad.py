@@ -16,7 +16,6 @@ from pathlib import Path
 
 from config import Config
 from manifest import get_manifest
-
 from services.engine.parameter_validation import validate_parameters
 from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, RenderResult, communicate_cancellable
 from services.engine.render_limits import describe_exit, limited_env, render_preexec_fn

@@ -98,7 +98,7 @@
     "axios": "^1.20.0",
     "protobufjs": "^7.5.8",
     "dompurify": "^3.4.3",
-    "follow-redirects": "^1.16.0",
+    "follow-redirects": "^1.16.2",
     "flatted": "^3.4.2",
     "postcss": "^8.5.14",
     "yaml": "^2.9.0",

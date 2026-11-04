@@ -205,8 +205,8 @@ spec:
               mountPath: /app/backend/data
           resources:
             requests:
-              cpu: 50m
-              memory: 256Mi
+              cpu: 25m
+              memory: 768Mi
             limits:
               cpu: 1000m
               memory: 2Gi
@@ -289,8 +289,8 @@ spec:
               mountPath: /app/backend/static
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 45m
+              memory: 480Mi
             limits:
               cpu: 1000m
               memory: 2Gi

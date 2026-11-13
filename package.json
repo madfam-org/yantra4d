@@ -11,7 +11,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.0.0",
+    "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^19.0.0",
     "husky": "^9.1.0",
     "shadcn": "^4.11.0",

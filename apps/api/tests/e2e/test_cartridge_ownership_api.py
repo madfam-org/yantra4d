@@ -45,7 +45,10 @@ TOKENS = {
     "tok-owner": {"sub": OWNER_SUB, "email": "owner@example.com", "yantra4d_tier": "premium"},
     "tok-other": {"sub": OTHER_SUB, "email": "other@example.com", "yantra4d_tier": "premium"},
     "tok-admin": {"sub": "a11d-admin-sub", "email": "admin@example.com", "yantra4d_tier": "premium",
-                  "roles": ["admin"]},
+                  "roles": ["admin"], "is_admin": True},
+    # An organization membership role named `admin`, without the platform-admin claim.
+    "tok-org-admin": {"sub": "0a9-org-admin-sub", "email": "org-admin@example.com", "yantra4d_tier": "premium",
+                      "roles": ["admin"]},
     "tok-essentials": {"sub": "e55e-sub", "email": "e@example.com"},
 }
 
@@ -233,12 +236,19 @@ class TestAdminOverride:
             res = _call(client, route, slug, "tok-admin")
             assert res.status_code in (200, 201), (route[0], slug, res.get_json())
 
+    @pytest.mark.parametrize("route", WRITE_ROUTES, ids=ROUTE_IDS)
+    def test_admin_role_string_without_claim_is_not_an_admin(self, client, route):
+        for slug in _targets(route):
+            res = _call(client, route, slug, "tok-org-admin")
+            assert res.status_code == 403, (route[0], slug, res.get_json())
+            assert res.get_json()["error_code"] == NOT_OWNER_ERROR_CODE
+
 
 class TestLegacyOwnerless:
     @pytest.mark.parametrize("route", [r for r in WRITE_ROUTES if not r[4]], ids=[r[0] for r in WRITE_ROUTES if not r[4]])
     def test_fails_closed_for_everyone_but_admins(self, client, cartridges, route):
         before = _snapshot(cartridges[LEGACY])
-        for token in ("tok-owner", "tok-other"):
+        for token in ("tok-owner", "tok-other", "tok-org-admin"):
             res = _call(client, route, LEGACY, token)
             assert res.status_code == 403, (route[0], token, res.get_json())
             assert res.get_json()["error_code"] == NOT_OWNER_ERROR_CODE
@@ -479,11 +489,12 @@ class TestAdminFlags:
         written = json.loads((cartridges[FORK] / "project.json").read_text())
         assert written["project"]["is_demo"] is True
 
-    def test_non_admin_keeps_the_existing_refusal(self, client, cartridges):
+    @pytest.mark.parametrize("token", ["tok-owner", "tok-org-admin"])
+    def test_non_admin_keeps_the_existing_refusal(self, client, cartridges, token):
         for slug in (FORK, COMMONS):
             before = _snapshot(cartridges[slug])
             # Even the fork's own creator: the route is admin-only, as before.
-            res = client.patch(self.URL.format(slug=slug), json={"is_demo": True}, headers=_auth("tok-owner"))
+            res = client.patch(self.URL.format(slug=slug), json={"is_demo": True}, headers=_auth(token))
             assert res.status_code == 403
             assert res.get_json()["error"] == "Insufficient permissions"
             assert _snapshot(cartridges[slug]) == before

@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from flask import Flask
 
-from middleware.auth import optional_auth, require_auth, require_role
+from middleware.auth import is_platform_admin, optional_auth, require_auth, require_platform_admin
 
 
 @pytest.fixture(autouse=True)
@@ -26,7 +26,7 @@ def app():
         return jsonify({"claims": getattr(request, "auth_claims", None)})
 
     @app.route("/admin")
-    @require_role("admin")
+    @require_platform_admin
     def admin():
         from flask import jsonify
         return jsonify({"ok": True})
@@ -46,7 +46,13 @@ def client(app):
 
 
 MOCK_CLAIMS = {"sub": "user123", "iss": "https://auth.madfam.io", "roles": ["user"], "exp": 9999999999}
-ADMIN_CLAIMS = {"sub": "admin1", "iss": "https://auth.madfam.io", "roles": ["admin"], "exp": 9999999999}
+# Janua marks a platform administrator with the boolean `is_admin` claim (and
+# also lists `admin` under `roles`).
+ADMIN_CLAIMS = {
+    "sub": "admin1", "iss": "https://auth.madfam.io", "roles": ["admin"], "is_admin": True, "exp": 9999999999,
+}
+# An organization membership role with the same name, without the claim.
+ORG_ADMIN_CLAIMS = {"sub": "orgadmin1", "iss": "https://auth.madfam.io", "roles": ["admin"], "exp": 9999999999}
 
 
 class TestRequireAuth:
@@ -67,17 +73,45 @@ class TestRequireAuth:
             assert resp.get_json()["claims"]["sub"] == "user123"
 
 
-class TestRequireRole:
-    def test_returns_403_when_role_missing(self, client):
+class TestRequirePlatformAdmin:
+    def test_returns_403_when_claim_missing(self, client):
         with patch("middleware.auth.decode_token", return_value=MOCK_CLAIMS):
             resp = client.get("/admin", headers={"Authorization": "Bearer valid.token"})
             assert resp.status_code == 403
             assert "Insufficient permissions" in resp.get_json()["error"]
 
-    def test_passes_with_correct_role(self, client):
+    def test_passes_with_platform_admin_claim(self, client):
         with patch("middleware.auth.decode_token", return_value=ADMIN_CLAIMS):
             resp = client.get("/admin", headers={"Authorization": "Bearer admin.token"})
             assert resp.status_code == 200
+
+    @pytest.mark.parametrize("claims", [
+        ORG_ADMIN_CLAIMS,
+        {"sub": "u", "role": "admin"},
+        {"sub": "u", "roles": "admin"},
+        {"sub": "u", "roles": ["owner", "admin", "platform_admin", "superadmin"]},
+    ])
+    def test_role_strings_without_claim_are_refused(self, client, claims):
+        with patch("middleware.auth.decode_token", return_value=claims):
+            resp = client.get("/admin", headers={"Authorization": "Bearer t"})
+            assert resp.status_code == 403
+
+
+class TestIsPlatformAdmin:
+    def test_true_only_for_boolean_true(self):
+        assert is_platform_admin({"is_admin": True}) is True
+
+    @pytest.mark.parametrize("claims", [
+        None,
+        {},
+        {"is_admin": False},
+        {"is_admin": "true"},
+        {"is_admin": 1},
+        {"roles": ["admin"]},
+        {"role": "admin"},
+    ])
+    def test_false_otherwise(self, claims):
+        assert is_platform_admin(claims) is False
 
 
 class TestOptionalAuth:
@@ -108,7 +142,7 @@ class TestAuthDisabled:
             resp = client.get("/protected")
             assert resp.status_code == 200
 
-    def test_require_role_noop(self, client):
+    def test_require_platform_admin_noop(self, client):
         with patch("middleware.auth.Config") as mock_config:
             mock_config.AUTH_ENABLED = False
             resp = client.get("/admin")

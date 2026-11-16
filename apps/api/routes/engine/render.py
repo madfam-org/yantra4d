@@ -18,8 +18,8 @@ from middleware.auth import (
     effective_tier,
     export_format_denied_response,
     optional_auth,
+    require_platform_admin,
     require_render_scope,
-    require_role,
 )
 from services.core.project_access import check_project_access
 from services.core.tier_service import (
@@ -314,9 +314,9 @@ def render_stl_stream():
 MAX_CANCEL_JOB_IDS = 64
 
 
-@require_role("admin")
+@require_platform_admin
 def _cancel_every_render():
-    """`{"all": true}` — the operator escape hatch, behind the admin role.
+    """`{"all": true}` — the operator escape hatch, behind the platform-admin claim.
 
     Renders carry no owner, and the backend runs a single replica, so cancelling
     "all" is cancelling every user's work. It was previously reachable by any

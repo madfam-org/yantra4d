@@ -61,7 +61,7 @@ PRIVATE_SLUG = "secret-widget"
 GUEST_CLAIMS = {"sub": "u1", "email": "someone@example.com"}
 PRO_CLAIMS = {"sub": "u2", "email": "pro@example.com", "yantra4d_tier": "pro"}
 TOP_CLAIMS = {"sub": "u3", "email": "boss@example.com", "yantra4d_tier": "madfam"}
-ADMIN_CLAIMS = {"sub": "u4", "email": "admin@example.com", "roles": ["admin"]}
+ADMIN_CLAIMS = {"sub": "u4", "email": "admin@example.com", "roles": ["admin"], "is_admin": True}
 # Fashion Cabinet's exact machine-token shape. Janua synthesises
 # `yantra4d_tier: "madfam"` for any machine client holding a `yantra4d:`-
 # namespaced scope (docs/AUTH.md § Machine tokens), which is what seats this

@@ -13,7 +13,7 @@ from flask import Blueprint, g, jsonify, request
 import rate_limits
 from extensions import limiter
 from manifest import invalidate_cache
-from middleware.auth import require_role
+from middleware.auth import require_platform_admin
 from services.core.manifest_generator import generate_manifest
 from utils.project_resolver import project_write_root, slug_in_use
 from utils.route_helpers import error_response, handle_exceptions
@@ -30,7 +30,7 @@ ALLOWED_UPLOAD_EXTENSIONS = {'.scad'}
 
 
 @onboard_bp.route('/api/projects/analyze', methods=['POST'])
-@require_role("admin")
+@require_platform_admin
 @limiter.limit(rate_limits.ONBOARD_ANALYZE)
 def analyze_scad_files():
     """Accept uploaded .scad files, analyze them, and return a draft manifest."""
@@ -76,7 +76,7 @@ def analyze_scad_files():
 
 
 @onboard_bp.route('/api/projects/create', methods=['POST'])
-@require_role("admin")
+@require_platform_admin
 @limiter.limit(rate_limits.ONBOARD_CREATE)
 @handle_exceptions
 def create_project():

@@ -1305,7 +1305,7 @@ def cancel_all_renders() -> bool:
     """Cancel every render on the box, queued and active, for every caller.
 
     Reachable over HTTP only via `POST /api/render-cancel {"all": true}`, which
-    requires the `admin` role — the single backend replica means "every render"
+    requires the platform-admin claim — the single backend replica means "every render"
     is literal, so this is an operator tool, not a client one.
     """
     try:

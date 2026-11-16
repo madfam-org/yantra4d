@@ -41,14 +41,20 @@ def list_projects():
     # ...
 ```
 
-### `@require_role(role)`
+### `@require_platform_admin`
 
-Requires a specific role claim in the token. Must be used after `@require_auth`. Returns HTTP 403 if the user does not have the specified role.
+Requires a platform administrator: the verified token's boolean `is_admin`
+claim, exactly `true` (`middleware.auth.is_platform_admin`). Includes
+`@require_auth`. Returns HTTP 403 otherwise.
+
+The `roles` claim is not consulted. Janua puts the caller's organization
+membership roles there (`owner`, `admin`, `member`, or a name the organization
+chose), so a role string describes the caller's standing in their own
+organization, not on this platform.
 
 ```python
 @app.route("/api/admin/users")
-@require_auth
-@require_role("admin")
+@require_platform_admin
 def admin_list_users():
     # ...
 ```
@@ -337,7 +343,7 @@ action — and on these channels there is no privileged action to reach.
 |---|---|---|---|
 | `POST /api/render-cancel` `{request_id}` | Yes, with the id | `yantra4d:render` on machine tokens | Every job of that one render request, including its not-yet-queued parts |
 | `POST /api/render-cancel` `{job_ids:[…]}` | Yes, with the ids | `yantra4d:render` on machine tokens | Exactly those jobs |
-| `POST /api/render-cancel` `{all:true}` | **No** — 401 | `@require_role("admin")` | Every render on the box, for every user |
+| `POST /api/render-cancel` `{all:true}` | **No** — 401 | `@require_platform_admin` | Every render on the box, for every user |
 | `POST /api/render-cancel` with no target | — | — | Nothing: **400** `cancel_target_required` |
 
 ### Why a target is required
@@ -413,7 +419,7 @@ A beacon carries no `Authorization` header; it cannot. That is fine, and it is
 the capability model doing its job: the beacon cancels only ids the server
 itself published on this client's own stream, so an anonymous unload can stop
 its own render and nothing else. `{"all": true}` over a beacon is still refused,
-by the same `@require_role("admin")` as every other caller.
+by the same `@require_platform_admin` as every other caller.
 
 The endpoint therefore parses the body as JSON regardless of `Content-Type`
 (`routes/engine/render.py::_cancel_body`): a beacon's type is whatever Blob it
@@ -494,7 +500,7 @@ Checked in order by `can_view_project()`
 1. the top tier — `resolve_tier(claims) == "premium"` (`TOP_TIER`, derived from
    the hierarchy rather than spelled out), which includes anyone seated there by
    `TIER_OVERRIDES` and anyone whose token still says `madfam`;
-2. the `admin` role on the token;
+2. the platform-admin claim on the token (`is_admin: true`);
 3. `PROJECT_ACCESS_GRANTS`, a JSON object mapping slug to allowed emails:
    `{"acme-bracket": ["someone@example.com"]}`.
 
@@ -783,8 +789,8 @@ way. See [JWKS Caching](#jwks-caching).
 
 ### Token missing role or tier claims
 
-**Symptom**: `@require_role` or `@require_tier` returns 403 even for users who should have access.
+**Symptom**: `@require_platform_admin` or `@require_tier` returns 403 even for users who should have access.
 
-**Cause**: The Janua OAuth client may not be configured to include custom claims in the token.
+**Cause**: The token does not carry `is_admin: true` (set by Janua for platform administrators only) or the expected tier claim.
 
-**Fix**: Verify the OAuth client configuration in Janua includes the `role` and `tier` claims in the token scope or custom claims mapping.
+**Fix**: Confirm the account is a platform administrator in Janua, and that the OAuth client configuration includes the tier claim.

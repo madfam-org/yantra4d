@@ -13,7 +13,7 @@ from sqlalchemy import desc, func
 from config import Config
 from extensions import db
 from manifest import discover_projects, get_manifest
-from middleware.auth import optional_auth, require_role
+from middleware.auth import is_platform_admin, optional_auth, require_platform_admin
 from models.analytics import AnalyticsEvent
 from routes.editor.editor import require_writable_cartridge
 from services.engine.render_orchestrator import (
@@ -241,14 +241,7 @@ def admin_list_projects() -> Response:
     # Check if user is admin
     is_admin = not Config.AUTH_ENABLED
     if Config.AUTH_ENABLED:
-        claims = getattr(request, "auth_claims", None)
-        if claims:
-            roles = claims.get("roles", [])
-            if isinstance(roles, str):
-                roles = [roles]
-            if claims.get("role"):
-                roles.append(claims.get("role"))
-            is_admin = "admin" in roles
+        is_admin = is_platform_admin(getattr(request, "auth_claims", None))
 
     # If not admin, filter the list
     if not is_admin and Config.AUTH_ENABLED:
@@ -263,7 +256,7 @@ def admin_list_projects() -> Response:
 
 @admin_bp.route('/api/admin/projects/<slug>', methods=['GET'])
 @require_valid_slug
-@require_role("admin")
+@require_platform_admin
 def admin_project_detail(slug: str) -> Response | tuple[Response, int]:
     """Return detailed info for a single project."""
     project_dir = find_project_dir(slug)
@@ -306,7 +299,7 @@ def admin_project_detail(slug: str) -> Response | tuple[Response, int]:
 
 @admin_bp.route('/api/admin/projects/<slug>/flags', methods=['PATCH'])
 @require_valid_slug
-@require_role("admin")
+@require_platform_admin
 @require_writable_cartridge
 def patch_project_flags(slug: str) -> Response | tuple[Response, int]:
     """
@@ -363,13 +356,13 @@ def patch_project_flags(slug: str) -> Response | tuple[Response, int]:
 
 
 @admin_bp.route('/api/admin/projects/tablaco/public-link', methods=['GET'])
-@require_role("admin")
+@require_platform_admin
 def tablaco_public_link() -> Response:
     """
     Return the public storefront URL for the tablaco project.
 
     This is the ONLY endpoint that exposes the tablaco public link.
-    Protected by admin role — not available in any public API.
+    Protected by the platform-admin claim — not available in any public API.
     """
     from utils.studio_url import build_project_url, get_studio_base_url
 
@@ -385,7 +378,7 @@ def tablaco_public_link() -> Response:
 
 
 @admin_bp.route('/api/admin/analytics/global', methods=['GET'])
-@require_role("admin")
+@require_platform_admin
 def admin_global_analytics() -> Response:
     """
     Aggregate analytics across all projects for the last N days.
@@ -459,7 +452,7 @@ def admin_global_analytics() -> Response:
 
 
 @admin_bp.route('/api/admin/renders/active', methods=['GET'])
-@require_role("admin")
+@require_platform_admin
 def admin_active_renders() -> Response:
     """Return active render information."""
     active_state = _collect_active_render_state()

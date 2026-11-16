@@ -18,7 +18,7 @@ from flask import Blueprint, jsonify, request
 import rate_limits
 from extensions import limiter
 from manifest import invalidate_cache
-from middleware.auth import claim_roles, ensure_optional_auth, require_tier
+from middleware.auth import ensure_optional_auth, is_platform_admin, require_tier
 from services.core.cartridge_ownership import claims_sub, owner_sub
 from services.core.project_access import dev_unlock_active, require_project_access
 from services.engine.render_source import graph_sources
@@ -79,9 +79,10 @@ def _graph_rejection(resolved: Path, content: str) -> str | None:
 # read-only through the API — fork it to edit a copy.
 #
 # A fork or import is writable only by the account that created it (its `sub`
-# is recorded at creation, see services/core/cartridge_ownership.py) or by an
-# admin (the `admin` app role, the same one require_role("admin") checks). A
-# fork or import with no recorded creator is writable by admins only. With auth
+# is recorded at creation, see services/core/cartridge_ownership.py) or by a
+# platform admin (the token's `is_admin` claim, the same one
+# require_platform_admin checks). A fork or import with no recorded creator is
+# writable by platform admins only. With auth
 # disabled, the local-development unlock that opens private projects
 # (auth off AND the Flask debugger on) opens these too; nothing else does.
 
@@ -122,7 +123,7 @@ def cartridge_write_refusal(slug: str, project_dir: Path, claims: dict | None) -
         return READ_ONLY_ERROR_CODE
     if dev_unlock_active():
         return None
-    if "admin" in claim_roles(claims):
+    if is_platform_admin(claims):
         return None
     sub = claims_sub(claims)
     owner = owner_sub(slug, project_dir)

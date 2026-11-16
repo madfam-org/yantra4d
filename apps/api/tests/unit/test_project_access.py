@@ -31,8 +31,10 @@ ANON = None
 ESSENTIALS = {"sub": "u1", "email": "someone@example.com"}
 PRO = {"sub": "u2", "email": "pro@example.com", "yantra4d_tier": "pro"}
 TOP = {"sub": "u3", "email": "staff@example.com", "yantra4d_tier": "premium"}
-ADMIN = {"sub": "u4", "email": "admin@example.com", "roles": ["admin"]}
-ADMIN_SINGULAR = {"sub": "u5", "email": "admin2@example.com", "role": "admin"}
+ADMIN = {"sub": "u4", "email": "admin@example.com", "roles": ["admin"], "is_admin": True}
+# Organization membership roles named `admin`, without the platform-admin claim.
+ORG_ADMIN = {"sub": "u5", "email": "admin2@example.com", "roles": ["admin"]}
+ORG_ADMIN_SINGULAR = {"sub": "u7", "email": "admin3@example.com", "role": "admin"}
 GRANTED = {"sub": "u6", "email": "guest-of-honour@example.com"}
 
 
@@ -149,11 +151,12 @@ class TestCanViewPrivateProject:
     def test_top_tier_can_view(self):
         assert can_view_project("widget", PRIVATE_MANIFEST, TOP) is True
 
-    def test_admin_role_can_view(self):
+    def test_platform_admin_can_view(self):
         assert can_view_project("widget", PRIVATE_MANIFEST, ADMIN) is True
 
-    def test_singular_role_claim_can_view(self):
-        assert can_view_project("widget", PRIVATE_MANIFEST, ADMIN_SINGULAR) is True
+    @pytest.mark.parametrize("claims", [ORG_ADMIN, ORG_ADMIN_SINGULAR])
+    def test_admin_role_string_without_claim_is_refused(self, claims):
+        assert can_view_project("widget", PRIVATE_MANIFEST, claims) is False
 
     def test_granted_email_can_view(self, monkeypatch):
         monkeypatch.setenv(
@@ -196,7 +199,7 @@ class TestCanViewEnvForcedPrivateProject:
     def _force(self, monkeypatch):
         monkeypatch.setenv(PRIVATE_PROJECTS_ENV, "widget")
 
-    @pytest.mark.parametrize("claims", [ANON, ESSENTIALS, PRO])
+    @pytest.mark.parametrize("claims", [ANON, ESSENTIALS, PRO, ORG_ADMIN])
     def test_unentitled_callers_are_refused(self, claims):
         assert can_view_project("widget", PUBLIC_MANIFEST, claims) is False
 

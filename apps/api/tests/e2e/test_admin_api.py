@@ -238,3 +238,37 @@ class TestTablacoPublicLink:
         assert "studio_url" in data
         assert "/project/tablaco" in data["studio_url"]
         assert "storefront" not in data["studio_url"]
+
+
+class TestAdminProjectListVisibility:
+    """With auth on, the unfiltered list follows the platform-admin claim."""
+
+    @pytest.fixture
+    def authed(self, monkeypatch):
+        from config import Config
+
+        monkeypatch.setattr(Config, "AUTH_ENABLED", True)
+        monkeypatch.setattr("middleware.auth._sync_user_from_claims", lambda claims: None)
+
+        def use(claims):
+            monkeypatch.setattr("middleware.auth.decode_token", lambda token: claims)
+            return {"Authorization": "Bearer t"}
+
+        return use
+
+    def _slugs(self, client, headers):
+        res = client.get("/api/admin/projects", headers=headers)
+        assert res.status_code == 200
+        return {p["slug"] for p in res.get_json()}
+
+    def test_platform_admin_sees_every_project(self, client, authed):
+        headers = authed({"sub": "a", "roles": ["admin"], "is_admin": True})
+        assert "test-project" in self._slugs(client, headers)
+
+    @pytest.mark.parametrize("claims", [
+        {"sub": "b", "roles": ["admin"]},
+        {"sub": "c", "role": "admin"},
+        {"sub": "d", "roles": ["admin"], "is_admin": "true"},
+    ])
+    def test_admin_role_string_without_claim_sees_the_public_list(self, client, authed, claims):
+        assert "test-project" not in self._slugs(client, authed(claims))

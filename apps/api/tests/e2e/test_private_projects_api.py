@@ -34,7 +34,9 @@ TOKENS = {
     # Janua still mints the deprecated top-tier name; it must still open the gate.
     "tok-legacy-top": {"sub": "u5", "email": "legacy@example.com", "yantra4d_tier": "madfam"},
     "tok-granted": {"sub": "u3", "email": "guest-of-honour@example.com"},
-    "tok-admin": {"sub": "u4", "email": "admin@example.com", "roles": ["admin"]},
+    "tok-admin": {"sub": "u4", "email": "admin@example.com", "roles": ["admin"], "is_admin": True},
+    # An organization membership role named `admin`, without the platform-admin claim.
+    "tok-org-admin": {"sub": "u6", "email": "org-admin@example.com", "roles": ["admin"]},
 }
 
 
@@ -144,10 +146,15 @@ class TestManifestRoute:
         assert res.status_code == 200
         assert res.get_json()["project"]["slug"] == PRIVATE_SLUG
 
-    def test_admin_role_is_allowed(self, client):
+    def test_platform_admin_is_allowed(self, client):
         res = client.get(f"/api/projects/{PRIVATE_SLUG}/manifest",
                          headers=auth("tok-admin"))
         assert res.status_code == 200
+
+    def test_admin_role_string_without_claim_is_refused(self, client):
+        res = client.get(f"/api/projects/{PRIVATE_SLUG}/manifest",
+                         headers=auth("tok-org-admin"))
+        assert res.status_code in (403, 404)
 
     def test_granted_email_is_allowed(self, client, monkeypatch):
         monkeypatch.setenv(

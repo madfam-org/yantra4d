@@ -17,8 +17,10 @@ from pathlib import Path
 
 import pytest
 
-ADMIN_CLAIMS = {"sub": "admin-1", "roles": ["admin"], "yantra4d_tier": "premium"}
+ADMIN_CLAIMS = {"sub": "admin-1", "roles": ["admin"], "is_admin": True, "yantra4d_tier": "premium"}
 USER_CLAIMS = {"sub": "user-1", "roles": ["user"], "yantra4d_tier": "pro"}
+# An organization membership role named `admin`, without the platform-admin claim.
+ORG_ADMIN_CLAIMS = {"sub": "org-admin-1", "roles": ["admin"], "yantra4d_tier": "pro"}
 
 
 class FakeRedis:
@@ -435,11 +437,12 @@ def test_all_true_is_refused_for_an_anonymous_caller(client, monkeypatch, route_
     assert route_orch.r.get(route_orch.CANCEL_ALL_KEY) is None
 
 
-def test_all_true_is_refused_for_a_non_admin_caller(client, monkeypatch, route_orch):
+@pytest.mark.parametrize("claims", [USER_CLAIMS, ORG_ADMIN_CLAIMS])
+def test_all_true_is_refused_for_a_non_admin_caller(client, monkeypatch, route_orch, claims):
     from config import Config
 
     monkeypatch.setattr(Config, "AUTH_ENABLED", True)
-    monkeypatch.setattr("middleware.auth.decode_token", lambda token: USER_CLAIMS)
+    monkeypatch.setattr("middleware.auth.decode_token", lambda token: claims)
     monkeypatch.setattr("middleware.auth._sync_user_from_claims", lambda claims: None)
     _activate(route_orch, job_id="theirs", request_id="req-b")
 

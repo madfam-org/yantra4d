@@ -21,7 +21,7 @@ Entitlement comes from three places, checked in this order:
 
   1. the top tier (``resolve_tier`` — which includes ``TIER_OVERRIDES``, so a
      staff identity configured there reaches every private project);
-  2. the ``admin`` role on the token;
+  2. the platform-admin claim on the token (``is_admin: true``);
   3. ``PROJECT_ACCESS_GRANTS`` (env), a per-slug list of email addresses.
 
 No identity is ever committed to this repository. Both env vars are deployment
@@ -41,7 +41,7 @@ import os
 from flask import current_app, has_app_context, jsonify
 
 from config import Config
-from middleware.auth import claim_roles, ensure_optional_auth
+from middleware.auth import ensure_optional_auth, is_platform_admin
 from services.core.tier_service import TOP_TIER, resolve_tier
 from utils.route_helpers import error_response
 from utils.validators import validate_project_slug
@@ -263,7 +263,7 @@ def can_view_project(slug: str | None, manifest=None, claims: dict | None = None
     if resolve_tier(claims) == TOP_TIER:
         return True
 
-    if "admin" in claim_roles(claims):
+    if is_platform_admin(claims):
         return True
 
     email = _claim_email(claims)

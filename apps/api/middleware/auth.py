@@ -277,49 +277,36 @@ def require_auth(f):
     return decorated
 
 
-def claim_roles(claims: dict | None) -> set[str]:
-    """Roles carried by a token.
+def is_platform_admin(claims: dict | None) -> bool:
+    """Whether a verified token belongs to a platform administrator.
 
-    Supports both spellings Janua may emit: a ``roles`` array (or a bare string)
-    and a singular ``role``. Returns a new set rather than mutating the claims —
-    the previous inline version appended ``role`` into the token's own ``roles``
-    list, so a second read of the same claims saw a role that was not in it.
+    Janua states platform administration in one claim: the boolean
+    ``is_admin``. The ``roles`` claim carries ORGANIZATION membership roles
+    (``owner``, ``admin``, ``member`` and names an organization chooses for
+    itself), so a role string says nothing about the platform and is not read
+    here. Only the literal ``True`` counts: a string ``"true"`` or a truthy
+    number is not a boolean claim.
     """
-    if not claims:
-        return set()
-
-    roles = claims.get("roles", [])
-    if isinstance(roles, str):
-        roles = [roles]
-    elif not isinstance(roles, (list, tuple, set)):
-        roles = []
-
-    result = {str(r) for r in roles}
-    single = claims.get("role", "")
-    if single:
-        result.add(str(single))
-    return result
+    return bool(claims) and claims.get("is_admin") is True
 
 
-def require_role(role: str):
-    """Decorator factory: require_auth + check that claims contain the given role."""
-    def decorator(f):
-        @functools.wraps(f)
-        @require_auth
-        def decorated(*args, **kwargs):
-            if not Config.AUTH_ENABLED:
-                return f(*args, **kwargs)
-
-            claims = getattr(request, "auth_claims", None)
-            if not claims:
-                return error_response("Authentication required", 401)
-
-            if role not in claim_roles(claims):
-                return error_response("Insufficient permissions", 403)
-
+def require_platform_admin(f):
+    """Decorator: require_auth + the platform-admin claim (see is_platform_admin)."""
+    @functools.wraps(f)
+    @require_auth
+    def decorated(*args, **kwargs):
+        if not Config.AUTH_ENABLED:
             return f(*args, **kwargs)
-        return decorated
-    return decorator
+
+        claims = getattr(request, "auth_claims", None)
+        if not claims:
+            return error_response("Authentication required", 401)
+
+        if not is_platform_admin(claims):
+            return error_response("Insufficient permissions", 403)
+
+        return f(*args, **kwargs)
+    return decorated
 
 
 def require_tier(min_tier: str):

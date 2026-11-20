@@ -359,6 +359,13 @@
     "journeyBtn": "Begin Your Journey",
     "studioBtn": "Launch Studio"
   },
+  "heroSweep": {
+    "label": "Sun Teeth",
+    "still": "A Commons planetary gearset with a 27-tooth sun, seen at an angle.",
+    "range": "Rendered sweep",
+    "caption": "A Commons cartridge. Every value is a rendered part.",
+    "open": "Open it in Studio"
+  },
   "footer": {
     "copyright": "Yantra4D. Open source under AGPLv3.",
     "docs": "Docs",

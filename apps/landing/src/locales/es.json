@@ -359,6 +359,13 @@
     "journeyBtn": "Comienza Tu Viaje",
     "studioBtn": "Abrir Studio"
   },
+  "heroSweep": {
+    "label": "Dientes del Sol",
+    "still": "Engranaje planetario del Commons con un sol de 27 dientes, visto en ángulo.",
+    "range": "Recorrido renderizado",
+    "caption": "Un cartucho del Commons. Cada valor es una pieza renderizada.",
+    "open": "Ábrelo en Studio"
+  },
   "footer": {
     "copyright": "Yantra4D. Código abierto bajo AGPLv3.",
     "docs": "Docs",

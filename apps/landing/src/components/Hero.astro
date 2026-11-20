@@ -1,6 +1,8 @@
 ---
 import type { Translations } from '../lib/i18n';
 import { STUDIO_URL } from '../lib/env';
+import { fillTemplate } from '../lib/i18n';
+import { COMMONS_STATS } from '../data/projects';
 
 interface Props {
   lang?: string;
@@ -40,22 +42,22 @@ const studioUrl = STUDIO_URL;
     </div>
 
     <h1 class="text-2xl xs:text-3xl phone-landscape:text-2xl sm:text-5xl phone-landscape:sm:text-4xl md:text-7xl lg:text-8xl font-black tracking-tight leading-tight">
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+      <span class="text-foreground">
         {t?.hero?.titleLine1 ?? 'Tus Diseños.'}
       </span>
       <br />
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
+      <span class="text-primary">
         {t?.hero?.titleLine2 ?? 'Sus Dimensiones.'}
       </span>
     </h1>
 
     <p class="mx-auto max-w-2xl text-xl text-muted-foreground leading-relaxed">
-      {t?.hero?.subtitle ?? 'No solo diseñes objetos estáticos. Diseña Hyperobjects: configuradores paramétricos vivos que cualquiera puede adaptar, fabricar y poseer.'}
+      {t?.hero?.subtitle ? fillTemplate(t.hero.subtitle, { cartridges: COMMONS_STATS.cartridges }) : ''}
     </p>
 
     <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
       <a
-        href="#adventure"
+        href="#gallery"
         class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-primary px-8 font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
         <span class="mr-2">{t?.heroNew?.journeyBtn ?? 'Begin Your Journey'}</span>

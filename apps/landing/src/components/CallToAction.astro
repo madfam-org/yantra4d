@@ -1,13 +1,11 @@
 ---
 import type { Translations } from '../lib/i18n';
-import { STUDIO_URL } from '../lib/env';
 
 interface Props {
   t?: Translations;
 }
 
 const { t } = Astro.props;
-const studioUrl = STUDIO_URL;
 ---
 
 <section class="cv-auto py-16 sm:py-24 px-4 sm:px-6">
@@ -24,10 +22,10 @@ const studioUrl = STUDIO_URL;
         {t?.cta.ctaMakers ?? 'Explorar Galería'}
       </a>
       <a
-        href={studioUrl}
+        href="https://github.com/madfam-org/solid-hyperobjects"
         class="rounded-md border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent min-h-[44px] inline-flex items-center justify-center"
       >
-        {t?.cta.ctaCreators ?? 'Sube Tu Diseño'}
+        {t?.cta.ctaCreators ?? 'Contribuye un Diseño'}
       </a>
     </div>
   </div>

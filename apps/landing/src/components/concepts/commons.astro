@@ -74,7 +74,7 @@ const { lang, t } = Astro.props;
           {t.concepts.commons.joinBody}
         </p>
         <div class="flex justify-center gap-4">
-          <a href="/#gallery" class="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all">
+          <a href={lang === 'en' ? '/en/#gallery' : '/#gallery'} class="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all">
             {t.concepts.commons.browseBtn}
           </a>
         </div>

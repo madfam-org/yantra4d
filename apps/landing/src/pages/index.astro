@@ -13,6 +13,8 @@ import CDGSection from '../components/CDGSection.astro';
 import Pricing from '../components/Pricing.astro';
 import CallToAction from '../components/CallToAction.astro';
 import Footer from '../components/Footer.astro';
+import { fillTemplate } from '../lib/i18n';
+import { COMMONS_STATS } from '../data/projects';
 import { getTranslations } from '../lib/i18n';
 
 const lang = Astro.currentLocale || 'es';
@@ -23,6 +25,9 @@ const t = getTranslations(lang);
   <Header lang={lang} t={t} />
   <main class="scroll-smooth">
     <Hero lang={lang} t={t} />
+    <ProjectGallery lang={lang} t={t} />
+    <HyperCommons t={t} />
+    <CDGSection t={t} />
     
     <!-- Choose Your Own Adventure Section -->
     <section id="adventure" class="cv-auto py-12 md:py-24 px-4 md:px-6 md:min-h-screen flex flex-col items-center justify-center relative">
@@ -34,6 +39,20 @@ const t = getTranslations(lang);
        </div>
 
        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-6xl w-full">
+          <!-- Path 3: The Commons -->
+          <a href="/concepts/commons/" class="group relative overflow-hidden rounded-xl border border-border bg-card p-8 hover:border-green-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-green-900/20">
+             <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <div class="relative z-10">
+                <div class="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 group-active:scale-110 transition-transform">🌍</div>
+                <h3 class="text-2xl font-bold mb-3">{t.choosePath.commons.title}</h3>
+                <p class="text-muted-foreground mb-6">
+                   {fillTemplate(t.choosePath.commons.desc, { cartridges: COMMONS_STATS.cartridges })}
+                </p>
+                <div class="text-green-400 font-medium flex items-center">
+                   {t.choosePath.commons.action} <span class="ml-2 transform group-hover:translate-x-1 group-active:translate-x-1 transition-transform">→</span>
+                </div>
+             </div>
+          </a>
           <!-- Path 1: Hyperobjects -->
           <a href="/concepts/hyperobjects/" class="group relative overflow-hidden rounded-xl border border-border bg-card p-8 hover:border-purple-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-900/20">
              <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -64,26 +83,9 @@ const t = getTranslations(lang);
              </div>
           </a>
 
-          <!-- Path 3: The Commons -->
-          <a href="/concepts/commons/" class="group relative overflow-hidden rounded-xl border border-border bg-card p-8 hover:border-green-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-green-900/20">
-             <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-             <div class="relative z-10">
-                <div class="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 group-active:scale-110 transition-transform">🌍</div>
-                <h3 class="text-2xl font-bold mb-3">{t.choosePath.commons.title}</h3>
-                <p class="text-muted-foreground mb-6">
-                   {t.choosePath.commons.desc}
-                </p>
-                <div class="text-green-400 font-medium flex items-center">
-                   {t.choosePath.commons.action} <span class="ml-2 transform group-hover:translate-x-1 group-active:translate-x-1 transition-transform">→</span>
-                </div>
-             </div>
-          </a>
        </div>
     </section>
 
-    <ProjectGallery lang={lang} t={t} />
-    <HyperCommons t={t} />
-    <CDGSection t={t} />
     <BeforeAfter t={t} />
     <ForMakers t={t} />
     <ForCreators t={t} />

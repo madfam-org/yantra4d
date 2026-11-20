@@ -22,7 +22,7 @@ const base = lang === 'en' ? '/en' : '';
       <a href={`${base}/concepts/hyperobjects/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.concepts?.hyperobjects?.title ?? 'Hyperobjects'}</a>
       <a href={`${base}/concepts/common-denominator/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.cdg ?? 'CDG'}</a>
       <a href={`${base}/concepts/commons/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.commons ?? 'Commons'}</a>
-      <a href="#gallery" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.gallery ?? 'Galería'}</a>
+      <a href={lang === 'en' ? '/en/#gallery' : '/#gallery'} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.gallery ?? 'Galería'}</a>
       <a href={switchLang.href} class="min-h-[44px] flex items-center hover:text-foreground transition-colors font-medium">{switchLang.label}</a>
     </nav>
     <div class="flex items-center gap-2">
@@ -67,7 +67,7 @@ const base = lang === 'en' ? '/en' : '';
       <a href={`${base}/concepts/hyperobjects/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.concepts?.hyperobjects?.title ?? 'Hyperobjects'}</a>
       <a href={`${base}/concepts/common-denominator/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.cdg ?? 'CDG'}</a>
       <a href={`${base}/concepts/commons/`} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav?.commons ?? 'Commons'}</a>
-      <a href="#gallery" class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.gallery ?? 'Galería'}</a>
+      <a href={lang === 'en' ? '/en/#gallery' : '/#gallery'} class="min-h-[44px] flex items-center hover:text-foreground transition-colors">{t?.nav.gallery ?? 'Galería'}</a>
       <a href={switchLang.href} class="min-h-[44px] flex items-center hover:text-foreground transition-colors font-medium">{switchLang.label}</a>
     <a
       href={studioUrl}

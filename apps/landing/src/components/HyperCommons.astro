@@ -32,16 +32,29 @@ const softCards = [
 
     <!-- ── Hero intro ── -->
     <div class="text-center mb-20 hc-fade-in">
-      <!-- 12px eyebrow: small text. --primary is 3.73:1 on bg-primary/5. -->
-      <span class="inline-block rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-medium tracking-wider text-primary-readable uppercase mb-6">
-        Open Commons
-      </span>
       <h2 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
-        {h?.heading ?? 'Los Comunes Paramétricos'}
+        {h?.heading ?? 'El Procomún de Hiperobjetos'}
       </h2>
       <p class="mx-auto max-w-3xl text-lg text-muted-foreground leading-relaxed">
         {h?.subtitle ?? 'Un solo archivo .scad no define un objeto — define todos los objetos posibles dentro de su espacio de parámetros. Los llamamos Hiperobjetos 4D Acotados, y están construyendo un nuevo tipo de infraestructura abierta.'}
       </p>
+    </div>
+
+    <!-- ── What the 4D means: a family projected to the one instance you print ── -->
+    <div class="mb-24 hc-fade-in" id="what-4d-means">
+      <div class="mx-auto max-w-3xl text-center">
+        <h3 class="text-2xl font-bold tracking-tight sm:text-3xl mb-4">{h?.fourDHeading ?? 'Qué significa el 4D'}</h3>
+        <p class="text-lg text-muted-foreground leading-relaxed">{h?.fourDBody ?? ''}</p>
+      </div>
+      <ol class="mx-auto mt-10 grid max-w-3xl gap-3 sm:grid-cols-3" aria-label={h?.fourDHeading ?? 'Qué significa el 4D'}>
+        {(h?.fourDSteps ?? []).map((step: string, i: number) => (
+          <li class="flex items-center gap-3 rounded-lg border border-border bg-card/60 px-4 py-3">
+            <span class="font-mono text-sm tabular-nums text-primary-readable" aria-hidden="true">{i + 1}</span>
+            <span class="text-sm font-medium text-foreground">{step}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="mx-auto mt-6 max-w-2xl text-center text-sm text-muted-foreground leading-relaxed">{h?.fourDSweeps ?? ''}</p>
     </div>
 
     <!-- ── What is a Hyperobject? ── -->

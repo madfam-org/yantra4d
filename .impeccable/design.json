@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T00:00:00-06:00",
+  "title": "Design System: Yantra4D",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "hsl(240 10% 3.9%)",
+        "tonalRamp": [
+          "hsl(240 10% 4%)",
+          "hsl(240 6% 10%)",
+          "hsl(240 4% 16%)",
+          "hsl(240 4% 26%)",
+          "hsl(240 4% 40%)",
+          "hsl(240 5% 65%)",
+          "hsl(240 6% 87%)",
+          "hsl(240 5% 96%)"
+        ]
+      },
+      "graphite-action": {
+        "role": "primary",
+        "displayName": "Graphite Action",
+        "canonical": "hsl(240 5.9% 10%)"
+      },
+      "signal-blue": {
+        "role": "primary",
+        "displayName": "Signal Blue",
+        "canonical": "hsl(221 83% 53%)",
+        "tonalRamp": [
+          "hsl(221 83% 18%)",
+          "hsl(221 83% 28%)",
+          "hsl(221 83% 36%)",
+          "hsl(221 83% 42%)",
+          "hsl(221 83% 53%)",
+          "hsl(221 83% 68%)",
+          "hsl(221 83% 82%)",
+          "hsl(221 83% 94%)"
+        ]
+      },
+      "zinc-wash": {
+        "role": "neutral",
+        "displayName": "Zinc Wash",
+        "canonical": "hsl(240 4.8% 95.9%)"
+      },
+      "zinc-quiet-text": {
+        "role": "neutral",
+        "displayName": "Zinc Quiet Text",
+        "canonical": "hsl(240 3.8% 40%)"
+      },
+      "alarm-red": {
+        "role": "tertiary",
+        "displayName": "Alarm Red",
+        "canonical": "hsl(0 84.2% 60.2%)"
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel and dialog titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions, dialog copy, list rows."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Control labels, tabs, in-panel buttons; the workhorse size."
+      },
+      "value": {
+        "displayName": "Value",
+        "purpose": "Parameter values, units, coordinates: numbers the visitor acts on."
+      }
+    },
+    "shadows": [
+      {
+        "name": "dock-lift",
+        "value": "0 -4px 24px rgba(0,0,0,0.05)",
+        "purpose": "The sticky action dock over the scrolling sidebar (0.2 alpha in dark)."
+      },
+      {
+        "name": "raised-sm",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Raised buttons, the active tab trigger, cards."
+      }
+    ],
+    "motion": [
+      {
+        "name": "accordion",
+        "value": "0.2s ease-out",
+        "purpose": "Accordion open and close."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "Every animation and transition under prefers-reduced-motion (packages/tokens/colors.css)."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "xs",
+        "value": "360px"
+      },
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "phone-landscape",
+        "value": "(orientation: landscape) and (max-width: 1023px)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action in panels and dialogs; Signal Blue in dark mode.",
+      "html": "<button class=\"ds-btn-primary\">Generate</button>",
+      "css": ".ds-btn-primary { background: hsl(240 5.9% 10%); color: hsl(0 0% 98%); height: 40px; padding: 8px 16px; border: 0; border-radius: 6px; font: 500 14px/1 system-ui, sans-serif; transition: background-color .15s; } .ds-btn-primary:hover { background: hsl(240 5.9% 10% / .9); } .ds-btn-primary:focus-visible { outline: 2px solid hsl(240 10% 3.9%); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary actions: Compare, Reset, Verify.",
+      "html": "<button class=\"ds-btn-outline\">Compare</button>",
+      "css": ".ds-btn-outline { background: hsl(0 0% 100%); color: hsl(240 10% 3.9%); height: 40px; padding: 8px 16px; border: 1px solid hsl(240 5.9% 90%); border-radius: 6px; font: 500 14px/1 system-ui, sans-serif; transition: background-color .15s; } .ds-btn-outline:hover { background: hsl(240 4.8% 95.9%); } .ds-btn-outline:focus-visible { outline: 2px solid hsl(240 10% 3.9%); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Text and numeric entry; 16px on phones.",
+      "html": "<input class=\"ds-input\" value=\"42\" aria-label=\"Pipe diameter\">",
+      "css": ".ds-input { background: hsl(0 0% 100%); color: hsl(240 10% 3.9%); height: 40px; padding: 8px 12px; border: 1px solid hsl(240 5.9% 90%); border-radius: 6px; font: 400 14px/1.4 ui-monospace, Menlo, monospace; } .ds-input:focus-visible { outline: 2px solid hsl(240 10% 3.9%); outline-offset: 2px; }"
+    },
+    {
+      "name": "Tabs",
+      "kind": "nav",
+      "refersTo": "tab-trigger",
+      "description": "Sidebar section tabs on a Zinc Wash rail.",
+      "html": "<div class=\"ds-tabs\"><button class=\"ds-tab ds-tab-active\">Parameters</button><button class=\"ds-tab\">Export</button></div>",
+      "css": ".ds-tabs { display: inline-flex; gap: 4px; padding: 4px; background: hsl(240 4.8% 95.9%); border-radius: 6px; } .ds-tab { border: 0; background: transparent; color: hsl(240 3.8% 40%); padding: 6px 12px; border-radius: 4px; font: 500 12px/1 system-ui, sans-serif; } .ds-tab-active { background: hsl(0 0% 100%); color: hsl(240 10% 3.9%); box-shadow: 0 1px 2px rgb(0 0 0 / .05); } .ds-tab:focus-visible { outline: 2px solid hsl(240 10% 3.9%); outline-offset: 2px; }"
+    },
+    {
+      "name": "Parameter Slider",
+      "kind": "custom",
+      "refersTo": "slider",
+      "description": "The signature control: label and mono value with unit, track below.",
+      "html": "<div class=\"ds-param\"><div class=\"ds-param-head\"><span>Pipe diameter</span><span class=\"ds-param-val\">42.0 mm</span></div><input class=\"ds-param-range\" type=\"range\" min=\"10\" max=\"120\" value=\"42\" aria-label=\"Pipe diameter\"></div>",
+      "css": ".ds-param { display: grid; gap: 6px; width: 260px; font: 500 12px/1.33 system-ui, sans-serif; color: hsl(240 10% 3.9%); } .ds-param-head { display: flex; justify-content: space-between; } .ds-param-val { font: 400 12px/1.33 ui-monospace, Menlo, monospace; color: hsl(240 3.8% 40%); } .ds-param-range { width: 100%; accent-color: hsl(240 5.9% 10%); } .ds-param-range:focus-visible { outline: 2px solid hsl(240 10% 3.9%); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Neutral Workbench (provisional)",
+    "overview": "The Studio is a workbench: a dense instrument panel beside a large 3D viewport, in which the object being configured is the only thing with colour and depth. The chrome is a stock shadcn/ui kit on a zinc neutral scale, a system font, and one accent that changes with the theme. The world is coherent but not authored; the pre-P2 world workshop exists to close that gap.",
+    "keyCharacteristics": [
+      "One shared token file for the Studio and the landing.",
+      "Light, dark and system themes.",
+      "System UI font for chrome; monospace for numeric values.",
+      "Tonal layering and translucent blurred panels; shadows are rare.",
+      "44 px targets on primary controls; safe-area utilities."
+    ],
+    "rules": [
+      {
+        "name": "The Readable Accent Rule",
+        "body": "Accent-coloured text below 24 px uses primary-readable, never primary.",
+        "section": "colors"
+      },
+      {
+        "name": "The Token-Only Rule",
+        "body": "New UI colours come from the token file; hard-coded palette utilities and raw hex in chrome are recorded drift, not precedent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Error Text Rule",
+        "body": "Error and constraint text must clear 4.5:1; --destructive is a fill, not a text colour, until a readable error token exists.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measurement Rule",
+        "body": "A number the visitor can act on is set in the mono face, with its unit.",
+        "section": "typography"
+      },
+      {
+        "name": "The 16 px Field Rule",
+        "body": "On viewports under 768 px, fields are 16 px so mobile browsers do not zoom on focus.",
+        "section": "typography"
+      },
+      {
+        "name": "The Object Has The Depth Rule",
+        "body": "Chrome stays flat and translucent so the configured object is the deepest thing on screen.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do take every colour from packages/tokens/colors.css through hsl(var(--token)).",
+      "Do use primary-readable for accent text under 24 px.",
+      "Do set acted-on numbers in the mono face with their unit.",
+      "Do keep 44 px targets on primary controls and the 16 px field size on phones.",
+      "Do honour prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't add new hard-coded Tailwind palette colours or raw hex in chrome; add a token.",
+      "Don't give chrome real shadows or depth that competes with the 3D object.",
+      "Don't introduce a new font, radius or accent before the pre-P2 world workshop decides the Studio's world."
+    ]
+  }
+}

@@ -2,17 +2,17 @@
   "_comment": "sha256 of every file of the hyperobject graph core (RFC 0067). Canonical in madfam-org/hyperobjects-spec; kernels vendor the directory and pin these hashes. See docs/GRAPH_CORE.md.",
   "canonical_repo": "madfam-org/hyperobjects-spec",
   "canonical_path": "src/hyperobject_graph",
-  "core_version": "1.0.0",
+  "core_version": "1.0.1",
   "format_version": "1.2",
   "hashes": {
-    "__init__.py": "8da1423e08c71c6f3c120f0e52ef52caa0994553c8fbd3084654e394cf149e81",
-    "declarations.py": "ba3db4955dae5684f27a1ffd164f9311fe8645dc4f6ba10e6c6c396924ed22c1",
+    "__init__.py": "7659bbaac73b229bf28c444f74e4001121b7a5128fc441426f9521df03544a30",
+    "declarations.py": "3e69466e5a66ea2a9c26d415d10b7340b2527d405b17e5d3599daa2352d7503e",
     "errors.py": "ac2ae1c18554bc9b63327aca0db22d115083aead37e921546bc54fd63639d176",
     "expression.py": "57efedb3326b786285ef77f743d9fc7aa944f4915f83c70c0a445740eb4c9089",
     "graph-core.schema.json": "6ddb7683c5cbfadebbc746893b235bc31f17ff0cce02ebaef4fa0073361762e8",
     "pack.py": "4454fe8fdbd828c231f88c105dbb587fb043b4b4aabc8db54b2f84265010d45a",
     "provenance.py": "1a43c0b24870cf83baa26bc028bf9c4a9999009bad53a25a10244bd41114062d",
     "script_node.py": "52efd9738b0a4b3c6bd624ecfb95b28355ba1a4ad65f6ae93ec0fb8df541cafb",
-    "validate.py": "28369e98787cba85dc2f0a78808852d8d5867924ebaeb66e4e3474f304d139b6"
+    "validate.py": "826ce275eaa9667ace93eb8ede562764beb5afcfc42474bb32b7700ff9d57c10"
   }
 }

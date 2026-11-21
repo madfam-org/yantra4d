@@ -43,7 +43,7 @@ python3 scripts/qa/check_graph_core_vendor.py
 `core.lock.json` comes with the copy; there is no `--update` here, because the lock is
 the keystone's statement of what it published, and the guard pins that lock's own digest
 so a copy and its lock cannot be edited together. Moving `SPEC_PIN` is its own step.
-`SPEC_PIN` carries the core since `5516b052`, so the `--spec` direction is live; on a
+`SPEC_PIN` carries the core since `5516b052` (core 1.0.1 since `85ac9f54`), so the `--spec` direction is live; on a
 pin that predated the core it would stand down in one line, and the pinned lock digest
 would hold the copy alone.
 

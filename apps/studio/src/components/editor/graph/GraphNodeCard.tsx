@@ -12,6 +12,11 @@ export interface GraphNodeData extends Record<string, unknown> {
   issues: GraphIssue[]
   parts: string[]
   boundParams: string[]
+  /**
+   * Read-only view: this node is driven by the parameter the visitor is
+   * hovering or changing. The editor never sets it.
+   */
+  highlighted?: boolean
 }
 
 export type GraphFlowNode = Node<GraphNodeData, 'graphNode'>
@@ -24,7 +29,7 @@ export type GraphFlowNode = Node<GraphNodeData, 'graphNode'>
  */
 function GraphNodeCard({ data, selected }: NodeProps<GraphFlowNode>) {
   const { t } = useLanguage()
-  const { node, spec, issues, parts, boundParams } = data
+  const { node, spec, issues, parts, boundParams, highlighted = false } = data
   const output = spec?.output ?? 'solid'
   const isProfile = output !== 'solid'
   const sockets = Object.entries(spec?.inputs ?? {})
@@ -35,11 +40,13 @@ function GraphNodeCard({ data, selected }: NodeProps<GraphFlowNode>) {
     <div
       data-testid={`graph-node-${node.id}`}
       data-has-issue={hasIssue ? 'true' : 'false'}
+      data-highlighted={highlighted ? 'true' : 'false'}
       className={[
         'rounded-md border-[1.5px] px-2.5 py-1.5 text-[11px] leading-tight min-w-[150px] bg-card',
         isProfile ? 'border-dashed border-[#6d5ae6] bg-[rgba(109,90,230,0.08)]' : 'border-solid border-[#0e7c66] bg-[rgba(14,124,102,0.08)]',
         hasIssue ? 'ring-2 ring-destructive/70' : '',
         selected ? 'outline outline-2 outline-primary' : '',
+        highlighted ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : '',
       ].join(' ')}
     >
       <div className="flex items-baseline justify-between gap-2">

@@ -62,6 +62,17 @@ vi.mock('../../hooks/system/useUnitSystem', () => ({
   useUnitSystem: () => ({ unit: 'mm', format: (v) => `${v}mm`, formatVolume: (v, p = 0) => `${v.toFixed(p)} mm³`, label: 'mm', toggle: vi.fn() }),
 }))
 
+vi.mock('./GraphViewFrame', () => ({
+  default: function MockGraphViewFrame({ children, available, slug, mode, isDesktop, hoveredParamId, labelOf }) {
+    return (
+      <div data-testid="graph-view-frame" data-available={String(available)} data-slug={slug} data-mode={mode} data-desktop={String(isDesktop)}
+        data-hovered={hoveredParamId ?? ''} data-label={labelOf('plate_radius')}>
+        {children}
+      </div>
+    )
+  },
+}))
+
 vi.mock('../feedback/WelcomeOverlay', () => ({
   default: function MockWelcomeOverlay() {
     return <div data-testid="welcome-overlay" />
@@ -568,5 +579,66 @@ describe('prerendered default preview', () => {
     render(<StudioMainView />)
     expect(viewerUrl()).toBe('')
     expect(screen.queryByTestId('prerendered-preview-badge')).not.toBeInTheDocument()
+  })
+})
+
+describe('StudioMainView: the Inside graph view', () => {
+  const graphManifest = {
+    modes: [
+      { id: 'flange', scad_file: 'flange.graph.json' },
+      { id: 'drive', scad_file: 'main.py', graph_file: 'drive.graph.json' },
+      { id: 'plain', scad_file: 'main.scad' },
+    ],
+    parameters: [{ id: 'plate_radius', label: { en: 'Plate radius' } }],
+  }
+  const withGraph = (extra) => ({
+    ...baseContext,
+    manifest: graphManifest,
+    projectSlug: 'flange-plate',
+    getLabel: (obj, key) => obj[key].en,
+    ...extra,
+  })
+
+  it('wraps the viewer for a graph-engine mode', () => {
+    useProject.mockReturnValue(withGraph({ mode: 'flange', hoveredParam: { paramId: 'plate_radius' } }))
+    render(<StudioMainView />)
+    const frame = screen.getByTestId('graph-view-frame')
+    expect(frame.dataset.available).toBe('true')
+    expect(frame.dataset.slug).toBe('flange-plate')
+    expect(frame.dataset.mode).toBe('flange')
+    expect(frame.dataset.desktop).toBe('true')
+    expect(frame.dataset.hovered).toBe('plate_radius')
+    expect(frame.dataset.label).toBe('Plate radius')
+    expect(frame).toContainElement(screen.getByTestId('viewer'))
+  })
+
+  it('wraps the viewer for a mode with a graph twin', () => {
+    useProject.mockReturnValue(withGraph({ mode: 'drive' }))
+    render(<StudioMainView />)
+    expect(screen.getByTestId('graph-view-frame').dataset.mode).toBe('drive')
+    expect(screen.getByTestId('graph-view-frame').dataset.available).toBe('true')
+  })
+
+  it('offers no graph for a script-only mode', () => {
+    useProject.mockReturnValue(withGraph({ mode: 'plain' }))
+    render(<StudioMainView />)
+    expect(screen.getByTestId('graph-view-frame').dataset.available).toBe('false')
+    expect(screen.getByTestId('viewer')).toBeInTheDocument()
+  })
+
+  it('keeps the same viewer when switching between a script mode and a graph mode', () => {
+    useProject.mockReturnValue(withGraph({ mode: 'plain' }))
+    const { rerender } = render(<StudioMainView />)
+    const viewer = screen.getByTestId('viewer')
+    useProject.mockReturnValue(withGraph({ mode: 'flange' }))
+    rerender(<StudioMainView />)
+    expect(screen.getByTestId('viewer')).toBe(viewer)
+  })
+
+  it('is offered on a phone too', () => {
+    setViewport('mobile')
+    useProject.mockReturnValue(withGraph({ mode: 'flange' }))
+    render(<StudioMainView />)
+    expect(screen.getByTestId('graph-view-frame').dataset.desktop).toBe('false')
   })
 })

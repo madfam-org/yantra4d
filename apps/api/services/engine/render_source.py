@@ -237,3 +237,58 @@ def user_source_revision(manifest) -> str | None:
         digest.update(entry.encode())
         digest.update(b"\n")
     return digest.hexdigest()[:16]
+
+
+#: ``GraphDocument.role``: the graph is what this mode renders …
+GRAPH_ROLE_SOURCE = "source"
+#: … or a published twin of the mode's script, which stays the render source.
+GRAPH_ROLE_TWIN = "twin"
+
+
+@dataclass(frozen=True)
+class GraphDocument:
+    """The one graph document a mode declares, for the public read-only view."""
+
+    filename: str
+    path: Path
+    #: GRAPH_ROLE_SOURCE or GRAPH_ROLE_TWIN.
+    role: str
+    #: The mode's script (``scad_file``) when the graph is a twin, else None.
+    script: str | None
+
+
+def graph_document_for_mode(manifest, mode_id: str) -> GraphDocument | None:
+    """The graph document ``mode_id`` declares, or None when it declares none.
+
+    Only a file the manifest names for that mode qualifies: ``scad_file`` when it
+    is itself a ``.graph.json`` (a graph-engine mode), otherwise the mode's
+    ``graph_file`` twin. The role follows :func:`render_source_for_mode`: a
+    twin is the render source in a user cartridge and a published companion of
+    the script in a curated one. Raises RenderSourceError when the declared name
+    is not a plain path inside the cartridge or the file is missing.
+    """
+    mode = _mode(manifest, mode_id)
+    if mode is None:
+        return None
+    project_dir = getattr(manifest, "project_dir", None)
+    if project_dir is None:
+        return None
+    project_dir = Path(project_dir)
+
+    primary = mode.get("scad_file")
+    if isinstance(primary, str) and primary.endswith(GRAPH_SUFFIX):
+        return GraphDocument(
+            filename=primary, path=_graph_path(project_dir, primary),
+            role=GRAPH_ROLE_SOURCE, script=None,
+        )
+
+    twin = mode.get("graph_file")
+    if twin is None:
+        return None
+    path = _graph_path(project_dir, twin)
+    if is_user_cartridge(project_dir):
+        return GraphDocument(filename=twin, path=path, role=GRAPH_ROLE_SOURCE, script=None)
+    return GraphDocument(
+        filename=twin, path=path, role=GRAPH_ROLE_TWIN,
+        script=primary if isinstance(primary, str) else None,
+    )

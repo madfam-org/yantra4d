@@ -43,9 +43,9 @@ python3 scripts/qa/check_graph_core_vendor.py
 `core.lock.json` comes with the copy; there is no `--update` here, because the lock is
 the keystone's statement of what it published, and the guard pins that lock's own digest
 so a copy and its lock cannot be edited together. Moving `SPEC_PIN` is its own step.
-Until `SPEC_PIN` reaches a keystone that carries the core (`5516b052` or later), the
-`--spec` direction stands down in one line; the pinned lock digest is what holds the
-copy in the meantime.
+`SPEC_PIN` carries the core since `5516b052`, so the `--spec` direction is live; on a
+pin that predated the core it would stand down in one line, and the pinned lock digest
+would hold the copy alone.
 
 Once a shared MADFAM Python registry exists, replace this copy with a plain dependency on
 the keystone and delete the guard, as `packages/commons-sandbox/VENDORED.md` says for the

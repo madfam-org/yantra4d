@@ -9,6 +9,7 @@ import math
 import os
 import time
 import uuid
+from dataclasses import dataclass
 
 import redis
 
@@ -188,7 +189,8 @@ def _request_origin() -> str:
         from flask import has_request_context, request
         if not has_request_context():
             return "no-request-context"
-        return f"{request.method} {request.path} from {request.remote_addr}"
+        from utils.client_ip import client_ip
+        return f"{request.method} {request.path} from {client_ip()}"
     except Exception:
         return "unknown"
 
@@ -705,7 +707,48 @@ def _sanitize_terminal_payload(payload: dict | None) -> dict:
     return clean
 
 
-def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str, tier: str):
+@dataclass
+class RenderStatus:
+    """What happened to a render, recorded by the render loop itself.
+
+    Settling a metered render (commons_render_quota) reads this, never the
+    log text: the log carries worker output, and the worker echoes the
+    visitor's own parameters (a nameplate whose text is "ERROR"), so any
+    substring test on it is under the visitor's control.
+    """
+
+    completed_parts: int = 0   # parts delivered (rendered, cached or static)
+    errored_parts: int = 0     # the worker reported an error for the part
+    timed_out: bool = False    # we stopped waiting for a part
+    cancelled: bool = False    # the request or a part was cancelled
+    worker_lost: bool = False  # no live render worker to hand the part to
+    finished: bool = False     # the loop ran to its end
+
+
+def _tick(on_tick) -> None:
+    """Call the caller's per-iteration hook; it must never break a render."""
+    if on_tick is None:
+        return
+    try:
+        on_tick()
+    except Exception:
+        logger.debug("render on_tick hook failed", exc_info=True)
+
+
+def _part_deadline(per_part_seconds: float, deadline: float | None) -> float:
+    limit = time.time() + per_part_seconds
+    return limit if deadline is None else min(limit, deadline)
+
+
+def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str, tier: str,
+                      *, status: RenderStatus | None = None, on_tick=None, deadline: float | None = None):
+    """Render every part, one worker job at a time, and wait for each.
+
+    ``status`` (filled in place), ``on_tick`` (called on every wait iteration)
+    and ``deadline`` (an absolute time no part wait may pass) are for metered
+    renders; other callers leave them out and see no change.
+    """
+    status = status if status is not None else RenderStatus()
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix']
     export_format = payload['export_format']
@@ -727,12 +770,14 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
         # exactly what the field is for on this path.
         if is_request_cancelled(request_id):
             combined_log += f"[{part}] INFO: Render cancelled by user request\n"
+            status.cancelled = True
             break
 
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
             generated_parts.append(static_result[0])
             combined_log += static_result[1]
+            status.completed_parts += 1
             continue
             
         output_filename = f"{stl_prefix}{part}.{actual_format}"
@@ -745,9 +790,11 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
             combined_log += f"[{part}] cache HIT\n"
             generated_parts.append({"type": part, "url": f"/static/{cache_entry_key(cached)}", "size_bytes": cached["size_bytes"],
                                     **generator_output.part_fields_from_cache(cached)})
+            status.completed_parts += 1
             continue
 
         if not is_render_worker_available():
+            status.worker_lost = True
             return None, "Render worker unavailable or not healthy", (cache_hits, cache_total)
 
         job_id = str(uuid.uuid4())
@@ -767,12 +814,14 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
         }
         r.rpush(RENDER_QUEUE, json.dumps(task))
 
-        part_deadline = time.time() + RENDER_PART_WAIT_TIMEOUT_SECONDS
+        part_deadline = _part_deadline(RENDER_PART_WAIT_TIMEOUT_SECONDS, deadline)
         part_complete = False
         while not part_complete:
+            _tick(on_tick)
             if time.time() > part_deadline:
                 combined_log += f"[{part}] ERROR: Render timed out while waiting for completion\n"
                 _notify_error(job_id, part, "Render job timed out")
+                status.timed_out = True
                 if _is_metered(payload):
                     # Nobody waits for it any more: stop the worker too.
                     cancel_render_jobs([job_id])
@@ -795,10 +844,13 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
                     part_entry = _sanitize_terminal_payload(event_payload)
                     combined_log += part_entry.pop("log", "")
                     generated_parts.append(part_entry)
+                    status.completed_parts += 1
                 elif event_type == RENDER_EVENT_ERROR:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] ERROR: {event_payload.get('error', event_payload.get('message'))}\n"
+                    status.errored_parts += 1
                 elif event_type == RENDER_EVENT_CANCELLED:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_payload.get('message')}\n"
+                    status.cancelled = True
                 else:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_type}\n"
                 part_complete = True
@@ -812,10 +864,13 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
                     part_entry = _sanitize_terminal_payload(event_payload)
                     combined_log += part_entry.pop("log", "")
                     generated_parts.append(part_entry)
+                    status.completed_parts += 1
                 elif event_type == RENDER_EVENT_ERROR:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] ERROR: {event_payload.get('error', event_payload.get('message'))}\n"
+                    status.errored_parts += 1
                 else:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_payload.get('message')}\n"
+                    status.cancelled = True
                 part_complete = True
 
         part_sub.close()
@@ -823,10 +878,15 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
             # A metered render stops at its first timeout rather than queueing
             # more free work behind a part that never finished.
             break
+    else:
+        status.finished = True
 
     return generated_parts, combined_log, (cache_hits, cache_total)
 
-def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str):
+def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str,
+                        *, status: RenderStatus | None = None, on_tick=None, deadline: float | None = None):
+    """Stream a render as SSE. ``status``/``on_tick``/``deadline``: see render_parts_sync."""
+    status = status if status is not None else RenderStatus()
     parts_to_render = payload["parts"]
     stl_prefix = payload["stl_prefix"]
     export_format = payload["export_format"]
@@ -857,6 +917,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
         # Parts are queued one at a time, so this is the only place a cancel can
         # stop the parts that have not been queued yet.
         if is_request_cancelled(request_id):
+            status.cancelled = True
             yield _sse_event(build_render_event(
                 RENDER_EVENT_CANCELLED,
                 part=part,
@@ -868,6 +929,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
             generated_parts.append(static_result[0])
+            status.completed_parts += 1
             progress = ((i + 1) / num_parts) * 100
             yield _sse_event(build_render_event(
                     RENDER_EVENT_PART_DONE,
@@ -891,6 +953,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 **generator_output.part_fields_from_cache(cached),
             }
             generated_parts.append(part_entry)
+            status.completed_parts += 1
             progress = ((i + 1) / num_parts) * 100
             yield _sse_event(build_render_event(
                     RENDER_EVENT_PART_DONE,
@@ -905,6 +968,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             continue
 
         if not is_render_worker_available():
+            status.worker_lost = True
             unavailable_error = build_render_event(
                 RENDER_EVENT_ERROR,
                 part=part,
@@ -958,9 +1022,10 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
         ))
 
         done = False
-        part_deadline = time.time() + RENDER_STREAM_PART_TIMEOUT_SECONDS
+        part_deadline = _part_deadline(RENDER_STREAM_PART_TIMEOUT_SECONDS, deadline)
 
         while not done:
+            _tick(on_tick)
             if time.time() > part_deadline:
                 timeout_event = build_render_event(
                     RENDER_EVENT_ERROR,
@@ -970,6 +1035,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 )
                 yield f"data: {json.dumps(timeout_event)}\n\n"
                 _notify_error(job_id, part, "Render stream timed out waiting for completion")
+                status.timed_out = True
                 if _is_metered(payload):
                     cancel_render_jobs([job_id])
                     stream_timed_out = True
@@ -989,6 +1055,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 yield f"data: {json.dumps(event_data)}\n\n"
                 if event_data.get("event") == RENDER_EVENT_PART_DONE and event_data.get("type"):
                     generated_parts.append(_sanitize_terminal_payload(event_data))
+                    status.completed_parts += 1
                     done = True
                 continue
 
@@ -998,8 +1065,10 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             event_type = event_data.get("event")
             if event_type == RENDER_EVENT_PART_DONE:
                 generated_parts.append(_sanitize_terminal_payload(event_data))
+                status.completed_parts += 1
                 done = True
             elif event_type == RENDER_EVENT_ERROR:
+                status.errored_parts += 1
                 logger.error(
                     "Render stream error for part %s: %s",
                     event_data.get("part"),
@@ -1008,6 +1077,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 yield f"data: {json.dumps(event_data)}\n\n"
                 done = True
             elif event_type == RENDER_EVENT_CANCELLED:
+                status.cancelled = True
                 logger.info(
                     "Render stream cancelled for part %s (reason=%s)",
                     event_data.get("part"),
@@ -1021,11 +1091,14 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 done = True
             else:
                 generated_parts.append(event_data)
+                status.completed_parts += 1
                 done = True
 
         pubsub.close()
         if stream_timed_out:
             break
+    else:
+        status.finished = True
 
     yield _sse_event(build_render_event(
             RENDER_EVENT_COMPLETE,

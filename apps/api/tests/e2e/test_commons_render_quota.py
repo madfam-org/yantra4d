@@ -28,7 +28,9 @@ def _manifest(slug: str, *, parts=("body",), engine="cadquery") -> dict:
         }],
         "parts": [{"id": p, "render_mode": 0, "label": {"en": p}, "default_color": "#ffffff"} for p in parts],
         "parameters": [{"id": "size", "type": "slider", "default": 10, "min": 1, "max": 100,
-                        "label": {"en": "Size"}}],
+                        "label": {"en": "Size"}},
+                       {"id": "text", "type": "text", "default": "HELLO", "maxlength": 20,
+                        "label": {"en": "Text"}}],
         "estimate_constants": {"base_time": 1, "per_unit": 1, "per_part": 1},
     }
 
@@ -105,6 +107,12 @@ class FakeRedis:
     def publish(self, channel, message):
         self.published.append((channel, message))
 
+    def pubsub(self, **_kwargs):
+        return FakePubSub(self)
+
+    #: Set by a test: final channel -> events the worker publishes on it.
+    worker_reply = staticmethod(lambda _channel: [])
+
     def eval(self, script, _numkeys, key, *args):
         if script == quota.CHARGE_SCRIPT:
             cost, limit, window = (int(a) for a in args)
@@ -149,17 +157,57 @@ def fake_redis(monkeypatch):
     return fake
 
 
+def _worker_log(payload) -> str:
+    """What the CadQuery runner prints: it echoes the visitor's parameters."""
+    return "".join(
+        f"[{p}] Loading parameters: {json.dumps(payload['params'])}\n[{p}] Exported {p}.stl\n"
+        for p in payload["parts"]
+    )
+
+
+class FakePubSub:
+    """The worker's side of one part: answers a subscription with ``reply(part)``."""
+
+    def __init__(self, fake):
+        self.fake = fake
+        self.pending: list = []
+
+    def subscribe(self, channel):
+        from services.engine.render_contract import RENDER_FINAL_CHANNEL_SUFFIX
+        if channel.endswith(f":{RENDER_FINAL_CHANNEL_SUFFIX}"):
+            for event in self.fake.worker_reply(channel):
+                self.pending.append({"channel": channel, "data": json.dumps(event)})
+
+    def get_message(self, timeout=0):
+        return self.pending.pop(0) if self.pending else None
+
+    def close(self):
+        pass
+
+
 @pytest.fixture
 def renders(monkeypatch):
     """Stand in for the worker round trip; record every render that ran."""
     calls = []
 
-    def fake_sync(_data, payload, engine, *_args):
+    def fake_sync(_data, payload, engine, *_args, status=None, on_tick=None, deadline=None):
         calls.append(engine)
-        return [{"type": p, "url": f"/static/{p}.stl"} for p in payload["parts"]], "ok", (0, len(payload["parts"]))
+        if on_tick:
+            on_tick()
+        if status is not None:
+            status.completed_parts = len(payload["parts"])
+            status.finished = True
+        return ([{"type": p, "url": f"/static/{p}.stl"} for p in payload["parts"]],
+                _worker_log(payload), (0, len(payload["parts"])))
 
-    def fake_stream(_data, payload, engine, *_args):
+    def fake_stream(_data, payload, engine, *_args, status=None, on_tick=None, deadline=None):
         calls.append(engine)
+        if on_tick:
+            on_tick()
+        if status is not None:
+            status.completed_parts = len(payload["parts"])
+            status.finished = True
+        yield f"data: {json.dumps({'event': 'output', 'line': _worker_log(payload)})}\n\n"
         yield f"data: {json.dumps({'event': 'complete', 'parts': payload['parts']})}\n\n"
 
     monkeypatch.setattr("routes.engine.render.render_parts_sync", fake_sync)
@@ -220,8 +268,10 @@ def _slots(fake):
     return {k: v for k, v in fake.values.items() if k.startswith(quota.SLOT_KEY_PREFIX)}
 
 
-def _render(client, size, *, project="cq-commons", ip="198.51.100.7", fmt="stl", stream=False, **extra):
-    body = {"project": project, "mode": "body", "parameters": {"size": size}, "export_format": fmt, **extra}
+def _render(client, size, *, project="cq-commons", ip="198.51.100.7", fmt="stl", stream=False,
+            text=None, **extra):
+    parameters = {"size": size} if text is None else {"size": size, "text": text}
+    body = {"project": project, "mode": "body", "parameters": parameters, "export_format": fmt, **extra}
     path = "/api/render-stream" if stream else "/api/render"
     return client.post(path, json=body, headers={"CF-Connecting-IP": ip})
 
@@ -446,11 +496,6 @@ class TestBurstBounds:
         # ...and the failure was refunded.
         assert fake_redis.get(f"{quota.QUOTA_KEY_PREFIX}ip:198.51.100.7") is None
 
-    def test_lease_outlives_every_part(self, app):
-        from services.engine.render_orchestrator import RENDER_STREAM_PART_TIMEOUT_SECONDS
-        lease = quota._slot_lease_seconds({"parts": ["a", "b"]})
-        assert lease >= 2 * RENDER_STREAM_PART_TIMEOUT_SECONDS
-
     def test_hourly_ceiling_across_all_free_visitors(self, client, monkeypatch):
         monkeypatch.setenv(quota.GLOBAL_PARTS_ENV, "2")
         assert _render(client, 11, ip="203.0.113.1").status_code == 200
@@ -469,10 +514,53 @@ class TestBurstBounds:
         assert res.get_json()["error_code"] == quota.BUSY_CODE
 
 
+def _part_done_reply(text_in_log: str):
+    """The worker finishing a part, its log echoing a visitor-chosen string."""
+    from services.engine.render_contract import RENDER_EVENT_PART_DONE, build_render_event
+
+    def reply(channel):
+        return [build_render_event(
+            RENDER_EVENT_PART_DONE, part="body", type="body", url="/static/body.stl", size_bytes=1,
+            log=f'[body] Loading parameters: {{"size": 11, "text": "{text_in_log}"}}\n'
+                f"[body] ERROR: is just text the visitor typed\n[body] Exported body.stl\n",
+        )]
+    return reply
+
+
 class TestSettlement:
-    """Failures on our side are refunded; abandoned work is stopped."""
+    """Settled from the render loop's structured status, never from log text.
+
+    Only infrastructure failures are refunded; abandoned work is stopped.
+    """
 
     GUEST_KEY = f"{quota.QUOTA_KEY_PREFIX}ip:198.51.100.7"
+
+    def _real_loops(self, monkeypatch):
+        from services.engine import render_orchestrator as orch
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", orch.render_parts_sync)
+        monkeypatch.setattr("routes.engine.render.render_parts_stream", orch.render_parts_stream)
+
+    def test_a_successful_render_whose_log_says_error_stays_charged(self, client, fake_redis, monkeypatch):
+        # The CadQuery runner prints the visitor's parameters, so a nameplate
+        # whose text is "ERROR" puts that word in the log of a render that
+        # succeeded. It must not be read as a failure (and refunded).
+        self._real_loops(monkeypatch)
+        fake_redis.worker_reply = _part_done_reply("ERROR")
+        for size in (11, 12, 13):
+            res = _render(client, size, text="ERROR")
+            assert res.status_code == 200
+            assert "ERROR" in res.get_json()["log"]
+        assert fake_redis.get(self.GUEST_KEY) == "3"
+        assert _render(client, 14, text="ERROR").status_code == 429
+
+    def test_the_same_through_the_stream(self, client, fake_redis, monkeypatch):
+        self._real_loops(monkeypatch)
+        fake_redis.worker_reply = _part_done_reply("ERROR")
+        for size in (11, 12, 13):
+            res = _render(client, size, text="ERROR", stream=True)
+            assert b"Render cancelled by user request" not in res.get_data()
+        assert fake_redis.get(self.GUEST_KEY) == "3"
+        assert _slots(fake_redis) == {}
 
     def test_worker_down_is_refused_before_charging(self, client, fake_redis):
         from services.engine import render_orchestrator
@@ -483,43 +571,63 @@ class TestSettlement:
         assert fake_redis.get(self.GUEST_KEY) is None
         assert fake_redis.get(quota.GLOBAL_KEY) is None
 
-    def test_a_failed_render_is_refunded(self, client, fake_redis, monkeypatch):
-        def failing(_data, payload, *_a):
-            return [], "[body] ERROR: CadQuery raised\n", (0, 1)
-        monkeypatch.setattr("routes.engine.render.render_parts_sync", failing)
-        for size in (11, 12, 13, 14):
+    def test_a_script_error_is_not_refunded(self, client, fake_redis, monkeypatch):
+        # A CadQuery exception may come from the visitor's own parameters.
+        from services.engine.render_contract import RENDER_EVENT_ERROR, build_render_event
+        self._real_loops(monkeypatch)
+        fake_redis.worker_reply = lambda _c: [build_render_event(
+            RENDER_EVENT_ERROR, part="body", error="StdFail_NotDone", message="StdFail_NotDone")]
+        for size in (11, 12, 13):
             assert _render(client, size).status_code == 200
-        assert fake_redis.get(self.GUEST_KEY) is None
-        # Worker time was spent, so the hourly budget keeps the charge.
-        assert fake_redis.get(quota.GLOBAL_KEY) == "4"
+        assert fake_redis.get(self.GUEST_KEY) == "3"
+        assert fake_redis.get(quota.GLOBAL_KEY) == "3"
+
+    def test_a_timeout_is_not_refunded(self, client, fake_redis, monkeypatch):
+        from services.engine import render_orchestrator as orch
+        self._real_loops(monkeypatch)
+        monkeypatch.setattr(orch, "RENDER_PART_WAIT_TIMEOUT_SECONDS", 0)
+        assert _render(client, 11).status_code == 200
+        assert fake_redis.get(self.GUEST_KEY) == "1"
+        assert _slots(fake_redis) == {}
 
     def test_worker_lost_mid_render_is_refunded(self, client, fake_redis, monkeypatch):
-        monkeypatch.setattr("routes.engine.render.render_parts_sync",
-                            lambda *_a: (None, "Render worker unavailable or not healthy", (0, 1)))
+        def lost(*_a, status=None, **_k):
+            status.worker_lost = True
+            return None, "Render worker unavailable or not healthy", (0, 1)
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", lost)
         assert _render(client, 11).status_code == 503
         assert fake_redis.get(self.GUEST_KEY) is None
 
-    def test_stream_error_is_refunded(self, client, fake_redis, monkeypatch):
-        def erroring(_data, payload, *_a):
-            yield f"data: {json.dumps({'event': 'error', 'error': 'boom'})}\n\n"
-            yield f"data: {json.dumps({'event': 'complete', 'parts': []})}\n\n"
-        monkeypatch.setattr("routes.engine.render.render_parts_stream", erroring)
+    def test_worker_lost_in_the_stream_is_refunded(self, client, fake_redis, monkeypatch):
+        from services.engine import render_orchestrator as orch
+        self._real_loops(monkeypatch)
+        # Admission saw a live worker; it disappears before the part is queued.
+        monkeypatch.setattr(orch, "is_render_worker_available", iter([True] + [False] * 10).__next__)
         res = _render(client, 11, stream=True)
-        res.get_data()
+        assert b"Render worker unavailable" in res.get_data()
+        assert fake_redis.get(self.GUEST_KEY) is None
+
+    def test_an_exception_is_refunded(self, client, fake_redis, monkeypatch):
+        def boom(*_a, **_k):
+            raise OSError("disk full")
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", boom)
+        assert _render(client, 11).status_code == 500
         assert fake_redis.get(self.GUEST_KEY) is None
         assert _slots(fake_redis) == {}
 
     def test_abandoned_stream_cancels_its_jobs_and_drains_the_lease(self, client, fake_redis, monkeypatch):
-        from services.engine import render_orchestrator
-        cancelled = []
-        monkeypatch.setattr(render_orchestrator, "cancel_request", lambda rid: cancelled.append(rid) or [])
+        from services.engine import render_orchestrator as orch
 
-        def long_render(_data, payload, *_a):
-            # The worker has picked the part up and is still rendering it.
-            fake_redis.sets.setdefault(render_orchestrator.ACTIVE_RENDER_JOBS_KEY, set()).add("job-1")
-            fake_redis.set(f"{render_orchestrator.ACTIVE_RENDER_META_PREFIX}job-1",
-                           json.dumps({"request_id": payload["request_id"]}), ex=600)
-            yield f"data: {json.dumps({'event': 'job', 'job_ids': ['job-1']})}\n\n"
+        def long_render(_data, payload, *_a, status=None, on_tick=None, deadline=None):
+            # The worker is rendering part 1 and part 2 is queued behind it.
+            fake_redis.sets.setdefault(orch.ACTIVE_RENDER_JOBS_KEY, set()).add("job-1")
+            fake_redis.set(f"{orch.ACTIVE_RENDER_META_PREFIX}job-1",
+                           json.dumps({"request_id": payload["request_id"], "part": "body"}), ex=600)
+            fake_redis.rpush(orch.RENDER_QUEUE, json.dumps(
+                {"job_id": "job-2", "request_id": payload["request_id"], "part": "lid"}))
+            fake_redis.rpush(orch.RENDER_QUEUE, json.dumps(
+                {"job_id": "someone-else", "request_id": "other", "part": "x"}))
+            yield f"data: {json.dumps({'event': 'job', 'job_ids': ['job-1', 'job-2']})}\n\n"
             yield f"data: {json.dumps({'event': 'progress', 'progress': 10})}\n\n"
         monkeypatch.setattr("routes.engine.render.render_parts_stream", long_render)
 
@@ -528,20 +636,27 @@ class TestSettlement:
         body = iter(res.response)
         next(body)  # the first event reaches the visitor...
         res.close()  # ...who goes away before `complete`
-        assert cancelled == ["req-abandoned"]
+
+        # The real cancel sweep ran: the queued part is gone, the other
+        # visitor's job is untouched, the running part was told to stop, and
+        # parts not yet queued will not be.
+        queued = [json.loads(t)["job_id"] for t in fake_redis.lists[orch.RENDER_QUEUE]]
+        assert queued == ["someone-else"]
+        assert fake_redis.get(f"{orch.CANCEL_JOB_PREFIX}job-1") == "1"
+        assert orch.is_request_cancelled("req-abandoned")
         # Not refunded: the visitor walked away, the server did not fail.
         assert fake_redis.get(self.GUEST_KEY) == "1"
         # The worker is still stopping, so the lease drains instead of freeing.
         [(key, value)] = _slots(fake_redis).items()
         assert value.startswith("drain:") and value.endswith(":req-abandoned")
-        assert 0 < fake_redis.ttl(key) <= render_orchestrator.ACTIVE_JOB_META_TTL
+        assert 0 < fake_redis.ttl(key) <= orch.ACTIVE_JOB_META_TTL
 
         monkeypatch.setattr("routes.engine.render.render_parts_stream",
-                            lambda *_a: iter([f"data: {json.dumps({'event': 'complete', 'parts': []})}\n\n"]))
+                            lambda *_a, **_k: iter([f"data: {json.dumps({'event': 'complete', 'parts': []})}\n\n"]))
         busy = _render(client, 12, ip="198.51.100.8")
         assert busy.status_code == 503 and busy.get_json()["error_code"] == quota.BUSY_CODE
         # Once the worker lets go of the job, the next free render takes the lease over.
-        fake_redis.sets[render_orchestrator.ACTIVE_RENDER_JOBS_KEY].clear()
+        fake_redis.sets[orch.ACTIVE_RENDER_JOBS_KEY].clear()
         assert _render(client, 12, ip="198.51.100.8").status_code == 200
 
     def test_a_never_iterated_stream_does_not_leak_the_lease(self, client, fake_redis):
@@ -559,6 +674,48 @@ class TestSettlement:
         assert res.get_json()["error_code"] == quota.CAPACITY_EXHAUSTED_CODE
         assert _render(client, 11, ip="203.0.113.3").status_code == 200
         assert fake_redis.get(quota.GLOBAL_KEY) == "3"
+
+    def test_global_units_are_given_back_when_the_identity_charge_throws(self, client, fake_redis, monkeypatch):
+        real_charge = quota._charge
+
+        def flaky(key, *args):
+            if key.startswith(quota.QUOTA_KEY_PREFIX):
+                raise ConnectionError("redis blip")
+            return real_charge(key, *args)
+        monkeypatch.setattr(quota, "_charge", flaky)
+        res = _render(client, 11)
+        assert res.status_code == 503 and res.get_json()["error_code"] == quota.BUSY_CODE
+        assert fake_redis.get(quota.GLOBAL_KEY) is None
+        assert _slots(fake_redis) == {}
+
+
+class TestLiveLease:
+    def test_live_lease_is_short_and_refreshed_by_the_wait_loop(self, app, fake_redis):
+        from services.engine.render_orchestrator import extract_render_payload
+        with app.test_request_context():
+            payload = extract_render_payload({"project": "cq-commons", "mode": "body",
+                                              "parameters": {}, "export_format": "stl"})
+            key, lease = quota._acquire_slot(payload)
+        assert 0 < fake_redis.ttl(key) <= quota.LIVE_LEASE_SECONDS
+        grant = quota.MeteredRender(slot_key=key, lease=lease)
+        fake_redis.expiry[key] = time.time() + 5  # nearly expired
+        grant._last_refresh = 0
+        grant.refresh()
+        assert fake_redis.ttl(key) > 50
+        # Throttled: a refresh right after does nothing.
+        fake_redis.expiry[key] = time.time() + 5
+        grant.refresh()
+        assert fake_redis.ttl(key) <= 5
+
+    def test_a_dead_owners_lease_frees_itself(self, client, fake_redis):
+        # The owner process died mid-render: nothing refreshes its live lease.
+        fake_redis.set(f"{quota.SLOT_KEY_PREFIX}0", "live:dead:req-dead", ex=quota.LIVE_LEASE_SECONDS)
+        assert _render(client, 11).status_code == 503
+        fake_redis.expiry[f"{quota.SLOT_KEY_PREFIX}0"] = time.time() - 1
+        assert _render(client, 11).status_code == 200
+
+    def test_metered_waits_end_before_gunicorn_would_kill_the_worker(self):
+        assert quota.METERED_MAX_WAIT_SECONDS < 300  # apps/api/Dockerfile: gunicorn --timeout 300
 
 
 class TestMeteredTimeoutStopsTheWorker:
@@ -589,6 +746,27 @@ class TestMeteredTimeoutStopsTheWorker:
         queued = fake_redis.lists.get(orch.RENDER_QUEUE, [])
         assert len(queued) == 1, "the second part must not be queued after a timeout"
         assert cancelled == [json.loads(queued[0])["job_id"]]
+
+    def test_the_metered_deadline_bounds_every_wait(self, app, fake_redis, monkeypatch):
+        from services.engine import render_orchestrator as orch
+        cancelled, ticks = [], []
+        monkeypatch.setattr(orch, "cancel_render_jobs", lambda ids: cancelled.extend(ids) or list(ids))
+        payload = orch.extract_render_payload({"project": "cq-two-parts", "mode": "body",
+                                               "parameters": {}, "export_format": "stl"})
+        payload[quota.METERED_FLAG] = True
+        status = orch.RenderStatus()
+        # Per-part wait is the normal 120 s; the request deadline has passed.
+        orch.render_parts_sync({}, payload, "cadquery", payload["scad_path"], "stl", "guest",
+                               status=status, on_tick=lambda: ticks.append(1), deadline=time.time())
+        assert status.timed_out and not status.finished
+        assert len(cancelled) == 1 and ticks
+
+        stream_status = orch.RenderStatus()
+        events = list(orch.render_parts_stream({}, payload, "cadquery", payload["scad_path"], "stl",
+                                               status=stream_status, deadline=time.time()))
+        assert stream_status.timed_out and not stream_status.finished
+        assert len(cancelled) == 2
+        assert '"event": "complete"' in events[-1]
 
 
 class TestClientAddress:

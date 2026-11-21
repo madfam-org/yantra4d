@@ -30,14 +30,22 @@ a charge can be refunded:
    keyed by user id when signed in and by ``utils.client_ip`` otherwise. One
    unit is one render request with at least one part to compute. A request
    whose parts are all static or already in the render cache is served without
-   touching the quota. A render that FAILS on our side (worker error, timeout,
-   a CadQuery error) is refunded; one the visitor cancels or abandons is not.
+   touching the quota. Only a failure of OUR infrastructure is refunded (the
+   worker lost, an exception such as OSError or a Redis error). A timeout, a
+   script error or a partial render is not: the visitor's own parameters can
+   cause those. Outcomes come from the render loop's structured
+   ``RenderStatus``, never from log text, which echoes the visitor's
+   parameters.
 2. **Worker time for all free tiers together, per hour** —
    ``COMMONS_FREE_RENDER_PARTS_PER_HOUR`` (default 30) cold PARTS, charged per
    part the worker will compute, so a many-part mode costs what it uses. Never
    refunded: it measures worker time spent, and failed work spent it too.
 3. **At most N at once** — ``COMMONS_FREE_RENDER_MAX_CONCURRENT`` (default 1)
-   leases. A free render holds its lease while the API waits on it, and then,
+   leases. A live lease lasts ``LIVE_LEASE_SECONDS`` (60) and the render wait
+   loops refresh it (compare-and-swap) as they tick, so a lease whose API
+   process died frees itself within a minute. A metered render never waits
+   longer than ``METERED_MAX_WAIT_SECONDS`` (270, below gunicorn's 300 s
+   timeout) in total. A free render holds its lease while the API waits on it, and then,
    if it ended early (timeout, disconnect, error), its jobs are cancelled — the
    queued ones removed, the running one told to stop through the per-job
    cancel key the worker polls — and the lease is held in a *draining* state
@@ -75,7 +83,6 @@ exactly as the hourly render bucket is not.
 """
 from __future__ import annotations
 
-import json
 import logging
 import os
 import time
@@ -124,13 +131,23 @@ GLOBAL_KEY = "yantra_commons_free_parts:global"
 SLOT_KEY_PREFIX = "yantra_commons_free_render_slot:"
 #: What a "busy" answer tells the client to wait. Not a promise, a pacing hint.
 BUSY_RETRY_AFTER_SECONDS = 30
-#: Lease slack on top of the per-part wait ceilings while the API is waiting.
-SLOT_LEASE_GRACE_SECONDS = 60
+#: A live lease expires this long after its owner's last refresh, so a lease
+#: whose API process died (pod roll, OOM kill) frees itself within a minute.
+LIVE_LEASE_SECONDS = 60
+#: How often the render wait loops refresh a live lease (they tick every
+#: 0.2-1 s; one CAS per this many seconds is plenty).
+LEASE_REFRESH_SECONDS = 10
+#: Longest a metered render may wait on the worker, in total. Below gunicorn's
+#: `--timeout 300` (apps/api/Dockerfile), so a slow free render is stopped and
+#: settled by us — its job cancelled, its lease released — instead of its
+#: gunicorn worker being killed mid-request.
+METERED_MAX_WAIT_SECONDS = 270
 
-#: Render outcomes the routes report to `MeteredRender.finish`.
-OUTCOME_OK = "ok"            # every part rendered
-OUTCOME_FAILED = "failed"    # failed on our side: refunded
-OUTCOME_ABORTED = "aborted"  # cancelled or abandoned by the visitor: not refunded
+#: How a metered render ended, settled by `MeteredRender.finish`.
+OUTCOME_OK = "ok"                # every part delivered
+OUTCOME_INFRA = "infra_failure"  # our infrastructure failed (worker lost, OSError, Redis): refunded
+OUTCOME_FAILED = "failed"        # the render itself failed or timed out: NOT refunded
+OUTCOME_ABORTED = "aborted"      # cancelled or abandoned by the visitor: NOT refunded
 
 # Charge ``cost`` against a fixed window unless it would pass ``limit``.
 # Returns {admitted 0|1, used, ttl}. The expiry is set in the same step as the
@@ -350,16 +367,6 @@ def _busy(tier, engine):
 # The lease
 # ──────────────────────────────────────────────
 
-def _slot_lease_seconds(payload: dict) -> int:
-    from services.engine.render_orchestrator import (
-        RENDER_PART_WAIT_TIMEOUT_SECONDS,
-        RENDER_STREAM_PART_TIMEOUT_SECONDS,
-    )
-    parts = max(1, len(payload.get("parts") or []))
-    per_part = max(RENDER_PART_WAIT_TIMEOUT_SECONDS, RENDER_STREAM_PART_TIMEOUT_SECONDS)
-    return parts * per_part + SLOT_LEASE_GRACE_SECONDS
-
-
 def _lease_value(state: str, token: str, request_id: str) -> str:
     return f"{state}:{token}:{request_id}"
 
@@ -374,7 +381,7 @@ def _acquire_slot(payload: dict) -> tuple[str, str] | None:
 
     slots = _int_env(MAX_CONCURRENT_ENV, DEFAULT_MAX_CONCURRENT) or DEFAULT_MAX_CONCURRENT
     value = _lease_value("live", uuid.uuid4().hex, str(payload.get("request_id") or ""))
-    ttl = _slot_lease_seconds(payload)
+    ttl = LIVE_LEASE_SECONDS
     r = _redis()
     for index in range(slots):
         key = f"{SLOT_KEY_PREFIX}{index}"
@@ -393,18 +400,59 @@ def _acquire_slot(payload: dict) -> tuple[str, str] | None:
 # Admission and settlement
 # ──────────────────────────────────────────────
 
+def outcome_of(status) -> str:
+    """Settle from the render loop's own record (orchestrator.RenderStatus).
+
+    Only a failure of OUR infrastructure is refunded. A timeout or a script
+    error can be caused by the visitor's own parameters, and refunding those
+    would let one visitor keep the free worker busy at no cost.
+    """
+    if status.worker_lost:
+        return OUTCOME_INFRA
+    if status.cancelled:
+        return OUTCOME_ABORTED
+    if status.timed_out or status.errored_parts or not status.finished:
+        return OUTCOME_FAILED
+    return OUTCOME_OK
+
+
 class MeteredRender:
-    """An admitted metered render, settled exactly once by ``finish``."""
+    """An admitted metered render, settled exactly once by ``finish``.
+
+    The routes hand ``status``, ``refresh`` and ``deadline`` to the render
+    loop: it records what happened in ``status``, calls ``refresh`` on every
+    wait tick (keeping the live lease alive), and never waits past
+    ``deadline``.
+    """
 
     def __init__(self, *, slot_key: str | None = None, lease: str | None = None,
                  request_id: str | None = None, identity_key: str | None = None,
                  headers: dict | None = None):
+        from services.engine.render_orchestrator import RenderStatus
+
         self.slot_key = slot_key
         self.lease = lease
         self.request_id = request_id
         self.identity_key = identity_key
         self.headers = headers or {}
+        self.status = RenderStatus()
+        self.deadline = time.time() + METERED_MAX_WAIT_SECONDS
+        self._last_refresh = time.time()
         self._finished = False
+
+    def refresh(self) -> None:
+        """Extend the live lease (compare-and-swap); called from the wait loops."""
+        if self.slot_key is None or self._finished:
+            return
+        now = time.time()
+        if now - self._last_refresh < LEASE_REFRESH_SECONDS:
+            return
+        self._last_refresh = now
+        try:
+            if not _redis().eval(SWAP_SCRIPT, 1, self.slot_key, self.lease, self.lease, LIVE_LEASE_SECONDS):
+                logger.warning("Free render lease %s was lost while rendering", self.slot_key)
+        except Exception:
+            logger.warning("Could not refresh free render lease %s", self.slot_key, exc_info=True)
 
     def finish(self, outcome: str) -> None:
         """Settle the render: refund, cancel leftover jobs, release or drain the lease."""
@@ -426,7 +474,7 @@ class MeteredRender:
                 cancel_request(self.request_id)
             except Exception:
                 logger.warning("Could not cancel leftover jobs of %s", self.request_id, exc_info=True)
-        if outcome == OUTCOME_FAILED and self.identity_key:
+        if outcome == OUTCOME_INFRA and self.identity_key:
             _refund(self.identity_key, 1)
 
         try:
@@ -448,56 +496,32 @@ class MeteredRender:
             response.headers[key] = value
 
     def wrap_stream(self, events):
-        """Yield ``events``; settle by what the stream reported, or as aborted if dropped."""
+        """Yield ``events``; settle from ``status`` when they end.
+
+        A client that goes away (GeneratorExit) is an abort; an exception
+        raised while producing the stream is an infrastructure failure.
+        """
         outcome = OUTCOME_ABORTED
-        failed = cancelled = False
         try:
-            for chunk in events:
-                event = _event_type(chunk)
-                if event == "error":
-                    failed = True
-                elif event == "cancelled":
-                    cancelled = True
-                elif event == "complete":
-                    outcome = OUTCOME_FAILED if failed else (
-                        OUTCOME_ABORTED if cancelled else OUTCOME_OK)
-                yield chunk
+            yield from events
+            outcome = outcome_of(self.status)
+        except GeneratorExit:
+            outcome = OUTCOME_ABORTED
+            raise
+        except Exception:
+            outcome = OUTCOME_INFRA
+            raise
         finally:
-            # GeneratorExit (the client went away) lands here with ABORTED.
             self.finish(outcome)
-
-
-def _event_type(chunk) -> str | None:
-    if not isinstance(chunk, str) or not chunk.startswith("data: "):
-        return None
-    try:
-        data = json.loads(chunk[len("data: "):].strip())
-    except ValueError:
-        return None
-    if not isinstance(data, dict):
-        return None
-    if data.get("event") == "complete" and data.get("error"):
-        return "error"
-    return data.get("event")
-
-
-def sync_outcome(payload: dict, generated_parts, log: str | None) -> str:
-    """Outcome of a finished ``/api/render`` call, for ``MeteredRender.finish``."""
-    if generated_parts is None:
-        return OUTCOME_FAILED
-    log = log or ""
-    if "Render cancelled by user request" in log:
-        return OUTCOME_ABORTED
-    if "ERROR" in log or len(generated_parts) < len(payload.get("parts") or []):
-        return OUTCOME_FAILED
-    return OUTCOME_OK
 
 
 def admit_metered_render(tier: str, engine: str, payload: dict):
     """Decide whether a metered render may run now.
 
-    Returns ``(MeteredRender, None)`` to go ahead — the route must call
-    ``finish(outcome)`` once the render is over — or ``(None, response)``.
+    Returns ``(MeteredRender, None)`` to go ahead — the route passes the
+    grant's ``status``/``refresh``/``deadline`` to the render loop and calls
+    ``finish(outcome_of(grant.status))`` when it is over — or
+    ``(None, response)``.
     """
     from services.engine.render_orchestrator import cold_part_count, is_render_worker_available
 
@@ -537,6 +561,7 @@ def admit_metered_render(tier: str, engine: str, payload: dict):
 
     grant = MeteredRender(slot_key=slot[0], lease=slot[1],
                           request_id=str(payload.get("request_id") or ""))
+    global_charged = 0
     try:
         # Charged under the lease, so concurrent free renders cannot both pass
         # the peeks above and overshoot.
@@ -545,6 +570,7 @@ def admit_metered_render(tier: str, engine: str, payload: dict):
             if not admitted:
                 grant.finish(OUTCOME_OK)
                 return None, _capacity(tier, engine, left)
+            global_charged = cold
         if identity_key is None:
             grant.headers = {"X-Commons-Render-Limit": "unlimited"}
             return grant, None
@@ -556,6 +582,8 @@ def admit_metered_render(tier: str, engine: str, payload: dict):
             return None, _exhausted(tier, engine, limit, used, left)
     except Exception:
         logger.warning("Free render charge failed; refusing the free render", exc_info=True)
+        if global_charged:
+            _refund(GLOBAL_KEY, global_charged)  # nothing will be computed
         grant.finish(OUTCOME_OK)
         return None, _busy(tier, engine)
 

@@ -31,10 +31,10 @@ from services.core.tier_service import (
 )
 from services.engine.commons_render_quota import (
     METERED_FLAG,
-    OUTCOME_FAILED,
+    OUTCOME_INFRA,
     admit_metered_render,
+    outcome_of,
     streaming_response,
-    sync_outcome,
 )
 from services.engine.generator_output import envelope_fields
 from services.engine.render_orchestrator import (
@@ -261,19 +261,26 @@ def render_stl():
         if refusal is not None:
             return refusal
 
+    # A metered render reports what happened in a structured status, keeps
+    # its lease alive on every wait tick, and stops waiting at a deadline set
+    # below the gunicorn timeout. Other renders pass none of these.
+    metered = {} if grant is None else {
+        "status": grant.status, "on_tick": grant.refresh, "deadline": grant.deadline,
+    }
     try:
         generated_parts, log_or_error, cache_stats = render_parts_sync(
-            data, payload, engine, scad_path, actual_format, tier,
+            data, payload, engine, scad_path, actual_format, tier, **metered,
         )
     except BaseException as e:
-        # Settle before answering: refund, stop leftover jobs, free the lease.
+        # An exception here is ours (OSError, Redis): settle as an
+        # infrastructure failure (refunded) before answering.
         if grant is not None:
-            grant.finish(OUTCOME_FAILED)
+            grant.finish(OUTCOME_INFRA)
         if isinstance(e, OSError):
             return error_response(str(e))
         raise
     if grant is not None:
-        grant.finish(sync_outcome(payload, generated_parts, log_or_error))
+        grant.finish(outcome_of(grant.status))
 
     if generated_parts is None:
         if log_or_error == "Render worker unavailable or not healthy":
@@ -342,7 +349,9 @@ def render_stl_stream():
         # The lease is held until the stream ends or the client drops it.
         return streaming_response(
             grant,
-            render_parts_stream(data, payload, engine, scad_path, actual_format),
+            render_parts_stream(data, payload, engine, scad_path, actual_format,
+                                status=grant.status, on_tick=grant.refresh,
+                                deadline=grant.deadline),
             mimetype='text/event-stream',
         )
 

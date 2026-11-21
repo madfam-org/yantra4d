@@ -97,9 +97,13 @@ Implementation: `apps/api/services/engine/commons_render_quota.py`.
 What counts: one render request (`/api/render` or `/api/render-stream`) that
 has at least one part to compute. A request whose parts are all static parts
 or render-cache hits (same cartridge, parameters and format) is served without
-touching the quota; `ignore_cache: true` makes it a computed render. A render
-that fails on our side (worker lost, timeout, a CadQuery error, an error event
-in the stream) is **refunded**; one the visitor cancels or abandons is not.
+touching the quota; `ignore_cache: true` makes it a computed render. Only a
+failure of **our infrastructure** is refunded: the worker lost mid-render, or
+an exception on our side (OSError, Redis). A timeout, a CadQuery/script error
+or a partial render is **not** refunded, because the visitor's own parameters
+can cause them; neither is a render the visitor cancels or abandons. The
+outcome is read from the render loop's structured status, never from the log
+(the CadQuery runner echoes the visitor's parameters into it).
 Before charging, admission checks the render worker's heartbeat: with no
 worker the answer is 503 `render_worker_unavailable` and nothing is charged.
 The hourly `backend_renders_per_hour` bucket still applies on top. The window
@@ -127,8 +131,13 @@ static parts excluded), so a six-part mode costs six; it is never refunded,
 because it measures worker time and failed work spent it too.
 
 The concurrency bound is a lease in the render Redis
-(`yantra_commons_free_render_slot:<n>`). While the API waits on the render it
-lasts at most the per-part wait ceilings plus 60 s. When a free render ends
+(`yantra_commons_free_render_slot:<n>`). A live lease lasts 60 s and the render
+wait loops refresh it (compare-and-swap) every 10 s, so a lease whose API
+process died (pod roll, OOM kill) frees itself within a minute. A metered
+render waits at most 270 s in total, below gunicorn's `--timeout 300`, so a
+slow free render is stopped and settled by us rather than by gunicorn killing
+its worker; a mode too slow to finish in that window completes over repeated
+requests, because each finished part is cached. When a free render ends
 early — a part times out, the visitor disconnects (the stream is closed or
 never read), or the render errors — its jobs are cancelled (queued parts
 removed, the running part told to stop through the per-job cancel key the

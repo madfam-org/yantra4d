@@ -80,6 +80,83 @@ Individual projects can declare `guest_render_limit` in their `project.json` man
 
 The override only applies to the `guest` tier. Authenticated users always use their tier-based limit. If the override is missing, zero, negative, or non-integer, the standard guest limit (10/hr) applies.
 
+## Free Commons re-renders with CadQuery and graph
+
+Owner decision 2026-11-20: guest and essentials may re-render a **Commons**
+cartridge whose mode needs the CadQuery or graph engine, under a daily quota.
+484 of the 512 Commons cartridges need one of those engines for every mode, so
+without this a free visitor could only look at the prerendered default.
+Implementation: `apps/api/services/engine/commons_render_quota.py`.
+
+| Tier | `commons_brep_renders_per_day` | Keyed by | Why |
+|------|:---:|---|---|
+| guest | 3 | client IP (`CF-Connecting-IP`, else the socket address) | Anonymous; one render worker with a 1-CPU limit, and a cold CadQuery part takes seconds to a few minutes. Enough to see that customising is real; the next step is a free account |
+| essentials | 10 | user id | A signed-in account is not multiplied by changing address; enough for one customisation session |
+| pro / premium | -1 | -- | They hold `cadquery_engine` / `graph_engine` outright and are never metered |
+
+What counts: one render request (`/api/render` or `/api/render-stream`) that
+has at least one part to compute. A request whose parts are all static parts
+or render-cache hits (same cartridge, parameters and format) is served without
+touching the quota; `ignore_cache: true` makes it a computed render. The
+hourly `backend_renders_per_hour` bucket still applies on top. The window is
+fixed and starts at the first counted render, so it resets 24 hours later.
+
+What is NOT opened: forks, GitHub imports, onboarded or AI-synthesised
+cartridges (the user-projects root), private cartridges, HEAD renders,
+animation flipbooks, STEP and every other format outside the tier's
+`export_formats`, verification and geometry analysis, print dispatch. Those
+still answer 403 exactly as before.
+
+Burst bounds for free B-Rep renders, on top of the existing render timeout
+(`RENDER_TIMEOUT_S`, 300 s per part), the per-render CPU/memory rlimits and the
+single serial render worker:
+
+| Bound | Default | Env | Refusal |
+|---|:---:|---|---|
+| Renders per identity per day | tier value | `tiers.json` | 429 `commons_render_quota_exhausted` |
+| Renders across ALL free visitors per hour | 30 | `COMMONS_FREE_RENDERS_PER_HOUR` (0 disables) | 503 `commons_render_capacity_exhausted` |
+| Free B-Rep renders in flight at once | 1 | `COMMONS_FREE_RENDER_MAX_CONCURRENT` | 503 `commons_render_busy` |
+
+The concurrency bound is a lease in the render Redis
+(`yantra_commons_free_render_slot:<n>`) that lasts at most the per-part wait
+ceilings plus 60 s and is released when the render or the stream ends. It is
+there because a streaming render holds one of the API's four gunicorn sync
+workers for its whole wait. If the lease store is unreachable the free render
+is refused (fail closed). A 503 refusal is not counted against the daily quota.
+
+The counters live in the rate limiter's storage (`RATE_LIMIT_STORAGE`, Redis
+in production) and follow its switch: with rate limiting off
+(`RATE_LIMIT_ENABLED=false`, or `FLASK_DEBUG=true`) none of this is enforced.
+
+Error shape (429 shown; the 503s carry the same `error_code`,
+`retry_after_seconds`, `tier` and `engine`, and no `quota`):
+
+```json
+{
+  "status": "error",
+  "error": "You have used all 3 free CadQuery re-renders of Commons cartridges for today. The quota resets at 2026-11-21T18:00:00Z. ...",
+  "error_code": "commons_render_quota_exhausted",
+  "quota": {"scope": "commons_brep", "limit": 3, "remaining": 0, "window": "day", "reset_at": "2026-11-21T18:00:00Z"},
+  "retry_after_seconds": 7200,
+  "tier": "guest",
+  "engine": "cadquery",
+  "request_id": "..."
+}
+```
+
+Every refusal sets `Retry-After`; flask-limiter then rewrites that header to
+the later of it and the route's own hourly window, so the body's
+`retry_after_seconds` is the exact figure (the Studio reads the body). A counted render answers with
+`X-Commons-Render-Limit`, `X-Commons-Render-Remaining` and
+`X-Commons-Render-Reset` (epoch seconds); a render served from cache with
+`X-Commons-Render-Cache: HIT`.
+
+The Studio (`src/lib/engineGate.ts`, `src/lib/commonsQuota.ts`,
+`useRender`) lets a metered mode through to an explicit Generate, never spends
+the quota on an automatic render (it says "press Generate" instead), and on a
+429 opens the upgrade dialog with a notice that says the quota is spent and
+when more are available. A 503 is a notice only.
+
 ## Per-Endpoint Limits
 
 All endpoint limits are centralized in `apps/api/rate_limits.py`:
@@ -149,5 +226,6 @@ Without Redis, each Gunicorn worker maintains independent counters — a user co
 | `apps/api/extensions.py` | Limiter initialization, key function, storage backend |
 | `apps/api/rate_limits.py` | Centralized limit constants for all endpoints |
 | `apps/api/tiers.json` | Per-tier feature flags and render limits |
+| `apps/api/services/engine/commons_render_quota.py` | Free-tier Commons CadQuery/graph quota, hourly ceiling and concurrency lease |
 | `apps/api/services/core/tier_service.py` | Tier resolution from JWT claims |
 | `apps/studio/src/services/engine/renderService.ts` | Client-side 429 handling and the fallback to browser rendering |

@@ -11,6 +11,7 @@ import type { RenderCancelTarget } from '../../services/engine/renderService'
 import { useUpgradePrompt } from '../system/useUpgradePrompt'
 import { useTier } from '../system/useTier'
 import { engineGateFor, modesAllowedForTier } from '../../lib/engineGate'
+import { COMMONS_QUOTA_EXHAUSTED, describeReset, isCommonsLimitError } from '../../lib/commonsQuota'
 import { peekPrerenderedPreview } from '../../lib/prerenderedPreview'
 import { effectiveModeEngine, type ModeEngineManifest } from '../../services/engine/renderPlacement'
 import * as idbCache from '../../services/cache/renderCache'
@@ -20,6 +21,8 @@ const LOADING_RESET_DELAY_MS = 500
 const SKIPPED_TOAST_DURATION_MS = 6000
 /** One id, so a run of param edits replaces the notice instead of stacking it. */
 const SKIPPED_TOAST_ID = 'auto-render-over-threshold'
+/** One id for the "press Generate" notice of a metered engine, for the same reason. */
+const METERED_TOAST_ID = 'auto-render-metered-engine'
 
 interface Manifest {
   modes: Array<{ id: string; parts: string[]; [key: string]: unknown }>
@@ -191,6 +194,17 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
     // and then get an HTTP 403 with an empty stage. Ask first, from the limits
     // /api/me already returned; unknown limits fall through to the server.
     const gate = engineGateFor(manifest as unknown as ModeEngineManifest, mode, limits)
+    // A free tier may re-render a Commons cartridge with this engine only a
+    // few times a day. Never spend that on a render the visitor did not ask
+    // for: the debounced on-load / param-change render waits for Generate.
+    if (gate.allowed && gate.metered && automatic) {
+      const quota = limits?.commons_brep_renders_per_day
+      toast.info(
+        t('tier.commons_auto_skipped', { engine: t(`tier.engine_${gate.engine}`), limit: typeof quota === 'number' ? quota : '' }),
+        { id: METERED_TOAST_ID, duration: SKIPPED_TOAST_DURATION_MS },
+      )
+      return
+    }
     if (!gate.allowed) {
       // Nobody asked for an automatic render: no prompt, no log line per edit.
       if (automatic) return
@@ -283,6 +297,28 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
     } catch (e) {
       if ((e as Error).name === 'AbortError') {
         setLogs(prev => prev + `\n${t("log.cancelled")}`)
+      } else if (isCommonsLimitError(e)) {
+        // A free Commons re-render the server would not run now. Say what
+        // happened and when it changes; only a spent quota is an upsell.
+        const engineName = t(`tier.engine_${e.engine || gate.engine}`)
+        const reset = describeReset(e)
+        const when = reset
+          ? (reset.hours > 1
+            ? t('tier.commons_reset_hours', { time: reset.time, hours: reset.hours })
+            : t('tier.commons_reset_minutes', { time: reset.time, minutes: reset.minutes }))
+          : ''
+        if (e.code === COMMONS_QUOTA_EXHAUSTED) {
+          const notice = t('tier.commons_quota_exhausted', { limit: e.limit ?? '', engine: engineName, when })
+          setLogs(prev => prev + `\n${notice}`)
+          const alternatives: string[] = []
+          if (tier === 'guest') alternatives.push(t('tier.commons_alt_account'))
+          if (peekPrerenderedPreview(project)) alternatives.push(t('tier.free_alt_preview'))
+          triggerUpgradePrompt(engineName, { notice, alternatives })
+        } else {
+          const notice = t('tier.commons_busy', { engine: engineName, when })
+          setLogs(prev => prev + `\n${notice}`)
+          toast.info(notice, { id: METERED_TOAST_ID, duration: SKIPPED_TOAST_DURATION_MS })
+        }
       } else {
         const isProGate = (e as Error).message.includes('HTTP 403') || (e as Error).message.includes('Pro tier required');
         const msg = isProGate

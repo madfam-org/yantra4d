@@ -41,7 +41,7 @@ describe('computeTierFacts', () => {
     const repo = makeRepo()
     fs.writeFileSync(
       path.join(repo, 'apps', 'api', 'tiers.json'),
-      JSON.stringify({ guest: { backend_renders_per_hour: 10 }, essentials: { backend_renders_per_hour: 30, max_projects: 5 }, pro: { backend_renders_per_hour: 150, max_projects: -1 } }),
+      JSON.stringify({ guest: { backend_renders_per_hour: 10, commons_brep_renders_per_day: 3 }, essentials: { backend_renders_per_hour: 30, max_projects: 5, commons_brep_renders_per_day: 10 }, pro: { backend_renders_per_hour: 150, max_projects: -1 } }),
     )
     expect(computeTierFacts(makeContext(repo))).toEqual({
       guestRenders: 10,
@@ -49,6 +49,8 @@ describe('computeTierFacts', () => {
       proRenders: 150,
       essentialsProjects: 5,
       proProjects: -1,
+      guestCommonsRenders: 3,
+      essentialsCommonsRenders: 10,
     })
   })
 

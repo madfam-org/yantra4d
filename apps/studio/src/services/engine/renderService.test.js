@@ -1480,6 +1480,33 @@ describe('renderParts server-to-browser fallback', () => {
     expect(progressEvents.some(e => e.log?.includes('Server render limit reached'))).toBe(true)
   })
 
+  it('turns a Commons quota 429 into a typed error without the generic limit line', async () => {
+    vi.stubGlobal('navigator', { hardwareConcurrency: 8, deviceMemory: 8 })
+
+    const forcedManifest = { ...manifest, render: { server_only: true } }
+    const body = {
+      status: 'error', error: 'You have used all 3 free CadQuery re-renders',
+      error_code: 'commons_render_quota_exhausted', engine: 'cadquery',
+      quota: { limit: 3, remaining: 0, window: 'day', reset_at: '2026-11-21T18:00:00Z' },
+      retry_after_seconds: 7200,
+    }
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce({ ok: true }) // health check
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 429, text: () => Promise.resolve(JSON.stringify(body)) })
+
+    const progressEvents = []
+    const err = await renderService.renderParts('unit', {}, forcedManifest, {
+      onProgress: e => progressEvents.push(e),
+    }).catch(e => e)
+
+    expect(err.name).toBe('CommonsRenderLimitError')
+    expect(err.message).toContain('HTTP 429')
+    expect(err.code).toBe('commons_render_quota_exhausted')
+    expect(err.limit).toBe(3)
+    expect(err.resetAt).toBe('2026-11-21T18:00:00Z')
+    expect(progressEvents.some(e => e.log?.includes('Server render limit reached'))).toBe(false)
+  })
+
   it('does NOT fallback on AbortError (user cancel)', async () => {
     // A `limited` device with a 43.5 s browser estimate is over the 15 s
     // threshold, so this lands on the server without any pin.

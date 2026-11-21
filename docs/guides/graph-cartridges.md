@@ -362,6 +362,9 @@ Never set it in CI.
 ## Tier gating
 
 The graph engine is gated by the `graph_engine` key in
-[`apps/api/tiers.json`](../../apps/api/tiers.json) — pro and premium. A guest
-render of a graph cartridge returns 403 with a message naming the tier, which
-is the expected behaviour, not a bug.
+[`apps/api/tiers.json`](../../apps/api/tiers.json) — pro and premium. Guest and
+essentials may re-render a **Commons** graph cartridge under their daily
+`commons_brep_renders_per_day` quota (see
+[rate-limiting.md](rate-limiting.md#free-commons-re-renders-with-cadquery-and-graph));
+a guest render of any other graph cartridge (a fork, an import) returns 403
+with a message naming the tier, which is the expected behaviour, not a bug.

@@ -39,3 +39,31 @@ describe('modesAllowedForTier', () => {
     expect(modesAllowedForTier(null, guest)).toEqual([])
   })
 })
+
+describe('the free Commons quota', () => {
+  const guestWithQuota = { ...guest, commons_brep_renders_per_day: 3 }
+
+  it('lets a tier without the engine render, metered, when it has a daily quota', () => {
+    expect(engineGateFor(gridfinity, 'bin', guestWithQuota)).toEqual({
+      allowed: true, engine: 'cadquery', feature: 'cadquery_engine', metered: true,
+    })
+    expect(engineGateFor(gridfinity, 'graph', guestWithQuota).metered).toBe(true)
+  })
+
+  it('a quota of 0 keeps the gate closed', () => {
+    expect(engineGateFor(gridfinity, 'bin', { ...guest, commons_brep_renders_per_day: 0 }).allowed).toBe(false)
+  })
+
+  it('a tier with the engine is never metered', () => {
+    expect(engineGateFor(gridfinity, 'bin', { cadquery_engine: true, commons_brep_renders_per_day: -1 }))
+      .toEqual({ allowed: true, engine: 'cadquery', feature: 'cadquery_engine' })
+  })
+
+  it('an engine without a tier feature is never metered', () => {
+    expect(engineGateFor(gridfinity, 'grid', guestWithQuota).metered).toBeUndefined()
+  })
+
+  it('metered modes count as renderable', () => {
+    expect(modesAllowedForTier(gridfinity, guestWithQuota)).toEqual(['bin', 'grid', 'graph'])
+  })
+})

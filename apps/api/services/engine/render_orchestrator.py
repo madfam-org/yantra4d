@@ -381,13 +381,21 @@ def _inject_material_compensations(params: dict, target_mat: str) -> None:
 # Engine Configuration
 # ──────────────────────────────────────────────
 
-def resolve_engine_config(data: dict, payload: dict, tier: str):
+def resolve_engine_config(data: dict, payload: dict, tier: str, *, allow_commons_quota: bool = False):
     """Determine the engine, validate export format, and resolve the actual render format.
 
     Returns (engine, scad_path, actual_format, error_tuple_or_none).
     If error_tuple_or_none is not None, it is (message, status_code).
+
+    ``allow_commons_quota`` is passed only by ``/api/render`` and
+    ``/api/render-stream``: there a tier without the CadQuery/graph engine may
+    still re-render a Commons cartridge under its daily quota
+    (services/engine/commons_render_quota.py). The payload is then flagged
+    ``METERED_FLAG`` and the route must admit the render before running it.
+    Every other caller keeps the 403.
     """
     from services.core.tier_service import check_feature
+    from services.engine.commons_render_quota import METERED_FLAG, metered_access
 
     project_slug = payload['project_slug']
     export_format = payload['export_format']
@@ -426,15 +434,18 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
             scad_path = str(cq_path)
 
     # Validate engine+format compatibility
+    payload.pop(METERED_FLAG, None)
+    metered = allow_commons_quota and metered_access(tier, engine, manifest)
+
     if engine == "cadquery":
-        if not check_feature(tier, "cadquery_engine"):
+        if not check_feature(tier, "cadquery_engine") and not metered:
             return engine, scad_path, None, ("CadQuery engine is not available for your tier.", 403)
         if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
     elif engine == "graph":
         # Graph documents transpile to CadQuery scripts (services/engine/graph_engine.py),
         # so they gate and format-check like a paid backend kernel of their own.
-        if not check_feature(tier, "graph_engine"):
+        if not check_feature(tier, "graph_engine") and not metered:
             return engine, scad_path, None, ("Graph engine is not available for your tier.", 403)
         if export_format not in Config.GRAPH_ALLOWED_EXPORT_FORMATS:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by graph engine.", 400)
@@ -444,6 +455,9 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     elif engine == "openscad":
         if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS and export_format not in TRIMESH_CONVERTIBLE:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
+
+    if metered:
+        payload[METERED_FLAG] = True
 
     # Determine actual render format
     if engine in ("cadquery", "graph"):
@@ -497,6 +511,25 @@ def _check_cache(payload, part, export_format):
         scad_content_hash=payload.get('scad_content_hash'),
     )
     return cached if generator_output.cache_entry_usable(cached, payload) else None
+
+
+def all_parts_served_without_render(payload: dict) -> bool:
+    """Whether every part of this request is a static part or a render-cache hit.
+
+    Asked before a metered render (commons_render_quota): a request that
+    computes nothing is not counted. Static parts are checked without the
+    conversion `_render_static_part` would do, so asking has no side effects.
+    """
+    static_stl_map = payload.get("static_stl_map") or {}
+    export_format = payload.get("export_format")
+    for part in payload.get("parts") or []:
+        static_path = static_stl_map.get(part)
+        if static_path is not None and getattr(static_path, "is_file", lambda: False)():
+            continue
+        if _check_cache(payload, part, export_format):
+            continue
+        return False
+    return True
 
 
 def _post_render_convert(output_path, output_filename, part, stl_prefix,

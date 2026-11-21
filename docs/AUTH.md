@@ -578,9 +578,11 @@ lets the tier-enforcement tests keep seeing 403s.
 
 That leaves a real harness stuck: the nightly browser audit
 (`apps/studio/e2e/tests/23-browser-audit`) exists to drive real renders, and
-gridfinity's default `bin` mode is CadQuery, which `guest` may not use
-(`apps/api/tiers.json`). Before this variable every one of those renders was
-refused and the studio answered with its upgrade prompt.
+gridfinity's default `bin` mode is CadQuery, which `guest` may not use outright
+(`apps/api/tiers.json`; since 2026-11-20 a guest gets only 3 metered Commons
+re-renders a day, see docs/guides/rate-limiting.md). Before this variable every
+one of those renders was refused and the studio answered with its upgrade
+prompt.
 
 `HARNESS_TIER` is the explicit way to say so:
 

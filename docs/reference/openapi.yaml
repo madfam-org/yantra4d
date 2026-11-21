@@ -91,6 +91,49 @@ components:
           description: The offending parameter id (invalid_parameter only)
       required: [status, error]
 
+    CommonsRenderLimit:
+      type: object
+      description: |
+        A free-tier (guest, essentials) re-render of a Commons cartridge with
+        the CadQuery or graph engine that the server will not run now
+        (apps/api/services/engine/commons_render_quota.py). 429
+        `commons_render_quota_exhausted` carries `quota`; the 503s
+        `commons_render_capacity_exhausted` and `commons_render_busy` do not
+        and were not counted. Every one sets `Retry-After`.
+      properties:
+        status:
+          type: string
+          example: error
+        error:
+          type: string
+        error_code:
+          type: string
+          enum: [commons_render_quota_exhausted, commons_render_capacity_exhausted, commons_render_busy]
+        retry_after_seconds:
+          type: integer
+        tier:
+          type: string
+        engine:
+          type: string
+          enum: [cadquery, graph]
+        quota:
+          type: object
+          properties:
+            scope:
+              type: string
+              example: commons_brep
+            limit:
+              type: integer
+            remaining:
+              type: integer
+            window:
+              type: string
+              example: day
+            reset_at:
+              type: string
+              format: date-time
+        request_id:
+          type: string
     ProjectLocked:
       type: object
       description: |
@@ -1198,6 +1241,10 @@ paths:
               schema:
                 type: string
                 enum: [HIT, MISS]
+            X-Commons-Render-Remaining:
+              description: Free tiers only, on a counted Commons CadQuery/graph re-render. Also X-Commons-Render-Limit and X-Commons-Render-Reset (epoch seconds)
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1220,6 +1267,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "429":
+          description: Rate limited. Either the tier's hourly server-render bucket, or (error_code commons_render_quota_exhausted) a free tier's daily quota of Commons re-renders with the CadQuery/graph engine is spent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonsRenderLimit"
+        "503":
+          description: Render worker unavailable (render_worker_unavailable), or free Commons CadQuery/graph capacity is full (commons_render_capacity_exhausted, commons_render_busy; not counted against the quota)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonsRenderLimit"
 
   /api/render-stream:
     post:
@@ -1270,6 +1329,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "429":
+          description: Rate limited. Either the tier's hourly server-render bucket, or (error_code commons_render_quota_exhausted) a free tier's daily quota of Commons re-renders with the CadQuery/graph engine is spent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonsRenderLimit"
+        "503":
+          description: Render worker unavailable (render_worker_unavailable), or free Commons CadQuery/graph capacity is full (commons_render_capacity_exhausted, commons_render_busy; not counted against the quota)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonsRenderLimit"
 
   /api/render-cancel:
     post:

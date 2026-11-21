@@ -32,15 +32,20 @@ sheet in Pliego) shares.
 ```sh
 # from a checkout with both repos side by side:
 rm -rf packages/hyperobject-graph/src/hyperobject_graph
-mkdir -p packages/hyperobject-graph/src/hyperobject_graph
-cp ../hyperobjects-spec/src/hyperobject_graph/*.py \
-   ../hyperobjects-spec/src/hyperobject_graph/*.json \
-   packages/hyperobject-graph/src/hyperobject_graph/
+cp -R ../hyperobjects-spec/src/hyperobject_graph packages/hyperobject-graph/src/
+find packages/hyperobject-graph -name __pycache__ -prune -exec rm -rf {} +
+shasum -a 256 packages/hyperobject-graph/src/hyperobject_graph/core.lock.json
+# → put that digest and the keystone commit in CANONICAL_LOCK_SHA256 / CANONICAL_COMMIT
+#   at the top of scripts/qa/check_graph_core_vendor.py, in the same commit
 python3 scripts/qa/check_graph_core_vendor.py
 ```
 
 `core.lock.json` comes with the copy; there is no `--update` here, because the lock is
-the keystone's statement of what it published. Moving `SPEC_PIN` is its own step.
+the keystone's statement of what it published, and the guard pins that lock's own digest
+so a copy and its lock cannot be edited together. Moving `SPEC_PIN` is its own step.
+Until `SPEC_PIN` reaches a keystone that carries the core (`5516b052` or later), the
+`--spec` direction stands down in one line; the pinned lock digest is what holds the
+copy in the meantime.
 
 Once a shared MADFAM Python registry exists, replace this copy with a plain dependency on
 the keystone and delete the guard, as `packages/commons-sandbox/VENDORED.md` says for the

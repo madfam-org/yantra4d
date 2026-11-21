@@ -12,9 +12,10 @@ It is the mirror of the graph ENGINE, which is canonical here and vendored there
     python3 scripts/qa/check_graph_core_vendor.py            # the copy matches its lock
     python3 scripts/qa/check_graph_core_vendor.py --spec     # ... and the keystone's lock
 
-Default (blocking in `ci.yml`, no keystone needed): every vendored file's sha256 equals
-the vendored `core.lock.json`, and the lock lists exactly the vendored files. A hand-edit
-of the copy goes red.
+Default (blocking in `ci.yml`, no keystone needed): the vendored `core.lock.json` is the
+one the keystone published (its sha256 is pinned below), every vendored file's sha256
+equals that lock, and the lock lists exactly the vendored files. A hand-edit of the copy,
+with or without its lock, goes red.
 
 `--spec` (where the keystone is installed at SPEC_PIN): additionally, the INSTALLED
 keystone's `hyperobject_graph/core.lock.json` pins the same files with the same hashes as
@@ -39,6 +40,13 @@ REPO = Path(__file__).resolve().parents[2]
 PKG = REPO / "packages" / "hyperobject-graph" / "src" / "hyperobject_graph"
 LOCK = PKG / "core.lock.json"
 
+# The keystone commit this copy was taken from, and the sha256 of ITS core.lock.json.
+# Pinned here, outside the copy, so that editing a vendored file AND its lock together
+# cannot pass: the lock must still be the one the keystone published. Re-vendoring moves
+# both lines in the same commit (VENDORED.md).
+CANONICAL_COMMIT = "5516b052f5f98b5d89e87a97be16f73d0e1d293d"
+CANONICAL_LOCK_SHA256 = "ac6547e8d10e7b2072bbbacb57934763f474f8f8ce88d35a25fdc4809e6ad042"
+
 
 def _vendored_files() -> list[str]:
     """Every vendored file at any depth, as the keystone's lock names them (relative
@@ -52,6 +60,13 @@ def _vendored_files() -> list[str]:
 def check_copy() -> list[str]:
     if not LOCK.is_file():
         return [f"{LOCK.relative_to(REPO)} missing — re-vendor (VENDORED.md)"]
+    if hashlib.sha256(LOCK.read_bytes()).hexdigest() != CANONICAL_LOCK_SHA256:
+        not_published = (
+            f"core.lock.json is not the lock the keystone published at "
+            f"{CANONICAL_COMMIT[:8]} — re-vendor from the keystone and move "
+            f"CANONICAL_COMMIT/CANONICAL_LOCK_SHA256 together (VENDORED.md)"
+        )
+        return [not_published]
     locked = json.loads(LOCK.read_text(encoding="utf-8")).get("hashes", {})
     files = _vendored_files()
     problems = []
@@ -72,7 +87,19 @@ def check_spec() -> tuple[list[str], str | None]:
         return [], "the installed keystone has no hyperobject_graph (pin predates the core)"
     installed = Path(spec.origin).resolve().parent
     if REPO in installed.parents:
-        return [], "only the vendored copy is importable here; no keystone installed"
+        # The vendored copy shadows the import. Stand down only when no keystone is
+        # installed at all; a keystone hidden behind the copy must not read as absent.
+        try:
+            from importlib.metadata import PackageNotFoundError, distribution
+
+            distribution("hyperobjects-spec")
+        except PackageNotFoundError:
+            return [], "only the vendored copy is importable here; no keystone installed"
+        shadowed = (
+            "the keystone is installed but the vendored copy shadows its "
+            "hyperobject_graph on the import path — run without it on sys.path"
+        )
+        return [shadowed], None
     lock_path = installed / "core.lock.json"
     if not lock_path.is_file():
         missing = f"the installed keystone's hyperobject_graph has no core.lock.json ({installed})"

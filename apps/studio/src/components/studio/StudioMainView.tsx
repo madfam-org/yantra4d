@@ -189,12 +189,13 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     ? logs.trim().split('\n').pop() || ''
     : ''
 
-  const viewerContent = compareMode && comparisonSlots && comparisonSlots.length > 0 ? (
+  const viewerContent = compareMode ? (
     <div className="relative h-full">
       <ComparisonView
-        slots={comparisonSlots as never}
+        slots={(comparisonSlots ?? []) as never}
         onRemoveSlot={onRemoveComparisonSlot!}
         onAddCurrent={onAddComparisonSlot!}
+        canAddCurrent={!loading && Array.isArray(parts) && parts.length > 0}
         colors={colors}
         wireframe={wireframe}
         mode={mode}

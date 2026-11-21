@@ -172,6 +172,8 @@
   "compare.title": "对比",
   "compare.empty": "没有可对比的变体",
   "compare.add_current": "添加当前",
+  "compare.empty_hint": "将当前模型添加为第一个变体。然后修改参数、渲染并再次添加：最多可并排比较四个。",
+  "compare.add_needs_render": "请先渲染模型，然后再添加。",
   "compare.sync_camera": "同步相机",
   "datasheet.generate": "生成数据表",
   "a11y.skip_to_content": "跳到内容",

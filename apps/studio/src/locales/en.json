@@ -181,6 +181,8 @@
   "compare.title": "Comparison",
   "compare.empty": "No variations to compare",
   "compare.add_current": "Add current",
+  "compare.empty_hint": "Add the current model as the first variation. Then change parameters, render, and add again: up to four side by side.",
+  "compare.add_needs_render": "Render the model first, then add it.",
   "compare.sync_camera": "Sync camera",
   "datasheet.generate": "Generate Datasheet",
   "a11y.skip_to_content": "Skip to content",

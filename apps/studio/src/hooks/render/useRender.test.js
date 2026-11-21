@@ -221,7 +221,7 @@ describe('useRender', () => {
     expect(cancelRender).toHaveBeenCalled()
   })
 
-  it('handleConfirmRender closes dialog and calls handleGenerate with forceRender', async () => {
+  it('handleConfirmRender closes dialog and renders without re-asking for the estimate', async () => {
     const { estimateRenderTime, renderParts } = await import('../../services/engine/renderService')
     estimateRenderTime.mockReturnValue(120)
 
@@ -240,8 +240,23 @@ describe('useRender', () => {
 
     // Dialog should close
     expect(result.current.showConfirmDialog).toBe(false)
-    // renderParts should have been called (forceRender bypasses estimate check)
+    // renderParts should have been called (the confirmation skips the estimate)
     expect(renderParts).toHaveBeenCalled()
+    // ...but it is NOT a force regenerate: confirming a long render must not
+    // send ignore_cache, or the server re-renders (and charges a free tier's
+    // Commons quota for) a result its cache already holds.
+    expect(renderParts.mock.calls.at(-1)[3].ignoreCache).toBe(false)
+  })
+
+  it('Force regenerate still ignores the cache', async () => {
+    const { renderParts } = await import('../../services/engine/renderService')
+    const { result } = renderUseRender()
+
+    await act(async () => {
+      await result.current.handleGenerate(true)
+    })
+
+    expect(renderParts.mock.calls.at(-1)[3].ignoreCache).toBe(true)
   })
 
   it('render error with HTTP 403 triggers upgrade prompt', async () => {

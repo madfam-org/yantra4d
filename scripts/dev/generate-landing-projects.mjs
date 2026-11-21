@@ -173,6 +173,8 @@ export function computeTierFacts(ctx) {
     proRenders: null,
     essentialsProjects: null,
     proProjects: null,
+    guestCommonsRenders: null,
+    essentialsCommonsRenders: null,
   };
   if (!fs.existsSync(ctx.tiersFile)) return empty;
   let tiers;
@@ -191,6 +193,10 @@ export function computeTierFacts(ctx) {
     proRenders: num('pro', 'backend_renders_per_hour'),
     essentialsProjects: num('essentials', 'max_projects'),
     proProjects: num('pro', 'max_projects'),
+    // Free re-renders a day of a Commons cartridge with the CadQuery/graph
+    // engine (apps/api/services/engine/commons_render_quota.py).
+    guestCommonsRenders: num('guest', 'commons_brep_renders_per_day'),
+    essentialsCommonsRenders: num('essentials', 'commons_brep_renders_per_day'),
   };
 }
 

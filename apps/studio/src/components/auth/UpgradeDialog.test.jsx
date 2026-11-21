@@ -118,4 +118,18 @@ describe('UpgradeDialog', () => {
         render(<UpgradeDialog {...defaultProps} />)
         expect(screen.queryByTestId('upgrade-free-alternatives')).not.toBeInTheDocument()
     })
+
+    it('states what happened instead of "you discovered a Pro feature" when given a notice', () => {
+        render(<UpgradeDialog {...defaultProps} feature="CadQuery engine"
+            notice="You have used today's 3 free CadQuery re-renders. More are available at 18:00." />)
+        expect(screen.getByTestId('upgrade-notice')).toHaveTextContent("today's 3 free CadQuery re-renders")
+        expect(screen.queryByText("You've discovered a Pro feature!")).not.toBeInTheDocument()
+        expect(screen.getByText('CadQuery engine')).toBeInTheDocument()
+    })
+
+    it('keeps the default description without a notice', () => {
+        render(<UpgradeDialog {...defaultProps} />)
+        expect(screen.queryByTestId('upgrade-notice')).not.toBeInTheDocument()
+        expect(screen.getByText(/You've discovered a Pro feature!/)).toBeInTheDocument()
+    })
 })

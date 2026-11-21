@@ -212,6 +212,7 @@ packages/
 | `apps/api/services/ai_code_editor.py` | NL -> SCAD code edit mapping | RARELY |
 | `apps/api/services/github_import.py` | GitHub repo clone and project creation | RARELY |
 | `apps/api/services/tier_service.py` | Tier lookup and feature gating | RARELY |
+| `apps/api/services/engine/commons_render_quota.py` | Free-tier quota for re-rendering Commons cartridges with CadQuery/graph, plus its burst bounds | RARELY |
 | `apps/studio/src/lib/billing.ts` | Dhanam checkout URL generation for tier upgrades | RARELY |
 | `apps/studio/src/components/ui/UpgradeModal.tsx` | Tier upgrade modal (links to Dhanam checkout) | RARELY |
 | `apps/studio/src/contexts/auth/AuthProvider.tsx` | JWT auth context + login/logout | RARELY |
@@ -400,13 +401,19 @@ Access is gated by user tier. Tier definitions live in `apps/api/tiers.json`; en
 
 | Tier | Server renders/hr | Projects | Export | Engines | GitHub | AI Config | AI Code | AI Req/hr |
 |------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| guest | 10 | 0 | STL | openscad, implicit | -- | -- | -- | 0 |
-| essentials | 30 | 5 | STL/3MF/OBJ | openscad, implicit | -- | Yes | -- | 20 |
+| guest | 10 | 0 | STL | openscad, implicit; cadquery, graph on Commons cartridges 3/day | -- | -- | -- | 0 |
+| essentials | 30 | 5 | STL/3MF/OBJ | openscad, implicit; cadquery, graph on Commons cartridges 10/day | -- | Yes | -- | 20 |
 | pro | 150 | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | + cadquery, graph | import, editor, private | Yes | Yes | 100 |
 | premium | unlimited | unlimited | STL/3MF/OFF/STEP/GLB/GLTF/OBJ | + cadquery, graph | import, sync, editor, private | Yes | Yes | unlimited |
 
-The `cadquery_engine` and `graph_engine` keys gate the two B-Rep kernels; a
-cartridge that declares either renders only for pro and premium.
+The `cadquery_engine` and `graph_engine` keys gate the two B-Rep kernels
+outright (pro and premium). Guest and essentials may still re-render a
+**Commons** cartridge with them through `/api/render*` under
+`commons_brep_renders_per_day` (3 / 10 a day; render-cache hits are free), with
+an hourly budget of computed parts across all free visitors, refunds for renders
+that fail on our side, and one free B-Rep render using the worker at a time: `services/engine/commons_render_quota.py`,
+`docs/guides/rate-limiting.md`. Forks, imports, private cartridges, STEP,
+analysis and print dispatch stay pro.
 
 > **Note**: WASM (browser) rendering is unlimited at all tiers. Server render limits apply only to `/api/render*` endpoints.
 

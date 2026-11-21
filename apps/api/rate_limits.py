@@ -58,6 +58,10 @@ GITHUB_IMPORT = "10/hour"
 GITHUB_SYNC = "20/hour"
 
 # Projects
+# GET /api/projects/<slug>/graph: the public, read-only graph view. A public
+# read like the manifest, so the same ceiling as the app-wide default, named
+# here so the route carries its own bucket instead of sharing the default's.
+PROJECT_GRAPH_READ = "500/hour"
 PROJECT_ANALYZE = "20/hour"
 PROJECT_CREATE = "10/hour"
 PROJECT_FORK = "10/hour"  # uses PROJECT_CREATE limit

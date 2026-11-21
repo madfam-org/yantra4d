@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import Viewer from '../viewer/Viewer'
 import ComparisonView from '../project/ComparisonView'
 import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
 import WelcomeOverlay from '../feedback/WelcomeOverlay'
 import ShortcutHelpDialog from './ShortcutHelpDialog'
 import ModelInfoPanel from './ModelInfoPanel'
+import GraphViewFrame from './GraphViewFrame'
+import { modeDeclaresGraph } from '../../services/domain/graphViewService'
+import type { ManifestParameterLike } from '../../lib/graph/graphExpressions'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
@@ -111,13 +114,13 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     thicknessData,
     overhangData,
     shortcutHelpOpen, setShortcutHelpOpen,
-    manifest, projectSlug,
+    manifest, projectSlug, getLabel,
     stressData, stressSimulationActive, handleRunFEA,
     physicsJobId, physicsProgress, physicsFrames, physicsUnavailable, handleRunPhysics,
     optimizationJobId, optimizationProgress, optimizationLogs, handleOptimizeTopology
   } = useProject()
 
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   // Prerendered default mesh from the landing (lib/prerenderedPreview.ts): shown
   // until the first real render arrives, for every tier.
   const prerendered = usePrerenderedPreview(projectSlug)
@@ -134,6 +137,19 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
   // Same 1024px breakpoint as the `lg:` classes below, so the mounted tree and
   // the visible tree are always the same one. App.tsx makes the identical call.
   const isDesktop = useIsDesktop()
+  // A mode that declares a graph gets the read-only "Inside" view beside the 3D.
+  const manifestParameters = useMemo(
+    () => ((manifest as { parameters?: ManifestParameterLike[] } | null)?.parameters ?? []),
+    [manifest],
+  )
+  const graphMode = useMemo(() => {
+    const modes = (manifest as { modes?: Array<{ id?: string; scad_file?: unknown; graph_file?: unknown }> } | null)?.modes
+    return modeDeclaresGraph(modes?.find((m) => m.id === mode))
+  }, [manifest, mode])
+  const paramLabel = useCallback((id: string) => {
+    const def = manifestParameters.find((p) => p.id === id)
+    return (def && getLabel(def as unknown as Record<string, unknown>, 'label', language)) || id
+  }, [manifestParameters, getLabel, language])
   const { unit, format: formatDim, formatVolume } = useUnitSystem()
   const [estimateOpen, setEstimateOpen] = useState(true)
   const [consoleExpanded, setConsoleExpanded] = useState(false)
@@ -189,7 +205,8 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     ? logs.trim().split('\n').pop() || ''
     : ''
 
-  const viewerContent = compareMode && comparisonSlots && comparisonSlots.length > 0 ? (
+  const comparing = Boolean(compareMode && comparisonSlots && comparisonSlots.length > 0)
+  const stageContent = compareMode && comparisonSlots && comparisonSlots.length > 0 ? (
     <div className="relative h-full">
       <ComparisonView
         slots={comparisonSlots as never}
@@ -330,6 +347,20 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
       </div>
     </div>
   )
+
+  const viewerContent = graphMode && !comparing && projectSlug && mode ? (
+    <GraphViewFrame
+      slug={projectSlug}
+      mode={mode}
+      isDesktop={isDesktop}
+      parameters={manifestParameters}
+      values={(params ?? {}) as Record<string, unknown>}
+      hoveredParamId={hoveredParam?.paramId ?? null}
+      labelOf={paramLabel}
+    >
+      {stageContent}
+    </GraphViewFrame>
+  ) : stageContent
 
   const consoleContent = (
     <div className="flex h-full border-t border-border">

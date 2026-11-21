@@ -28,7 +28,11 @@ from services.core.project_access import (
 )
 from services.core.tier_service import has_tier, resolve_tier
 from services.engine.render_revision import render_revision
-from services.engine.render_source import user_source_revision
+from services.engine.render_source import (
+    RenderSourceError,
+    graph_document_for_mode,
+    user_source_revision,
+)
 from utils.project_resolver import project_write_root, slug_in_use
 from utils.route_helpers import error_response, handle_exceptions
 from utils.validators import require_valid_slug
@@ -179,6 +183,85 @@ def get_project_meta(slug):
 
     resp = jsonify(body)
     resp.headers["Cache-Control"] = "private, no-store"
+    return resp
+
+
+#: Largest graph document the public view serves; the editor's own write cap.
+MAX_GRAPH_VIEW_BYTES = 512 * 1024
+
+
+@projects_bp.route('/api/projects/<slug>/graph', methods=['GET'])
+@require_valid_slug
+@limiter.limit(rate_limits.PROJECT_GRAPH_READ)
+@require_project_access
+def get_project_graph(slug):
+    """The graph document one mode declares, for the public read-only graph view.
+
+    Open to every caller who may see the cartridge (signed out included), unlike
+    the Pro-gated editor file routes: it serves only the ``.graph.json`` the
+    manifest names for ``mode`` (its graph ``scad_file`` or its ``graph_file``
+    twin), never a path the caller chooses. ``role`` says whether the graph is
+    what the mode renders (``source``) or a published twin of its script
+    (``twin``, with ``script`` naming that script).
+    """
+    mode_id = request.args.get("mode", "")
+    if not mode_id:
+        return error_response("mode is required", 400, error_code="mode_required")
+
+    try:
+        manifest = get_manifest(slug)
+    except RuntimeError:
+        return error_response("Project not found", 404, error_code="project_not_found")
+    # An unresolvable slug falls back to the single-project directory, which
+    # would otherwise hand out another cartridge's graph under this name.
+    if manifest.project.get("slug") != slug and manifest.project_dir.name != slug:
+        return error_response("Project not found", 404, error_code="project_not_found")
+
+    if not any(isinstance(m, dict) and m.get("id") == mode_id for m in manifest.modes):
+        return error_response("No such mode", 404, error_code="mode_not_found")
+    try:
+        document = graph_document_for_mode(manifest, mode_id)
+    except RenderSourceError as exc:
+        logger.warning("graph view: %s mode %s: %s", slug, mode_id, exc)
+        return error_response("This mode's graph document is unavailable", 404,
+                              error_code="graph_unavailable")
+    if document is None:
+        return error_response("This mode is not a graph", 404, error_code="not_a_graph_mode")
+
+    try:
+        if document.path.stat().st_size > MAX_GRAPH_VIEW_BYTES:
+            return error_response("Graph document is too large to view", 413,
+                                  error_code="graph_too_large")
+        content = document.path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return error_response("This mode's graph document is unavailable", 404,
+                              error_code="graph_unavailable")
+
+    payload = {
+        "mode": mode_id,
+        "path": document.filename,
+        "role": document.role,
+        "script": document.script,
+        "content": content,
+    }
+    body = json.dumps(payload, sort_keys=True)
+
+    if is_private_project(slug, manifest):
+        # As the private manifest: no shared cache and no ETag (a stable handle
+        # to the content being withheld).
+        resp = make_response(body)
+        resp.headers["Content-Type"] = "application/json"
+        resp.headers["Cache-Control"] = "private, no-store"
+        return resp
+
+    # Revalidated on every load, as the manifest: a fork's graph changes when
+    # its owner saves, and a 304 costs one stat and one read.
+    etag = hashlib.sha256(body.encode()).hexdigest()
+    unchanged = request.if_none_match and etag in request.if_none_match
+    resp = make_response("" if unchanged else body, 304 if unchanged else 200)
+    resp.headers["Content-Type"] = "application/json"
+    resp.headers["Cache-Control"] = "public, no-cache"
+    resp.set_etag(etag)
     return resp
 
 

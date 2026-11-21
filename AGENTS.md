@@ -374,6 +374,7 @@ POST `/api/verify` with `{mode}` -- runs `apps/api/tests/scripts/verify_design.p
 | GET | `/api/materials` | -- | List material hyperobjects |
 | GET | `/api/materials/<slug>` | -- | Material manifest by slug |
 | GET | `/api/projects/<slug>/meta` | -- | Project meta.json file |
+| GET | `/api/projects/<slug>/graph` | `?mode=<id>` | **Public, read-only** (no tier; private cartridges stay 403): `{mode, path, role, script, content}` -- the `.graph.json` the manifest names for that mode (a graph `scad_file`, else its `graph_file` twin; `role` `twin` names the `script` that still renders). Never a caller-chosen path; 404 `not_a_graph_mode` for a script-only mode. Feeds the Studio's "Inside" graph view (`components/studio/GraphViewFrame.tsx`) |
 | GET | `/api/projects/<slug>/parts/<path>` | -- | Serve pre-built STL part files |
 | GET | `/api/projects/<slug>/assembly-steps` | -- | Auto-generate assembly steps from BOSL2 |
 | POST | `/api/projects/<slug>/assembly-steps/write` | `{merge?}` | Write generated assembly steps to manifest |

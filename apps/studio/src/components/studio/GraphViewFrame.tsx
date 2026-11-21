@@ -44,8 +44,14 @@ function useRecentlyChangedParam(values: Record<string, unknown>): string | null
 }
 
 export interface GraphViewFrameProps {
-  /** The 3D viewer; it stays mounted whichever view is showing. */
+  /** The 3D viewer; it stays mounted whichever view is showing, and across modes. */
   children: ReactNode
+  /**
+   * Whether the active mode declares a graph. When false the frame renders
+   * only the viewer, in the same place, so switching between a script mode and
+   * a graph mode never remounts the viewer (and its WebGL context).
+   */
+  available: boolean
   slug: string
   mode: string
   isDesktop: boolean
@@ -63,11 +69,11 @@ const RAIL_ITEM = 'h-7 min-w-[64px] rounded-sm px-3 text-xs font-medium text-mut
  * that graph: side by side on desktop (the viewport keeps the larger share), a
  * 3D | Inside switch on smaller screens. Read-only and open to every visitor.
  */
-export default function GraphViewFrame({ children, slug, mode, isDesktop, parameters, values, hoveredParamId, labelOf }: GraphViewFrameProps) {
+export default function GraphViewFrame({ children, available, slug, mode, isDesktop, parameters, values, hoveredParamId, labelOf }: GraphViewFrameProps) {
   const { t } = useLanguage()
   const [desktopOpen, setDesktopOpen] = useState(readOpen)
   const [compactView, setCompactView] = useState<'3d' | 'inside'>('3d')
-  const open = isDesktop ? desktopOpen : compactView === 'inside'
+  const open = available && (isDesktop ? desktopOpen : compactView === 'inside')
 
   const graph = useModeGraph(slug, mode, open)
   const bindings = useMemo(() => bindingsFromManifest(parameters), [parameters])
@@ -80,8 +86,8 @@ export default function GraphViewFrame({ children, slug, mode, isDesktop, parame
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col" data-testid="graph-view-frame" data-inside-open={open ? 'true' : 'false'}>
-      <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border bg-background px-2" role="toolbar" aria-label={t('inside.toolbar')}>
+    <div className="flex h-full min-h-0 flex-col" data-testid="graph-view-frame" data-graph-available={available ? 'true' : 'false'} data-inside-open={open ? 'true' : 'false'}>
+      {available && (<div className="flex h-11 shrink-0 items-center gap-2 border-b border-border bg-background px-2" role="toolbar" aria-label={t('inside.toolbar')}>
         {isDesktop ? (
           <Toggle
             pressed={desktopOpen}
@@ -112,7 +118,7 @@ export default function GraphViewFrame({ children, slug, mode, isDesktop, parame
           </ToggleGroup>
         )}
         <span className="min-w-0 truncate text-xs text-muted-foreground">{t('inside.toolbar_hint')}</span>
-      </div>
+      </div>)}
 
       <div className="flex min-h-0 flex-1">
         {/* The viewer is hidden, never unmounted, on a phone showing Inside: its scene and camera survive the switch. */}
@@ -125,6 +131,7 @@ export default function GraphViewFrame({ children, slug, mode, isDesktop, parame
             data-testid="graph-view-inside"
           >
             <InsidePanel
+              key={`${slug}:${mode}`}
               state={graph}
               onRetry={graph.retry}
               bindings={bindings}

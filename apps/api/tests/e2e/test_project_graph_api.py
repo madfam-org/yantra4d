@@ -198,6 +198,17 @@ class TestRefusals:
         assert res.status_code == 404
         assert "secret" not in res.get_data(as_text=True)
 
+    def test_a_symlink_out_of_the_cartridge_is_never_followed(self, client, tree):
+        link = tree["root"] / TWIN_SLUG / "drive.graph.json"
+        link.unlink()
+        link.symlink_to(tree["root"] / "secret.graph.json")
+
+        res = _get(client, slug=TWIN_SLUG, mode="drive")
+
+        assert res.status_code == 404
+        assert res.get_json()["error_code"] == "graph_unavailable"
+        assert "secret" not in res.get_data(as_text=True)
+
     def test_a_missing_graph_file_404(self, client, tree):
         (tree["root"] / TWIN_SLUG / "drive.graph.json").unlink()
 

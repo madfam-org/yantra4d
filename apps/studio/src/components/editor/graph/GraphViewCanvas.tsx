@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react'
-import { Background, Controls, MiniMap, ReactFlow, ReactFlowProvider } from '@xyflow/react'
-import type { Edge, NodeMouseHandler } from '@xyflow/react'
+import { useCallback, useMemo, useState } from 'react'
+import { Background, Controls, MiniMap, ReactFlow, ReactFlowProvider, applyNodeChanges } from '@xyflow/react'
+import type { Edge, NodeChange, NodeMouseHandler } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { useLanguage } from '../../../contexts/system/LanguageProvider'
 import { useTheme } from '../../../contexts/system/ThemeProvider'
@@ -33,7 +33,7 @@ function GraphViewCanvasInner({ doc, bindings, selectedId, onSelect, highlighted
   const { t } = useLanguage()
   const { theme } = useTheme()
 
-  const nodes = useMemo<GraphFlowNode[]>(() => {
+  const derivedNodes = useMemo<GraphFlowNode[]>(() => {
     const positions = layoutNodes(doc.nodes)
     const parts = partsByNode(doc)
     return doc.nodes.map((node) => ({
@@ -56,6 +56,29 @@ function GraphViewCanvasInner({ doc, bindings, selectedId, onSelect, highlighted
       },
     }))
   }, [doc, bindings, selectedId, highlighted])
+
+  // React Flow measures every node after it mounts and hides a node it has not
+  // measured. New node objects (a hover mark, a selection) would drop those
+  // measurements and blank the canvas for a frame on every slider move, so the
+  // last measurements are carried onto each new set, as the editor does. Only
+  // measurement changes are applied: nothing the visitor does moves, removes
+  // or reselects a node through React Flow.
+  const [nodes, setNodes] = useState<GraphFlowNode[]>(derivedNodes)
+  const [nodesSource, setNodesSource] = useState(derivedNodes)
+  if (nodesSource !== derivedNodes) {
+    setNodesSource(derivedNodes)
+    setNodes((current) => {
+      const measured = new Map(current.map((n) => [n.id, n]))
+      return derivedNodes.map((n) => {
+        const prev = measured.get(n.id)
+        return prev?.measured ? { ...n, measured: prev.measured, width: prev.width, height: prev.height } : n
+      })
+    })
+  }
+  const onNodesChange = useCallback((changes: NodeChange<GraphFlowNode>[]) => {
+    const dimensions = changes.filter((c) => c.type === 'dimensions')
+    if (dimensions.length > 0) setNodes((current) => applyNodeChanges(dimensions, current))
+  }, [])
 
   const edges = useMemo<Edge[]>(() => {
     const ids = new Set(doc.nodes.map((n) => n.id))
@@ -84,6 +107,7 @@ function GraphViewCanvasInner({ doc, bindings, selectedId, onSelect, highlighted
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
         onNodeClick={onNodeClick}
         onPaneClick={() => onSelect(null)}
         nodesDraggable={false}

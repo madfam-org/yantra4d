@@ -21,7 +21,7 @@ vi.mock('../../services/domain/graphViewService', () => ({ fetchModeGraph: vi.fn
 
 import GraphViewFrame, { CHANGE_HIGHLIGHT_MS } from './GraphViewFrame'
 import { fetchModeGraph } from '../../services/domain/graphViewService'
-import { clearModeGraphCache } from '../../hooks/project/useModeGraph'
+import { bumpSourceRevision } from '../../services/cache/sourceRevision'
 
 const GRAPH = { mode: 'flange', path: 'flange.graph.json', role: 'source', script: null, content: '{"nodes":[],"outputs":{}}' }
 const PARAMS = [
@@ -32,6 +32,7 @@ const PARAMS = [
 function Frame(props) {
   return (
     <GraphViewFrame
+      available
       slug="flange-plate"
       mode="flange"
       isDesktop
@@ -47,7 +48,6 @@ function Frame(props) {
 }
 
 beforeEach(() => {
-  clearModeGraphCache()
   fetchModeGraph.mockReset()
   fetchModeGraph.mockResolvedValue(GRAPH)
   try { localStorage.clear() } catch { /* jsdom storage */ }
@@ -105,6 +105,64 @@ describe('GraphViewFrame on desktop', () => {
     fireEvent.click(screen.getByText('retry'))
     await waitFor(() => expect(screen.getByTestId('inside-panel-stub').dataset.status).toBe('ready'))
     expect(fetchModeGraph).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('GraphViewFrame loading rules', () => {
+  it('reopening after a failure retries instead of showing the old error', async () => {
+    let reject
+    fetchModeGraph.mockImplementationOnce(() => Promise.reject(new Error('offline')))
+    fetchModeGraph.mockImplementationOnce(() => new Promise((_resolve, r) => { reject = r }))
+    render(<Frame />)
+    fireEvent.click(screen.getByTestId('inside-toggle'))
+    await waitFor(() => expect(screen.getByTestId('inside-panel-stub').dataset.status).toBe('error'))
+    fireEvent.click(screen.getByTestId('inside-toggle'))
+    fireEvent.click(screen.getByTestId('inside-toggle'))
+    expect(screen.getByTestId('inside-panel-stub').dataset.status).toBe('loading')
+    expect(fetchModeGraph).toHaveBeenCalledTimes(2)
+    await act(async () => { reject(new Error('still offline')) })
+  })
+
+  it('loads the saved graph after the cartridge source changes', async () => {
+    const { rerender } = render(<Frame slug="my-fork" />)
+    fireEvent.click(screen.getByTestId('inside-toggle'))
+    await waitFor(() => expect(screen.getByTestId('inside-panel-stub').dataset.status).toBe('ready'))
+    bumpSourceRevision('my-fork')
+    rerender(<Frame slug="my-fork" />)
+    await waitFor(() => expect(fetchModeGraph).toHaveBeenCalledTimes(2))
+  })
+
+  it('a different mode loads its own graph', async () => {
+    const { rerender } = render(<Frame />)
+    fireEvent.click(screen.getByTestId('inside-toggle'))
+    await waitFor(() => expect(screen.getByTestId('inside-panel-stub').dataset.status).toBe('ready'))
+    rerender(<Frame mode="blank" />)
+    expect(screen.getByTestId('inside-panel-stub').dataset.status).toBe('loading')
+    await waitFor(() => expect(fetchModeGraph).toHaveBeenLastCalledWith('flange-plate', 'blank', expect.any(AbortSignal)))
+  })
+})
+
+describe('GraphViewFrame for a mode without a graph', () => {
+  it('renders the viewer alone, with no toolbar and no request', () => {
+    render(<Frame available={false} />)
+    expect(screen.getByTestId('viewer-stub')).toBeInTheDocument()
+    expect(screen.queryByRole('toolbar')).toBeNull()
+    expect(fetchModeGraph).not.toHaveBeenCalled()
+  })
+
+  it('keeps the same viewer element when the mode gains or loses a graph', () => {
+    const { rerender } = render(<Frame available={false} />)
+    const viewer = screen.getByTestId('viewer-stub')
+    rerender(<Frame available />)
+    expect(screen.getByTestId('viewer-stub')).toBe(viewer)
+    rerender(<Frame available={false} />)
+    expect(screen.getByTestId('viewer-stub')).toBe(viewer)
+  })
+
+  it('closes Inside when the mode has no graph, even if it was left open', () => {
+    try { localStorage.setItem('yantra4d-inside-open', '1') } catch { /* jsdom storage */ }
+    render(<Frame available={false} />)
+    expect(screen.queryByTestId('graph-view-inside')).toBeNull()
   })
 })
 

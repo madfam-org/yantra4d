@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { render, screen, fireEvent, within, act } from '@testing-library/react'
 import { axe } from '../../test/axe-setup'
 import { toHaveNoViolations } from 'jest-axe'
 
@@ -8,7 +8,7 @@ expect.extend(toHaveNoViolations)
 // React Flow needs a real layout engine; this stand-in renders the node cards
 // through the canvas's own nodeTypes and keeps the props it was given, so a
 // test can check what the canvas allows (nothing that edits) and click a node.
-const rf = vi.hoisted(() => ({ props: null }))
+const rf = vi.hoisted(() => ({ props: null, applied: [] }))
 vi.mock('@xyflow/react', () => ({
   ReactFlow: (props) => {
     rf.props = props
@@ -28,6 +28,7 @@ vi.mock('@xyflow/react', () => ({
     )
   },
   ReactFlowProvider: ({ children }) => children,
+  applyNodeChanges: (changes, nodes) => { rf.applied.push(...changes); return nodes },
   Handle: ({ type, id }) => <span data-testid={`handle-${type}-${id}`} />,
   Position: { Left: 'left', Right: 'right' },
   Background: () => null,
@@ -75,7 +76,7 @@ function renderPanel(props = {}) {
   )
 }
 
-beforeEach(() => { rf.props = null })
+beforeEach(() => { rf.props = null; rf.applied = [] })
 
 describe('InsidePanel: the graph, read-only', () => {
   it('draws every node and every wire', () => {
@@ -90,7 +91,6 @@ describe('InsidePanel: the graph, read-only', () => {
     expect(rf.props.nodesConnectable).toBe(false)
     expect(rf.props.deleteKeyCode).toBeNull()
     expect(rf.props.onConnect).toBeUndefined()
-    expect(rf.props.onNodesChange).toBeUndefined()
     expect(rf.props.onEdgesChange).toBeUndefined()
     expect(rf.props.onNodeDragStop).toBeUndefined()
     expect(rf.props.nodes.every((n) => n.draggable === false && n.connectable === false && n.deletable === false)).toBe(true)
@@ -111,6 +111,35 @@ describe('InsidePanel: the graph, read-only', () => {
   it('uses the singular for one node', () => {
     renderPanel({ state: ready({ ...FLANGE, nodes: [FLANGE.nodes[0]] }) })
     expect(screen.getByTestId('inside-summary')).toHaveTextContent('inside.node_count_one(1)')
+  })
+})
+
+describe('InsidePanel: React Flow changes', () => {
+  it('applies measurements only: a move, a removal or a selection from React Flow changes nothing', () => {
+    renderPanel()
+    act(() => {
+      rf.props.onNodesChange([
+        { type: 'position', id: 'bore', position: { x: 999, y: 0 } },
+        { type: 'remove', id: 'bore' },
+        { type: 'select', id: 'bore', selected: true },
+      ])
+    })
+    expect(rf.applied).toEqual([])
+    expect(screen.getByTestId('rf-node-bore')).toBeInTheDocument()
+    expect(screen.getByText('inside.select_hint')).toBeInTheDocument()
+    act(() => { rf.props.onNodesChange([{ type: 'dimensions', id: 'bore', dimensions: { width: 150, height: 60 } }]) })
+    expect(rf.applied.map((c) => c.type)).toEqual(['dimensions'])
+  })
+
+  it('keeps measured sizes when a hover mark changes the node set', () => {
+    const { rerender } = renderPanel()
+    const measured = rf.props.nodes.map((n) => ({ ...n, measured: { width: 150, height: 60 } }))
+    // Simulate React Flow having measured every node, then a hover mark arriving.
+    act(() => { rf.props.onNodesChange(measured.map((n) => ({ type: 'dimensions', id: n.id, dimensions: n.measured }))) })
+    rerender(
+      <InsidePanel state={ready()} onRetry={vi.fn()} bindings={BINDINGS} values={{}} labelOf={(id) => id} activeParamId="plate_radius" />,
+    )
+    expect(rf.props.nodes.find((n) => n.id === 'outline').data.highlighted).toBe(true)
   })
 })
 

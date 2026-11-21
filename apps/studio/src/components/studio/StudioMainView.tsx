@@ -348,10 +348,13 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     </div>
   )
 
-  const viewerContent = graphMode && !comparing && projectSlug && mode ? (
+  // Always the same wrapper, so a mode switch never remounts the viewer; it
+  // offers the "Inside" graph view only when the active mode declares a graph.
+  const viewerContent = comparing ? stageContent : (
     <GraphViewFrame
-      slug={projectSlug}
-      mode={mode}
+      available={graphMode && !!projectSlug && !!mode}
+      slug={projectSlug ?? ''}
+      mode={mode ?? ''}
       isDesktop={isDesktop}
       parameters={manifestParameters}
       values={(params ?? {}) as Record<string, unknown>}
@@ -360,7 +363,7 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     >
       {stageContent}
     </GraphViewFrame>
-  ) : stageContent
+  )
 
   const consoleContent = (
     <div className="flex h-full border-t border-border">

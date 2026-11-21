@@ -927,6 +927,94 @@ paths:
               schema:
                 $ref: "#/components/schemas/BundleTooLarge"
 
+  /api/projects/{slug}/graph:
+    get:
+      tags: [projects]
+      summary: Get the graph document a mode declares (public, read-only)
+      operationId: getProjectGraph
+      description: |
+        The `.graph.json` the manifest names for `mode`, for the Studio's
+        read-only "Inside" graph view: the mode's `scad_file` when it is itself
+        a graph (a graph-engine mode), otherwise its `graph_file` twin. Never an
+        arbitrary path: the caller names a mode, not a file, and the declared
+        name must be a plain relative path inside the cartridge.
+
+        Open to every caller who may see the cartridge, signed out included (no
+        tier); a private cartridge answers 403 as its manifest does. Rate-limited
+        at 500/hour, the same ceiling as the app-wide default for public reads.
+        A public cartridge is sent `public, no-cache` with an ETag (revalidated
+        on every load, since a fork's graph changes when its owner saves); a
+        private one `private, no-store` with no ETag.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mode
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The graph document, verbatim
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mode:
+                    type: string
+                  path:
+                    type: string
+                    description: The graph file's path inside the cartridge.
+                  role:
+                    type: string
+                    enum: [source, twin]
+                    description: >-
+                      `source`: the graph is what this mode renders. `twin`: a
+                      published twin of `script`, which stays the render source
+                      (curated cartridges; a fork renders its twin).
+                  script:
+                    type: string
+                    nullable: true
+                    description: The mode's script when `role` is `twin`, else null.
+                  content:
+                    type: string
+                    description: The `.graph.json` text as stored.
+                required: [mode, path, role, script, content]
+        "304":
+          description: Not modified (ETag match). Public projects only.
+        "400":
+          description: "`mode` is missing (`error_code: mode_required`), or the slug is invalid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Project is private and the caller is not entitled to it
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectLocked"
+        "404":
+          description: >-
+            Project not found (`project_not_found`), no such mode
+            (`mode_not_found`), the mode declares no graph (`not_a_graph_mode`),
+            or its declared graph is missing or not a plain path inside the
+            cartridge (`graph_unavailable`)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "413":
+          description: The graph document exceeds 512 KB (`graph_too_large`)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /api/projects/{slug}/meta:
     get:
       tags: [projects]

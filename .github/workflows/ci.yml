@@ -891,6 +891,10 @@ jobs:
         run: python3 scripts/qa/derive_mating_candidates.py --check
       - name: Shared sandbox core has not drifted from its lock
         run: python3 scripts/qa/check_sandbox_sync.py
+      - name: Vendored graph core has not drifted from its lock
+        # RFC 0067 G-2: the graph core is canonical in the keystone and vendored here by
+        # its core.lock.json (packages/hyperobject-graph/VENDORED.md).
+        run: python3 scripts/qa/check_graph_core_vendor.py
       - name: Commons-sandbox tests
         run: |
           pip install -e 'packages/commons-sandbox[dev]'
@@ -1053,7 +1057,7 @@ jobs:
         # solid-hyperobjects / soft-hyperobjects), never a floating tag: the bar
         # the platform clears must be the bar the commons cleared. The repo is
         # public (2026-09-05), so no token is needed to fetch it.
-        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@142db1802bbf9e1135ceae6c9c531c469f2d295b"
+        run: pip install "hyperobjects-spec[geometry] @ git+https://github.com/madfam-org/hyperobjects-spec.git@85ac9f542ce97be7771eae65d86442cea9d49aa5"
       - name: Structural conformance (full commons)
         shell: bash
         run: |
@@ -1127,6 +1131,12 @@ jobs:
         # failing, exactly as check_render_env.py does — so this can never go red because
         # of a pin move. It goes LIVE once SPEC_PIN carries the vendored engine.
         run: python3 scripts/qa/check_spec_graph_vendor.py
+
+      - name: Vendored graph core matches the keystone's
+        # The other direction of the graph-core guard (RFC 0067 G-2): the core is
+        # canonical in the keystone, so the installed keystone's core.lock.json must equal
+        # the copy's. Stands down in one line on a pin that predates the core.
+        run: python3 scripts/qa/check_graph_core_vendor.py --spec
 
   metadata-consistency:
     runs-on: ${{ github.event_name == 'pull_request' && 'ubuntu-24.04' || (vars.ARC_BOOTSTRAP_COMPLETE == 'true' && 'madfam-runners-blue' || 'ubuntu-24.04') }}

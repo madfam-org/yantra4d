@@ -18,6 +18,29 @@ export function createSTLGeometry(payload: STLPayload): BufferGeometry {
     }
 }
 
+/**
+ * Replace every quantized attribute with a float copy, in place.
+ *
+ * The models pipeline writes meshopt-compressed GLBs with KHR_mesh_quantization: positions are
+ * normalized int16 under a node scale. `applyMatrix4` writes the transformed values back through
+ * the attribute, and a normalized integer attribute can only hold [-1, 1], so every point was
+ * clamped into a unit cube and every prerendered preview rendered as a box of scratches. Reading
+ * the values out as floats first keeps them at their real size.
+ */
+export function toFloatAttributes(geometry: BufferGeometry): BufferGeometry {
+    for (const name of Object.keys(geometry.attributes)) {
+        const attr = geometry.getAttribute(name) as BufferAttribute
+        if (attr.array instanceof Float32Array && !attr.normalized) continue
+        const size = attr.itemSize
+        const out = new Float32Array(attr.count * size)
+        for (let i = 0; i < attr.count; i++) {
+            for (let k = 0; k < size; k++) out[i * size + k] = attr.getComponent(i, k)
+        }
+        geometry.setAttribute(name, new BufferAttribute(out, size))
+    }
+    return geometry
+}
+
 /** Analysis geometry is independent of the loaded scene and its materials. */
 export function mergeGLTFGeometry(scene: Object3D): BufferGeometry | null {
     const clones: BufferGeometry[] = []
@@ -27,7 +50,7 @@ export function mergeGLTFGeometry(scene: Object3D): BufferGeometry | null {
         scene.traverse(child => {
             const mesh = child as Mesh
             if (!mesh.isMesh || !mesh.geometry) return
-            const clone = mesh.geometry.clone()
+            const clone = toFloatAttributes(mesh.geometry.clone())
             clones.push(clone)
             clone.applyMatrix4(child.matrixWorld)
         })

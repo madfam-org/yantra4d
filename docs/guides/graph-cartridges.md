@@ -35,6 +35,23 @@ the oracle; it retires only after parity holds (owner decision D5, 2026-10-04).
 The first golden twin is `solid-hyperobjects/idler-608/idler.graph.json` (three modes,
 exact parity at the defaults and all presets).
 
+### The shared graph core and wrapper graphs (RFC 0067)
+
+Graph format 1.2 is shared by the solid, soft and sheet commons. Its kernel-neutral half
+— the document, typed sockets, the expression dialect, validation, declarations (every
+parameter, preset, constraint and interface declared by the graph), licence, provenance
+and the `script` node — is canonical in the keystone and vendored here by hash at
+[`packages/hyperobject-graph/`](../../packages/hyperobject-graph/VENDORED.md). This
+engine is the **solid node pack** behind that core's interface; every commons graph
+transpiles through the core to the same bytes as before.
+
+A **wrapper graph** is one `script` node running the mode's own source
+(`"source": "main.py", "language": "cadquery"`), every mode parameter passed through
+under its own name. It counts as a configurable graph (ruling G-1), and the keystone
+requires its mesh to equal the script's byte for byte at the defaults and every preset.
+The contract is the keystone's `docs/GRAPH_CORE.md`. This engine does not serve wrappers
+yet; that is RFC 0067 P1.
+
 ### Which source renders
 
 One resolver decides what a mode renders (`apps/api/services/engine/render_source.py`),

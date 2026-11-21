@@ -217,12 +217,19 @@ def get_project_graph(slug):
     if manifest.project.get("slug") != slug and manifest.project_dir.name != slug:
         return error_response("Project not found", 404, error_code="project_not_found")
 
-    if not any(isinstance(m, dict) and m.get("id") == mode_id for m in manifest.modes):
+    # From here on the mode id is the manifest's own string, never the request's:
+    # nothing the caller typed is echoed back or used to pick a file.
+    declared_mode = next(
+        (m["id"] for m in manifest.modes
+         if isinstance(m, dict) and isinstance(m.get("id"), str) and m["id"] == mode_id),
+        None,
+    )
+    if declared_mode is None:
         return error_response("No such mode", 404, error_code="mode_not_found")
     try:
-        document = graph_document_for_mode(manifest, mode_id)
+        document = graph_document_for_mode(manifest, declared_mode)
     except RenderSourceError as exc:
-        logger.warning("graph view: %s mode %s: %s", slug, mode_id, exc)
+        logger.warning("graph view: %s mode %s: %s", slug, declared_mode, exc)
         return error_response("This mode's graph document is unavailable", 404,
                               error_code="graph_unavailable")
     if document is None:
@@ -238,28 +245,27 @@ def get_project_graph(slug):
                               error_code="graph_unavailable")
 
     payload = {
-        "mode": mode_id,
+        "mode": declared_mode,
         "path": document.filename,
         "role": document.role,
         "script": document.script,
         "content": content,
     }
-    body = json.dumps(payload, sort_keys=True)
 
     if is_private_project(slug, manifest):
         # As the private manifest: no shared cache and no ETag (a stable handle
         # to the content being withheld).
-        resp = make_response(body)
-        resp.headers["Content-Type"] = "application/json"
+        resp = jsonify(payload)
         resp.headers["Cache-Control"] = "private, no-store"
         return resp
 
     # Revalidated on every load, as the manifest: a fork's graph changes when
     # its owner saves, and a 304 costs one stat and one read.
-    etag = hashlib.sha256(body.encode()).hexdigest()
-    unchanged = request.if_none_match and etag in request.if_none_match
-    resp = make_response("" if unchanged else body, 304 if unchanged else 200)
-    resp.headers["Content-Type"] = "application/json"
+    etag = hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+    if request.if_none_match and etag in request.if_none_match:
+        resp = make_response("", 304)
+    else:
+        resp = jsonify(payload)
     resp.headers["Cache-Control"] = "public, no-cache"
     resp.set_etag(etag)
     return resp

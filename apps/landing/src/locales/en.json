@@ -360,11 +360,12 @@
     "studioBtn": "Launch Studio"
   },
   "heroSweep": {
-    "label": "Sun Teeth",
-    "still": "A Commons planetary gearset with a 27-tooth sun, seen at an angle.",
+    "label": "Reach",
+    "still": "A SCARA robot arm from the Commons with a 445 mm reach, seen at an angle.",
     "range": "Rendered sweep",
-    "caption": "A Commons cartridge. Every value is a rendered part.",
-    "open": "Open it in Studio"
+    "caption": "A Commons cartridge. Every value is a rendered arm.",
+    "open": "Open it in Studio",
+    "name": "SCARA"
   },
   "footer": {
     "copyright": "Yantra4D. Open source under AGPLv3.",

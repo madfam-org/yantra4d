@@ -13,20 +13,40 @@ describe('the hero sweep says only what the meshes show', () => {
     readFileSync(resolve(repo, `projects/${HERO_SWEEP.slug}/project.json`), 'utf8'),
   );
   const animation = project.animations.find((a: { id: string }) => a.id === HERO_SWEEP.animation);
-  const parameter = project.parameters.find((p: { id: string }) => p.id === HERO_SWEEP.param);
 
-  it('names a real animation of a real parameter, with its own label', () => {
+  it('names a real sweep of real parameters, and its label names the readout', () => {
     expect(animation).toBeDefined();
-    expect(parameter).toBeDefined();
-    expect(Object.keys(animation.to_state)).toEqual([HERO_SWEEP.param]);
-    expect(HERO_SWEEP.label).toEqual({ es: parameter.label.es, en: parameter.label.en });
+    expect(Object.keys(animation.to_state).sort()).toEqual([...HERO_SWEEP.params].sort());
+    for (const id of HERO_SWEEP.params) {
+      expect(project.parameters.find((p: { id: string }) => p.id === id)).toBeDefined();
+    }
+    expect(animation.label.es.startsWith(HERO_SWEEP.label.es)).toBe(true);
+    expect(animation.label.en.startsWith(HERO_SWEEP.label.en)).toBe(true);
+    expect(animation.label.en).toContain(HERO_SWEEP.unit);
   });
 
-  it('lists the value each frame was rendered at (linear over frames, integers rounded)', () => {
-    const from = animation.from_state[HERO_SWEEP.param];
-    const to = animation.to_state[HERO_SWEEP.param];
+  it('lists the value each frame was rendered at (linear, rounded, snapped to the slider grid)', () => {
+    // Python's round() rounds half to even; mirror it so a half-way frame matches the pipeline.
+    const pyRound = (v: number) => {
+      const f = Math.floor(v);
+      const d = v - f;
+      if (Math.abs(d - 0.5) < 1e-9) return f % 2 === 0 ? f : f + 1;
+      return Math.round(v);
+    };
     const n = animation.frames;
-    const expected = Array.from({ length: n }, (_, i) => Math.round(from + ((to - from) * i) / (n - 1)));
+    const expected = Array.from({ length: n }, (_, i) => {
+      const t = i / (n - 1);
+      return HERO_SWEEP.params.reduce((sum, id) => {
+        const def = project.parameters.find((p: { id: string }) => p.id === id);
+        const from = animation.from_state[id];
+        const to = animation.to_state[id];
+        let v = from + (to - from) * t;
+        if (Number.isInteger(from) && Number.isInteger(to)) v = pyRound(v);
+        let snapped = def.min + pyRound((v - def.min) / def.step) * def.step;
+        snapped = Math.max(def.min, Math.min(def.max, snapped));
+        return sum + snapped;
+      }, 0);
+    });
     expect(HERO_SWEEP.values).toEqual(expected);
     expect(HERO_SWEEP.restFrame).toBeGreaterThanOrEqual(0);
     expect(HERO_SWEEP.restFrame).toBeLessThan(n);
@@ -42,7 +62,7 @@ describe('the hero sweep says only what the meshes show', () => {
   });
 
   it('has its still pictures on disk', () => {
-    for (const w of [640, 1280]) {
+    for (const w of [640, 672]) {
       expect(existsSync(resolve(publicDir, `hero-sweep-still-${w}w.webp`))).toBe(true);
     }
   });

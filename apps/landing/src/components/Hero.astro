@@ -90,11 +90,11 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
     <figure class="hero-sweep mx-auto w-full max-w-3xl pt-6" data-hero-sweep data-state="still">
       <div class="hero-sweep-stage relative mx-auto aspect-[16/10] w-full sm:aspect-[2/1]" data-hero-sweep-stage>
         <img
-          src="/hero-sweep-still-1280w.webp"
-          srcset="/hero-sweep-still-640w.webp 640w, /hero-sweep-still-1280w.webp 1280w"
-          sizes="(min-width: 768px) 768px, 100vw"
-          width="1280"
-          height="640"
+          src="/hero-sweep-still-672w.webp"
+          srcset="/hero-sweep-still-640w.webp 640w, /hero-sweep-still-672w.webp 672w"
+          sizes="(min-width: 768px) 672px, 100vw"
+          width="672"
+          height="337"
           alt={t?.heroSweep?.still ?? ''}
           decoding="async"
           class="hero-sweep-still absolute inset-0 h-full w-full object-contain"
@@ -104,7 +104,7 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
       <figcaption class="mx-auto mt-2 w-full max-w-md space-y-3 text-left">
         <div class="flex items-baseline justify-between gap-4">
           <label for="hero-sweep-range" class="text-sm font-medium text-foreground">
-            {t?.heroSweep?.label ?? sweep.label[sweepLang]}
+            {t?.heroSweep?.label ?? sweep.label[sweepLang]} <span class="text-muted-foreground">({sweep.unit})</span>
           </label>
           <output
             for="hero-sweep-range"
@@ -129,7 +129,7 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
           </div>
         </div>
         <p class="text-sm leading-6 text-muted-foreground">
-          {sweep.name} · {t?.heroSweep?.caption ?? ''}
+          {t?.heroSweep?.name ?? 'SCARA'} · {t?.heroSweep?.caption ?? ''}
           <a
             href={projectUrl}
             class="ml-1 inline-flex min-h-[44px] items-center gap-1 font-semibold text-foreground underline decoration-primary/60 underline-offset-4 hover:text-primary-readable"

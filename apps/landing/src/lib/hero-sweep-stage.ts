@@ -37,6 +37,8 @@ export interface Stage {
 const HOLD_SECONDS = 1.6;
 /** Turntable speed, radians per second. */
 const TURN_RATE = 0.22;
+/** Heading at rest, radians about the base: reaching toward the viewer, three-quarter on. */
+const REST_ANGLE = -0.75;
 /** Seconds a change of frame takes to settle. */
 const SETTLE_SECONDS = 0.32;
 
@@ -56,14 +58,12 @@ function loadFrames(urls: string[]): Promise<THREE.BufferGeometry[]> {
               gltf.scene.updateMatrixWorld(true);
               gltf.scene.traverse((child) => {
                 const mesh = child as THREE.Mesh;
-                if (mesh.isMesh) {
-                  const g = mesh.geometry.clone();
-                  g.applyMatrix4(mesh.matrixWorld);
-                  parts.push(g.index ? g.toNonIndexed() : g);
-                }
+                if (mesh.isMesh) parts.push(worldPositions(mesh));
               });
               if (parts.length === 0) return reject(new Error(`${url} has no mesh`));
               const merged = parts.length === 1 ? parts[0] : mergePositions(parts);
+              // The pipeline exports in the CAD convention, Z up; the scene is Y up.
+              merged.rotateX(-Math.PI / 2);
               merged.computeVertexNormals();
               resolve(merged);
             },
@@ -73,6 +73,29 @@ function loadFrames(urls: string[]): Promise<THREE.BufferGeometry[]> {
         }),
     ),
   );
+}
+
+/**
+ * A mesh's triangles as plain float positions in world space. The pipeline's files are
+ * meshopt-compressed with quantized positions (normalized 16-bit integers plus a node scale);
+ * transforming the attribute in place would clamp every point into the unit cube, so the values
+ * are read out as floats first.
+ */
+function worldPositions(mesh: THREE.Mesh): THREE.BufferGeometry {
+  const source = mesh.geometry.getAttribute('position');
+  const index = mesh.geometry.getIndex();
+  const count = index ? index.count : source.count;
+  const out = new Float32Array(count * 3);
+  const v = new THREE.Vector3();
+  for (let i = 0; i < count; i++) {
+    v.fromBufferAttribute(source, index ? index.getX(i) : i).applyMatrix4(mesh.matrixWorld);
+    out[i * 3] = v.x;
+    out[i * 3 + 1] = v.y;
+    out[i * 3 + 2] = v.z;
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(out, 3));
+  return geometry;
 }
 
 /** The pipeline's meshes carry positions only, so merging is a concatenation. */
@@ -94,16 +117,19 @@ export async function createStage(options: StageOptions): Promise<Stage> {
   const { host, frameUrls, reducedMotion, onFrame } = options;
   const geometries = await loadFrames(frameUrls);
 
-  // One frame of reference for every frame: centre and scale by the largest, so a bigger sun
-  // reads as bigger instead of every frame filling the view.
+  // One frame of reference for every frame, scaled by the largest, so a longer reach reads as
+  // longer instead of every frame filling the view. The part turns about its own origin, which for
+  // the pipeline's kinematic cartridges is the base: an arm sweeps around its shoulder, as it does.
   const bounds = new THREE.Box3();
+  let radius = 0;
   for (const g of geometries) {
     g.computeBoundingBox();
     bounds.union(g.boundingBox as THREE.Box3);
+    const p = g.getAttribute('position');
+    for (let i = 0; i < p.count; i++) radius = Math.max(radius, Math.hypot(p.getX(i), p.getZ(i)));
   }
-  const centre = bounds.getCenter(new THREE.Vector3());
-  const size = bounds.getSize(new THREE.Vector3());
-  const scale = 2.6 / Math.max(size.x, size.y, size.z, 1e-6);
+  const centre = new THREE.Vector3(0, bounds.getCenter(new THREE.Vector3()).y, 0);
+  const scale = 2.45 / Math.max(radius, 1e-6);
 
   let renderer: THREE.WebGLRenderer | null = null;
   let raf = 0;
@@ -117,8 +143,9 @@ export async function createStage(options: StageOptions): Promise<Stage> {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
-  camera.position.set(0, 2.6, 6.4);
-  camera.lookAt(0, 0, 0);
+  // A three-quarter view from above, so the gear's face and teeth both read.
+  camera.position.set(0, 2.5, 4.7);
+  camera.lookAt(0, -0.15, 0);
   scene.add(new THREE.HemisphereLight(0xe2e8f0, 0x0f172a, 1.1));
   const key = new THREE.DirectionalLight(0xffffff, 1.6);
   key.position.set(3, 5, 4);
@@ -134,8 +161,6 @@ export async function createStage(options: StageOptions): Promise<Stage> {
     flatShading: true,
   });
   const rig = new THREE.Group();
-  // The gear lies flat; tip it towards the camera so its teeth read.
-  rig.rotation.x = -0.5;
   scene.add(rig);
   const part = new THREE.Mesh(geometries[current], material);
   part.scale.setScalar(scale);
@@ -169,7 +194,8 @@ export async function createStage(options: StageOptions): Promise<Stage> {
       lastStep = now;
     }
     const t = (now - start) / 1000;
-    if (!reducedMotion) rig.rotation.y = t * TURN_RATE;
+    // At rest the arm reaches toward the viewer's right, three-quarter on.
+    rig.rotation.y = REST_ANGLE + (reducedMotion ? 0 : t * TURN_RATE);
     if (!reducedMotion && !driven && now - lastStep >= HOLD_SECONDS * 1000) {
       lastStep = now;
       setFrame((current + 1) % geometries.length, now);

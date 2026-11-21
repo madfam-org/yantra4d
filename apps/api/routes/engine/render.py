@@ -31,8 +31,10 @@ from services.core.tier_service import (
 )
 from services.engine.commons_render_quota import (
     METERED_FLAG,
+    OUTCOME_FAILED,
     admit_metered_render,
     streaming_response,
+    sync_outcome,
 )
 from services.engine.generator_output import envelope_fields
 from services.engine.render_orchestrator import (
@@ -47,6 +49,7 @@ from services.engine.render_orchestrator import (
     resolve_engine_config,
     unknown_project_error,
 )
+from utils.client_ip import client_ip
 from utils.route_helpers import error_response, handle_exceptions, payload_error_response, require_json_body
 
 logger = logging.getLogger(__name__)
@@ -151,11 +154,16 @@ def _known_project_before_limit(f):
 
 
 def _rate_limit_key() -> str:
-    """Return a per-user or per-IP rate limit bucket key."""
+    """Return a per-user or per-IP rate limit bucket key.
+
+    Anonymous callers are keyed by ``client_ip()`` — the same address the
+    Commons quota uses — not the socket address, which behind the Cloudflare
+    tunnel is one address for every visitor.
+    """
     claims = getattr(request, "auth_claims", None)
     if claims:
         return f"user:{claims.get('sub', '')}"
-    return f"ip:{request.remote_addr}"
+    return f"ip:{client_ip()}"
 
 
 @render_bp.route('/api/estimate', methods=['POST'])
@@ -257,11 +265,15 @@ def render_stl():
         generated_parts, log_or_error, cache_stats = render_parts_sync(
             data, payload, engine, scad_path, actual_format, tier,
         )
-    except OSError as e:
-        return error_response(str(e))
-    finally:
+    except BaseException as e:
+        # Settle before answering: refund, stop leftover jobs, free the lease.
         if grant is not None:
-            grant.release()
+            grant.finish(OUTCOME_FAILED)
+        if isinstance(e, OSError):
+            return error_response(str(e))
+        raise
+    if grant is not None:
+        grant.finish(sync_outcome(payload, generated_parts, log_or_error))
 
     if generated_parts is None:
         if log_or_error == "Render worker unavailable or not healthy":

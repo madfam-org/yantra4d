@@ -513,23 +513,54 @@ def _check_cache(payload, part, export_format):
     return cached if generator_output.cache_entry_usable(cached, payload) else None
 
 
-def all_parts_served_without_render(payload: dict) -> bool:
-    """Whether every part of this request is a static part or a render-cache hit.
+def cold_part_count(payload: dict) -> int:
+    """How many parts of this request the worker would actually compute.
 
-    Asked before a metered render (commons_render_quota): a request that
-    computes nothing is not counted. Static parts are checked without the
-    conversion `_render_static_part` would do, so asking has no side effects.
+    Static parts and render-cache hits cost no worker time. Asked before a
+    metered render (commons_render_quota): a request with no cold part is not
+    counted, and the free tiers' hourly budget is charged per cold part.
+    Static parts are checked without the conversion `_render_static_part` would
+    do, so asking has no side effects.
     """
     static_stl_map = payload.get("static_stl_map") or {}
     export_format = payload.get("export_format")
+    cold = 0
     for part in payload.get("parts") or []:
         static_path = static_stl_map.get(part)
         if static_path is not None and getattr(static_path, "is_file", lambda: False)():
             continue
         if _check_cache(payload, part, export_format):
             continue
+        cold += 1
+    return cold
+
+
+def request_has_pending_work(request_id: str | None) -> bool:
+    """Whether any job of this render request is still queued or held by a worker.
+
+    "Held" means in the active set with a live lease (its metadata key, which
+    the worker refreshes while it renders). Errors answer True: the caller uses
+    this to decide whether the worker is still busy for this request, and
+    "busy" is the safe answer.
+    """
+    if not request_id:
         return False
-    return True
+    try:
+        for _raw, task in _iter_queued_tasks():
+            if task.get("request_id") == request_id:
+                return True
+        for job_id in _decoded_job_ids(r.smembers(ACTIVE_RENDER_JOBS_KEY)):
+            if _active_job_meta(job_id).get("request_id") == request_id:
+                return True
+    except Exception:
+        logger.debug("Could not inspect pending work for request %s", request_id, exc_info=True)
+        return True
+    return False
+
+
+def _is_metered(payload: dict) -> bool:
+    from services.engine.commons_render_quota import METERED_FLAG
+    return bool(payload.get(METERED_FLAG))
 
 
 def _post_render_convert(output_path, output_filename, part, stl_prefix,
@@ -689,6 +720,7 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
 
     clear_request_cancel(request_id)
 
+    timed_out = False
     for part in parts_to_render:
         # /api/render answers only when every part is done, so a caller can
         # cancel it only by supplying its own `request_id` up front — which is
@@ -741,6 +773,10 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
             if time.time() > part_deadline:
                 combined_log += f"[{part}] ERROR: Render timed out while waiting for completion\n"
                 _notify_error(job_id, part, "Render job timed out")
+                if _is_metered(payload):
+                    # Nobody waits for it any more: stop the worker too.
+                    cancel_render_jobs([job_id])
+                    timed_out = True
                 break
 
             message = part_sub.get_message(timeout=1.0)
@@ -783,6 +819,10 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
                 part_complete = True
 
         part_sub.close()
+        if timed_out:
+            # A metered render stops at its first timeout rather than queueing
+            # more free work behind a part that never finished.
+            break
 
     return generated_parts, combined_log, (cache_hits, cache_total)
 
@@ -812,6 +852,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
         job_ids=list(job_ids),
     ))
 
+    stream_timed_out = False
     for i, part in enumerate(parts_to_render):
         # Parts are queued one at a time, so this is the only place a cancel can
         # stop the parts that have not been queued yet.
@@ -929,6 +970,9 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 )
                 yield f"data: {json.dumps(timeout_event)}\n\n"
                 _notify_error(job_id, part, "Render stream timed out waiting for completion")
+                if _is_metered(payload):
+                    cancel_render_jobs([job_id])
+                    stream_timed_out = True
                 break
 
             message = pubsub.get_message(timeout=0.2)
@@ -980,6 +1024,8 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 done = True
 
         pubsub.close()
+        if stream_timed_out:
+            break
 
     yield _sse_event(build_render_event(
             RENDER_EVENT_COMPLETE,

@@ -99,7 +99,10 @@ components:
         (apps/api/services/engine/commons_render_quota.py). 429
         `commons_render_quota_exhausted` carries `quota`; the 503s
         `commons_render_capacity_exhausted` and `commons_render_busy` do not
-        and were not counted. Every one sets `Retry-After`.
+        and were not counted. Every one sets `Retry-After`, which flask-limiter
+        may raise to the end of the route's hourly window;
+        `retry_after_seconds` is exact. A render that fails on the server is
+        refunded.
       properties:
         status:
           type: string
@@ -1274,7 +1277,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommonsRenderLimit"
         "503":
-          description: Render worker unavailable (render_worker_unavailable), or free Commons CadQuery/graph capacity is full (commons_render_capacity_exhausted, commons_render_busy; not counted against the quota)
+          description: Render worker unavailable (render_worker_unavailable; for a free Commons re-render this is checked before anything is charged), or free Commons CadQuery/graph capacity is used up (commons_render_capacity_exhausted, the hourly budget of computed parts) or busy (commons_render_busy, one free render on the worker at a time). None of these counts against the daily quota
           content:
             application/json:
               schema:
@@ -1336,7 +1339,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommonsRenderLimit"
         "503":
-          description: Render worker unavailable (render_worker_unavailable), or free Commons CadQuery/graph capacity is full (commons_render_capacity_exhausted, commons_render_busy; not counted against the quota)
+          description: Render worker unavailable (render_worker_unavailable; for a free Commons re-render this is checked before anything is charged), or free Commons CadQuery/graph capacity is used up (commons_render_capacity_exhausted, the hourly budget of computed parts) or busy (commons_render_busy, one free render on the worker at a time). None of these counts against the daily quota
           content:
             application/json:
               schema:

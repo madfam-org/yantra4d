@@ -409,8 +409,8 @@ The `cadquery_engine` and `graph_engine` keys gate the two B-Rep kernels
 outright (pro and premium). Guest and essentials may still re-render a
 **Commons** cartridge with them through `/api/render*` under
 `commons_brep_renders_per_day` (3 / 10 a day; render-cache hits are free), with
-an hourly ceiling across all free visitors and one free B-Rep render in flight
-at a time: `services/engine/commons_render_quota.py`,
+an hourly budget of computed parts across all free visitors, refunds for renders
+that fail on our side, and one free B-Rep render using the worker at a time: `services/engine/commons_render_quota.py`,
 `docs/guides/rate-limiting.md`. Forks, imports, private cartridges, STEP,
 analysis and print dispatch stay pro.
 

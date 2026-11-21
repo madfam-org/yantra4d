@@ -44,28 +44,108 @@ def _cartridge(root: Path, slug: str, *, meta=None, **kwargs) -> Path:
 
 
 class FakeRedis:
-    """The three commands the free-render lease uses."""
+    """The Redis commands the quota, the lease and the cancel sweep use.
+
+    The four Lua scripts are run as their Python equivalents (``eval`` matches
+    the exact script text); ``TestLuaScriptsOnRealRedis`` runs the real Lua
+    against a real redis-server where one is installed, so the two cannot
+    drift unnoticed.
+    """
 
     def __init__(self):
         self.values: dict[str, str] = {}
+        self.expiry: dict[str, float] = {}
+        self.lists: dict[str, list] = {}
+        self.sets: dict[str, set] = {}
+        self.published: list = []
 
-    def set(self, key, value, nx=False, ex=None):
-        if nx and key in self.values:
-            return None
-        self.values[key] = value
-        return True
+    def _live(self, key):
+        at = self.expiry.get(key)
+        if at is not None and at <= time.time():
+            self.values.pop(key, None)
+            self.expiry.pop(key, None)
+        return key in self.values
 
     def get(self, key):
-        return self.values.get(key)
+        return self.values.get(key) if self._live(key) else None
 
-    def delete(self, key):
-        self.values.pop(key, None)
+    def set(self, key, value, nx=False, ex=None):
+        if nx and self._live(key):
+            return None
+        self.values[key] = str(value)
+        if ex is not None:
+            self.expiry[key] = time.time() + ex
+        else:
+            self.expiry.pop(key, None)
+        return True
+
+    def delete(self, *keys):
+        for key in keys:
+            self.values.pop(key, None)
+            self.expiry.pop(key, None)
+
+    def ttl(self, key):
+        if not self._live(key):
+            return -2
+        at = self.expiry.get(key)
+        return -1 if at is None else max(0, round(at - time.time()))
+
+    def lrange(self, key, _start, _end):
+        return list(self.lists.get(key, []))
+
+    def lrem(self, key, _count, value):
+        self.lists[key] = [v for v in self.lists.get(key, []) if v != value]
+
+    def rpush(self, key, value):
+        self.lists.setdefault(key, []).append(value)
+
+    def smembers(self, key):
+        return set(self.sets.get(key, set()))
+
+    def publish(self, channel, message):
+        self.published.append((channel, message))
+
+    def eval(self, script, _numkeys, key, *args):
+        if script == quota.CHARGE_SCRIPT:
+            cost, limit, window = (int(a) for a in args)
+            used = int(self.get(key) or 0)
+            ttl = self.ttl(key)
+            if used + cost > limit:
+                return [0, used, ttl if ttl >= 0 else window]
+            self.values[key] = str(used + cost)
+            if ttl < 0:
+                self.expiry[key] = time.time() + window
+                ttl = window
+            return [1, used + cost, ttl]
+        if script == quota.REFUND_SCRIPT:
+            if not self._live(key):
+                return 0
+            left = int(self.values[key]) - int(args[0])
+            if left <= 0:
+                self.delete(key)
+            else:
+                self.values[key] = str(left)
+            return left
+        if script == quota.RELEASE_SCRIPT:
+            if self.get(key) == args[0]:
+                self.delete(key)
+                return 1
+            return 0
+        if script == quota.SWAP_SCRIPT:
+            if self.get(key) == args[0]:
+                self.set(key, args[1], ex=int(args[2]))
+                return 1
+            return 0
+        raise AssertionError("unexpected script")
 
 
 @pytest.fixture
 def fake_redis(monkeypatch):
+    from services.engine import render_orchestrator
     fake = FakeRedis()
-    monkeypatch.setattr(quota, "_redis", lambda: fake)
+    # A live worker heartbeat: admission checks for one before charging.
+    fake.set(render_orchestrator.RENDER_WORKER_HEARTBEAT_KEY, str(int(time.time())))
+    monkeypatch.setattr(render_orchestrator, "r", fake)
     return fake
 
 
@@ -134,6 +214,10 @@ def as_tier(monkeypatch):
         # gating tier read it, as in production.
         monkeypatch.setattr("routes.engine.render.resolve_tier", lambda *_a, **_k: tier)
     return seat
+
+
+def _slots(fake):
+    return {k: v for k, v in fake.values.items() if k.startswith(quota.SLOT_KEY_PREFIX)}
 
 
 def _render(client, size, *, project="cq-commons", ip="198.51.100.7", fmt="stl", stream=False, **extra):
@@ -287,7 +371,7 @@ class TestQuota:
         assert res.headers["X-Commons-Render-Remaining"] == "2"
 
     def test_quota_resets_after_the_window(self, client, monkeypatch):
-        monkeypatch.setattr(quota, "QUOTA_WINDOW", "1 second")
+        monkeypatch.setattr(quota, "QUOTA_WINDOW_SECONDS", 1)
         for size in (11, 12, 13):
             assert _render(client, size).status_code == 200
         assert _render(client, 14).status_code == 429
@@ -301,7 +385,7 @@ class TestQuota:
             res = _render(client, size, stream=True)
             assert res.status_code == 200
             res.get_data()  # drain the stream
-            assert fake_redis.values == {}
+            assert _slots(fake_redis) == {}
         res = _render(client, 14, stream=True)
         assert res.status_code == 429
         assert res.get_json()["error_code"] == quota.QUOTA_EXHAUSTED_CODE
@@ -337,7 +421,7 @@ class TestQuota:
 
 class TestBurstBounds:
     def test_one_free_render_at_a_time(self, client, fake_redis):
-        fake_redis.values[f"{quota.SLOT_KEY_PREFIX}0"] = "someone-else"
+        fake_redis.set(f"{quota.SLOT_KEY_PREFIX}0", "live:other:req-x")
         res = _render(client, 11)
         assert res.status_code == 503
         body = res.get_json()
@@ -345,20 +429,22 @@ class TestBurstBounds:
         assert body["retry_after_seconds"] == quota.BUSY_RETRY_AFTER_SECONDS
         assert int(res.headers["Retry-After"]) >= quota.BUSY_RETRY_AFTER_SECONDS - 1
         # Nothing was counted: once the slot frees, all three are there.
-        fake_redis.values.clear()
+        fake_redis.delete(f"{quota.SLOT_KEY_PREFIX}0")
         for size in (11, 12, 13):
             assert _render(client, size).status_code == 200
 
     def test_lease_is_released_after_a_sync_render(self, client, fake_redis):
         assert _render(client, 11).status_code == 200
-        assert fake_redis.values == {}
+        assert _slots(fake_redis) == {}
 
     def test_lease_is_released_when_the_render_raises(self, client, fake_redis, monkeypatch):
         def boom(*_a, **_k):
             raise OSError("disk full")
         monkeypatch.setattr("routes.engine.render.render_parts_sync", boom)
         assert _render(client, 11).status_code == 500
-        assert fake_redis.values == {}
+        assert _slots(fake_redis) == {}
+        # ...and the failure was refunded.
+        assert fake_redis.get(f"{quota.QUOTA_KEY_PREFIX}ip:198.51.100.7") is None
 
     def test_lease_outlives_every_part(self, app):
         from services.engine.render_orchestrator import RENDER_STREAM_PART_TIMEOUT_SECONDS
@@ -366,7 +452,7 @@ class TestBurstBounds:
         assert lease >= 2 * RENDER_STREAM_PART_TIMEOUT_SECONDS
 
     def test_hourly_ceiling_across_all_free_visitors(self, client, monkeypatch):
-        monkeypatch.setenv(quota.GLOBAL_HOURLY_ENV, "2")
+        monkeypatch.setenv(quota.GLOBAL_PARTS_ENV, "2")
         assert _render(client, 11, ip="203.0.113.1").status_code == 200
         assert _render(client, 11, ip="203.0.113.2").status_code == 200
         res = _render(client, 11, ip="203.0.113.3")
@@ -383,7 +469,167 @@ class TestBurstBounds:
         assert res.get_json()["error_code"] == quota.BUSY_CODE
 
 
+class TestSettlement:
+    """Failures on our side are refunded; abandoned work is stopped."""
+
+    GUEST_KEY = f"{quota.QUOTA_KEY_PREFIX}ip:198.51.100.7"
+
+    def test_worker_down_is_refused_before_charging(self, client, fake_redis):
+        from services.engine import render_orchestrator
+        fake_redis.delete(render_orchestrator.RENDER_WORKER_HEARTBEAT_KEY)
+        res = _render(client, 11)
+        assert res.status_code == 503
+        assert res.get_json()["error_code"] == "render_worker_unavailable"
+        assert fake_redis.get(self.GUEST_KEY) is None
+        assert fake_redis.get(quota.GLOBAL_KEY) is None
+
+    def test_a_failed_render_is_refunded(self, client, fake_redis, monkeypatch):
+        def failing(_data, payload, *_a):
+            return [], "[body] ERROR: CadQuery raised\n", (0, 1)
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", failing)
+        for size in (11, 12, 13, 14):
+            assert _render(client, size).status_code == 200
+        assert fake_redis.get(self.GUEST_KEY) is None
+        # Worker time was spent, so the hourly budget keeps the charge.
+        assert fake_redis.get(quota.GLOBAL_KEY) == "4"
+
+    def test_worker_lost_mid_render_is_refunded(self, client, fake_redis, monkeypatch):
+        monkeypatch.setattr("routes.engine.render.render_parts_sync",
+                            lambda *_a: (None, "Render worker unavailable or not healthy", (0, 1)))
+        assert _render(client, 11).status_code == 503
+        assert fake_redis.get(self.GUEST_KEY) is None
+
+    def test_stream_error_is_refunded(self, client, fake_redis, monkeypatch):
+        def erroring(_data, payload, *_a):
+            yield f"data: {json.dumps({'event': 'error', 'error': 'boom'})}\n\n"
+            yield f"data: {json.dumps({'event': 'complete', 'parts': []})}\n\n"
+        monkeypatch.setattr("routes.engine.render.render_parts_stream", erroring)
+        res = _render(client, 11, stream=True)
+        res.get_data()
+        assert fake_redis.get(self.GUEST_KEY) is None
+        assert _slots(fake_redis) == {}
+
+    def test_abandoned_stream_cancels_its_jobs_and_drains_the_lease(self, client, fake_redis, monkeypatch):
+        from services.engine import render_orchestrator
+        cancelled = []
+        monkeypatch.setattr(render_orchestrator, "cancel_request", lambda rid: cancelled.append(rid) or [])
+
+        def long_render(_data, payload, *_a):
+            # The worker has picked the part up and is still rendering it.
+            fake_redis.sets.setdefault(render_orchestrator.ACTIVE_RENDER_JOBS_KEY, set()).add("job-1")
+            fake_redis.set(f"{render_orchestrator.ACTIVE_RENDER_META_PREFIX}job-1",
+                           json.dumps({"request_id": payload["request_id"]}), ex=600)
+            yield f"data: {json.dumps({'event': 'job', 'job_ids': ['job-1']})}\n\n"
+            yield f"data: {json.dumps({'event': 'progress', 'progress': 10})}\n\n"
+        monkeypatch.setattr("routes.engine.render.render_parts_stream", long_render)
+
+        res = _render(client, 11, stream=True, request_id="req-abandoned")
+        assert res.status_code == 200
+        body = iter(res.response)
+        next(body)  # the first event reaches the visitor...
+        res.close()  # ...who goes away before `complete`
+        assert cancelled == ["req-abandoned"]
+        # Not refunded: the visitor walked away, the server did not fail.
+        assert fake_redis.get(self.GUEST_KEY) == "1"
+        # The worker is still stopping, so the lease drains instead of freeing.
+        [(key, value)] = _slots(fake_redis).items()
+        assert value.startswith("drain:") and value.endswith(":req-abandoned")
+        assert 0 < fake_redis.ttl(key) <= render_orchestrator.ACTIVE_JOB_META_TTL
+
+        monkeypatch.setattr("routes.engine.render.render_parts_stream",
+                            lambda *_a: iter([f"data: {json.dumps({'event': 'complete', 'parts': []})}\n\n"]))
+        busy = _render(client, 12, ip="198.51.100.8")
+        assert busy.status_code == 503 and busy.get_json()["error_code"] == quota.BUSY_CODE
+        # Once the worker lets go of the job, the next free render takes the lease over.
+        fake_redis.sets[render_orchestrator.ACTIVE_RENDER_JOBS_KEY].clear()
+        assert _render(client, 12, ip="198.51.100.8").status_code == 200
+
+    def test_a_never_iterated_stream_does_not_leak_the_lease(self, client, fake_redis):
+        res = _render(client, 11, stream=True)
+        assert res.status_code == 200
+        res.close()  # closed without reading a byte
+        assert _slots(fake_redis) == {}
+
+    def test_global_budget_is_charged_per_computed_part(self, client, fake_redis, monkeypatch):
+        monkeypatch.setenv(quota.GLOBAL_PARTS_ENV, "3")
+        assert _render(client, 11, project="cq-two-parts", ip="203.0.113.1").status_code == 200
+        assert fake_redis.get(quota.GLOBAL_KEY) == "2"
+        res = _render(client, 11, project="cq-two-parts", ip="203.0.113.2")
+        assert res.status_code == 503
+        assert res.get_json()["error_code"] == quota.CAPACITY_EXHAUSTED_CODE
+        assert _render(client, 11, ip="203.0.113.3").status_code == 200
+        assert fake_redis.get(quota.GLOBAL_KEY) == "3"
+
+
+class TestMeteredTimeoutStopsTheWorker:
+    def test_sync_timeout_cancels_the_job_and_stops_queueing(self, app, fake_redis, monkeypatch):
+        from services.engine import render_orchestrator as orch
+
+        class SilentPubSub:
+            def subscribe(self, *_a):
+                pass
+
+            def get_message(self, timeout=0):
+                return None
+
+            def close(self):
+                pass
+
+        fake_redis.pubsub = lambda **_k: SilentPubSub()
+        monkeypatch.setattr(orch, "RENDER_PART_WAIT_TIMEOUT_SECONDS", 0)
+        cancelled = []
+        monkeypatch.setattr(orch, "cancel_render_jobs", lambda ids: cancelled.extend(ids) or list(ids))
+
+        payload = orch.extract_render_payload({"project": "cq-two-parts", "mode": "body",
+                                               "parameters": {}, "export_format": "stl"})
+        payload[quota.METERED_FLAG] = True
+        parts, log, _stats = orch.render_parts_sync({}, payload, "cadquery", payload["scad_path"], "stl", "guest")
+        assert parts == []
+        assert "timed out" in log
+        queued = fake_redis.lists.get(orch.RENDER_QUEUE, [])
+        assert len(queued) == 1, "the second part must not be queued after a timeout"
+        assert cancelled == [json.loads(queued[0])["job_id"]]
+
+
+class TestClientAddress:
+    def test_cloudflare_address_keys_every_anonymous_bucket(self, app):
+        from extensions import tiered_rate_key
+        from routes.engine.render import _rate_limit_key
+        with app.test_request_context(headers={"CF-Connecting-IP": "203.0.113.9"}):
+            assert tiered_rate_key() == "ip:203.0.113.9"
+            assert _rate_limit_key() == "ip:203.0.113.9"
+            assert quota.quota_identity() == "ip:203.0.113.9"
+
+    def test_ipv6_is_keyed_by_its_64(self, app):
+        from utils.client_ip import client_ip
+        with app.test_request_context(headers={"CF-Connecting-IP": "2001:db8:1:2:aaaa::1"}):
+            assert client_ip() == "2001:db8:1:2::/64"
+
+    def test_a_non_address_header_is_ignored(self, app):
+        from utils.client_ip import client_ip
+        with app.test_request_context(headers={"CF-Connecting-IP": "not-an-ip"},
+                                      environ_base={"REMOTE_ADDR": "10.0.0.5"}):
+            assert client_ip() == "10.0.0.5"
+
+    def test_guests_no_longer_share_the_hourly_render_bucket(self, client, cache):
+        cache.add(50)  # cache hits: only the hourly bucket is involved
+        for _ in range(10):
+            assert _render(client, 50, ip="198.51.100.20").status_code == 200
+        limited = _render(client, 50, ip="198.51.100.20")
+        assert limited.status_code == 429
+        assert (limited.get_json(silent=True) or {}).get("error_code") != quota.QUOTA_EXHAUSTED_CODE
+        assert _render(client, 50, ip="198.51.100.21").status_code == 200
+
+
 class TestCommonsCartridge:
+    def test_private_flag_is_not_commons(self, app, monkeypatch):
+        from manifest import get_manifest
+        manifest = get_manifest("cq-commons")
+        assert quota.is_commons_cartridge(manifest)
+        monkeypatch.setattr("services.core.project_access.is_private_project",
+                            lambda slug, _m=None: slug == "cq-commons")
+        assert not quota.is_commons_cartridge(manifest)
+
     def test_private_root_is_not_commons(self, app, tmp_path):
         from config import Config
         from manifest import ProjectManifest
@@ -401,3 +647,78 @@ class TestCommonsCartridge:
         assert quota.is_commons_cartridge(manifest)
         monkeypatch.setattr(Config, "USER_PROJECTS_DIR", Config.PROJECTS_DIR)
         assert not quota.is_commons_cartridge(manifest)
+
+
+@pytest.fixture(scope="module")
+def real_redis():
+    """A throwaway redis-server, where one is installed (skipped otherwise)."""
+    import shutil
+    import socket
+    import subprocess
+
+    binary = shutil.which("redis-server")
+    if binary is None:
+        pytest.skip("redis-server not installed")
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        port = sock.getsockname()[1]
+    proc = subprocess.Popen(
+        [binary, "--port", str(port), "--save", "", "--appendonly", "no", "--bind", "127.0.0.1"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    import redis
+    client = redis.Redis(host="127.0.0.1", port=port, decode_responses=True)
+    for _ in range(50):
+        try:
+            client.ping()
+            break
+        except redis.ConnectionError:
+            time.sleep(0.1)
+    else:  # pragma: no cover - environment problem
+        proc.kill()
+        pytest.skip("redis-server did not start")
+    yield client
+    proc.terminate()
+    proc.wait(timeout=10)
+
+
+class TestLuaScriptsOnRealRedis:
+    """The Lua the module sends, against real Redis, matched step for step by FakeRedis."""
+
+    def _both(self, real, fake, script, key, *args):
+        got = real.eval(script, 1, key, *args)
+        expected = fake.eval(script, 1, key, *(str(a) for a in args))
+        assert [int(x) for x in got] == [int(x) for x in expected] if isinstance(got, list) else int(got) == int(expected)
+        return got
+
+    def test_charge_and_refund(self, real_redis):
+        fake, key = FakeRedis(), "t:quota"
+        real_redis.delete(key)
+        assert self._both(real_redis, fake, quota.CHARGE_SCRIPT, key, 1, 2, 100)[:2] == [1, 1]
+        assert self._both(real_redis, fake, quota.CHARGE_SCRIPT, key, 1, 2, 100)[:2] == [1, 2]
+        assert self._both(real_redis, fake, quota.CHARGE_SCRIPT, key, 1, 2, 100)[:2] == [0, 2]
+        assert 0 < real_redis.ttl(key) <= 100
+        assert int(self._both(real_redis, fake, quota.REFUND_SCRIPT, key, 1)) == 1
+        assert int(self._both(real_redis, fake, quota.REFUND_SCRIPT, key, 1)) == 0
+        assert real_redis.exists(key) == 0
+        # A refund never creates a counter.
+        assert int(self._both(real_redis, fake, quota.REFUND_SCRIPT, key, 1)) == 0
+        assert real_redis.exists(key) == 0
+
+    def test_charge_by_cost(self, real_redis):
+        fake, key = FakeRedis(), "t:global"
+        real_redis.delete(key)
+        assert self._both(real_redis, fake, quota.CHARGE_SCRIPT, key, 2, 3, 100)[:2] == [1, 2]
+        assert self._both(real_redis, fake, quota.CHARGE_SCRIPT, key, 2, 3, 100)[:2] == [0, 2]
+        assert self._both(real_redis, fake, quota.CHARGE_SCRIPT, key, 1, 3, 100)[:2] == [1, 3]
+
+    def test_release_and_swap_only_their_own_lease(self, real_redis):
+        fake, key = FakeRedis(), "t:slot"
+        for client in (real_redis, fake):
+            client.set(key, "live:a:r1", ex=100)
+        assert int(self._both(real_redis, fake, quota.RELEASE_SCRIPT, key, "live:b:r2")) == 0
+        assert int(self._both(real_redis, fake, quota.SWAP_SCRIPT, key, "live:a:r1", "drain:a:r1", 50)) == 1
+        assert real_redis.get(key) == "drain:a:r1" and 0 < real_redis.ttl(key) <= 50
+        assert int(self._both(real_redis, fake, quota.SWAP_SCRIPT, key, "live:a:r1", "x", 50)) == 0
+        assert int(self._both(real_redis, fake, quota.RELEASE_SCRIPT, key, "drain:a:r1")) == 1
+        assert real_redis.exists(key) == 0

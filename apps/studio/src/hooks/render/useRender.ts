@@ -72,6 +72,15 @@ export interface GenerateOptions {
    * toast rather than confirmed with a modal; see handleGenerate.
    */
   automatic?: boolean
+  /**
+   * True when the visitor has just confirmed the long-render estimate dialog.
+   * It skips the estimate, and ONLY the estimate: the render still uses the
+   * caches. Confirming used to call handleGenerate(true), which also sent
+   * `ignore_cache: true` — a fresh server render (and, for a free tier, one of
+   * its daily Commons re-renders) for a result the cache already held.
+   * `forceRender` stays the explicit "Force regenerate".
+   */
+  confirmed?: boolean
 }
 
 interface UseRenderResult {
@@ -129,7 +138,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
     delete partsCacheRef.current[key]
   }, [])
 
-  const handleGenerate = useCallback(async (forceRender: boolean = false, overridePayload: Record<string, unknown> | null = null, { automatic = false }: GenerateOptions = {}) => {
+  const handleGenerate = useCallback(async (forceRender: boolean = false, overridePayload: Record<string, unknown> | null = null, { automatic = false, confirmed = false }: GenerateOptions = {}) => {
     const payload = overridePayload || { ...params, mode }
     const cacheKey = getCacheKey(mode, params)
 
@@ -223,7 +232,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
       return
     }
 
-    if (!forceRender) {
+    if (!forceRender && !confirmed) {
       const estimate = estimateRenderTime(mode, params, manifest as unknown as Parameters<typeof estimateRenderTime>[2])
       const threshold = manifest.estimate_constants?.warning_threshold_seconds || 60
       if (estimate > threshold) {
@@ -386,7 +395,7 @@ export function useRender({ mode, params, manifest, t, getCacheKey, project, exp
 
   const handleConfirmRender = useCallback(() => {
     setShowConfirmDialog(false)
-    handleGenerate(true, pendingPayload)
+    handleGenerate(false, pendingPayload, { confirmed: true })
   }, [handleGenerate, pendingPayload])
 
   const handleCancelRender = useCallback(() => {

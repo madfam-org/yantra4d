@@ -268,7 +268,9 @@ daily quota is never spent on renders nobody asked for. The server decides
 whether the cartridge is Commons (anything else still 403s). A spent quota
 (429 `commons_render_quota_exhausted`, `src/lib/commonsQuota.ts`) opens the
 upgrade dialog with a notice saying when more are available; busy free
-capacity (503) is a notice only.
+capacity (503) is a notice only. Confirming the long-render dialog passes
+`{ confirmed: true }` and keeps the caches; only Force regenerate
+(`handleGenerate(true)`) sends `ignore_cache`.
 
 ### Geometry core (WASM) — experimental
 

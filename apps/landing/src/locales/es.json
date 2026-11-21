@@ -18,7 +18,7 @@
     "subtitle": "Yantra4D es el configurador y visor 3D del Procomún de Hiperobjetos: {cartridges} diseños abiertos, cada uno una familia completa de objetos. Elige los parámetros, mira esa instancia exacta en 3D, expórtala e imprímela."
   },
   "gallery": {
-    "heading": "El Procomún de Hiperobjetos",
+    "heading": "Explora el Procomún",
     "subtitle": "Hardware abierto y paramétrico que puedes redimensionar, remezclar y fabricar — cada cartucho libre, para siempre. Abre uno en Studio y ajústalo a tus dimensiones.",
     "categories": {
       "all": "Todos",
@@ -60,10 +60,6 @@
       "title": "Funciona en Tu Navegador",
       "desc": "Sin instalar nada. Sin cuenta. Abre un enlace y empieza a personalizar."
     },
-    "compare": {
-      "title": "Compara Antes de Decidir",
-      "desc": "Pon de dos a cuatro variaciones lado a lado, con una sola cámara para todas."
-    },
     "viewer": {
       "title": "Inspecciónalo en 3D",
       "desc": "Mide entre puntos, haz un corte de sección, cambia entre mm y pulgadas, guarda vistas como imágenes."
@@ -77,7 +73,7 @@
     "heading": "Hecho para Creadores",
     "subtitle": "Suma al Procomún, o construye sobre él. Cada cartucho es código más un manifiesto JSON, en un repositorio público.",
     "upload": {
-      "title": "Contribuye un Cartucho",
+      "title": "Aporta un Cartucho",
       "desc": "Abre un pull request en el repositorio público del Procomún con tu código OpenSCAD o CadQuery y su manifiesto. Al integrarse, aparece en el Procomún con su propio configurador."
     },
     "share": {
@@ -86,7 +82,7 @@
     },
     "control": {
       "title": "Controla Todo",
-      "desc": "Parámetros, modos, preajustes, restricciones, verificaciones, barridos, interfaces CDG, pasos de ensamblaje, BOM — un solo manifiesto JSON."
+      "desc": "Parámetros, modos, preajustes, restricciones, verificaciones, animaciones (barridos de parámetros), interfaces CDG, pasos de ensamblaje, BOM — un solo manifiesto JSON."
     },
     "multiProject": {
       "title": "Haz Fork y Edita en Pro",
@@ -125,7 +121,7 @@
         "desc": "Declara parámetros, modos, preajustes e interfaces en el manifiesto."
       },
       "step3": {
-        "title": "Contribúyelo",
+        "title": "Apórtalo",
         "desc": "Abre un pull request al Procomún. Al integrarse, cualquiera puede configurarlo y exportarlo."
       }
     }
@@ -147,14 +143,14 @@
   },
   "pricing": {
     "heading": "Precios",
-    "subheading": "El Procomún es gratis para siempre: cada diseño es hardware abierto que puedes descargar, bifurcar e imprimir. Los planes de pago financian los servidores que lo renderizan, verifican y fabrican.",
+    "subheading": "El Procomún es gratis para siempre: cada diseño es hardware abierto que puedes descargar, imprimir y adaptar con un fork. Los planes de pago financian los servidores que lo renderizan, verifican y fabrican.",
     "free": {
       "name": "Explorador",
       "price": "Gratis",
-      "f1": "Explora los {cartridges} cartuchos con vista previa 3D",
+      "f1": "Explora los {cartridges} cartuchos abiertos",
       "f2": "Personaliza cualquier cartucho del Procomún + exportación STL",
       "f3": "{guestRenders} renders en servidor por hora",
-      "f4": "{guestCommonsRenders} renders a medida al día de cartuchos CadQuery y de grafo",
+      "f4": "Hasta {guestCommonsRenders} renders a medida al día de cartuchos CadQuery y de grafo",
       "cta": "Abrir el estudio"
     },
     "essentials": {
@@ -163,7 +159,7 @@
       "f1": "{essentialsRenders} renders en servidor por hora",
       "f2": "Exportación 3MF y OBJ",
       "f3": "Configurador con IA",
-      "f4": "{essentialsCommonsRenders} renders a medida al día de cartuchos CadQuery y de grafo",
+      "f4": "Hasta {essentialsCommonsRenders} renders a medida al día de cartuchos CadQuery y de grafo",
       "cta": "Crear cuenta"
     },
     "pro": {
@@ -229,15 +225,15 @@
     },
     "impactHeading": "Impacto Real",
     "impact1label": "Cartuchos abiertos",
-    "impact2label": "Estándares referidos",
+    "impact2label": "Estándares citados",
     "impact3label": "Interfaces declaradas",
     "impact4label": "diseños",
     "impact4value": "CERN OHL",
-    "impact5label": "Prendas en el procomún blando",
+    "impact5label": "Prendas en el Procomún blando",
     "impact6label": "Vínculos de hardware verificados",
     "fourDHeading": "Qué significa el 4D",
     "fourDBody": "Cada cartucho es geometría 3D más un eje adicional: sus parámetros y, al reproducirse, el tiempo. Cada punto de ese eje es un sólido 3D exacto e imprimible. Yantra4D proyecta la familia a la instancia que eliges — la que ves en el visor, la que exportas, la que imprimes.",
-    "fourDSweeps": "Algunos cartuchos también declaran barridos: un recorrido de un estado de parámetros a otro a lo largo del tiempo, muestreado en cuadros, para que veas a la familia cambiar de forma — un brazo que extiende su alcance, un engrane que gana dientes.",
+    "fourDSweeps": "Algunos cartuchos también declaran barridos: un recorrido de un estado de parámetros a otro a lo largo del tiempo, muestreado en cuadros, para reproducir a la familia cambiando de forma (la reproducción en Studio es función de Pro) — un brazo que extiende su alcance, un engrane que gana dientes.",
     "fourDSteps": [
       "Familia (4D)",
       "Tus parámetros",
@@ -307,7 +303,7 @@
     "heading": "Tu próxima impresión empieza en el Procomún",
     "subtitle": "Sin cuenta. Sin instalar nada. Solo abre.",
     "ctaMakers": "Explorar Galería",
-    "ctaCreators": "Contribuye un Diseño"
+    "ctaCreators": "Aporta un Diseño"
   },
   "choosePath": {
     "title": "Elige Tu Camino",
@@ -324,7 +320,7 @@
     },
     "commons": {
       "title": "El Procomún",
-      "desc": "{cartridges} diseños de hardware abierto bajo CERN-OHL-W, en un repositorio público que cualquiera puede bifurcar y al que cualquiera puede contribuir.",
+      "desc": "{cartridges} diseños de hardware abierto bajo CERN-OHL-W, en un repositorio público del que cualquiera puede hacer fork y al que cualquiera puede aportar.",
       "action": "Entrar a la Biblioteca"
     }
   },
@@ -369,7 +365,7 @@
       "copyleftTitle": "Licencia Copyleft",
       "copyleftDesc": "Los diseños llevan CERN-OHL-W, la licencia de hardware del CERN de reciprocidad débil: los cambios a un diseño siguen abiertos, y el diseño puede integrarse en un producto junto a piezas con otras licencias. La plataforma es AGPLv3.",
       "globalTitle": "Estándares Globales",
-      "globalDesc": "Construido sobre estándares reales métricos e imperiales, citados en cada manifiesto.",
+      "globalDesc": "Construido sobre estándares reales métricos e imperiales, citados en los manifiestos.",
       "joinTitle": "Únete al Movimiento",
       "joinBody": "Comienza tu viaje explorando el Procomún existente o configurando tu primer Hiperobjeto.",
       "browseBtn": "Explorar el Procomún"
@@ -406,9 +402,9 @@
     "prev": "Proyecto anterior",
     "next": "Proyecto siguiente",
     "live": "Render 3D en vivo",
-    "stillStrip": "Una selección del procomún — abre cualquiera en Studio.",
+    "stillStrip": "Una selección del Procomún — abre cualquiera en Studio.",
     "hyperobject": "Hiperobjeto",
-    "loading": "Cargando el procomún…",
+    "loading": "Cargando el Procomún…",
     "domains": {
       "household": "Hogar",
       "industrial": "Industrial",

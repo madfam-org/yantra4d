@@ -18,7 +18,7 @@
     "subtitle": "Yantra4D is the configurator and 3D viewer of the Hyperobjects Commons: {cartridges} open designs, each one a whole family of objects. Choose the parameters, see that exact instance in 3D, export it and print it."
   },
   "gallery": {
-    "heading": "The Hyperobjects Commons",
+    "heading": "Browse the Commons",
     "subtitle": "Open, parametric hardware you can resize, remix and manufacture — every cartridge free, forever. Open one in Studio and set it to your dimensions.",
     "categories": {
       "all": "All",
@@ -60,10 +60,6 @@
       "title": "Works in Your Browser",
       "desc": "No install. No account. Open a link, start customizing."
     },
-    "compare": {
-      "title": "Compare Before You Commit",
-      "desc": "Put two to four variations side by side, with one camera for all of them."
-    },
     "viewer": {
       "title": "Inspect It in 3D",
       "desc": "Measure between points, cut a section, switch mm and inches, save views as images."
@@ -86,7 +82,7 @@
     },
     "control": {
       "title": "Control Everything",
-      "desc": "Parameters, modes, presets, constraints, verification checks, sweeps, CDG interfaces, assembly steps, BOM — one JSON manifest."
+      "desc": "Parameters, modes, presets, constraints, verification checks, animations (parameter sweeps), CDG interfaces, assembly steps, BOM — one JSON manifest."
     },
     "multiProject": {
       "title": "Fork and Edit on Pro",
@@ -151,10 +147,10 @@
     "free": {
       "name": "Explorer",
       "price": "Free",
-      "f1": "Browse all {cartridges} cartridges with a 3D preview",
+      "f1": "Browse all {cartridges} open cartridges",
       "f2": "Customize any cartridge in the Commons + STL export",
       "f3": "{guestRenders} server renders per hour",
-      "f4": "{guestCommonsRenders} custom renders a day of CadQuery and graph cartridges",
+      "f4": "Up to {guestCommonsRenders} custom renders a day of CadQuery and graph cartridges",
       "cta": "Open the studio"
     },
     "essentials": {
@@ -163,7 +159,7 @@
       "f1": "{essentialsRenders} server renders per hour",
       "f2": "3MF and OBJ exports",
       "f3": "AI configurator",
-      "f4": "{essentialsCommonsRenders} custom renders a day of CadQuery and graph cartridges",
+      "f4": "Up to {essentialsCommonsRenders} custom renders a day of CadQuery and graph cartridges",
       "cta": "Create an account"
     },
     "pro": {
@@ -237,7 +233,7 @@
     "impact6label": "Verified hardware links",
     "fourDHeading": "What the 4D means",
     "fourDBody": "Every cartridge is 3D geometry plus one more axis: its parameters, and, played back, time. Each point along that axis is one exact, printable 3D solid. Yantra4D projects the family down to the instance you choose — the one you see in the viewer, the one you export, the one you print.",
-    "fourDSweeps": "Some cartridges also declare sweeps: a path from one parameter state to another over time, sampled into frames, so you can watch the family change shape — an arm extending its reach, a gear growing its teeth.",
+    "fourDSweeps": "Some cartridges also declare sweeps: a path from one parameter state to another over time, sampled into frames, so the family can be played changing shape (playback in Studio is a Pro feature) — an arm extending its reach, a gear growing its teeth.",
     "fourDSteps": [
       "Family (4D)",
       "Your parameters",
@@ -369,7 +365,7 @@
       "copyleftTitle": "Copyleft Licensed",
       "copyleftDesc": "Designs carry CERN-OHL-W, the weakly reciprocal CERN hardware licence: changes to a design stay open, and the design can still go into a product next to parts under other licences. The platform itself is AGPLv3.",
       "globalTitle": "Global Standards",
-      "globalDesc": "Built on real metric and imperial standards, cited in each manifest.",
+      "globalDesc": "Built on real metric and imperial standards, cited in the manifests.",
       "joinTitle": "Join the Movement",
       "joinBody": "Start your journey by exploring the existing Commons or configuring your first Hyperobject.",
       "browseBtn": "Browse the Commons"

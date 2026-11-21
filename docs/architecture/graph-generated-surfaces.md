@@ -133,9 +133,11 @@ turns on.
 | `destructive` text on background/card (constraint messages) | 3.76 | 1.99 | 4.5 |
 | `destructive-foreground` on `destructive` (destructive button) | 3.60 | 9.59 | 4.5 |
 | `input` border on background (field boundary) | 1.27 | 1.34 | 3.0 |
+| `primary` on `secondary` (slider's filled range on its track) | passes | 2.86 | 3.0 |
 
 Everything else the configurator uses clears its floor. The fixes are token work (a readable
-error token, as `primary-readable` was for accent text, and a field boundary that clears 3:1).
+error token, as `primary-readable` was for accent text, a field boundary that clears 3:1, and a
+dark slider track or range that clears 3:1).
 They are left to the world workshop or a token PR, and the ratchet makes each fix update the test.
 
 ## 6. Next steps

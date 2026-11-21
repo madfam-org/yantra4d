@@ -98,6 +98,7 @@ const RECORDED_DEBT: ReadonlyArray<{ theme: Theme; fg: string; bg: string }> = [
   { theme: 'light', fg: 'destructive', bg: 'card' }, // 3.76
   { theme: 'dark', fg: 'destructive', bg: 'background' }, // 1.99
   { theme: 'dark', fg: 'destructive', bg: 'card' }, // 1.99
+  { theme: 'dark', fg: 'primary', bg: 'secondary' }, // 2.86
   { theme: 'light', fg: 'input', bg: 'background' }, // 1.27
   { theme: 'dark', fg: 'input', bg: 'background' }, // 1.34
 ]

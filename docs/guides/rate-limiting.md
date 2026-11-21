@@ -104,6 +104,15 @@ or a partial render is **not** refunded, because the visitor's own parameters
 can cause them; neither is a render the visitor cancels or abandons. The
 outcome is read from the render loop's structured status, never from the log
 (the CadQuery runner echoes the visitor's parameters into it).
+
+Some charged outcomes are ours, and are charged anyway rather than guessed at
+from worker heartbeats: a render worker that crashes in the middle of a part,
+and time a free render spends queued behind Pro renders, both show up as a
+**timeout** (charged); a platform admin's cancel-all shows up as a
+**cancellation** (charged); gunicorn killing a request that ran past
+`--timeout` (a `SystemExit`) is a **failed render** (charged). A free render
+waits at most 270 s from when its request arrived, and a part is never queued
+once that time is up.
 Before charging, admission checks the render worker's heartbeat: with no
 worker the answer is 503 `render_worker_unavailable` and nothing is charged.
 The hourly `backend_renders_per_hour` bucket still applies on top. The window
@@ -160,7 +169,11 @@ tunnel, so the socket address is the tunnel's for every visitor. Since this
 change every anonymous key — the app-wide limiter (`extensions.tiered_rate_key`),
 the hourly render bucket and this quota — uses `utils/client_ip.py`: the
 `CF-Connecting-IP` header when it holds a valid address (Cloudflare overwrites
-it at the edge), else the socket address; IPv6 is keyed by its /64. Before it,
+it at the edge), else the socket address; IPv6 is keyed by its /64 (one
+subscriber normally holds a whole /64). A visitor with many IPv6 prefixes, or
+many addresses, still gets one daily quota per prefix or address: what bounds
+them is the global hourly budget of computed parts, shared by every free
+visitor. Before it,
 all anonymous visitors shared one bucket per limit. Trust boundary: an
 in-cluster caller can set the header to anything; accepted because those
 callers are our own services.

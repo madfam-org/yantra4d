@@ -30,7 +30,9 @@ from services.core.tier_service import (
     resolve_tier,
 )
 from services.engine.commons_render_quota import (
+    INFRA_EXCEPTIONS,
     METERED_FLAG,
+    OUTCOME_FAILED,
     OUTCOME_INFRA,
     admit_metered_render,
     outcome_of,
@@ -271,13 +273,18 @@ def render_stl():
         generated_parts, log_or_error, cache_stats = render_parts_sync(
             data, payload, engine, scad_path, actual_format, tier, **metered,
         )
-    except BaseException as e:
-        # An exception here is ours (OSError, Redis): settle as an
-        # infrastructure failure (refunded) before answering.
+    except INFRA_EXCEPTIONS as e:
+        # Our infrastructure failed (OSError, Redis): refunded.
         if grant is not None:
             grant.finish(OUTCOME_INFRA)
         if isinstance(e, OSError):
             return error_response(str(e))
+        raise
+    except BaseException:
+        # Anything else — a bug, or gunicorn's SystemExit on its worker
+        # timeout — is a failed render: settled, not refunded, re-raised.
+        if grant is not None:
+            grant.finish(OUTCOME_FAILED)
         raise
     if grant is not None:
         grant.finish(outcome_of(grant.status))

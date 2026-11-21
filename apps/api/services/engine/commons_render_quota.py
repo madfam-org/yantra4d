@@ -27,13 +27,20 @@ fixed-window counters updated by Lua so a charge and its expiry are atomic and
 a charge can be refunded:
 
 1. **Per identity, per day** — ``commons_brep_renders_per_day`` from the tier,
-   keyed by user id when signed in and by ``utils.client_ip`` otherwise. One
+   keyed by user id when signed in and by ``utils.client_ip`` otherwise
+   (IPv6 by /64; a visitor holding many prefixes gets one quota per prefix,
+   and it is the global budget in (2) that bounds them). One
    unit is one render request with at least one part to compute. A request
    whose parts are all static or already in the render cache is served without
-   touching the quota. Only a failure of OUR infrastructure is refunded (the
-   worker lost, an exception such as OSError or a Redis error). A timeout, a
-   script error or a partial render is not: the visitor's own parameters can
-   cause those. Outcomes come from the render loop's structured
+   touching the quota. Only a failure of OUR infrastructure is refunded: no
+   live worker to hand a part to, or one of ``INFRA_EXCEPTIONS`` (OSError, a
+   Redis error) during the render. A timeout, a script error or a partial
+   render is not: the visitor's own parameters can cause those. Some charged
+   outcomes are ours, and are deliberately NOT refunded rather than guessed
+   at from heartbeats: a worker that crashes mid-part, and time spent queued
+   behind Pro renders, both surface as a timeout; an operator's cancel-all
+   surfaces as a cancellation; gunicorn killing a slow request (SystemExit)
+   is a failed render. Outcomes come from the render loop's structured
    ``RenderStatus``, never from log text, which echoes the visitor's
    parameters.
 2. **Worker time for all free tiers together, per hour** —
@@ -90,7 +97,8 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flask import Response, request
+import redis
+from flask import Response, g, has_request_context, request
 
 from config import Config
 from services.core.tier_service import check_feature, get_tier_limits, is_unlimited
@@ -142,6 +150,11 @@ LEASE_REFRESH_SECONDS = 10
 #: settled by us — its job cancelled, its lease released — instead of its
 #: gunicorn worker being killed mid-request.
 METERED_MAX_WAIT_SECONDS = 270
+
+#: Exceptions that mean OUR infrastructure failed, and so are refunded. Anything
+#: else raised during a render — a bug, or gunicorn's SystemExit on its worker
+#: timeout — settles as a failed render, not refunded.
+INFRA_EXCEPTIONS = (OSError, redis.RedisError)
 
 #: How a metered render ended, settled by `MeteredRender.finish`.
 OUTCOME_OK = "ok"                # every part delivered
@@ -436,7 +449,10 @@ class MeteredRender:
         self.identity_key = identity_key
         self.headers = headers or {}
         self.status = RenderStatus()
-        self.deadline = time.time() + METERED_MAX_WAIT_SECONDS
+        started = getattr(g, "request_started_at", None) if has_request_context() else None
+        # Measured from when the request ARRIVED (middleware/request_id.py),
+        # since gunicorn's timeout counts from there too.
+        self.deadline = (started or time.time()) + METERED_MAX_WAIT_SECONDS
         self._last_refresh = time.time()
         self._finished = False
 
@@ -498,8 +514,10 @@ class MeteredRender:
     def wrap_stream(self, events):
         """Yield ``events``; settle from ``status`` when they end.
 
-        A client that goes away (GeneratorExit) is an abort; an exception
-        raised while producing the stream is an infrastructure failure.
+        A client that goes away (GeneratorExit) is an abort; one of OUR
+        exceptions (``INFRA_EXCEPTIONS``) is an infrastructure failure; any
+        other exception, or SystemExit/KeyboardInterrupt (gunicorn's worker
+        timeout), is a failed render and is not refunded.
         """
         outcome = OUTCOME_ABORTED
         try:
@@ -508,8 +526,11 @@ class MeteredRender:
         except GeneratorExit:
             outcome = OUTCOME_ABORTED
             raise
-        except Exception:
+        except INFRA_EXCEPTIONS:
             outcome = OUTCOME_INFRA
+            raise
+        except BaseException:
+            outcome = OUTCOME_FAILED
             raise
         finally:
             self.finish(outcome)

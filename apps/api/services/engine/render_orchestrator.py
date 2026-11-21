@@ -7,6 +7,7 @@ import json
 import logging
 import math
 import os
+import re
 import time
 import uuid
 from dataclasses import dataclass
@@ -264,6 +265,20 @@ def resolve_render_context(data: dict):
             manifest.get_static_stl_map(), mode_id)
 
 
+#: A caller-supplied request id is used only if it is this shape; anything else
+#: (a number, an object, an over-long or odd string) gets a server-minted one.
+#: A non-string id never matches the string ids the cancel sweep and the free
+#: render lease compare against, so an abandoned render could not be stopped.
+_REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+
+
+def _request_id_from(data: dict) -> str:
+    raw = data.get("request_id")
+    if isinstance(raw, str) and _REQUEST_ID_RE.match(raw):
+        return raw
+    return str(uuid.uuid4())
+
+
 def extract_render_payload(data: dict) -> dict | RenderPayloadError:
     """Extract and validate all render payload fields from request data.
 
@@ -341,7 +356,7 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         'mode_map': mode_map,
         'stl_prefix': stl_prefix,
         'mode': mode_id,
-        'request_id': data.get("request_id") or str(uuid.uuid4()),
+        'request_id': _request_id_from(data),
         'export_format': export_format,
         'params': params,
         'static_stl_map': static_stl_map,
@@ -793,6 +808,12 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
             status.completed_parts += 1
             continue
 
+        if deadline is not None and time.time() >= deadline:
+            # Out of time before this part was even queued: do not start it.
+            combined_log += f"[{part}] ERROR: Render timed out before this part was queued\n"
+            status.timed_out = True
+            break
+
         if not is_render_worker_available():
             status.worker_lost = True
             return None, "Render worker unavailable or not healthy", (cache_hits, cache_total)
@@ -966,6 +987,17 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 )
             )
             continue
+
+        if deadline is not None and time.time() >= deadline:
+            # Out of time before this part was even queued: do not start it.
+            status.timed_out = True
+            yield _sse_event(build_render_event(
+                RENDER_EVENT_ERROR,
+                part=part,
+                error="Render stream timed out before this part was queued",
+                message="Render stream timed out before this part was queued",
+            ))
+            break
 
         if not is_render_worker_available():
             status.worker_lost = True

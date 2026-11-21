@@ -689,6 +689,67 @@ class TestSettlement:
         assert _slots(fake_redis) == {}
 
 
+class TestExceptionsAndRequestIds:
+    GUEST_KEY = f"{quota.QUOTA_KEY_PREFIX}ip:198.51.100.7"
+
+    def test_gunicorns_timeout_is_not_refunded(self, client, fake_redis, monkeypatch):
+        def killed(*_a, **_k):
+            raise SystemExit(1)  # what gunicorn raises in a worker past --timeout
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", killed)
+        with pytest.raises(SystemExit):
+            _render(client, 11)
+        assert fake_redis.get(self.GUEST_KEY) == "1"
+        assert _slots(fake_redis) == {}
+
+    def test_a_redis_error_is_refunded(self, client, fake_redis, monkeypatch):
+        import redis
+
+        def blip(*_a, **_k):
+            raise redis.ConnectionError("render redis went away")
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", blip)
+        assert _render(client, 11).status_code == 500
+        assert fake_redis.get(self.GUEST_KEY) is None
+
+    def test_a_bug_is_not_refunded(self, client, fake_redis, monkeypatch):
+        def bug(*_a, **_k):
+            raise KeyError("parts")
+        monkeypatch.setattr("routes.engine.render.render_parts_sync", bug)
+        assert _render(client, 11).status_code == 500
+        assert fake_redis.get(self.GUEST_KEY) == "1"
+
+    @pytest.mark.parametrize("raw", [5, ["x"], {"a": 1}, "", "has space", "x" * 129, "semi;colon"])
+    def test_an_unusable_request_id_is_replaced(self, app, raw):
+        from services.engine.render_orchestrator import extract_render_payload
+        payload = extract_render_payload({"project": "cq-commons", "mode": "body", "parameters": {},
+                                          "export_format": "stl", "request_id": raw})
+        assert isinstance(payload["request_id"], str) and payload["request_id"] != raw
+        assert len(payload["request_id"]) == 36  # a server-minted UUID
+
+    def test_a_good_request_id_is_kept(self, app):
+        from services.engine.render_orchestrator import extract_render_payload
+        payload = extract_render_payload({"project": "cq-commons", "mode": "body", "parameters": {},
+                                          "export_format": "stl", "request_id": "req_A-1"})
+        assert payload["request_id"] == "req_A-1"
+
+    def test_an_abandoned_render_with_a_numeric_request_id_is_still_stopped(self, client, fake_redis, monkeypatch):
+        from services.engine import render_orchestrator as orch
+
+        def long_render(_data, payload, *_a, status=None, on_tick=None, deadline=None):
+            fake_redis.sets.setdefault(orch.ACTIVE_RENDER_JOBS_KEY, set()).add("job-5")
+            fake_redis.set(f"{orch.ACTIVE_RENDER_META_PREFIX}job-5",
+                           json.dumps({"request_id": payload["request_id"], "part": "body"}), ex=600)
+            yield f"data: {json.dumps({'event': 'job', 'job_ids': ['job-5']})}\n\n"
+            yield f"data: {json.dumps({'event': 'progress', 'progress': 10})}\n\n"
+        monkeypatch.setattr("routes.engine.render.render_parts_stream", long_render)
+
+        res = _render(client, 11, stream=True, request_id=5)
+        next(iter(res.response))
+        res.close()
+        assert fake_redis.get(f"{orch.CANCEL_JOB_PREFIX}job-5") == "1"
+        [(_key, value)] = _slots(fake_redis).items()
+        assert value.startswith("drain:")
+
+
 class TestLiveLease:
     def test_live_lease_is_short_and_refreshed_by_the_wait_loop(self, app, fake_redis):
         from services.engine.render_orchestrator import extract_render_payload
@@ -754,19 +815,46 @@ class TestMeteredTimeoutStopsTheWorker:
         payload = orch.extract_render_payload({"project": "cq-two-parts", "mode": "body",
                                                "parameters": {}, "export_format": "stl"})
         payload[quota.METERED_FLAG] = True
+        queue = lambda: fake_redis.lists.get(orch.RENDER_QUEUE, [])
+
+        # Per-part wait is the normal 120 s; the request deadline arrives
+        # while the first part is on the worker: that part is cancelled and
+        # the second is never queued.
         status = orch.RenderStatus()
-        # Per-part wait is the normal 120 s; the request deadline has passed.
         orch.render_parts_sync({}, payload, "cadquery", payload["scad_path"], "stl", "guest",
-                               status=status, on_tick=lambda: ticks.append(1), deadline=time.time())
+                               status=status, on_tick=lambda: ticks.append(1), deadline=time.time() + 0.3)
         assert status.timed_out and not status.finished
-        assert len(cancelled) == 1 and ticks
+        assert len(queue()) == 1 and cancelled == [json.loads(queue()[0])["job_id"]] and ticks
 
         stream_status = orch.RenderStatus()
         events = list(orch.render_parts_stream({}, payload, "cadquery", payload["scad_path"], "stl",
-                                               status=stream_status, deadline=time.time()))
+                                               status=stream_status, deadline=time.time() + 0.3))
         assert stream_status.timed_out and not stream_status.finished
-        assert len(cancelled) == 2
+        assert len(queue()) == 2 and len(cancelled) == 2
         assert '"event": "complete"' in events[-1]
+
+    def test_nothing_is_queued_once_the_deadline_has_passed(self, app, fake_redis):
+        from services.engine import render_orchestrator as orch
+        payload = orch.extract_render_payload({"project": "cq-two-parts", "mode": "body",
+                                               "parameters": {}, "export_format": "stl"})
+        payload[quota.METERED_FLAG] = True
+        status = orch.RenderStatus()
+        orch.render_parts_sync({}, payload, "cadquery", payload["scad_path"], "stl", "guest",
+                               status=status, deadline=time.time() - 1)
+        stream_status = orch.RenderStatus()
+        list(orch.render_parts_stream({}, payload, "cadquery", payload["scad_path"], "stl",
+                                      status=stream_status, deadline=time.time() - 1))
+        assert status.timed_out and stream_status.timed_out
+        assert fake_redis.lists.get(orch.RENDER_QUEUE, []) == []
+
+    def test_the_deadline_counts_from_when_the_request_arrived(self, app):
+        from flask import g
+        with app.test_request_context("/api/render", method="POST"):
+            app.preprocess_request()  # runs the request-id middleware
+            assert abs(g.request_started_at - time.time()) < 5
+            g.request_started_at = time.time() - 100
+            grant = quota.MeteredRender()
+            assert abs(grant.deadline - (g.request_started_at + quota.METERED_MAX_WAIT_SECONDS)) < 1
 
 
 class TestClientAddress:

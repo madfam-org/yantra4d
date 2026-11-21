@@ -90,7 +90,7 @@ function loadFrames(urls: string[]): Promise<THREE.BufferGeometry[]> {
  * transforming the attribute in place would clamp every point into the unit cube, so the values
  * are read out as floats first.
  */
-function worldPositions(mesh: THREE.Mesh): THREE.BufferGeometry {
+export function worldPositions(mesh: THREE.Mesh): THREE.BufferGeometry {
   const source = mesh.geometry.getAttribute('position');
   const index = mesh.geometry.getIndex();
   const count = index ? index.count : source.count;
@@ -108,7 +108,7 @@ function worldPositions(mesh: THREE.Mesh): THREE.BufferGeometry {
 }
 
 /** The pipeline's meshes carry positions only, so merging is a concatenation. */
-function mergePositions(parts: THREE.BufferGeometry[]): THREE.BufferGeometry {
+export function mergePositions(parts: THREE.BufferGeometry[]): THREE.BufferGeometry {
   const total = parts.reduce((n, g) => n + g.getAttribute('position').count, 0);
   const out = new Float32Array(total * 3);
   let offset = 0;

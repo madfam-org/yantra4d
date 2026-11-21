@@ -76,9 +76,11 @@ describe('the hero sweep says only what the meshes show', () => {
     expect(new Set(hashes).size).toBe(hashes.length);
   });
 
-  it('has its still pictures on disk', () => {
-    for (const w of [640, 672]) {
-      expect(existsSync(resolve(publicDir, `hero-sweep-still-${w}w.webp`))).toBe(true);
+  it('has a rendered picture of every frame, at both widths', () => {
+    for (let i = 0; i < HERO_SWEEP.values.length; i++) {
+      for (const w of [672, 1344]) {
+        expect(existsSync(resolve(publicDir, `hero-sweep/frame-${i}-${w}w.webp`))).toBe(true);
+      }
     }
   });
 });

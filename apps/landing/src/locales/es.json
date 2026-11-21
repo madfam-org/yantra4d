@@ -366,7 +366,8 @@
     "open": "Ábrelo en Studio",
     "name": "SCARA",
     "pause": "Pausar",
-    "play": "Reproducir"
+    "play": "Reproducir",
+    "view3d": "Ver en 3D"
   },
   "footer": {
     "copyright": "Yantra4D. Código abierto bajo AGPLv3.",

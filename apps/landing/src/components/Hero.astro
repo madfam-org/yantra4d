@@ -81,20 +81,20 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
     </div>
 
     <!--
-      The live parameter sweep. The still is the page's own picture of the rest
-      frame and is what the still tier, a failed load and the first paint show;
-      on the lite/full tiers the script below swaps in the 3D stage once the
-      page is idle. The slider is a real control over real rendered frames, so
-      it stays hidden until there is something for it to move.
+      The parameter sweep. Every reach value is a picture rendered from its real
+      frame (public/hero-sweep/), so the sweep plays and the slider works with no
+      3D code at all: the page's budgets keep three.js off the load and away from
+      the still tier, and the WebGL probe waits for the visitor. "View in 3D"
+      loads the live stage on request, on the lite/full tiers only.
     -->
     <figure class="hero-sweep mx-auto w-full max-w-3xl pt-6" data-hero-sweep data-state="still">
       <div class="hero-sweep-stage relative mx-auto aspect-[16/10] w-full sm:aspect-[2/1]" data-hero-sweep-stage>
         <img
-          src="/hero-sweep-still-672w.webp"
-          srcset="/hero-sweep-still-640w.webp 640w, /hero-sweep-still-672w.webp 672w"
+          src={`/hero-sweep/frame-${sweep.restFrame}-672w.webp`}
+          srcset={`/hero-sweep/frame-${sweep.restFrame}-672w.webp 672w, /hero-sweep/frame-${sweep.restFrame}-1344w.webp 1344w`}
           sizes="(min-width: 768px) 672px, 100vw"
           width="672"
-          height="337"
+          height="336"
           alt={t?.heroSweep?.still ?? ''}
           decoding="async"
           class="hero-sweep-still absolute inset-0 h-full w-full object-contain"
@@ -114,8 +114,7 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
             data-hero-sweep-value
           >{restValue}</output>
         </div>
-        <!-- Space is reserved from the first paint (invisible, not hidden) so showing it moves nothing. -->
-        <div class="hero-sweep-control invisible space-y-1" data-hero-sweep-control>
+        <div class="hero-sweep-control space-y-1" data-hero-sweep-control>
           <input
             id="hero-sweep-range"
             type="range"
@@ -139,6 +138,11 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
               data-label-pause={t?.heroSweep?.pause ?? 'Pause'}
               data-label-play={t?.heroSweep?.play ?? 'Play'}
             >{t?.heroSweep?.pause ?? 'Pause'}</button>
+            <button
+              type="button"
+              class="hero-sweep-3d hidden min-h-[44px] items-center rounded-md border border-border px-3 text-sm font-medium text-foreground hover:text-primary-readable"
+              data-hero-sweep-3d
+            >{t?.heroSweep?.view3d ?? 'View in 3D'}</button>
           </div>
         </div>
         <p class="text-sm leading-6 text-muted-foreground">
@@ -202,38 +206,49 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
 
 <script>
   import { HERO_SWEEP, sweepFrameUrl } from '../data/hero-sweep';
-  import { settleTier, TIER_CHANGE_EVENT, type Tier } from '../lib/tier';
+  import { currentTier, settleTier, TIER_CHANGE_EVENT, type Tier } from '../lib/tier';
 
   type Stage = { show(index: number): void; setPaused(paused: boolean): void; dispose(): void };
 
+  /** Seconds each value is held while the sweep plays on its own; the 3D stage uses the same. */
+  const HOLD_MS = 1600;
   const root = document.querySelector<HTMLElement>('[data-hero-sweep]');
   const host = root?.querySelector<HTMLElement>('[data-hero-sweep-stage]');
   const still = root?.querySelector<HTMLImageElement>('[data-hero-sweep-still]');
   const value = root?.querySelector<HTMLOutputElement>('[data-hero-sweep-value]');
-  const control = root?.querySelector<HTMLElement>('[data-hero-sweep-control]');
   const range = root?.querySelector<HTMLInputElement>('[data-hero-sweep-range]');
   const pause = root?.querySelector<HTMLButtonElement>('[data-hero-sweep-pause]');
+  const view3d = root?.querySelector<HTMLButtonElement>('[data-hero-sweep-3d]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let index = HERO_SWEEP.restFrame;
+  let paused = reduced;
+  let driven = false;
+  let timer = 0;
   let stage: Stage | null = null;
   // Bumped by every start and stop, so a stage that finishes loading after a stop is discarded.
   let generation = 0;
-  let paused = reduced;
 
-  const showValue = (index: number) => {
-    const v = String(HERO_SWEEP.values[index]);
+  const picture = (i: number, w: number) => `/hero-sweep/frame-${i}-${w}w.webp`;
+
+  const showValue = (i: number) => {
+    index = i;
+    const v = String(HERO_SWEEP.values[i]);
     if (value) value.textContent = v;
     if (range) {
-      range.value = String(index);
+      range.value = String(i);
       range.setAttribute('aria-valuetext', `${v} ${HERO_SWEEP.unit}`);
+    }
+    if (still && !stage) {
+      still.src = picture(i, 672);
+      still.srcset = `${picture(i, 672)} 672w, ${picture(i, 1344)} 1344w`;
     }
   };
 
-  // Live: the canvas shows and the controls work; otherwise the still shows and they are inert.
-  const setLive = (live: boolean) => {
-    if (!root) return;
-    root.dataset.state = live ? 'live' : 'still';
-    control?.classList.toggle('invisible', !live);
-    if (still) still.setAttribute('aria-hidden', live ? 'true' : 'false');
+  // The pictured sweep: one rendered frame after another, until the visitor takes over or pauses.
+  const play = () => {
+    window.clearInterval(timer);
+    if (paused || driven || stage) return;
+    timer = window.setInterval(() => showValue((index + 1) % HERO_SWEEP.values.length), HOLD_MS);
   };
 
   const showPaused = () => {
@@ -242,26 +257,40 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
     pause.textContent = (paused ? pause.dataset.labelPlay : pause.dataset.labelPause) ?? '';
   };
 
+  const setLive = (live: boolean) => {
+    if (!root) return;
+    root.dataset.state = live ? 'live' : 'still';
+    if (still) still.setAttribute('aria-hidden', live ? 'true' : 'false');
+  };
+
   const stop = () => {
     generation++;
     stage?.dispose();
     stage = null;
     setLive(false);
-    showValue(HERO_SWEEP.restFrame);
+    showValue(index);
+    play();
   };
 
   // The gallery's 3D stage holds the page's one WebGL context while it is mounted.
   const contextTaken = () => document.querySelector('[data-testid="commons-stage"] canvas') !== null;
 
-  const start = async (tier: Tier) => {
-    if (!root || !host || stage || tier === 'still') return;
+  const start3d = async () => {
+    if (!host || stage) return;
+    // Only now, at the visitor's request, does the page measure the device.
+    const tier: Tier = settleTier().tier;
+    if (tier === 'still') {
+      view3d?.classList.add('hidden');
+      return;
+    }
     const mine = ++generation;
+    if (view3d) view3d.disabled = true;
     try {
       const { createStage } = await import('../lib/hero-sweep-stage');
       const created = await createStage({
         host,
         frameUrls: HERO_SWEEP.values.map((_, i) => sweepFrameUrl(HERO_SWEEP, i)),
-        rest: HERO_SWEEP.restFrame,
+        rest: index,
         maxDpr: tier === 'full' ? 2 : 1,
         reducedMotion: reduced,
         onFrame: showValue,
@@ -272,33 +301,57 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
         created.dispose();
         return;
       }
+      window.clearInterval(timer);
       stage = created;
       stage.setPaused(paused);
-      showPaused();
+      view3d?.classList.add('hidden');
     } catch {
-      // The still stays: a page whose 3D failed must still read as finished.
+      // The pictured sweep stays: a page whose 3D failed must still read as finished.
       if (mine === generation) stop();
+    } finally {
+      if (view3d) view3d.disabled = false;
     }
   };
 
-  range?.addEventListener('input', () => stage?.show(Number(range.value)));
+  range?.addEventListener('input', () => {
+    driven = true;
+    window.clearInterval(timer);
+    const i = Number(range.value);
+    if (stage) stage.show(i);
+    else showValue(i);
+  });
   pause?.addEventListener('click', () => {
     paused = !paused;
     stage?.setPaused(paused);
     showPaused();
+    play();
   });
+  view3d?.addEventListener('click', () => void start3d());
   window.addEventListener(TIER_CHANGE_EVENT, (event) => {
     const tier = (event as CustomEvent<{ tier?: Tier }>).detail?.tier;
-    if (tier === 'still') stop();
-    else if (tier) void start(tier);
+    if (tier === 'still') {
+      stop();
+      view3d?.classList.add('hidden');
+    }
   });
 
-  // After the page has painted and gone idle: the headline is the first paint, never the 3D.
+  // The offer of 3D follows the tier the page already has; nothing is measured here.
+  if (currentTier().tier !== 'still') {
+    view3d?.classList.remove('hidden');
+    view3d?.classList.add('inline-flex');
+  }
+  showPaused();
+  // The other frames are small; fetch them once the page is idle so the sweep never waits.
   const whenIdle = (fn: () => void) =>
-    'requestIdleCallback' in window
-      ? window.requestIdleCallback(fn, { timeout: 2500 })
-      : window.setTimeout(fn, 1200);
-  const boot = () => whenIdle(() => void start(settleTier().tier));
-  if (document.readyState === 'complete') boot();
-  else window.addEventListener('load', boot, { once: true });
+    'requestIdleCallback' in window ? window.requestIdleCallback(fn, { timeout: 2500 }) : window.setTimeout(fn, 1200);
+  const warm = () =>
+    whenIdle(() => {
+      HERO_SWEEP.values.forEach((_, i) => {
+        const img = new Image();
+        img.src = picture(i, 672);
+      });
+      play();
+    });
+  if (document.readyState === 'complete') warm();
+  else window.addEventListener('load', warm, { once: true });
 </script>

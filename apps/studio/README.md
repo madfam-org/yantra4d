@@ -261,6 +261,17 @@ plan's hourly render quota. Nothing is sent to `/api/render`, and nothing is
 logged as an error. An automatic render of a gated mode is skipped quietly.
 Unknown limits fall through to the server, which still answers 403 as before.
 
+A tier without the engine but with a `commons_brep_renders_per_day` quota
+(guest 3, essentials 10) is let through as **metered**: an explicit Generate
+renders, an automatic render is skipped with a "press Generate" toast so the
+daily quota is never spent on renders nobody asked for. The server decides
+whether the cartridge is Commons (anything else still 403s). A spent quota
+(429 `commons_render_quota_exhausted`, `src/lib/commonsQuota.ts`) opens the
+upgrade dialog with a notice saying when more are available; busy free
+capacity (503) is a notice only. Confirming the long-render dialog passes
+`{ confirmed: true }` and keeps the caches; only Force regenerate
+(`handleGenerate(true)`) sends `ignore_cache`.
+
 ### Geometry core (WASM) — experimental
 
 The Studio depends on [`@madfam/geom-core`](https://github.com/madfam-org/geom-core)

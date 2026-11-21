@@ -17,8 +17,21 @@ export const ENGINE_TIER_FEATURE: Readonly<Record<string, string>> = {
   graph: 'graph_engine',
 }
 
+/**
+ * tiers.json key: daily re-renders of a COMMONS cartridge with an engine the
+ * tier does not hold outright (services/engine/commons_render_quota.py).
+ */
+export const COMMONS_QUOTA_KEY = 'commons_brep_renders_per_day'
+
 export interface EngineGate {
   allowed: boolean
+  /**
+   * True when the tier lacks the engine but may still re-render a Commons
+   * cartridge with it under a daily quota. The Studio cannot tell a Commons
+   * cartridge from a fork here, so the server decides: a Commons render is
+   * counted, anything else still answers 403 and gets the upgrade prompt.
+   */
+  metered?: boolean
   /** The engine the mode renders with (renderPlacement.effectiveModeEngine). */
   engine: string
   /** The tier feature that engine needs, or null when it needs none. */
@@ -36,7 +49,10 @@ export function engineGateFor(
   if (!feature || !limits || typeof limits[feature] !== 'boolean') {
     return { allowed: true, engine, feature }
   }
-  return { allowed: limits[feature] === true, engine, feature }
+  if (limits[feature] === true) return { allowed: true, engine, feature }
+  const quota = limits[COMMONS_QUOTA_KEY]
+  if (typeof quota === 'number' && quota !== 0) return { allowed: true, engine, feature, metered: true }
+  return { allowed: false, engine, feature }
 }
 
 /** PURE. Ids of the modes this tier can render, in manifest order. */

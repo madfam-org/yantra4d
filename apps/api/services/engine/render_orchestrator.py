@@ -381,13 +381,21 @@ def _inject_material_compensations(params: dict, target_mat: str) -> None:
 # Engine Configuration
 # ──────────────────────────────────────────────
 
-def resolve_engine_config(data: dict, payload: dict, tier: str):
+def resolve_engine_config(data: dict, payload: dict, tier: str, *, allow_commons_quota: bool = False):
     """Determine the engine, validate export format, and resolve the actual render format.
 
     Returns (engine, scad_path, actual_format, error_tuple_or_none).
     If error_tuple_or_none is not None, it is (message, status_code).
+
+    ``allow_commons_quota`` is passed only by ``/api/render`` and
+    ``/api/render-stream``: there a tier without the CadQuery/graph engine may
+    still re-render a Commons cartridge under its daily quota
+    (services/engine/commons_render_quota.py). The payload is then flagged
+    ``METERED_FLAG`` and the route must admit the render before running it.
+    Every other caller keeps the 403.
     """
     from services.core.tier_service import check_feature
+    from services.engine.commons_render_quota import METERED_FLAG, metered_access
 
     project_slug = payload['project_slug']
     export_format = payload['export_format']
@@ -426,15 +434,18 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
             scad_path = str(cq_path)
 
     # Validate engine+format compatibility
+    payload.pop(METERED_FLAG, None)
+    metered = allow_commons_quota and metered_access(tier, engine, manifest)
+
     if engine == "cadquery":
-        if not check_feature(tier, "cadquery_engine"):
+        if not check_feature(tier, "cadquery_engine") and not metered:
             return engine, scad_path, None, ("CadQuery engine is not available for your tier.", 403)
         if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
     elif engine == "graph":
         # Graph documents transpile to CadQuery scripts (services/engine/graph_engine.py),
         # so they gate and format-check like a paid backend kernel of their own.
-        if not check_feature(tier, "graph_engine"):
+        if not check_feature(tier, "graph_engine") and not metered:
             return engine, scad_path, None, ("Graph engine is not available for your tier.", 403)
         if export_format not in Config.GRAPH_ALLOWED_EXPORT_FORMATS:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by graph engine.", 400)
@@ -444,6 +455,9 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     elif engine == "openscad":
         if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS and export_format not in TRIMESH_CONVERTIBLE:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
+
+    if metered:
+        payload[METERED_FLAG] = True
 
     # Determine actual render format
     if engine in ("cadquery", "graph"):
@@ -497,6 +511,56 @@ def _check_cache(payload, part, export_format):
         scad_content_hash=payload.get('scad_content_hash'),
     )
     return cached if generator_output.cache_entry_usable(cached, payload) else None
+
+
+def cold_part_count(payload: dict) -> int:
+    """How many parts of this request the worker would actually compute.
+
+    Static parts and render-cache hits cost no worker time. Asked before a
+    metered render (commons_render_quota): a request with no cold part is not
+    counted, and the free tiers' hourly budget is charged per cold part.
+    Static parts are checked without the conversion `_render_static_part` would
+    do, so asking has no side effects.
+    """
+    static_stl_map = payload.get("static_stl_map") or {}
+    export_format = payload.get("export_format")
+    cold = 0
+    for part in payload.get("parts") or []:
+        static_path = static_stl_map.get(part)
+        if static_path is not None and getattr(static_path, "is_file", lambda: False)():
+            continue
+        if _check_cache(payload, part, export_format):
+            continue
+        cold += 1
+    return cold
+
+
+def request_has_pending_work(request_id: str | None) -> bool:
+    """Whether any job of this render request is still queued or held by a worker.
+
+    "Held" means in the active set with a live lease (its metadata key, which
+    the worker refreshes while it renders). Errors answer True: the caller uses
+    this to decide whether the worker is still busy for this request, and
+    "busy" is the safe answer.
+    """
+    if not request_id:
+        return False
+    try:
+        for _raw, task in _iter_queued_tasks():
+            if task.get("request_id") == request_id:
+                return True
+        for job_id in _decoded_job_ids(r.smembers(ACTIVE_RENDER_JOBS_KEY)):
+            if _active_job_meta(job_id).get("request_id") == request_id:
+                return True
+    except Exception:
+        logger.debug("Could not inspect pending work for request %s", request_id, exc_info=True)
+        return True
+    return False
+
+
+def _is_metered(payload: dict) -> bool:
+    from services.engine.commons_render_quota import METERED_FLAG
+    return bool(payload.get(METERED_FLAG))
 
 
 def _post_render_convert(output_path, output_filename, part, stl_prefix,
@@ -656,6 +720,7 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
 
     clear_request_cancel(request_id)
 
+    timed_out = False
     for part in parts_to_render:
         # /api/render answers only when every part is done, so a caller can
         # cancel it only by supplying its own `request_id` up front — which is
@@ -708,6 +773,10 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
             if time.time() > part_deadline:
                 combined_log += f"[{part}] ERROR: Render timed out while waiting for completion\n"
                 _notify_error(job_id, part, "Render job timed out")
+                if _is_metered(payload):
+                    # Nobody waits for it any more: stop the worker too.
+                    cancel_render_jobs([job_id])
+                    timed_out = True
                 break
 
             message = part_sub.get_message(timeout=1.0)
@@ -750,6 +819,10 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
                 part_complete = True
 
         part_sub.close()
+        if timed_out:
+            # A metered render stops at its first timeout rather than queueing
+            # more free work behind a part that never finished.
+            break
 
     return generated_parts, combined_log, (cache_hits, cache_total)
 
@@ -779,6 +852,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
         job_ids=list(job_ids),
     ))
 
+    stream_timed_out = False
     for i, part in enumerate(parts_to_render):
         # Parts are queued one at a time, so this is the only place a cancel can
         # stop the parts that have not been queued yet.
@@ -896,6 +970,9 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 )
                 yield f"data: {json.dumps(timeout_event)}\n\n"
                 _notify_error(job_id, part, "Render stream timed out waiting for completion")
+                if _is_metered(payload):
+                    cancel_render_jobs([job_id])
+                    stream_timed_out = True
                 break
 
             message = pubsub.get_message(timeout=0.2)
@@ -947,6 +1024,8 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 done = True
 
         pubsub.close()
+        if stream_timed_out:
+            break
 
     yield _sse_event(build_render_event(
             RENDER_EVENT_COMPLETE,

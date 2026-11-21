@@ -29,6 +29,13 @@ from services.core.tier_service import (
     is_unlimited,
     resolve_tier,
 )
+from services.engine.commons_render_quota import (
+    METERED_FLAG,
+    OUTCOME_FAILED,
+    admit_metered_render,
+    streaming_response,
+    sync_outcome,
+)
 from services.engine.generator_output import envelope_fields
 from services.engine.render_orchestrator import (
     RenderPayloadError,
@@ -42,6 +49,7 @@ from services.engine.render_orchestrator import (
     resolve_engine_config,
     unknown_project_error,
 )
+from utils.client_ip import client_ip
 from utils.route_helpers import error_response, handle_exceptions, payload_error_response, require_json_body
 
 logger = logging.getLogger(__name__)
@@ -146,11 +154,16 @@ def _known_project_before_limit(f):
 
 
 def _rate_limit_key() -> str:
-    """Return a per-user or per-IP rate limit bucket key."""
+    """Return a per-user or per-IP rate limit bucket key.
+
+    Anonymous callers are keyed by ``client_ip()`` — the same address the
+    Commons quota uses — not the socket address, which behind the Cloudflare
+    tunnel is one address for every visitor.
+    """
     claims = getattr(request, "auth_claims", None)
     if claims:
         return f"user:{claims.get('sub', '')}"
-    return f"ip:{request.remote_addr}"
+    return f"ip:{client_ip()}"
 
 
 @render_bp.route('/api/estimate', methods=['POST'])
@@ -234,17 +247,33 @@ def render_stl():
     if not export_format_allowed(tier, export_format):
         return export_format_denied_response(export_format)
 
-    # Resolve engine configuration
-    engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)
+    # Resolve engine configuration. A free tier may re-render a Commons
+    # cartridge with the B-Rep engines under its daily quota.
+    engine, scad_path, actual_format, engine_error = resolve_engine_config(
+        data, payload, tier, allow_commons_quota=True,
+    )
     if engine_error:
         return error_response(engine_error[0], engine_error[1])
+
+    grant = None
+    if payload.get(METERED_FLAG):
+        grant, refusal = admit_metered_render(tier, engine, payload)
+        if refusal is not None:
+            return refusal
 
     try:
         generated_parts, log_or_error, cache_stats = render_parts_sync(
             data, payload, engine, scad_path, actual_format, tier,
         )
-    except OSError as e:
-        return error_response(str(e))
+    except BaseException as e:
+        # Settle before answering: refund, stop leftover jobs, free the lease.
+        if grant is not None:
+            grant.finish(OUTCOME_FAILED)
+        if isinstance(e, OSError):
+            return error_response(str(e))
+        raise
+    if grant is not None:
+        grant.finish(sync_outcome(payload, generated_parts, log_or_error))
 
     if generated_parts is None:
         if log_or_error == "Render worker unavailable or not healthy":
@@ -268,6 +297,8 @@ def render_stl():
     })
     for k, v in _make_rate_limit_headers(tier).items():
         resp.headers[k] = v
+    if grant is not None:
+        grant.apply_headers(resp)
     resp.headers["X-Cache"] = "HIT" if (cache_total > 0 and cache_hits == cache_total) else "MISS"
     return resp
 
@@ -297,10 +328,23 @@ def render_stl_stream():
     if not export_format_allowed(tier, export_format):
         return export_format_denied_response(export_format)
 
-    # Resolve engine configuration
-    engine, scad_path, actual_format, engine_error = resolve_engine_config(data, payload, tier)
+    # Resolve engine configuration (see render_stl for the Commons quota).
+    engine, scad_path, actual_format, engine_error = resolve_engine_config(
+        data, payload, tier, allow_commons_quota=True,
+    )
     if engine_error:
         return error_response(engine_error[0], engine_error[1])
+
+    if payload.get(METERED_FLAG):
+        grant, refusal = admit_metered_render(tier, engine, payload)
+        if refusal is not None:
+            return refusal
+        # The lease is held until the stream ends or the client drops it.
+        return streaming_response(
+            grant,
+            render_parts_stream(data, payload, engine, scad_path, actual_format),
+            mimetype='text/event-stream',
+        )
 
     return Response(
         render_parts_stream(data, payload, engine, scad_path, actual_format),

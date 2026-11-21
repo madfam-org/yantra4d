@@ -97,6 +97,10 @@ jobs:
         # of a pin move. It goes LIVE once SPEC_PIN carries the vendored engine.
         if: inputs.report_fixture == ''
         run: python3 scripts/qa/check_spec_graph_vendor.py
+      - name: Vendored graph core matches the keystone's
+        # RFC 0067 G-2; see packages/hyperobject-graph/VENDORED.md.
+        if: inputs.report_fixture == ''
+        run: python3 scripts/qa/check_graph_core_vendor.py --spec
 
       - name: Full render sweep
         id: sweep

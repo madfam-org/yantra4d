@@ -22,16 +22,16 @@ images:
 - digest: sha256:8b81dd37ff027bec4e516d41acfbe9fe2460070dc6d4a4570a2ac5b9d59df065
   name: docker.io/library/redis
   newName: docker.io/library/redis
-- digest: sha256:fb863980015e7122baea1ef8e2a2216eede7e26aacdf1c9e2d378a2873778f94
+- digest: sha256:ee6f72a45ab860914e7bdb1a494e32d64aa9764657f3e7a62b9571490416864b
   name: ghcr.io/madfam-org/yantra4d/admin
   newName: ghcr.io/madfam-org/yantra4d/admin
-- digest: sha256:1e98fa82e50df8830ed5b6ac4e0ead42b5e46e19cb6a2806671c53806604cbc7
+- digest: sha256:3b64b3faed1d716ede21e71cb7d4dfa8278cbb2a0ed1a54afe025966d3cc2d9c
   name: ghcr.io/madfam-org/yantra4d/backend
   newName: ghcr.io/madfam-org/yantra4d/backend
-- digest: sha256:4a7e7dcf442e255941355e2f4a2c864f507e035231eb900617bc8d4c8ace727d
+- digest: sha256:639f3287bee329f8986a07f0f8dca761261d1166f8fea4362af5a671e2293a54
   name: ghcr.io/madfam-org/yantra4d/landing
   newName: ghcr.io/madfam-org/yantra4d/landing
-- digest: sha256:15058f46cefa0e8704e76b3a8eddc913233a0fb2eefe68f809b85426356a68f1
+- digest: sha256:c362f8b29cd212df7b91cae60b3fc94dfab6fa924b6fe553ff7802b77dab967c
   name: ghcr.io/madfam-org/yantra4d/studio
   newName: ghcr.io/madfam-org/yantra4d/studio
 

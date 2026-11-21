@@ -15,6 +15,8 @@ interface ComparisonViewProps {
   slots: ComparisonSlot[]
   onRemoveSlot: (id: string) => void
   onAddCurrent: () => void
+  /** False while there is no rendered model to snapshot (nothing rendered yet, or a render in flight). */
+  canAddCurrent?: boolean
   colors: Record<string, string>
   wireframe: boolean
   mode: string
@@ -25,18 +27,30 @@ interface ComparisonViewProps {
  * Each slot holds a snapshot of parts + params.
  * Camera is synchronized across all viewers via shared state.
  */
-export default function ComparisonView({ slots, onRemoveSlot, onAddCurrent, colors, wireframe, mode }: ComparisonViewProps) {
+export default function ComparisonView({ slots, onRemoveSlot, onAddCurrent, canAddCurrent = true, colors, wireframe, mode }: ComparisonViewProps) {
   const { t } = useLanguage()
   const [syncCamera, setSyncCamera] = useState(true)
 
   if (!slots || slots.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground">
-        <p>{t('compare.empty')}</p>
-        <Button variant="outline" onClick={onAddCurrent} className="gap-2">
+      <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
+        <p className="text-sm font-medium text-foreground">{t('compare.empty')}</p>
+        <p className="max-w-sm text-sm text-muted-foreground">{t('compare.empty_hint')}</p>
+        <Button
+          variant="outline"
+          onClick={onAddCurrent}
+          disabled={!canAddCurrent}
+          aria-describedby={canAddCurrent ? undefined : 'compare-add-needs-render'}
+          className="gap-2 min-h-[44px]"
+        >
           <Plus className="h-4 w-4" />
           {t('compare.add_current')}
         </Button>
+        {!canAddCurrent && (
+          <p id="compare-add-needs-render" className="text-xs text-muted-foreground">
+            {t('compare.add_needs_render')}
+          </p>
+        )}
       </div>
     )
   }
@@ -50,7 +64,14 @@ export default function ComparisonView({ slots, onRemoveSlot, onAddCurrent, colo
         <span className="text-xs text-muted-foreground">({slots.length}/4)</span>
         <div className="flex-1" />
         {slots.length < 4 && (
-          <Button variant="outline" size="sm" onClick={onAddCurrent} className="gap-1 min-h-[36px]">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onAddCurrent}
+            disabled={!canAddCurrent}
+            title={canAddCurrent ? undefined : t('compare.add_needs_render')}
+            className="gap-1 min-h-[36px]"
+          >
             <Plus className="h-3 w-3" />
             {t('compare.add_current')}
           </Button>

@@ -172,6 +172,8 @@
   "compare.title": "Vergleich",
   "compare.empty": "Keine Varianten zum Vergleichen",
   "compare.add_current": "Aktuelle hinzufügen",
+  "compare.empty_hint": "Füge das aktuelle Modell als erste Variante hinzu. Ändere dann Parameter, rendere und füge erneut hinzu: bis zu vier nebeneinander.",
+  "compare.add_needs_render": "Rendere zuerst das Modell und füge es dann hinzu.",
   "compare.sync_camera": "Kamera synchronisieren",
   "datasheet.generate": "Datenblatt erstellen",
   "a11y.skip_to_content": "Zum Inhalt springen",

@@ -91,6 +91,28 @@ describe('ComparisonView', () => {
     expect(mockOnAddCurrent).toHaveBeenCalledTimes(1)
   })
 
+  it('explains how to start when empty', () => {
+    renderWithProviders(<ComparisonView slots={[]} onAddCurrent={mockOnAddCurrent} />)
+    expect(screen.getByText('compare.empty_hint')).toBeInTheDocument()
+    expect(screen.queryByText('compare.add_needs_render')).not.toBeInTheDocument()
+  })
+
+  it('disables adding, with a reason, when there is nothing rendered to snapshot', () => {
+    renderWithProviders(<ComparisonView slots={[]} onAddCurrent={mockOnAddCurrent} canAddCurrent={false} />)
+    const add = screen.getByRole('button', { name: /compare.add_current/i })
+    expect(add).toBeDisabled()
+    expect(add).toHaveAttribute('aria-describedby', 'compare-add-needs-render')
+    expect(screen.getByText('compare.add_needs_render')).toHaveAttribute('id', 'compare-add-needs-render')
+    fireEvent.click(add)
+    expect(mockOnAddCurrent).not.toHaveBeenCalled()
+  })
+
+  it('disables the toolbar add button too when nothing is rendered', () => {
+    const slots = [{ id: '1', parts: [], params: {}, label: 'Slot 1' }]
+    renderWithProviders(<ComparisonView slots={slots} onAddCurrent={mockOnAddCurrent} canAddCurrent={false} />)
+    expect(screen.getByRole('button', { name: /compare.add_current/i })).toBeDisabled()
+  })
+
   it('toggles sync camera state', () => {
     const slots = [{ id: '1', parts: [], params: {}, label: 'Slot 1' }]
     renderWithProviders(

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 
 // The layout callback is captured so a test can fire it; it is how the console
@@ -383,6 +383,33 @@ describe('StudioMainView', () => {
     // The compare layout replaces the single viewer with one per slot — two
     // slots, one layout tree, so two viewers.
     expect(screen.getAllByTestId('viewer').length).toBeGreaterThan(1)
+  })
+
+  it('compare mode with no slots yet shows the empty state, so the first variation can be added', () => {
+    // Regression: the compare layout used to mount only once a slot existed,
+    // and the only control that adds a slot lives inside it, so compare could
+    // never be entered from the UI.
+    const onAdd = vi.fn()
+    withContext({ parts: [{ type: 'body' }] })
+    render(<StudioMainView compareMode comparisonSlots={[]} onAddComparisonSlot={onAdd} />)
+    expect(screen.getByText('compare.empty')).toBeInTheDocument()
+    const add = screen.getByRole('button', { name: /compare.add_current/ })
+    expect(add).toBeEnabled()
+    fireEvent.click(add)
+    expect(onAdd).toHaveBeenCalledTimes(1)
+  })
+
+  it('compare mode cannot add a variation before anything is rendered, and says why', () => {
+    withContext({ parts: [] })
+    render(<StudioMainView compareMode comparisonSlots={[]} onAddComparisonSlot={vi.fn()} />)
+    expect(screen.getByRole('button', { name: /compare.add_current/ })).toBeDisabled()
+    expect(screen.getByText('compare.add_needs_render')).toBeInTheDocument()
+  })
+
+  it('compare mode cannot add a variation while a render is in flight', () => {
+    withContext({ parts: [{ type: 'body' }], loading: true })
+    render(<StudioMainView compareMode comparisonSlots={[]} onAddComparisonSlot={vi.fn()} />)
+    expect(screen.getByRole('button', { name: /compare.add_current/ })).toBeDisabled()
   })
 
   it('optimization logs are shown while a run reports them', () => {

@@ -172,6 +172,8 @@
   "compare.title": "Comparaison",
   "compare.empty": "Aucune variation à comparer",
   "compare.add_current": "Ajouter l'actuel",
+  "compare.empty_hint": "Ajoutez le modèle actuel comme première variante. Modifiez ensuite les paramètres, lancez le rendu et ajoutez à nouveau : jusqu'à quatre côte à côte.",
+  "compare.add_needs_render": "Lancez d'abord le rendu du modèle, puis ajoutez-le.",
   "compare.sync_camera": "Synchroniser la caméra",
   "datasheet.generate": "Générer la fiche technique",
   "a11y.skip_to_content": "Aller au contenu",

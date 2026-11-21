@@ -25,11 +25,20 @@ export interface StageOptions {
   reducedMotion: boolean;
   /** Called with the frame index whenever the shown frame changes. */
   onFrame: (index: number) => void;
+  /**
+   * Called with false when the stage cannot draw (no WebGL context, a lost context, or the page's
+   * one WebGL context is held by another stage) and with true when it draws again.
+   */
+  onAvailability: (live: boolean) => void;
+  /** Whether another 3D stage on the page holds the page's single WebGL context right now. */
+  contextTaken: () => boolean;
 }
 
 export interface Stage {
   /** Show frame `index` now and stop stepping on its own: the visitor has taken over. */
   show(index: number): void;
+  /** Stop or resume turning and stepping (WCAG 2.2.2: moving content can be paused). */
+  setPaused(paused: boolean): void;
   dispose(): void;
 }
 
@@ -140,6 +149,9 @@ export async function createStage(options: StageOptions): Promise<Stage> {
   let start: number | null = null;
   let lastStep = 0;
   let visible = false;
+  let paused = options.reducedMotion;
+  let turn = 0;
+  let lastNow: number | null = null;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
@@ -174,7 +186,11 @@ export async function createStage(options: StageOptions): Promise<Stage> {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, options.maxDpr));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
+    // The framing is set for a 2:1 stage; a narrower one zooms out so a full reach still fits.
+    camera.zoom = Math.min(1, camera.aspect / 2);
     camera.updateProjectionMatrix();
+    // setSize clears the canvas; draw now in case nothing else will (paused, reduced motion).
+    renderer.render(scene, camera);
   };
 
   const setFrame = (index: number, at: number) => {
@@ -193,10 +209,13 @@ export async function createStage(options: StageOptions): Promise<Stage> {
       start = now;
       lastStep = now;
     }
-    const t = (now - start) / 1000;
+    // Turning accumulates only while playing, so a pause holds the pose where it is.
+    if (!paused && lastNow !== null) turn += ((now - lastNow) / 1000) * TURN_RATE;
+    lastNow = now;
     // At rest the arm reaches toward the viewer's right, three-quarter on.
-    rig.rotation.y = REST_ANGLE + (reducedMotion ? 0 : t * TURN_RATE);
-    if (!reducedMotion && !driven && now - lastStep >= HOLD_SECONDS * 1000) {
+    rig.rotation.y = REST_ANGLE + turn;
+    if (paused) lastStep = now;
+    if (!paused && !driven && now - lastStep >= HOLD_SECONDS * 1000) {
       lastStep = now;
       setFrame((current + 1) % geometries.length, now);
     }
@@ -207,23 +226,43 @@ export async function createStage(options: StageOptions): Promise<Stage> {
     const settle = reducedMotion ? 1 : 1 - 0.035 * grow * (1 - ease);
     part.scale.setScalar(scale * settle);
     renderer.render(scene, camera);
-    // With reduced motion nothing moves on its own: draw once per change, then rest.
-    if (!reducedMotion || p < 1) raf = requestAnimationFrame(tick);
+    // Paused (or reduced motion): nothing moves on its own; draw once per change, then rest.
+    if (!paused || p < 1) raf = requestAnimationFrame(tick);
+    else lastNow = null;
   };
 
   const run = () => {
     if (!raf && renderer && visible && !document.hidden) raf = requestAnimationFrame(tick);
   };
 
+  const onLost = (event: Event) => {
+    event.preventDefault();
+    unmount();
+    options.onAvailability(false);
+  };
+
   const mount = () => {
     if (renderer) return;
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+    // The page budget allows one WebGL context: if another stage holds it, show the still.
+    if (options.contextTaken()) {
+      options.onAvailability(false);
+      return;
+    }
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+    } catch {
+      renderer = null;
+      options.onAvailability(false);
+      return;
+    }
+    renderer.domElement.addEventListener('webglcontextlost', onLost, { once: true });
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.domElement.setAttribute('aria-hidden', 'true');
     renderer.domElement.className = 'hero-sweep-canvas';
     host.appendChild(renderer.domElement);
     resize();
+    options.onAvailability(true);
     run();
   };
 
@@ -231,6 +270,7 @@ export async function createStage(options: StageOptions): Promise<Stage> {
     if (raf) cancelAnimationFrame(raf);
     raf = 0;
     if (!renderer) return;
+    renderer.domElement.removeEventListener('webglcontextlost', onLost);
     renderer.domElement.remove();
     renderer.dispose();
     renderer.forceContextLoss();
@@ -260,6 +300,10 @@ export async function createStage(options: StageOptions): Promise<Stage> {
         // Draw the new frame even when nothing else is moving (reduced motion).
         run();
       }
+    },
+    setPaused(value: boolean) {
+      paused = value;
+      run();
     },
     dispose() {
       observer.disconnect();

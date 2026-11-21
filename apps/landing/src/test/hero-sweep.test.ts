@@ -9,10 +9,25 @@ const repo = resolve(__dirname, '../../../..');
 const publicDir = resolve(__dirname, '../../public');
 
 describe('the hero sweep says only what the meshes show', () => {
-  const project = JSON.parse(
-    readFileSync(resolve(repo, `projects/${HERO_SWEEP.slug}/project.json`), 'utf8'),
+  // The landing CI has no submodules, so the sweep definition is read from a frozen copy.
+  const fixture = JSON.parse(
+    readFileSync(resolve(__dirname, 'fixtures/scara-reach-sweep.json'), 'utf8'),
   );
-  const animation = project.animations.find((a: { id: string }) => a.id === HERO_SWEEP.animation);
+  const project = { parameters: fixture.parameters, animations: [fixture.animation] };
+  const animation = fixture.animation;
+  const commonsFile = resolve(repo, `projects/${HERO_SWEEP.slug}/project.json`);
+
+  it.skipIf(!existsSync(commonsFile))('the frozen copy still matches the Commons', () => {
+    const live = JSON.parse(readFileSync(commonsFile, 'utf8'));
+    expect(fixture.slug).toBe(HERO_SWEEP.slug);
+    expect(live.animations.find((a: { id: string }) => a.id === HERO_SWEEP.animation)).toEqual(
+      fixture.animation,
+    );
+    for (const p of fixture.parameters) {
+      const l = live.parameters.find((x: { id: string }) => x.id === p.id);
+      for (const k of Object.keys(p)) expect(l[k]).toEqual(p[k]);
+    }
+  });
 
   it('names a real sweep of real parameters, and its label names the readout', () => {
     expect(animation).toBeDefined();

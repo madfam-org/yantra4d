@@ -361,11 +361,12 @@
   },
   "heroSweep": {
     "label": "Alcance",
-    "still": "Brazo robótico SCARA del Procomún con 445 mm de alcance, visto en ángulo.",
-    "range": "Recorrido renderizado",
+    "still": "Brazo robótico SCARA del Procomún, extendido y visto en ángulo.",
     "caption": "Un cartucho del Procomún. Cada valor es un brazo renderizado.",
     "open": "Ábrelo en Studio",
-    "name": "SCARA"
+    "name": "SCARA",
+    "pause": "Pausar",
+    "play": "Reproducir"
   },
   "footer": {
     "copyright": "Yantra4D. Código abierto bajo AGPLv3.",

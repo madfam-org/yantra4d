@@ -361,11 +361,12 @@
   },
   "heroSweep": {
     "label": "Reach",
-    "still": "A SCARA robot arm from the Commons with a 445 mm reach, seen at an angle.",
-    "range": "Rendered sweep",
+    "still": "A SCARA robot arm from the Commons, reaching out at an angle.",
     "caption": "A Commons cartridge. Every value is a rendered arm.",
     "open": "Open it in Studio",
-    "name": "SCARA"
+    "name": "SCARA",
+    "pause": "Pause",
+    "play": "Play"
   },
   "footer": {
     "copyright": "Yantra4D. Open source under AGPLv3.",

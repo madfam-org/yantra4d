@@ -1,6 +1,6 @@
 import { afterEach, describe, it, expect, vi } from 'vitest'
-import { BufferGeometry, BoxGeometry, Cache, Mesh, MeshStandardMaterial, Scene, Texture } from 'three'
-import { mergeGLTFGeometry, disposeGLTF } from './viewerResources'
+import { BufferAttribute, BufferGeometry, BoxGeometry, Cache, Group, Mesh, MeshStandardMaterial, Scene, Texture } from 'three'
+import { mergeGLTFGeometry, disposeGLTF, toFloatAttributes } from './viewerResources'
 
 afterEach(() => { vi.restoreAllMocks(); Cache.enabled = false })
 
@@ -66,4 +66,36 @@ describe('GLTF resource ownership', () => {
     expect(releaseTexture).toHaveBeenCalledTimes(1)
     expect(bitmap.close).not.toHaveBeenCalled()
   })
+})
+
+describe('prerendered previews from the models pipeline', () => {
+    // Pipeline GLBs carry KHR_mesh_quantization: normalized int16 positions under a node scale.
+    const quantized = (length) => {
+        const scene = new Scene()
+        const node = new Group()
+        node.scale.setScalar(length / 2)
+        node.position.set(5, 0, 0)
+        const g = new BufferGeometry()
+        g.setAttribute('position', new BufferAttribute(new Int16Array([0, 0, 0, 32767, 0, 0, 0, 32767, 0, -32767, 0, 32767]), 3, true))
+        g.setAttribute('normal', new BufferAttribute(new Int8Array([0, 0, 127, 0, 0, 127, 0, 0, 127, 0, 0, 127]), 3, true))
+        node.add(new Mesh(g, new MeshStandardMaterial()))
+        scene.add(node)
+        return scene
+    }
+
+    it('keeps a quantized mesh at its real size instead of clamping it into a unit cube', () => {
+        const merged = mergeGLTFGeometry(quantized(480))
+        merged.computeBoundingBox()
+        expect(merged.boundingBox.max.x).toBeCloseTo(245, 0)
+        expect(merged.boundingBox.min.x).toBeCloseTo(-235, 0)
+        expect(merged.boundingBox.max.z).toBeCloseTo(240, 0)
+        expect(merged.getAttribute('position').array).toBeInstanceOf(Float32Array)
+        expect(merged.getAttribute('normal').getZ(0)).toBeCloseTo(1, 2)
+    })
+
+    it('leaves float geometry as it was', () => {
+        const g = new BoxGeometry(2, 2, 2)
+        const before = g.getAttribute('position')
+        expect(toFloatAttributes(g).getAttribute('position')).toBe(before)
+    })
 })

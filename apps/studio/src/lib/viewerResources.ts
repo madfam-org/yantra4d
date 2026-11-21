@@ -18,7 +18,6 @@ export function createSTLGeometry(payload: STLPayload): BufferGeometry {
     }
 }
 
-/** Analysis geometry is independent of the loaded scene and its materials. */
 /**
  * Replace every quantized attribute with a float copy, in place.
  *
@@ -42,6 +41,7 @@ export function toFloatAttributes(geometry: BufferGeometry): BufferGeometry {
     return geometry
 }
 
+/** Analysis geometry is independent of the loaded scene and its materials. */
 export function mergeGLTFGeometry(scene: Object3D): BufferGeometry | null {
     const clones: BufferGeometry[] = []
     let result: BufferGeometry | null = null

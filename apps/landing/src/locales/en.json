@@ -359,6 +359,15 @@
     "journeyBtn": "Begin Your Journey",
     "studioBtn": "Launch Studio"
   },
+  "heroSweep": {
+    "label": "Reach",
+    "still": "A SCARA robot arm from the Commons, reaching out at an angle.",
+    "caption": "A Commons cartridge. Every value is a rendered arm.",
+    "open": "Open it in Studio",
+    "name": "SCARA",
+    "pause": "Pause",
+    "play": "Play"
+  },
   "footer": {
     "copyright": "Yantra4D. Open source under AGPLv3.",
     "docs": "Docs",

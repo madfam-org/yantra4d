@@ -97,9 +97,12 @@ def declaration_problems(
     node_ids: set[str],
     *,
     wired: set[str],
+    part_parameters: frozenset[str] = frozenset(),
 ) -> list[Problem]:
     """Check the declarations block. ``wired`` is every declared parameter id that some
-    node reads: a script pass-through, a ``binding``, or the graph's expression scope."""
+    node reads: a script pass-through, a ``binding``, or the graph's expression scope.
+    ``part_parameters`` are the pack's part parameter(s), which a preset may set without
+    declaring them."""
     block = doc.get("declarations")
     if block is None:
         return []
@@ -207,7 +210,7 @@ def declaration_problems(
         if not isinstance(values, dict):
             problems.append(Problem("declarations", loc, "'values' must be an object"))
             continue
-        stray = sorted(set(values) - set(params))
+        stray = sorted(set(values) - set(params) - set(part_parameters))
         if stray:
             problems.append(Problem(
                 "declarations", loc,

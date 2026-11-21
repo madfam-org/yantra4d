@@ -44,8 +44,8 @@ LOCK = PKG / "core.lock.json"
 # Pinned here, outside the copy, so that editing a vendored file AND its lock together
 # cannot pass: the lock must still be the one the keystone published. Re-vendoring moves
 # both lines in the same commit (VENDORED.md).
-CANONICAL_COMMIT = "5516b052f5f98b5d89e87a97be16f73d0e1d293d"
-CANONICAL_LOCK_SHA256 = "ac6547e8d10e7b2072bbbacb57934763f474f8f8ce88d35a25fdc4809e6ad042"
+CANONICAL_COMMIT = "85ac9f542ce97be7771eae65d86442cea9d49aa5"
+CANONICAL_LOCK_SHA256 = "8bbf19c501877896d4ea28205157fb2655af088d8baeeef614104b4a75a08c37"
 
 
 def _vendored_files() -> list[str]:

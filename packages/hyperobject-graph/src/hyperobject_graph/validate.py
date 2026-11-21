@@ -450,6 +450,14 @@ def validate(
     # ── Bindings ──────────────────────────────────────────────────────────────
     has_declarations = isinstance(doc.get("declarations"), dict)
     binding_source = binding_parameters(doc, parameters)
+    if has_declarations and wrapper_plan(doc, pack) is not None:
+        # A pure wrapper has no node a `binding` could target. A `binding` in its
+        # declarations belongs to another graph of the same cartridge (a native graph mode
+        # beside the script modes), copied here because the declarations must equal the
+        # manifest's entries; resolving it against the wrapper would report a dangling
+        # reference that is not there (RFC 0067 P1 pre-check: book-fold-phone,
+        # clamshell-dual-screen-handheld).
+        binding_source = []
     try:
         bindings = extract_bindings(binding_source, reserved)
     except GraphCoreError as exc:
@@ -570,7 +578,17 @@ def validate(
                     f"does not declare",
                 ))
             wired = passed | (set(declared) & read) | {pid for pid in bindings.values()}
-            problems.extend(declaration_problems(doc, set(by_id), wired=wired))
+            # The pack's part parameter (solid: `target_part`) is the runner's, not a node's:
+            # it selects which output renders, and a script node passes it through by
+            # contract (it may not bind it). Declared as a manifest parameter — six solid
+            # cartridges do, as a part picker — it is wired by definition, and a preset may
+            # set it whether or not it is declared (RFC 0067 P1 pre-check).
+            part_parameters = frozenset(
+                {pack.script.part_parameter} if getattr(pack, "script", None) else ()
+            )
+            wired = wired | (part_parameters & (declared_ids or set()))
+            problems.extend(declaration_problems(doc, set(by_id), wired=wired,
+                                                 part_parameters=part_parameters))
         problems.extend(provenance_problems(doc, script_sources))
     return problems
 

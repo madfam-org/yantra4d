@@ -154,6 +154,7 @@
       "f1": "Explora los {cartridges} cartuchos con vista previa 3D",
       "f2": "Personaliza cualquier cartucho del Procomún + exportación STL",
       "f3": "{guestRenders} renders en servidor por hora",
+      "f4": "{guestCommonsRenders} renders a medida al día de cartuchos CadQuery y de grafo",
       "cta": "Abrir el estudio"
     },
     "essentials": {
@@ -162,6 +163,7 @@
       "f1": "{essentialsRenders} renders en servidor por hora",
       "f2": "Exportación 3MF y OBJ",
       "f3": "Configurador con IA",
+      "f4": "{essentialsCommonsRenders} renders a medida al día de cartuchos CadQuery y de grafo",
       "cta": "Crear cuenta"
     },
     "pro": {

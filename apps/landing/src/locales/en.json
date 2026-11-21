@@ -154,6 +154,7 @@
       "f1": "Browse all {cartridges} cartridges with a 3D preview",
       "f2": "Customize any cartridge in the Commons + STL export",
       "f3": "{guestRenders} server renders per hour",
+      "f4": "{guestCommonsRenders} custom renders a day of CadQuery and graph cartridges",
       "cta": "Open the studio"
     },
     "essentials": {
@@ -162,6 +163,7 @@
       "f1": "{essentialsRenders} server renders per hour",
       "f2": "3MF and OBJ exports",
       "f3": "AI configurator",
+      "f4": "{essentialsCommonsRenders} custom renders a day of CadQuery and graph cartridges",
       "cta": "Create an account"
     },
     "pro": {

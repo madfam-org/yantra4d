@@ -265,6 +265,8 @@ Rule separate regions; there are no decorative shapes in the Studio chrome.
 
 The parameter slider is the Studio's most common control (4,028 of 4,509 Commons parameters):
 label and live mono value on one line, the Radix slider below, the unit in Zinc Quiet Text.
+The filled range is `--primary` on a `--secondary` track: 16.13:1 in light, but 2.86:1 in dark,
+under the 3:1 non-text floor (recorded debt in `apps/studio/src/test/tokenContrast.test.ts`).
 
 ## Do's and Don'ts
 

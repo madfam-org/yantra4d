@@ -110,7 +110,7 @@ outline + inspector three-pane layout and a two-face sidebar.
 
 | Declared type | Control | Notes |
 |---|---|---|
-| number, bounded | slider **and** a numeric field side by side, unit after the value | field always visible (today it hides behind a click); ticks when ≤ 30 steps; the default marked on the track; keyboard: arrows = step, Shift+arrows = 10 steps |
+| number, bounded | slider **and** a numeric field side by side, unit after the value | field always visible (today it hides behind a click); ticks when ≤ 30 steps; the default marked on the track; keyboard: arrows = step, Shift+arrows = 10 steps; the filled range must clear 3:1 on its track in both themes (dark measures 2.86:1 today) |
 | number, unbounded or range > 1,000 steps | numeric field with stepper | |
 | integer count | stepper (− value +) | |
 | enum, ≤ 4 short options | segmented control | |

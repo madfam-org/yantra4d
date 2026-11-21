@@ -93,7 +93,7 @@ Read on `main` at `91b3ffc9`. Several are defects worth fixing before P2 regardl
 | Reset | no per-parameter reset; the default is only a star on the track | `SliderControl.tsx:143-149` |
 | Constraints | messages show only under sliders; Generate is disabled by an error with no explanation; a formula that throws is skipped silently | `Controls.tsx:530-534`, `StudioSidebar.tsx:46`, `useConstraints.ts:68-70` |
 | Constraint text | `text-destructive` measures 3.76:1 (light) and 1.99:1 (dark), under 4.5:1 | `tokenContrast.test.ts` |
-| Compare | nothing adds the first slot, so compare never opens from the UI; "Sync camera" toggles state that no viewer reads; desktop only | `StudioMainView.tsx:192`, `ComparisonView.tsx:30-91`, `StudioSidebar.tsx:422` |
+| Compare | nothing adds the first slot, so compare never opens from the UI; "Sync camera" toggles state that no viewer reads; desktop only, because the phone sheet renders the sidebar without the compare props | `StudioMainView.tsx:192`, `ComparisonView.tsx:30-91`, `StudioSidebar.tsx:422` |
 | Graph editor | Pro + fork only; no per-node preview; issues list and validator messages hard-coded in English; no axe test | `StudioHeader.tsx:155-165`, `GraphIssues.tsx:58-67`, `graphDocument.ts:248-286` |
 | Visual regression | the only `toHaveScreenshot` suite is `describe.skip` | `e2e/tests/18-visual-regression` |
 | Cartridge labels | 4,495 of 4,509 parameter labels exist in en and es only | commons scan, 2026-11-20 |
@@ -102,7 +102,8 @@ Read on `main` at `91b3ffc9`. Several are defects worth fixing before P2 regardl
 
 G-6 asks for, per cartridge: impeccable `detect`, accessibility (axe), contrast, label/unit/i18n
 completeness against the graph, and golden screenshots per family at phone and desktop widths.
-Running 1,195 cartridges through a browser on every pull request is neither possible on this
+Running every cartridge (512 solid today; about 1,195 across the solid, soft and sheet commons)
+through a browser on every pull request is neither possible on this
 infrastructure nor useful, so the checks split into **static** (every cartridge, every PR, no
 browser) and **rendered** (sampled per PR, full sweep nightly on the cluster's CPU workers,
 RFC 0061).
@@ -133,7 +134,7 @@ turns on.
 | `destructive` text on background/card (constraint messages) | 3.76 | 1.99 | 4.5 |
 | `destructive-foreground` on `destructive` (destructive button) | 3.60 | 9.59 | 4.5 |
 | `input` border on background (field boundary) | 1.27 | 1.34 | 3.0 |
-| `primary` on `secondary` (slider's filled range on its track) | passes | 2.86 | 3.0 |
+| `primary` on `secondary` (slider's filled range on its track) | 16.13 | 2.86 | 3.0 |
 
 Everything else the configurator uses clears its floor. The fixes are token work (a readable
 error token, as `primary-readable` was for accent text, a field boundary that clears 3:1, and a

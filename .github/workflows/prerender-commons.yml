@@ -300,9 +300,9 @@ jobs:
         env:
           # pull_request = the five-cartridge smoke set; a dispatch names its own.
           SLUGS: ${{ github.event_name == 'pull_request' && 'gridfinity,motor-mount,din-rail-clip,spiral-planter,hook-and-eye' || inputs.slugs }}
-          # `all` on the monthly schedule too: with --clean, a narrower selection
-          # deletes every lod0 outside it, and the Studio falls back to the
-          # 2,500-triangle lod1 for those cartridges.
+          # `all` on the monthly schedule too, so its artifact matches what is
+          # committed: with --clean, a narrower selection deletes every lod0
+          # outside it, and the Studio falls back to the 2,500-triangle lod1.
           LOD0: ${{ inputs.lod0 || 'all' }}
         run: |
           set -uo pipefail

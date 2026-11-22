@@ -31,7 +31,6 @@ import {
   EXIT_OK,
   EXIT_USAGE,
   GENERATOR,
-  LOD0_ALL_MAX_INPUTS,
   MANIFEST_VERSION,
   buildManifest,
   loadDeps,
@@ -645,16 +644,16 @@ describe('run — legacy uncompressed inputs', () => {
 // ─── lod0 selection ─────────────────────────────────────────────────────────
 
 describe('resolveLod0Selection', () => {
-  it('defaults to all for a small set and to hero above the threshold', () => {
+  it('defaults to all, however many inputs there are', () => {
     const repo = makeRepo({ manifests: [{ slug: 'motor-mount', animations: true }, { slug: 'gridfinity' }] })
     const ctx = makeContext({ repo })
     const few = ['gridfinity', 'motor-mount']
     expect(resolveLod0Selection(undefined, few, ctx)).toEqual({ mode: 'all', slugs: new Set(few) })
 
-    const many = Array.from({ length: LOD0_ALL_MAX_INPUTS + 1 }, (_, i) => `cartridge-${i}`).concat(few)
-    const picked = resolveLod0Selection(undefined, many, ctx)
-    expect(picked.mode).toBe('hero')
-    expect([...picked.slugs]).toEqual(['motor-mount'])
+    // The whole Commons is ~510 inputs; a default of `hero` there let --clean delete every
+    // other cartridge's lod0.
+    const many = Array.from({ length: 600 }, (_, i) => `cartridge-${i}`).concat(few)
+    expect(resolveLod0Selection(undefined, many, ctx)).toEqual({ mode: 'all', slugs: new Set(many) })
   })
 
   it('prefers models.hero.json over the animated manifests', () => {

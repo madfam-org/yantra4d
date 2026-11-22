@@ -99,16 +99,20 @@ Enforcement, in order:
 (a second, byte-identical file under another name would help nobody); the
 manifest then simply carries no `lod0` for that slug.
 
-`--lod0` accepts `all`, `hero`, `none` or a comma-separated list. The
-optimizer's own default is `all` for ≤ 40 inputs and `hero` above that; the
-workflow passes `all` on every run, scheduled or dispatched (see below), so every
-cartridge that lod1 decimates also gets a lod0, and the Studio opens on it.
-Measured on the 2026-09-19 run (502 cartridges): 279 raw renders exceed 2,500
-triangles; 37 of those also exceed 25,000, and roughly 16 more hit the 61,440 B
-cap first (estimated at 3.3 B per triangle), so about 226 get an undecimated
-lod0 and the rest a lod0 decimated to 16,000–25,000 triangles instead of 2,500.
-The landing gallery keeps reading lod1; lod0 adds about 8 MB to
-`public/models`, fetched only by a Studio visitor, one cartridge at a time.
+`--lod0` accepts `all`, `hero`, `none` or a comma-separated list, and defaults
+to `all`, in the optimizer and in the workflow (scheduled or dispatched): every
+cartridge that lod1 decimates also gets a lod0, and the Studio opens on it. Keep
+it that way when running the optimizer by hand: with `--clean`, a narrower
+selection deletes every lod0 outside it, and even without `--clean` the rebuilt
+manifest stops listing them.
+
+Measured on the 2026-11-22 run (510 cartridges, `lod0=all`): 289 lod0 files;
+239 of them are the raw render undecimated, 49 hit the 61,440 B cap first and
+were decimated to 15,000–19,500 triangles (the 25,000-triangle budget never
+binds at about 3 B per triangle), one is the lattice exception. lod0 totals
+8.57 MB in `public/models`, fetched only by a Studio visitor, one cartridge at a
+time; the landing gallery keeps reading lod1, and only `manifest.json` grows
+(about 1.3 KB compressed).
 
 `hero` is `apps/landing/models.hero.json` (a JSON array of slugs, or `{ "slugs": [...] }`)
 when that file exists, else every manifest under `projects/*` with an
@@ -253,7 +257,7 @@ on `workflow_dispatch` with:
 | :-- | :-- | :-- |
 | `open_pr` | `false` | Commit `apps/landing/public/models` to `chore/commons-models-<run>` and open a PR (`peter-evans/create-pull-request`). |
 | `slugs` | *(empty = whole catalog)* | Render only these, `--force`d. A limited run never passes `--clean` to the optimizer, so the other cartridges' LODs stay. |
-| `lod0` | `all` | Passed straight to the optimizer's `--lod0`. The scheduled run uses `all` too: with `--clean`, a narrower selection deletes every lod0 outside it. |
+| `lod0` | `all` | Passed straight to the optimizer's `--lod0`. The scheduled run uses `all` too, so the artifact it uploads matches what is committed. |
 
 What it does, on GitHub-hosted `ubuntu-24.04` (R116: public repositories stay on
 GitHub-hosted runners), 120 min budget:

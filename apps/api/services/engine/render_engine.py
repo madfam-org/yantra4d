@@ -72,6 +72,10 @@ class EngineResult(tuple):
         self.crash_signal = crash_signal
         return self
 
+    def __getnewargs__(self):
+        # copy, deepcopy and pickle rebuild a tuple subclass from these.
+        return (self[0], self[1], self.crash_signal)
+
 
 class ProcessManager:
     """Track render processes without letting one request cancel another.

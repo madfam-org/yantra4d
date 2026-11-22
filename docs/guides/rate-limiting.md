@@ -109,15 +109,18 @@ A render whose **engine process crashed** is given back too. "Crashed" means
 every part that failed died of a crash signal (SIGSEGV, SIGBUS, SIGILL, SIGFPE
 or SIGABRT), which the engine reads from the process's exit status and the
 worker reports on the part's error event (`crash_signal`, worker to API only;
-it is removed before the event reaches a client). No slider value a Commons
-cartridge accepts should crash the kernel, so a crash is our defect: on
-2026-11-21 an address-space ceiling set too low for the node made every free
-render die with `Render failed with code -11`, and each one used up one of
-the visitor's three renders. A kill (SIGKILL: our timeout, a cancel, the OOM
-killer) and the CPU-time limit (SIGXCPU) are not crashes and stay charged.
+it is removed before the event reaches a client). A crash is presumed to be
+ours: on 2026-11-21 an address-space ceiling set too low for the node made
+every free render die with `Render failed with code -11`, and each one used up
+one of the visitor's three renders. It is not always ours: a render that grows
+past its address-space ceiling (`RENDER_RLIMIT_AS_MB`) usually dies of a crash
+signal too, and slider values can cause that. The bound below is what makes
+the presumption safe. A kill (SIGKILL: our timeout, a cancel, the OOM killer)
+and the CPU-time limit (SIGXCPU) are not crashes and stay charged.
 
 Crash refunds are bounded: at most the tier's daily quota of them per identity
-per day (`yantra_commons_crash_refunds:<identity>`, same window as the quota).
+per day (`yantra_commons_crash_refunds:<identity>`, a fixed window of its own
+that starts with the first refund, as long as the quota's).
 A visitor who finds parameters that crash the kernel therefore gets at most
 twice the daily quota in worker runs, not an unmetered loop; without the bound
 one address could spend the whole hourly budget below for everyone. The hourly

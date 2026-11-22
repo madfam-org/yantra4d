@@ -1,12 +1,13 @@
 """Per-process resource limits for render subprocesses (OpenSCAD, CadQuery).
 
-The render worker shares one container memory limit (2Gi in
+The render worker shares one container memory limit (4Gi in
 ``k8s/production/yantra4d-backend-deployment.yaml``) between itself, the warm
-CadQuery workers and every render in flight. Without a per-process ceiling a
+CadQuery worker and the render in flight. Without a per-process ceiling a
 single runaway render grows until the kernel OOM-kills the container, and
-every other render with it. With one, the runaway render fails on its own
-(``MemoryError`` / ``std::bad_alloc``, or SIGXCPU for CPU time) and the worker
-reports a render error.
+every other render with it. With one, the runaway render fails on its own and
+the worker reports a render error: a Python ``MemoryError`` when the refusal
+reaches Python, but usually a crash (SIGSEGV, or SIGABRT from an uncaught
+``std::bad_alloc``) because it lands in native code; SIGXCPU for CPU time.
 
 Limits are applied in the child between ``fork`` and ``exec`` through
 ``preexec_fn``. The function only calls ``resource.setrlimit`` with values
@@ -16,7 +17,7 @@ Tunables (read when a render starts, so a changed env takes effect without a
 restart of the module):
 
 * ``RENDER_RLIMIT_AS_MB`` — address-space ceiling per render process.
-  Default 2048 (see ``DEFAULT_AS_MB`` for the measurement behind it).
+  Default 2560 (see ``DEFAULT_AS_MB`` for the measurement behind it).
   ``0`` disables it.
 * ``RENDER_RLIMIT_CPU_S`` — CPU-seconds ceiling per one-shot render process.
   Default ``RENDER_TIMEOUT_S + 60``: the wall-clock timeout normally ends a
@@ -56,14 +57,17 @@ except ImportError:  # pragma: no cover - exercised only on platforms without it
 
 logger = logging.getLogger(__name__)
 
-#: Measured on CI (ubuntu-24.04, Python 3.12, CadQuery 2.8.0, 2026-11-22): a
-#: small CadQuery part rendered to GLB peaks at 1254 MiB of address space once
-#: BLAS threads are capped (``THREAD_CAPS``), of which about 640 MiB is ever
-#: resident. 2048 leaves about 800 MiB for the geometry itself, and still clears
-#: the uncapped peak on a 12-CPU node (about 1790 MiB) if a cap ever stops
-#: applying. A runaway render is refused near 1.4 GiB resident, below the
-#: worker container's 2Gi limit with room for the worker process.
-DEFAULT_AS_MB = 2048
+#: Measured on CI (ubuntu-24.04, Python 3.12, CadQuery 2.8.0, 2026-11-22) with
+#: BLAS threads capped (``THREAD_CAPS``), real Commons cartridges at their
+#: default parameters, rendered to GLB: most peak at 1254-1274 MiB of address
+#: space (arca-gopro-bridge, rugged-box, tripod-hub, polydice), the heavier
+#: ones at 1331 (tpu-chainmail-panel), 1391 (solar-dryer-tray) and 1732
+#: (body-form, the heaviest sampled). About 600 MiB of that is mapped and never
+#: resident. 2560 clears body-form by 1.48x and the common case by 2x, and a
+#: runaway render is refused near 1.95 GiB resident, which the 4Gi worker
+#: container holds beside the worker process and one idle warm worker
+#: (``tests/unit/test_render_limits.py`` checks that sum against the manifest).
+DEFAULT_AS_MB = 2560
 DEFAULT_CPU_S = RENDER_TIMEOUT_S + 60
 
 #: glibc reserves 64 MiB of address space per malloc arena and creates up to

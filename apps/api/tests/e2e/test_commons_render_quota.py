@@ -112,6 +112,8 @@ class FakeRedis:
 
     #: Set by a test: final channel -> events the worker publishes on it.
     worker_reply = staticmethod(lambda _channel: [])
+    #: Set by a test: publish the same events on the render channel first.
+    also_on_render_channel = False
 
     def eval(self, script, _numkeys, key, *args):
         if script == quota.CHARGE_SCRIPT:
@@ -176,6 +178,12 @@ class FakePubSub:
         from services.engine.render_contract import RENDER_FINAL_CHANNEL_SUFFIX
         if channel.endswith(f":{RENDER_FINAL_CHANNEL_SUFFIX}"):
             for event in self.fake.worker_reply(channel):
+                self.pending.append({"channel": channel, "data": json.dumps(event)})
+        elif self.fake.also_on_render_channel:
+            # The real worker publishes a part's events on the render channel
+            # too, and the stream loop forwards those to the client verbatim.
+            final = f"{channel}:{RENDER_FINAL_CHANNEL_SUFFIX}"
+            for event in self.fake.worker_reply(final):
                 self.pending.append({"channel": channel, "data": json.dumps(event)})
 
     def get_message(self, timeout=0):
@@ -623,6 +631,7 @@ class TestSettlement:
 
     def test_an_engine_crash_in_the_stream_is_given_back_and_stays_internal(self, client, fake_redis, monkeypatch):
         self._worker_crashes(fake_redis, monkeypatch)
+        fake_redis.also_on_render_channel = True
         body = _render(client, 11, stream=True).get_data()
         assert b"Render failed with code -11" in body
         # The signal number is worker -> API only; it never reaches a client.

@@ -50,11 +50,9 @@ PARAMS = {"plate_radius": 40, "thickness": 6, "bore": 20, "bolt_circle": 28, "bo
 #: The default ceiling must clear the measured peak by this factor: the room
 #: left for the geometry itself, which a small flange barely uses.
 HEADROOM = 1.5
-#: Address space a render may gain per CPU of the machine. A thread's stack is
-#: 8 MiB; an uncapped OpenBLAS thread is 49.
-PER_CPU_BUDGET_MIB = 12
 #: The default must also clear the peak projected to a node this large
-#: (production nodes have 12 CPUs).
+#: (production nodes have 12 CPUs). Uncapped, OpenBLAS adds 49 MiB per CPU,
+#: which would project to about 4.3 GiB here.
 PROJECTED_CPUS = 64
 
 #: Runs ``cq_runner.py`` in this process and reports the process's own peaks
@@ -181,13 +179,14 @@ class TestDefaultCeilingIsSizedFromAMeasurement:
         """The ceiling must clear what a render maps, here and on a larger node.
 
         Measured unlimited, in the environment a limited render gets, on this
-        machine's CPUs and again pinned to one. Three things are required:
+        machine's CPUs and again pinned to one. Two things are required:
 
-        - the address space must not grow with the CPU count beyond a thread
-          stack or so per CPU (uncapped, OpenBLAS adds 49 MiB per CPU, which
-          is what made a default that passed on 4 CPUs fail on 12);
         - the default must clear the peak by ``HEADROOM``;
-        - the default must clear the peak projected to ``PROJECTED_CPUS``.
+        - the default must clear the peak projected to ``PROJECTED_CPUS``
+          from the growth per CPU, so a render whose address space grows with
+          the CPU count fails here, on a 4-CPU runner, and not first on a
+          12-CPU node (what made a 1536 default that passed CI fail in
+          production).
 
         The numbers are printed as a notice on every run, so the next person
         to size the ceiling starts from a measurement.
@@ -204,58 +203,6 @@ class TestDefaultCeilingIsSizedFromAMeasurement:
                   f"{projected:.0f} MiB projected at {PROJECTED_CPUS} CPUs; default ceiling {default} MiB")
         with capsys.disabled():
             print(f"\n::notice title=Render address space::{report}")
-        assert per_cpu <= PER_CPU_BUDGET_MIB, f"address space grows with the CPU count: {report}"
         assert here["VmPeak"] * HEADROOM <= default, f"too little headroom: {report}"
-        assert projected <= default, f"a larger node would not fit: {report}"
+        assert projected <= default, f"address space grows with the CPU count; a larger node would not fit: {report}"
 
-
-class TestDiagnose:
-    """TEMPORARY (removed before merge): size the default from real cartridges."""
-
-    def test_report(self, tmp_path, capsys, monkeypatch):
-        from pathlib import Path
-
-        def say(row):
-            with capsys.disabled():
-                print(f"\n::notice title=Render diagnose::{row}", flush=True)
-
-        projects = Path(__file__).resolve().parents[4] / "projects"
-        flange = tmp_path / "flange.py"
-        flange.write_text(SCRIPT)
-
-        # 1. The old conditions: no BLAS cap, a ceiling inside the window the
-        #    OpenBLAS pool allocates in (1250..1398 MiB on 4 CPUs).
-        for as_mb in (1260, 1280, 1300, 1320, 1340, 1360, 1380):
-            monkeypatch.setenv("RENDER_RLIMIT_AS_MB", str(as_mb))
-            env = dict(cadquery_engine._cadquery_env())
-            env["MALLOC_ARENA_MAX"] = render_limits.MALLOC_ARENA_MAX
-            try:
-                proc = subprocess.run(
-                    _command(flange, tmp_path / "w.glb"), capture_output=True, text=True, timeout=40,
-                    check=False, env=env, preexec_fn=render_limits.render_preexec_fn(),
-                )
-                tail = (proc.stdout + proc.stderr).strip().splitlines()[-2:]
-                say(f"uncapped, limit {as_mb}: rc={proc.returncode} tail={' | '.join(ln[:140] for ln in tail)}")
-            except subprocess.TimeoutExpired:
-                say(f"uncapped, limit {as_mb}: HUNG 40s")
-        monkeypatch.delenv("RENDER_RLIMIT_AS_MB")
-
-        # 2. Real Commons cartridges at their default parameters, capped, unlimited.
-        for slug in ("arca-gopro-bridge", "rugged-box", "tpu-chainmail-panel", "solar-dryer-tray",
-                     "tripod-hub", "polydice", "body-form"):
-            manifest = json.loads((projects / slug / "project.json").read_text())
-            mode = manifest["modes"][0]
-            params = {p["id"]: p["default"] for p in manifest.get("parameters", []) if "default" in p}
-            params["target_part"] = mode["parts"][0]
-            script = projects / slug / (mode.get("cq_file") or mode["scad_file"])
-            env = dict(render_limits.limited_env(cadquery_engine._cadquery_env()))
-            env["PYTHONPATH"] = str(projects)
-            env[cadquery_engine.CURATED_ROOTS_ENV] = str(projects)
-            cmd = cadquery_engine.build_cadquery_command(str(tmp_path / f"{slug}.glb"), str(script), params, "glb")
-            try:
-                proc = subprocess.run([cmd[0], "-c", MEASURE, *cmd[1:]], capture_output=True, text=True,
-                                      timeout=75, check=False, env=env)
-                line = [ln for ln in proc.stdout.splitlines() if ln.startswith("Y4D_MEASURE ")]
-                say(f"{slug}: {line[-1][12:] if line else (proc.returncode, (proc.stdout + proc.stderr)[-300:])}")
-            except subprocess.TimeoutExpired:
-                say(f"{slug}: TIMEOUT 75s")

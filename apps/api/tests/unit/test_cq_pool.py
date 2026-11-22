@@ -10,6 +10,8 @@ Workers are faked here — real CadQuery workers are exercised by the integratio
 test in tests/integration/test_cq_pool_warm.py, which skips when cadquery is absent.
 """
 import json
+import os
+import time
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -274,6 +276,16 @@ class TestReadlineWithTimeout:
         finally:
             blocked.set()
 
+    def test_end_of_stream_is_not_a_timeout(self):
+        # A worker that dies closes its stdout: readline() returns "" at once.
+        # That used to read as a timeout and was reported to the visitor as
+        # "Render timed out after 300 seconds" a second after they pressed
+        # Generate.
+        stream = MagicMock()
+        stream.readline.return_value = ""
+        assert _readline_with_timeout(stream, 5) is cq_pool._EOF
+        assert _readline_with_timeout(stream, 5, is_cancelled=lambda: False) is cq_pool._EOF
+
     def test_returns_cancelled_sentinel_when_cancel_fires(self):
         import threading
         blocked = threading.Event()
@@ -354,3 +366,58 @@ class TestEngineDispatch:
         # The render worker ALWAYS passes is_cancelled; if the pool ignored it
         # this lever would be dead code in production.
         assert submit.call_args.kwargs["is_cancelled"] is flag
+
+
+# ---------------------------------------------------------------------------
+# A real worker process that dies mid-job
+# ---------------------------------------------------------------------------
+_DIES_ON_FIRST_JOB = (
+    "import json, os, signal, sys\n"
+    "print(json.dumps({'ready': True}), flush=True)\n"
+    "sys.stdin.readline()\n"
+    "os.kill(os.getpid(), signal.SIGSEGV)\n"
+)
+_DIES_AT_STARTUP = "import os, signal; os.kill(os.getpid(), signal.SIGSEGV)"
+
+
+@pytest.mark.skipif(not hasattr(os, "fork"), reason="POSIX processes")
+class TestWorkerDeath:
+    def _pool_running(self, monkeypatch, tmp_path, code):
+        """A pool whose REAL workers run *code* instead of cq_runner.py."""
+        runner = tmp_path / "fake_runner.py"
+        runner.write_text(code)
+        monkeypatch.setattr(cq_pool, "RUNNER_SCRIPT", str(runner))
+        return CadQueryPool()
+
+    def test_a_crash_mid_job_falls_back_instead_of_reporting_a_timeout(self, monkeypatch, tmp_path):
+        pool = self._pool_running(monkeypatch, tmp_path, _DIES_ON_FIRST_JOB)
+        try:
+            started = time.monotonic()
+            assert pool.submit("s.py", "o.stl", "{}", "stl") is None
+            assert time.monotonic() - started < 10
+            assert pool.stats()["live"] == 0
+        finally:
+            pool.shutdown()
+
+    def test_the_engine_then_renders_on_a_fresh_process(self, monkeypatch, tmp_path):
+        pool = self._pool_running(monkeypatch, tmp_path, _DIES_ON_FIRST_JOB)
+        monkeypatch.setattr(cadquery_engine, "cq_pool", pool)
+        try:
+            cmd = cadquery_engine.build_cadquery_command("o.stl", "s.py", {}, "stl")
+            with patch.object(cadquery_engine.subprocess, "run") as one_shot:
+                one_shot.return_value = MagicMock(stdout="fresh", stderr="")
+                assert cadquery_engine.run_render(cmd) == (True, "fresh")
+            one_shot.assert_called_once()
+        finally:
+            pool.shutdown()
+
+    def test_a_worker_that_dies_at_startup_disables_the_pool_with_its_code(self, monkeypatch, tmp_path):
+        pool = self._pool_running(monkeypatch, tmp_path, _DIES_AT_STARTUP)
+        try:
+            assert pool.submit("s.py", "o.stl", "{}", "stl") is None
+            stats = pool.stats()
+            assert "exited during startup" in stats["disabled_reason"]
+            assert str(-11) in stats["disabled_reason"]
+        finally:
+            pool.shutdown()
+

@@ -26,15 +26,45 @@ def _clean_env(monkeypatch):
         monkeypatch.delenv(name, raising=False)
 
 
+def _render_worker_container():
+    """The render-worker container's env and memory limit (MiB) from the manifest."""
+    from pathlib import Path
+
+    import yaml
+
+    manifest = Path(__file__).resolve().parents[4] / "k8s/production/yantra4d-backend-deployment.yaml"
+    docs = [d for d in yaml.safe_load_all(manifest.read_text()) if d and d.get("kind") == "Deployment"]
+    containers = docs[0]["spec"]["template"]["spec"]["containers"]
+    worker = next(c for c in containers if c["name"] == "render-worker")
+    env = {e["name"]: e.get("value") for e in worker.get("env", []) if "value" in e}
+    raw = worker["resources"]["limits"]["memory"]
+    units = {"Mi": 1, "Gi": 1024}
+    return env, int(raw[:-2]) * units[raw[-2:]]
+
+
 class TestConfiguration:
-    def test_defaults_fit_inside_the_pod_limit(self):
-        # The worker container is limited to 2Gi of MEMORY; the ceiling counts
-        # address space, and a CadQuery render maps about 600 MiB it never
-        # touches (measured: 1254 MiB mapped, 640 MiB resident). So a runaway
-        # render is refused that much below the ceiling, and that point must
-        # stay under the pod limit with room for the worker process (300 MiB).
-        never_resident_mb, worker_mb, pod_mb = 600, 300, 2048
-        assert 0 < render_limits.DEFAULT_AS_MB - never_resident_mb <= pod_mb - worker_mb
+    def test_defaults_agree_with_the_render_worker_container(self):
+        """The ceiling, the warm-worker count and the container's memory limit
+        are one budget, set in two files. The worst case the container must
+        hold is the worker process, the idle warm workers, and the one render
+        in flight at the point its ceiling refuses it.
+
+        The per-process figures are measurements (2026-11-22): the render
+        worker's working set in production, a warm worker idle after importing
+        CadQuery, and the address space a CadQuery render maps but never
+        touches (VmPeak - VmHWM, 595-620 MiB across seven Commons cartridges).
+        """
+        worker_mib, warm_idle_mib, never_resident_mib = 812, 640, 590
+        env, limit_mib = _render_worker_container()
+        assert env["RENDER_RLIMIT_AS_MB"] == str(render_limits.DEFAULT_AS_MB), \
+            "set the manifest and the code default together"
+        warm_workers = int(env.get("YANTRA4D_CQ_WORKERS", "2"))
+        in_flight = render_limits.DEFAULT_AS_MB - never_resident_mib
+        worst = worker_mib + warm_workers * warm_idle_mib + in_flight
+        assert worst <= limit_mib * 0.9, (
+            f"worker {worker_mib} + {warm_workers} warm x {warm_idle_mib} + render {in_flight} "
+            f"= {worst} MiB, over 90% of the container's {limit_mib} MiB"
+        )
         assert render_limits.address_space_limit_bytes() == render_limits.DEFAULT_AS_MB * 1024 * 1024
         assert render_limits.cpu_limit_seconds() > render_limits.RENDER_TIMEOUT_S
 

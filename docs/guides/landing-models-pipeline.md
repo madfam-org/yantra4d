@@ -26,7 +26,7 @@ scripts/dev/optimize-commons-models.mjs  (npm run models:optimize, from apps/lan
         ▼
 apps/landing/public/models/
     <slug>.lod1.glb                  every cartridge     ≤ 12,288 B, ≤ 2,500 triangles
-    <slug>.lod0.glb                  hero cartridges     ≤ 61,440 B, ≤ 25,000 triangles
+    <slug>.lod0.glb                  decimated at lod1   ≤ 61,440 B, ≤ 25,000 triangles
     <slug>.<animation>.<index>.glb   keyframes           ≤ 61,440 B, ≤ 25,000 triangles
     manifest.json                    v2, see below
 ```
@@ -99,9 +99,18 @@ Enforcement, in order:
 (a second, byte-identical file under another name would help nobody); the
 manifest then simply carries no `lod0` for that slug.
 
-`--lod0` accepts `all`, `hero`, `none` or a comma-separated list. The default
-is `all` for ≤ 40 inputs and `hero` above that. `hero` is
-`apps/landing/models.hero.json` (a JSON array of slugs, or `{ "slugs": [...] }`)
+`--lod0` accepts `all`, `hero`, `none` or a comma-separated list. The
+optimizer's own default is `all` for ≤ 40 inputs and `hero` above that; the
+workflow passes `all` on every run, scheduled or dispatched (see below), so every
+cartridge that lod1 decimates also gets a lod0, and the Studio opens on it.
+Measured on the 2026-09-19 run (502 cartridges): 279 raw renders exceed 2,500
+triangles; 37 of those also exceed 25,000, and roughly 16 more hit the 61,440 B
+cap first (estimated at 3.3 B per triangle), so about 226 get an undecimated
+lod0 and the rest a lod0 decimated to 16,000–25,000 triangles instead of 2,500.
+The landing gallery keeps reading lod1; lod0 adds about 8 MB to
+`public/models`, fetched only by a Studio visitor, one cartridge at a time.
+
+`hero` is `apps/landing/models.hero.json` (a JSON array of slugs, or `{ "slugs": [...] }`)
 when that file exists, else every manifest under `projects/*` with an
 `animations` array (20 cartridges at the time of writing).
 
@@ -176,7 +185,7 @@ the commons submodule (`git submodule update --init --depth 1 projects`).
 cd apps/landing
 
 # Over a raw/ directory produced by the render half:
-npm run models:optimize -- --strict --clean --lod0 hero
+npm run models:optimize -- --strict --clean --lod0 all
 
 # Drift lane: exit 3 when the committed files differ from what the inputs produce.
 npm run models:optimize -- --check
@@ -244,7 +253,7 @@ on `workflow_dispatch` with:
 | :-- | :-- | :-- |
 | `open_pr` | `false` | Commit `apps/landing/public/models` to `chore/commons-models-<run>` and open a PR (`peter-evans/create-pull-request`). |
 | `slugs` | *(empty = whole catalog)* | Render only these, `--force`d. A limited run never passes `--clean` to the optimizer, so the other cartridges' LODs stay. |
-| `lod0` | `hero` | Passed straight to the optimizer's `--lod0`. |
+| `lod0` | `all` | Passed straight to the optimizer's `--lod0`. The scheduled run uses `all` too: with `--clean`, a narrower selection deletes every lod0 outside it. |
 
 What it does, on GitHub-hosted `ubuntu-24.04` (R116: public repositories stay on
 GitHub-hosted runners), 120 min budget:

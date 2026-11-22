@@ -228,6 +228,8 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
   let driven = false;
   let timer = 0;
   let stage: Stage | null = null;
+  // True while the 3D frames load: the readout holds still, so no picture timer may start.
+  let loading = false;
   // Bumped by every start and stop, so a stage that finishes loading after a stop is discarded.
   let generation = 0;
 
@@ -250,7 +252,7 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
   // The pictured sweep: one rendered frame after another, until the visitor takes over or pauses.
   const play = () => {
     window.clearInterval(timer);
-    if (paused || driven || stage) return;
+    if (paused || driven || stage || loading) return;
     timer = window.setInterval(() => showValue((index + 1) % HERO_SWEEP.values.length), HOLD_MS);
   };
 
@@ -307,7 +309,10 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
     }
     const mine = ++generation;
     // The readout holds still while the frames load, so the stage starts on the value shown.
+    loading = true;
     window.clearInterval(timer);
+    // A disabled button can lose focus to the page; remember it so the slider can take it over.
+    const hadFocus = document.activeElement === view3d;
     if (view3d) view3d.disabled = true;
     try {
       const { createStage } = await import('../lib/hero-sweep-stage');
@@ -328,11 +333,15 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
       stage = created;
       stage.setPaused(paused);
       offer3d(false);
+      if (hadFocus) range?.focus();
     } catch {
       // The pictured sweep stays: a page whose 3D failed must still read as finished.
       if (mine === generation) stop();
     } finally {
+      loading = false;
       if (view3d) view3d.disabled = false;
+      // Without a stage (it failed, or was stopped while loading) the pictures play on.
+      if (!stage) play();
     }
   };
 

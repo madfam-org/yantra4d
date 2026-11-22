@@ -241,7 +241,7 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                     thickness={2}
                     depthWrite={false}
                 />
-                <AsyncEdges geometry={geom} threshold={30} color={color} />
+                <AsyncEdges geometry={geom} threshold={creaseAngleDeg} color={color} />
             </mesh>
             </CompileGate>
         )

@@ -25,14 +25,22 @@ export function shadeWithCreaseNormals(root: Object3D, creaseAngleDeg: number): 
     }
     const normals = computeCreaseNormals(world, creaseAngleDeg);
     // A normal n in world space is M^-T applied to the local one, so the local one is M^T n.
+    // A mirroring transform (negative determinant) reverses the winding the world normals were
+    // taken from, so they point inwards: turn them round. A transform that flattens an axis to
+    // nothing has no local normal; any unit vector keeps the shader out of NaN.
     const m = mesh.matrixWorld.elements;
+    const sign = mesh.matrixWorld.determinant() < 0 ? -1 : 1;
     for (let i = 0; i < normals.length; i += 3) {
       const x = normals[i], y = normals[i + 1], z = normals[i + 2];
       const lx = m[0] * x + m[1] * y + m[2] * z;
       const ly = m[4] * x + m[5] * y + m[6] * z;
       const lz = m[8] * x + m[9] * y + m[10] * z;
-      const length = Math.hypot(lx, ly, lz) || 1;
-      normals[i] = lx / length; normals[i + 1] = ly / length; normals[i + 2] = lz / length;
+      const length = Math.hypot(lx, ly, lz);
+      if (length > 0 && Number.isFinite(length)) {
+        normals[i] = (sign * lx) / length; normals[i + 1] = (sign * ly) / length; normals[i + 2] = (sign * lz) / length;
+      } else {
+        normals[i] = 0; normals[i + 1] = 0; normals[i + 2] = 1;
+      }
     }
     geometry.setAttribute('normal', new BufferAttribute(normals, 3));
     mesh.geometry = geometry;

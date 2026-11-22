@@ -43,50 +43,77 @@ export function toFloatAttributes(geometry: BufferGeometry): BufferGeometry {
     return geometry
 }
 
+type CreaseNormalsCompute = (worldPositions: Float32Array, creaseAngleDeg: number) => Float32Array | Promise<Float32Array>
+
 /**
  * Give every mesh in a loaded scene that arrived without normals crease-angle normals, in place.
  *
  * Prerendered previews and the GLB the API converts from an STL carry positions only, and
- * GLTFLoader answers that by flat-shading the material. The mesh is un-indexed (a corner on a
- * crease needs a normal per face) and the material's flat shading is switched off. A mesh that
- * brought its own normals is left exactly as loaded.
+ * GLTFLoader answers that by flat-shading the material. Each such mesh gets its own un-indexed
+ * copy of its geometry (a corner on a crease needs a normal per face, and a geometry shared by
+ * two meshes may sit under two different transforms), and the material's flat shading is
+ * switched off. A mesh that brought its own normals is left exactly as loaded.
  *
  * Normals are worked out on world-space positions, so the crease test sees the part at its real
  * proportions whatever transform the node carries, then turned back into the mesh's own space;
  * the stored positions are not touched (a preview keeps its quantized ones). The scene belongs
- * to the load, so each replaced geometry is disposed here, once, after every mesh that shares
- * it has its copy.
+ * to the load, so each replaced geometry is disposed here, once, after every mesh that shared it
+ * has its copy.
+ *
+ * `compute` defaults to the main-thread routine; the loader passes the worker one.
  */
-export function addCreaseNormals(scene: Object3D, creaseAngleDeg: number): void {
+export async function addCreaseNormals(
+    scene: Object3D,
+    creaseAngleDeg: number,
+    compute: CreaseNormalsCompute = computeCreaseNormals,
+): Promise<void> {
     const point = new Vector3()
+    const pending: { mesh: Mesh; geometry: BufferGeometry; world: Float32Array }[] = []
     const replaced = new Set<BufferGeometry>()
     scene.updateMatrixWorld(true)
     scene.traverse(child => {
         const mesh = child as Mesh
         const source = mesh.isMesh ? mesh.geometry : null
         if (!source?.getAttribute('position') || source.getAttribute('normal')) return
-        const geometry = source.index ? source.toNonIndexed() : source
+        const geometry = source.index ? source.toNonIndexed() : source.clone()
         const position = geometry.getAttribute('position')
         const world = new Float32Array(position.count * 3)
         for (let i = 0; i < position.count; i++) {
             point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld).toArray(world, i * 3)
         }
-        const normals = computeCreaseNormals(world, creaseAngleDeg)
+        pending.push({ mesh, geometry, world })
+        replaced.add(source)
+    })
+    let results: Float32Array[]
+    try {
+        results = await Promise.all(pending.map(({ world }) => compute(world, creaseAngleDeg)))
+    } catch (error) {
+        for (const { geometry } of pending) geometry.dispose()
+        throw error
+    }
+    pending.forEach(({ mesh, geometry }, k) => {
+        const normals = results[k]
         // A normal n in world space is M^-T applied to the local one, so the local one is M^T n.
+        // A mirroring transform (negative determinant) reverses the winding the world normals
+        // were taken from, so they point inwards: turn them round. A transform that flattens an
+        // axis to nothing has no local normal; any unit vector keeps the shader out of NaN.
         const m = mesh.matrixWorld.elements
+        const det = mesh.matrixWorld.determinant()
+        const sign = det < 0 ? -1 : 1
         for (let i = 0; i < normals.length; i += 3) {
             const x = normals[i], y = normals[i + 1], z = normals[i + 2]
             const lx = m[0] * x + m[1] * y + m[2] * z
             const ly = m[4] * x + m[5] * y + m[6] * z
             const lz = m[8] * x + m[9] * y + m[10] * z
-            const length = Math.hypot(lx, ly, lz) || 1
-            normals[i] = lx / length; normals[i + 1] = ly / length; normals[i + 2] = lz / length
+            const length = Math.hypot(lx, ly, lz)
+            if (length > 0 && Number.isFinite(length)) {
+                normals[i] = (sign * lx) / length; normals[i + 1] = (sign * ly) / length; normals[i + 2] = (sign * lz) / length
+            } else {
+                normals[i] = 0; normals[i + 1] = 0; normals[i + 2] = 1
+            }
         }
         geometry.setAttribute('normal', new BufferAttribute(normals, 3))
-        if (geometry !== source) {
-            mesh.geometry = geometry
-            replaced.add(source)
-        }
+        mesh.geometry = geometry
         for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
             const shaded = material as Material & { flatShading?: boolean }
             if (shaded?.flatShading) {

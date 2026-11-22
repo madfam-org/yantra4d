@@ -5,6 +5,7 @@ import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { STLPayloadCache, type STLPayload } from '../../lib/stlPayloadCache'
 import { addCreaseNormals, createSTLGeometry, mergeGLTFGeometry, disposeGLTF } from '../../lib/viewerResources'
 import { RENDER_CREASE_ANGLE_DEG } from '../../lib/creaseNormals'
+import { computeCreaseNormalsOffThread } from '../../lib/creaseNormalsWorker'
 import { bearerHeaderForSameOrigin } from '../../lib/januaSso'
 
 interface WorkerMessage {
@@ -171,12 +172,13 @@ export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean 
                     return loader.loadAsync(url)
                 })
                 : loader.loadAsync(url)
-            loading.then((data: GLTF) => {
+            loading.then(async (data: GLTF) => {
                 if (!active) { disposeGLTF(data); return }
                 let geometry: BufferGeometry | null = null
                 try {
                     // Before the merge, so the analysis geometry carries the same normals.
-                    addCreaseNormals(data.scene, request.creaseAngleDeg)
+                    await addCreaseNormals(data.scene, request.creaseAngleDeg, computeCreaseNormalsOffThread)
+                    if (!active) { disposeGLTF(data); return }
                     geometry = mergeGLTFGeometry(data.scene)
                 } catch (error) {
                     disposeGLTF(data)

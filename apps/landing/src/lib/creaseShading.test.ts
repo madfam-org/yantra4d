@@ -71,4 +71,13 @@ describe('shadeWithCreaseNormals', () => {
     expect(shadeWithCreaseNormals(new Group().add(mesh), 30)).toHaveLength(0);
     expect(mesh.geometry).toBe(geometry);
   });
+
+  it('turns the normals round under a mirroring transform', () => {
+    const mesh = new Mesh(quantizedFold(), new MeshStandardMaterial());
+    mesh.scale.set(-1, 1, 1);
+    shadeWithCreaseNormals(new Group().add(mesh), 30);
+    const normal = mesh.geometry.getAttribute('normal');
+    for (let i = 0; i < 6; i++) expect(normal.getZ(i)).toBeCloseTo(1, 6);
+    for (let i = 6; i < 12; i++) expect(normal.getX(i)).toBeCloseTo(1, 6);
+  });
 });

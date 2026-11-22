@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { computeCreaseNormals, PREVIEW_CREASE_ANGLE_DEG } from './creaseNormals';
 
-const functionBody = (source: string) => source.slice(source.indexOf('export function computeCreaseNormals'));
+// Everything from the first shared constant down: the constants and the function.
+const functionBody = (source: string) => source.slice(source.indexOf('/** A point shared by more faces'));
 
 describe('computeCreaseNormals', () => {
   it('is the same code as the Studio twin', () => {

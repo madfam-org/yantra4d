@@ -12,6 +12,11 @@ vi.mock('three/examples/jsm/loaders/GLTFLoader', () => ({
 }))
 vi.mock('three/examples/jsm/libs/meshopt_decoder.module.js', () => ({ MeshoptDecoder: meshoptDecoder }))
 vi.mock('../../lib/januaSso', () => ({ bearerHeaderForSameOrigin }))
+// The crease worker is the real routine on this thread here: the global Worker is a mock.
+vi.mock('../../lib/creaseNormalsWorker', async () => {
+  const { computeCreaseNormals } = await vi.importActual('../../lib/creaseNormals')
+  return { computeCreaseNormalsOffThread: async (positions, angle) => computeCreaseNormals(positions, angle) }
+})
 
 let useWorkerLoader, workers
 class MockWorker extends EventTarget {

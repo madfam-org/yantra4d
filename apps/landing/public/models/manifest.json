@@ -387,6 +387,24 @@
       }
     },
     {
+      "slug": "bevel-gear",
+      "size": 10396,
+      "lod1": {
+        "file": "bevel-gear.lod1.glb",
+        "bytes": 10396,
+        "triangles": 2424
+      }
+    },
+    {
+      "slug": "bevel-pair",
+      "size": 8920,
+      "lod1": {
+        "file": "bevel-pair.lod1.glb",
+        "bytes": 8920,
+        "triangles": 2040
+      }
+    },
+    {
       "slug": "bias-tape-maker",
       "size": 3164,
       "lod1": {

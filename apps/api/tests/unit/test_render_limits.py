@@ -92,7 +92,7 @@ class TestCpuLimitThroughLaunchPaths:
         assert ok is False
         assert "CPU-time limit" in output
 
-    def test_describe_exit_names_sigxcpu_only(self):
+    def test_describe_exit_names_the_cpu_limit_and_stays_quiet_on_a_kill(self):
         assert "CPU-time limit" in render_limits.describe_exit(-signal.SIGXCPU)
         assert render_limits.describe_exit(-signal.SIGKILL) is None  # cancel / wall timeout
         assert render_limits.describe_exit(1) is None

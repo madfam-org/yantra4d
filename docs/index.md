@@ -9,7 +9,7 @@ Platform-level documentation for the Yantra4D parametric 3D print design platfor
 -   [Architecture Audit](./architecture/architecture_audit.md): Deep dive into platform architecture and components.
 -   [Database & Analytics](./architecture/database.md): SQLite/PostgreSQL, Alembic migrations, analytics schema.
 -   [Engine architecture](./architecture/dual-engine.md): the four render kernels — OpenSCAD, CadQuery, implicit SDF, graph — and B-Rep export.
--   [Tessellation profiles and a mesh gate](./architecture/tessellation-profiles-and-mesh-gate.md): **proposal, awaiting the owner's ruling** — named print and preview tessellation for CadQuery, and a CI gate on mesh quality.
+-   [Tessellation profiles and a mesh gate](./architecture/tessellation-profiles-and-mesh-gate.md): **proposal, awaiting the owner's ruling** — named print and preview tessellation for CadQuery, and a CI gate on mesh quality and resolution.
 -   [Authoring graph cartridges](./guides/graph-cartridges.md): node graphs compiled to sandboxed CadQuery — including what the keystone does NOT yet verify about them.
 -   [Sim4D extraction record](./architecture/sim4d-extraction.md): what was taken from sim4d and what was left behind.
 -   [Cross-ecosystem interventions](./operations/cross-ecosystem-interventions.md): what Yantra4D is owed from other platforms.

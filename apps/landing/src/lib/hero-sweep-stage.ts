@@ -37,7 +37,10 @@ export interface StageOptions {
 export interface Stage {
   /** Show frame `index` now and stop stepping on its own: the visitor has taken over. */
   show(index: number): void;
-  /** Stop or resume turning and stepping (WCAG 2.2.2: moving content can be paused). */
+  /**
+   * Stop or resume turning and stepping (WCAG 2.2.2: moving content can be paused). Resuming also
+   * hands stepping back to the stage after the visitor drove it with `show`.
+   */
   setPaused(paused: boolean): void;
   dispose(): void;
 }
@@ -232,7 +235,12 @@ export async function createStage(options: StageOptions): Promise<Stage> {
   };
 
   const run = () => {
-    if (!raf && renderer && visible && !document.hidden) raf = requestAnimationFrame(tick);
+    if (raf || !renderer || !visible || document.hidden) return;
+    // The loop was idle (hidden tab, off screen, paused): time starts again from the next frame,
+    // so the pose does not jump by the time spent away and the next step waits a full hold.
+    lastNow = null;
+    start = null;
+    raf = requestAnimationFrame(tick);
   };
 
   const onLost = (event: Event) => {
@@ -303,6 +311,7 @@ export async function createStage(options: StageOptions): Promise<Stage> {
     },
     setPaused(value: boolean) {
       paused = value;
+      if (!value) driven = false;
       run();
     },
     dispose() {

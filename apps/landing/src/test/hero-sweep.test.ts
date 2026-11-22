@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { HERO_SWEEP, sweepFrameUrl } from '../data/hero-sweep';
+import { HERO_SWEEP, sweepFrameUrl, sweepPictureUrl } from '../data/hero-sweep';
 
 const repo = resolve(__dirname, '../../../..');
 const publicDir = resolve(__dirname, '../../public');
@@ -76,10 +76,13 @@ describe('the hero sweep says only what the meshes show', () => {
     expect(new Set(hashes).size).toBe(hashes.length);
   });
 
-  it('has a rendered picture of every frame, at both widths', () => {
+  it('has a rendered picture of every frame, at both widths, behind a versioned URL', () => {
     for (let i = 0; i < HERO_SWEEP.values.length; i++) {
-      for (const w of [672, 1344]) {
-        expect(existsSync(resolve(publicDir, `hero-sweep/frame-${i}-${w}w.webp`))).toBe(true);
+      for (const w of [672, 1344] as const) {
+        // The pictures are cached for a year, so the URL must change when they are rendered again.
+        const [path, query] = sweepPictureUrl(HERO_SWEEP, i, w).split('?');
+        expect(query).toBe(`v=${HERO_SWEEP.pictures}`);
+        expect(existsSync(resolve(publicDir, path.slice(1)))).toBe(true);
       }
     }
   });

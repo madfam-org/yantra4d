@@ -94,7 +94,7 @@ describe('Hero.astro', () => {
   })
 
   it('has two CTA links', () => {
-    expect(html).toContain('#adventure')
+    expect(html).toContain('#gallery')
     expect(html).toContain('studioUrl')
     expect(html).toMatch(/Begin Your Journey|journeyBtn/)
     expect(html).toMatch(/Launch Studio|studioBtn/)
@@ -192,9 +192,9 @@ describe('ForMakers.astro', () => {
     expect(html).toMatch(/Hecho para Makers|forMakers\.heading/)
   })
 
-  it('has 5 feature cards', () => {
+  it('has 7 feature cards', () => {
     const h3Count = (html.match(/<h3/g) || []).length
-    expect(h3Count).toBe(5)
+    expect(h3Count).toBe(7)
   })
 
   it('has feature emojis', () => {
@@ -203,6 +203,8 @@ describe('ForMakers.astro', () => {
     expect(html).toContain('📦')
     expect(html).toContain('🔧')
     expect(html).toContain('🌐')
+    expect(html).toContain('📏')
+    expect(html).toContain('🧩')
   })
 
   it('uses responsive grid', () => {
@@ -261,7 +263,7 @@ describe('CallToAction.astro', () => {
 
   it('has two CTA buttons', () => {
     expect(html).toContain('#gallery')
-    expect(html).toContain('studioUrl')
+    expect(html).toContain('github.com/madfam-org/solid-hyperobjects')
   })
 })
 
@@ -413,11 +415,19 @@ describe('HyperCommons.astro', () => {
 
   it('has heading about parametric commons', () => {
     expect(html).toContain('<h2')
-    expect(html).toMatch(/Los Comunes Paramétricos|hyperCommons\.heading/)
+    expect(html).toMatch(/El Procomún de Hiperobjetos|h\?\.heading/)
   })
 
-  it('has Open Commons badge', () => {
-    expect(html).toContain('Open Commons')
+  it('has no eyebrow above the heading', () => {
+    expect(html).not.toContain('Open Commons')
+  })
+
+  it('explains what the 4D means, with the family-to-instance steps', () => {
+    expect(html).toContain('id="what-4d-means"')
+    expect(html).toContain('fourDHeading')
+    expect(html).toContain('fourDBody')
+    expect(html).toContain('fourDSteps')
+    expect(html).toContain('fourDSweeps')
   })
 
   it('has What is a Hyperobject section', () => {

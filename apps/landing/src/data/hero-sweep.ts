@@ -22,6 +22,11 @@ export interface HeroSweep {
   values: number[];
   /** Frame shown first and in the still image. */
   restFrame: number;
+  /**
+   * Version of the rendered pictures in `public/hero-sweep/`. They are served with a year-long
+   * immutable cache, so bump this whenever they are rendered again.
+   */
+  pictures: number;
 }
 
 export const HERO_SWEEP: HeroSweep = {
@@ -32,7 +37,13 @@ export const HERO_SWEEP: HeroSweep = {
   unit: 'mm',
   values: [180, 270, 355, 445, 535, 625, 710, 800],
   restFrame: 3,
+  pictures: 1,
 };
+
+/** The rendered picture of frame `index`, `width` pixels wide. */
+export function sweepPictureUrl(sweep: HeroSweep, index: number, width: 672 | 1344): string {
+  return `/hero-sweep/frame-${index}-${width}w.webp?v=${sweep.pictures}`;
+}
 
 export function sweepFrameUrl(sweep: HeroSweep, index: number): string {
   return `/models/${sweep.slug}.${sweep.animation}.${index}.glb`;

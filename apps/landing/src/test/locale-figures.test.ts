@@ -72,7 +72,9 @@ describe('locale figures are bound, not typed', () => {
       const data = JSON.parse(readFileSync(join(LOCALES_DIR, file), 'utf8'))
       expect(data.pricing.free.f1).toContain('{cartridges}')
       expect(data.pricing.free.f3).toContain('{guestRenders}')
+      expect(data.pricing.free.f4).toContain('{guestCommonsRenders}')
       expect(data.pricing.essentials.f1).toContain('{essentialsRenders}')
+      expect(data.pricing.essentials.f4).toContain('{essentialsCommonsRenders}')
       expect(data.pricing.pro.f1).toContain('{proRenders}')
       expect(data.forMakers.export.desc).toContain('{stepCapable}')
     }

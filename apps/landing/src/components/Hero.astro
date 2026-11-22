@@ -1,7 +1,9 @@
 ---
 import type { Translations } from '../lib/i18n';
 import { STUDIO_URL } from '../lib/env';
-import { HERO_SWEEP } from '../data/hero-sweep';
+import { fillTemplate } from '../lib/i18n';
+import { COMMONS_STATS } from '../data/projects';
+import { HERO_SWEEP, sweepPictureUrl } from '../data/hero-sweep';
 
 interface Props {
   lang?: string;
@@ -47,22 +49,22 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
     </div>
 
     <h1 class="text-2xl xs:text-3xl phone-landscape:text-2xl sm:text-5xl phone-landscape:sm:text-4xl md:text-7xl lg:text-8xl font-black tracking-tight leading-tight">
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+      <span class="text-foreground">
         {t?.hero?.titleLine1 ?? 'Tus Diseños.'}
       </span>
       <br />
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
+      <span class="text-primary">
         {t?.hero?.titleLine2 ?? 'Sus Dimensiones.'}
       </span>
     </h1>
 
     <p class="mx-auto max-w-2xl text-xl text-muted-foreground leading-relaxed">
-      {t?.hero?.subtitle ?? 'No solo diseñes objetos estáticos. Diseña Hyperobjects: configuradores paramétricos vivos que cualquiera puede adaptar, fabricar y poseer.'}
+      {t?.hero?.subtitle ? fillTemplate(t.hero.subtitle, { cartridges: COMMONS_STATS.cartridges }) : ''}
     </p>
 
     <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
       <a
-        href="#adventure"
+        href="#gallery"
         class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-primary px-8 font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
         <span class="mr-2">{t?.heroNew?.journeyBtn ?? 'Begin Your Journey'}</span>
@@ -90,9 +92,9 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
     <figure class="hero-sweep mx-auto w-full max-w-3xl pt-6" data-hero-sweep data-state="still">
       <div class="hero-sweep-stage relative mx-auto aspect-[16/10] w-full sm:aspect-[2/1]" data-hero-sweep-stage>
         <img
-          src={`/hero-sweep/frame-${sweep.restFrame}-672w.webp`}
-          srcset={`/hero-sweep/frame-${sweep.restFrame}-672w.webp 672w, /hero-sweep/frame-${sweep.restFrame}-1344w.webp 1344w`}
-          sizes="(min-width: 768px) 672px, 100vw"
+          src={sweepPictureUrl(sweep, sweep.restFrame, 672)}
+          srcset={`${sweepPictureUrl(sweep, sweep.restFrame, 672)} 672w, ${sweepPictureUrl(sweep, sweep.restFrame, 1344)} 1344w`}
+          sizes="(min-width: 816px) 768px, calc(100vw - 48px)"
           width="672"
           height="336"
           alt={t?.heroSweep?.still ?? ''}
@@ -133,7 +135,6 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
             <button
               type="button"
               class="hero-sweep-pause inline-flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium text-foreground hover:text-primary-readable"
-              aria-pressed="false"
               data-hero-sweep-pause
               data-label-pause={t?.heroSweep?.pause ?? 'Pause'}
               data-label-play={t?.heroSweep?.play ?? 'Play'}
@@ -205,7 +206,7 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
 </style>
 
 <script>
-  import { HERO_SWEEP, sweepFrameUrl } from '../data/hero-sweep';
+  import { HERO_SWEEP, sweepFrameUrl, sweepPictureUrl } from '../data/hero-sweep';
   import { currentTier, settleTier, TIER_CHANGE_EVENT, type Tier } from '../lib/tier';
 
   type Stage = { show(index: number): void; setPaused(paused: boolean): void; dispose(): void };
@@ -221,14 +222,16 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
   const view3d = root?.querySelector<HTMLButtonElement>('[data-hero-sweep-3d]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let index = HERO_SWEEP.restFrame;
-  let paused = reduced;
+  // Visitors who asked for less data get the rest picture and the slider, never an automatic download.
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+  let paused = reduced || saveData;
   let driven = false;
   let timer = 0;
   let stage: Stage | null = null;
   // Bumped by every start and stop, so a stage that finishes loading after a stop is discarded.
   let generation = 0;
 
-  const picture = (i: number, w: number) => `/hero-sweep/frame-${i}-${w}w.webp`;
+  const picture = (i: number, w: 672 | 1344) => sweepPictureUrl(HERO_SWEEP, i, w);
 
   const showValue = (i: number) => {
     index = i;
@@ -253,14 +256,14 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
 
   const showPaused = () => {
     if (!pause) return;
-    pause.setAttribute('aria-pressed', String(paused));
+    // The label carries the state (Pause / Play); a pressed state on top of it would contradict it.
     pause.textContent = (paused ? pause.dataset.labelPlay : pause.dataset.labelPause) ?? '';
   };
 
   const setLive = (live: boolean) => {
     if (!root) return;
+    // The picture stays exposed while the canvas draws over it: it is the figure's text alternative.
     root.dataset.state = live ? 'live' : 'still';
-    if (still) still.setAttribute('aria-hidden', live ? 'true' : 'false');
   };
 
   const stop = () => {
@@ -275,15 +278,36 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
   // The gallery's 3D stage holds the page's one WebGL context while it is mounted.
   const contextTaken = () => document.querySelector('[data-testid="commons-stage"] canvas') !== null;
 
+  // Hiding a focused button drops focus to the page; hand it to the slider first.
+  const offer3d = (offered: boolean) => {
+    if (!view3d) return;
+    if (!offered && document.activeElement === view3d) range?.focus();
+    view3d.classList.toggle('hidden', !offered);
+    view3d.classList.toggle('inline-flex', offered);
+  };
+
+  // The stage reports it cannot draw (the page's one context is taken, or was lost): the pictured
+  // sweep takes over again, and 3D is offered only while it could actually start.
+  const onAvailability = (live: boolean) => {
+    if (live) {
+      setLive(true);
+      return;
+    }
+    stop();
+    offer3d(!contextTaken() && currentTier().tier !== 'still');
+  };
+
   const start3d = async () => {
     if (!host || stage) return;
     // Only now, at the visitor's request, does the page measure the device.
     const tier: Tier = settleTier().tier;
-    if (tier === 'still') {
-      view3d?.classList.add('hidden');
+    if (tier === 'still' || contextTaken()) {
+      offer3d(false);
       return;
     }
     const mine = ++generation;
+    // The readout holds still while the frames load, so the stage starts on the value shown.
+    window.clearInterval(timer);
     if (view3d) view3d.disabled = true;
     try {
       const { createStage } = await import('../lib/hero-sweep-stage');
@@ -294,17 +318,16 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
         maxDpr: tier === 'full' ? 2 : 1,
         reducedMotion: reduced,
         onFrame: showValue,
-        onAvailability: setLive,
+        onAvailability,
         contextTaken,
       });
       if (mine !== generation) {
         created.dispose();
         return;
       }
-      window.clearInterval(timer);
       stage = created;
       stage.setPaused(paused);
-      view3d?.classList.add('hidden');
+      offer3d(false);
     } catch {
       // The pictured sweep stays: a page whose 3D failed must still read as finished.
       if (mine === generation) stop();
@@ -313,15 +336,24 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
     }
   };
 
-  range?.addEventListener('input', () => {
+  // Touching the slider is a pause: nothing moves under the visitor's hand, and Play resumes.
+  const takeOver = () => {
     driven = true;
+    paused = true;
     window.clearInterval(timer);
+    stage?.setPaused(true);
+    showPaused();
+  };
+  range?.addEventListener('pointerdown', takeOver);
+  range?.addEventListener('input', () => {
+    takeOver();
     const i = Number(range.value);
     if (stage) stage.show(i);
     else showValue(i);
   });
   pause?.addEventListener('click', () => {
     paused = !paused;
+    if (!paused) driven = false;
     stage?.setPaused(paused);
     showPaused();
     play();
@@ -331,25 +363,27 @@ const projectUrl = `${studioUrl}/project/${sweep.slug}`;
     const tier = (event as CustomEvent<{ tier?: Tier }>).detail?.tier;
     if (tier === 'still') {
       stop();
-      view3d?.classList.add('hidden');
+      offer3d(false);
     }
   });
 
   // The offer of 3D follows the tier the page already has; nothing is measured here.
-  if (currentTier().tier !== 'still') {
-    view3d?.classList.remove('hidden');
-    view3d?.classList.add('inline-flex');
-  }
+  if (currentTier().tier !== 'still') offer3d(true);
   showPaused();
   // The other frames are small; fetch them once the page is idle so the sweep never waits.
   const whenIdle = (fn: () => void) =>
     'requestIdleCallback' in window ? window.requestIdleCallback(fn, { timeout: 2500 }) : window.setTimeout(fn, 1200);
   const warm = () =>
     whenIdle(() => {
-      HERO_SWEEP.values.forEach((_, i) => {
-        const img = new Image();
-        img.src = picture(i, 672);
-      });
+      // Warm the same candidate the visible picture will pick, or the warmed files are never shown.
+      if (!saveData) {
+        HERO_SWEEP.values.forEach((_, i) => {
+          const img = new Image();
+          if (still) img.sizes = still.sizes;
+          img.srcset = `${picture(i, 672)} 672w, ${picture(i, 1344)} 1344w`;
+          img.src = picture(i, 672);
+        });
+      }
       play();
     });
   if (document.readyState === 'complete') warm();

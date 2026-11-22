@@ -162,6 +162,23 @@ describe('the hero stage', () => {
     expect(seen.at(-1)).toBe(3);
   });
 
+  it('resuming hands stepping back to the stage after the visitor drove it', async () => {
+    const { stage, seen } = await make();
+    intersect(true);
+    step(16);
+    stage.setPaused(true);
+    stage.show(3);
+    step(5000);
+    expect(seen.at(-1)).toBe(3);
+    stage.setPaused(false);
+    // Time starts again on resume: the first frame after it never steps at once.
+    step(16);
+    expect(seen.at(-1)).toBe(3);
+    step(1700);
+    step(16);
+    expect(seen.at(-1)).toBe(0);
+  });
+
   it('in reduced motion it does not step on its own', async () => {
     const { seen } = await make({ reducedMotion: true });
     intersect(true);

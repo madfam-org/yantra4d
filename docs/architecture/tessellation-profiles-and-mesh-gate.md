@@ -19,8 +19,8 @@
    measured), because nothing bounds the error in millimetres.
 2. **The preview is the same fine mesh, cut down afterwards.** The models pipeline renders the
    print mesh and decimates it to 2,500 triangles. 279 of 502 previews were decimated in the last
-   prerender run that succeeded (run 35460054814, 2026-09-19; counted from the optimizer's log;
-   the later runs show 289 of 510).
+   prerender run that produced the previews shipped today (run 35460054814, 2026-09-19; counted
+   from the optimizer's log; the runs of 2026-11-22 show 289 of 510).
    Decimation turns a regular 126-segment circle into an uneven one with as few as 18 segments.
    Asking the kernel for a coarser, regular mesh instead gave 2,272 and 2,556 triangles with 63 to
    105 even segments per circle on two ordinary parts; the second is still just over the budget.
@@ -44,7 +44,8 @@ an angular bound.
 A coarser preview was also measured: 0.02 mm and 0.35 rad gave 1,484, 1,564 and 3,428 triangles
 with 36 to 126 segments. It fits the 2,500-triangle gallery budget on two of the three parts
 without any decimation, at the price of visibly fewer segments on small holes, and its linear
-bound equals `print`'s, so a preview is never denser than the print file. Large and free-form
+bound equals the proposed `print` bound, so with that bound a preview circle is never denser
+than the print file (with today's print numbers it is, above a radius of about 64 mm). Large and free-form
 parts still grow under either preview setting, which is why the simplifier stays as a fallback.
 
 What building it involves:
@@ -54,7 +55,7 @@ What building it involves:
   `preview`.
 - **STL.** `cq.exporters.export` has no way to say "absolute", so the STL branch calls
   `shape.exportStl(path, linear, angular, ascii=False, relative=False)` directly on a shape: a
-  Workplane result is turned into one first (`compound(*result)` or `.val()`, as
+  Workplane result is turned into one first (`compound(*result)`, as
   `exporters.export` does internally), and an assembly is flattened with `toCompound()`, as the
   spec already does.
 - **3MF needs its own path.** In CadQuery 2.7.0 the 3MF writer tessellates through
@@ -128,14 +129,15 @@ cartridges (motor mount on segments; spiral planter and Voronoi coaster on chord
 The chord limit also reaches CadQuery if today's tolerance is kept (ruling 1): at 126 segments a
 circle exceeds 0.05 mm above a radius of about 161 mm, and the relative bound leaves large
 free-form surfaces unbounded. Keeping today's numbers and adopting the 0.05 mm gate together
-would fail large CadQuery parts; how many is not known (the audit's sample had none that large).
+would fail large CadQuery parts; how many is not known (the audit's sample had no circles that large; the chord error of its large free-form part was not
+measured).
 
 **Faceting drawn into the solid.** Some CadQuery cartridges are faceted in the geometry itself,
 and their meshes match their solids exactly, so a check that compares the mesh with the solid
 passes them. It happens in two ways, and the two possible remedies do not cover the same ground:
 
 - **Polygons.** The rugged box draws every cylindrical feature (holes, corners) as an inscribed
-  8- or 16-sided prism, through `wp.polygon(n, …)`, at its default style.
+  prism through `wp.polygon(n, …)`: 16-sided at its default style, 8-sided at another.
 - **Hand-sampled curves.** 59 cartridges build curves with `polyline` and trigonometry (found by
   text search; gear involutes among them are legitimate).
 
@@ -195,8 +197,9 @@ pipeline's own summary. A preview is a picture, not a deliverable.
    fail CadQuery circles above a radius of about 161 mm.
 2. **Preview profile.** 0.01 mm / 0.2 rad (more segments; denser than the print file on circles
    above about 32 mm, so more parts still need decimation for the 2,500-triangle gallery file) or
-   0.02 mm / 0.35 rad (fits the gallery budget more often, never denser than print, fewer
-   segments on small holes)? Either can be tried on the full Commons in CI before it is fixed.
+   0.02 mm / 0.35 rad (fits the gallery budget more often, fewer segments on small holes; on
+   circles never denser than print if print takes the 0.02 mm bound, denser above about 64 mm if
+   it keeps today's numbers)? Either can be tried on the full Commons in CI before it is fixed.
 3. **Who may ask for `preview`.** Only the models pipeline, or any API caller? (Not measured
    which costs more: tessellation is a small part of a render, building the solid dominates.)
 4. **Gate thresholds.** Chord error at most 0.05 mm and at least 32 segments on full circles of

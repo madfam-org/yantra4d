@@ -376,6 +376,16 @@
     "journeyBtn": "Entra al Procomún",
     "studioBtn": "Abrir Studio"
   },
+  "heroSweep": {
+    "label": "Alcance",
+    "still": "Brazo robótico SCARA del Procomún, extendido y visto en ángulo.",
+    "caption": "Un cartucho del Procomún. Cada valor es un brazo renderizado.",
+    "open": "Ábrelo en Studio",
+    "name": "SCARA",
+    "pause": "Pausar",
+    "play": "Reproducir",
+    "view3d": "Ver en 3D"
+  },
   "footer": {
     "copyright": "Yantra4D. Código abierto bajo AGPLv3.",
     "docs": "Docs",

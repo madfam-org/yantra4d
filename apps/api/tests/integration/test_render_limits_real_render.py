@@ -197,22 +197,15 @@ class TestDefaultCeilingIsSizedFromAMeasurement:
 class TestDiagnoseCpuScaling:
     """TEMPORARY: one CI run to find what makes the address space grow per CPU."""
 
-    def _limited_run(self, cartridge, out, monkeypatch, as_mb, extra):
-        monkeypatch.setenv("RENDER_RLIMIT_AS_MB", str(as_mb))
-        env = dict(render_limits.limited_env(cadquery_engine._cadquery_env()))
-        env.update(extra)
-        proc = subprocess.run(
-            _command(cartridge, out), capture_output=True, text=True, timeout=300, check=False,
-            env=env, preexec_fn=render_limits.render_preexec_fn(),
-        )
-        tail = (proc.stdout + proc.stderr).strip().splitlines()[-2:]
-        return proc.returncode, " | ".join(line[:160] for line in tail)
-
     def test_report(self, cartridge, tmp_path, capsys, monkeypatch):
-        rows = []
+        def say(row):
+            with capsys.disabled():
+                print(f"\n::notice title=Render diagnose::{row}", flush=True)
+
         for label, extra, cpus in (
             ("all cpus", {}, None),
             ("1 cpu", {}, 1),
+            ("2 cpus", {}, 2),
             ("all cpus OPENBLAS=1", {"OPENBLAS_NUM_THREADS": "1"}, None),
             ("all cpus OPENBLAS=1 OMP=1", {"OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1"}, None),
             ("all cpus OPENBLAS=12", {"OPENBLAS_NUM_THREADS": "12"}, None),
@@ -224,18 +217,32 @@ class TestDiagnoseCpuScaling:
             if cpus:
                 env["Y4D_MEASURE_CPUS"] = str(cpus)
             cmd = _command(cartridge, tmp_path / "m.glb")
-            proc = subprocess.run([cmd[0], "-c", MEASURE, *cmd[1:]], capture_output=True, text=True,
-                                  timeout=300, check=False, env=env)
-            line = [ln for ln in proc.stdout.splitlines() if ln.startswith("Y4D_MEASURE ")]
-            rows.append(f"{label}: {line[-1][12:] if line else (proc.returncode, proc.stderr[-200:])}")
+            try:
+                proc = subprocess.run([cmd[0], "-c", MEASURE, *cmd[1:]], capture_output=True, text=True,
+                                      timeout=120, check=False, env=env)
+                line = [ln for ln in proc.stdout.splitlines() if ln.startswith("Y4D_MEASURE ")]
+                say(f"{label}: {line[-1][12:] if line else (proc.returncode, proc.stderr[-200:])}")
+            except subprocess.TimeoutExpired:
+                say(f"{label}: TIMEOUT 120s")
         for label, as_mb, extra in (
+            ("limit 1536 default", 1536, {}),
             ("limit 1536 OPENBLAS=12", 1536, {"OPENBLAS_NUM_THREADS": "12"}),
             ("limit 1536 OPENBLAS=32", 1536, {"OPENBLAS_NUM_THREADS": "32"}),
-            ("limit 1024 default", 1024, {}),
             ("limit 1300 default", 1300, {}),
+            ("limit 1024 default", 1024, {}),
+            ("limit 2560 OPENBLAS=12", 2560, {"OPENBLAS_NUM_THREADS": "12"}),
         ):
-            rc, tail = self._limited_run(cartridge, tmp_path / "l.glb", monkeypatch, as_mb, extra)
-            rows.append(f"{label}: rc={rc} tail={tail}")
-        with capsys.disabled():
-            for row in rows:
-                print(f"\n::notice title=Render diagnose::{row}")
+            monkeypatch.setenv("RENDER_RLIMIT_AS_MB", str(as_mb))
+            env = dict(render_limits.limited_env(cadquery_engine._cadquery_env()))
+            env.update(extra)
+            try:
+                proc = subprocess.run(
+                    _command(cartridge, tmp_path / "l.glb"), capture_output=True, text=True, timeout=90,
+                    check=False, env=env, preexec_fn=render_limits.render_preexec_fn(),
+                )
+                tail = (proc.stdout + proc.stderr).strip().splitlines()[-2:]
+                say(f"{label}: rc={proc.returncode} tail={' | '.join(ln[:160] for ln in tail)}")
+            except subprocess.TimeoutExpired as exc:
+                out = ((exc.stdout or b"") + (exc.stderr or b""))
+                out = out.decode(errors="replace") if isinstance(out, bytes) else out
+                say(f"{label}: HUNG 90s tail={' | '.join(ln[:160] for ln in out.strip().splitlines()[-2:])}")

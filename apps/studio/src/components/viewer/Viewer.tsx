@@ -28,6 +28,7 @@ import ViewerPerformance, { CompileGate, InvalidateOnCommit, KeepRendering } fro
 import { MAX_DPR, useRenderScale } from '../../lib/viewerQuality'
 import type { GhostVariants } from './GhostGeometryOverlay'
 import { PRERENDERED_PREVIEW_PART } from '../../lib/prerenderedPreview'
+import { PREVIEW_CREASE_ANGLE_DEG, RENDER_CREASE_ANGLE_DEG } from '../../lib/creaseNormals'
 
 const DEFAULT_AXIS_COLORS = ['#ef4444', '#22c55e', '#3b82f6']
 // Grid colors will be evaluated dynamically based on theme.
@@ -129,14 +130,19 @@ interface ModelProps {
     meshopt?: boolean
     /** Replaces the loader's console.error when the mesh cannot be loaded. */
     onLoadError?: (error: unknown) => void
+    /**
+     * One angle decides both what is shaded as an edge and what is outlined as one, so the
+     * outline never crosses a face that is drawn smooth. Defaults to the render angle.
+     */
+    creaseAngleDeg?: number
 }
 
-const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark, stressData, meshopt, onLoadError }: ModelProps) => {
+const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGeometryRemove, highlightMode, isDark, stressData, meshopt, onLoadError, creaseAngleDeg = RENDER_CREASE_ANGLE_DEG }: ModelProps) => {
     const bareUrl = (url || '').split('?')[0].toLowerCase()
     const isGLTF = isGlb || bareUrl.endsWith('.gltf') || bareUrl.endsWith('.glb')
 
     // Asynchronously loads geometries; .stl via WebWorker, .gltf natively.
-    const { geometry: geom, scene: gltfScene } = useWorkerLoader(url, isGLTF, { meshopt, onError: onLoadError })
+    const { geometry: geom, scene: gltfScene } = useWorkerLoader(url, isGLTF, { meshopt, creaseAngleDeg, onError: onLoadError })
 
     useEffect(() => {
         if (geom && onGeometry) onGeometry(partType, geom)
@@ -235,7 +241,7 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                     thickness={2}
                     depthWrite={false}
                 />
-                <AsyncEdges geometry={geom} threshold={30} color={color} />
+                <AsyncEdges geometry={geom} threshold={creaseAngleDeg} color={color} />
             </mesh>
             </CompileGate>
         )
@@ -248,7 +254,7 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
         return (
             <CompileGate signature={geom.uuid}>
                 <primitive object={gltfScene} />
-                {!isGhost && <AsyncEdges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
+                {!isGhost && <AsyncEdges geometry={geom} threshold={creaseAngleDeg} color={isDark ? "#ffffff" : "#18181b"} />}
             </CompileGate>
         )
     }
@@ -267,7 +273,7 @@ const Model = ({ url, isGlb, partType, color, wireframe, glass, onGeometry, onGe
                 emissiveIntensity={emissiveIntensity}
                 depthWrite={!isGhost}
             />
-            {!isGhost && <AsyncEdges geometry={geom} threshold={15} color={isDark ? "#ffffff" : "#18181b"} />}
+            {!isGhost && <AsyncEdges geometry={geom} threshold={creaseAngleDeg} color={isDark ? "#ffffff" : "#18181b"} />}
         </mesh>
         </CompileGate>
     )
@@ -1000,6 +1006,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
                                     url={prerenderedPreviewUrl}
                                     isGlb
                                     meshopt
+                                    creaseAngleDeg={PREVIEW_CREASE_ANGLE_DEG}
                                     partType={PRERENDERED_PREVIEW_PART}
                                     color={defaultColor}
                                     wireframe={wireframe}

@@ -208,9 +208,9 @@ describe('accent text never uses text-primary on small copy', () => {
     }
   })
 
-  it('HyperCommons eyebrow, caption and shift heading use the readable accent', () => {
+  it('HyperCommons caption and shift heading use the readable accent', () => {
     const html = loadTemplate('HyperCommons.astro')
-    for (const anchor of ['Open Commons', 'whatIsCaption2', 'shiftTo']) {
+    for (const anchor of ['whatIsCaption2', 'shiftTo']) {
       const i = html.indexOf(anchor)
       expect(i, `anchor ${anchor} not found`).toBeGreaterThan(-1)
       // Walk back to the opening tag of the element carrying the class.

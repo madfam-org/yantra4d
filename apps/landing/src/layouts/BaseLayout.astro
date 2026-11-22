@@ -1,4 +1,6 @@
 ---
+import { fillTemplate } from '../lib/i18n';
+import { COMMONS_STATS } from '../data/projects';
 import type { Translations } from '../lib/i18n';
 import EcosystemBanner from '../components/EcosystemBanner.astro';
 import { buildTierBootstrap } from '../lib/tier-bootstrap';
@@ -15,7 +17,7 @@ const {
   lang = 'es',
   t,
   title = t?.meta.title ?? 'Yantra4D — Diseño 3D Paramétrico para Todos',
-  description = t?.meta.description ?? 'Convierte modelos OpenSCAD en configuradores visuales. Sin necesidad de entrenamiento en CAD.',
+  description = t?.meta.description ? fillTemplate(t.meta.description, { cartridges: COMMONS_STATS.cartridges }) : '',
 } = Astro.props;
 
 // The tier bootstrap runs inline, before first paint, so the CSS and every

@@ -18,6 +18,8 @@ interface UpgradeDialogProps {
     feature: string
     /** Free things the visitor can do right now instead (engine gate). */
     alternatives?: string[]
+    /** What just happened, stated before the offer (a spent free quota and when it resets). */
+    notice?: string
 }
 
 /**
@@ -29,7 +31,7 @@ interface UpgradeDialogProps {
  * not exist — and the only component that called the checkout builder
  * (UpgradeModal) was never mounted anywhere.
  */
-export default function UpgradeDialog({ isOpen, onClose, feature, alternatives = [] }: UpgradeDialogProps) {
+export default function UpgradeDialog({ isOpen, onClose, feature, alternatives = [], notice = '' }: UpgradeDialogProps) {
     const { t } = useLanguage();
     const { user } = useAuth();
 
@@ -44,7 +46,11 @@ export default function UpgradeDialog({ isOpen, onClose, feature, alternatives =
                         <span>✨</span> {t("tier.upgrade_title") || "Unlock Limitless Creation"}
                     </AlertDialogTitle>
                     <AlertDialogDescription className="pt-2 text-base">
-                        {t("tier.upgrade_desc_1") || "You've discovered a Pro feature!"}
+                        {notice ? (
+                            <span data-testid="upgrade-notice" className="block text-foreground">{notice}</span>
+                        ) : (
+                            t("tier.upgrade_desc_1") || "You've discovered a Pro feature!"
+                        )}
                         <br />
                         <br />
                         {t("tier.upgrade_desc_2") || "Upgrade your plan to access:"} <strong className="text-foreground">{feature}</strong>.

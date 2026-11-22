@@ -4,7 +4,6 @@ import os
 
 from flask import request
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -15,11 +14,18 @@ logger = logging.getLogger(__name__)
 
 
 def tiered_rate_key():
-    """Rate limit key: use user ID for authenticated users, IP for anonymous."""
+    """Rate limit key: use user ID for authenticated users, IP for anonymous.
+
+    The anonymous key is the visitor's address as Cloudflare reports it
+    (utils/client_ip.py): behind the tunnel the socket address is the same for
+    every visitor, which made every anonymous bucket a single shared one.
+    """
+    from utils.client_ip import client_ip
+
     claims = getattr(request, "auth_claims", None)
     if claims and claims.get("sub"):
         return f"user:{claims['sub']}"
-    return f"ip:{get_remote_address()}"
+    return f"ip:{client_ip()}"
 
 # RATE_LIMIT_STORAGE controls the rate-limiter backend.
 # If not explicitly set:

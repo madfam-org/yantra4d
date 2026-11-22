@@ -1,0 +1,276 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/madfam-org/hyperobjects-spec/blob/main/src/hyperobject_graph/graph-core.schema.json",
+  "title": "Hyperobject Graph Document (core)",
+  "description": "The kernel-neutral graph format shared by the solid, soft and sheet commons (RFC 0067). Format 1.0 is nodes and outputs; 1.1 adds expressions (parameters, derived, {\"expr\"} inputs); 1.2 adds the core fields (kernel, declarations, licence, provenance) and the script node. Node types and their params are a kernel's node pack (published as its node catalogue); this schema constrains only what is common to every kernel. The enforcing validator is hyperobject_graph.validate, which also checks cycles, socket types, dangling references, unbound inputs and that every declared name is read.",
+  "type": "object",
+  "required": ["version", "nodes", "outputs"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^1\\.\\d+(\\.\\d+)?$",
+      "description": "Graph format version. 1.2 is the core format; 1.0 and 1.1 documents remain valid and are solid graphs."
+    },
+    "kernel": {
+      "type": "string",
+      "enum": ["solid", "soft", "sheet"],
+      "description": "The node pack this graph is written in. Required from format 1.2."
+    },
+    "units": { "type": "string", "enum": ["mm"], "default": "mm" },
+    "meta": { "type": "object", "description": "Free-form authoring metadata. Ignored by every kernel." },
+    "parameters": {
+      "type": "object",
+      "maxProperties": 128,
+      "description": "The expression scope (format 1.1): parameter ids that expressions read, each with a fallback default and an optional option map. Every one must be read by some expression. From 1.2, each must also be a declared parameter when the graph has declarations.",
+      "propertyNames": { "$ref": "#/$defs/identifier" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["default"],
+        "properties": {
+          "default": {
+            "oneOf": [{ "type": "number" }, { "type": "boolean" }, { "$ref": "#/$defs/optionValue" }]
+          },
+          "map": {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 64,
+            "propertyNames": { "$ref": "#/$defs/optionValue" },
+            "additionalProperties": { "type": "number" }
+          }
+        }
+      }
+    },
+    "derived": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "expr"],
+        "properties": { "id": { "$ref": "#/$defs/identifier" }, "expr": { "$ref": "#/$defs/exprSource" } }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "outputs": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 50,
+      "description": "Part id → node id. The node's output type must be one the kernel accepts as a part.",
+      "additionalProperties": { "$ref": "#/$defs/identifier" }
+    },
+    "declarations": { "$ref": "#/$defs/declarations" },
+    "licence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["spdx"],
+      "properties": {
+        "spdx": { "type": "string", "pattern": "^[A-Za-z0-9.\\-+() ]{1,128}$" },
+        "notice": { "type": "string" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "authored": { "type": "string", "enum": ["hand", "generated"] },
+        "generator": {
+          "type": "object",
+          "required": ["name", "version"],
+          "properties": { "name": { "type": "string" }, "version": { "type": "string" } }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256", "role"],
+            "properties": {
+              "path": { "$ref": "#/$defs/relativePath" },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "role": { "type": "string", "enum": ["script", "oracle", "reference"] }
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "description": "Format 1.0 and 1.1 documents carry no core fields; the solid engine refuses them.",
+      "if": { "properties": { "version": { "pattern": "^1\\.[01](\\.\\d+)?$" } } },
+      "then": {
+        "propertyNames": {
+          "enum": ["version", "units", "nodes", "outputs", "meta", "parameters", "derived"]
+        }
+      },
+      "else": {
+        "required": ["kernel"],
+        "propertyNames": {
+          "enum": [
+            "version", "units", "nodes", "outputs", "meta", "parameters", "derived",
+            "kernel", "declarations", "licence", "provenance"
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+    "optionValue": { "type": "string", "pattern": "^[A-Za-z0-9_.\\- ]{0,64}$" },
+    "relativePath": {
+      "type": "string",
+      "maxLength": 200,
+      "pattern": "^(?!/)(?!.*(^|/)\\.{1,2}(/|$))[A-Za-z0-9_.\\-]+(/[A-Za-z0-9_.\\-]+)*$"
+    },
+    "exprSource": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "expr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expr"],
+      "properties": { "expr": { "$ref": "#/$defs/exprSource" } }
+    },
+    "i18nString": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["en"],
+          "properties": {
+            "en": { "type": "string", "minLength": 1 },
+            "es": { "type": "string" },
+            "fr": { "type": "string" },
+            "pt": { "type": "string" }
+          },
+          "additionalProperties": { "type": "string" }
+        }
+      ]
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "type": { "type": "string", "minLength": 1, "description": "A type from the kernel's node catalogue, or 'script' (format 1.2)." },
+        "params": { "type": "object" },
+        "inputs": { "type": "object", "additionalProperties": { "$ref": "#/$defs/identifier" } },
+        "meta": {
+          "type": "object",
+          "properties": { "label": { "$ref": "#/$defs/i18nString" } }
+        }
+      },
+      "if": { "properties": { "type": { "const": "script" } } },
+      "then": { "properties": { "params": { "$ref": "#/$defs/scriptParams" }, "inputs": { "maxProperties": 0 } } }
+    },
+    "scriptParams": {
+      "description": "The script node contract v1.0 (docs/GRAPH_CORE.md).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "language", "output"],
+      "properties": {
+        "source": { "$ref": "#/$defs/relativePath" },
+        "language": { "type": "string", "description": "One of the kernel's script languages (solid: cadquery, openscad)." },
+        "output": { "type": "string", "description": "One of the kernel's script output socket types (solid: solid)." },
+        "part": { "type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9_.\\- ]{1,64}$" },
+        "bind": {
+          "type": "object",
+          "maxProperties": 128,
+          "propertyNames": { "$ref": "#/$defs/identifier" },
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["param"],
+                "properties": { "param": { "$ref": "#/$defs/identifier" } }
+              },
+              { "$ref": "#/$defs/expr" },
+              { "type": "number" },
+              { "type": "boolean" },
+              { "$ref": "#/$defs/optionValue" }
+            ]
+          }
+        }
+      }
+    },
+    "declarations": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Everything a visitor sees, declared by the graph; the manifest's lists are generated from it. Each entry keeps the shape the commons' manifest gives it.",
+      "properties": {
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "default", "label"],
+            "properties": {
+              "id": { "$ref": "#/$defs/identifier" },
+              "type": { "type": "string", "enum": ["slider", "checkbox", "select", "text"] },
+              "label": { "$ref": "#/$defs/i18nString" },
+              "tooltip": { "$ref": "#/$defs/i18nString" },
+              "binding": {
+                "oneOf": [
+                  { "type": "string" },
+                  { "type": "array", "items": { "type": "string" } }
+                ]
+              },
+              "intentionally_unused": {
+                "type": "object",
+                "required": ["reason"],
+                "properties": { "reason": { "type": "string", "minLength": 1 } }
+              }
+            }
+          }
+        },
+        "parameter_groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label"],
+            "properties": { "label": { "$ref": "#/$defs/i18nString" } },
+            "anyOf": [{ "required": ["id"] }, { "required": ["key"] }, { "required": ["slug"] }]
+          }
+        },
+        "presets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "values"],
+            "properties": { "label": { "$ref": "#/$defs/i18nString" }, "values": { "type": "object" } }
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "expression": { "$ref": "#/$defs/exprSource" },
+              "rule": { "$ref": "#/$defs/exprSource" },
+              "severity": { "type": "string", "enum": ["error", "warning"] },
+              "message": { "$ref": "#/$defs/i18nString" }
+            }
+          }
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "label"],
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "$ref": "#/$defs/i18nString" },
+              "parameters": { "type": "array", "items": { "type": "string" } },
+              "node": { "$ref": "#/$defs/identifier" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

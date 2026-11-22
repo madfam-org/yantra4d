@@ -12,6 +12,7 @@
  * health, per-slug failure history) and executes the result.
  */
 
+import { CommonsRenderLimitError, commonsLimitErrorFrom } from '../../lib/commonsQuota'
 import { isBackendAvailable, getApiBase, resetDetection } from '../core/backendDetection'
 import { detectPhase, isLogWorthy } from '../../lib/openscad-phases'
 import { apiFetch } from '../core/apiClient'
@@ -784,7 +785,8 @@ async function renderBackend(
 
   if (!response.ok) {
     const text = await response.text().catch(() => '')
-    throw new Error(`Render request failed (HTTP ${response.status}): ${text}`)
+    throw commonsLimitErrorFrom(response.status, text)
+      ?? new Error(`Render request failed (HTTP ${response.status}): ${text}`)
   }
 
   const reader = response.body!.getReader()
@@ -962,7 +964,9 @@ export async function renderParts(
       }
       // A hard server pin plus an exhausted quota is a dead end; say so plainly
       // rather than letting a cryptic WASM failure stand in for it.
-      if (decision.hard && isRateLimitError(err)) {
+      // A Commons quota refusal is explained by the caller (useRender), with
+      // the reset time; this generic line would only contradict it.
+      if (decision.hard && isRateLimitError(err) && !(err instanceof CommonsRenderLimitError)) {
         onProgress?.({ log: '[ERROR] Server render limit reached. This project requires server rendering — upgrade your plan or wait for the limit to reset.' })
       }
       if (decision.hard && isRenderWorkerUnavailableError(err)) {

@@ -54,12 +54,13 @@ import time
 from collections import defaultdict
 from contextlib import contextmanager
 
-from flask import Blueprint, request
+from flask import Blueprint
 
 from config import Config
 from middleware.auth import is_machine_token, machine_client_id, resolve_ws_claims
 from services.core.project_access import project_view_denied_reason
 from services.core.tier_service import has_tier, resolve_tier
+from utils.client_ip import client_ip
 from utils.validators import validate_project_slug
 
 logger = logging.getLogger(__name__)
@@ -127,7 +128,9 @@ class MessageBudget:
 @contextmanager
 def connection_slot(channel: str):
     """Reserve a per-IP connection slot. Yields False when the cap is reached."""
-    remote = request.remote_addr or "unknown"
+    # The visitor's address, not the socket's: behind the Cloudflare tunnel the
+    # socket address is the tunnel's for everyone (utils/client_ip.py).
+    remote = client_ip()
     key = f"{channel}:{remote}"
     with _connection_lock:
         current = _connection_counts[key]
@@ -278,7 +281,7 @@ def _deny(ws, channel: str, subject: str, claims: dict | None,
     reason, message = denial
     logger.warning(
         "WS %s read refused (subject=%s identity=%s reason=%s ip=%s)",
-        channel, subject, _identity_label(claims), reason, request.remote_addr,
+        channel, subject, _identity_label(claims), reason, client_ip(),
     )
     _refuse(ws, reason, message)
     return True
@@ -323,7 +326,7 @@ def handle_render_message(msg: object, claims: dict | None) -> dict:
         reason = cancel_refusal_reason(claims)
         logger.warning(
             "WS render cancel refused (identity=%s reason=%s ip=%s)",
-            _identity_label(claims), reason, request.remote_addr,
+            _identity_label(claims), reason, client_ip(),
         )
         return {
             "type": "error",
@@ -371,7 +374,7 @@ def ws_render(ws, session_id):
                 if not budget.allow():
                     logger.warning(
                         "WS render message rate limit exceeded (ip=%s limit=%d)",
-                        request.remote_addr, budget.limit,
+                        client_ip(), budget.limit,
                     )
                     _send(ws, {"type": "error", "message": "Message rate limit exceeded"})
                     break
@@ -443,7 +446,7 @@ def ws_printer(ws, printer_id):
                 if not budget.allow():
                     logger.warning(
                         "WS printer message rate limit exceeded (ip=%s limit=%d)",
-                        request.remote_addr, budget.limit,
+                        client_ip(), budget.limit,
                     )
                     _send(ws, {"type": "error", "message": "Message rate limit exceeded"})
                     break
@@ -522,7 +525,7 @@ def ws_telemetry(ws, project_slug):
                     if not budget.allow():
                         logger.warning(
                             "WS telemetry message rate limit exceeded (ip=%s limit=%d)",
-                            request.remote_addr, budget.limit,
+                            client_ip(), budget.limit,
                         )
                         _send(ws, {"type": "error", "message": "Message rate limit exceeded"})
                         break

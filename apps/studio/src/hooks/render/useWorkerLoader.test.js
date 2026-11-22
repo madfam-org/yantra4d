@@ -13,9 +13,15 @@ vi.mock('three/examples/jsm/loaders/GLTFLoader', () => ({
 vi.mock('three/examples/jsm/libs/meshopt_decoder.module.js', () => ({ MeshoptDecoder: meshoptDecoder }))
 vi.mock('../../lib/januaSso', () => ({ bearerHeaderForSameOrigin }))
 // The crease worker is the real routine on this thread here: the global Worker is a mock.
+const creaseGate = vi.hoisted(() => ({ hold: null }))
 vi.mock('../../lib/creaseNormalsWorker', async () => {
   const { computeCreaseNormals } = await vi.importActual('../../lib/creaseNormals')
-  return { computeCreaseNormalsOffThread: async (positions, angle) => computeCreaseNormals(positions, angle) }
+  return {
+    computeCreaseNormalsOffThread: async (positions, angle) => {
+      if (creaseGate.hold) await creaseGate.hold
+      return computeCreaseNormals(positions, angle)
+    },
+  }
 })
 
 let useWorkerLoader, workers
@@ -324,5 +330,27 @@ describe('meshes that arrive without normals', () => {
     const normal = result.current.geometry.getAttribute('normal')
     expect(normal.count).toBe(3)
     expect(normal.getZ(0)).toBeCloseTo(1, 6)
+  })
+
+  it('disposes a GLB abandoned while its normals are being worked out, without publishing it', async () => {
+    let release
+    creaseGate.hold = new Promise(resolve => { release = resolve })
+    const loaded = folded()
+    const mesh = loaded.scene.children[0]
+    const source = mesh.geometry
+    const sourceDisposed = vi.spyOn(source, 'dispose')
+    loadAsync.mockResolvedValueOnce(loaded)
+    const { result, unmount } = renderHook(() => useWorkerLoader('abandoned.glb', true))
+    await act(async () => {})
+    unmount()
+    release()
+    creaseGate.hold = null
+    await act(async () => {})
+    await act(async () => {})
+    expect(result.current.scene).toBeNull()
+    expect(sourceDisposed).toHaveBeenCalledTimes(1)
+    expect(mesh.geometry).not.toBe(source)
+    // The copy that replaced it is released with the rest of the abandoned load.
+    expect(mesh.geometry.attributes.position.array.length).toBeGreaterThan(0)
   })
 })

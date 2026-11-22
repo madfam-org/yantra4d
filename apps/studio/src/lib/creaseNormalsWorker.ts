@@ -11,30 +11,50 @@ import { computeCreaseNormals } from './creaseNormals'
 
 type Job = { resolve: (normals: Float32Array) => void; reject: (error: Error) => void }
 
+/** A worker that has not answered by then is presumed dead, as with the STL worker. */
+export const CREASE_WORKER_DEADLINE_MS = 120_000
+
 const jobs = new Map<number, Job>()
 let worker: Worker | null = null
+let deadline: ReturnType<typeof setTimeout> | null = null
 let nextId = 0
 
-function failAll(error: Error) {
-    for (const job of jobs.values()) job.reject(error)
-    jobs.clear()
-    worker?.terminate()
+/** Settle every pending job (each falls back to this thread) and retire `which`. */
+function failAll(which: Worker, error: Error) {
+    if (worker !== which) return
     worker = null
+    if (deadline) clearTimeout(deadline)
+    deadline = null
+    which.terminate()
+    const pending = [...jobs.values()]
+    jobs.clear()
+    for (const job of pending) job.reject(error)
+}
+
+/** One deadline for the worker, restarted whenever it answers and cleared when it is idle. */
+function armDeadline(which: Worker) {
+    if (deadline) clearTimeout(deadline)
+    deadline = jobs.size > 0
+        ? setTimeout(() => failAll(which, new Error('crease worker did not answer in time')), CREASE_WORKER_DEADLINE_MS)
+        : null
 }
 
 function creaseWorker(): Worker {
     if (worker) return worker
-    worker = new Worker(new URL('../workers/creaseWorker.js', import.meta.url), { type: 'module' })
-    worker.onmessage = (event: MessageEvent<{ id: number; normals?: Float32Array; error?: string }>) => {
+    const created = new Worker(new URL('../workers/creaseWorker.js', import.meta.url), { type: 'module' })
+    worker = created
+    created.onmessage = (event: MessageEvent<{ id: number; normals?: Float32Array; error?: string }>) => {
+        if (worker !== created) return
         const job = jobs.get(event.data.id)
         if (!job) return
         jobs.delete(event.data.id)
+        armDeadline(created)
         if (event.data.normals) job.resolve(event.data.normals)
         else job.reject(new Error(event.data.error || 'crease normals failed'))
     }
-    worker.onerror = () => failAll(new Error('crease worker crashed'))
-    worker.onmessageerror = () => failAll(new Error('crease worker sent a message that could not be read'))
-    return worker
+    created.onerror = () => failAll(created, new Error('crease worker crashed'))
+    created.onmessageerror = () => failAll(created, new Error('crease worker sent a message that could not be read'))
+    return created
 }
 
 export function computeCreaseNormalsOffThread(positions: Float32Array, creaseAngleDeg: number): Promise<Float32Array> {
@@ -44,7 +64,9 @@ export function computeCreaseNormalsOffThread(positions: Float32Array, creaseAng
     return new Promise<Float32Array>((resolve, reject) => {
         jobs.set(id, { resolve, reject })
         try {
-            creaseWorker().postMessage({ id, positions: copy, creaseAngleDeg }, [copy.buffer])
+            const target = creaseWorker()
+            target.postMessage({ id, positions: copy, creaseAngleDeg }, [copy.buffer])
+            armDeadline(target)
         } catch (error) {
             jobs.delete(id)
             reject(error as Error)

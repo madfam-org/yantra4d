@@ -269,10 +269,24 @@ describe('crease-angle normals for meshes that arrive without any', () => {
         expect(seen).toEqual([[36, 30]])
         expect(mesh.geometry.getAttribute('normal').getZ(0)).toBe(1)
 
+        expect(geometry.getAttribute('normal')).toBeUndefined()
+
         const failing = preview()
+        const copies = []
+        const toNonIndexed = failing.geometry.toNonIndexed.bind(failing.geometry)
+        vi.spyOn(failing.geometry, 'toNonIndexed').mockImplementation(() => {
+            const copy = toNonIndexed()
+            copies.push(vi.spyOn(copy, 'dispose'))
+            return copy
+        })
+        const releasedSource = vi.spyOn(failing.geometry, 'dispose')
         await expect(addCreaseNormals(failing.scene, 30, () => Promise.reject(new Error('worker gone')))).rejects.toThrow('worker gone')
         expect(failing.mesh.geometry).toBe(failing.geometry)
         expect(failing.mesh.material.flatShading).toBe(true)
-        expect(geometry.getAttribute('normal')).toBeUndefined()
+        expect(failing.geometry.getAttribute('normal')).toBeUndefined()
+        // The copy made for the failed attempt is released; the source still belongs to the scene.
+        expect(copies).toHaveLength(1)
+        expect(copies[0]).toHaveBeenCalledTimes(1)
+        expect(releasedSource).not.toHaveBeenCalled()
     })
 })

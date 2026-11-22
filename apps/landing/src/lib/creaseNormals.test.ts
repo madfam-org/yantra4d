@@ -10,6 +10,7 @@ describe('computeCreaseNormals', () => {
   it('is the same code as the Studio twin', () => {
     const here = readFileSync(resolve(__dirname, 'creaseNormals.ts'), 'utf8');
     const studio = readFileSync(resolve(__dirname, '../../../studio/src/lib/creaseNormals.ts'), 'utf8');
+    for (const source of [here, studio]) expect(source.indexOf('/** A point shared by more faces')).toBeGreaterThan(0);
     expect(functionBody(here)).toBe(functionBody(studio));
     // The Studio draws the same preview meshes, so the two angles must not drift apart.
     expect(studio).toContain(`export const PREVIEW_CREASE_ANGLE_DEG = ${PREVIEW_CREASE_ANGLE_DEG}\n`);

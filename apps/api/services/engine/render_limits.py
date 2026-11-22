@@ -1,12 +1,13 @@
 """Per-process resource limits for render subprocesses (OpenSCAD, CadQuery).
 
-The render worker shares one container memory limit (2Gi in
+The render worker shares one container memory limit (4Gi in
 ``k8s/production/yantra4d-backend-deployment.yaml``) between itself, the warm
-CadQuery workers and every render in flight. Without a per-process ceiling a
+CadQuery worker and the render in flight. Without a per-process ceiling a
 single runaway render grows until the kernel OOM-kills the container, and
-every other render with it. With one, the runaway render fails on its own
-(``MemoryError`` / ``std::bad_alloc``, or SIGXCPU for CPU time) and the worker
-reports a render error.
+every other render with it. With one, the runaway render fails on its own and
+the worker reports a render error: a Python ``MemoryError`` when the refusal
+reaches Python, but usually a crash (SIGSEGV, or SIGABRT from an uncaught
+``std::bad_alloc``) because it lands in native code; SIGXCPU for CPU time.
 
 Limits are applied in the child between ``fork`` and ``exec`` through
 ``preexec_fn``. The function only calls ``resource.setrlimit`` with values
@@ -16,7 +17,7 @@ Tunables (read when a render starts, so a changed env takes effect without a
 restart of the module):
 
 * ``RENDER_RLIMIT_AS_MB`` — address-space ceiling per render process.
-  Default 1536: below the 2Gi container limit with room for the worker itself.
+  Default 2560 (see ``DEFAULT_AS_MB`` for the measurement behind it).
   ``0`` disables it.
 * ``RENDER_RLIMIT_CPU_S`` — CPU-seconds ceiling per one-shot render process.
   Default ``RENDER_TIMEOUT_S + 60``: the wall-clock timeout normally ends a
@@ -24,8 +25,21 @@ restart of the module):
   disables it.
 
 Platforms without the ``resource`` module (Windows) run renders unlimited, as
-before. The address-space limit (and the ``MALLOC_ARENA_MAX`` cap that goes
-with it) is applied on Linux only — see ``address_space_limit_enforced``.
+before. The address-space limit (and the ``MALLOC_ARENA_MAX`` and BLAS thread
+caps that go with it) is applied on Linux only — see
+``address_space_limit_enforced``.
+
+The ceiling counts ADDRESS SPACE, not memory, and that is its trap: a render
+refused by it does not fail politely. The refusal lands inside native code
+(OCP, VTK, OpenBLAS), which dies with SIGSEGV or deadlocks. From 2026-10-18 to
+2026-11-22 the default was 1536 MiB, sized on a 4-CPU machine where a CadQuery
+render maps 1398 MiB. Production nodes have 12 CPUs, OpenBLAS starts one
+thread per CPU and each maps 49 MiB, so the same render needed about 1790 MiB
+there and every server-side CadQuery and graph render failed with ``Render
+failed with code -11``. Anything that changes what a render maps (a dependency
+upgrade, a larger node) can do it again, so
+``tests/integration/test_render_limits_real_render.py`` measures a real render
+on every CI run and fails when the default no longer clears it.
 """
 from __future__ import annotations
 
@@ -34,7 +48,7 @@ import os
 import sys
 from collections.abc import Callable
 
-from services.engine.render_engine import RENDER_TIMEOUT_S
+from services.engine.render_engine import RENDER_TIMEOUT_S, crash_signal_of
 
 try:  # POSIX only
     import resource
@@ -43,7 +57,17 @@ except ImportError:  # pragma: no cover - exercised only on platforms without it
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_AS_MB = 1536
+#: Measured on CI (ubuntu-24.04, Python 3.12, CadQuery 2.8.0, 2026-11-22) with
+#: BLAS threads capped (``THREAD_CAPS``), real Commons cartridges at their
+#: default parameters, rendered to GLB: most peak at 1254-1274 MiB of address
+#: space (arca-gopro-bridge, rugged-box, tripod-hub, polydice), the heavier
+#: ones at 1331 (tpu-chainmail-panel), 1391 (solar-dryer-tray) and 1732
+#: (body-form, the heaviest sampled). About 600 MiB of that is mapped and never
+#: resident. 2560 clears body-form by 1.48x and the common case by 2x, and a
+#: runaway render is refused near 1.95 GiB resident, which the 4Gi worker
+#: container holds beside the worker process and one idle warm worker
+#: (``tests/unit/test_render_limits.py`` checks that sum against the manifest).
+DEFAULT_AS_MB = 2560
 DEFAULT_CPU_S = RENDER_TIMEOUT_S + 60
 
 #: glibc reserves 64 MiB of address space per malloc arena and creates up to
@@ -52,6 +76,18 @@ DEFAULT_CPU_S = RENDER_TIMEOUT_S + 60
 #: on a many-core node a render could be refused while using a fraction of its
 #: ceiling. Capping the arena count keeps the address-space limit a memory limit.
 MALLOC_ARENA_MAX = "2"
+
+#: Thread pools that size themselves from the machine's CPU count make a
+#: render's address space depend on the node it lands on. OpenBLAS (under
+#: numpy, which CadQuery imports) starts one thread per CPU at import and each
+#: maps 49 MiB (measured 2026-11-22: 1250 MiB on 1 CPU, 1302 on 2, 1398 on 4).
+#: A render uses BLAS for small vector maths only, so one thread costs nothing;
+#: the kernel's own meshing threads (OCCT) are not affected. Set in the child
+#: while the address-space limit applies, like the arena cap above.
+THREAD_CAPS = {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+}
 
 
 def _env_int(name: str, default: int) -> int:
@@ -133,16 +169,19 @@ def render_preexec_fn(cpu_seconds: int | None = None) -> Callable[[], None] | No
 
 
 def limited_env(env: dict | None) -> dict | None:
-    """*env* with ``MALLOC_ARENA_MAX`` set when the address-space limit is active.
+    """*env* with the caps that keep address space a measure of memory.
 
-    ``None`` (inherit the parent's environment) stays ``None`` unless the limit
-    is active, in which case a copy of ``os.environ`` is returned with the cap.
-    An explicit ``MALLOC_ARENA_MAX`` already present is kept.
+    ``MALLOC_ARENA_MAX`` and ``THREAD_CAPS`` are set when the address-space
+    limit is active. ``None`` (inherit the parent's environment) stays ``None``
+    unless the limit is active, in which case a copy of ``os.environ`` is
+    returned with the caps. A value already present in *env* is kept.
     """
     if not address_space_limit_enforced() or address_space_limit_bytes() <= 0:
         return env
     child = dict(os.environ if env is None else env)
     child.setdefault("MALLOC_ARENA_MAX", MALLOC_ARENA_MAX)
+    for name, value in THREAD_CAPS.items():
+        child.setdefault(name, value)
     return child
 
 
@@ -154,4 +193,14 @@ def describe_exit(returncode: int | None) -> str | None:
     if returncode == -signal.SIGXCPU:
         return ("Render stopped: it exceeded its CPU-time limit "
                 f"(RENDER_RLIMIT_CPU_S={cpu_limit_seconds()})")
+    crashed = crash_signal_of(returncode)
+    if crashed is not None:
+        # An allocation refused by RLIMIT_AS inside native code ends as a
+        # crash, not as a MemoryError, so name the ceiling next to the signal:
+        # it is the first thing to check when every render dies this way.
+        reason = f"Render engine process crashed ({signal.Signals(crashed).name})"
+        as_bytes = address_space_limit_bytes() if address_space_limit_enforced() else 0
+        if as_bytes > 0:
+            reason += f"; its address-space ceiling is {as_bytes // (1024 * 1024)} MiB (RENDER_RLIMIT_AS_MB)"
+        return reason
     return None

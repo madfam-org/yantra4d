@@ -5,6 +5,7 @@ Both engines share: RENDER_TIMEOUT_S, active-process tracking, and cancel logic.
 """
 import logging
 import os
+import signal
 import subprocess
 import threading
 from collections.abc import Callable
@@ -31,6 +32,49 @@ class RenderResult:
         """Allow ``success, stderr = result`` unpacking."""
         yield self.success
         yield self.stderr
+
+
+#: Signals that mean the engine process itself crashed in native code (OCCT,
+#: VTK, OpenBLAS, the interpreter). Deliberately not here: SIGKILL (our own
+#: timeout and cancel, and the kernel's OOM killer), SIGXCPU (the CPU-time
+#: limit, which a visitor's parameters can reach) and SIGTERM (a shutdown).
+CRASH_SIGNALS = frozenset(
+    int(getattr(signal, name))
+    for name in ("SIGSEGV", "SIGBUS", "SIGILL", "SIGFPE", "SIGABRT")
+    if hasattr(signal, name)
+)
+
+
+def crash_signal_of(returncode: int | None) -> int | None:
+    """The crash signal a render process died of, or ``None``.
+
+    ``subprocess`` reports death by signal N as return code ``-N``. Read from
+    the process's exit status, never from its output: the output echoes the
+    visitor's parameters.
+    """
+    if not isinstance(returncode, int) or isinstance(returncode, bool) or returncode >= 0:
+        return None
+    return -returncode if -returncode in CRASH_SIGNALS else None
+
+
+class EngineResult(tuple):
+    """``(success, output)`` from an engine run, plus how the process died.
+
+    A plain two-tuple to every caller that unpacks or compares it. The
+    ``crash_signal`` attribute carries ``crash_signal_of`` for the render
+    worker, which reports it on the part's error event.
+    """
+
+    crash_signal: int | None
+
+    def __new__(cls, success: bool, output: str, crash_signal: int | None = None):
+        self = super().__new__(cls, (success, output))
+        self.crash_signal = crash_signal
+        return self
+
+    def __getnewargs__(self):
+        # copy, deepcopy and pickle rebuild a tuple subclass from these.
+        return (self[0], self[1], self.crash_signal)
 
 
 class ProcessManager:

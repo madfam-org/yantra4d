@@ -234,6 +234,23 @@ spec:
               value: "redis://yantra4d-redis:6379/1"
             - name: RENDER_WORKER_HEARTBEAT_TTL_SECONDS
               value: "60"
+            # Address-space ceiling (RLIMIT_AS, MiB) of each render subprocess
+            # this container starts. Stated here, not left to the code default,
+            # because it is sized against THIS container's memory limit below:
+            # a CadQuery render maps about 1250 MiB before it draws anything
+            # (1732 for body-form), and a ceiling below what a render maps
+            # kills every render with SIGSEGV ("Render failed with code -11",
+            # as from 2026-10-18 to 2026-11-22 at 1536 on these 12-CPU nodes).
+            # Change it, the memory limit or YANTRA4D_CQ_WORKERS only together:
+            # tests/unit/test_render_limits.py reads all three from this file.
+            # See docs/guides/production-checklist.md.
+            - name: RENDER_RLIMIT_AS_MB
+              value: "2560"
+            # One warm CadQuery worker (default 2). Each idles at about 640 MiB
+            # resident, and the Studio's Generate (render-stream) never uses
+            # them: they serve /api/render, animations and git render-head.
+            - name: YANTRA4D_CQ_WORKERS
+              value: "1"
             # Must equal the render-output emptyDir sizeLimit below (2Gi).
             - name: RENDER_VOLUME_LIMIT_BYTES
               value: "2147483648"
@@ -293,7 +310,12 @@ spec:
               memory: 480Mi
             limits:
               cpu: 1000m
-              memory: 2Gi
+              # Worker process (812Mi working set, measured 2026-11-22) + one
+              # idle warm CadQuery worker (~640Mi) + the render in flight, which
+              # RENDER_RLIMIT_AS_MB stops near 1.95Gi resident: about 3.4Gi.
+              # Was 2Gi, sized on 2026-11-20 from use while every CadQuery
+              # render was dying at import, so it never saw one.
+              memory: 4Gi
       volumes:
         - name: tmp
           emptyDir:

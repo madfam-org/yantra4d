@@ -47,6 +47,11 @@ RUNNER_SCRIPT = os.path.join(os.path.dirname(__file__), "cq_runner.py")
 # Sentinel distinguishing "cancelled" from "timed out" as a readline outcome;
 # None already means timeout and both must lead to different error text.
 _CANCELLED = object()
+# Sentinel for end of file: the worker closed its stdout, which in practice
+# means it died mid-job (a crash in OCCT, VTK or OpenBLAS). Distinct from a
+# timeout so it is not reported as one: it used to read as an instant
+# "Render timed out after 300 seconds".
+_EOF = object()
 
 # How often the reader wakes to re-check the cancel flag, in seconds.
 _CANCEL_POLL_INTERVAL = 0.05
@@ -54,6 +59,14 @@ _CANCEL_POLL_INTERVAL = 0.05
 
 class CancelledRender(Exception):
     """Raised when a pooled job is abandoned because the caller cancelled."""
+
+
+class WorkerDied(Exception):
+    """The warm worker's output ended mid-job: it exited (or closed stdout)."""
+
+    def __init__(self, returncode: int | None):
+        super().__init__(f"CadQuery worker exited mid-job with code {returncode}")
+        self.returncode = returncode
 
 
 def _env_int(name: str, default: int, minimum: int = 0) -> int:
@@ -121,6 +134,14 @@ class _Worker:
     def await_ready(self, timeout: float) -> None:
         """Block until the worker reports a warm kernel. Raises on failure."""
         line = _readline_with_timeout(self.proc.stdout, timeout)
+        if line is _EOF:
+            # How a worker under too low an address-space ceiling ends: it
+            # dies importing CadQuery, before it can report anything.
+            try:
+                returncode = self.proc.wait(timeout=5)
+            except Exception:
+                returncode = self.proc.poll()
+            raise RuntimeError(f"CadQuery worker exited during startup with code {returncode}")
         if line is None:
             raise RuntimeError(
                 f"CadQuery worker did not become ready within {timeout:g}s"
@@ -137,13 +158,20 @@ class _Worker:
         """Send one job and await its result.
 
         Raises TimeoutError on timeout, CancelledRender when *is_cancelled*
-        turns true, and propagates protocol/IO errors.
+        turns true, WorkerDied when the worker's output ends mid-job, and
+        propagates protocol/IO errors.
         """
         self.proc.stdin.write(json.dumps(request) + "\n")
         self.proc.stdin.flush()
         line = _readline_with_timeout(self.proc.stdout, timeout, is_cancelled)
         if line is _CANCELLED:
             raise CancelledRender("Render cancelled by user request")
+        if line is _EOF:
+            try:
+                returncode = self.proc.wait(timeout=5)
+            except Exception:
+                returncode = self.proc.poll()
+            raise WorkerDied(returncode)
         if line is None:
             raise TimeoutError(f"Render timed out after {int(timeout)} seconds")
         payload = json.loads(line)
@@ -171,8 +199,9 @@ def _readline_with_timeout(stream, timeout: float,
                            is_cancelled: Callable[[], bool] | None = None):
     """Read one line, giving up after *timeout* seconds or on cancellation.
 
-    Returns the line, ``None`` on timeout, or ``_CANCELLED`` when *is_cancelled*
-    turns true while waiting.
+    Returns the line, ``None`` on timeout, ``_EOF`` when the stream ended
+    before a line arrived (the writer exited), or ``_CANCELLED`` when
+    *is_cancelled* turns true while waiting.
 
     ``stream.readline()`` on a pipe cannot be interrupted, so the read happens
     on a daemon thread and the caller abandons it. The abandoned thread dies
@@ -180,13 +209,12 @@ def _readline_with_timeout(stream, timeout: float,
     worker that timed out or was cancelled mid-job is never reused, because its
     kernel may still be churning on the abandoned solid.
     """
-    result: list[str] = []
+    result: list = []
 
     def _read():
         try:
             line = stream.readline()
-            if line:
-                result.append(line)
+            result.append(line if line else _EOF)
         except Exception:
             pass
 
@@ -206,6 +234,8 @@ def _readline_with_timeout(stream, timeout: float,
 
     if thread.is_alive() or not result:
         return None
+    if result[0] is _EOF:
+        return _EOF
     return result[0].strip()
 
 
@@ -324,6 +354,15 @@ class CadQueryPool:
             logger.info("CadQuery pooled render cancelled; killing worker")
             self._discard(worker)
             return False, "Render cancelled by user request"
+        except WorkerDied as exc:
+            # The worker crashed (or exited) mid-job. A warm worker carries
+            # every job it has served in its heap, so the crash may be the
+            # worker's and not the job's: retry once on a fresh one-shot
+            # process, which reports its own outcome, crash signal included.
+            logger.error("CadQuery warm worker died mid-job (code %s); "
+                         "retrying the job on a fresh process", exc.returncode)
+            self._discard(worker)
+            return None
         except TimeoutError as exc:
             # A wedged OCCT is unrecoverable in-process. Kill, do not reuse.
             logger.error("CadQuery worker timed out after %.1fs; killing worker",

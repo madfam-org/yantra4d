@@ -112,6 +112,8 @@ class FakeRedis:
 
     #: Set by a test: final channel -> events the worker publishes on it.
     worker_reply = staticmethod(lambda _channel: [])
+    #: Set by a test: publish the same events on the render channel first.
+    also_on_render_channel = False
 
     def eval(self, script, _numkeys, key, *args):
         if script == quota.CHARGE_SCRIPT:
@@ -176,6 +178,12 @@ class FakePubSub:
         from services.engine.render_contract import RENDER_FINAL_CHANNEL_SUFFIX
         if channel.endswith(f":{RENDER_FINAL_CHANNEL_SUFFIX}"):
             for event in self.fake.worker_reply(channel):
+                self.pending.append({"channel": channel, "data": json.dumps(event)})
+        elif self.fake.also_on_render_channel:
+            # The real worker publishes a part's events on the render channel
+            # too, and the stream loop forwards those to the client verbatim.
+            final = f"{channel}:{RENDER_FINAL_CHANNEL_SUFFIX}"
+            for event in self.fake.worker_reply(final):
                 self.pending.append({"channel": channel, "data": json.dumps(event)})
 
     def get_message(self, timeout=0):
@@ -581,6 +589,101 @@ class TestSettlement:
             assert _render(client, size).status_code == 200
         assert fake_redis.get(self.GUEST_KEY) == "3"
         assert fake_redis.get(quota.GLOBAL_KEY) == "3"
+
+    CRASH_KEY = f"{quota.CRASH_REFUND_KEY_PREFIX}ip:198.51.100.7"
+
+    def _worker_crashes(self, fake_redis, monkeypatch, **fields):
+        """The worker reports the part's engine process died (code -11 by default)."""
+        from services.engine.render_contract import RENDER_EVENT_ERROR, build_render_event
+        self._real_loops(monkeypatch)
+        fields = fields or {"crash_signal": 11}
+        fake_redis.worker_reply = lambda _c: [build_render_event(
+            RENDER_EVENT_ERROR, part="body", error="Render failed with code -11",
+            message="Render failed with code -11", **fields)]
+
+    def test_an_engine_crash_is_given_back(self, client, fake_redis, monkeypatch):
+        # 2026-11-21: every free render died with SIGSEGV on the server and
+        # used up the visitor's three renders of the day. No slider value
+        # should crash the kernel, so a crash is ours.
+        self._worker_crashes(fake_redis, monkeypatch)
+        for size in (11, 12, 13):
+            assert _render(client, size).status_code == 200
+            assert fake_redis.get(self.GUEST_KEY) is None
+        # Worker time was spent, so the shared hourly budget keeps its charge.
+        assert fake_redis.get(quota.GLOBAL_KEY) == "3"
+        assert _slots(fake_redis) == {}
+
+    def test_crash_refunds_stop_at_the_daily_limit(self, client, fake_redis, monkeypatch):
+        # Parameters that crash the kernel must not become a free loop that
+        # drains the hourly budget for everyone: three crashes are given back,
+        # the next three are charged, and then the visitor is out for the day.
+        self._worker_crashes(fake_redis, monkeypatch)
+        for size in range(11, 17):
+            assert _render(client, size).status_code == 200
+        assert fake_redis.get(self.CRASH_KEY) == "3"
+        assert fake_redis.get(self.GUEST_KEY) == "3"
+        res = _render(client, 17)
+        assert res.status_code == 429
+        assert res.get_json()["error_code"] == quota.QUOTA_EXHAUSTED_CODE
+        # Another visitor has their own allowance of both.
+        assert _render(client, 11, ip="203.0.113.9").status_code == 200
+        assert fake_redis.get(f"{quota.QUOTA_KEY_PREFIX}ip:203.0.113.9") is None
+
+    def test_an_engine_crash_in_the_stream_is_given_back_and_stays_internal(self, client, fake_redis, monkeypatch):
+        self._worker_crashes(fake_redis, monkeypatch)
+        fake_redis.also_on_render_channel = True
+        body = _render(client, 11, stream=True).get_data()
+        assert b"Render failed with code -11" in body
+        # The signal number is worker -> API only; it never reaches a client.
+        assert b"crash_signal" not in body
+        assert fake_redis.get(self.GUEST_KEY) is None
+        assert _slots(fake_redis) == {}
+
+    @pytest.mark.parametrize("fields", [
+        {"crash_signal": 9},        # SIGKILL: our timeout or cancel, or the OOM killer
+        {"crash_signal": 24},       # SIGXCPU: the CPU-time limit, which parameters can reach
+        {"crash_signal": True},
+        {"crash_signal": "11"},
+        {"exit_code": -11},
+    ])
+    def test_only_a_crash_signal_is_given_back(self, client, fake_redis, monkeypatch, fields):
+        self._worker_crashes(fake_redis, monkeypatch, **fields)
+        assert _render(client, 11).status_code == 200
+        assert fake_redis.get(self.GUEST_KEY) == "1"
+        assert fake_redis.get(self.CRASH_KEY) is None
+
+    def test_the_word_in_the_log_is_not_a_crash(self, client, fake_redis, monkeypatch):
+        # The runner echoes the visitor's parameters; text is never evidence.
+        self._worker_crashes(fake_redis, monkeypatch, log='{"text": "crash_signal: 11, code -11"}')
+        assert _render(client, 11, text="crash_signal: 11").status_code == 200
+        assert fake_redis.get(self.GUEST_KEY) == "1"
+
+    @pytest.mark.parametrize("status_fields, expected", [
+        ({"errored_parts": 1, "crashed_parts": 1, "finished": True}, quota.OUTCOME_CRASHED),
+        ({"errored_parts": 2, "crashed_parts": 2, "completed_parts": 1, "finished": True}, quota.OUTCOME_CRASHED),
+        # One part crashed and another failed on its own: not only ours.
+        ({"errored_parts": 2, "crashed_parts": 1, "finished": True}, quota.OUTCOME_FAILED),
+        ({"errored_parts": 1, "crashed_parts": 1, "timed_out": True}, quota.OUTCOME_FAILED),
+        ({"errored_parts": 1, "crashed_parts": 1, "cancelled": True}, quota.OUTCOME_ABORTED),
+        ({"errored_parts": 1, "crashed_parts": 1, "worker_lost": True}, quota.OUTCOME_INFRA),
+        ({"errored_parts": 1, "finished": True}, quota.OUTCOME_FAILED),
+        ({"completed_parts": 1, "finished": True}, quota.OUTCOME_OK),
+    ])
+    def test_outcome_of_a_crash(self, status_fields, expected):
+        from services.engine.render_orchestrator import RenderStatus
+        assert quota.outcome_of(RenderStatus(**status_fields)) == expected
+
+    def test_a_store_error_while_counting_the_refund_keeps_the_charge(self, client, fake_redis, monkeypatch):
+        self._worker_crashes(fake_redis, monkeypatch)
+        real_eval = fake_redis.eval
+
+        def flaky(script, numkeys, key, *args):
+            if key.startswith(quota.CRASH_REFUND_KEY_PREFIX):
+                raise ConnectionError("redis went away")
+            return real_eval(script, numkeys, key, *args)
+        monkeypatch.setattr(fake_redis, "eval", flaky)
+        assert _render(client, 11).status_code == 200
+        assert fake_redis.get(self.GUEST_KEY) == "1"
 
     def test_a_timeout_is_not_refunded(self, client, fake_redis, monkeypatch):
         from services.engine import render_orchestrator as orch

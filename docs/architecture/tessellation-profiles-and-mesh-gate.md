@@ -19,7 +19,8 @@
    measured), because nothing bounds the error in millimetres.
 2. **The preview is the same fine mesh, cut down afterwards.** The models pipeline renders the
    print mesh and decimates it to 2,500 triangles. 279 of 502 previews were decimated in the last
-   prerender run that completed (run 35460054814, 2026-09-19; counted from the optimizer's log).
+   prerender run that succeeded (run 35460054814, 2026-09-19; counted from the optimizer's log;
+   the later runs show 289 of 510).
    Decimation turns a regular 126-segment circle into an uneven one with as few as 18 segments.
    Asking the kernel for a coarser, regular mesh instead gave 2,272 and 2,556 triangles with 63 to
    105 even segments per circle on two ordinary parts; the second is still just over the budget.
@@ -38,11 +39,13 @@ an angular bound.
 | Profile | Linear (absolute) | Angular | Used by | Effect measured on three parts |
 |---|---|---|---|---|
 | `print` (default) | 0.02 mm | 0.1 rad | every render a person downloads | Not measured at exactly this setting. For a circle, the 0.02 mm bound is looser than what the angular bound already gives below a radius of about 64 mm (computed), so small round features should come out as today and larger ones gain segments. Threads and free-form surfaces may change at any size. |
-| `preview` | 0.01 mm | 0.2 rad | the models pipeline only | 2,272, 2,556 and 5,900 triangles (bearing housing, electronics enclosure, thread capsule); 63 to 159 segments per circle, by radius; chord error at most 0.005 mm |
+| `preview` | 0.01 mm | 0.2 rad | the models pipeline only | 2,272, 2,556 and 5,900 triangles (bearing housing, electronics enclosure, thread capsule); 63 to 159 segments per circle, by radius; chord error at most 0.005 mm. Note: its linear bound is *tighter* than `print`'s, so above a radius of about 32 mm a preview circle gets more segments than the print file (computed: 149 against 126 at 45 mm, 222 against 157 at 100 mm). |
 
 A coarser preview was also measured: 0.02 mm and 0.35 rad gave 1,484, 1,564 and 3,428 triangles
 with 36 to 126 segments. It fits the 2,500-triangle gallery budget on two of the three parts
-without any decimation, at the price of visibly fewer segments on small holes.
+without any decimation, at the price of visibly fewer segments on small holes, and its linear
+bound equals `print`'s, so a preview is never denser than the print file. Large and free-form
+parts still grow under either preview setting, which is why the simplifier stays as a fallback.
 
 What building it involves:
 
@@ -50,12 +53,15 @@ What building it involves:
   pipeline ([`render_commons_models.py`](../../scripts/dev/render_commons_models.py)) asks for
   `preview`.
 - **STL.** `cq.exporters.export` has no way to say "absolute", so the STL branch calls
-  `shape.exportStl(path, linear, angular, ascii=False, relative=False)` directly. Assemblies are
-  flattened with `toCompound()` first, as the spec already does.
+  `shape.exportStl(path, linear, angular, ascii=False, relative=False)` directly on a shape: a
+  Workplane result is turned into one first (`compound(*result)` or `.val()`, as
+  `exporters.export` does internally), and an assembly is flattened with `toCompound()`, as the
+  spec already does.
 - **3MF needs its own path.** In CadQuery 2.7.0 the 3MF writer tessellates through
-  `Shape.mesh()`, which always passes the tolerance as *relative* and skips a shape that already
-  carries a triangulation. Getting an absolute bound into 3MF means meshing the shape explicitly
-  with `relative=False` before writing it. Without that, 3MF downloads (offered by all 512
+  `Shape.mesh()`, which always passes the tolerance as *relative*, and skips the shape when an
+  existing triangulation is already at least as fine as asked. Getting an absolute bound into 3MF
+  means meshing the shape explicitly with `relative=False` first and then exporting with a
+  tolerance no finer than that mesh, so the writer keeps it. Without that, 3MF downloads (offered by all 512
   manifests) would keep today's relative tolerance while STL changed. Separately, the assembly
   branch `result.save(path, "3MF")` raises "Unknown format" in 2.7.0. Neither point has been
   checked on 2.8.0, which production runs.
@@ -105,10 +111,10 @@ Checks on the **print export**, per part:
 | Check | Fails when | Today |
 |---|---|---|
 | Closed | any boundary edge | already enforced (watertight) |
-| Manifold | any edge shared by more than two triangles | already fails, indirectly: such an edge breaks the watertight test, but the message calls it a boundary edge. The gate adds a clear message. 0 found in 17 files. |
+| Manifold | any edge shared by more than two triangles | already fails, indirectly: such an edge breaks the watertight test, but the message counts boundary edges only and can read "0 boundary edge(s)". The gate adds a clear message. 0 found in 17 files. |
 | No zero-area triangles | any triangle with zero area after the vertex merge | not checked; 0 found in 17 files |
 | No duplicate faces | the same triangle twice | not checked; 0 found in 17 files |
-| Chord error | a circular feature deviates from its true circle by more than 0.05 mm | not checked. Print files: worst 0.024 mm (CadQuery 0.006 mm). OpenSCAD source meshes, measured through undecimated previews: 0.126 mm (spiral planter), 0.241 mm (Voronoi coaster). |
+| Chord error | a circular feature deviates from its true circle by more than 0.05 mm | not checked. Print files: worst 0.024 mm (CadQuery 0.006 mm). OpenSCAD meshes measured through previews: 0.126 mm (spiral planter, 48 segments as in its source; the preview was decimated, which cannot add segments), 0.241 mm (Voronoi coaster, undecimated). |
 | Segments per circle | a full circle of radius 1 mm or more has fewer than 32 segments | not checked; OpenSCAD print files measured at 32 to 65; the motor mount's 24-segment holes would fail |
 | Positive volume, no inverted body | as today | already enforced |
 | Size | more than 200,000 triangles in one part | warning only |
@@ -117,24 +123,36 @@ What those two resolution thresholds mean in practice: a 32-segment circle stays
 up to a radius of about 10 mm, 48 segments up to about 23 mm, 64 up to about 41 mm (computed).
 So the gate does not fail every fixed-`$fn` cartridge; it fails the ones whose circles are large
 for their segment count, or have fewer than 32. In the audit's sample that is three OpenSCAD
-cartridges (motor mount, spiral planter, Voronoi coaster).
+cartridges (motor mount on segments; spiral planter and Voronoi coaster on chord error).
 
-**Faceting drawn into the solid.** Some CadQuery cartridges are faceted in the geometry itself:
-the rugged box draws its round corners as 16-sided polygons at its default setting, and 59
-cartridges sample curves by hand with `polyline` and trigonometry (found by text search; gear
-involutes among them are legitimate). Their meshes match their solids exactly, so a check that
-compares the mesh with the solid passes them. Catching them takes one of two additions, to be
-ruled on:
+The chord limit also reaches CadQuery if today's tolerance is kept (ruling 1): at 126 segments a
+circle exceeds 0.05 mm above a radius of about 161 mm, and the relative bound leaves large
+free-form surfaces unbounded. Keeping today's numbers and adopting the 0.05 mm gate together
+would fail large CadQuery parts; how many is not known (the audit's sample had none that large).
 
-- a **lint** on the cartridge source that flags `polyline` built from `sin`/`cos` loops, as a
-  warning for a person to judge; or
-- the **mesh circle fit** used for OpenSCAD (below), run on CadQuery output too.
+**Faceting drawn into the solid.** Some CadQuery cartridges are faceted in the geometry itself,
+and their meshes match their solids exactly, so a check that compares the mesh with the solid
+passes them. It happens in two ways, and the two possible remedies do not cover the same ground:
+
+- **Polygons.** The rugged box draws every cylindrical feature (holes, corners) as an inscribed
+  8- or 16-sided prism, through `wp.polygon(n, …)`, at its default style.
+- **Hand-sampled curves.** 59 cartridges build curves with `polyline` and trigonometry (found by
+  text search; gear involutes among them are legitimate).
+
+The remedies:
+
+- the **mesh circle fit** used for OpenSCAD (below), run on CadQuery output too. It catches both
+  kinds where the feature is a full circle aligned with an axis, and can fail a cartridge; or
+- a **source lint** that flags `polyline` built from `sin`/`cos` loops, and `polygon(n, …)` with
+  a small `n`. It is a warning for a person to judge, never a failure, and it sees only the
+  patterns it is written for.
 
 **Opt-out** for parts that are faceted on purpose, modelled on how the parity check is exempted
 today: a policy object with a required written reason, settable for the cartridge and overridable
-per mode and part, reported as a note and counted as exempt, never silently skipped. Per part
-matters: the rugged box is low-poly only in one of its styles, so a cartridge-wide opt-out would
-also hide a regression in its round styles. The opt-out switches off only the chord-error and
+per mode and part, reported as a note and counted as exempt, never silently skipped. Faceting is
+sometimes chosen by a parameter rather than by mode or part (the rugged box has two low-poly
+styles and one round one, for all its modes), so the opt-out may also need to name a parameter
+value or preset; the owner decides the grain. The opt-out switches off only the chord-error and
 segment checks; the closed, manifold, zero-area and duplicate checks have none.
 
 **Never gated: sliver share.** Thin triangles are what every CAD tessellator produces (long
@@ -156,14 +174,15 @@ Rollout, so the gate never lands as a wall of red:
 
 1. **Report only**, for two weeks. Publishes how many cartridges would fail each check. Expected
    from the audit's sample: a few OpenSCAD cartridges on segments or chord error; the
-   hand-faceted CadQuery ones only if the lint or the circle fit above is added.
+   hand-faceted CadQuery ones only if the circle fit is run on them (the lint only warns); large
+   CadQuery parts if today's tolerance is kept.
 2. **Fix or opt out** those cartridges in the Commons.
 3. **Blocking on pull requests**, for the cartridges a pull request touches.
 4. **Blocking in the nightly sweeps**, once they have been green for a week.
 
 All the lanes run the same `y4d-spec check --render` at the same pin, so a check becomes blocking
 everywhere at once unless the spec gains a switch for it (an option or environment variable that
-turns a check from warning to failure). Steps 1, 3 and 4 need that switch.
+turns a check from warning to failure). Steps 1 and 3 need that switch; at step 4 it can go.
 
 Preview meshes get the same closed and manifold checks as warnings only, in the models
 pipeline's own summary. A preview is a picture, not a deliverable.
@@ -172,18 +191,22 @@ pipeline's own summary. A preview is a picture, not a deliverable.
 
 1. **Print profile.** Add the 0.02 mm absolute bound now (re-renders everything and changes the
    CadQuery side of the parity comparisons), or keep today's numbers under the name `print` and
-   add the bound later?
-2. **Preview profile.** 0.01 mm / 0.2 rad (finer, some parts still need decimation for the
-   2,500-triangle gallery file) or 0.02 mm / 0.35 rad (fits the gallery budget more often, fewer
+   add the bound later? Keeping today's numbers together with the 0.05 mm gate (ruling 4) would
+   fail CadQuery circles above a radius of about 161 mm.
+2. **Preview profile.** 0.01 mm / 0.2 rad (more segments; denser than the print file on circles
+   above about 32 mm, so more parts still need decimation for the 2,500-triangle gallery file) or
+   0.02 mm / 0.35 rad (fits the gallery budget more often, never denser than print, fewer
    segments on small holes)? Either can be tried on the full Commons in CI before it is fixed.
 3. **Who may ask for `preview`.** Only the models pipeline, or any API caller? (Not measured
    which costs more: tessellation is a small part of a render, building the solid dominates.)
 4. **Gate thresholds.** Chord error at most 0.05 mm and at least 32 segments on full circles of
    radius 1 mm or more: confirm, or change the numbers or the 1 mm floor.
-5. **Faceting drawn into the solid.** Catch it with a source lint (warning), with the mesh circle
-   fit on CadQuery output too, or not at all for now?
+5. **Faceting drawn into the solid.** Catch it with the mesh circle fit on CadQuery output (can
+   fail a cartridge; sees axis-aligned full circles), with a source lint for `polyline` + trig and
+   small-`n` `polygon` (warning only), both, or not at all for now?
 6. **Opt-out.** A policy object with a required reason, per cartridge and overridable per mode
-   and part, as described: accepted?
+   and part, as described: accepted? And should it also be settable per parameter value or
+   preset, for cartridges whose faceting is a style choice?
 7. **Rollout.** The four steps above, starting report-only, with a spec switch per check:
    accepted?
 

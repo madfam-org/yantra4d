@@ -25,13 +25,48 @@ Essential configuration for deploying Yantra4D in production.
 | `RATE_LIMIT_STORAGE` | `memory://` | Set to `redis://host:6379` for multi-worker rate limiting |
 | `ANALYTICS_DB_PATH` | `data/analytics.db` | Path to analytics SQLite (ephemeral is acceptable for stateless API pods; use Postgres for durable user/analytics data) |
 | `RENDER_TIMEOUT_S` | `300` | Max render time in seconds |
-| `RENDER_RLIMIT_AS_MB` | `1536` | Address-space ceiling (RLIMIT_AS) for each OpenSCAD / CadQuery render subprocess, warm CadQuery workers included. Linux only. Keeps one runaway render from OOM-killing the 2Gi worker container and every render in it: the render fails with `MemoryError` / `std::bad_alloc` instead. `MALLOC_ARENA_MAX=2` is set in the child while it applies. `0` disables |
+| `RENDER_RLIMIT_AS_MB` | `2048` | Address-space ceiling (RLIMIT_AS, MiB) for each OpenSCAD / CadQuery render subprocess, warm CadQuery workers included. Linux only. Keeps one runaway render from OOM-killing the 2Gi worker container and every render in it. Set explicitly on the `render-worker` container in `k8s/production/yantra4d-backend-deployment.yaml`. `MALLOC_ARENA_MAX=2`, `OPENBLAS_NUM_THREADS=1` and `OMP_NUM_THREADS=1` are set in the child while it applies, so what a render maps does not depend on the node's CPU count. `0` disables. **Never set it below what a render maps**: see "Render address-space ceiling" below |
 | `RENDER_RLIMIT_CPU_S` | `RENDER_TIMEOUT_S + 60` | CPU-seconds ceiling (RLIMIT_CPU) for each one-shot render subprocess, a backstop behind the wall-clock timeout; the render fails with "exceeded its CPU-time limit". A warm CadQuery worker gets this times `YANTRA4D_CQ_WORKER_MAX_JOBS` for its lifetime (none when it never recycles). `0` disables |
 | `ACTIVE_JOB_LEASE_GRACE_SECONDS` | `120` | Grace added to `RENDER_TIMEOUT_S` to derive the active-job lease TTL. A render job's Redis entry expires unless a live worker keeps renewing it on each heartbeat tick, so a pod roll or an OOM kill cannot leave the reported active-job count stuck above zero forever. Raise it only if the post-render format conversion legitimately needs longer |
 | `RENDER_GC_TTL` | `86400` | Age at which a finished render artifact is deleted. On the `s3` store, **set a matching bucket lifecycle rule when provisioning** — the GC's age pass runs through the store, but a bucket that outlives the API should expire objects on its own too |
 | `JWKS_CACHE_LIFESPAN` | `3600` | How long a fetched JWKS is served as fresh |
 | `JWKS_STALE_MAX_AGE` | `86400` | Ceiling past which a stale JWKS is no longer served. Between the two, a JWKS whose refresh is failing keeps being served with a warning, so a brief issuer outage does not log everyone out; past the ceiling — or with nothing ever fetched — auth fails closed |
 | `JWKS_REFRESH_BACKOFF` | `30` | Minimum seconds between refresh attempts, single-flighted |
+
+### Render address-space ceiling
+
+`RENDER_RLIMIT_AS_MB` counts **address space**, not memory, and a render that
+is refused by it does not fail politely: the refusal lands inside native code
+(OCP, VTK, OpenBLAS) and the process dies with SIGSEGV, or deadlocks until the
+render timeout. The Studio shows `Render failed with code -11`.
+
+That happened to every server-side CadQuery and graph render from 2026-10-18
+to 2026-11-22. The default was 1536 MiB, sized on a 4-CPU machine where a
+CadQuery render maps 1398 MiB. Production nodes have 12 CPUs; OpenBLAS (under
+numpy) starts one thread per CPU and each maps 49 MiB, so the same render
+needed about 1790 MiB. CI has 4 CPUs and stayed green.
+
+What is in place now:
+
+| | |
+|---|---|
+| Default and production value | `2048` |
+| What a small CadQuery part maps, rendered to GLB (CI, 2026-11-22) | 1254 MiB, of which about 640 MiB is ever resident |
+| Per CPU of the node | 0 MiB with the BLAS thread caps; 49 MiB without them |
+| Where a runaway render is refused | about 1.4 GiB resident, under the container's 2Gi limit |
+
+Before lowering it, changing the worker container's memory limit, upgrading
+CadQuery / OCP / VTK / numpy, or moving to a different node size, read the
+`Render address space` notice that the `backend` CI job prints on every run
+(`tests/integration/test_render_limits_real_render.py`). That test renders a
+real part through the worker's three launch paths under the default ceiling
+and fails when the default no longer clears the measured peak with headroom,
+or when the peak starts to grow with the CPU count again.
+
+If production shows `Render failed with code -11` for every render, this
+ceiling is the first thing to check. The failure reason names it: `Render
+engine process crashed (SIGSEGV); its address-space ceiling is N MiB
+(RENDER_RLIMIT_AS_MB)`.
 
 ### Render artifact storage (optional)
 

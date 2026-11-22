@@ -16,7 +16,7 @@ Tunables (read when a render starts, so a changed env takes effect without a
 restart of the module):
 
 * ``RENDER_RLIMIT_AS_MB`` — address-space ceiling per render process.
-  Default 1536: below the 2Gi container limit with room for the worker itself.
+  Default 2048 (see ``DEFAULT_AS_MB`` for the measurement behind it).
   ``0`` disables it.
 * ``RENDER_RLIMIT_CPU_S`` — CPU-seconds ceiling per one-shot render process.
   Default ``RENDER_TIMEOUT_S + 60``: the wall-clock timeout normally ends a
@@ -24,8 +24,21 @@ restart of the module):
   disables it.
 
 Platforms without the ``resource`` module (Windows) run renders unlimited, as
-before. The address-space limit (and the ``MALLOC_ARENA_MAX`` cap that goes
-with it) is applied on Linux only — see ``address_space_limit_enforced``.
+before. The address-space limit (and the ``MALLOC_ARENA_MAX`` and BLAS thread
+caps that go with it) is applied on Linux only — see
+``address_space_limit_enforced``.
+
+The ceiling counts ADDRESS SPACE, not memory, and that is its trap: a render
+refused by it does not fail politely. The refusal lands inside native code
+(OCP, VTK, OpenBLAS), which dies with SIGSEGV or deadlocks. From 2026-10-18 to
+2026-11-22 the default was 1536 MiB, sized on a 4-CPU machine where a CadQuery
+render maps 1398 MiB. Production nodes have 12 CPUs, OpenBLAS starts one
+thread per CPU and each maps 49 MiB, so the same render needed about 1790 MiB
+there and every server-side CadQuery and graph render failed with ``Render
+failed with code -11``. Anything that changes what a render maps (a dependency
+upgrade, a larger node) can do it again, so
+``tests/integration/test_render_limits_real_render.py`` measures a real render
+on every CI run and fails when the default no longer clears it.
 """
 from __future__ import annotations
 
@@ -43,7 +56,14 @@ except ImportError:  # pragma: no cover - exercised only on platforms without it
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_AS_MB = 1536
+#: Measured on CI (ubuntu-24.04, Python 3.12, CadQuery 2.8.0, 2026-11-22): a
+#: small CadQuery part rendered to GLB peaks at 1254 MiB of address space once
+#: BLAS threads are capped (``THREAD_CAPS``), of which about 640 MiB is ever
+#: resident. 2048 leaves about 800 MiB for the geometry itself, and still clears
+#: the uncapped peak on a 12-CPU node (about 1790 MiB) if a cap ever stops
+#: applying. A runaway render is refused near 1.4 GiB resident, below the
+#: worker container's 2Gi limit with room for the worker process.
+DEFAULT_AS_MB = 2048
 DEFAULT_CPU_S = RENDER_TIMEOUT_S + 60
 
 #: glibc reserves 64 MiB of address space per malloc arena and creates up to
@@ -52,6 +72,18 @@ DEFAULT_CPU_S = RENDER_TIMEOUT_S + 60
 #: on a many-core node a render could be refused while using a fraction of its
 #: ceiling. Capping the arena count keeps the address-space limit a memory limit.
 MALLOC_ARENA_MAX = "2"
+
+#: Thread pools that size themselves from the machine's CPU count make a
+#: render's address space depend on the node it lands on. OpenBLAS (under
+#: numpy, which CadQuery imports) starts one thread per CPU at import and each
+#: maps 49 MiB (measured 2026-11-22: 1250 MiB on 1 CPU, 1302 on 2, 1398 on 4).
+#: A render uses BLAS for small vector maths only, so one thread costs nothing;
+#: the kernel's own meshing threads (OCCT) are not affected. Set in the child
+#: while the address-space limit applies, like the arena cap above.
+THREAD_CAPS = {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+}
 
 
 def _env_int(name: str, default: int) -> int:
@@ -133,16 +165,19 @@ def render_preexec_fn(cpu_seconds: int | None = None) -> Callable[[], None] | No
 
 
 def limited_env(env: dict | None) -> dict | None:
-    """*env* with ``MALLOC_ARENA_MAX`` set when the address-space limit is active.
+    """*env* with the caps that keep address space a measure of memory.
 
-    ``None`` (inherit the parent's environment) stays ``None`` unless the limit
-    is active, in which case a copy of ``os.environ`` is returned with the cap.
-    An explicit ``MALLOC_ARENA_MAX`` already present is kept.
+    ``MALLOC_ARENA_MAX`` and ``THREAD_CAPS`` are set when the address-space
+    limit is active. ``None`` (inherit the parent's environment) stays ``None``
+    unless the limit is active, in which case a copy of ``os.environ`` is
+    returned with the caps. A value already present in *env* is kept.
     """
     if not address_space_limit_enforced() or address_space_limit_bytes() <= 0:
         return env
     child = dict(os.environ if env is None else env)
     child.setdefault("MALLOC_ARENA_MAX", MALLOC_ARENA_MAX)
+    for name, value in THREAD_CAPS.items():
+        child.setdefault(name, value)
     return child
 
 

@@ -234,6 +234,17 @@ spec:
               value: "redis://yantra4d-redis:6379/1"
             - name: RENDER_WORKER_HEARTBEAT_TTL_SECONDS
               value: "60"
+            # Address-space ceiling (RLIMIT_AS, MiB) of each render subprocess
+            # this container starts. Stated here, not left to the code default,
+            # because it is sized against THIS container's 2Gi memory limit and
+            # the node it runs on: a CadQuery render maps about 1250 MiB before
+            # it draws anything, and a ceiling below what a render maps kills
+            # every render with SIGSEGV ("Render failed with code -11", as from
+            # 2026-10-18 to 2026-11-22 at 1536 on these 12-CPU nodes). Measure
+            # before changing it: apps/api/services/engine/render_limits.py and
+            # docs/guides/production-checklist.md.
+            - name: RENDER_RLIMIT_AS_MB
+              value: "2048"
             # Must equal the render-output emptyDir sizeLimit below (2Gi).
             - name: RENDER_VOLUME_LIMIT_BYTES
               value: "2147483648"

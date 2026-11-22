@@ -22,14 +22,20 @@ HOG_CPU = "while True: pass"
 
 @pytest.fixture(autouse=True)
 def _clean_env(monkeypatch):
-    for name in ("RENDER_RLIMIT_AS_MB", "RENDER_RLIMIT_CPU_S", "MALLOC_ARENA_MAX"):
+    for name in ("RENDER_RLIMIT_AS_MB", "RENDER_RLIMIT_CPU_S", "MALLOC_ARENA_MAX", *render_limits.THREAD_CAPS):
         monkeypatch.delenv(name, raising=False)
 
 
 class TestConfiguration:
     def test_defaults_fit_inside_the_pod_limit(self):
-        # The worker container is limited to 2Gi; one render must stay below it.
-        assert 0 < render_limits.address_space_limit_bytes() < 2 * 1024 ** 3
+        # The worker container is limited to 2Gi of MEMORY; the ceiling counts
+        # address space, and a CadQuery render maps about 600 MiB it never
+        # touches (measured: 1254 MiB mapped, 640 MiB resident). So a runaway
+        # render is refused that much below the ceiling, and that point must
+        # stay under the pod limit with room for the worker process (300 MiB).
+        never_resident_mb, worker_mb, pod_mb = 600, 300, 2048
+        assert 0 < render_limits.DEFAULT_AS_MB - never_resident_mb <= pod_mb - worker_mb
+        assert render_limits.address_space_limit_bytes() == render_limits.DEFAULT_AS_MB * 1024 * 1024
         assert render_limits.cpu_limit_seconds() > render_limits.RENDER_TIMEOUT_S
 
     @pytest.mark.parametrize("raw", ["abc", "-5", " "])
@@ -52,11 +58,22 @@ class TestConfiguration:
         assert render_limits.describe_exit(-9) is None
 
     @linux_only
-    def test_arena_cap_set_only_with_the_address_space_limit(self, monkeypatch):
-        assert render_limits.limited_env({"A": "1"}) == {"A": "1", "MALLOC_ARENA_MAX": "2"}
-        assert render_limits.limited_env({"MALLOC_ARENA_MAX": "4"})["MALLOC_ARENA_MAX"] == "4"
+    def test_caps_set_only_with_the_address_space_limit(self, monkeypatch):
+        # One BLAS thread per CPU maps 49 MiB each: uncapped, the address space
+        # a render needs depends on the node, which is how the 1536 default
+        # passed on 4 CPUs and killed every render on 12.
+        assert render_limits.limited_env({"A": "1"}) == {
+            "A": "1", "MALLOC_ARENA_MAX": "2", "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1",
+        }
+        kept = render_limits.limited_env({"MALLOC_ARENA_MAX": "4", "OPENBLAS_NUM_THREADS": "3"})
+        assert kept["MALLOC_ARENA_MAX"] == "4" and kept["OPENBLAS_NUM_THREADS"] == "3"
         monkeypatch.setenv("RENDER_RLIMIT_AS_MB", "0")
-        assert "MALLOC_ARENA_MAX" not in render_limits.limited_env({"A": "1"})
+        assert render_limits.limited_env({"A": "1"}) == {"A": "1"}
+
+    @linux_only
+    def test_caps_reach_a_child_that_inherits_the_environment(self):
+        child = render_limits.limited_env(None)
+        assert child is not None and child["OPENBLAS_NUM_THREADS"] == "1"
 
     def test_pool_worker_cpu_budget_spans_its_jobs(self, monkeypatch):
         from services.engine import cq_pool

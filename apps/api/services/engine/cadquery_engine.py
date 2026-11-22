@@ -11,7 +11,14 @@ from collections.abc import Callable
 
 from services.engine.cq_pool import cq_pool
 from services.engine.engine_guard import worker_only
-from services.engine.render_engine import RENDER_TIMEOUT_S, ProcessManager, communicate_cancellable
+from services.engine.render_contract import RENDER_FIELD_CRASH_SIGNAL
+from services.engine.render_engine import (
+    RENDER_TIMEOUT_S,
+    EngineResult,
+    ProcessManager,
+    communicate_cancellable,
+    crash_signal_of,
+)
 from services.engine.render_limits import describe_exit, limited_env, render_preexec_fn
 from services.engine.render_log import sanitize_render_log, scrub_render_log
 from utils.project_resolver import curated_project_roots
@@ -174,17 +181,22 @@ def run_render(
     that callback, so gating the pool on its absence would have left this lever
     unused in production.
     """
-    success, output = _run_render(cmd, is_cancelled)
+    result = _run_render(cmd, is_cancelled)
+    success, output = result
     # The log leaves the server from here (render `log` field, error events), so
     # bound and redact it. The full, unredacted output already reached the
     # server's own logs via the logger calls below.
-    return success, sanitize_render_log(output)
+    return EngineResult(success, sanitize_render_log(output), getattr(result, "crash_signal", None))
 
 
 def _run_render(
     cmd: list, is_cancelled: Callable[[], bool] | None = None
 ) -> tuple[bool, str]:
-    """The render itself; its raw output is sanitized by ``run_render``."""
+    """The render itself; its raw output is sanitized by ``run_render``.
+
+    A failure of the one-shot subprocess comes back as an ``EngineResult``
+    carrying the crash signal it died of, if any (``crash_signal_of``).
+    """
     pooled = _try_warm_pool(cmd, is_cancelled)
     if pooled is not None:
         success, output = pooled
@@ -221,7 +233,8 @@ def _run_render(
         if process.returncode != 0:
             logger.error("CadQuery failed with code %s", process.returncode)
             reason = describe_exit(process.returncode)
-            return False, f"{stdout_text}\n{reason}" if reason else stdout_text
+            return EngineResult(False, f"{stdout_text}\n{reason}" if reason else stdout_text,
+                                crash_signal_of(process.returncode))
 
         return True, stdout_text
     except subprocess.TimeoutExpired:
@@ -230,7 +243,8 @@ def _run_render(
     except subprocess.CalledProcessError as e:
         logger.error("CadQuery failed: %s%s", e.stdout, e.stderr)
         reason = describe_exit(e.returncode)
-        return False, (e.stdout or "") + (e.stderr or "") + (f"\n{reason}" if reason else "")
+        return EngineResult(False, (e.stdout or "") + (e.stderr or "") + (f"\n{reason}" if reason else ""),
+                            crash_signal_of(e.returncode))
     except Exception:
         logger.exception("CadQuery render error")
         return False, "CadQuery render error"
@@ -347,11 +361,17 @@ def stream_render(
         })
         return True
     else:
-        yield json.dumps({
+        logger.error("CadQuery failed with code %s", process.returncode)
+        reason = describe_exit(process.returncode)
+        event = {
             'event': 'error',
             'part': part,
-            'message': f'Render failed with code {process.returncode}'
-        })
+            'message': f'Render failed with code {process.returncode}' + (f': {reason}' if reason else ''),
+        }
+        crash_signal = crash_signal_of(process.returncode)
+        if crash_signal is not None:
+            event[RENDER_FIELD_CRASH_SIGNAL] = crash_signal
+        yield json.dumps(event)
         return False
 
 

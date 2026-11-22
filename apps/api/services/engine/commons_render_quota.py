@@ -35,7 +35,17 @@ a charge can be refunded:
    touching the quota. Only a failure of OUR infrastructure is refunded: no
    live worker to hand a part to, or one of ``INFRA_EXCEPTIONS`` (OSError, a
    Redis error) during the render. A timeout, a script error or a partial
-   render is not: the visitor's own parameters can cause those. Some charged
+   render is not: the visitor's own parameters can cause those. A render
+   whose engine process CRASHED — every failed part died of a crash signal
+   (SIGSEGV, SIGBUS, SIGILL, SIGFPE, SIGABRT), read from the process's exit
+   status — is given back too: no slider value a Commons cartridge accepts
+   should crash the kernel, so that is our defect, and on 2026-11-21 an
+   address-space ceiling set too low made every free render die that way
+   while charging the visitor for it. Because a visitor might still find
+   parameters that crash the kernel, at most ``limit`` crashed renders are
+   given back per identity per day (``CRASH_REFUND_KEY_PREFIX``): the worst
+   case is twice the daily quota in worker runs, not an unmetered loop that
+   drains the hourly budget in (2) for everyone. Some charged
    outcomes are ours, and are deliberately NOT refunded rather than guessed
    at from heartbeats: a worker that crashes mid-part, and time spent queued
    behind Pro renders, both surface as a timeout; an operator's cancel-all
@@ -135,6 +145,8 @@ MAX_CONCURRENT_ENV = "COMMONS_FREE_RENDER_MAX_CONCURRENT"
 DEFAULT_MAX_CONCURRENT = 1
 
 QUOTA_KEY_PREFIX = "yantra_commons_quota:"
+#: Per identity, per day: crashed renders already given back (see `finish`).
+CRASH_REFUND_KEY_PREFIX = "yantra_commons_crash_refunds:"
 GLOBAL_KEY = "yantra_commons_free_parts:global"
 SLOT_KEY_PREFIX = "yantra_commons_free_render_slot:"
 #: What a "busy" answer tells the client to wait. Not a promise, a pacing hint.
@@ -159,6 +171,7 @@ INFRA_EXCEPTIONS = (OSError, redis.RedisError)
 #: How a metered render ended, settled by `MeteredRender.finish`.
 OUTCOME_OK = "ok"                # every part delivered
 OUTCOME_INFRA = "infra_failure"  # our infrastructure failed (worker lost, OSError, Redis): refunded
+OUTCOME_CRASHED = "engine_crash"  # the engine process died of a crash signal: refunded, up to the daily limit
 OUTCOME_FAILED = "failed"        # the render itself failed or timed out: NOT refunded
 OUTCOME_ABORTED = "aborted"      # cancelled or abandoned by the visitor: NOT refunded
 
@@ -418,13 +431,19 @@ def outcome_of(status) -> str:
 
     Only a failure of OUR infrastructure is refunded. A timeout or a script
     error can be caused by the visitor's own parameters, and refunding those
-    would let one visitor keep the free worker busy at no cost.
+    would let one visitor keep the free worker busy at no cost. An engine
+    crash is ours when it is the whole story: every part that failed died of
+    a crash signal, and nothing timed out.
     """
     if status.worker_lost:
         return OUTCOME_INFRA
     if status.cancelled:
         return OUTCOME_ABORTED
-    if status.timed_out or status.errored_parts or not status.finished:
+    if status.timed_out:
+        return OUTCOME_FAILED
+    if status.errored_parts:
+        return OUTCOME_CRASHED if status.crashed_parts >= status.errored_parts else OUTCOME_FAILED
+    if not status.finished:
         return OUTCOME_FAILED
     return OUTCOME_OK
 
@@ -440,6 +459,7 @@ class MeteredRender:
 
     def __init__(self, *, slot_key: str | None = None, lease: str | None = None,
                  request_id: str | None = None, identity_key: str | None = None,
+                 crash_refund_key: str | None = None, limit: int = 0,
                  headers: dict | None = None):
         from services.engine.render_orchestrator import RenderStatus
 
@@ -447,6 +467,8 @@ class MeteredRender:
         self.lease = lease
         self.request_id = request_id
         self.identity_key = identity_key
+        self.crash_refund_key = crash_refund_key
+        self.limit = limit
         self.headers = headers or {}
         self.status = RenderStatus()
         started = getattr(g, "request_started_at", None) if has_request_context() else None
@@ -490,7 +512,9 @@ class MeteredRender:
                 cancel_request(self.request_id)
             except Exception:
                 logger.warning("Could not cancel leftover jobs of %s", self.request_id, exc_info=True)
-        if outcome == OUTCOME_INFRA and self.identity_key:
+        if self.identity_key and (
+            outcome == OUTCOME_INFRA or (outcome == OUTCOME_CRASHED and self._crash_refund_allowed())
+        ):
             _refund(self.identity_key, 1)
 
         try:
@@ -506,6 +530,24 @@ class MeteredRender:
             # The lease expires on its own; a missed release only delays the
             # next free render by at most the lease.
             logger.warning("Could not release free render lease %s", self.slot_key, exc_info=True)
+
+    def _crash_refund_allowed(self) -> bool:
+        """Count this crashed render against the day's crash refunds.
+
+        At most ``limit`` a day per identity, so parameters that crash the
+        kernel cannot be replayed without end. A store error means no refund.
+        """
+        if not self.crash_refund_key or self.limit <= 0:
+            return False
+        try:
+            admitted, _used, _left = _charge(self.crash_refund_key, 1, self.limit, QUOTA_WINDOW_SECONDS)
+        except Exception:
+            logger.warning("Could not count a crash refund on %s", self.crash_refund_key, exc_info=True)
+            return False
+        if not admitted:
+            logger.warning("Crash refunds for %s are used up for today; the render stays charged",
+                           self.crash_refund_key)
+        return admitted
 
     def apply_headers(self, response) -> None:
         for key, value in self.headers.items():
@@ -561,7 +603,8 @@ def admit_metered_render(tier: str, engine: str, payload: dict):
         )
 
     limit = quota_limit(tier)
-    identity_key = None if is_unlimited(limit) else f"{QUOTA_KEY_PREFIX}{quota_identity()}"
+    identity = quota_identity()
+    identity_key = None if is_unlimited(limit) else f"{QUOTA_KEY_PREFIX}{identity}"
     budget = _int_env(GLOBAL_PARTS_ENV, DEFAULT_GLOBAL_PARTS)
 
     try:
@@ -609,6 +652,8 @@ def admit_metered_render(tier: str, engine: str, payload: dict):
         return None, _busy(tier, engine)
 
     grant.identity_key = identity_key
+    grant.crash_refund_key = f"{CRASH_REFUND_KEY_PREFIX}{identity}"
+    grant.limit = limit
     grant.headers = {
         "X-Commons-Render-Limit": str(limit),
         "X-Commons-Render-Remaining": str(max(0, limit - used)),

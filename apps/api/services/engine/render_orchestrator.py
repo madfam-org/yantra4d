@@ -27,13 +27,14 @@ from services.engine.render_contract import (
     RENDER_EVENT_ERROR,
     RENDER_EVENT_JOB,
     RENDER_EVENT_PART_DONE,
+    RENDER_FIELD_CRASH_SIGNAL,
     RENDER_STREAM_SCHEMA_VERSION,
     build_render_event,
     is_terminal_render_event,
     render_channel_for_job,
     render_final_channel_for_job,
 )
-from services.engine.render_engine import RENDER_TIMEOUT_S
+from services.engine.render_engine import CRASH_SIGNALS, RENDER_TIMEOUT_S
 from services.engine.render_revision import cache_revision, render_revision
 from services.engine.render_source import (
     RenderSourceError,
@@ -734,10 +735,30 @@ class RenderStatus:
 
     completed_parts: int = 0   # parts delivered (rendered, cached or static)
     errored_parts: int = 0     # the worker reported an error for the part
+    crashed_parts: int = 0     # ...of which the engine process died of a crash signal
     timed_out: bool = False    # we stopped waiting for a part
     cancelled: bool = False    # the request or a part was cancelled
     worker_lost: bool = False  # no live render worker to hand the part to
     finished: bool = False     # the loop ran to its end
+
+
+def _take_crash_signal(event: dict) -> int | None:
+    """Remove the worker's crash-signal field from *event* and return it.
+
+    The field is worker -> API only (render_contract), so it is removed here,
+    before the event can be forwarded to a client. Anything but a known crash
+    signal number counts as absent.
+    """
+    value = event.pop(RENDER_FIELD_CRASH_SIGNAL, None)
+    if isinstance(value, int) and not isinstance(value, bool) and value in CRASH_SIGNALS:
+        return value
+    return None
+
+
+def _record_part_error(status: RenderStatus, crash_signal: int | None) -> None:
+    status.errored_parts += 1
+    if crash_signal is not None:
+        status.crashed_parts += 1
 
 
 def _tick(on_tick) -> None:
@@ -868,7 +889,7 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
                     status.completed_parts += 1
                 elif event_type == RENDER_EVENT_ERROR:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] ERROR: {event_payload.get('error', event_payload.get('message'))}\n"
-                    status.errored_parts += 1
+                    _record_part_error(status, _take_crash_signal(event_payload))
                 elif event_type == RENDER_EVENT_CANCELLED:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_payload.get('message')}\n"
                     status.cancelled = True
@@ -888,7 +909,7 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
                     status.completed_parts += 1
                 elif event_type == RENDER_EVENT_ERROR:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] ERROR: {event_payload.get('error', event_payload.get('message'))}\n"
-                    status.errored_parts += 1
+                    _record_part_error(status, _take_crash_signal(event_payload))
                 else:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_payload.get('message')}\n"
                     status.cancelled = True
@@ -1083,6 +1104,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 logger.debug("Skipping malformed render payload for part %s", part)
                 continue
 
+            crash_signal = _take_crash_signal(event_data)
             if channel == render_channel:
                 yield f"data: {json.dumps(event_data)}\n\n"
                 if event_data.get("event") == RENDER_EVENT_PART_DONE and event_data.get("type"):
@@ -1100,7 +1122,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 status.completed_parts += 1
                 done = True
             elif event_type == RENDER_EVENT_ERROR:
-                status.errored_parts += 1
+                _record_part_error(status, crash_signal)
                 logger.error(
                     "Render stream error for part %s: %s",
                     event_data.get("part"),

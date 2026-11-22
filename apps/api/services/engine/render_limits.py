@@ -34,7 +34,7 @@ import os
 import sys
 from collections.abc import Callable
 
-from services.engine.render_engine import RENDER_TIMEOUT_S
+from services.engine.render_engine import RENDER_TIMEOUT_S, crash_signal_of
 
 try:  # POSIX only
     import resource
@@ -154,4 +154,14 @@ def describe_exit(returncode: int | None) -> str | None:
     if returncode == -signal.SIGXCPU:
         return ("Render stopped: it exceeded its CPU-time limit "
                 f"(RENDER_RLIMIT_CPU_S={cpu_limit_seconds()})")
+    crashed = crash_signal_of(returncode)
+    if crashed is not None:
+        # An allocation refused by RLIMIT_AS inside native code ends as a
+        # crash, not as a MemoryError, so name the ceiling next to the signal:
+        # it is the first thing to check when every render dies this way.
+        reason = f"Render engine process crashed ({signal.Signals(crashed).name})"
+        as_bytes = address_space_limit_bytes() if address_space_limit_enforced() else 0
+        if as_bytes > 0:
+            reason += f"; its address-space ceiling is {as_bytes // (1024 * 1024)} MiB (RENDER_RLIMIT_AS_MB)"
+        return reason
     return None

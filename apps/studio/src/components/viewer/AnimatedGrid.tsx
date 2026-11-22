@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { Edges } from '@react-three/drei'
 import { fetchAssemblyGeometries, isAbortError } from '../../services/domain/assemblyFetcher'
 import { useManifest } from '../../contexts/project/ManifestProvider'
+import { RENDER_CREASE_ANGLE_DEG } from '../../lib/creaseNormals'
 
 interface AssemblyGeometry {
   type: string
@@ -214,7 +215,8 @@ function AnimatedGrid({ params, colors, wireframe, onReady, onError, onCancelled
                   transparent={wireframe}
                   opacity={wireframe ? 0.08 : 1}
                 />
-                <Edges threshold={15} color="#374151" />
+                {/* The STL worker shades at this angle; outlining at the same one keeps lines off smooth faces. */}
+                <Edges threshold={RENDER_CREASE_ANGLE_DEG} color="#374151" />
               </mesh>
             ))}
           </group>

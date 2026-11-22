@@ -68,7 +68,8 @@ vi.mock('./ViewerPerformance', () => ({
   CompileGate: ({ children }) => <>{children}</>,
 }))
 
-vi.mock('./AsyncEdges', () => ({ default: () => null }))
+const mockAsyncEdges = vi.hoisted(() => vi.fn())
+vi.mock('./AsyncEdges', () => ({ default: (props) => { mockAsyncEdges(props); return null } }))
 
 vi.mock('three/examples/jsm/loaders/STLLoader', () => ({
   STLLoader: class { },
@@ -1262,6 +1263,21 @@ describe('Viewer prerendered default preview', () => {
   it('loads the preview GLB with the meshopt decoder while nothing has rendered', () => {
     render(<Viewer {...props} prerenderedPreviewUrl={PREVIEW} onGeometryStats={vi.fn()} />)
     expect(mockUseWorkerLoader).toHaveBeenCalledWith(PREVIEW, true, expect.objectContaining({ meshopt: true }))
+  })
+
+  it('shades and outlines the preview at the preview crease angle', () => {
+    render(<Viewer {...props} prerenderedPreviewUrl={PREVIEW} onGeometryStats={vi.fn()} />)
+    expect(mockUseWorkerLoader).toHaveBeenCalledWith(PREVIEW, true, expect.objectContaining({ creaseAngleDeg: 35 }))
+    // One angle for both, so the outline never crosses a face that is drawn smooth.
+    expect(mockAsyncEdges).toHaveBeenCalledWith(expect.objectContaining({ threshold: 35 }))
+    expect(mockAsyncEdges).not.toHaveBeenCalledWith(expect.objectContaining({ threshold: 15 }))
+  })
+
+  it('shades and outlines a real render at the render crease angle', () => {
+    const url = '/api/render/bin.stl'
+    render(<Viewer {...props} parts={[{ type: 'bin', url }]} prerenderedPreviewUrl={PREVIEW} onGeometryStats={vi.fn()} />)
+    expect(mockUseWorkerLoader).toHaveBeenCalledWith(url, false, expect.objectContaining({ creaseAngleDeg: 20 }))
+    expect(mockAsyncEdges).toHaveBeenCalledWith(expect.objectContaining({ threshold: 20 }))
   })
 
   it('frames the preview but never reports it as render stats', () => {

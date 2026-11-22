@@ -1,14 +1,16 @@
-import { BufferAttribute, BufferGeometry, Cache, Material, Mesh, Object3D, Skeleton, Texture } from 'three'
+import { BufferAttribute, BufferGeometry, Cache, Material, Mesh, Object3D, Skeleton, Texture, Vector3 } from 'three'
 // @ts-expect-error three.js examples lack type declarations in this project's TS config
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
+import { computeCreaseNormals, RENDER_CREASE_ANGLE_DEG } from './creaseNormals'
 import type { STLPayload } from './stlPayloadCache'
 
 export function createSTLGeometry(payload: STLPayload): BufferGeometry {
     const geometry = new BufferGeometry()
     try {
         geometry.setAttribute('position', new BufferAttribute(payload.positions.slice(), 3))
-        if (payload.normals) geometry.setAttribute('normal', new BufferAttribute(payload.normals.slice(), 3))
-        else geometry.computeVertexNormals()
+        // The worker sends crease-angle normals; a payload without them gets the same ones here.
+        const normals = payload.normals?.slice() ?? computeCreaseNormals(payload.positions, RENDER_CREASE_ANGLE_DEG)
+        geometry.setAttribute('normal', new BufferAttribute(normals, 3))
         geometry.computeBoundingSphere()
         geometry.computeBoundingBox()
         return geometry
@@ -39,6 +41,61 @@ export function toFloatAttributes(geometry: BufferGeometry): BufferGeometry {
         geometry.setAttribute(name, new BufferAttribute(out, size))
     }
     return geometry
+}
+
+/**
+ * Give every mesh in a loaded scene that arrived without normals crease-angle normals, in place.
+ *
+ * Prerendered previews and the GLB the API converts from an STL carry positions only, and
+ * GLTFLoader answers that by flat-shading the material. The mesh is un-indexed (a corner on a
+ * crease needs a normal per face) and the material's flat shading is switched off. A mesh that
+ * brought its own normals is left exactly as loaded.
+ *
+ * Normals are worked out on world-space positions, so the crease test sees the part at its real
+ * proportions whatever transform the node carries, then turned back into the mesh's own space;
+ * the stored positions are not touched (a preview keeps its quantized ones). The scene belongs
+ * to the load, so each replaced geometry is disposed here, once, after every mesh that shares
+ * it has its copy.
+ */
+export function addCreaseNormals(scene: Object3D, creaseAngleDeg: number): void {
+    const point = new Vector3()
+    const replaced = new Set<BufferGeometry>()
+    scene.updateMatrixWorld(true)
+    scene.traverse(child => {
+        const mesh = child as Mesh
+        const source = mesh.isMesh ? mesh.geometry : null
+        if (!source?.getAttribute('position') || source.getAttribute('normal')) return
+        const geometry = source.index ? source.toNonIndexed() : source
+        const position = geometry.getAttribute('position')
+        const world = new Float32Array(position.count * 3)
+        for (let i = 0; i < position.count; i++) {
+            point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld).toArray(world, i * 3)
+        }
+        const normals = computeCreaseNormals(world, creaseAngleDeg)
+        // A normal n in world space is M^-T applied to the local one, so the local one is M^T n.
+        const m = mesh.matrixWorld.elements
+        for (let i = 0; i < normals.length; i += 3) {
+            const x = normals[i], y = normals[i + 1], z = normals[i + 2]
+            const lx = m[0] * x + m[1] * y + m[2] * z
+            const ly = m[4] * x + m[5] * y + m[6] * z
+            const lz = m[8] * x + m[9] * y + m[10] * z
+            const length = Math.hypot(lx, ly, lz) || 1
+            normals[i] = lx / length; normals[i + 1] = ly / length; normals[i + 2] = lz / length
+        }
+        geometry.setAttribute('normal', new BufferAttribute(normals, 3))
+        if (geometry !== source) {
+            mesh.geometry = geometry
+            replaced.add(source)
+        }
+        for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+            const shaded = material as Material & { flatShading?: boolean }
+            if (shaded?.flatShading) {
+                shaded.flatShading = false
+                shaded.needsUpdate = true
+            }
+        }
+    })
+    for (const geometry of replaced) geometry.dispose()
 }
 
 /** Analysis geometry is independent of the loaded scene and its materials. */

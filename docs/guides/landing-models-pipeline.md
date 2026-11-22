@@ -58,10 +58,15 @@ Consequences the page has to know about:
 
 - **Every output carries `POSITION` only** — one mesh, one primitive, no
   material, no normals. three.js's `GLTFLoader` sets `flatShading: true` on
-  the material *it* creates when normals are absent; a page material of its own
-  must do the same (`new MeshStandardMaterial({ flatShading: true })`) or call
-  `geometry.computeVertexNormals()`. CAD parts look right flat-shaded; the
-  legacy 2026-03 carousel GLBs were already POSITION-only.
+  the material *it* creates when normals are absent, which draws every
+  triangle of a decimated mesh as its own patch. Both readers therefore work
+  out **crease-angle normals** on load: facets within 35° of each other shade
+  as one surface, sharper ones stay edges (`computeCreaseNormals`,
+  `PREVIEW_CREASE_ANGLE_DEG`, in `apps/landing/src/lib/creaseNormals.ts` and its
+  twin `apps/studio/src/lib/creaseNormals.ts`; a landing test holds the two
+  copies identical). Do not call `geometry.computeVertexNormals()` instead: on
+  the welded mesh it also rounds off the real edges of the part. The legacy
+  2026-03 carousel GLBs were already POSITION-only.
 - **Both extensions are `extensionsRequired`.** The loader needs the meshopt
   decoder: `loader.setMeshoptDecoder(MeshoptDecoder)` (`three/examples/jsm/libs/meshopt_decoder.module.js`).
 - Geometry is baked in world space; the quantization offset lives on the

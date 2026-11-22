@@ -1,7 +1,7 @@
 import React from 'react'
 import { act, cleanup, renderHook } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { Scene, Mesh, BoxGeometry, MeshStandardMaterial, Texture } from 'three'
+import { BufferAttribute, BufferGeometry, Scene, Mesh, BoxGeometry, MeshStandardMaterial, Texture } from 'three'
 
 const { loadAsync, bearerHeaderForSameOrigin, setMeshoptDecoder, meshoptDecoder } = vi.hoisted(() => ({
   loadAsync: vi.fn(), bearerHeaderForSameOrigin: vi.fn(), setMeshoptDecoder: vi.fn(),
@@ -272,5 +272,52 @@ describe('prerendered previews (meshopt, silent failure)', () => {
     await act(async () => {})
     expect(onError).toHaveBeenCalledWith(failure)
     expect(console.error).not.toHaveBeenCalled()
+  })
+})
+
+describe('meshes that arrive without normals', () => {
+  // Two triangles folded 25° along the Y axis, positions only, as a GLB without normals loads.
+  const folded = () => {
+    const a = (25 * Math.PI) / 180
+    const geometry = new BufferGeometry()
+    geometry.setAttribute('position', new BufferAttribute(new Float32Array([
+      0, 0, 0, 1, 0, 0, 0, 1, 0,
+      0, 0, 0, 0, 1, 0, -Math.cos(a), 0, -Math.sin(a),
+    ]), 3))
+    const value = new Scene()
+    value.add(new Mesh(geometry, new MeshStandardMaterial({ flatShading: true })))
+    return { scene: value }
+  }
+  const sharesNormal = geometry => {
+    const n = geometry.getAttribute('normal')
+    return Math.abs(n.getX(0) - n.getX(3)) < 1e-6
+  }
+
+  it('shades a GLB at the render crease angle by default, scene and analysis geometry alike', async () => {
+    loadAsync.mockResolvedValueOnce(folded())
+    const { result } = renderHook(() => useWorkerLoader('render.glb', true))
+    await act(async () => {})
+    const shown = result.current.scene.children[0]
+    expect(shown.material.flatShading).toBe(false)
+    // 25° is an edge in a render: the two faces keep their own normals.
+    expect(sharesNormal(shown.geometry)).toBe(false)
+    expect(sharesNormal(result.current.geometry)).toBe(false)
+  })
+
+  it('uses the wider angle a prerendered preview asks for', async () => {
+    loadAsync.mockResolvedValueOnce(folded())
+    const { result } = renderHook(() => useWorkerLoader('preview.glb', true, { meshopt: true, creaseAngleDeg: 35 }))
+    await act(async () => {})
+    await act(async () => {})
+    expect(sharesNormal(result.current.scene.children[0].geometry)).toBe(true)
+    expect(sharesNormal(result.current.geometry)).toBe(true)
+  })
+
+  it('gives an STL crease-angle normals even when the worker sends none', async () => {
+    const { result } = renderHook(() => useWorkerLoader('part.stl'))
+    await act(async () => workers[0].complete(0))
+    const normal = result.current.geometry.getAttribute('normal')
+    expect(normal.count).toBe(3)
+    expect(normal.getZ(0)).toBeCloseTo(1, 6)
   })
 })

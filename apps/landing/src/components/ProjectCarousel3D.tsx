@@ -8,6 +8,8 @@ import { GLBErrorBoundary } from './GLBErrorBoundary';
 import type { GalleryItem } from '../lib/gallery';
 import type { GalleryLabels } from './CommonsGallery';
 import { modelUrl, type ModelsManifest } from '../lib/models-manifest';
+import { PREVIEW_CREASE_ANGLE_DEG } from '../lib/creaseNormals';
+import { shadeWithCreaseNormals } from '../lib/creaseShading';
 import type { Tier } from '../lib/tier';
 
 /**
@@ -56,16 +58,19 @@ function LoadedModel({ url }: { url: string }) {
     box.getSize(size);
     const maxDim = Math.max(size.x, size.y, size.z);
     const scale = maxDim > 0 ? 2.5 / maxDim : 1;
-    // The pipeline's LOD files carry POSITION only (no normals, no materials —
-    // the page owns the look). GLTFLoader flat-shades its own material for such
-    // primitives; since we replace it, we must say so too, or the lighting is
-    // wrong. See docs/guides/landing-models-pipeline.md.
-    const material = new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.4, metalness: 0.1, flatShading: true });
+    // The pipeline's LOD files carry POSITION only (no normals, no materials: the page owns
+    // the look). Left to itself three.js flat-shades such a mesh and every triangle of the
+    // decimated preview shows; crease-angle normals shade round faces as round and keep real
+    // edges sharp. See docs/guides/landing-models-pipeline.md.
+    const creased = shadeWithCreaseNormals(root, PREVIEW_CREASE_ANGLE_DEG);
+    const material = new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.4, metalness: 0.1 });
     root.traverse((child: any) => {
       if (child.isMesh) child.material = material;
     });
-    return { root, scale, center };
+    return { root, scale, center, owned: [...creased, material] };
   }, [gltf]);
+  // The shaded copies and the material belong to this clone, not to the loader's cache.
+  useEffect(() => () => scene?.owned.forEach((resource) => resource.dispose()), [scene]);
   if (!scene) return null;
   const { root, scale, center } = scene;
   return (

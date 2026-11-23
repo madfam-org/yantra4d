@@ -457,10 +457,12 @@ describe('HyperCommons.astro', () => {
 
   it('has impact stats section', () => {
     expect(html).toMatch(/Impacto Real|impactHeading/)
-    // Four solid-commons figures plus the soft-commons cards, which render
-    // only when their snapshot figure is a number (never a zero).
+    // Six figures, each generated from the solid commons. The Fashion Cabinet
+    // snapshot figures are not shown on this page (owner ruling C5, 2026-11-22).
     expect(html).toContain('sm:grid-cols-3')
-    expect(html).toContain('data-testid="impact-soft"')
+    expect(html).toContain('data-testid="impact-domains"')
+    expect(html).toContain('data-testid="impact-sweeps"')
+    expect(html).not.toContain('data-testid="impact-soft"')
   })
 
   it('has static entry content classes', () => {

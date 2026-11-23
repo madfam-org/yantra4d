@@ -171,7 +171,6 @@
       "f1": "{proRenders} renders en servidor por hora",
       "f2": "Todos los formatos de exportación, incluido STEP",
       "f3": "Fork, editor de código con git, importación de GitHub",
-      "f4": "Cotizaciones de manufactura y envío a impresoras configuradas",
       "cta": "Mejorar a Pro",
       "f5": "Verificación, análisis de espesor de pared y voladizos"
     },
@@ -229,8 +228,8 @@
     "impact3label": "Interfaces declaradas",
     "impact4label": "diseños",
     "impact4value": "CERN OHL",
-    "impact5label": "Prendas en el Procomún blando",
-    "impact6label": "Vínculos de hardware verificados",
+    "impactDomainsLabel": "Dominios con cartuchos",
+    "impactSweepsLabel": "Cartuchos con barridos de parámetros",
     "fourDHeading": "Qué significa el 4D",
     "fourDBody": "Cada cartucho es geometría 3D más un eje adicional: sus parámetros y, al reproducirse, el tiempo. Cada punto de ese eje es un sólido 3D exacto e imprimible. Yantra4D proyecta la familia a la instancia que eliges — la que ves en el visor, la que exportas, la que imprimes.",
     "fourDSweeps": "Algunos cartuchos también declaran barridos: un recorrido de un estado de parámetros a otro a lo largo del tiempo, muestreado en cuadros, para reproducir a la familia cambiando de forma (la reproducción en Studio es función de Pro) — un brazo que extiende su alcance, un engrane que gana dientes.",

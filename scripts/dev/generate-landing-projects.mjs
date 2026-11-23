@@ -675,6 +675,12 @@ function computeStats(ctx, manifests, projects) {
   let withInterfaces = 0;
   let stepCapable = 0;
   let cernLicensed = 0;
+  // Deployment domains with at least one public cartridge, from the schema's
+  // `hyperobject.domain` vocabulary. 'uncategorized' is the catalog's bucket for
+  // a cartridge that declares none, not a domain.
+  const domains = new Set();
+  // Cartridges that declare at least one parameter sweep (`animations`).
+  let sweptCartridges = 0;
 
   for (const { data: manifest } of manifests) {
     const project = manifest.project ?? {};
@@ -696,6 +702,9 @@ function computeStats(ctx, manifests, projects) {
 
     const license = ho.commons_license ?? project.attribution?.license ?? '';
     if (license.startsWith('CERN-OHL')) cernLicensed += 1;
+
+    if (typeof ho.domain === 'string' && ho.domain && ho.domain !== 'uncategorized') domains.add(ho.domain);
+    if (Array.isArray(manifest.animations) && manifest.animations.length > 0) sweptCartridges += 1;
   }
 
   // The commons catalog is canonical for the headline count: it applies the
@@ -722,6 +731,8 @@ function computeStats(ctx, manifests, projects) {
     engines: engines.size,
     stepCapable,
     cernLicensed,
+    domains: domains.size,
+    sweptCartridges,
   };
 }
 

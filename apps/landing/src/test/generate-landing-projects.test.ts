@@ -295,6 +295,23 @@ describe('generate — private cartridges are dropped', () => {
     )
   })
 
+  it('counts domains with a cartridge and cartridges with sweeps', () => {
+    const repo = makeRepo({ manifests: [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }, { slug: 'd' }] })
+    const write = (slug: string, manifest: Record<string, unknown>) =>
+      fs.writeFileSync(
+        path.join(repo, 'projects', slug, 'project.json'),
+        JSON.stringify({ project: { slug, name: slug, description: slug, tags: [] }, ...manifest }),
+      )
+    write('a', { hyperobject: { domain: 'industrial' }, animations: [{ id: 'reach' }] })
+    write('b', { hyperobject: { domain: 'industrial' }, animations: [] })
+    // The catalog's bucket for "no domain declared" is not a domain.
+    write('c', { hyperobject: { domain: 'uncategorized' } })
+    write('d', { hyperobject: { domain: 'wearable' }, animations: [{ id: 'grow' }, { id: 'turn' }] })
+    const { stats } = generate({ repo, env: {} })
+    expect(stats.domains).toBe(2)
+    expect(stats.sweptCartridges).toBe(2)
+  })
+
   it('leaves `unlisted` semantics unchanged — unlisted is not private', () => {
     const repo = makeRepo({
       manifests: [{ slug: 'public-widget' }, { slug: 'quiet-widget', unlisted: true }],

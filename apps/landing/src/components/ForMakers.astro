@@ -22,6 +22,13 @@ const { t } = Astro.props;
         <h3 class="mb-2 font-semibold">{t ? t.forMakers.customize.title : 'Personaliza Todo'}</h3>
         <p class="text-sm text-muted-foreground">{t ? t.forMakers.customize.desc : 'Deslizadores, botones, selectores de color. Cambia cualquier dimensión, míralo en 3D en tiempo real.'}</p>
       </div>
+      <!-- Back since compare can be entered in the Studio (yantra4d#318, owner ruling O1).
+           No shared-camera promise: each variation keeps its own view. -->
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">↔️</div>
+        <h3 class="mb-2 font-semibold">{t?.forMakers.compare.title ?? ''}</h3>
+        <p class="text-sm text-muted-foreground">{t?.forMakers.compare.desc ?? ''}</p>
+      </div>
       <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
         <div class="mb-3 text-2xl">📏</div>
         <h3 class="mb-2 font-semibold">{t?.forMakers.viewer.title ?? ''}</h3>

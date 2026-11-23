@@ -379,7 +379,6 @@
   "tier.perk_renders": "更多服务器渲染次数，支持全部导出格式",
   "tier.perk_cadquery": "CadQuery 引擎与 STEP 导出",
   "tier.perk_github": "GitHub 导入与代码编辑器",
-  "tier.perk_print": "打印派送与制造报价",
   "tier.see_plans": "查看套餐",
   "tier.upgrade_desc_1": "您发现了一项 Pro 功能！",
   "tier.upgrade_desc_2": "升级套餐即可使用：",

@@ -75,7 +75,6 @@ export default function UpgradeDialog({ isOpen, onClose, feature, alternatives =
                         <li>{t("tier.perk_renders") || "More server renders, all export formats"}</li>
                         <li>{t("tier.perk_cadquery") || "CadQuery engine & STEP export"}</li>
                         <li>{t("tier.perk_github") || "GitHub import & code editor"}</li>
-                        <li>{t("tier.perk_print") || "Print dispatch & manufacturing quotes"}</li>
                     </ul>
                 </div>
 

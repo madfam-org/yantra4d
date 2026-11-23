@@ -223,8 +223,12 @@ de la configuración por defecto") with the commons pin it was rendered from.
   ([guide](../../docs/guides/landing-models-pipeline.md)):
   `.github/workflows/prerender-commons.yml` renders every public cartridge at
   its first mode with default parameters, and the optimizer writes
-  meshopt-compressed `<slug>.lod1.glb` (≤ 12 KiB) / `<slug>.lod0.glb`
-  (≤ 60 KiB) plus `manifest.json` (v2) to `apps/landing/public/models/`,
+  meshopt-compressed `<slug>.lod1.glb` (≤ 12 KiB and 2,500 triangles, except
+  where `meshes.exceptions` in `apps/landing/perf-budgets.json` raises a
+  budget, recorded as `budget` on that manifest entry) plus, for every
+  cartridge whose render had to be decimated to fit lod1, a `<slug>.lod0.glb`
+  (≤ 60 KiB; every triangle of the render when it fits, which is most of
+  them), and `manifest.json` (v2), to `apps/landing/public/models/`,
   served as `yantra4d.com/models/…`. The landing nginx answers
   `/models/manifest.json` and `/models/*.glb` with
   `Access-Control-Allow-Origin` for `https://app.yantra4d.com` and
@@ -236,7 +240,12 @@ de la configuración por defecto") with the commons pin it was rendered from.
   hour per tab (five minutes after a failure), loads `lod0` when the manifest
   has it and `lod1` otherwise or when `lod0` fails, through `useWorkerLoader`
   with THREE's meshopt decoder (its own ~22 kB chunk, imported only for a
-  preview). Every failure is silent: no manifest, a slug it does not list, a
+  preview). The files carry positions only, so the loader gives them
+  crease-angle normals in a worker (`src/lib/creaseNormals.ts`,
+  `src/lib/creaseNormalsWorker.ts`): facets within 35° of each other shade as
+  one surface, and the edge outline is drawn at the same angle, so it never
+  crosses a face that is shaded smooth. A real render uses 20° for both.
+  Every failure is silent: no manifest, a slug it does not list, a
   network or CORS error, a bad mesh — the stage just stays empty, nothing is
   logged.
 - **Lifetime.** The preview stays until the first real render result, which
@@ -245,9 +254,11 @@ de la configuración por defecto") with the commons pin it was rendered from.
   The preview never feeds print estimates or model info.
 - **Staleness.** The manifest trails the commons: it lists what the last
   pipeline run rendered, at its `source.commons_pin`. A cartridge added since
-  has no preview, and one changed since shows its old default until the
-  monthly run (or a `workflow_dispatch` with `open_pr`) refreshes the files
-  and that PR is merged.
+  has no preview, and one changed since shows its old default until a
+  `workflow_dispatch` of the pipeline with `open_pr` refreshes the files and
+  that PR is merged. (The monthly scheduled run only uploads an artifact, and
+  the workflow cannot open its PR itself while the repository has no
+  `DISPATCH_TOKEN`: the branch is pushed and the PR is opened by hand.)
 
 ### Tier gate before the estimate
 

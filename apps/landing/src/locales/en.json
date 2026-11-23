@@ -171,7 +171,6 @@
       "f1": "{proRenders} server renders per hour",
       "f2": "All export formats, including STEP",
       "f3": "Fork, code editor with git, GitHub import",
-      "f4": "Manufacturing quotes and print dispatch to configured printers",
       "cta": "Upgrade to Pro",
       "f5": "Verification, wall-thickness and overhang analysis"
     },
@@ -229,8 +228,8 @@
     "impact3label": "Declared interfaces",
     "impact4label": "designs",
     "impact4value": "CERN OHL",
-    "impact5label": "Garments in the soft commons",
-    "impact6label": "Verified hardware links",
+    "impactDomainsLabel": "Domains with cartridges",
+    "impactSweepsLabel": "Cartridges with parameter sweeps",
     "fourDHeading": "What the 4D means",
     "fourDBody": "Every cartridge is 3D geometry plus one more axis: its parameters, and, played back, time. Each point along that axis is one exact, printable 3D solid. Yantra4D projects the family down to the instance you choose — the one you see in the viewer, the one you export, the one you print.",
     "fourDSweeps": "Some cartridges also declare sweeps: a path from one parameter state to another over time, sampled into frames, so the family can be played changing shape (playback in Studio is a Pro feature) — an arm extending its reach, a gear growing its teeth.",

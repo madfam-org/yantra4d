@@ -38,13 +38,20 @@ export function commonsItems(lang: 'es' | 'en'): CommonsItem[] {
   }));
 }
 
+// The Fashion Cabinet snapshot figures are not published by Yantra4D (owner
+// ruling C5, 2026-11-22): they have no link and Yantra4D cannot open them yet.
+const UNPUBLISHED = new Set(['softCartridges', 'softWithFlats', 'crossLinks', 'bridgedSolids']);
+const publicStats = Object.fromEntries(
+  Object.entries(COMMONS_STATS).filter(([key]) => !UNPUBLISHED.has(key)),
+);
+
 export const GET: APIRoute = ({ params }) => {
   const lang = params.lang === 'en' ? 'en' : 'es';
   const items = commonsItems(lang);
   const body = JSON.stringify({
     lang,
     count: items.length,
-    stats: COMMONS_STATS,
+    stats: publicStats,
     items,
   });
   return new Response(body, {

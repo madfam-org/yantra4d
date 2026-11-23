@@ -5,6 +5,7 @@ import PrintEstimateOverlay from '../export/PrintEstimateOverlay'
 import WelcomeOverlay from '../feedback/WelcomeOverlay'
 import ShortcutHelpDialog from './ShortcutHelpDialog'
 import ModelInfoPanel from './ModelInfoPanel'
+import SweepStatusChip from './SweepStatusChip'
 import GraphViewFrame from './GraphViewFrame'
 import { modeDeclaresGraph } from '../../services/domain/graphViewService'
 import type { ManifestParameterLike } from '../../lib/graph/graphExpressions'
@@ -117,10 +118,15 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     manifest, projectSlug, getLabel,
     stressData, stressSimulationActive, handleRunFEA,
     physicsJobId, physicsProgress, physicsFrames, physicsUnavailable, handleRunPhysics,
-    optimizationJobId, optimizationProgress, optimizationLogs, handleOptimizeTopology
+    optimizationJobId, optimizationProgress, optimizationLogs, handleOptimizeTopology,
+    sweep,
   } = useProject()
 
   const { t, language } = useLanguage()
+  // A parameter sweep's frames replace the configuration on the stage while
+  // one is shown (hooks/render/useSweepPlayer, held by ProjectProvider).
+  const sweepShowing = !!sweep && (sweep.status === 'playing' || sweep.status === 'paused') && sweep.frames.length > 0
+  const sweepLabel = sweep?.sweep ? (getLabel(sweep.sweep as never, 'label', language) || sweep.sweep.id) : ''
   // Prerendered default mesh from the landing (lib/prerenderedPreview.ts): shown
   // until the first real render arrives, for every tier.
   const prerendered = usePrerenderedPreview(projectSlug)
@@ -263,10 +269,13 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
         unit={unit}
         prerenderedPreviewUrl={previewUrl}
         onPrerenderedPreviewError={prerendered.reportFailure}
+        sweepFrames={sweepShowing ? sweep!.frames : null}
+        sweepFrameIndex={sweep?.index ?? 0}
       />
-      {previewUrl && !loading && (
+      {previewUrl && !loading && !(sweep && sweep.status !== 'idle') && (
         <PrerenderedPreviewBadge commonsPin={prerendered.current?.commonsPin ?? null} changed={previewChanged} t={t} />
       )}
+      {sweep && <SweepStatusChip player={sweep} label={sweepLabel} />}
       <RenderStatusChip loading={loading} progress={progress} progressPhase={progressPhase} parts={parts} t={t} />
       {/* Simulation tools. The stress map and the parameter search are
           estimates; physics needs a solver backend on the server. */}
@@ -325,7 +334,9 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
           )}
         </div>
       )}
-      {!loading && parts.length > 0 && (
+      {/* The figures describe the configuration; while a sweep frame is on
+          screen they would describe something not shown, so they step aside. */}
+      {!loading && parts.length > 0 && !sweepShowing && (
         <ModelInfoPanel printEstimate={printEstimate as never} partCount={parts.length} totalPieceCount={totalPieceCount} />
       )}
       {/* Accessible live region for render status and model summary */}

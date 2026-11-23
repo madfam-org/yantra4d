@@ -21,6 +21,7 @@ from services.engine.render_engine import (
 )
 from services.engine.render_limits import describe_exit, limited_env, render_preexec_fn
 from services.engine.render_log import sanitize_render_log, scrub_render_log
+from services.engine.tessellation import PRINT
 from utils.project_resolver import curated_project_roots
 
 logger = logging.getLogger(__name__)
@@ -109,8 +110,15 @@ def _cadquery_env():
     return env
 
 
-def build_cadquery_command(output_path: str, script_path: str, params: dict, export_format: str) -> list:
-    """Build Python command to run the CadQuery wrapper script."""
+def build_cadquery_command(
+    output_path: str, script_path: str, params: dict, export_format: str, tessellation: str = PRINT
+) -> list:
+    """Build Python command to run the CadQuery wrapper script.
+
+    *tessellation* names the profile (services/engine/tessellation.py). It is appended
+    as a fifth runner argument only when it is not ``print``, so a print command is
+    exactly the six-element command it was before profiles existed.
+    """
     runner_script = os.path.join(os.path.dirname(__file__), 'cq_runner.py')
 
     # Pass parameters as a JSON string to the runner
@@ -120,6 +128,8 @@ def build_cadquery_command(output_path: str, script_path: str, params: dict, exp
         "python", runner_script,
         script_path, output_path, params_json, export_format
     ]
+    if tessellation and tessellation != PRINT:
+        cmd.append(tessellation)
     return cmd
 
 
@@ -132,14 +142,17 @@ def _job_from_cmd(cmd: list) -> dict | None:
     return None for anything that is not exactly that shape so an unexpected
     command still runs down the historical subprocess path.
     """
-    if len(cmd) != 6 or not str(cmd[1]).endswith("cq_runner.py"):
+    if len(cmd) not in (6, 7) or not str(cmd[1]).endswith("cq_runner.py"):
         return None
-    return {
+    job = {
         "script_path": cmd[2],
         "output_path": cmd[3],
         "params_json": cmd[4],
         "export_format": cmd[5],
     }
+    if len(cmd) == 7:
+        job["tessellation"] = cmd[6]
+    return job
 
 
 def _pool_enabled() -> bool:

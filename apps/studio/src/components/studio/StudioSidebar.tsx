@@ -8,6 +8,7 @@ import AssemblyEditorPanel from '../assembly-editor/AssemblyEditorPanel'
 import WorksWithPanel from './WorksWithPanel'
 import RenderPlacementControl from './RenderPlacementControl'
 import PrintPanel from './PrintPanel'
+import AnimationPanel from './AnimationPanel'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
@@ -15,6 +16,9 @@ import { Square, RotateCcw, Menu, Wrench, Settings2, AreaChart, Download, Sparkl
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
 import { useTier } from '../../hooks/system/useTier'
+import { useUpgradePrompt } from '../../hooks/system/useUpgradePrompt'
+import { isAuthEnabled } from '../../contexts/auth/AuthProvider'
+import { manifestSweeps, type SweepDefinition } from '../../lib/sweeps'
 import { canWriteCartridge, useProjectMeta } from '../../hooks/project/useProjectMeta'
 
 interface ActionDockProps {
@@ -94,6 +98,43 @@ function ActionDock({ compareMode, onToggleCompare }: ActionDockProps) {
           </Button>
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * The cartridge's parameter sweeps (manifest `animations[]`), with playback
+ * gated the way the API gates it: the tier's `animation` feature. Limits the
+ * Studio has not loaded fail closed, except with auth off, where the API
+ * decides (local dev seats the developer at the top tier).
+ */
+function SweepSection() {
+  const { manifest, mode, getLabel, sweep } = useProject()
+  const { limits } = useTier()
+  const { triggerUpgradePrompt } = useUpgradePrompt()
+  const { language, t } = useLanguage()
+
+  const sweeps = manifestSweeps(manifest)
+  if (!sweep || sweeps.length === 0) return null
+
+  const canPlay = limits ? (limits as Record<string, unknown>).animation === true : !isAuthEnabled
+  const modes = (manifest as { modes?: Array<Record<string, unknown>> }).modes ?? []
+  const modeLabelOf = (modeId: string) => {
+    const m = modes.find(x => x.id === modeId)
+    return m ? getLabel(m as never, 'label', language) : modeId
+  }
+
+  return (
+    <div className="border-t border-border pt-4">
+      <AnimationPanel
+        sweeps={sweeps}
+        player={sweep}
+        canPlay={canPlay}
+        onLocked={() => triggerUpgradePrompt(t('sweep.feature_name'), { alternatives: [t('sweep.free_alt_sliders')] })}
+        labelOf={(s: SweepDefinition) => getLabel(s as never, 'label', language)}
+        currentMode={mode}
+        modeLabelOf={modeLabelOf}
+      />
     </div>
   )
 }
@@ -266,6 +307,8 @@ function SidebarContent({ compareMode, onToggleCompare }: SidebarContentProps) {
               onParamLeave={() => setHoveredParamId(null)}
             />
           </div>
+
+          <SweepSection />
 
           {worksWithSlug && (
             <div className="border-t border-border pt-4">

@@ -657,6 +657,11 @@ function renderProject(p) {
   return `  { ${fields.join(', ')} },`;
 }
 
+/** Legacy `hyperobject.domain` values and the canonical name each one files under (schema description). */
+const LEGACY_DOMAINS = { consumer: 'consumer-electronics', electronics: 'consumer-electronics', play: 'commercial' };
+/** Values that are not a deployment domain of their own. */
+const NOT_A_DOMAIN = new Set(['hybrid', 'uncategorized']);
+
 /**
  * Commons figures the landing quotes, derived from the same manifests as the
  * project list. Hardcoded copy went stale by more than fifteenfold ("21
@@ -675,6 +680,14 @@ function computeStats(ctx, manifests, projects) {
   let withInterfaces = 0;
   let stepCapable = 0;
   let cernLicensed = 0;
+  // Deployment domains with at least one public cartridge, counted the way the
+  // schema's `hyperobject.domain` description defines them: the legacy one-offs
+  // fold into their canonical names, and neither 'hybrid' ("spans several
+  // domains with no principal one") nor the catalog's 'uncategorized' bucket is
+  // a domain of its own.
+  const domains = new Set();
+  // Cartridges that declare at least one parameter sweep (`animations`).
+  let sweptCartridges = 0;
 
   for (const { data: manifest } of manifests) {
     const project = manifest.project ?? {};
@@ -696,6 +709,10 @@ function computeStats(ctx, manifests, projects) {
 
     const license = ho.commons_license ?? project.attribution?.license ?? '';
     if (license.startsWith('CERN-OHL')) cernLicensed += 1;
+
+    const domain = typeof ho.domain === 'string' ? (LEGACY_DOMAINS[ho.domain] ?? ho.domain) : '';
+    if (domain && !NOT_A_DOMAIN.has(domain)) domains.add(domain);
+    if (Array.isArray(manifest.animations) && manifest.animations.length > 0) sweptCartridges += 1;
   }
 
   // The commons catalog is canonical for the headline count: it applies the
@@ -722,6 +739,8 @@ function computeStats(ctx, manifests, projects) {
     engines: engines.size,
     stepCapable,
     cernLicensed,
+    domains: domains.size,
+    sweptCartridges,
   };
 }
 

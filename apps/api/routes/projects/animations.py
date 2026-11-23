@@ -20,7 +20,7 @@ import rate_limits
 from config import Config
 from extensions import limiter
 from manifest import get_manifest
-from middleware.auth import optional_auth
+from middleware.auth import effective_tier, optional_auth
 from services.core.project_access import require_project_access
 from services.core.tier_service import check_feature, resolve_tier
 from services.engine.openscad import validate_params
@@ -132,6 +132,21 @@ def _interpolate_params(from_state: dict, to_state: dict, t: float, parameter_de
     return _snap_to_parameter_grid(result, parameter_definitions)
 
 
+def _gating_tier() -> str:
+    """The tier these routes gate on: `effective_tier`, like every other gate.
+
+    They read the bare claim before, so local dev (auth off, debug on) was a
+    guest here while /api/me, /api/render and the downloads seated the same
+    caller at the top tier: the Studio offered sweep playback and this route
+    refused it. With auth on, `effective_tier` is exactly the claim; with auth
+    off and debug off (CI, the test suite) it is still a guest unless
+    HARNESS_TIER says otherwise. The module-level `resolve_tier` binding is
+    handed in so the tier gated on and the one used for the engine below stay
+    the same object, as in routes/engine/render.py.
+    """
+    return effective_tier(resolve_tier)
+
+
 def _sse(payload: dict) -> str:
     return f"data: {json.dumps(payload)}\n\n"
 
@@ -168,7 +183,7 @@ def render_animation(slug: str, animation_id: str):
 
     Requires 'pro' tier or above.
     """
-    tier = resolve_tier(getattr(request, "auth_claims", None))
+    tier = _gating_tier()
     if not check_feature(tier, "animation"):
         return error_response("Animation rendering requires Pro tier or above.", 403)
 
@@ -324,7 +339,7 @@ def render_animation(slug: str, animation_id: str):
 @require_project_access
 def list_animations(slug: str):
     """Return the animations[] array from the project manifest."""
-    tier = resolve_tier(getattr(request, "auth_claims", None))
+    tier = _gating_tier()
     if not check_feature(tier, "animation"):
         return error_response("Animation features require Pro tier or above.", 403)
 

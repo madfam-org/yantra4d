@@ -53,6 +53,8 @@ vi.mock('../../hooks/project/useProjectMeta', async (importOriginal) => {
 })
 
 import StudioSidebar from './StudioSidebar'
+import { TierContext } from '../../contexts/auth/TierProvider'
+import { UpgradePromptContext } from '../../contexts/auth/UpgradePromptContext'
 import { useProjectMeta } from '../../hooks/project/useProjectMeta'
 import { useProject } from '../../contexts/project/ProjectProvider'
 import { useLanguage } from '../../contexts/system/LanguageProvider'
@@ -417,5 +419,63 @@ describe('StudioSidebar — compare on a phone', () => {
     const compare = await screen.findByRole('button', { name: /btn\.compare/ })
     fireEvent.click(compare)
     expect(onToggleCompare).toHaveBeenCalledTimes(1)
+  })
+})
+
+// The cartridge's parameter sweeps sit in the Design tab, between the controls
+// and "Works with". Playback is the tier's `animation` feature (tiers.json).
+describe('StudioSidebar — sweeps', () => {
+  const sweepPlayer = {
+    status: 'idle', sweep: null, progress: 0, frames: [], index: 0, error: null, exporting: false, loops: true,
+    play: vi.fn(), cancel: vi.fn(), pause: vi.fn(), resume: vi.fn(), seek: vi.fn(), stop: vi.fn(), exportWebM: vi.fn(),
+  }
+  const withSweeps = {
+    ...baseContext,
+    manifest: {
+      ...baseContext.manifest,
+      animations: [{ id: 'reach', label: 'Reach', frames: 8, duration_ms: 2400, mode: 'plate' }],
+    },
+    sweep: sweepPlayer,
+  }
+  const tierWith = (limits) => ({
+    tier: limits?.animation ? 'pro' : 'guest', tierConfig: null, limits, allTiers: null, loading: false, canAccess: () => true,
+  })
+  const renderWith = (limits, triggerUpgradePrompt = vi.fn()) => render(
+    <TierContext.Provider value={tierWith(limits)}>
+      <UpgradePromptContext.Provider value={{ triggerUpgradePrompt, closeUpgradePrompt: vi.fn() }}>
+        <StudioSidebar variant="desktop" />
+      </UpgradePromptContext.Provider>
+    </TierContext.Provider>,
+  )
+
+  it('shows no sweep section for a cartridge without sweeps', () => {
+    useProject.mockReturnValue({ ...baseContext, sweep: sweepPlayer })
+    renderWith({ animation: true })
+    expect(screen.queryByTestId('sweep-panel')).not.toBeInTheDocument()
+  })
+
+  it('offers playback to a tier with the animation feature', () => {
+    useProject.mockReturnValue(withSweeps)
+    renderWith({ animation: true })
+    expect(screen.getByTestId('sweep-panel')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'sweep.play_label' }))
+    expect(sweepPlayer.play).toHaveBeenCalledWith(expect.objectContaining({ id: 'reach' }))
+  })
+
+  it('shows the sweeps locked to a tier without it, and the upgrade prompt on use', () => {
+    useProject.mockReturnValue(withSweeps)
+    const triggerUpgradePrompt = vi.fn()
+    renderWith({ animation: false }, triggerUpgradePrompt)
+
+    expect(screen.queryByRole('button', { name: 'sweep.play_label' })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'sweep.locked_label' }))
+    expect(triggerUpgradePrompt).toHaveBeenCalledWith('sweep.feature_name', { alternatives: ['sweep.free_alt_sliders'] })
+    expect(sweepPlayer.play).not.toHaveBeenCalled()
+  })
+
+  it('names the mode a sweep shows when it is not the one on screen', () => {
+    useProject.mockReturnValue(withSweeps)
+    renderWith({ animation: true })
+    expect(screen.getByText('sweep.in_mode')).toBeInTheDocument()
   })
 })

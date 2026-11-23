@@ -1,362 +1,259 @@
 /**
- * AnimationPanel.tsx
+ * AnimationPanel.tsx — the cartridge's parameter sweeps, in the sidebar's
+ * Design tab.
  *
- * Studio sidebar panel that lists parametric animation sequences defined in
- * the project manifest's `animations[]` array. Users can trigger a server-side
- * flipbook render and play back the resulting GLB frames in the 3D viewport.
+ * A sweep is a path from one parameter setting to another (`animations[]` in
+ * the manifest). Playing one renders its frames on the server and shows them
+ * in the viewer, which is the `animation` feature: Pro and above
+ * (apps/api/tiers.json). Every visitor sees which sweeps a cartridge declares;
+ * a tier without playback gets the Studio's usual locked control, which opens
+ * the upgrade prompt instead of a request that would be refused.
  *
- * Props:
- *   projectSlug  : string — current project identifier
- *   manifest     : object — parsed project.json data
- *   onLoadFrame  : (glbUrls: string[]) => void — called with frame GLB URLs for the viewport
+ * The player state lives in ProjectProvider (`useSweepPlayer`), so this panel
+ * can unmount — another tab, the phone sheet closing — without stopping it.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { apiFetch } from '../../services/core/apiClient'
-import './AnimationPanel.css'
+import { AlertTriangle, Download, Film, Lock, Pause, Play, Square, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Slider } from '@/components/ui/slider'
+import { useLanguage } from '../../contexts/system/LanguageProvider'
+import { sweepSeconds, type SweepDefinition } from '../../lib/sweeps'
+import type { SweepPlayer } from '../../hooks/render/useSweepPlayer'
 
-interface Animation {
-    id: string
-    label: string | Record<string, string>
-    description?: string | Record<string, string>
-    frames: number
-    duration_ms: number
-    easing?: string
+export interface AnimationPanelProps {
+  sweeps: SweepDefinition[]
+  player: SweepPlayer
+  /** The visitor's tier includes playback (`animation` in tiers.json). */
+  canPlay: boolean
+  /** A locked sweep was chosen, or the server refused one: offer the upgrade. */
+  onLocked: () => void
+  /** The sweep's display label in the visitor's language. */
+  labelOf: (sweep: SweepDefinition) => string
+  /** The mode on screen; a sweep in another mode says which one it shows. */
+  currentMode?: string | null
+  modeLabelOf?: (modeId: string) => string
 }
 
-interface SSEEvent {
-    event: string
-    progress?: number
-    frames?: FrameData[]
-    error?: string
-}
+/** Small controls keep a 44 px target on touch screens (DESIGN.md, AGENTS.md). */
+const TOUCH = 'h-auto min-h-[44px] md:h-8 md:min-h-0'
 
-interface FrameData {
-    frame_index: number
-    parts: Array<{ url: string }>
-}
+export default function AnimationPanel({
+  sweeps, player, canPlay, onLocked, labelOf, currentMode, modeLabelOf,
+}: AnimationPanelProps) {
+  const { t } = useLanguage()
+  if (sweeps.length === 0) return null
 
-interface AnimationPanelProps {
-    projectSlug: string
-    onLoadFrame?: (glbUrls: string[]) => void
-    manifest?: unknown
-}
+  const activeId = player.status === 'idle' ? null : player.sweep?.id ?? null
+  const busy = player.status === 'rendering'
 
-/** Retrieve available animations from the backend (mirrors manifest data). */
-async function fetchAnimations(slug: string): Promise<Animation[]> {
-    const res = await apiFetch(`/api/projects/${slug}/animations`)
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.animations ?? []
-}
-
-/** Parse an SSE stream and call onEvent for each parsed data line. */
-function consumeSSE(response: Response, onEvent: (event: SSEEvent) => void, signal?: AbortSignal) {
-    const reader = response.body!.getReader()
-    const decoder = new TextDecoder()
-    let buffer = ''
-
-    async function pump() {
-        while (true) {
-            if (signal?.aborted) break
-            const { done, value } = await reader.read()
-            if (done) break
-            buffer += decoder.decode(value, { stream: true })
-            const lines = buffer.split('\n')
-            buffer = lines.pop() ?? ''
-            for (const line of lines) {
-                if (!line.startsWith('data: ')) continue
-                // The try covers the parse only. It used to wrap onEvent too, so
-                // anything the handler threw was discarded as "malformed SSE" —
-                // including the `throw new Error(event.error)` that handleRender
-                // raises for an `error` event. A failed render therefore never
-                // reached setError: the panel sat in its rendering state with no
-                // message, and the stream just ended.
-                let event: SSEEvent
-                try {
-                    event = JSON.parse(line.slice(6)) as SSEEvent
-                } catch {
-                    continue // malformed SSE event
-                }
-                onEvent(event)
-            }
-        }
+  const start = async (sweep: SweepDefinition) => {
+    if (!canPlay) {
+      onLocked()
+      return
     }
-    return pump()
-}
+    const result = await player.play(sweep)
+    // A tier the server does not grant playback to (a stale session, a plan
+    // that changed) is offered the upgrade, not shown an error.
+    if (result === 'forbidden') onLocked()
+  }
 
-export default function AnimationPanel({ projectSlug, onLoadFrame }: AnimationPanelProps) {
-    const [animations, setAnimations] = useState<Animation[]>([])
-    const [selectedId, setSelectedId] = useState<string | null>(null)
-    const [status, setStatus] = useState<'idle' | 'rendering' | 'playing' | 'error'>('idle') // idle | rendering | playing | error
-    const [progress, setProgress] = useState(0)
-    const [frames, setFrames] = useState<FrameData[]>([]) // [{frame_index, parts: [{url}]}]
-    const [currentFrame, setCurrentFrame] = useState(0)
-    const [error, setError] = useState<string | null>(null)
-    const abortRef = useRef<AbortController | null>(null)
-    const playTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  return (
+    <section aria-labelledby="sweeps-heading" className="space-y-2" data-testid="sweep-panel">
+      <div>
+        <h2
+          id="sweeps-heading"
+          className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+        >
+          <Film className="h-3.5 w-3.5" aria-hidden="true" />
+          {t('sweep.title')}
+        </h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          {canPlay ? t('sweep.subtitle') : t('sweep.subtitle_locked')}
+        </p>
+      </div>
 
-    // Load animation list
-    useEffect(() => {
-        if (!projectSlug) return
-        fetchAnimations(projectSlug).then(setAnimations)
-    }, [projectSlug])
-
-    const selectedAnim = animations.find(a => a.id === selectedId)
-
-    // ── Render ──────────────────────────────────────────────────────────────────
-    const handleRender = useCallback(async () => {
-        if (!selectedId || status === 'rendering') return
-        setStatus('rendering')
-        setProgress(0)
-        setFrames([])
-        setCurrentFrame(0)
-        setError(null)
-
-        const controller = new AbortController()
-        abortRef.current = controller
-
-        try {
-            const res = await apiFetch(
-                `/api/projects/${projectSlug}/animations/${selectedId}/render`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ parameters: {} }),
-                    signal: controller.signal,
-                }
-            )
-
-            if (!res.ok) {
-                const err = await res.json()
-                throw new Error(err.error ?? `HTTP ${res.status}`)
-            }
-
-            const collectedFrames: FrameData[] = []
-
-            await consumeSSE(res, event => {
-                if (event.event === 'frame_done') {
-                    setProgress(event.progress ?? 0)
-                } else if (event.event === 'complete') {
-                    collectedFrames.push(...(event.frames ?? []))
-                    setFrames([...collectedFrames])
-                    setStatus('playing')
-                    setProgress(100)
-                } else if (event.event === 'error') {
-                    throw new Error(event.error ?? 'Render error')
-                }
-            }, controller.signal)
-        } catch (err: unknown) {
-            if (err instanceof Error && err.name === 'AbortError') {
-                setStatus('idle')
-            } else {
-                setError(err instanceof Error ? err.message : String(err))
-                setStatus('error')
-            }
-        }
-    }, [selectedId, projectSlug, status])
-
-    const handleCancel = useCallback(() => {
-        abortRef.current?.abort()
-        if (playTimerRef.current) clearInterval(playTimerRef.current)
-        setStatus('idle')
-    }, [])
-
-    // ── Playback ─────────────────────────────────────────────────────────────────
-    useEffect(() => {
-        if (status !== 'playing' || frames.length === 0) return
-        const duration = selectedAnim?.duration_ms ?? 2000
-        const interval = duration / frames.length
-
-        if (playTimerRef.current) clearInterval(playTimerRef.current)
-        playTimerRef.current = setInterval(() => {
-            setCurrentFrame(prev => {
-                const next = (prev + 1) % frames.length
-                const frameGlbs = frames[next]?.parts?.map(p => p.url) ?? []
-                if (onLoadFrame && frameGlbs.length) onLoadFrame(frameGlbs)
-                return next
-            })
-        }, interval)
-
-        return () => { if (playTimerRef.current) clearInterval(playTimerRef.current) }
-    }, [status, frames, selectedAnim, onLoadFrame])
-
-    // Load first frame into viewport when frames arrive
-    useEffect(() => {
-        if (frames.length > 0 && onLoadFrame) {
-            const firstGlbs = frames[0]?.parts?.map(p => p.url) ?? []
-            if (firstGlbs.length) onLoadFrame(firstGlbs)
-        }
-    }, [frames]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    // ── WebM Export ────────────────────────────────────────────────────────────
-    const [exporting, setExporting] = useState(false)
-    const exportRef = useRef<{ recorder: MediaRecorder | null; chunks: Blob[] }>({ recorder: null, chunks: [] })
-
-    const handleExportWebM = useCallback(() => {
-        if (frames.length === 0 || exporting) return
-
-        const canvas = document.querySelector('canvas')
-        if (!canvas) {
-            setError('No 3D canvas found for recording')
-            return
-        }
-
-        setExporting(true)
-        const stream = canvas.captureStream(30)
-        const recorder = new MediaRecorder(stream, {
-            mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-                ? 'video/webm;codecs=vp9'
-                : 'video/webm',
-        })
-
-        exportRef.current.chunks = []
-        exportRef.current.recorder = recorder
-
-        recorder.ondataavailable = (e) => {
-            if (e.data.size > 0) exportRef.current.chunks.push(e.data)
-        }
-
-        recorder.onstop = () => {
-            const blob = new Blob(exportRef.current.chunks, { type: 'video/webm' })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = `${projectSlug}-animation-${selectedId}.webm`
-            a.click()
-            URL.revokeObjectURL(url)
-            setExporting(false)
-        }
-
-        recorder.start()
-
-        // Play through all frames then stop
-        const duration = selectedAnim?.duration_ms ?? 2000
-        const interval = duration / frames.length
-        let frameIdx = 0
-
-        const exportTimer = setInterval(() => {
-            if (frameIdx >= frames.length) {
-                clearInterval(exportTimer)
-                recorder.stop()
-                return
-            }
-            const glbs = frames[frameIdx]?.parts?.map(p => p.url) ?? []
-            if (onLoadFrame && glbs.length) onLoadFrame(glbs)
-            setCurrentFrame(frameIdx)
-            frameIdx++
-        }, interval)
-    }, [frames, exporting, projectSlug, selectedId, selectedAnim, onLoadFrame])
-
-    if (animations.length === 0) return null
-
-    return (
-        <div className="animation-panel" role="region" aria-label="Animation Panel">
-            <h3 className="animation-panel__title">
-                <span className="animation-panel__icon">▶</span>
-                Animations
-            </h3>
-
-            {/* Animation cards */}
-            <div className="animation-panel__list">
-                {animations.map(anim => {
-                    const label = typeof anim.label === 'object' ? (anim.label.en ?? anim.id) : anim.label
-                    const desc = anim.description
-                        ? (typeof anim.description === 'object' ? anim.description.en : anim.description)
-                        : null
-                    const isSelected = anim.id === selectedId
-                    return (
-                        <button
-                            key={anim.id}
-                            className={`animation-panel__card ${isSelected ? 'animation-panel__card--active' : ''}`}
-                            onClick={() => setSelectedId(anim.id)}
-                            disabled={status === 'rendering'}
-                        >
-                            <span className="animation-panel__card-label">{label}</span>
-                            {desc && <span className="animation-panel__card-desc">{desc}</span>}
-                            <span className="animation-panel__card-meta">
-                                {anim.frames} frames · {anim.duration_ms}ms · {anim.easing ?? 'ease-in-out'}
-                            </span>
-                        </button>
-                    )
-                })}
-            </div>
-
-            {/* Controls */}
-            {selectedId && (
-                <div className="animation-panel__controls">
-                    {status === 'idle' || status === 'error' ? (
-                        <button
-                            className="animation-panel__btn animation-panel__btn--primary"
-                            onClick={handleRender}
-                            id="anim-render-btn"
-                        >
-                            Render Animation
-                        </button>
-                    ) : status === 'rendering' ? (
-                        <>
-                            <div className="animation-panel__progress-bar">
-                                <div
-                                    className="animation-panel__progress-fill"
-                                    style={{ width: `${progress}%` }}
-                                />
-                            </div>
-                            <span className="animation-panel__progress-label">{progress.toFixed(0)}%</span>
-                            <button
-                                className="animation-panel__btn animation-panel__btn--cancel"
-                                onClick={handleCancel}
-                            >
-                                Cancel
-                            </button>
-                        </>
-                    ) : (
-                        /* Playing */
-                        <div className="animation-panel__playback">
-                            <span className="animation-panel__frame-label">
-                                Frame {currentFrame + 1} / {frames.length}
-                            </span>
-                            <div className="animation-panel__scrub">
-                                <input
-                                    type="range"
-                                    min={0}
-                                    max={frames.length - 1}
-                                    value={currentFrame}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const f = Number(e.target.value)
-                                        setCurrentFrame(f)
-                                        const glbs = frames[f]?.parts?.map(p => p.url) ?? []
-                                        if (onLoadFrame && glbs.length) onLoadFrame(glbs)
-                                    }}
-                                    aria-label="Animation frame scrubber"
-                                />
-                            </div>
-                            <div className="animation-panel__btn-group">
-                                <button
-                                    className="animation-panel__btn animation-panel__btn--primary"
-                                    onClick={handleExportWebM}
-                                    disabled={exporting}
-                                >
-                                    {exporting ? 'Recording…' : 'Export WebM'}
-                                </button>
-                                <button
-                                    className="animation-panel__btn animation-panel__btn--secondary"
-                                    onClick={() => {
-                                        setStatus('idle')
-                                        setFrames([])
-                                        setCurrentFrame(0)
-                                        if (playTimerRef.current) clearInterval(playTimerRef.current)
-                                    }}
-                                >
-                                    Reset
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                    {error && (
-                        <p className="animation-panel__error" role="alert">{error}</p>
-                    )}
+      <ul className="space-y-2">
+        {sweeps.map(sweep => {
+          const label = labelOf(sweep) || sweep.id
+          const active = sweep.id === activeId
+          const otherMode = sweep.mode && currentMode && sweep.mode !== currentMode
+            ? (modeLabelOf?.(sweep.mode) || sweep.mode)
+            : null
+          return (
+            <li
+              key={sweep.id}
+              data-testid={`sweep-row-${sweep.id}`}
+              className={`rounded-md border bg-card p-2 ${active ? 'border-primary/50' : 'border-border'}`}
+            >
+              <div className="flex items-start gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium leading-tight [overflow-wrap:anywhere]">{label}</div>
+                  <div className="mt-0.5 font-mono text-xs text-muted-foreground">
+                    {t('sweep.meta', { frames: sweep.frames, seconds: sweepSeconds(sweep) })}
+                  </div>
+                  {otherMode && (
+                    <div className="mt-0.5 text-xs text-muted-foreground">
+                      {t('sweep.in_mode', { mode: otherMode })}
+                    </div>
+                  )}
                 </div>
-            )}
-        </div>
-    )
+
+                {!active && (
+                  canPlay ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className={`${TOUCH} shrink-0 gap-1.5 px-3 text-xs`}
+                      onClick={() => start(sweep)}
+                      disabled={busy}
+                      aria-label={t('sweep.play_label', { label })}
+                    >
+                      <Play className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t('sweep.play')}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className={`${TOUCH} shrink-0 gap-1.5 px-3 text-xs text-muted-foreground`}
+                      onClick={() => start(sweep)}
+                      title={t('tier.pro_required')}
+                      aria-label={t('sweep.locked_label', { label })}
+                    >
+                      <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t('tier.name_pro')}
+                    </Button>
+                  )
+                )}
+
+                {active && player.status === 'rendering' && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className={`${TOUCH} shrink-0 gap-1.5 px-3 text-xs`}
+                    onClick={player.cancel}
+                  >
+                    <X className="h-3.5 w-3.5" aria-hidden="true" />
+                    {t('btn.cancel')}
+                  </Button>
+                )}
+
+                {active && (player.status === 'playing' || player.status === 'paused') && (
+                  <div className="flex shrink-0 gap-1">
+                    {player.frames.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-11 w-11 md:h-8 md:w-8"
+                        onClick={player.status === 'playing' ? player.pause : player.resume}
+                        aria-label={player.status === 'playing' ? t('sweep.pause') : t('sweep.resume')}
+                        title={player.status === 'playing' ? t('sweep.pause') : t('sweep.resume')}
+                        disabled={player.exporting}
+                      >
+                        {player.status === 'playing'
+                          ? <Pause className="h-3.5 w-3.5" aria-hidden="true" />
+                          : <Play className="h-3.5 w-3.5" aria-hidden="true" />}
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-11 w-11 md:h-8 md:w-8"
+                      onClick={player.stop}
+                      aria-label={t('sweep.stop')}
+                      title={t('sweep.stop')}
+                    >
+                      <Square className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Button>
+                  </div>
+                )}
+
+                {active && player.status === 'error' && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-11 w-11 shrink-0 md:h-8 md:w-8"
+                    onClick={player.stop}
+                    aria-label={t('sweep.dismiss')}
+                    title={t('sweep.dismiss')}
+                  >
+                    <X className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Button>
+                )}
+              </div>
+
+              {active && player.status === 'rendering' && (
+                <div className="mt-2 flex items-center gap-2">
+                  <div
+                    role="progressbar"
+                    aria-label={t('sweep.rendering_label', { label })}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(player.progress)}
+                    className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary"
+                  >
+                    <div className="h-full bg-primary transition-[width]" style={{ width: `${player.progress}%` }} />
+                  </div>
+                  <span className="shrink-0 font-mono text-xs text-muted-foreground">
+                    {t('sweep.rendering', { progress: Math.round(player.progress) })}
+                  </span>
+                </div>
+              )}
+
+              {active && (player.status === 'playing' || player.status === 'paused') && (
+                <div className="mt-2 space-y-2">
+                  {player.frames.length > 1 && (
+                    <div className="flex items-center gap-3">
+                      <Slider
+                        className="flex-1 py-3 md:py-1"
+                        min={0}
+                        max={player.frames.length - 1}
+                        step={1}
+                        value={[player.index]}
+                        onValueChange={(v: number[]) => player.seek(v[0])}
+                        aria-label={t('sweep.scrubber', { label })}
+                        disabled={player.exporting}
+                      />
+                      <span className="shrink-0 font-mono text-xs text-muted-foreground">
+                        {t('sweep.frame_of', { current: player.index + 1, total: player.frames.length })}
+                      </span>
+                    </div>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className={`${TOUCH} w-full gap-1.5 text-xs`}
+                    onClick={player.exportWebM}
+                    disabled={player.exporting}
+                  >
+                    <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                    {player.exporting ? t('sweep.recording') : t('sweep.export_webm')}
+                  </Button>
+                </div>
+              )}
+
+              {active && player.error && (
+                <p role="alert" className="mt-2 flex items-start gap-1.5 rounded-md bg-destructive/10 p-2 text-xs text-foreground">
+                  <AlertTriangle className="mt-px h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span className="[overflow-wrap:anywhere]">
+                    {player.error.code === 'no_canvas' ? t('sweep.error_no_canvas') : t('sweep.error_render')}
+                    {player.error.detail && (
+                      <span className="mt-0.5 block font-mono text-muted-foreground">{player.error.detail}</span>
+                    )}
+                  </span>
+                </p>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+  )
 }

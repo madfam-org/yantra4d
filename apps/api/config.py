@@ -122,6 +122,13 @@ class AppConfig:
     # cannot do so as the anonymous guest, and the alternative (FLASK_DEBUG)
     # drags in the reloader and the interactive debugger.
     HARNESS_TIER: str = field(default_factory=lambda: os.getenv("HARNESS_TIER", "").strip().lower())
+    # Lets the models pipeline ask a LOCAL API for the `preview` tessellation profile
+    # (ruling M3, 2026-11-22). Off by default and, like HARNESS_TIER, only honoured
+    # while AUTH_ENABLED is false — see services/engine/tessellation.preview_allowed().
+    # Set only by .github/workflows/prerender-commons.yml.
+    ALLOW_PREVIEW_TESSELLATION: bool = field(
+        default_factory=lambda: os.getenv("ALLOW_PREVIEW_TESSELLATION", "").strip().lower() in ("1", "true", "yes", "on")
+    )
     JWT_ALGORITHMS: list = field(default_factory=lambda: [a.strip().upper() for a in os.getenv("JWT_ALGORITHMS", "RS256").split(",") if a.strip()])
 
     # JWKS cache windows (stale-while-revalidate) — see docs/AUTH.md "JWKS Caching".

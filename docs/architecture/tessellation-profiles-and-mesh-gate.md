@@ -1,9 +1,91 @@
 # Tessellation profiles and a mesh gate for the Commons
 
-> **Status: proposal, not built. Awaiting the owner's ruling on the seven questions in
-> [Rulings requested](#rulings-requested).** Nothing described here exists in the code yet.
-> Written 2026-11-22. Figures come from the mesh topology audit of 2026-11-21 (40 preview files
+> **Status: ruled 2026-11-22 (seven rulings, [below](#rulings-2026-11-22)); step 1 of the
+> rollout (report-only) is built.** What exists and what does not is in
+> [Implementation status](#implementation-status). The proposal text after those two
+> sections is kept as written on 2026-11-22; where a ruling chose differently, a
+> *Ruled* line under the passage says so.
+> Figures come from the mesh topology audit of 2026-11-21 (40 preview files
 > from 35 cartridges, and 17 print files) unless a line names another source.
+
+## Rulings (2026-11-22)
+
+The owner's answers to the seven questions in [Rulings requested](#rulings-requested):
+
+- **M1 Print profile.** Keep today's numbers (0.1 relative, 0.1 rad) under the name `print`
+  for now. Add the 0.02 mm absolute bound later, and only if the report-only gate shows
+  CadQuery parts over 0.05 mm. Print output must not change in this work.
+- **M2 Preview profile.** 0.02 mm absolute / 0.35 rad. Try it on the whole Commons in CI
+  before fixing it, and report the measured triangle counts and how many previews then fit
+  the 2,500-triangle gallery budget without decimation. The simplifier stays as the fallback.
+- **M3 Who may ask for `preview`.** Only the models pipeline, never a public API caller. The
+  profile is part of the render cache key, so a preview mesh can never be served as a print
+  file.
+- **M4 Gate thresholds.** Chord error at most 0.05 mm; at least 32 segments on full circles
+  of radius 1 mm or more. Plus the structural checks of Part 2 (closed, manifold with a clear
+  message, no zero-area triangles, no duplicate faces; more than 200,000 triangles is a
+  warning). Never gate on sliver share.
+- **M5 Faceting drawn into the solid.** A source lint (`polyline` built from sin/cos loops;
+  `polygon(n, ...)` with a small `n`) that warns only, never fails. No failing circle-fit
+  check on CadQuery output. Separately, the rugged box's holes become round by default in the
+  Commons; its low-poly styles stay available as non-default options.
+- **M6 Opt-out.** A policy object with a required written reason, per cartridge and
+  overridable per mode and part, reported as a note and counted as exempt, never silently
+  skipped. It switches off only the chord-error and segment checks. No per-parameter or
+  per-preset grain for now.
+- **M7 Rollout.** The four steps of Part 2. This work delivers step 1 only: report-only,
+  with a spec switch per check (an option or environment variable turning a check from
+  warning to failure), publishing how many cartridges would fail each check. Steps 2 to 4
+  are later work.
+
+## Implementation status
+
+| Piece | Where | State |
+|---|---|---|
+| `print` / `preview` profiles (M1, M3) | `apps/api/services/engine/tessellation.py`, `cq_runner.py`, `cadquery_engine.py`, `cq_pool.py`, `render_cache.py`, `render_orchestrator.py`, `apps/worker/render_worker.py` | Built. `print` is the default and calls the exporter exactly as before (byte-identical, `tests/integration/test_tessellation_kernel.py`). `preview` is STL only and honoured only while `ALLOW_PREVIEW_TESSELLATION` is set and `AUTH_ENABLED` is false; any other caller gets 403 `tessellation_not_allowed`. The profile is in the cache key and the artifact name whenever it is not `print`, so print keys and URLs are unchanged. |
+| Models pipeline asks for `preview` (M2) | `scripts/dev/render_commons_models.py --tessellation`, `prerender-commons.yml` input `tessellation` (default `preview`) | Built. The committed landing models were not refreshed in this work. |
+| Preview measured on the whole Commons (M2) | [Preview profile across the Commons](#preview-profile-across-the-commons) | Done 2026-11-23: 329 of 512 previews fit the gallery budget without decimation, against 221 of 510 at print. |
+| Report-only mesh gate (M4–M7) | `hyperobjects-spec` 0.22.0 (`y4d_spec.mesh_gate`, hyperobjects-spec#89) | Built, report-only (rollout step 1): every finding is a note unless its check is named in `--mesh-strict` / `Y4D_SPEC_MESH_STRICT`; the summary line counts the cartridges that would fail each check. Source lint warns only; the opt-out needs a reason. |
+| Spec pins moved together | `ci.yml`, `spec-nightly.yml`, Commons `SPEC_PIN` | Moved to `c102717d` together: this repository's two pins and the Commons `SPEC_PIN` (solid-hyperobjects#255). The first whole-Commons counts come from the next `spec-nightly.yml` sweep. The `[geometry]` extra still pins CadQuery `<2.8` while production runs 2.8.0 (reported, not changed). |
+| Rugged box round by default (M5) | Commons (solid-hyperobjects#254) | Done: `BoxPolygonStyle` defaults to Curved; the 15 presets that restated the old default moved; Tool Case (Gasket) keeps 8-sided on purpose. |
+| GLB and 3MF tessellation | — | Unchanged on purpose (M1): print GLB still goes through `cascadio` defaults and 3MF through CadQuery's relative tessellation. |
+
+## Preview profile across the Commons
+
+Measured 2026-11-23 by `prerender-commons.yml` dispatched on the profile branch with
+`tessellation: preview` (run 45116797880), against the print-profile run of 2026-11-22
+(run 45060607409). Same Commons pin (`8317c177`), same CadQuery release, same optimizer.
+Counts are raw triangles of each cartridge's base render (default mode, manifest
+defaults), read from the optimizer's log; "fits" means at or under the 2,500-triangle
+gallery budget, i.e. not decimated.
+
+| | Print | Preview |
+|---|---|---|
+| Base renders produced | 510 of 512 (bevel-gear and bevel-pair timed out at 300 s) | 512 of 512 |
+| Fit the gallery budget without decimation | 221 of 510 | 329 of 512 (all 329 among the same 510; the two that timed out at print are over budget) |
+| Still decimated | 289 | 183 (median 5,380 raw triangles; 84 of them at 5,000 or fewer) |
+| Raw triangles, median / 90th percentile | 2,934 / 18,676 | 1,404 / 8,436 |
+| Raw triangles, all base renders | 5.15 million | 2.86 million |
+| Base renders over the 25,000-triangle lod0 budget | 37 | 15 |
+
+By engine, on the 510 cartridges both runs rendered:
+
+- **CadQuery and graph (490):** 211 fit at print, 319 at preview. 112 that were decimated
+  now fit; 4 that fit no longer do (bollard-cap 2,232 → 23,072, coaster, shoe-tree 116 →
+  6,100, water-meter-lid). 31 grew in all: free-form and revolved parts gain triangles
+  under an absolute bound (body-form 3,218 → 169,022, lingerie-form 3,176 → 146,658,
+  figure-child 2,934 → 82,900). 37 are unchanged (all-planar parts).
+- **OpenSCAD (19) and implicit (1):** unchanged, as expected: their resolution is in the
+  cartridge.
+- **The audit's three parts:** bearing-housing 3,832 → 1,484, electronics-enclosure
+  5,084 → 1,564, thread-capsule 4,548 → 3,510 (the audit measured 1,484, 1,564 and 3,428
+  at this setting).
+
+What this does not show: how the previews look (no pixels compared), and how much of the
+remaining decimation the simplifier does well. The free-form parts that grew are the case
+the proposal warned about; whether to cap them (a looser preview for parts over a size, or
+an angular bound only for free-form faces) is a question for after this trial, not decided
+here. The committed landing models were not refreshed.
 
 ## The problem in three facts
 
@@ -41,6 +123,9 @@ an angular bound.
 | `print` (default) | 0.02 mm | 0.1 rad | every render a person downloads | Not measured at exactly this setting. For a circle, the 0.02 mm bound is looser than what the angular bound already gives below a radius of about 64 mm (computed), so small round features should come out as today and larger ones gain segments. Threads and free-form surfaces may change at any size. |
 | `preview` | 0.01 mm | 0.2 rad | the models pipeline only | 2,272, 2,556 and 5,900 triangles (bearing housing, electronics enclosure, thread capsule); 63 to 159 segments per circle, by radius; chord error at most 0.005 mm. Note: its linear bound is *tighter* than `print`'s, so above a radius of about 32 mm a preview circle gets more segments than the print file (computed: 149 against 126 at 45 mm, 222 against 157 at 100 mm). |
 
+*Ruled (M1, M2):* `print` keeps today's numbers (0.1 relative, 0.1 rad) for now, and
+`preview` is the coarser setting below, 0.02 mm / 0.35 rad.
+
 A coarser preview was also measured: 0.02 mm and 0.35 rad gave 1,484, 1,564 and 3,428 triangles
 with 36 to 126 segments. It fits the 2,500-triangle gallery budget on two of the three parts
 without any decimation, at the price of visibly fewer segments on small holes, and its linear
@@ -52,7 +137,7 @@ What building it involves:
 
 - **The request.** A `tessellation` field on the render payload, `print` when absent. The models
   pipeline ([`render_commons_models.py`](../../scripts/dev/render_commons_models.py)) asks for
-  `preview`.
+  `preview`. *Ruled (M3):* only the models pipeline may.
 - **STL.** `cq.exporters.export` has no way to say "absolute", so the STL branch calls
   `shape.exportStl(path, linear, angular, ascii=False, relative=False)` directly on a shape: a
   Workplane result is turned into one first (`compound(*result)`, as
@@ -157,6 +242,10 @@ styles and one round one, for all its modes), so the opt-out may also need to na
 value or preset; the owner decides the grain. The opt-out switches off only the chord-error and
 segment checks; the closed, manifold, zero-area and duplicate checks have none.
 
+*Ruled (M5):* the source lint, warning only; no failing circle-fit check on CadQuery output.
+*Ruled (M6):* the opt-out as described, per cartridge and overridable per mode and part, with
+no per-parameter or per-preset grain for now.
+
 **Never gated: sliver share.** Thin triangles are what every CAD tessellator produces (long
 strips on cylinders, fans on flat faces). The audit measured 17 % to 100 % slivers on files that
 are watertight. The number says nothing about printability, and a gate on it would fail most of
@@ -172,7 +261,8 @@ How the two resolution checks would be measured:
   audit's fit handled only features aligned with an axis; tilted holes, cones and spheres were
   not counted. The gate would say so in its output instead of passing them silently.
 
-Rollout, so the gate never lands as a wall of red:
+Rollout, so the gate never lands as a wall of red (*ruled, M7: this work delivers step 1
+only*):
 
 1. **Report only**, for two weeks. Publishes how many cartridges would fail each check. Expected
    from the audit's sample: a few OpenSCAD cartridges on segments or chord error; the
@@ -190,6 +280,8 @@ Preview meshes get the same closed and manifold checks as warnings only, in the 
 pipeline's own summary. A preview is a picture, not a deliverable.
 
 ## Rulings requested
+
+Answered 2026-11-22; see [Rulings](#rulings-2026-11-22). The questions as they were put:
 
 1. **Print profile.** Add the 0.02 mm absolute bound now (re-renders everything and changes the
    CadQuery side of the parity comparisons), or keep today's numbers under the name `print` and

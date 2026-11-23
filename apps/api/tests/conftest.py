@@ -31,6 +31,9 @@ def _isolate_config(tmp_path, tmp_path_factory, monkeypatch):
     monkeypatch.setattr(Config, "SCAD_DIR", tmp_path)
     monkeypatch.setattr(Config, "MULTI_PROJECT", True)
     monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+    # The models pipeline's `preview` tessellation opt-in: off, whatever the
+    # developer's shell exports, so a test sees what a public caller sees.
+    monkeypatch.setattr(Config, "ALLOW_PREVIEW_TESSELLATION", False)
     monkeypatch.setattr(Config, "LIBS_DIR", tmp_path / "libs")
     monkeypatch.setattr(Config, "OPENSCADPATH", str(tmp_path / "libs"))
 

@@ -21,7 +21,7 @@ vi.mock('@/components/ui/resizable', () => ({
 
 vi.mock('../viewer/Viewer', () => ({
   default: React.forwardRef(function MockViewer(props) {
-    return <div data-testid="viewer" data-loading={props.loading} data-has-cached-variants={props.cachedVariants ? 'true' : 'false'} data-preview-url={props.prerenderedPreviewUrl ?? ''} />
+    return <div data-testid="viewer" data-loading={props.loading} data-has-cached-variants={props.cachedVariants ? 'true' : 'false'} data-preview-url={props.prerenderedPreviewUrl ?? ''} data-sweep-frames={props.sweepFrames ? props.sweepFrames.length : ''} data-sweep-index={props.sweepFrameIndex ?? ''} />
   }),
 }))
 
@@ -667,5 +667,73 @@ describe('StudioMainView: the Inside graph view', () => {
     useProject.mockReturnValue(withGraph({ mode: 'flange' }))
     render(<StudioMainView />)
     expect(screen.getByTestId('graph-view-frame').dataset.desktop).toBe('false')
+  })
+})
+
+describe('parameter sweep on the stage', () => {
+  const FRAMES = [
+    { frame_index: 0, parts: [{ part: 'body', url: '/static/f0.glb' }] },
+    { frame_index: 1, parts: [{ part: 'body', url: '/static/f1.glb' }] },
+  ]
+  const player = (overrides = {}) => ({
+    status: 'idle', sweep: null, progress: 0, frames: [], index: 0, error: null, exporting: false, loops: true,
+    play: vi.fn(), cancel: vi.fn(), pause: vi.fn(), resume: vi.fn(), seek: vi.fn(), stop: vi.fn(), exportWebM: vi.fn(),
+    ...overrides,
+  })
+  const withSweep = (sweep) => ({ ...baseContext, getLabel: (o, k) => (o?.[k]?.en ?? o?.[k] ?? ''), sweep })
+
+  it('hands the frames and the frame on screen to the viewer while a sweep plays', () => {
+    useProject.mockReturnValue(withSweep(player({
+      status: 'playing', sweep: { id: 'grow', label: { en: 'Grow' }, frames: 2, duration_ms: 2000 }, frames: FRAMES, index: 1,
+    })))
+    render(<StudioMainView />)
+    const viewer = screen.getByTestId('viewer')
+    expect(viewer.dataset.sweepFrames).toBe('2')
+    expect(viewer.dataset.sweepIndex).toBe('1')
+    // The viewer says a sweep is on screen, not the visitor's configuration.
+    const chip = screen.getByTestId('sweep-status-chip')
+    expect(chip).toHaveTextContent('Grow')
+  })
+
+  it('gives the viewer no frames while they are still rendering', () => {
+    useProject.mockReturnValue(withSweep(player({
+      status: 'rendering', sweep: { id: 'grow', label: 'Grow', frames: 2, duration_ms: 2000 }, progress: 40,
+    })))
+    render(<StudioMainView />)
+    expect(screen.getByTestId('viewer').dataset.sweepFrames).toBe('')
+    expect(screen.getByTestId('sweep-status-chip')).toBeInTheDocument()
+  })
+
+  it('shows no chip and no frames when no sweep is active', () => {
+    useProject.mockReturnValue(withSweep(player()))
+    render(<StudioMainView />)
+    expect(screen.getByTestId('viewer').dataset.sweepFrames).toBe('')
+    expect(screen.queryByTestId('sweep-status-chip')).not.toBeInTheDocument()
+  })
+
+  it('hides the model info of the configuration while a sweep frame is on screen', () => {
+    useProject.mockReturnValue({
+      ...withSweep(player({
+        status: 'playing', sweep: { id: 'grow', label: 'Grow', frames: 2, duration_ms: 2000 }, frames: FRAMES,
+      })),
+      parts: [{ type: 'body', url: '/static/body.glb' }],
+    })
+    render(<StudioMainView />)
+    expect(screen.queryByTestId('model-info')).not.toBeInTheDocument()
+  })
+
+  it('shows the model info again once the sweep is stopped', () => {
+    useProject.mockReturnValue({ ...withSweep(player()), parts: [{ type: 'body', url: '/static/body.glb' }] })
+    render(<StudioMainView />)
+    expect(screen.getByTestId('model-info')).toBeInTheDocument()
+  })
+
+  it('hides the prerendered-preview badge while a sweep is on the stage', () => {
+    previewState.current = { url: '/models/demo.glb', commonsPin: 'abcdef1234' }
+    useProject.mockReturnValue(withSweep(player({
+      status: 'paused', sweep: { id: 'grow', label: 'Grow', frames: 2, duration_ms: 2000 }, frames: FRAMES,
+    })))
+    render(<StudioMainView />)
+    expect(screen.queryByTestId('prerendered-preview-badge')).not.toBeInTheDocument()
   })
 })

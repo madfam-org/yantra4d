@@ -381,7 +381,6 @@
   "tier.perk_renders": "More server renders, all export formats",
   "tier.perk_cadquery": "CadQuery engine & STEP export",
   "tier.perk_github": "GitHub import & code editor",
-  "tier.perk_print": "Print dispatch & manufacturing quotes",
   "tier.see_plans": "See plans",
   "tier.pro_required": "Pro tier required",
   "tier.name_guest": "Guest",

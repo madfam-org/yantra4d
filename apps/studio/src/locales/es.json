@@ -381,7 +381,6 @@
   "tier.perk_renders": "Más renders en servidor y todos los formatos de exportación",
   "tier.perk_cadquery": "Motor CadQuery y exportación STEP",
   "tier.perk_github": "Importación de GitHub y editor de código",
-  "tier.perk_print": "Envío a impresora y cotizaciones de manufactura",
   "tier.see_plans": "Ver planes",
   "tier.pro_required": "Requiere nivel Pro",
   "tier.name_guest": "Invitado",

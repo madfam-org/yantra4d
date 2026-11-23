@@ -106,6 +106,12 @@ describe('UpgradeDialog', () => {
         expect(links).toContain('https://yantra4d.com/#pricing')
     })
 
+    it('lists no print dispatch or manufacturing quotes among the Pro perks (owner ruling C4)', () => {
+        render(<UpgradeDialog {...defaultProps} />)
+        expect(screen.queryByText(/dispatch|manufacturing quotes|tier\.perk_print/i)).not.toBeInTheDocument()
+        expect(screen.getByText(/CadQuery engine|tier\.perk_cadquery/)).toBeInTheDocument()
+    })
+
     it('names the free alternatives when the caller passes them', () => {
         render(<UpgradeDialog {...defaultProps} feature="CadQuery engine" alternatives={['Prerendered default shown', 'OpenSCAD modes render free']} />)
         const box = screen.getByTestId('upgrade-free-alternatives')

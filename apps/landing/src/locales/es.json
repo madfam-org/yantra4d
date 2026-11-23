@@ -60,6 +60,10 @@
       "title": "Funciona en Tu Navegador",
       "desc": "Sin instalar nada. Sin cuenta. Abre un enlace y empieza a personalizar."
     },
+    "compare": {
+      "title": "Compara Antes de Decidir",
+      "desc": "Pon hasta cuatro variaciones lado a lado, cada una en su propia vista, y ve cuál te sirve."
+    },
     "viewer": {
       "title": "Inspecciónalo en 3D",
       "desc": "Mide entre puntos, haz un corte de sección, cambia entre mm y pulgadas, guarda vistas como imágenes."

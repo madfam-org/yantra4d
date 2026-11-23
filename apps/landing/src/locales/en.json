@@ -60,6 +60,10 @@
       "title": "Works in Your Browser",
       "desc": "No install. No account. Open a link, start customizing."
     },
+    "compare": {
+      "title": "Compare Before You Commit",
+      "desc": "Keep up to four variations side by side, each in its own view, and see which one fits."
+    },
     "viewer": {
       "title": "Inspect It in 3D",
       "desc": "Measure between points, cut a section, switch mm and inches, save views as images."

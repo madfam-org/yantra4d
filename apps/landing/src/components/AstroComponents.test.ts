@@ -192,13 +192,14 @@ describe('ForMakers.astro', () => {
     expect(html).toMatch(/Hecho para Makers|forMakers\.heading/)
   })
 
-  it('has 7 feature cards', () => {
+  it('has 8 feature cards', () => {
     const h3Count = (html.match(/<h3/g) || []).length
-    expect(h3Count).toBe(7)
+    expect(h3Count).toBe(8)
   })
 
   it('has feature emojis', () => {
     expect(html).toContain('🎛️')
+    expect(html).toContain('↔️')
     expect(html).toContain('🖨️')
     expect(html).toContain('📦')
     expect(html).toContain('🔧')

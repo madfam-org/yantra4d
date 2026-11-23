@@ -4,77 +4,77 @@
   "generated_by": "scripts/qa/derive_mating_candidates.py",
   "status": "proposed",
   "inputs": {
-    "cartridges_scanned": 512,
-    "cartridges_public_total": 512,
+    "cartridges_scanned": 612,
+    "cartridges_public_total": 612,
     "cartridges_out_of_scope": 0,
     "scope_note": "every projects/*/project.json is read; only the client-private slugs named in PRIVATE_EXCLUDED are skipped, and since RFC 0038 P2 those are not under projects/ at all (they mount at private-projects/). The commons is one submodule, so projects/ is either fully checked out or empty; validate_manifests.py's ratchet is what refuses the empty case",
-    "interfaces_declared": 1078,
-    "interfaces_with_resolved_family": 349,
-    "objects_with_resolved_family": 222,
-    "author_declared_pairs_in_scope": 301,
-    "author_declared_links_out_of_scope": 0,
+    "interfaces_declared": 1192,
+    "interfaces_with_resolved_family": 365,
+    "objects_with_resolved_family": 227,
+    "author_declared_pairs_in_scope": 364,
+    "author_declared_links_out_of_scope": 6,
     "bridge_snapshot_available": true,
     "bridge_targets": 89
   },
   "graph_baseline": {
     "note": "the live graph's own rule replayed over the in-scope manifests; see baseline_graph_pairs() for why get_graph() is not called directly",
-    "graph_nodes": 222,
-    "edges": 373,
-    "isolated_graph_nodes": 67,
-    "density_pct_over_graph_nodes": 1.5205,
-    "density_pct_over_catalog": 0.2851,
-    "author_declared_pairs_reproduced": 167,
-    "author_declared_pairs_missing": 134,
-    "author_declared_pairs_without_shared_family": 111
+    "graph_nodes": 227,
+    "edges": 416,
+    "isolated_graph_nodes": 66,
+    "density_pct_over_graph_nodes": 1.6218,
+    "density_pct_over_catalog": 0.2225,
+    "author_declared_pairs_reproduced": 173,
+    "author_declared_pairs_missing": 191,
+    "author_declared_pairs_without_shared_family": 168
   },
   "tier_summary": {
-    "corroborated": 26,
+    "corroborated": 27,
     "plausible": 52,
-    "speculative": 29
+    "speculative": 30
   },
   "projection": [
     {
       "tranche": "corroborated",
-      "rules": 26,
+      "rules": 27,
       "new_edges_in_tranche": 146,
-      "edges_after": 519,
-      "author_declared_pairs_explained": 180,
-      "author_declared_pairs_explained_pct": 59.8,
-      "graph_nodes": 222,
-      "isolated_graph_nodes_after": 63,
-      "density_pct_over_graph_nodes": 2.1157,
-      "density_pct_over_catalog": 0.3967
+      "edges_after": 562,
+      "author_declared_pairs_explained": 186,
+      "author_declared_pairs_explained_pct": 51.1,
+      "graph_nodes": 227,
+      "isolated_graph_nodes_after": 62,
+      "density_pct_over_graph_nodes": 2.1909,
+      "density_pct_over_catalog": 0.3006
     },
     {
       "tranche": "plausible",
       "rules": 52,
       "new_edges_in_tranche": 15,
-      "edges_after": 534,
-      "author_declared_pairs_explained": 190,
-      "author_declared_pairs_explained_pct": 63.12,
-      "graph_nodes": 222,
-      "isolated_graph_nodes_after": 52,
-      "density_pct_over_graph_nodes": 2.1768,
-      "density_pct_over_catalog": 0.4082
+      "edges_after": 577,
+      "author_declared_pairs_explained": 196,
+      "author_declared_pairs_explained_pct": 53.85,
+      "graph_nodes": 227,
+      "isolated_graph_nodes_after": 51,
+      "density_pct_over_graph_nodes": 2.2494,
+      "density_pct_over_catalog": 0.3086
     },
     {
       "tranche": "speculative",
-      "rules": 29,
-      "new_edges_in_tranche": 99,
-      "edges_after": 633,
-      "author_declared_pairs_explained": 190,
-      "author_declared_pairs_explained_pct": 63.12,
-      "graph_nodes": 222,
+      "rules": 30,
+      "new_edges_in_tranche": 110,
+      "edges_after": 687,
+      "author_declared_pairs_explained": 196,
+      "author_declared_pairs_explained_pct": 53.85,
+      "graph_nodes": 227,
       "isolated_graph_nodes_after": 40,
-      "density_pct_over_graph_nodes": 2.5804,
-      "density_pct_over_catalog": 0.4839
+      "density_pct_over_graph_nodes": 2.6783,
+      "density_pct_over_catalog": 0.3674
     }
   ],
   "rejected_interfaces": {
     "counts": {
-      "standard_absent": 2,
-      "standard_internal": 564,
-      "standard_unrecognized": 163
+      "standard_absent": 26,
+      "standard_internal": 615,
+      "standard_unrecognized": 186
     },
     "unrecognized_standards": [
       {
@@ -83,6 +83,10 @@
       },
       {
         "standard": "FPV frame camera side plate, outer face, on the camera side-screw axis",
+        "interfaces": 6
+      },
+      {
+        "standard": "rectangular post section post_w x post_d, entered endwise",
         "interfaces": 6
       },
       {
@@ -111,6 +115,18 @@
       },
       {
         "standard": "ISO 7380-1 M5x30 button head, head on the counterbore floor",
+        "interfaces": 2
+      },
+      {
+        "standard": "motor face: centring pilot and bolt circle, declared by pilot_d, bolt_circle, bolt_d, bolt_count",
+        "interfaces": 2
+      },
+      {
+        "standard": "plain pin bore; 8 mm ground shaft (shaft-8mm) at pin_d 8",
+        "interfaces": 2
+      },
+      {
+        "standard": "plain pin in a round hole of pin_d; 10 mm plain pin (pin-10mm) at pin_d 10",
         "interfaces": 2
       },
       {
@@ -180,25 +196,9 @@
       {
         "standard": "3/8-3/4 in tube barb",
         "interfaces": 1
-      },
-      {
-        "standard": "34 mm flask neck OD (250/500 mL)",
-        "interfaces": 1
-      },
-      {
-        "standard": "4/6mm pneumatic tube",
-        "interfaces": 1
-      },
-      {
-        "standard": "6-10mm shaft",
-        "interfaces": 1
-      },
-      {
-        "standard": "6-12mm shaft",
-        "interfaces": 1
       }
     ],
-    "unrecognized_standards_distinct": 119
+    "unrecognized_standards_distinct": 134
   },
   "rules": [
     {
@@ -1327,6 +1327,144 @@
       ]
     },
     {
+      "rule_id": "iso-m5:bolt_pattern+bolt_pattern",
+      "claim": "objects declaring standard family 'iso-m5' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
+      "family": "iso-m5",
+      "role_a": "bolt_pattern",
+      "role_b": "bolt_pattern",
+      "symmetric": true,
+      "confidence": "corroborated",
+      "reason": "3 author-declared compatible_with links already assert bolt_pattern<->bolt_pattern within this family, and both roles have 2+ objects",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 10,
+        "objects_role_b": 10,
+        "objects_total": 10,
+        "objects_both_roles": 10
+      },
+      "claimed_pairs": 45,
+      "pairs_already_in_graph": 45,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 3,
+        "author_declared_examples": [
+          [
+            "load-cell-mount",
+            "twin-post-frame"
+          ],
+          [
+            "twin-post-frame",
+            "vesa-arm-extender"
+          ],
+          [
+            "twin-post-frame",
+            "winch-cradle"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+          "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
+          "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
+          "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on",
+          "bar load cell, two holes in line; M5 screw joint at a 5.5 mm hole",
+          "four tapped holes in the top of the rear member; M8 screw joint at a 6.8 mm tap drill, M6 at 5 mm, M5 at 4.2 mm, M10 at 8.5 mm",
+          "four tapped holes through the base, two rows along the shaft; M5 screw joint at a 4.2 mm tap drill, M6 at 5 mm, M8 at 6.8 mm",
+          "two bolts in a line along the finger; M5 screw joint at a 5.5 mm hole",
+          "two bolts in a line; M8 screw joint at an 8.5 mm hole, M5 at 5.5 mm",
+          "two tapped holes in the front face; M8 screw joint at a 6.8 mm tap drill, M5 at 4.2 mm",
+          "two tapped holes in the top of the ledge; M6 screw joint at a 5 mm tap drill, M5 at 4.2 mm, M8 at 6.8 mm"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "arm_bolt_span",
+          "arm_hole_d",
+          "arm_len",
+          "arm_mount",
+          "arm_mount_drop",
+          "arm_thick",
+          "bar_h",
+          "bar_margin",
+          "base_depth",
+          "base_t",
+          "beam_bolt_d",
+          "beam_bolt_span"
+        ],
+        "role_b_parameters": [
+          "arm_bolt_span",
+          "arm_hole_d",
+          "arm_len",
+          "arm_mount",
+          "arm_mount_drop",
+          "arm_thick",
+          "bar_h",
+          "bar_margin",
+          "base_depth",
+          "base_t",
+          "beam_bolt_d",
+          "beam_bolt_span"
+        ]
+      },
+      "examples": [
+        {
+          "a": "load-cell-mount",
+          "a_interface": "fixed_seat",
+          "a_standard": "bar load cell, two holes in line; M5 screw joint at a 5.5 mm hole",
+          "b": "twin-post-frame",
+          "b_interface": "arm_mount",
+          "b_standard": "two tapped holes in the front face; M8 screw joint at a 6.8 mm tap drill, M5 at 4.2 mm",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "twin-post-frame",
+          "a_interface": "arm_mount",
+          "a_standard": "two tapped holes in the front face; M8 screw joint at a 6.8 mm tap drill, M5 at 4.2 mm",
+          "b": "vesa-arm-extender",
+          "b_interface": "drop_beam_mount",
+          "b_standard": "two bolts in a line; M8 screw joint at an 8.5 mm hole, M5 at 5.5 mm",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "twin-post-frame",
+          "a_interface": "arm_mount",
+          "a_standard": "two tapped holes in the front face; M8 screw joint at a 6.8 mm tap drill, M5 at 4.2 mm",
+          "b": "winch-cradle",
+          "b_interface": "hood_seat",
+          "b_standard": "four tapped holes through the base, two rows along the shaft; M5 screw joint at a 4.2 mm tap drill, M6 at 5 mm, M8 at 6.8 mm",
+          "author_declared": true,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "ab-front-idler",
+          "b_interface": "front_idler_top_mount",
+          "b_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "author_declared": false,
+          "already_in_graph": true
+        },
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "gripper-finger",
+          "b_interface": "jaw_mount",
+          "b_standard": "two bolts in a line along the finger; M5 screw joint at a 5.5 mm hole",
+          "author_declared": false,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "pco-1881:thread+thread",
       "claim": "objects declaring standard family 'pco-1881' in role 'thread' mate with objects declaring it in role 'thread'",
       "family": "pco-1881",
@@ -1471,19 +1609,19 @@
       "role_b": "socket",
       "symmetric": true,
       "confidence": "corroborated",
-      "reason": "11 author-declared compatible_with links already assert socket<->socket within this family, and both roles have 2+ objects",
+      "reason": "13 author-declared compatible_with links already assert socket<->socket within this family, and both roles have 2+ objects",
       "one_sided": false,
       "members": {
-        "objects_role_a": 7,
-        "objects_role_b": 7,
-        "objects_total": 7,
-        "objects_both_roles": 7
+        "objects_role_a": 8,
+        "objects_role_b": 8,
+        "objects_total": 8,
+        "objects_both_roles": 8
       },
-      "claimed_pairs": 21,
-      "pairs_already_in_graph": 21,
+      "claimed_pairs": 28,
+      "pairs_already_in_graph": 28,
       "new_edges": 0,
       "evidence": {
-        "author_declared_pairs": 11,
+        "author_declared_pairs": 13,
         "author_declared_examples": [
           [
             "bearing-housing",
@@ -1517,37 +1655,38 @@
           "ISO 15 (608/625/6900)",
           "ISO 15 (623/625/6900)",
           "ISO 15 (625/608)",
-          "ISO 15 deep-groove ball bearing outer-ring seat (608: 8 x 22 x 7)"
+          "ISO 15 deep-groove ball bearing outer-ring seat (608: 8 x 22 x 7)",
+          "bearing outer-ring seat; 608 (8 x 22 x 7) at bearing_d 22"
         ]
       },
       "falsification_handles": {
         "role_a_parameters": [
+          "axis_h",
           "back_wall",
           "bearing",
           "bearing_bore",
+          "bearing_d",
           "bearing_od",
           "bearing_seat",
           "belt_offset",
           "belt_plane",
           "belt_width",
           "big_pulley_od",
-          "cb_depth",
-          "counterbore",
-          "mirrored"
+          "cb_depth"
         ],
         "role_b_parameters": [
+          "axis_h",
           "back_wall",
           "bearing",
           "bearing_bore",
+          "bearing_d",
           "bearing_od",
           "bearing_seat",
           "belt_offset",
           "belt_plane",
           "belt_width",
           "big_pulley_od",
-          "cb_depth",
-          "counterbore",
-          "mirrored"
+          "cb_depth"
         ]
       },
       "examples": [
@@ -2177,6 +2316,7 @@
       },
       "falsification_handles": {
         "role_a_parameters": [
+          "arm_thick",
           "bolt_d",
           "countersink",
           "cs_depth",
@@ -2187,10 +2327,10 @@
           "offset",
           "plate_margin",
           "plate_thick",
-          "vesa",
-          "vesa_large"
+          "vesa"
         ],
         "role_b_parameters": [
+          "arm_thick",
           "bolt_d",
           "countersink",
           "cs_depth",
@@ -2201,8 +2341,7 @@
           "offset",
           "plate_margin",
           "plate_thick",
-          "vesa",
-          "vesa_large"
+          "vesa"
         ]
       },
       "examples": [
@@ -2211,7 +2350,7 @@
           "a_interface": "vesa_pattern",
           "a_standard": "VESA 75/100",
           "b": "vesa-arm-extender",
-          "b_interface": "vesa_display_face",
+          "b_interface": "drop_display_face",
           "b_standard": "VESA MIS-D",
           "author_declared": true,
           "already_in_graph": true
@@ -2248,7 +2387,7 @@
         },
         {
           "a": "vesa-arm-extender",
-          "a_interface": "vesa_display_face",
+          "a_interface": "drop_display_face",
           "a_standard": "VESA MIS-D",
           "b": "vesa-mount",
           "b_interface": "vesa_fdmi_destination",
@@ -4451,112 +4590,6 @@
       ]
     },
     {
-      "rule_id": "iso-m5:bolt_pattern+bolt_pattern",
-      "claim": "objects declaring standard family 'iso-m5' in role 'bolt_pattern' mate with objects declaring it in role 'bolt_pattern'",
-      "family": "iso-m5",
-      "role_a": "bolt_pattern",
-      "role_b": "bolt_pattern",
-      "symmetric": true,
-      "confidence": "plausible",
-      "reason": "the live graph's geometry table already admits bolt_pattern<->bolt_pattern (as 'mates_with') and both roles have 2+ objects, but no author has declared a pairing to confirm it",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 5,
-        "objects_role_b": 5,
-        "objects_total": 5,
-        "objects_both_roles": 5
-      },
-      "claimed_pairs": 10,
-      "pairs_already_in_graph": 10,
-      "new_edges": 0,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": "mates_with",
-        "graph_agrees": true,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "M5 (5.3 mm clearance, 8.1 mm AF nut)",
-          "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
-          "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
-          "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
-          "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
-          "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "bolt_dia",
-          "d_end",
-          "e_end",
-          "kerf",
-          "mirrored",
-          "nut_af"
-        ],
-        "role_b_parameters": [
-          "bolt_dia",
-          "d_end",
-          "e_end",
-          "kerf",
-          "mirrored",
-          "nut_af"
-        ]
-      },
-      "examples": [
-        {
-          "a": "ab-drive",
-          "a_interface": "ab_drive_c_mount",
-          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
-          "b": "ab-front-idler",
-          "b_interface": "front_idler_top_mount",
-          "b_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
-          "author_declared": false,
-          "already_in_graph": true
-        },
-        {
-          "a": "ab-drive",
-          "a_interface": "ab_drive_c_mount",
-          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
-          "b": "iv-pole-clamp",
-          "b_interface": "pinch_bolt_pattern",
-          "b_standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
-          "author_declared": false,
-          "already_in_graph": true
-        },
-        {
-          "a": "ab-drive",
-          "a_interface": "ab_drive_c_mount",
-          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
-          "b": "xy-joint",
-          "b_interface": "xy_joint_beam_mount",
-          "b_standard": "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
-          "author_declared": false,
-          "already_in_graph": true
-        },
-        {
-          "a": "ab-drive",
-          "a_interface": "ab_drive_c_mount",
-          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
-          "b": "z-joint",
-          "b_interface": "z_joint_clamp_mount",
-          "b_standard": "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on",
-          "author_declared": false,
-          "already_in_graph": true
-        },
-        {
-          "a": "ab-front-idler",
-          "a_interface": "front_idler_top_mount",
-          "a_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
-          "b": "iv-pole-clamp",
-          "b_interface": "pinch_bolt_pattern",
-          "b_standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
-          "author_declared": false,
-          "already_in_graph": true
-        }
-      ]
-    },
-    {
       "rule_id": "spi-neck:thread+thread",
       "claim": "objects declaring standard family 'spi-neck' in role 'thread' mate with objects declaring it in role 'thread'",
       "family": "spi-neck",
@@ -6056,6 +6089,70 @@
       ]
     },
     {
+      "rule_id": "iso-hex-fastener:pocket+profile",
+      "claim": "objects declaring standard family 'iso-hex-fastener' in role 'pocket' mate with objects declaring it in role 'profile'",
+      "family": "iso-hex-fastener",
+      "role_a": "pocket",
+      "role_b": "profile",
+      "symmetric": false,
+      "confidence": "plausible",
+      "reason": "1 author-declared compatible_with link(s) assert pocket<->profile, but one role is declared by a single object — the rule cannot be generalised from one side",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 1,
+        "objects_role_b": 1,
+        "objects_total": 2,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 1,
+      "new_edges": 0,
+      "evidence": {
+        "author_declared_pairs": 1,
+        "author_declared_examples": [
+          [
+            "fasteners",
+            "tube-end-plug"
+          ]
+        ],
+        "graph_rule_admits": "mates_with",
+        "graph_agrees": true,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "ISO 4014 / ISO 4762 / ISO 7380",
+          "ISO 4032 / ISO 4033",
+          "ISO hex nut by across-flats width"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "bolt_d",
+          "bolt_seat",
+          "nut_af",
+          "nut_h"
+        ],
+        "role_b_parameters": [
+          "clearance",
+          "diameter",
+          "head_style",
+          "nut_style"
+        ]
+      },
+      "examples": [
+        {
+          "a": "tube-end-plug",
+          "a_interface": "nut_seat",
+          "a_standard": "ISO hex nut by across-flats width",
+          "b": "fasteners",
+          "b_interface": "bolt_head_interface",
+          "b_standard": "ISO 4014 / ISO 4762 / ISO 7380",
+          "author_declared": true,
+          "already_in_graph": true
+        }
+      ]
+    },
+    {
       "rule_id": "iso-m3:socket+socket",
       "claim": "objects declaring standard family 'iso-m3' in role 'socket' mate with objects declaring it in role 'socket'",
       "family": "iso-m3",
@@ -7428,6 +7525,126 @@
       ]
     },
     {
+      "rule_id": "iso-m5:bolt_pattern+thread",
+      "claim": "objects declaring standard family 'iso-m5' in role 'bolt_pattern' mate with objects declaring it in role 'thread'",
+      "family": "iso-m5",
+      "role_a": "bolt_pattern",
+      "role_b": "thread",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->thread, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": false,
+      "members": {
+        "objects_role_a": 10,
+        "objects_role_b": 2,
+        "objects_total": 12,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 20,
+      "pairs_already_in_graph": 0,
+      "new_edges": 20,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "12-24 UNC (5.49 mm, 24 TPI) / M5",
+          "M5 (5.3 mm clearance, 8.1 mm AF nut)",
+          "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
+          "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
+          "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on",
+          "M5/M6",
+          "bar load cell, two holes in line; M5 screw joint at a 5.5 mm hole",
+          "four tapped holes in the top of the rear member; M8 screw joint at a 6.8 mm tap drill, M6 at 5 mm, M5 at 4.2 mm, M10 at 8.5 mm",
+          "four tapped holes through the base, two rows along the shaft; M5 screw joint at a 4.2 mm tap drill, M6 at 5 mm, M8 at 6.8 mm",
+          "two bolts in a line along the finger; M5 screw joint at a 5.5 mm hole",
+          "two bolts in a line; M8 screw joint at an 8.5 mm hole, M5 at 5.5 mm",
+          "two tapped holes in the front face; M8 screw joint at a 6.8 mm tap drill, M5 at 4.2 mm",
+          "two tapped holes in the top of the ledge; M6 screw joint at a 5 mm tap drill, M5 at 4.2 mm, M8 at 6.8 mm"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "arm_bolt_span",
+          "arm_hole_d",
+          "arm_len",
+          "arm_mount",
+          "arm_mount_drop",
+          "arm_thick",
+          "bar_h",
+          "bar_margin",
+          "base_depth",
+          "base_t",
+          "beam_bolt_d",
+          "beam_bolt_span"
+        ],
+        "role_b_parameters": [
+          "clearance",
+          "engage_turns",
+          "rod_len",
+          "thread_size",
+          "thread_std"
+        ]
+      },
+      "examples": [
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "drum-hardware",
+          "b_interface": "tension_rod_thread",
+          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "ab-drive",
+          "a_interface": "ab_drive_c_mount",
+          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
+          "b": "thumb-screw",
+          "b_interface": "iso_metric_thread",
+          "b_standard": "M5/M6",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "ab-front-idler",
+          "a_interface": "front_idler_top_mount",
+          "a_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "b": "drum-hardware",
+          "b_interface": "tension_rod_thread",
+          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "ab-front-idler",
+          "a_interface": "front_idler_top_mount",
+          "a_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
+          "b": "thumb-screw",
+          "b_interface": "iso_metric_thread",
+          "b_standard": "M5/M6",
+          "author_declared": false,
+          "already_in_graph": false
+        },
+        {
+          "a": "gripper-finger",
+          "a_interface": "jaw_mount",
+          "a_standard": "two bolts in a line along the finger; M5 screw joint at a 5.5 mm hole",
+          "b": "drum-hardware",
+          "b_interface": "tension_rod_thread",
+          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
       "rule_id": "involute-gear:profile+spline",
       "claim": "objects declaring standard family 'involute-gear' in role 'profile' mate with objects declaring it in role 'spline'",
       "family": "involute-gear",
@@ -7529,113 +7746,6 @@
           "b": "gears",
           "b_interface": "involute_gear_tooth",
           "b_standard": "ISO 53 / DIN 867 (20° involute)",
-          "author_declared": false,
-          "already_in_graph": false
-        }
-      ]
-    },
-    {
-      "rule_id": "iso-m5:bolt_pattern+thread",
-      "claim": "objects declaring standard family 'iso-m5' in role 'bolt_pattern' mate with objects declaring it in role 'thread'",
-      "family": "iso-m5",
-      "role_a": "bolt_pattern",
-      "role_b": "thread",
-      "symmetric": false,
-      "confidence": "speculative",
-      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->thread, with no author-declared link and no geometry rule admitting the pairing",
-      "one_sided": false,
-      "members": {
-        "objects_role_a": 5,
-        "objects_role_b": 2,
-        "objects_total": 7,
-        "objects_both_roles": 0
-      },
-      "claimed_pairs": 10,
-      "pairs_already_in_graph": 0,
-      "new_edges": 10,
-      "evidence": {
-        "author_declared_pairs": 0,
-        "author_declared_examples": [],
-        "graph_rule_admits": null,
-        "graph_agrees": false,
-        "bridge_objects": 0,
-        "bridge_consumers": 0,
-        "standards_observed": [
-          "12-24 UNC (5.49 mm, 24 TPI) / M5",
-          "M5 (5.3 mm clearance, 8.1 mm AF nut)",
-          "M5 screw through the arm into an M5 T-nut in the rear (E) beam's top slot, at the slot station 10 from its end; E's end e_end inboard of the C centre, its top face flush with the C's",
-          "M5 screw through the back wall into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in D's back slot, 10 from D's end; framed on D's back face",
-          "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
-          "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
-          "M5 screw through z-belt-clamp into a Ø4.2 pilot (the hole MISUMI taps M5); framed on the backer's face the clamp bears on",
-          "M5/M6"
-        ]
-      },
-      "falsification_handles": {
-        "role_a_parameters": [
-          "bolt_dia",
-          "d_end",
-          "e_end",
-          "kerf",
-          "mirrored",
-          "nut_af"
-        ],
-        "role_b_parameters": [
-          "clearance",
-          "engage_turns",
-          "rod_len",
-          "thread_size",
-          "thread_std"
-        ]
-      },
-      "examples": [
-        {
-          "a": "ab-drive",
-          "a_interface": "ab_drive_c_mount",
-          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
-          "b": "drum-hardware",
-          "b_interface": "tension_rod_thread",
-          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "ab-drive",
-          "a_interface": "ab_drive_c_mount",
-          "a_standard": "M5 screw through the base into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its rear end",
-          "b": "thumb-screw",
-          "b_interface": "iso_metric_thread",
-          "b_standard": "M5/M6",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "ab-front-idler",
-          "a_interface": "front_idler_top_mount",
-          "a_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
-          "b": "drum-hardware",
-          "b_interface": "tension_rod_thread",
-          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "ab-front-idler",
-          "a_interface": "front_idler_top_mount",
-          "a_standard": "M5 screw through the block into an M5 post-assembly T-nut (MISUMI HNTAP5-5) in the C's top slot, at the slot station 10 from its front end; framed on the C's top face",
-          "b": "thumb-screw",
-          "b_interface": "iso_metric_thread",
-          "b_standard": "M5/M6",
-          "author_declared": false,
-          "already_in_graph": false
-        },
-        {
-          "a": "iv-pole-clamp",
-          "a_interface": "pinch_bolt_pattern",
-          "a_standard": "M5 (5.3 mm clearance, 8.1 mm AF nut)",
-          "b": "drum-hardware",
-          "b_interface": "tension_rod_thread",
-          "b_standard": "12-24 UNC (5.49 mm, 24 TPI) / M5",
           "author_declared": false,
           "already_in_graph": false
         }
@@ -8893,6 +9003,61 @@
           "b": "filter-wheel",
           "b_interface": "cuvette_well",
           "b_standard": "12.5 mm square, 10 mm path-length cuvette",
+          "author_declared": false,
+          "already_in_graph": false
+        }
+      ]
+    },
+    {
+      "rule_id": "iso-hex-fastener:bolt_pattern+pocket",
+      "claim": "objects declaring standard family 'iso-hex-fastener' in role 'bolt_pattern' mate with objects declaring it in role 'pocket'",
+      "family": "iso-hex-fastener",
+      "role_a": "bolt_pattern",
+      "role_b": "pocket",
+      "symmetric": false,
+      "confidence": "speculative",
+      "reason": "co-declaration only: objects share the standard family in roles bolt_pattern<->pocket, with no author-declared link and no geometry rule admitting the pairing",
+      "one_sided": true,
+      "members": {
+        "objects_role_a": 1,
+        "objects_role_b": 1,
+        "objects_total": 2,
+        "objects_both_roles": 0
+      },
+      "claimed_pairs": 1,
+      "pairs_already_in_graph": 0,
+      "new_edges": 1,
+      "evidence": {
+        "author_declared_pairs": 0,
+        "author_declared_examples": [],
+        "graph_rule_admits": null,
+        "graph_agrees": false,
+        "bridge_objects": 0,
+        "bridge_consumers": 0,
+        "standards_observed": [
+          "ISO 4032",
+          "ISO hex nut by across-flats width"
+        ]
+      },
+      "falsification_handles": {
+        "role_a_parameters": [
+          "cdg_mount_type"
+        ],
+        "role_b_parameters": [
+          "bolt_d",
+          "bolt_seat",
+          "nut_af",
+          "nut_h"
+        ]
+      },
+      "examples": [
+        {
+          "a": "locking-mechanism-hyperobject",
+          "a_interface": "iso_m3_standard",
+          "a_standard": "ISO 4032",
+          "b": "tube-end-plug",
+          "b_interface": "nut_seat",
+          "b_standard": "ISO hex nut by across-flats width",
           "author_declared": false,
           "already_in_graph": false
         }

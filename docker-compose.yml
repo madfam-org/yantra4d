@@ -18,6 +18,12 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+    # The Studio and admin nginx configs proxy to `yantra4d-backend`, the
+    # Kubernetes service name; this alias lets the same images reach the API here.
+    networks:
+      default:
+        aliases:
+          - yantra4d-backend
     shm_size: '2gb'
     restart: unless-stopped
     ports:

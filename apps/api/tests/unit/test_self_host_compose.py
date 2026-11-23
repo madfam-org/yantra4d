@@ -46,6 +46,18 @@ def test_compose_publishes_ports_on_loopback_only():
         assert port.startswith("127.0.0.1:"), f"{name} publishes {port} on every interface"
 
 
+def test_nginx_proxy_hosts_resolve_on_the_compose_network():
+    """The Studio and admin images proxy to a host name the compose stack must provide."""
+    compose = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
+    names = set(compose["services"])
+    for service in compose["services"].values():
+        for network in (service.get("networks") or {}).values() if isinstance(service.get("networks"), dict) else []:
+            names.update((network or {}).get("aliases", []))
+    for conf in (REPO / "apps" / "studio" / "nginx.conf", REPO / "apps" / "admin" / "nginx.conf"):
+        for host in re.findall(r"proxy_pass\s+https?://([A-Za-z0-9_.-]+)", conf.read_text(encoding="utf-8")):
+            assert host in names, f"{conf.name} proxies to {host!r}, which no compose service or alias provides"
+
+
 def test_compose_stack_is_auth_off():
     assert _backend_env()["AUTH_ENABLED"] == "false"
 

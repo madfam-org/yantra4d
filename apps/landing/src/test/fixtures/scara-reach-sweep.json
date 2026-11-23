@@ -1,0 +1,49 @@
+{
+  "_comment": "Frozen from projects/scara-robotics/project.json (Commons pin at the time of writing). The landing CI checks out no submodules, so hero-sweep.test.ts reads this copy; when the Commons is checked out, the same test also checks this copy still matches it.",
+  "slug": "scara-robotics",
+  "animation": {
+    "id": "reach-sweep",
+    "label": {
+      "en": "Reach 180 → 800 mm",
+      "es": "Alcance 180 → 800 mm"
+    },
+    "from_state": {
+      "link1_length": 100,
+      "link2_length": 80
+    },
+    "to_state": {
+      "link1_length": 450,
+      "link2_length": 350
+    },
+    "frames": 8,
+    "duration_ms": 3500,
+    "easing": "ease-in-out",
+    "mode": "kinematic_chain"
+  },
+  "parameters": [
+    {
+      "id": "link1_length",
+      "type": "slider",
+      "default": 200,
+      "min": 100,
+      "max": 450,
+      "step": 5,
+      "label": {
+        "en": "Shoulder Link Length — L1 (mm)",
+        "es": "Longitud Eslabón Hombro — L1 (mm)"
+      }
+    },
+    {
+      "id": "link2_length",
+      "type": "slider",
+      "default": 150,
+      "min": 80,
+      "max": 350,
+      "step": 5,
+      "label": {
+        "en": "Elbow Link Length — L2 (mm)",
+        "es": "Longitud Eslabón Codo — L2 (mm)"
+      }
+    }
+  ]
+}

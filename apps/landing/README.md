@@ -52,7 +52,7 @@ submodule-less landing CI job, not the source of truth.
 ## Models
 
 `public/models/` holds the 3D models the page streams: one meshopt-compressed
-`<slug>.lod1.glb` per cartridge, a `<slug>.lod0.glb` for the hero cartridges,
+`<slug>.lod1.glb` per cartridge, a `<slug>.lod0.glb` for every cartridge that lod1 decimates,
 `<slug>.<animation>.<index>.glb` keyframes, and `manifest.json` (v2) listing
 them with their byte and triangle counts. They are produced by
 [`scripts/dev/optimize-commons-models.mjs`](../../scripts/dev/optimize-commons-models.mjs)
@@ -60,7 +60,7 @@ from raw renders and committed; the per-file budgets are the `meshes` block of
 `perf-budgets.json`.
 
 ```bash
-npm run models:optimize -- --strict --clean --lod0 hero   # from apps/landing, over public/models/raw/
+npm run models:optimize -- --strict --clean --lod0 all    # from apps/landing, over public/models/raw/
 npm run models:optimize -- --check                        # drift lane: exit 3 when the committed files are stale
 ```
 

@@ -18,8 +18,8 @@
  * Two levels of detail per cartridge, plus keyframes:
  *
  *   <slug>.lod1.glb   ≤ meshes.lod1Triangles / meshes.lod1Bytes   (every input)
- *   <slug>.lod0.glb   ≤ meshes.lod0Triangles / meshes.lod0Bytes   (--lod0 selection;
- *                     skipped when it would add no triangles over lod1)
+ *   <slug>.lod0.glb   ≤ meshes.lod0Triangles / meshes.lod0Bytes   (--lod0 selection,
+ *                     default all; skipped when it would add no triangles over lod1)
  *   <slug>.<animation>.<index>.glb   keyframes at lod0 settings, ≤ meshes.keyframeBytes
  *                                    (a frame byte-identical to the base or to an
  *                                    earlier frame is not written; the manifest
@@ -84,9 +84,6 @@ export const EXIT_BUDGET = 1;
 export const EXIT_USAGE = 2;
 export const EXIT_DRIFT = 3;
 export const EXIT_FAILED = 4;
-
-/** Above this many input cartridges `--lod0` defaults to `hero` instead of `all`. */
-export const LOD0_ALL_MAX_INPUTS = 40;
 
 /** Never simplify below this many triangles, whatever the byte budget says. */
 export const MIN_TRIANGLES = 64;
@@ -199,7 +196,7 @@ export const USAGE = [
   '  --in <dir>              raw GLBs (default apps/landing/public/models/raw; absent → legacy',
   '                          apps/landing/public/models/<slug>.glb files are the inputs)',
   '  --out <dir>             default apps/landing/public/models',
-  '  --lod0 all|hero|none|a,b  which slugs also get a lod0 (default: all for ≤ 40 inputs, else hero)',
+  '  --lod0 all|hero|none|a,b  which slugs also get a lod0 (default: all)',
   '  --strict                exit 1 when any output is over its byte budget',
   '  --check                 compare against what is on disk, write nothing (exit 3 on drift)',
   '  --clean                 remove stale outputs and consumed legacy inputs',
@@ -396,7 +393,9 @@ export function heroSlugs(ctx) {
 
 /** Resolve `--lod0` against the slugs that actually have a base input. */
 export function resolveLod0Selection(spec, baseSlugs, ctx) {
-  const mode = spec ?? (baseSlugs.length <= LOD0_ALL_MAX_INPUTS ? 'all' : 'hero');
+  // `all` by default, whatever the input count: the Studio opens every cartridge on its lod0
+  // when it has one, and with --clean a narrower selection deletes the lod0 outside it.
+  const mode = spec ?? 'all';
   if (mode === 'all') return { mode, slugs: new Set(baseSlugs) };
   if (mode === 'none') return { mode, slugs: new Set() };
   if (mode === 'hero') {

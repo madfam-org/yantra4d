@@ -1,4 +1,5 @@
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
+import { computeCreaseNormals, RENDER_CREASE_ANGLE_DEG } from '../lib/creaseNormals'
 
 self.onmessage = async (e) => {
     const { url, id, authHeader } = e.data
@@ -17,24 +18,17 @@ self.onmessage = async (e) => {
         const loader = new STLLoader()
         const geometry = loader.parse(buffer)
 
-        // Extract the raw interleaved arrays
-        const positionAttr = geometry.getAttribute('position')
-        const normalAttr = geometry.getAttribute('normal')
+        // We must copy the underlying array buffer because Transferable Objects
+        // will detach it from the worker.
+        const rawPositions = new Float32Array(geometry.getAttribute('position').array)
 
-        // We must copy the underlying array buffers because Transferable Objects
-        // will detach them from the worker.
-        const rawPositions = new Float32Array(positionAttr.array)
-        let rawNormals = null
-
-        if (normalAttr) {
-            rawNormals = new Float32Array(normalAttr.array)
-        }
+        // An STL carries one normal per facet, which draws every triangle as its own flat
+        // patch. Crease-angle normals shade a round face as one surface and keep real edges
+        // sharp; they are worked out here so the main thread never pays for it.
+        const rawNormals = computeCreaseNormals(rawPositions, RENDER_CREASE_ANGLE_DEG)
 
         // Prepare transferables (zero-copy memory pass to main thread)
-        const transferables = [rawPositions.buffer]
-        if (rawNormals) {
-            transferables.push(rawNormals.buffer)
-        }
+        const transferables = [rawPositions.buffer, rawNormals.buffer]
 
         self.postMessage(
             {

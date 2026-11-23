@@ -45,6 +45,13 @@ def render_final_channel_for_job(job_id: str) -> str:
     return f"{render_channel_for_job(job_id)}:{RENDER_FINAL_CHANNEL_SUFFIX}"
 
 
+#: Worker -> API only, on an `error` event: the signal number the engine process
+#: died of, when it crashed (`render_engine.crash_signal_of`); absent for every
+#: other failure. The API settles a metered render from it and removes it
+#: before the event reaches a client, so it is not part of the stream protocol.
+RENDER_FIELD_CRASH_SIGNAL = "crash_signal"
+
+
 def build_render_event(event: str, **payload) -> dict:
     """Build a versioned render event payload."""
     event_payload = {

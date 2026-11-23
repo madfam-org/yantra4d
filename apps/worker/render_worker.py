@@ -39,6 +39,7 @@ from services.engine.render_contract import (
     RENDER_EVENT_CANCELLED,
     RENDER_EVENT_ERROR,
     RENDER_EVENT_PART_DONE,
+    RENDER_FIELD_CRASH_SIGNAL,
     build_render_event,
     render_channel_for_job,
     render_final_channel_for_job,
@@ -280,6 +281,17 @@ def _notify_cancelled(job_id: str, part: str) -> None:
     )
 
 
+def _crash_fields(crash_signal) -> dict:
+    """The error-event field saying the engine process died of a crash signal.
+
+    Taken from the process's exit status by the engine, never from its output.
+    The API reads it to settle a metered render (commons_render_quota).
+    """
+    if isinstance(crash_signal, int) and not isinstance(crash_signal, bool) and crash_signal > 0:
+        return {RENDER_FIELD_CRASH_SIGNAL: crash_signal}
+    return {}
+
+
 def _notify_error(job_id: str, part: str, error: str, **extra) -> None:
     _publish_job_event(
         job_id,
@@ -442,15 +454,18 @@ def _render_sync_task(task):
         return
 
     _set_active_job(job_id, part, engine, payload)
+    crash_signal = None
     try:
     # Simple execution (no telemetry routing for worker sync simplicity)
         if engine == "cadquery":
             cp_copy = params.copy()
             cp_copy["target_part"] = part
             cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format)
-            success, stderr = run_cadquery_render(
+            result = run_cadquery_render(
                 cmd, scad_path=scad_path, is_cancelled=lambda: _is_cancelled(job_id)
             )
+            success, stderr = result
+            crash_signal = getattr(result, "crash_signal", None)
         elif engine == "graph":
             # Transpile the graph document to a CadQuery script, then ride the
             # proven CadQuery sandbox path (part selection via target_part).
@@ -458,9 +473,11 @@ def _render_sync_task(task):
             cp_copy = params.copy()
             cp_copy["target_part"] = part
             cmd = build_cadquery_command(output_path, script_path, cp_copy, export_format)
-            success, stderr = run_cadquery_render(
+            result = run_cadquery_render(
                 cmd, scad_path=script_path, is_cancelled=lambda: _is_cancelled(job_id)
             )
+            success, stderr = result
+            crash_signal = getattr(result, "crash_signal", None)
         elif engine == "implicit":
             config = manifest.project.get("hyperobject", {}).get("implicit_field", {})
             success, stderr = run_implicit_render(output_path, config, params)
@@ -476,7 +493,7 @@ def _render_sync_task(task):
             return
 
         if not success:
-            _notify_error(job_id, part, stderr)
+            _notify_error(job_id, part, stderr, **_crash_fields(crash_signal))
             return
 
         # Post-render
@@ -625,7 +642,8 @@ def process_stream_task(task):
                     if "cancel" in str(error_message).lower():
                         _notify_cancelled(job_id, part)
                     else:
-                        _notify_error(job_id, part, error_message)
+                        _notify_error(job_id, part, error_message,
+                                      **_crash_fields(event.get(RENDER_FIELD_CRASH_SIGNAL)))
                     emitted_final = True
                     break
 

@@ -55,9 +55,11 @@ on:
         description: >-
           Which cartridges also get a lod0 (full-detail) file: all, hero, none or a
           comma-separated list. hero = apps/landing/models.hero.json if present, else
-          every manifest with an `animations` array.
+          every manifest with an `animations` array. all is the default: the Studio
+          opens every cartridge on its lod0 when there is one, and a cartridge whose
+          raw render already fits lod1 gets none (the optimizer skips it).
         type: string
-        default: hero
+        default: all
 
 permissions:
   contents: write
@@ -298,7 +300,10 @@ jobs:
         env:
           # pull_request = the five-cartridge smoke set; a dispatch names its own.
           SLUGS: ${{ github.event_name == 'pull_request' && 'gridfinity,motor-mount,din-rail-clip,spiral-planter,hook-and-eye' || inputs.slugs }}
-          LOD0: ${{ inputs.lod0 || 'hero' }}
+          # `all` on the monthly schedule too, so its artifact matches what is
+          # committed: with --clean, a narrower selection deletes every lod0
+          # outside it, and the Studio falls back to the 2,500-triangle lod1.
+          LOD0: ${{ inputs.lod0 || 'all' }}
         run: |
           set -uo pipefail
           args=(--strict --lod0 "$LOD0")
@@ -349,7 +354,7 @@ jobs:
           title: "chore(landing): refresh the commons models"
           body: |
             Rendered through a local API on the runner and optimized with
-            `scripts/dev/optimize-commons-models.mjs` (`--strict --lod0 ${{ inputs.lod0 || 'hero' }}`${{ inputs.slugs == '' && ' --clean' || '' }}).
+            `scripts/dev/optimize-commons-models.mjs` (`--strict --lod0 ${{ inputs.lod0 || 'all' }}`${{ inputs.slugs == '' && ' --clean' || '' }}).
 
             - slugs: `${{ inputs.slugs == '' && 'whole catalog' || inputs.slugs }}`
             - render step: `${{ steps.render.outcome }}` · optimize step: `${{ steps.optimize.outcome }}`

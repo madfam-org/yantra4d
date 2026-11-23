@@ -7,8 +7,10 @@ import json
 import logging
 import math
 import os
+import re
 import time
 import uuid
+from dataclasses import dataclass
 
 import redis
 
@@ -25,13 +27,14 @@ from services.engine.render_contract import (
     RENDER_EVENT_ERROR,
     RENDER_EVENT_JOB,
     RENDER_EVENT_PART_DONE,
+    RENDER_FIELD_CRASH_SIGNAL,
     RENDER_STREAM_SCHEMA_VERSION,
     build_render_event,
     is_terminal_render_event,
     render_channel_for_job,
     render_final_channel_for_job,
 )
-from services.engine.render_engine import RENDER_TIMEOUT_S
+from services.engine.render_engine import CRASH_SIGNALS, RENDER_TIMEOUT_S
 from services.engine.render_revision import cache_revision, render_revision
 from services.engine.render_source import (
     RenderSourceError,
@@ -188,7 +191,8 @@ def _request_origin() -> str:
         from flask import has_request_context, request
         if not has_request_context():
             return "no-request-context"
-        return f"{request.method} {request.path} from {request.remote_addr}"
+        from utils.client_ip import client_ip
+        return f"{request.method} {request.path} from {client_ip()}"
     except Exception:
         return "unknown"
 
@@ -260,6 +264,20 @@ def resolve_render_context(data: dict):
     parts = next((m.get("parts", []) for m in manifest.modes if m.get("id") == mode_id), [])
     return (source.filename, source_path, parts, manifest.get_mode_map(),
             manifest.get_static_stl_map(), mode_id)
+
+
+#: A caller-supplied request id is used only if it is this shape; anything else
+#: (a number, an object, an over-long or odd string) gets a server-minted one.
+#: A non-string id never matches the string ids the cancel sweep and the free
+#: render lease compare against, so an abandoned render could not be stopped.
+_REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+
+
+def _request_id_from(data: dict) -> str:
+    raw = data.get("request_id")
+    if isinstance(raw, str) and _REQUEST_ID_RE.match(raw):
+        return raw
+    return str(uuid.uuid4())
 
 
 def extract_render_payload(data: dict) -> dict | RenderPayloadError:
@@ -339,7 +357,7 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         'mode_map': mode_map,
         'stl_prefix': stl_prefix,
         'mode': mode_id,
-        'request_id': data.get("request_id") or str(uuid.uuid4()),
+        'request_id': _request_id_from(data),
         'export_format': export_format,
         'params': params,
         'static_stl_map': static_stl_map,
@@ -381,13 +399,21 @@ def _inject_material_compensations(params: dict, target_mat: str) -> None:
 # Engine Configuration
 # ──────────────────────────────────────────────
 
-def resolve_engine_config(data: dict, payload: dict, tier: str):
+def resolve_engine_config(data: dict, payload: dict, tier: str, *, allow_commons_quota: bool = False):
     """Determine the engine, validate export format, and resolve the actual render format.
 
     Returns (engine, scad_path, actual_format, error_tuple_or_none).
     If error_tuple_or_none is not None, it is (message, status_code).
+
+    ``allow_commons_quota`` is passed only by ``/api/render`` and
+    ``/api/render-stream``: there a tier without the CadQuery/graph engine may
+    still re-render a Commons cartridge under its daily quota
+    (services/engine/commons_render_quota.py). The payload is then flagged
+    ``METERED_FLAG`` and the route must admit the render before running it.
+    Every other caller keeps the 403.
     """
     from services.core.tier_service import check_feature
+    from services.engine.commons_render_quota import METERED_FLAG, metered_access
 
     project_slug = payload['project_slug']
     export_format = payload['export_format']
@@ -426,15 +452,18 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
             scad_path = str(cq_path)
 
     # Validate engine+format compatibility
+    payload.pop(METERED_FLAG, None)
+    metered = allow_commons_quota and metered_access(tier, engine, manifest)
+
     if engine == "cadquery":
-        if not check_feature(tier, "cadquery_engine"):
+        if not check_feature(tier, "cadquery_engine") and not metered:
             return engine, scad_path, None, ("CadQuery engine is not available for your tier.", 403)
         if export_format not in Config.CADQUERY_ALLOWED_EXPORT_FORMATS:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by CadQuery engine.", 400)
     elif engine == "graph":
         # Graph documents transpile to CadQuery scripts (services/engine/graph_engine.py),
         # so they gate and format-check like a paid backend kernel of their own.
-        if not check_feature(tier, "graph_engine"):
+        if not check_feature(tier, "graph_engine") and not metered:
             return engine, scad_path, None, ("Graph engine is not available for your tier.", 403)
         if export_format not in Config.GRAPH_ALLOWED_EXPORT_FORMATS:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by graph engine.", 400)
@@ -444,6 +473,9 @@ def resolve_engine_config(data: dict, payload: dict, tier: str):
     elif engine == "openscad":
         if export_format not in Config.OPENSCAD_ALLOWED_EXPORT_FORMATS and export_format not in TRIMESH_CONVERTIBLE:
             return engine, scad_path, None, (f"Export format '{export_format}' is not supported by OpenSCAD engine.", 400)
+
+    if metered:
+        payload[METERED_FLAG] = True
 
     # Determine actual render format
     if engine in ("cadquery", "graph"):
@@ -497,6 +529,56 @@ def _check_cache(payload, part, export_format):
         scad_content_hash=payload.get('scad_content_hash'),
     )
     return cached if generator_output.cache_entry_usable(cached, payload) else None
+
+
+def cold_part_count(payload: dict) -> int:
+    """How many parts of this request the worker would actually compute.
+
+    Static parts and render-cache hits cost no worker time. Asked before a
+    metered render (commons_render_quota): a request with no cold part is not
+    counted, and the free tiers' hourly budget is charged per cold part.
+    Static parts are checked without the conversion `_render_static_part` would
+    do, so asking has no side effects.
+    """
+    static_stl_map = payload.get("static_stl_map") or {}
+    export_format = payload.get("export_format")
+    cold = 0
+    for part in payload.get("parts") or []:
+        static_path = static_stl_map.get(part)
+        if static_path is not None and getattr(static_path, "is_file", lambda: False)():
+            continue
+        if _check_cache(payload, part, export_format):
+            continue
+        cold += 1
+    return cold
+
+
+def request_has_pending_work(request_id: str | None) -> bool:
+    """Whether any job of this render request is still queued or held by a worker.
+
+    "Held" means in the active set with a live lease (its metadata key, which
+    the worker refreshes while it renders). Errors answer True: the caller uses
+    this to decide whether the worker is still busy for this request, and
+    "busy" is the safe answer.
+    """
+    if not request_id:
+        return False
+    try:
+        for _raw, task in _iter_queued_tasks():
+            if task.get("request_id") == request_id:
+                return True
+        for job_id in _decoded_job_ids(r.smembers(ACTIVE_RENDER_JOBS_KEY)):
+            if _active_job_meta(job_id).get("request_id") == request_id:
+                return True
+    except Exception:
+        logger.debug("Could not inspect pending work for request %s", request_id, exc_info=True)
+        return True
+    return False
+
+
+def _is_metered(payload: dict) -> bool:
+    from services.engine.commons_render_quota import METERED_FLAG
+    return bool(payload.get(METERED_FLAG))
 
 
 def _post_render_convert(output_path, output_filename, part, stl_prefix,
@@ -641,7 +723,68 @@ def _sanitize_terminal_payload(payload: dict | None) -> dict:
     return clean
 
 
-def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str, tier: str):
+@dataclass
+class RenderStatus:
+    """What happened to a render, recorded by the render loop itself.
+
+    Settling a metered render (commons_render_quota) reads this, never the
+    log text: the log carries worker output, and the worker echoes the
+    visitor's own parameters (a nameplate whose text is "ERROR"), so any
+    substring test on it is under the visitor's control.
+    """
+
+    completed_parts: int = 0   # parts delivered (rendered, cached or static)
+    errored_parts: int = 0     # the worker reported an error for the part
+    crashed_parts: int = 0     # ...of which the engine process died of a crash signal
+    timed_out: bool = False    # we stopped waiting for a part
+    cancelled: bool = False    # the request or a part was cancelled
+    worker_lost: bool = False  # no live render worker to hand the part to
+    finished: bool = False     # the loop ran to its end
+
+
+def _take_crash_signal(event: dict) -> int | None:
+    """Remove the worker's crash-signal field from *event* and return it.
+
+    The field is worker -> API only (render_contract), so it is removed here,
+    before the event can be forwarded to a client. Anything but a known crash
+    signal number counts as absent.
+    """
+    value = event.pop(RENDER_FIELD_CRASH_SIGNAL, None)
+    if isinstance(value, int) and not isinstance(value, bool) and value in CRASH_SIGNALS:
+        return value
+    return None
+
+
+def _record_part_error(status: RenderStatus, crash_signal: int | None) -> None:
+    status.errored_parts += 1
+    if crash_signal is not None:
+        status.crashed_parts += 1
+
+
+def _tick(on_tick) -> None:
+    """Call the caller's per-iteration hook; it must never break a render."""
+    if on_tick is None:
+        return
+    try:
+        on_tick()
+    except Exception:
+        logger.debug("render on_tick hook failed", exc_info=True)
+
+
+def _part_deadline(per_part_seconds: float, deadline: float | None) -> float:
+    limit = time.time() + per_part_seconds
+    return limit if deadline is None else min(limit, deadline)
+
+
+def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str, tier: str,
+                      *, status: RenderStatus | None = None, on_tick=None, deadline: float | None = None):
+    """Render every part, one worker job at a time, and wait for each.
+
+    ``status`` (filled in place), ``on_tick`` (called on every wait iteration)
+    and ``deadline`` (an absolute time no part wait may pass) are for metered
+    renders; other callers leave them out and see no change.
+    """
+    status = status if status is not None else RenderStatus()
     parts_to_render = payload['parts']
     stl_prefix = payload['stl_prefix']
     export_format = payload['export_format']
@@ -656,18 +799,21 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
 
     clear_request_cancel(request_id)
 
+    timed_out = False
     for part in parts_to_render:
         # /api/render answers only when every part is done, so a caller can
         # cancel it only by supplying its own `request_id` up front — which is
         # exactly what the field is for on this path.
         if is_request_cancelled(request_id):
             combined_log += f"[{part}] INFO: Render cancelled by user request\n"
+            status.cancelled = True
             break
 
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
             generated_parts.append(static_result[0])
             combined_log += static_result[1]
+            status.completed_parts += 1
             continue
             
         output_filename = f"{stl_prefix}{part}.{actual_format}"
@@ -680,9 +826,17 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
             combined_log += f"[{part}] cache HIT\n"
             generated_parts.append({"type": part, "url": f"/static/{cache_entry_key(cached)}", "size_bytes": cached["size_bytes"],
                                     **generator_output.part_fields_from_cache(cached)})
+            status.completed_parts += 1
             continue
 
+        if deadline is not None and time.time() >= deadline:
+            # Out of time before this part was even queued: do not start it.
+            combined_log += f"[{part}] ERROR: Render timed out before this part was queued\n"
+            status.timed_out = True
+            break
+
         if not is_render_worker_available():
+            status.worker_lost = True
             return None, "Render worker unavailable or not healthy", (cache_hits, cache_total)
 
         job_id = str(uuid.uuid4())
@@ -702,12 +856,18 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
         }
         r.rpush(RENDER_QUEUE, json.dumps(task))
 
-        part_deadline = time.time() + RENDER_PART_WAIT_TIMEOUT_SECONDS
+        part_deadline = _part_deadline(RENDER_PART_WAIT_TIMEOUT_SECONDS, deadline)
         part_complete = False
         while not part_complete:
+            _tick(on_tick)
             if time.time() > part_deadline:
                 combined_log += f"[{part}] ERROR: Render timed out while waiting for completion\n"
                 _notify_error(job_id, part, "Render job timed out")
+                status.timed_out = True
+                if _is_metered(payload):
+                    # Nobody waits for it any more: stop the worker too.
+                    cancel_render_jobs([job_id])
+                    timed_out = True
                 break
 
             message = part_sub.get_message(timeout=1.0)
@@ -726,10 +886,13 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
                     part_entry = _sanitize_terminal_payload(event_payload)
                     combined_log += part_entry.pop("log", "")
                     generated_parts.append(part_entry)
+                    status.completed_parts += 1
                 elif event_type == RENDER_EVENT_ERROR:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] ERROR: {event_payload.get('error', event_payload.get('message'))}\n"
+                    _record_part_error(status, _take_crash_signal(event_payload))
                 elif event_type == RENDER_EVENT_CANCELLED:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_payload.get('message')}\n"
+                    status.cancelled = True
                 else:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_type}\n"
                 part_complete = True
@@ -743,17 +906,29 @@ def render_parts_sync(data: dict, payload: dict, engine: str, scad_path: str, ac
                     part_entry = _sanitize_terminal_payload(event_payload)
                     combined_log += part_entry.pop("log", "")
                     generated_parts.append(part_entry)
+                    status.completed_parts += 1
                 elif event_type == RENDER_EVENT_ERROR:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] ERROR: {event_payload.get('error', event_payload.get('message'))}\n"
+                    _record_part_error(status, _take_crash_signal(event_payload))
                 else:
                     combined_log += f"[{event_payload.get('part', 'unknown')}] INFO: {event_payload.get('message')}\n"
+                    status.cancelled = True
                 part_complete = True
 
         part_sub.close()
+        if timed_out:
+            # A metered render stops at its first timeout rather than queueing
+            # more free work behind a part that never finished.
+            break
+    else:
+        status.finished = True
 
     return generated_parts, combined_log, (cache_hits, cache_total)
 
-def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str):
+def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, actual_format: str,
+                        *, status: RenderStatus | None = None, on_tick=None, deadline: float | None = None):
+    """Stream a render as SSE. ``status``/``on_tick``/``deadline``: see render_parts_sync."""
+    status = status if status is not None else RenderStatus()
     parts_to_render = payload["parts"]
     stl_prefix = payload["stl_prefix"]
     export_format = payload["export_format"]
@@ -779,10 +954,12 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
         job_ids=list(job_ids),
     ))
 
+    stream_timed_out = False
     for i, part in enumerate(parts_to_render):
         # Parts are queued one at a time, so this is the only place a cancel can
         # stop the parts that have not been queued yet.
         if is_request_cancelled(request_id):
+            status.cancelled = True
             yield _sse_event(build_render_event(
                 RENDER_EVENT_CANCELLED,
                 part=part,
@@ -794,6 +971,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
         static_result = _render_static_part(part, static_stl_map, stl_prefix, export_format, project_slug)
         if static_result:
             generated_parts.append(static_result[0])
+            status.completed_parts += 1
             progress = ((i + 1) / num_parts) * 100
             yield _sse_event(build_render_event(
                     RENDER_EVENT_PART_DONE,
@@ -817,6 +995,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 **generator_output.part_fields_from_cache(cached),
             }
             generated_parts.append(part_entry)
+            status.completed_parts += 1
             progress = ((i + 1) / num_parts) * 100
             yield _sse_event(build_render_event(
                     RENDER_EVENT_PART_DONE,
@@ -830,7 +1009,19 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             )
             continue
 
+        if deadline is not None and time.time() >= deadline:
+            # Out of time before this part was even queued: do not start it.
+            status.timed_out = True
+            yield _sse_event(build_render_event(
+                RENDER_EVENT_ERROR,
+                part=part,
+                error="Render stream timed out before this part was queued",
+                message="Render stream timed out before this part was queued",
+            ))
+            break
+
         if not is_render_worker_available():
+            status.worker_lost = True
             unavailable_error = build_render_event(
                 RENDER_EVENT_ERROR,
                 part=part,
@@ -884,9 +1075,10 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
         ))
 
         done = False
-        part_deadline = time.time() + RENDER_STREAM_PART_TIMEOUT_SECONDS
+        part_deadline = _part_deadline(RENDER_STREAM_PART_TIMEOUT_SECONDS, deadline)
 
         while not done:
+            _tick(on_tick)
             if time.time() > part_deadline:
                 timeout_event = build_render_event(
                     RENDER_EVENT_ERROR,
@@ -896,6 +1088,10 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 )
                 yield f"data: {json.dumps(timeout_event)}\n\n"
                 _notify_error(job_id, part, "Render stream timed out waiting for completion")
+                status.timed_out = True
+                if _is_metered(payload):
+                    cancel_render_jobs([job_id])
+                    stream_timed_out = True
                 break
 
             message = pubsub.get_message(timeout=0.2)
@@ -908,10 +1104,12 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 logger.debug("Skipping malformed render payload for part %s", part)
                 continue
 
+            crash_signal = _take_crash_signal(event_data)
             if channel == render_channel:
                 yield f"data: {json.dumps(event_data)}\n\n"
                 if event_data.get("event") == RENDER_EVENT_PART_DONE and event_data.get("type"):
                     generated_parts.append(_sanitize_terminal_payload(event_data))
+                    status.completed_parts += 1
                     done = True
                 continue
 
@@ -921,8 +1119,10 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
             event_type = event_data.get("event")
             if event_type == RENDER_EVENT_PART_DONE:
                 generated_parts.append(_sanitize_terminal_payload(event_data))
+                status.completed_parts += 1
                 done = True
             elif event_type == RENDER_EVENT_ERROR:
+                _record_part_error(status, crash_signal)
                 logger.error(
                     "Render stream error for part %s: %s",
                     event_data.get("part"),
@@ -931,6 +1131,7 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 yield f"data: {json.dumps(event_data)}\n\n"
                 done = True
             elif event_type == RENDER_EVENT_CANCELLED:
+                status.cancelled = True
                 logger.info(
                     "Render stream cancelled for part %s (reason=%s)",
                     event_data.get("part"),
@@ -944,9 +1145,14 @@ def render_parts_stream(data: dict, payload: dict, engine: str, scad_path: str, 
                 done = True
             else:
                 generated_parts.append(event_data)
+                status.completed_parts += 1
                 done = True
 
         pubsub.close()
+        if stream_timed_out:
+            break
+    else:
+        status.finished = True
 
     yield _sse_event(build_render_event(
             RENDER_EVENT_COMPLETE,

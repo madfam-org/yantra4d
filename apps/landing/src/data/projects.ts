@@ -567,4 +567,6 @@ export const TIER_FACTS = {
   proRenders: 150,
   essentialsProjects: 5,
   proProjects: -1,
+  guestCommonsRenders: 3,
+  essentialsCommonsRenders: 10,
 } as const;

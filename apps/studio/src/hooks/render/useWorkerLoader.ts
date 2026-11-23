@@ -3,7 +3,9 @@ import { BufferGeometry, Scene } from 'three'
 // @ts-expect-error three.js examples lack type declarations in this project's TS config
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { STLPayloadCache, type STLPayload } from '../../lib/stlPayloadCache'
-import { createSTLGeometry, mergeGLTFGeometry, disposeGLTF } from '../../lib/viewerResources'
+import { addCreaseNormals, createSTLGeometry, mergeGLTFGeometry, disposeGLTF } from '../../lib/viewerResources'
+import { RENDER_CREASE_ANGLE_DEG } from '../../lib/creaseNormals'
+import { computeCreaseNormalsOffThread } from '../../lib/creaseNormalsWorker'
 import { bearerHeaderForSameOrigin } from '../../lib/januaSso'
 
 interface WorkerMessage {
@@ -20,6 +22,12 @@ export interface WorkerLoaderOptions {
    * not. The decoder (~20 KB) is imported on first use, in its own chunk.
    */
   meshopt?: boolean
+  /**
+   * The crease angle for a GLB that arrives without normals: facets further apart than this
+   * stay edges, the rest shade as one surface. Defaults to the render angle; the prerendered
+   * preview passes a wider one. An STL's normals are set by the worker.
+   */
+  creaseAngleDeg?: number
   /** Called instead of `console.error` when the load fails (a silent preview). */
   onError?: (error: unknown) => void
 }
@@ -132,8 +140,9 @@ function loadSTL(url: string): Promise<STLPayload> {
 /** Load the current request; this effect owns all displayed Three.js resources. */
 export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean = false, options: WorkerLoaderOptions = {}): WorkerLoaderResult {
     const meshopt = options.meshopt === true
+    const creaseAngleDeg = options.creaseAngleDeg ?? RENDER_CREASE_ANGLE_DEG
     // Identity distinguishes A/B/A transitions and never resurrects disposed A.
-    const request = useMemo(() => ({ url, isGLTF, meshopt }), [url, isGLTF, meshopt])
+    const request = useMemo(() => ({ url, isGLTF, meshopt, creaseAngleDeg }), [url, isGLTF, meshopt, creaseAngleDeg])
     // The latest handler, without making it part of the request identity.
     const onErrorRef = useRef(options.onError)
     useEffect(() => { onErrorRef.current = options.onError })
@@ -163,10 +172,13 @@ export function useWorkerLoader(url: string | null | undefined, isGLTF: boolean 
                     return loader.loadAsync(url)
                 })
                 : loader.loadAsync(url)
-            loading.then((data: GLTF) => {
+            loading.then(async (data: GLTF) => {
                 if (!active) { disposeGLTF(data); return }
                 let geometry: BufferGeometry | null = null
                 try {
+                    // Before the merge, so the analysis geometry carries the same normals.
+                    await addCreaseNormals(data.scene, request.creaseAngleDeg, computeCreaseNormalsOffThread)
+                    if (!active) { disposeGLTF(data); return }
                     geometry = mergeGLTFGeometry(data.scene)
                 } catch (error) {
                     disposeGLTF(data)

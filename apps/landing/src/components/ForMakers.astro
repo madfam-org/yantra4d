@@ -23,6 +23,11 @@ const { t } = Astro.props;
         <p class="text-sm text-muted-foreground">{t ? t.forMakers.customize.desc : 'Deslizadores, botones, selectores de color. Cambia cualquier dimensión, míralo en 3D en tiempo real.'}</p>
       </div>
       <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">📏</div>
+        <h3 class="mb-2 font-semibold">{t?.forMakers.viewer.title ?? ''}</h3>
+        <p class="text-sm text-muted-foreground">{t?.forMakers.viewer.desc ?? ''}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
         <div class="mb-3 text-2xl">🖨️</div>
         <h3 class="mb-2 font-semibold">{t ? t.forMakers.estimate.title : 'Anticípate a la Impresión'}</h3>
         <p class="text-sm text-muted-foreground">{t ? t.forMakers.estimate.desc : 'Tiempo, filamento y costo estimados antes de gastar un gramo.'}</p>
@@ -36,6 +41,11 @@ const { t } = Astro.props;
         <div class="mb-3 text-2xl">🔧</div>
         <h3 class="mb-2 font-semibold">{t ? t.forMakers.assembly.title : 'Ensamblaje Claro'}</h3>
         <p class="text-sm text-muted-foreground">{t ? t.forMakers.assembly.desc : 'Instrucciones 3D paso a paso. Lista de materiales incluida.'}</p>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
+        <div class="mb-3 text-2xl">🧩</div>
+        <h3 class="mb-2 font-semibold">{t?.forMakers.worksWith.title ?? ''}</h3>
+        <p class="text-sm text-muted-foreground">{t?.forMakers.worksWith.desc ?? ''}</p>
       </div>
       <div class="rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md">
         <div class="mb-3 text-2xl">🌐</div>

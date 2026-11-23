@@ -26,7 +26,7 @@ scripts/dev/optimize-commons-models.mjs  (npm run models:optimize, from apps/lan
         ▼
 apps/landing/public/models/
     <slug>.lod1.glb                  every cartridge     ≤ 12,288 B, ≤ 2,500 triangles
-    <slug>.lod0.glb                  hero cartridges     ≤ 61,440 B, ≤ 25,000 triangles
+    <slug>.lod0.glb                  decimated at lod1   ≤ 61,440 B, ≤ 25,000 triangles
     <slug>.<animation>.<index>.glb   keyframes           ≤ 61,440 B, ≤ 25,000 triangles
     manifest.json                    v2, see below
 ```
@@ -58,10 +58,15 @@ Consequences the page has to know about:
 
 - **Every output carries `POSITION` only** — one mesh, one primitive, no
   material, no normals. three.js's `GLTFLoader` sets `flatShading: true` on
-  the material *it* creates when normals are absent; a page material of its own
-  must do the same (`new MeshStandardMaterial({ flatShading: true })`) or call
-  `geometry.computeVertexNormals()`. CAD parts look right flat-shaded; the
-  legacy 2026-03 carousel GLBs were already POSITION-only.
+  the material *it* creates when normals are absent, which draws every
+  triangle of a decimated mesh as its own patch. Both readers therefore work
+  out **crease-angle normals** on load: facets within 35° of each other shade
+  as one surface, sharper ones stay edges (`computeCreaseNormals`,
+  `PREVIEW_CREASE_ANGLE_DEG`, in `apps/landing/src/lib/creaseNormals.ts` and its
+  twin `apps/studio/src/lib/creaseNormals.ts`; a landing test holds the two
+  copies identical). Do not call `geometry.computeVertexNormals()` instead: on
+  the welded mesh it also rounds off the real edges of the part. The legacy
+  2026-03 carousel GLBs were already POSITION-only.
 - **Both extensions are `extensionsRequired`.** The loader needs the meshopt
   decoder: `loader.setMeshoptDecoder(MeshoptDecoder)` (`three/examples/jsm/libs/meshopt_decoder.module.js`).
 - Geometry is baked in world space; the quantization offset lives on the
@@ -99,9 +104,22 @@ Enforcement, in order:
 (a second, byte-identical file under another name would help nobody); the
 manifest then simply carries no `lod0` for that slug.
 
-`--lod0` accepts `all`, `hero`, `none` or a comma-separated list. The default
-is `all` for ≤ 40 inputs and `hero` above that. `hero` is
-`apps/landing/models.hero.json` (a JSON array of slugs, or `{ "slugs": [...] }`)
+`--lod0` accepts `all`, `hero`, `none` or a comma-separated list, and defaults
+to `all`, in the optimizer and in the workflow (scheduled or dispatched): every
+cartridge that lod1 decimates also gets a lod0, and the Studio opens on it. Keep
+it that way when running the optimizer by hand: with `--clean`, a narrower
+selection deletes every lod0 outside it, and even without `--clean` the rebuilt
+manifest stops listing them.
+
+Measured on the 2026-11-22 run (510 cartridges, `lod0=all`): 289 lod0 files;
+239 of them are the raw render undecimated, 49 hit the 61,440 B cap first and
+were decimated to 15,000–19,500 triangles (the 25,000-triangle budget never
+binds at about 3 B per triangle), one is the lattice exception. lod0 totals
+8.57 MB in `public/models`, fetched only by a Studio visitor, one cartridge at a
+time; the landing gallery keeps reading lod1, and only `manifest.json` grows
+(about 1.3 KB compressed).
+
+`hero` is `apps/landing/models.hero.json` (a JSON array of slugs, or `{ "slugs": [...] }`)
 when that file exists, else every manifest under `projects/*` with an
 `animations` array (20 cartridges at the time of writing).
 
@@ -176,7 +194,7 @@ the commons submodule (`git submodule update --init --depth 1 projects`).
 cd apps/landing
 
 # Over a raw/ directory produced by the render half:
-npm run models:optimize -- --strict --clean --lod0 hero
+npm run models:optimize -- --strict --clean --lod0 all
 
 # Drift lane: exit 3 when the committed files differ from what the inputs produce.
 npm run models:optimize -- --check
@@ -244,7 +262,7 @@ on `workflow_dispatch` with:
 | :-- | :-- | :-- |
 | `open_pr` | `false` | Commit `apps/landing/public/models` to `chore/commons-models-<run>` and open a PR (`peter-evans/create-pull-request`). |
 | `slugs` | *(empty = whole catalog)* | Render only these, `--force`d. A limited run never passes `--clean` to the optimizer, so the other cartridges' LODs stay. |
-| `lod0` | `hero` | Passed straight to the optimizer's `--lod0`. |
+| `lod0` | `all` | Passed straight to the optimizer's `--lod0`. The scheduled run uses `all` too, so the artifact it uploads matches what is committed. |
 
 What it does, on GitHub-hosted `ubuntu-24.04` (R116: public repositories stay on
 GitHub-hosted runners), 120 min budget:

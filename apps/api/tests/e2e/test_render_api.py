@@ -181,7 +181,7 @@ class TestTierEnforcementRender:
         # Short-circuit after the format gate: engine resolution "fails" with a
         # sentinel status, proving the request passed the gate.
         monkeypatch.setattr("routes.engine.render.resolve_engine_config",
-                            lambda *args: (None, None, None, ("passed format gate", 418)))
+                            lambda *args, **kwargs: (None, None, None, ("passed format gate", 418)))
 
         res = client.post("/api/render", json={"project": "test-project"})
         assert res.status_code == 418

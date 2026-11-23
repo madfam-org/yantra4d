@@ -68,7 +68,7 @@ from .validate import (
 
 #: The version of this package's contract. A kernel's vendored copy states it in its
 #: lock; a change that moves what a valid document is bumps it.
-CORE_VERSION = "1.0.0"
+CORE_VERSION = "1.0.1"
 
 __all__ = [
     "CORE_KEYS",

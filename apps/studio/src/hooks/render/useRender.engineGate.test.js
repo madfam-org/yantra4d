@@ -149,3 +149,65 @@ describe('engine gate before the render estimate', () => {
     expect(mocks.triggerUpgradePrompt).toHaveBeenCalledWith('CadQuery Cloud Rendering')
   })
 })
+
+describe('the free Commons quota (metered engine)', () => {
+  const GUEST_Q = { ...GUEST, commons_brep_renders_per_day: 3 }
+
+  function quotaError(code, body = {}) {
+    const err = new Error(`Render request failed (HTTP ${code === 'commons_render_quota_exhausted' ? 429 : 503}): {}`)
+    err.name = 'CommonsRenderLimitError'
+    Object.assign(err, { code, engine: 'cadquery', limit: 3, resetAt: null, retryAfterSeconds: 7200, ...body })
+    return err
+  }
+
+  beforeEach(() => {
+    mocks.tier = { tier: 'guest', limits: GUEST_Q }
+  })
+
+  it('an explicit Generate goes to the estimate and renders, no upgrade prompt', async () => {
+    const { result } = setup()
+    await act(async () => { await result.current.handleGenerate(true) })
+    expect(mocks.triggerUpgradePrompt).not.toHaveBeenCalled()
+    expect(renderParts).toHaveBeenCalledTimes(1)
+  })
+
+  it('an automatic render never spends the quota', async () => {
+    const { result } = setup()
+    await act(async () => { await result.current.handleGenerate(false, null, { automatic: true }) })
+    expect(renderParts).not.toHaveBeenCalled()
+    expect(toast.info).toHaveBeenCalledWith('tier.commons_auto_skipped tier.engine_cadquery 3', expect.objectContaining({ id: 'auto-render-metered-engine' }))
+    expect(mocks.triggerUpgradePrompt).not.toHaveBeenCalled()
+  })
+
+  it('a spent quota says what happened and when it resets, then offers the upgrade', async () => {
+    renderParts.mockRejectedValueOnce(quotaError('commons_render_quota_exhausted'))
+    const { result } = setup()
+    await act(async () => { await result.current.handleGenerate(true) })
+    const notice = mocks.triggerUpgradePrompt.mock.calls[0][1].notice
+    expect(notice).toMatch(/^tier\.commons_quota_exhausted 3 tier\.engine_cadquery tier\.commons_reset_hours .+ 2$/)
+    expect(mocks.triggerUpgradePrompt).toHaveBeenCalledWith('tier.engine_cadquery', {
+      notice,
+      alternatives: ['tier.commons_alt_account', 'tier.free_alt_preview'],
+    })
+    expect(result.current.logs).toContain(notice)
+    expect(result.current.logs).not.toContain('log.error')
+  })
+
+  it('a signed-in visitor is not told to make an account', async () => {
+    mocks.tier = { tier: 'essentials', limits: { ...ESSENTIALS, commons_brep_renders_per_day: 10 } }
+    mocks.preview = null
+    renderParts.mockRejectedValueOnce(quotaError('commons_render_quota_exhausted', { limit: 10 }))
+    const { result } = setup()
+    await act(async () => { await result.current.handleGenerate(true) })
+    expect(mocks.triggerUpgradePrompt.mock.calls[0][1].alternatives).toEqual([])
+  })
+
+  it('busy free capacity is a notice, not an upsell', async () => {
+    renderParts.mockRejectedValueOnce(quotaError('commons_render_busy', { retryAfterSeconds: 30 }))
+    const { result } = setup()
+    await act(async () => { await result.current.handleGenerate(true) })
+    expect(mocks.triggerUpgradePrompt).not.toHaveBeenCalled()
+    expect(result.current.logs).toMatch(/tier\.commons_busy tier\.engine_cadquery tier\.commons_reset_minutes .+ 1/)
+    expect(toast.info).toHaveBeenCalled()
+  })
+})

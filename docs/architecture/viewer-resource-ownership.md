@@ -30,6 +30,21 @@ Three.js's optional global cache, bitmap lifetime belongs to that external cache
 The Studio does not enable it. React render and memoization never allocate GLTF
 analysis geometry, so an abandoned render cannot strand those allocations.
 
+A mesh that arrives without normals (a prerendered preview, the GLB the API
+converts from an STL) is given crease-angle normals inside the load, before the
+analysis geometry is merged; the computation runs in a worker
+(`creaseNormalsWorker.ts`, falling back to the main thread where no worker can
+run). Each such mesh gets its own un-indexed copy of its geometry; the loader
+releases the geometry it replaced once every mesh that shared it has its copy,
+and the copy is released with the scene like any loaded geometry. A load that
+is abandoned while the worker runs is disposed when the worker answers. STL
+normals are worked out in the parsing worker and travel in the cached payload.
+
+Un-indexing costs memory: about 72 bytes per triangle for positions and
+normals, where an indexed float mesh takes about 18, and the merged analysis
+geometry holds a second copy. Splitting only the vertices on a crease, or
+having the API write crease normals into its GLB, would avoid that.
+
 These budgets cover completed STL cache retention, **not total browser memory**.
 Active consumer copies, concurrent pending loads, network buffers, GLTF assets,
 WASM heaps and driver allocations have separate lifetimes. Large individual

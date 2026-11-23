@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Yantra4D — Parametric 3D Design for Everyone",
-    "description": "Customize any dimension, export your perfect STL. Or turn your OpenSCAD models into configurators anyone can use."
+    "title": "Yantra4D — The Hyperobjects Commons, configured",
+    "description": "Configure, view and export open parametric hardware: {cartridges} CERN-OHL-W cartridges, each a family of printable 3D objects."
   },
   "nav": {
     "gallery": "Gallery",
@@ -13,15 +13,13 @@
     "openStudio": "Open Studio →"
   },
   "hero": {
-    "titleLine1": "Your Designs.",
-    "titleLine2": "Their Dimensions.",
-    "subtitle": "Makers: customize any parameter and export your perfect STL. Creators: turn your OpenSCAD models into configurators anyone can use.",
-    "ctaPrimary": "Browse the Commons",
-    "ctaSecondary": "Onboard Your Design"
+    "titleLine1": "Open hyperobjects.",
+    "titleLine2": "Printed at your dimensions.",
+    "subtitle": "Yantra4D is the configurator and 3D viewer of the Hyperobjects Commons: {cartridges} open designs, each one a whole family of objects. Choose the parameters, see that exact instance in 3D, export it and print it."
   },
   "gallery": {
-    "heading": "Project Gallery",
-    "subtitle": "Open, parametric hardware you can resize, remix and manufacture — every cartridge free, forever. Open one in Studio and make it yours.",
+    "heading": "Browse the Commons",
+    "subtitle": "Open, parametric hardware you can resize, remix and manufacture — every cartridge free, forever. Open one in Studio and set it to your dimensions.",
     "categories": {
       "all": "All",
       "commons": "🔷 Commons",
@@ -35,16 +33,16 @@
     "openInStudio": "Open in Studio →"
   },
   "beforeAfter": {
-    "tagline": "From code to configurator. Zero learning curve.",
+    "tagline": "From code to configurator: the manifest turns parameters into controls.",
     "codeSide": "OpenSCAD Code",
     "uiSide": "Yantra4D Configurator"
   },
   "forMakers": {
     "heading": "Made for Makers",
-    "subtitle": "Stop printing someone else's dimensions. Customize everything, know the cost, export and print.",
+    "subtitle": "Stop printing someone else’s dimensions. Pick a cartridge, set it to your reality, check it, export and print.",
     "customize": {
       "title": "Customize Everything",
-      "desc": "Sliders, toggles, color pickers. Change any dimension, see it in real-time 3D."
+      "desc": "Sliders, selects, toggles and presets. Constraints warn you before an invalid combination; undo any change."
     },
     "estimate": {
       "title": "Know Before You Print",
@@ -52,35 +50,43 @@
     },
     "export": {
       "title": "Export Your Way",
-      "desc": "STL for the slicer, STEP for real CAD. {stepCapable} cartridges export B-Rep solids you can open in Fusion, SolidWorks or FreeCAD."
+      "desc": "STL for the slicer; with Pro, STEP for real CAD — {stepCapable} cartridges export B-Rep solids you can open in Fusion, SolidWorks or FreeCAD."
     },
     "assembly": {
       "title": "Assembly Made Clear",
-      "desc": "Step-by-step 3D instructions. Bill of materials included."
+      "desc": "Where a cartridge ships them: step-by-step 3D instructions, a bill of materials and a PDF datasheet."
     },
     "browser": {
       "title": "Works in Your Browser",
       "desc": "No install. No account. Open a link, start customizing."
+    },
+    "viewer": {
+      "title": "Inspect It in 3D",
+      "desc": "Measure between points, cut a section, switch mm and inches, save views as images."
+    },
+    "worksWith": {
+      "title": "See What It Mates With",
+      "desc": "Studio lists the other cartridges that share its standards, so the next part fits."
     }
   },
   "forCreators": {
     "heading": "Built for Creators",
-    "subtitle": "Your designs deserve an audience beyond coders. Turn OpenSCAD or CadQuery models into shareable configurators.",
+    "subtitle": "Add to the Commons, or build on it. Every cartridge is code plus one JSON manifest, in a public repository.",
     "upload": {
-      "title": "Upload and Done",
-      "desc": "Drop in .scad or CadQuery Python. Yantra4D reads the parameters and generates a configurator."
+      "title": "Contribute a Cartridge",
+      "desc": "Open a pull request to the public Commons repository with your OpenSCAD or CadQuery source and its manifest. Once merged, it appears in the Commons with its own configurator."
     },
     "share": {
       "title": "Share With Anyone",
-      "desc": "Tiny URL for any configuration. Your makerspace, your subreddit, your family."
+      "desc": "A compact link carries any configuration. Your makerspace, your subreddit, your family."
     },
     "control": {
       "title": "Control Everything",
-      "desc": "Params, presets, assembly steps, BOM, modes — one JSON manifest."
+      "desc": "Parameters, modes, presets, constraints, verification checks, animations (parameter sweeps), CDG interfaces, assembly steps, BOM — one JSON manifest."
     },
     "multiProject": {
-      "title": "Host Your Whole Catalog",
-      "desc": "Five projects free with an account, unlimited on Pro. Each gets its own URL."
+      "title": "Fork and Edit on Pro",
+      "desc": "Fork any cartridge into your own copy, edit its code with git history, import a .scad repository from GitHub, or describe an object and let AI draft one."
     },
     "openSource": {
       "title": "Open Source Forever",
@@ -93,30 +99,30 @@
       "label": "For Makers",
       "step1": {
         "title": "Browse",
-        "desc": "Pick a project from the gallery or follow a shared link."
+        "desc": "Pick a hyperobject from the Commons or follow a shared link."
       },
       "step2": {
         "title": "Customize",
-        "desc": "Adjust dimensions with sliders and toggles. See changes in real-time 3D."
+        "desc": "Set its parameters and see that exact instance in 3D."
       },
       "step3": {
         "title": "Export & Print",
-        "desc": "Download your STL and send it to your slicer. Done."
+        "desc": "Download the file and send it to your slicer. Done."
       }
     },
     "creatorTrack": {
       "label": "For Creators",
       "step1": {
-        "title": "Upload .scad",
-        "desc": "Drop your OpenSCAD source files into Yantra4D."
+        "title": "Write it",
+        "desc": "Author the geometry in OpenSCAD or CadQuery."
       },
       "step2": {
-        "title": "Configure",
-        "desc": "Edit the manifest — params, modes, presets, assembly steps."
+        "title": "Describe it",
+        "desc": "Declare params, modes, presets and interfaces in the manifest."
       },
       "step3": {
-        "title": "Share",
-        "desc": "Get a link. Anyone can customize and export your design."
+        "title": "Contribute it",
+        "desc": "Open a pull request to the Commons. Once merged, anyone can configure and export it."
       }
     }
   },
@@ -127,7 +133,7 @@
   },
   "openSourceSection": {
     "heading": "Free. Open Source. Forever.",
-    "description": "Self-host, contribute, build on top — own your configurators.",
+    "description": "Self-host the platform, contribute to the Commons, build on top — AGPLv3 platform, CERN-OHL-W designs.",
     "statProjects": "Open Cartridges",
     "statLicense": "CERN-OHL-W",
     "cta": "View on GitHub",
@@ -137,13 +143,14 @@
   },
   "pricing": {
     "heading": "Pricing",
-    "subheading": "The commons is free forever. Paid tiers fund the servers that render, verify, and manufacture it.",
+    "subheading": "The Commons is free forever: every design is open hardware you can download, fork and print. Paid tiers fund the servers that render, verify and manufacture it.",
     "free": {
       "name": "Explorer",
       "price": "Free",
       "f1": "Browse all {cartridges} open cartridges",
-      "f2": "In-browser rendering + STL export",
+      "f2": "Customize any cartridge in the Commons + STL export",
       "f3": "{guestRenders} server renders per hour",
+      "f4": "Up to {guestCommonsRenders} custom renders a day of CadQuery and graph cartridges",
       "cta": "Open the studio"
     },
     "essentials": {
@@ -152,6 +159,7 @@
       "f1": "{essentialsRenders} server renders per hour",
       "f2": "3MF and OBJ exports",
       "f3": "AI configurator",
+      "f4": "Up to {essentialsCommonsRenders} custom renders a day of CadQuery and graph cartridges",
       "cta": "Create an account"
     },
     "pro": {
@@ -162,18 +170,19 @@
       "badge": "Recommended",
       "f1": "{proRenders} server renders per hour",
       "f2": "All export formats, including STEP",
-      "f3": "CadQuery engine, GitHub import & code editor",
-      "f4": "Print dispatch & manufacturing quotes",
-      "cta": "Upgrade to Pro"
+      "f3": "Fork, code editor with git, GitHub import",
+      "f4": "Manufacturing quotes and print dispatch to configured printers",
+      "cta": "Upgrade to Pro",
+      "f5": "Verification, wall-thickness and overhang analysis"
     },
     "whitelabel": "Need a branded studio with a private catalog for your team or clients? White-label licensing is available from",
     "whitelabelCta": "Innovaciones MADFAM"
   },
   "hyperCommons": {
-    "heading": "The Parametric Commons",
-    "subtitle": "A single .scad file doesn't define one object — it defines every possible object within its parameter space. We call these Bounded 4D Hyperobjects, and they're building a new kind of open infrastructure.",
+    "heading": "The Hyperobjects Commons",
+    "subtitle": "A cartridge doesn’t define one object — it defines every object inside its parameter range. We call these Bounded 4D Hyperobjects: open designs that share standard interfaces, so the Commons grows as one system.",
     "whatIsHeading": "What is a Hyperobject?",
-    "whatIsBody": "Traditional 3D files are static — one geometry, frozen at one size. A parametric hyperobject is a computational definition of an entire *family* of objects, bounded by the rules of its code. Change the parameters, and the geometry adapts — instantly.",
+    "whatIsBody": "Traditional 3D files are static — one geometry, frozen at one size. A hyperobject is the computational definition of a whole family of objects, bounded by the rules of its code and its manifest. Change the parameters and you get another member of the family.",
     "whatIsCaption1": "One file",
     "whatIsCaption2": "Infinite objects",
     "whyHeading": "Why hyperobjects",
@@ -183,13 +192,13 @@
     "shiftHeading": "The Shift",
     "shiftFrom": "Static .STL",
     "shiftFromDesc": "One fixed geometry. One size. Download and hope it fits.",
-    "shiftTo": "Parametric .SCAD",
-    "shiftToDesc": "Infinite geometries. Your dimensions. Configured to your reality.",
+    "shiftTo": "Parametric cartridge",
+    "shiftToDesc": "A family of geometries. Your dimensions. One exact instance to print.",
     "shiftStat1": "1 file → ∞ objects",
     "shiftStat2": "Community interfaces",
-    "shiftStat3": "Material-aware code",
-    "domainsHeading": "Four Domains of Impact",
-    "domainsSubtitle": "From your desk drawer to disaster relief — parametric hyperobjects standardize the interfaces that let communities manufacture what they need.",
+    "shiftStat3": "Material manifests",
+    "domainsHeading": "Domains of the Commons",
+    "domainsSubtitle": "From your desk drawer to the factory floor — each domain built on standard interfaces communities already use.",
     "household": {
       "title": "Household",
       "desc": "Organization, infrastructure, and self-sufficiency for the domestic sphere.",
@@ -204,7 +213,7 @@
     },
     "medical": {
       "title": "Medical",
-      "desc": "Accessible healthcare through open-source diagnostic and prosthetic devices.",
+      "desc": "Open designs for lab, diagnostic and assistive hardware — reference geometry, not certified medical devices.",
       "items": "Prosthetic Sockets (limb-scan parametric) · Glia Stethoscope · Open Otoscope",
       "stat": "Open diagnostics"
     },
@@ -216,19 +225,27 @@
     },
     "impactHeading": "Real-World Impact",
     "impact1label": "Open cartridges",
-    "impact2label": "Standards spoken",
+    "impact2label": "Standards referenced",
     "impact3label": "Declared interfaces",
     "impact4label": "designs",
     "impact4value": "CERN OHL",
     "impact5label": "Garments in the soft commons",
-    "impact6label": "Verified hardware links"
+    "impact6label": "Verified hardware links",
+    "fourDHeading": "What the 4D means",
+    "fourDBody": "Every cartridge is 3D geometry plus one more axis: its parameters, and, played back, time. Each point along that axis is one exact, printable 3D solid. Yantra4D projects the family down to the instance you choose — the one you see in the viewer, the one you export, the one you print.",
+    "fourDSweeps": "Some cartridges also declare sweeps: a path from one parameter state to another over time, sampled into frames, so the family can be played changing shape (playback in Studio is a Pro feature) — an arm extending its reach, a gear growing its teeth.",
+    "fourDSteps": [
+      "Family (4D)",
+      "Your parameters",
+      "One 3D instance"
+    ]
   },
   "cdg": {
     "badge": "Common Denominator Geometry",
     "heading": "The Interfaces That Connect Everything",
-    "subtitle": "CDG is the standardized geometry that ensures interoperability across the commons. Each CDG defines an immutable interface — the mathematical truth that lets hyperobjects from different creators work together.",
+    "subtitle": "CDG is the standardized geometry that lets the Commons interoperate. Each CDG names one real interface — a thread, a rail, a grid, a bolt pattern — and the cartridges that declare it can be built to mate.",
     "explainerTitle": "What is CDG?",
-    "explainerBody": "Borrowed from aerospace lofting, CDG provides the geometric 'ground truth' that ensures a filter fits any bottle, a clip snaps onto any rail, and a socket connects to any prosthetic. Standardize the interface, and the community builds the rest.",
+    "explainerBody": "CDG is the geometric ground truth that lets a filter fit a standard bottle, a clip snap onto a standard rail, and a bin sit on a standard grid. Standardize the interface, and the community builds the rest.",
     "catalogTitle": "The CDG Catalog",
     "entries": {
       "gridfinity": {
@@ -276,34 +293,34 @@
     },
     "impactTitle": "The Interface Strategy",
     "impactBody": "Stop designing products. Start designing interfaces. A perfect Gridfinity base is more valuable than 1,000 different cup holders.",
-    "stat1label": "CDG Interfaces",
-    "stat2label": "Hyperobjects",
-    "stat3label": "Domains",
+    "stat1label": "Declared interfaces",
+    "stat2label": "Cartridges with interfaces",
+    "stat3label": "Standards",
     "stat4value": "CERN OHL",
     "stat4label": "Open License"
   },
   "cta": {
-    "heading": "Your next print starts here",
-    "subtitle": "No account required. No install. Just open.",
+    "heading": "Your next print starts in the Commons",
+    "subtitle": "No account. No install. Just open.",
     "ctaMakers": "Browse Gallery",
-    "ctaCreators": "Onboard Your Design"
+    "ctaCreators": "Contribute a Design"
   },
   "choosePath": {
     "title": "Choose Your Path",
-    "subtitle": "The world of Yantra4D is vast. How do you wish to interact with the new paradigm of manufacturing?",
+    "subtitle": "Three ideas hold Yantra4D together. Start with the Commons.",
     "hyperobjects": {
       "title": "Hyperobjects",
-      "desc": "Explore objects that are not static, but exist as software-defined possibility spaces.",
+      "desc": "Objects defined as families: 3D geometry plus parameters, so every setting is a different printable object.",
       "action": "Learn about Parametricity"
     },
     "cdg": {
       "title": "Common Denominator",
-      "desc": "Understand the universal geometry that allows any part to fit with any other part, instantly.",
+      "desc": "The shared standards — threads, rails, grids, bolt patterns — that let parts from different cartridges mate.",
       "action": "See the Standards"
     },
     "commons": {
       "title": "The Commons",
-      "desc": "Join the global library of remixable, open-source designs owned by everyone.",
+      "desc": "{cartridges} open hardware designs under CERN-OHL-W, in a public repository anyone can fork and contribute to.",
       "action": "Enter the Library"
     }
   },
@@ -317,11 +334,11 @@
       "section1Body1": "An STL file is a dead snapshot. A Hyperobject is alive. It is a parametric definition that contains every possible variation of itself.",
       "section1Body2": "When you interact with a Yantra4D project, you aren't downloading a file; you are exploring a Hyperobject's possibility space to find the specific instance that fits your reality.",
       "parametricTitle": "Parametric",
-      "parametricDesc": "Adjust dimensions, features, and constraints in real-time.",
+      "parametricDesc": "Adjust dimensions and features; constraints keep the combination valid.",
       "codeDrivenTitle": "Code-Driven",
-      "codeDrivenDesc": "Built with OpenSCAD, version-controlled with Git, shareable like open source software.",
+      "codeDrivenDesc": "Written in CadQuery or OpenSCAD, version-controlled with Git, shareable like open-source software.",
       "manufacturingTitle": "Manufacturing Ready",
-      "manufacturingDesc": "Generates precise, distinct STLs ready for your slicer and 3D printer."
+      "manufacturingDesc": "Exports the exact instance as STL, 3MF, STEP and more, ready for your slicer or CAD."
     },
     "cdg": {
       "title": "Common Denominator Geometry",
@@ -329,18 +346,18 @@
       "heroTitle": "Common Denominator Geometry",
       "heroSubtitle": "The universal DNA of every object in the Yantra4D ecosystem.",
       "section1Title": "Standardized Connectivity",
-      "section1Body": "CDG defines a rigorous set of geometric standards that ensure every part fits with every other part. Whether you're designing a drawer system, a wall mount, or a complex machine, the interfaces are guaranteed to match.",
+      "section1Body": "CDG names the real-world standards a part must meet — a Gridfinity grid, a DIN rail, a bottle thread — so cartridges that declare the same interface can be built to fit together.",
       "gridfinity": "Universal Grid Alignment (Gridfinity compatible)",
       "fasteners": "Standardized Screw Holes & Fasteners",
       "tolerances": "Predictable Tolerances for 3D Printing",
       "remixTitle": "Remix Culture, Native",
-      "remixBody": "Because the geometry is standardized, remixing isn't just possible—it's effortless. Take a module from a creator in Tokyo, combine it with a base from a maker in Berlin, and add your own custom interface. It just works."
+      "remixBody": "Because interfaces are standardized, a part built to one standard can meet a part built to the same standard by someone else. Fork a cartridge, keep its interface, change the rest."
     },
     "commons": {
       "title": "The Commons",
       "description": "A shared, open library of parametric wisdom owned by everyone.",
       "heroTitle": "The Commons",
-      "heroSubtitle": "The sum of all human manufacturing knowledge, accessible to all.",
+      "heroSubtitle": "Open, parametric hardware, shared under one licence and built on shared standards.",
       "section1Title": "Ownership for Everyone",
       "section1Body": "The Yantra4D Commons is not a walled garden. It is a public library of designs. When you contribute a Hyperobject, you aren't giving it to a corporation—you are gifting it to the global community of makers.",
       "forkTitle": "Fork & Adapt",
@@ -348,7 +365,7 @@
       "copyleftTitle": "Copyleft Licensed",
       "copyleftDesc": "Designs carry CERN-OHL-W, the weakly reciprocal CERN hardware licence: changes to a design stay open, and the design can still go into a product next to parts under other licences. The platform itself is AGPLv3.",
       "globalTitle": "Global Standards",
-      "globalDesc": "Language agnostic, metric-first, universally compatible.",
+      "globalDesc": "Built on real metric and imperial standards, cited in the manifests.",
       "joinTitle": "Join the Movement",
       "joinBody": "Start your journey by exploring the existing Commons or configuring your first Hyperobject.",
       "browseBtn": "Browse the Commons"
@@ -356,8 +373,18 @@
   },
   "heroNew": {
     "badge": "Open Commons · Public Beta",
-    "journeyBtn": "Begin Your Journey",
+    "journeyBtn": "Enter the Commons",
     "studioBtn": "Launch Studio"
+  },
+  "heroSweep": {
+    "label": "Reach",
+    "still": "A SCARA robot arm from the Commons, reaching out at an angle.",
+    "caption": "A Commons cartridge. Every value is a rendered arm.",
+    "open": "Open it in Studio",
+    "name": "SCARA",
+    "pause": "Pause",
+    "play": "Play",
+    "view3d": "View in 3D"
   },
   "footer": {
     "copyright": "Yantra4D. Open source under AGPLv3.",

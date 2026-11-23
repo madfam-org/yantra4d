@@ -56,6 +56,7 @@ const proPriceText = proPrice
           <li>{fill(t?.pricing?.free?.f1)}</li>
           <li>{t?.pricing?.free?.f2 ?? ''}</li>
           <li>{fill(t?.pricing?.free?.f3)}</li>
+          <li>{fill(t?.pricing?.free?.f4)}</li>
         </ul>
         <a href={APP_URL} class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
           {t?.pricing?.free?.cta ?? 'Abrir el estudio'}
@@ -70,6 +71,7 @@ const proPriceText = proPrice
           <li>{fill(t?.pricing?.essentials?.f1)}</li>
           <li>{t?.pricing?.essentials?.f2 ?? ''}</li>
           <li>{t?.pricing?.essentials?.f3 ?? ''}</li>
+          <li>{fill(t?.pricing?.essentials?.f4)}</li>
         </ul>
         <a href={APP_URL} class="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
           {t?.pricing?.essentials?.cta ?? 'Crear cuenta'}
@@ -88,6 +90,7 @@ const proPriceText = proPrice
           <li>{t?.pricing?.pro?.f2 ?? ''}</li>
           <li>{t?.pricing?.pro?.f3 ?? ''}</li>
           <li>{t?.pricing?.pro?.f4 ?? ''}</li>
+          <li>{t?.pricing?.pro?.f5 ?? ''}</li>
         </ul>
         <a href={CHECKOUT_URL} class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
           {t?.pricing?.pro?.cta ?? 'Mejorar a Pro'}

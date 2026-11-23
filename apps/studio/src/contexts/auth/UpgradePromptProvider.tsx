@@ -11,6 +11,7 @@ export function UpgradePromptProvider({ children }: UpgradePromptProviderProps) 
     const [isOpen, setIsOpen] = useState(false);
     const [feature, setFeature] = useState('');
     const [alternatives, setAlternatives] = useState<string[]>([]);
+    const [notice, setNotice] = useState('');
 
     const triggerUpgradePrompt = useCallback((feature?: string, options?: UpgradePromptOptions) => {
         // Callers pass the specific thing the user just reached for —
@@ -19,18 +20,19 @@ export function UpgradePromptProvider({ children }: UpgradePromptProviderProps) 
         // upsell was generic. Show what they actually wanted.
         setFeature(feature || 'a Pro feature');
         setAlternatives(options?.alternatives ?? []);
+        setNotice(options?.notice ?? '');
         setIsOpen(true);
     }, []);
 
     const closeUpgradePrompt = useCallback(() => {
         setIsOpen(false);
-        setTimeout(() => { setFeature(''); setAlternatives([]) }, 300); // Clear after animation
+        setTimeout(() => { setFeature(''); setAlternatives([]); setNotice('') }, 300); // Clear after animation
     }, []);
 
     return (
         <UpgradePromptContext.Provider value={{ triggerUpgradePrompt, closeUpgradePrompt }}>
             {children}
-            <UpgradeDialog isOpen={isOpen} onClose={closeUpgradePrompt} feature={feature} alternatives={alternatives} />
+            <UpgradeDialog isOpen={isOpen} onClose={closeUpgradePrompt} feature={feature} alternatives={alternatives} notice={notice} />
         </UpgradePromptContext.Provider>
     );
 }

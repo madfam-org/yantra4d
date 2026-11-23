@@ -419,7 +419,9 @@ export default function StudioSidebar({ compareMode, onToggleCompare, variant, o
                 {t('a11y.controls_description')}
               </SheetDescription>
               <div className="flex-1 min-h-0 relative flex flex-col">
-                <SidebarContent />
+                {/* The same Compare control as the desktop dock: without these
+                    props a phone had no way into compare at all. */}
+                <SidebarContent compareMode={compareMode} onToggleCompare={onToggleCompare} />
               </div>
             </SheetContent>
           </Sheet>

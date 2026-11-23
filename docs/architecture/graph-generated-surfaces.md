@@ -93,7 +93,7 @@ Read on `main` at `91b3ffc9`. Several are defects worth fixing before P2 regardl
 | Reset | no per-parameter reset; the default is only a star on the track | `SliderControl.tsx:143-149` |
 | Constraints | messages show only under sliders; Generate is disabled by an error with no explanation; a formula that throws is skipped silently | `Controls.tsx:530-534`, `StudioSidebar.tsx:46`, `useConstraints.ts:68-70` |
 | Constraint text | `text-destructive` measures 3.76:1 (light) and 1.99:1 (dark), under 4.5:1 | `tokenContrast.test.ts` |
-| Compare | nothing adds the first slot, so compare never opens from the UI; "Sync camera" toggles state that no viewer reads; desktop only, because the phone sheet renders the sidebar without the compare props | `StudioMainView.tsx:192`, `ComparisonView.tsx:30-91`, `StudioSidebar.tsx:422` |
+| Compare | fixed in #318: compare opens to its empty state and adds the first slot; the "Sync camera" toggle is removed (owner ruling 2026-11-22: no one-camera promise, each slot keeps its own camera); the phone sheet offers Compare; slot controls no longer sit under the viewer's own | `StudioMainView.tsx`, `ComparisonView.tsx`, `StudioSidebar.tsx` |
 | Graph editor | Pro + fork only; no per-node preview; issues list and validator messages hard-coded in English; no axe test | `StudioHeader.tsx:155-165`, `GraphIssues.tsx:58-67`, `graphDocument.ts:248-286` |
 | Visual regression | the only `toHaveScreenshot` suite is `describe.skip` | `e2e/tests/18-visual-regression` |
 | Cartridge labels | 4,495 of 4,509 parameter labels exist in en and es only | commons scan, 2026-11-20 |

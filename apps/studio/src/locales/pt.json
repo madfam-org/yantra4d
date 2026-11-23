@@ -174,7 +174,6 @@
   "compare.add_current": "Adicionar atual",
   "compare.empty_hint": "Adicione o modelo atual como a primeira variação. Depois mude os parâmetros, renderize e adicione de novo: até quatro lado a lado.",
   "compare.add_needs_render": "Renderize o modelo primeiro e depois adicione-o.",
-  "compare.sync_camera": "Sincronizar câmera",
   "datasheet.generate": "Gerar ficha técnica",
   "a11y.skip_to_content": "Ir para o conteúdo",
   "shortcuts.title": "Atalhos de Teclado",
@@ -570,5 +569,7 @@
   "inside.source_bound": "definido por {label}",
   "inside.source_reads": "lê {labels}",
   "inside.source_literal": "valor fixo",
-  "inside.source_default": "padrão do nó"
+  "inside.source_default": "padrão do nó",
+  "compare.variation": "Variação {n}",
+  "compare.remove": "Remover {label}"
 }

@@ -183,7 +183,6 @@
   "compare.add_current": "Add current",
   "compare.empty_hint": "Add the current model as the first variation. Then change parameters, render, and add again: up to four side by side.",
   "compare.add_needs_render": "Render the model first, then add it.",
-  "compare.sync_camera": "Sync camera",
   "datasheet.generate": "Generate Datasheet",
   "a11y.skip_to_content": "Skip to content",
   "projects.sort.name_asc": "Name (A-Z)",
@@ -570,5 +569,7 @@
   "inside.source_bound": "set by {label}",
   "inside.source_reads": "reads {labels}",
   "inside.source_literal": "fixed value",
-  "inside.source_default": "node default"
+  "inside.source_default": "node default",
+  "compare.variation": "Variation {n}",
+  "compare.remove": "Remove {label}"
 }

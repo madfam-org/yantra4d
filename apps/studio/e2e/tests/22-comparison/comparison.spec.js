@@ -36,7 +36,7 @@ test.describe('Comparison View', () => {
     await expect(addBtn).toBeEnabled({ timeout: 15000 })
     await addBtn.click()
 
-    await expect(page.locator('button[aria-label="Remove slot"]')).toHaveCount(1)
+    await expect(page.getByRole('button', { name: /^Remove Variation/ })).toHaveCount(1)
   })
 
   test('remove slot button works', async ({ page }) => {
@@ -48,7 +48,7 @@ test.describe('Comparison View', () => {
     await expect(addBtn).toBeEnabled({ timeout: 15000 })
     await addBtn.click()
 
-    const removeBtn = page.locator('button[aria-label="Remove slot"]')
+    const removeBtn = page.getByRole('button', { name: /^Remove Variation/ })
     await expect(removeBtn).toHaveCount(1)
     await removeBtn.click()
 
@@ -76,7 +76,7 @@ test.describe('Comparison View', () => {
     // After 4 slots, the add button should be hidden (component hides it at capacity)
     // ComparisonView hides the "Add current" button when slots.length >= 4
     // Just verify we have at most 4 remove buttons
-    const removeButtons = page.locator('button[aria-label="Remove slot"]')
+    const removeButtons = page.getByRole('button', { name: /^Remove Variation/ })
     expect(await removeButtons.count()).toBeLessThanOrEqual(4)
   })
 

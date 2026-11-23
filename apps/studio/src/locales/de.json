@@ -174,7 +174,6 @@
   "compare.add_current": "Aktuelle hinzufügen",
   "compare.empty_hint": "Füge das aktuelle Modell als erste Variante hinzu. Ändere dann Parameter, rendere und füge erneut hinzu: bis zu vier nebeneinander.",
   "compare.add_needs_render": "Rendere zuerst das Modell und füge es dann hinzu.",
-  "compare.sync_camera": "Kamera synchronisieren",
   "datasheet.generate": "Datenblatt erstellen",
   "a11y.skip_to_content": "Zum Inhalt springen",
   "shortcuts.title": "Tastaturkürzel",
@@ -570,5 +569,7 @@
   "inside.source_bound": "gesetzt durch {label}",
   "inside.source_reads": "liest {labels}",
   "inside.source_literal": "fester Wert",
-  "inside.source_default": "Standardwert des Knotens"
+  "inside.source_default": "Standardwert des Knotens",
+  "compare.variation": "Variante {n}",
+  "compare.remove": "{label} entfernen"
 }

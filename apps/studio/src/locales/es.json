@@ -183,7 +183,6 @@
   "compare.add_current": "Agregar actual",
   "compare.empty_hint": "Agrega el modelo actual como primera variación. Luego cambia parámetros, renderiza y agrega otra vez: hasta cuatro lado a lado.",
   "compare.add_needs_render": "Primero renderiza el modelo y luego agrégalo.",
-  "compare.sync_camera": "Sincronizar cámara",
   "datasheet.generate": "Generar ficha técnica",
   "a11y.skip_to_content": "Ir al contenido",
   "projects.sort.name_asc": "Nombre (A-Z)",
@@ -570,5 +569,7 @@
   "inside.source_bound": "lo fija {label}",
   "inside.source_reads": "lee {labels}",
   "inside.source_literal": "valor fijo",
-  "inside.source_default": "valor por defecto del nodo"
+  "inside.source_default": "valor por defecto del nodo",
+  "compare.variation": "Variación {n}",
+  "compare.remove": "Quitar {label}"
 }

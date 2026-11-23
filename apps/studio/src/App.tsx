@@ -88,7 +88,6 @@ function App() {
     if (comparisonSlots.length >= 4) return
     setComparisonSlots(prev => [...prev, {
       id: crypto.randomUUID(),
-      label: `Variation ${prev.length + 1}`,
       parts: [...parts],
       params: { ...params },
     }])

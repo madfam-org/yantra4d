@@ -612,6 +612,13 @@ AUTH_ENABLED=false HARNESS_TIER=premium python app.py
   `AUTH_ENABLED=false` sends no token and has no identity to match. The two are
   mutually exclusive by construction.
 
+Self-hosting uses the same switch. `docker-compose.yml` runs auth off and sets
+`HARNESS_TIER=${SELF_HOST_TIER:-premium}`, so a self-hosted install renders
+CadQuery and graph cartridges out of the box (owner ruling C8, 2026-11-22). The
+safety rules above are unchanged: it does nothing once `AUTH_ENABLED` is true.
+`apps/api/tests/unit/test_self_host_compose.py` pins that the compose default
+names a tier with both engines.
+
 Implemented by `harness_tier_override()` in
 `apps/api/services/core/tier_service.py`; both directions are pinned by
 `apps/api/tests/unit/test_harness_tier.py`.

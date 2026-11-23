@@ -39,6 +39,13 @@ services:
       # Never deploy to production with these settings.
       # Production uses K8s manifests with AUTH_ENABLED=true.
       - AUTH_ENABLED=false
+      # Self-hosted renders: the tier this auth-off stack is gated as on the
+      # render path. `premium` unlocks the CadQuery and graph engines most Commons
+      # cartridges need, and matches what /api/me already reports while auth is
+      # off. Honoured only while AUTH_ENABLED is false (docs/AUTH.md, Harness tier).
+      # Set SELF_HOST_TIER=guest to try the free limits. Turn auth on before you
+      # expose this stack beyond your own machine.
+      - HARNESS_TIER=${SELF_HOST_TIER:-premium}
       - PYTHONPATH=/app/backend
       - RATE_LIMIT_ENABLED=false
       - RATE_LIMIT_STORAGE=redis://:${REDIS_PASSWORD:-yantra4d_dev}@redis:6379

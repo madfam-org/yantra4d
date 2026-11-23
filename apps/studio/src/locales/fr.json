@@ -568,5 +568,10 @@
   "inside.source_bound": "défini par {label}",
   "inside.source_reads": "lit {labels}",
   "inside.source_literal": "valeur fixe",
-  "inside.source_default": "valeur par défaut du nœud"
+  "inside.source_default": "valeur par défaut du nœud",
+  "onboard.closed_title": "Les nouveaux modèles rejoignent le Commons des Hyperobjets par pull request",
+  "onboard.closed_body": "Le téléversement de fichiers .scad dans le Studio est réservé aux administrateurs de la plateforme. Pour ajouter une cartouche, ouvrez une pull request sur le dépôt du Commons : son guide de contribution indique ce qu'il faut à une cartouche et les contrôles qu'elle doit passer.",
+  "onboard.closed_guide": "Lire le guide de contribution",
+  "onboard.closed_admin_sign_in": "Administrateurs de la plateforme : connectez-vous pour téléverser.",
+  "a11y.opens_new_tab": "(s'ouvre dans un nouvel onglet)"
 }

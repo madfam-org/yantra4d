@@ -568,5 +568,10 @@
   "inside.source_bound": "由 {label} 设定",
   "inside.source_reads": "读取 {labels}",
   "inside.source_literal": "固定值",
-  "inside.source_default": "节点默认值"
+  "inside.source_default": "节点默认值",
+  "onboard.closed_title": "新设计通过 Pull Request 加入超对象公共库",
+  "onboard.closed_body": "在 Studio 中上传 .scad 文件仅限平台管理员。要添加卡带，请在公共库仓库中提交 Pull Request：其贡献指南列出了卡带的要求以及必须通过的检查。",
+  "onboard.closed_guide": "阅读贡献指南",
+  "onboard.closed_admin_sign_in": "平台管理员：请登录后上传。",
+  "a11y.opens_new_tab": "（在新标签页中打开）"
 }

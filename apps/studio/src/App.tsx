@@ -23,7 +23,8 @@ import { ErrorBoundary } from './components/feedback/ErrorBoundary'
 import './index.css'
 
 const ProjectsView = lazy(() => import('./components/project/ProjectsView'))
-const OnboardingWizard = lazy(() => import('./components/onboarding/OnboardingWizard'))
+// Admins get the upload wizard; everyone else the pull-request route (OnboardRoute).
+const OnboardRoute = lazy(() => import('./components/onboarding/OnboardRoute'))
 const ScadEditor = lazy(() => import('./components/editor/ScadEditor'))
 const GitPanel = lazy(() => import('./components/editor/GitPanel'))
 const AiChatPanel = lazy(() => import('./components/ai/AiChatPanel'))
@@ -183,7 +184,7 @@ function App() {
     return (
       <ErrorBoundary t={t}>
         <Suspense fallback={<div className="flex items-center justify-center h-dvh text-muted-foreground">Loading...</div>}>
-          <OnboardingWizard />
+          <OnboardRoute />
         </Suspense>
       </ErrorBoundary>
     )

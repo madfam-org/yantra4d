@@ -568,5 +568,10 @@
   "inside.source_bound": "set by {label}",
   "inside.source_reads": "reads {labels}",
   "inside.source_literal": "fixed value",
-  "inside.source_default": "node default"
+  "inside.source_default": "node default",
+  "onboard.closed_title": "New designs join the Hyperobjects Commons by pull request",
+  "onboard.closed_body": "Uploading .scad files in the Studio is limited to platform administrators. To add a cartridge, open a pull request on the Commons repository: its contribution guide lists what a cartridge needs and the checks it must pass.",
+  "onboard.closed_guide": "Read the contribution guide",
+  "onboard.closed_admin_sign_in": "Platform administrators: sign in to upload.",
+  "a11y.opens_new_tab": "(opens in a new tab)"
 }

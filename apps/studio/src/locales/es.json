@@ -568,5 +568,10 @@
   "inside.source_bound": "lo fija {label}",
   "inside.source_reads": "lee {labels}",
   "inside.source_literal": "valor fijo",
-  "inside.source_default": "valor por defecto del nodo"
+  "inside.source_default": "valor por defecto del nodo",
+  "onboard.closed_title": "Los diseños nuevos llegan al Procomún de Hiperobjetos por pull request",
+  "onboard.closed_body": "Subir archivos .scad en el Studio está reservado a quienes administran la plataforma. Para añadir un cartucho, abre un pull request en el repositorio del Procomún: su guía de contribución explica qué necesita un cartucho y qué verificaciones debe pasar.",
+  "onboard.closed_guide": "Leer la guía de contribución",
+  "onboard.closed_admin_sign_in": "Si administras la plataforma, inicia sesión para subir archivos.",
+  "a11y.opens_new_tab": "(se abre en una pestaña nueva)"
 }

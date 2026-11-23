@@ -129,6 +129,21 @@ export function getStoredIdentityEmail(): string | null {
 }
 
 /**
+ * Whether the stored access token carries Janua's platform-admin claim,
+ * `is_admin: true` — the one claim the API's `is_platform_admin`
+ * (apps/api/middleware/auth.py) reads, and like it only the literal boolean
+ * counts. Read the same way as the email above: it decides what the Studio
+ * shows (the upload wizard at /onboard), never what the API allows — the API
+ * verifies the token on every request.
+ */
+export function hasStoredPlatformAdminClaim(): boolean {
+  const token = getStoredAccessToken()
+  if (!token) return false
+  const claims = decodeJwtPayload(token)
+  return claims?.is_admin === true
+}
+
+/**
  * The `Authorization` header value for a fetch to `url`, or null when there is
  * no session or the URL is cross-origin. Private-project render artifacts
  * (`/static/<slug>_preview_*.glb|.stl`) are access-gated — an unauthenticated

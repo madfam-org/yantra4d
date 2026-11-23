@@ -568,5 +568,10 @@
   "inside.source_bound": "gesetzt durch {label}",
   "inside.source_reads": "liest {labels}",
   "inside.source_literal": "fester Wert",
-  "inside.source_default": "Standardwert des Knotens"
+  "inside.source_default": "Standardwert des Knotens",
+  "onboard.closed_title": "Neue Entwürfe kommen per Pull-Request in die Hyperobjekt-Commons",
+  "onboard.closed_body": "Das Hochladen von .scad-Dateien im Studio ist Plattform-Administratoren vorbehalten. Um eine Kartusche hinzuzufügen, öffnen Sie einen Pull-Request im Repository der Commons: Der Beitragsleitfaden nennt, was eine Kartusche braucht und welche Prüfungen sie bestehen muss.",
+  "onboard.closed_guide": "Beitragsleitfaden lesen",
+  "onboard.closed_admin_sign_in": "Plattform-Administratoren: zum Hochladen anmelden.",
+  "a11y.opens_new_tab": "(öffnet in einem neuen Tab)"
 }

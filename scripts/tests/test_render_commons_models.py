@@ -211,3 +211,45 @@ def test_snap_to_parameter_grid_clamps_and_leaves_the_rest_alone():
     assert rcm.snap_to_parameter_grid({"teeth": 9}, defs) == {"teeth": 8}
     assert rcm.snap_to_parameter_grid({"teeth": -5}, defs) == {"teeth": 8}
     assert rcm.snap_to_parameter_grid({"teeth": 12}, None) == {"teeth": 12}
+
+
+# ─── Tessellation profile (owner rulings M2/M3, 2026-11-22) ────────────────
+
+
+ITEM = {"file": "gears.glb", "slug": "gears", "mode": "spur", "parameters": {"teeth": 20}, "label": "base"}
+
+
+def test_print_render_payload_is_the_one_from_before_profiles():
+    assert rcm.render_payload(ITEM) == {
+        "project": "gears", "mode": "spur", "parameters": {"teeth": 20}, "export_format": "stl",
+    }
+    assert rcm.render_payload(ITEM, "print") == rcm.render_payload(ITEM)
+
+
+def test_preview_render_payload_names_the_profile():
+    assert rcm.render_payload(ITEM, "preview")["tessellation"] == "preview"
+
+
+def test_the_profile_is_part_of_the_engine_fingerprint(tmp_path):
+    """A cached raw/ from a print run is never reused by a preview run, or back."""
+    printed = rcm.engine_fingerprint(None, "x", "print")
+    preview = rcm.engine_fingerprint(None, "x", "preview")
+    assert printed != preview
+    # a print run keeps the fingerprint it had before profiles, so its cache stays valid
+    assert printed == rcm.engine_fingerprint(None, "x") and "tessellation" not in printed
+    (tmp_path / "main.py").write_text("result = None\n")
+    assert rcm.cartridge_hash(tmp_path, printed) != rcm.cartridge_hash(tmp_path, preview)
+
+
+def test_script_defaults_to_print_so_a_plain_local_api_still_works():
+    assert rcm.parse_args([]).tessellation == "print"
+    assert rcm.parse_args(["--tessellation", "preview"]).tessellation == "preview"
+
+
+def test_budget_summary_counts_base_renders_that_need_no_decimation():
+    triangles = {"a.glb": 1200, "b.glb": 2500, "c.glb": 2501, "d.glb": None, "a.anim.0.glb": 100}
+    summary = rcm.budget_summary(triangles, {"a.glb", "b.glb", "c.glb", "d.glb"})
+    assert summary["base_renders"] == 3  # d.glb could not be counted; frames are not base renders
+    assert summary["within_gallery_budget"] == 2  # at or under 2,500
+    assert summary["max"] == 2501
+    assert summary["gallery_triangle_budget"] == 2500

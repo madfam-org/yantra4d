@@ -295,6 +295,30 @@ describe('generate — private cartridges are dropped', () => {
     )
   })
 
+  it('counts domains with a cartridge and cartridges with sweeps', () => {
+    const repo = makeRepo({
+      manifests: [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }, { slug: 'd' }, { slug: 'e' }, { slug: 'f' }, { slug: 'g' }],
+    })
+    const write = (slug: string, manifest: Record<string, unknown>) =>
+      fs.writeFileSync(
+        path.join(repo, 'projects', slug, 'project.json'),
+        JSON.stringify({ project: { slug, name: slug, description: slug, tags: [] }, ...manifest }),
+      )
+    write('a', { hyperobject: { domain: 'industrial' }, animations: [{ id: 'reach' }] })
+    write('b', { hyperobject: { domain: 'industrial' }, animations: [] })
+    // The catalog's bucket for "no domain declared" is not a domain.
+    write('c', { hyperobject: { domain: 'uncategorized' } })
+    write('d', { hyperobject: { domain: 'wearable' }, animations: [{ id: 'grow' }, { id: 'turn' }] })
+    // "Spans several domains with no principal one": not a domain of its own.
+    write('e', { hyperobject: { domain: 'hybrid' } })
+    // Legacy one-offs fold into their canonical names, which are counted once.
+    write('f', { hyperobject: { domain: 'electronics' } })
+    write('g', { hyperobject: { domain: 'consumer-electronics' } })
+    const { stats } = generate({ repo, env: {} })
+    expect(stats.domains).toBe(3)
+    expect(stats.sweptCartridges).toBe(2)
+  })
+
   it('leaves `unlisted` semantics unchanged — unlisted is not private', () => {
     const repo = makeRepo({
       manifests: [{ slug: 'public-widget' }, { slug: 'quiet-widget', unlisted: true }],

@@ -7,7 +7,8 @@
 // Tier facts mirror apps/api/tiers.json (the entitlement source of truth):
 // guest 10 renders/hr · essentials 30 + 3MF/OBJ (free with an account — an
 // authenticated user without a billing claim resolves to essentials) · pro 150
-// + all formats + CadQuery + GitHub + print dispatch. The pro price is read
+// + all formats + CadQuery + GitHub (print dispatch and quotes stay off the
+// card until shown working on the hosted service, owner ruling C4). The pro price is read
 // from Dhanam's public catalog at build time, the amount checkout charges
 // (owner rulings G1-1 and 2026-10-14; the old "from $9/mo" copy was never a
 // validated price): IVA included when the catalog sends `grossPrices`, else
@@ -89,7 +90,6 @@ const proPriceText = proPrice
           <li>{fill(t?.pricing?.pro?.f1)}</li>
           <li>{t?.pricing?.pro?.f2 ?? ''}</li>
           <li>{t?.pricing?.pro?.f3 ?? ''}</li>
-          <li>{t?.pricing?.pro?.f4 ?? ''}</li>
           <li>{t?.pricing?.pro?.f5 ?? ''}</li>
         </ul>
         <a href={CHECKOUT_URL} class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">

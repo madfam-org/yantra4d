@@ -42,6 +42,9 @@ from services.engine.render_source import (
     render_source_for_mode,
     source_content_hash,
 )
+from services.engine.tessellation import PRINT as TESSELLATION_PRINT
+from services.engine.tessellation import TessellationRequestError, requested_profile
+from services.engine.tessellation import key_fields as tessellation_key_fields
 from services.storage import publish_artifact_best_effort
 
 r = redis.Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
@@ -298,6 +301,14 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
     if export_format not in ALLOWED_EXPORT_FORMATS:
         export_format = 'stl'
 
+    # The tessellation profile (services/engine/tessellation.py, rulings M1-M3):
+    # `print` unless the models pipeline's local API asks for `preview`.
+    try:
+        tessellation = requested_profile(data, export_format)
+    except TessellationRequestError as exc:
+        return RenderPayloadError(str(exc), bad_name="tessellation",
+                                  status_code=exc.status_code, error_code=exc.error_code)
+
     # Documented contract nests render parameters under 'parameters'. A flattened
     # payload (params spread at the top level) silently "works" but produces a
     # different param_hash — and therefore a different cache key — than the same
@@ -345,6 +356,8 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         "s": scad_filename, "p": params, "mode": mode_id,
         "source": scad_content_hash, "revision": cache_revision(),
         "kernel": render_cache._engine_signature(),
+        # Absent for print (its URLs are unchanged); a preview artifact gets its own.
+        **tessellation_key_fields(tessellation),
     }, sort_keys=True)
     param_hash = hashlib.sha256(raw_hash.encode()).hexdigest()[:10]
     base_prefix = f"{project_slug}_{Config.STL_PREFIX}" if project_slug else Config.STL_PREFIX
@@ -364,6 +377,7 @@ def extract_render_payload(data: dict) -> dict | RenderPayloadError:
         'project_slug': project_slug,
         'ignore_cache': data.get('ignore_cache', False),
         'scad_content_hash': scad_content_hash,
+        'tessellation': tessellation,
         'render_revision': render_revision(),
         'generator_inputs': generator_inputs,
     }
@@ -527,6 +541,7 @@ def _check_cache(payload, part, export_format):
         payload['project_slug'], payload['scad_filename'],
         payload['params'], part, export_format,
         scad_content_hash=payload.get('scad_content_hash'),
+        tessellation=payload.get('tessellation', TESSELLATION_PRINT),
     )
     return cached if generator_output.cache_entry_usable(cached, payload) else None
 

@@ -18,6 +18,7 @@ import {
   hasStoredJanuaSession,
   bearerHeaderForSameOrigin,
   getStoredIdentityEmail,
+  hasStoredPlatformAdminClaim,
 } from './januaSso'
 
 // jsdom ships getRandomValues but not SubtleCrypto; the S256 challenge needs it.
@@ -390,5 +391,47 @@ describe('getStoredIdentityEmail', () => {
       jwt({ email: 'caro@madfam.io', exp: Math.floor(Date.now() / 1000) - 60 }),
     )
     expect(getStoredIdentityEmail()).toBeNull()
+  })
+})
+
+
+describe('hasStoredPlatformAdminClaim', () => {
+  const jwt = (payload: Record<string, unknown>) => {
+    const b64url = (o: unknown) =>
+      Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+    return `${b64url({ alg: 'none' })}.${b64url(payload)}.sig`
+  }
+  const store = (payload: Record<string, unknown>) =>
+    localStorage.setItem(TOKEN_STORAGE_KEYS.accessToken, jwt({ exp: Math.floor(Date.now() / 1000) + 3600, ...payload }))
+
+  beforeEach(() => localStorage.clear())
+
+  it('is false with no stored token', () => {
+    expect(hasStoredPlatformAdminClaim()).toBe(false)
+  })
+
+  it('is true for the boolean is_admin claim the API reads', () => {
+    store({ sub: 'u', is_admin: true })
+    expect(hasStoredPlatformAdminClaim()).toBe(true)
+  })
+
+  it('is false without the claim, or with an organization admin role only', () => {
+    store({ sub: 'u', roles: ['admin', 'owner'] })
+    expect(hasStoredPlatformAdminClaim()).toBe(false)
+  })
+
+  it('counts only the literal true, as the API does', () => {
+    store({ sub: 'u', is_admin: 'true' })
+    expect(hasStoredPlatformAdminClaim()).toBe(false)
+    store({ sub: 'u', is_admin: 1 })
+    expect(hasStoredPlatformAdminClaim()).toBe(false)
+  })
+
+  it('is false once the token has expired', () => {
+    localStorage.setItem(
+      TOKEN_STORAGE_KEYS.accessToken,
+      jwt({ sub: 'u', is_admin: true, exp: Math.floor(Date.now() / 1000) - 60 }),
+    )
+    expect(hasStoredPlatformAdminClaim()).toBe(false)
   })
 })

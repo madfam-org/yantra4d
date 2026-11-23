@@ -11,13 +11,45 @@ from commons_sandbox import read_script, validate_script_path
 # the application package under services.engine for the test suite.
 try:  # pragma: no cover - exercised by both invocation styles
     from cq_sandbox import build_cq_sandbox_builtins
+    from tessellation import PRINT, profile
 except ImportError:  # pragma: no cover
     from services.engine.cq_sandbox import build_cq_sandbox_builtins
+    from services.engine.tessellation import PRINT, profile
 
 logger = logging.getLogger(__name__)
 
 
-def run_cadquery_script(script_path, output_path, params_json, export_format):
+def _export_stl_with_profile(cq, result, output_path, tess):
+    """Write *result* as binary STL tessellated with the profile *tess*.
+
+    Only non-``print`` profiles come here: the print branch keeps calling the exporter
+    exactly as it did before profiles existed. ``cq.exporters.export`` cannot ask for an
+    ABSOLUTE linear bound (it calls ``exportStl`` with ``relative`` left at True), so
+    the shape's own ``exportStl`` is called, after the same flattening ``export`` does
+    internally: a Workplane becomes ``compound(*result)``, an Assembly its
+    ``toCompound()``.
+
+    The shape is copied WITHOUT its triangulation first. OCCT stores a face's mesh on
+    the face, and ``BRepMesh_IncrementalMesh`` keeps an existing mesh it judges fine
+    enough. A shape shared across renders in a warm worker (a sibling cartridge's
+    module-level solid, say) would otherwise carry one profile's mesh into another
+    profile's export, in either direction. Meshing a fresh copy leaves the original
+    untouched and makes the preview mesh depend on the profile alone.
+    """
+    from cadquery.occ_impl.shapes import compound
+
+    if isinstance(result, cq.Assembly):
+        shape = result.toCompound()
+    elif isinstance(result, cq.Shape):
+        shape = result
+    else:
+        shape = compound(*result)
+    shape.copy(mesh=False).exportStl(
+        output_path, tess.linear, tess.angular, ascii=False, relative=tess.relative
+    )
+
+
+def run_cadquery_script(script_path, output_path, params_json, export_format, tessellation=PRINT):
     try:
         import cadquery as cq
     except ImportError as exc:
@@ -25,6 +57,19 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
         # reasons other than absence (missing libGL on a slim runner image, a
         # failed dlopen under a pod memory limit). Always surface the cause.
         print(f"Error: CadQuery is not installed. ({exc})")
+        sys.exit(1)
+
+    # The tessellation profile (services/engine/tessellation.py). The API decides who
+    # may ask for which; the runner only refuses what it cannot honour, so a bad value
+    # fails the render instead of silently producing a print mesh.
+    try:
+        tess = profile(tessellation)
+    except ValueError as exc:
+        print(f"Error: {exc}")
+        sys.exit(1)
+    if tess.name != PRINT and export_format.upper() != "STL":
+        print(f"Error: the {tess.name!r} tessellation profile is only offered for STL exports, "
+              f"not {export_format!r}.")
         sys.exit(1)
 
     print(f"Loading parameters: {params_json}")
@@ -136,6 +181,13 @@ def run_cadquery_script(script_path, output_path, params_json, export_format):
                 if temp_step_path and os.path.exists(temp_step_path):
                     os.remove(temp_step_path)
 
+        elif tess.name != PRINT:
+            print(f"Tessellation profile {tess.name!r}: linear {tess.linear} "
+                  f"({'relative' if tess.relative else 'mm'}), angular {tess.angular} rad")
+            _export_stl_with_profile(cq, result, output_path, tess)
+
+        # The print profile: CadQuery's own export defaults, called exactly as before
+        # profiles existed (ruling M1, 2026-11-22: print output must not change).
         elif isinstance(result, cq.Assembly):
             result.save(output_path, export_format.upper())
         else:
@@ -161,7 +213,8 @@ def serve_forever(stdin=None, stdout=None):
 
     Protocol: one JSON object per line on stdin, one JSON object per line on
     stdout. Request keys mirror the argv contract exactly — script_path,
-    output_path, params_json, export_format. Response is
+    output_path, params_json, export_format, and ``tessellation`` only for a
+    profile other than print. Response is
     ``{"ok": bool, "output": str}``; ``output`` carries the same text the
     subprocess mode would have written to stdout, so the caller's error surface
     is unchanged.
@@ -217,6 +270,9 @@ def serve_forever(stdin=None, stdout=None):
                     request["output_path"],
                     request["params_json"],
                     request["export_format"],
+                    # Absent for print: the pool sends the key only for another
+                    # profile, so a print job's request is what it always was.
+                    request.get("tessellation", PRINT),
                 )
         except SystemExit as exc:
             ok = (exc.code or 0) == 0
@@ -234,7 +290,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if len(sys.argv) < 5:
-        print("Usage: python cq_runner.py <script_path> <output_path> <params_json> <export_format>")
+        print("Usage: python cq_runner.py <script_path> <output_path> <params_json> <export_format> [tessellation]")
         print("       python cq_runner.py --serve")
         sys.exit(1)
 
@@ -242,5 +298,8 @@ if __name__ == "__main__":
     output_path = sys.argv[2]
     params_json = sys.argv[3]
     export_format = sys.argv[4]
+    # Optional fifth argument: the tessellation profile. build_cadquery_command adds it
+    # only for a profile other than print, so a print command is what it always was.
+    tessellation = sys.argv[5] if len(sys.argv) >= 6 else PRINT
 
-    run_cadquery_script(script_path, output_path, params_json, export_format)
+    run_cadquery_script(script_path, output_path, params_json, export_format, tessellation)

@@ -45,6 +45,7 @@ from services.engine.render_contract import (
     render_final_channel_for_job,
 )
 from services.engine.render_revision import render_revision
+from services.engine.tessellation import PRINT as TESSELLATION_PRINT
 from services.engine.worker_dispatch import (
     SOURCE_ERROR_GIT_UNAVAILABLE,
     SOURCE_ERROR_MISSING,
@@ -418,6 +419,16 @@ def process_sync_task(task):
     _render_sync_task(task)
 
 
+def _tessellation(payload) -> str:
+    """The task's tessellation profile; a payload queued before profiles existed is print.
+
+    The API decided whether the caller may have it (render_orchestrator
+    .extract_render_payload, ruling M3); the worker only carries it to the runner and
+    into the cache key, so a preview artifact is never recorded under a print key.
+    """
+    return payload.get("tessellation") or TESSELLATION_PRINT
+
+
 def _task_manifest(project_slug, engine: str):
     """The manifest a task renders against.
 
@@ -460,7 +471,7 @@ def _render_sync_task(task):
         if engine == "cadquery":
             cp_copy = params.copy()
             cp_copy["target_part"] = part
-            cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format)
+            cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format, _tessellation(payload))
             result = run_cadquery_render(
                 cmd, scad_path=scad_path, is_cancelled=lambda: _is_cancelled(job_id)
             )
@@ -472,7 +483,7 @@ def _render_sync_task(task):
             script_path = prepare_graph_script(scad_path, manifest)
             cp_copy = params.copy()
             cp_copy["target_part"] = part
-            cmd = build_cadquery_command(output_path, script_path, cp_copy, export_format)
+            cmd = build_cadquery_command(output_path, script_path, cp_copy, export_format, _tessellation(payload))
             result = run_cadquery_render(
                 cmd, scad_path=script_path, is_cancelled=lambda: _is_cancelled(job_id)
             )
@@ -531,6 +542,7 @@ def _render_sync_task(task):
                 project_slug, payload['scad_filename'], params, part, export_format,
                 serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
                 generator_fields=gen.cache_fields(published) if gen else None,
+                tessellation=_tessellation(payload),
             )
 
         part_entry = {
@@ -601,7 +613,7 @@ def process_stream_task(task):
         if engine == "cadquery":
             cp_copy = params.copy()
             cp_copy["target_part"] = part
-            cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format)
+            cmd = build_cadquery_command(output_path, scad_path, cp_copy, export_format, _tessellation(payload))
             stream_gen = stream_cadquery_render(
                 cmd, part, part_base, part_weight, i, num_parts,
                 scad_path=scad_path, is_cancelled=lambda: _is_cancelled(job_id)
@@ -610,7 +622,7 @@ def process_stream_task(task):
             script_path = prepare_graph_script(scad_path, manifest)
             cp_copy = params.copy()
             cp_copy["target_part"] = part
-            cmd = build_cadquery_command(output_path, script_path, cp_copy, export_format)
+            cmd = build_cadquery_command(output_path, script_path, cp_copy, export_format, _tessellation(payload))
             stream_gen = stream_cadquery_render(
                 cmd, part, part_base, part_weight, i, num_parts,
                 scad_path=script_path, is_cancelled=lambda: _is_cancelled(job_id)
@@ -673,6 +685,7 @@ def process_stream_task(task):
                         project_slug, payload['scad_filename'], params, part, export_format,
                         serve_key, size_bytes, scad_content_hash=payload.get('scad_content_hash'),
                         generator_fields=gen.cache_fields(published) if gen else None,
+                        tessellation=_tessellation(payload),
                     )
                     part_entry = {
                         "type": part,

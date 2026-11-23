@@ -32,10 +32,22 @@ the player's timing, not for which states get rendered).
 Multi-part modes are merged into one GLB with trimesh (already a backend
 dependency); single-part renders are written as the API produced them.
 
+Tessellation (owner rulings M2/M3, 2026-11-22): ``--tessellation preview`` asks
+the API for the coarser, regular CadQuery mesh (0.02 mm absolute, 0.35 rad)
+instead of the print mesh, so a preview is tessellated for the screen rather
+than decimated from the print file. The API honours it only when started with
+``ALLOW_PREVIEW_TESSELLATION=true`` and ``AUTH_ENABLED=false``, which is how
+``prerender-commons.yml`` starts it; the default here stays ``print`` so the
+script still works against a plain local API. The profile is part of the engine
+fingerprint, so a cached ``raw/`` never mixes the two. Every rendered file's
+triangle count goes into ``.render-report.json`` and the job summary counts the
+base renders that already fit the 2,500-triangle gallery budget, i.e. that the
+optimizer will not decimate.
+
 Usage:
     render_commons_models.py [--api http://localhost:5000] [--out apps/landing/public/models/raw]
                              [--slugs a,b,c] [--jobs 4] [--force] [--engine-fingerprint TEXT]
-                             [--timeout 900]
+                             [--timeout 900] [--tessellation print|preview]
     render_commons_models.py --hash-only [--engine-fingerprint TEXT]
 
 Exit codes:
@@ -71,6 +83,13 @@ REPORT_NAME = ".render-report.json"
 INDEX_VERSION = 2
 
 PRODUCTION_HOSTS = {"api.yantra4d.com", "yantra4d.com", "app.yantra4d.com"}
+
+# The API's tessellation profiles (apps/api/services/engine/tessellation.py).
+TESSELLATION_CHOICES = ("print", "preview")
+
+# The landing's lod1 triangle budget (apps/landing/perf-budgets.json, meshes.lod1Triangles):
+# a raw render at or under it reaches the gallery without decimation.
+GALLERY_TRIANGLE_BUDGET = 2500
 
 # Files whose change does not change geometry, so they do not invalidate a render.
 HASH_SKIP_DIRS = {"docs", "__pycache__", ".git", "exports"}
@@ -314,9 +333,9 @@ def api_health(api: str) -> dict:
     return payload
 
 
-def engine_fingerprint(api: str | None, extra: str) -> str:
-    """What makes a rendered mesh change besides the cartridge: the kernels."""
-    parts = [f"pipeline=raw-glb-v{INDEX_VERSION}"]
+def engine_fingerprint(api: str | None, extra: str, tessellation: str = "print") -> str:
+    """What makes a rendered mesh change besides the cartridge: the kernels and the profile."""
+    parts = [f"pipeline=raw-glb-v{INDEX_VERSION}", f"tessellation={tessellation}"]
     if api:
         health = api_health(api)
         openscad = (health.get("checks") or {}).get("openscad") or {}
@@ -338,7 +357,24 @@ class RenderError(Exception):
         self.retryable = retryable
 
 
-def render_item(api: str, item: dict, timeout: float) -> bytes:
+def render_payload(item: dict, tessellation: str = "print") -> dict:
+    """The ``POST /api/render`` body for one item.
+
+    ``tessellation`` is sent only when it is not ``print``, so a print run's
+    request is exactly what it was before profiles existed.
+    """
+    payload = {
+        "project": item["slug"],
+        "mode": item["mode"],
+        "parameters": item["parameters"],
+        "export_format": "stl",
+    }
+    if tessellation != "print":
+        payload["tessellation"] = tessellation
+    return payload
+
+
+def render_item(api: str, item: dict, timeout: float, tessellation: str = "print") -> bytes:
     """POST /api/render for one item and return the GLB bytes (parts merged when needed)."""
     # STL, not GLB, on purpose. Asking the API for glb makes it re-route an
     # OpenSCAD mode to its CadQuery twin (dual-engine cartridges such as
@@ -347,17 +383,17 @@ def render_item(api: str, item: dict, timeout: float) -> bytes:
     # extensions, specify export type explicitly". STL is what every kernel
     # produces natively; trimesh turns it into the position-only GLB the
     # optimizer expects (merge_parts handles single- and multi-part alike).
-    payload = {
-        "project": item["slug"],
-        "mode": item["mode"],
-        "parameters": item["parameters"],
-        "export_format": "stl",
-    }
+    payload = render_payload(item, tessellation)
     status, body, raw = http_json(f"{api}/api/render", payload, timeout=timeout)
     if status == 503:
         raise RenderError("render worker unavailable (503)", retryable=True)
     if status == 429:
         raise RenderError("rate limited (429) — start the API with RATE_LIMIT_ENABLED=false", retryable=True)
+    if status == 403 and (body or {}).get("error_code") == "tessellation_not_allowed":
+        raise SetupError(
+            "the API refused the preview tessellation — start it with "
+            "ALLOW_PREVIEW_TESSELLATION=true and AUTH_ENABLED=false, or pass --tessellation print"
+        )
     if status != 200 or body is None:
         detail = (body or {}).get("error") or (body or {}).get("message") or raw[:200].decode("utf-8", "replace")
         raise RenderError(f"HTTP {status}: {detail}", retryable=status >= 500)
@@ -395,6 +431,37 @@ def merge_parts(blobs: list[tuple[str, bytes]]) -> bytes:
         return merged.export(file_type="glb")
     except (ValueError, TypeError, AttributeError, KeyError, IndexError) as err:
         raise RenderError(f"could not merge parts: {err}") from err
+
+
+def glb_triangles(data: bytes) -> int | None:
+    """Triangles in a rendered GLB, or None when it cannot be read (reported, never fatal)."""
+    try:
+        import trimesh
+
+        loaded = trimesh.load(io.BytesIO(data), file_type="glb", force="mesh")
+        return len(loaded.faces)
+    except (ImportError, OSError, ValueError, TypeError, AttributeError, KeyError, IndexError):
+        return None  # a count is a report, not a render
+
+
+def budget_summary(triangles: dict[str, int | None], base_files: set[str]) -> dict:
+    """How many BASE renders (``<slug>.glb``) fit the gallery budget without decimation."""
+    counts = sorted(t for f, t in triangles.items() if f in base_files and t is not None)
+    within = sum(1 for t in counts if t <= GALLERY_TRIANGLE_BUDGET)
+
+    def pct(q: float) -> int | None:
+        if not counts:
+            return None
+        return counts[min(len(counts) - 1, int(q * (len(counts) - 1) + 0.5))]
+
+    return {
+        "base_renders": len(counts),
+        "within_gallery_budget": within,
+        "gallery_triangle_budget": GALLERY_TRIANGLE_BUDGET,
+        "median": pct(0.5),
+        "p90": pct(0.9),
+        "max": counts[-1] if counts else None,
+    }
 
 
 # ──────────────────────────────────────────────
@@ -452,6 +519,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--timeout", type=float, default=900.0, help="seconds to wait for one /api/render call")
     parser.add_argument("--hash-only", action="store_true", help="print the combined cartridge digest and exit")
     parser.add_argument("--no-prune", action="store_true", help="keep raw files of cartridges no longer in the catalog")
+    parser.add_argument(
+        "--tessellation",
+        choices=TESSELLATION_CHOICES,
+        default="print",
+        help="CadQuery tessellation profile to ask the API for (preview needs ALLOW_PREVIEW_TESSELLATION on the API)",
+    )
     return parser.parse_args(argv)
 
 
@@ -463,7 +536,7 @@ def main(argv: list[str] | None = None, env: dict | None = None) -> int:
     try:
         manifests, skipped = load_worklist(args.catalog, args.projects, only)
         api = None if args.hash_only else check_api_base(args.api)
-        fingerprint = engine_fingerprint(api, args.engine_fingerprint)
+        fingerprint = engine_fingerprint(api, args.engine_fingerprint, args.tessellation)
     except SetupError as err:
         print(f"ERROR: {err}", file=sys.stderr)
         return EXIT_USAGE
@@ -503,6 +576,7 @@ def main(argv: list[str] | None = None, env: dict | None = None) -> int:
 
     failures: list[str] = []
     rendered: list[str] = []
+    triangles: dict[str, int | None] = {}
     failures_lock = threading.Lock()
     started = time.monotonic()
 
@@ -511,7 +585,7 @@ def main(argv: list[str] | None = None, env: dict | None = None) -> int:
         last: Exception | None = None
         for attempt in range(4):
             try:
-                return render_item(api, item, args.timeout)
+                return render_item(api, item, args.timeout, args.tessellation)
             except RenderError as err:
                 last = err
                 if not err.retryable:
@@ -530,6 +604,8 @@ def main(argv: list[str] | None = None, env: dict | None = None) -> int:
             t0 = time.monotonic()
             try:
                 data = render_with_retries(item)
+            except SetupError:
+                raise
             except (RenderError, OSError, ValueError) as err:
                 ok = False
                 with failures_lock:
@@ -541,9 +617,11 @@ def main(argv: list[str] | None = None, env: dict | None = None) -> int:
             with tempfile.NamedTemporaryFile(dir=out_dir, prefix=".tmp-", suffix=".glb", delete=False) as tmp:
                 tmp.write(data)
             os.replace(tmp.name, out_dir / item["file"])
+            tris = glb_triangles(data)
             with failures_lock:
                 rendered.append(item["file"])
-            print(f"ok   {item['file']} {len(data):,} B in {time.monotonic() - t0:.1f}s")
+                triangles[item["file"]] = tris
+            print(f"ok   {item['file']} {len(data):,} B, {tris if tris is not None else '?'} tris in {time.monotonic() - t0:.1f}s")
         with index_lock:
             previous = set(index["slugs"].get(slug, {}).get("files", []))
             for old in sorted(previous - set(wanted)):
@@ -555,11 +633,18 @@ def main(argv: list[str] | None = None, env: dict | None = None) -> int:
                 index["slugs"].pop(slug, None)
             save_index(out_dir, index)
 
-    with ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
-        list(pool.map(do_slug, todo))
+    try:
+        with ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
+            list(pool.map(do_slug, todo))
+    except SetupError as err:
+        save_index(out_dir, index)
+        print(f"ERROR: {err}", file=sys.stderr)
+        return EXIT_USAGE
 
     save_index(out_dir, index)
     elapsed = time.monotonic() - started
+    base_files = {f"{slug}.glb" for slug in plan}
+    budget = budget_summary(triangles, base_files)
     report = {
         "cartridges": len(plan),
         "cached": cached,
@@ -567,7 +652,11 @@ def main(argv: list[str] | None = None, env: dict | None = None) -> int:
         "failed": sorted(failures),
         "skipped": skipped,
         "engine_fingerprint": fingerprint,
+        "tessellation": args.tessellation,
         "elapsed_seconds": round(elapsed, 1),
+        # Raw triangles per file rendered THIS run (cached files are not re-measured).
+        "triangles": {f: triangles[f] for f in sorted(triangles)},
+        "gallery_budget": budget,
     }
     (out_dir / REPORT_NAME).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
@@ -577,6 +666,13 @@ def main(argv: list[str] | None = None, env: dict | None = None) -> int:
         (
             f"{len(plan)} cartridge(s), {cached} already rendered, {len(rendered)} render(s) written, "
             f"{len(failures)} failed, {len(skipped)} skipped, in {elapsed / 60:.1f} min."
+        ),
+        "",
+        (
+            f"Tessellation `{args.tessellation}`: {budget['within_gallery_budget']} of "
+            f"{budget['base_renders']} base render(s) rendered this run fit the "
+            f"{GALLERY_TRIANGLE_BUDGET:,}-triangle gallery budget without decimation "
+            f"(raw triangles: median {budget['median']}, p90 {budget['p90']}, max {budget['max']})."
         ),
         "",
     ]

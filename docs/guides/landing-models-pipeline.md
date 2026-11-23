@@ -37,6 +37,13 @@ apps/landing/public/models/
    declares a top-level `animations` array. Multi-part modes are merged into
    one GLB (trimesh). Runs in `.github/workflows/prerender-commons.yml`; it is
    never pointed at `api.yantra4d.com` (the script refuses the host).
+   The workflow asks for the `preview` tessellation profile (`--tessellation
+   preview`, owner rulings M2/M3 of 2026-11-22): CadQuery and graph cartridges
+   are tessellated for the screen at 0.02 mm absolute / 0.35 rad instead of at
+   the print profile and then decimated. OpenSCAD and implicit cartridges are
+   the same under both profiles. The optimizer still decimates whatever is over
+   budget. Design and rulings:
+   [tessellation profiles and a mesh gate](../architecture/tessellation-profiles-and-mesh-gate.md).
 2. **Optimize** (`scripts/dev/optimize-commons-models.mjs`) turns each raw GLB
    into the LOD files and writes the manifest. This half needs only Node and
    the landing's devDependencies, so it also runs locally and in tests.
@@ -239,6 +246,14 @@ python3 scripts/dev/render_commons_models.py --slugs gridfinity,motor-mount --jo
 `AUTH_ENABLED` is false (docs/AUTH.md § Harness tier). The driver refuses any
 `*.yantra4d.com` host: production is never a render farm.
 
+The driver asks for the `print` profile unless told otherwise. To render previews
+the way the workflow does, start the API with `ALLOW_PREVIEW_TESSELLATION=true`
+as well (honoured, like `HARNESS_TIER`, only while `AUTH_ENABLED` is false; any
+other API answers a `preview` request with 403 `tessellation_not_allowed`) and
+pass `--tessellation preview`. The profile is part of the engine fingerprint, so
+a cached `raw/` never mixes the two, and every rendered file's triangle count
+goes into `raw/.render-report.json` (`triangles`, `gallery_budget`).
+
 The driver is incremental: `raw/.render-index.json` records, per slug, a hash
 of the cartridge directory (docs and images excluded) plus the engine
 fingerprint (`/api/health`'s OpenSCAD detail, the CadQuery version, and
@@ -263,6 +278,7 @@ on `workflow_dispatch` with:
 | `open_pr` | `false` | Commit `apps/landing/public/models` to `chore/commons-models-<run>` and open a PR (`peter-evans/create-pull-request`). |
 | `slugs` | *(empty = whole catalog)* | Render only these, `--force`d. A limited run never passes `--clean` to the optimizer, so the other cartridges' LODs stay. |
 | `lod0` | `all` | Passed straight to the optimizer's `--lod0`. The scheduled run uses `all` too, so the artifact it uploads matches what is committed. |
+| `tessellation` | `preview` | The CadQuery tessellation profile the renders ask for (`preview` or `print`). Scheduled and pull-request runs use `preview`. The job summary counts the base renders that already fit the 2,500-triangle gallery budget. |
 
 What it does, on GitHub-hosted `ubuntu-24.04` (R116: public repositories stay on
 GitHub-hosted runners), 120 min budget:
@@ -272,7 +288,7 @@ GitHub-hosted runners), 120 min budget:
    and Node 22.
 2. Installs the pinned OpenSCAD snapshot (`.github/actions/render-env`), Redis
    and the backend exactly as `ci.yml`'s `e2e` job does, then starts Redis, `python app.py` (`AUTH_ENABLED=false`,
-   `HARNESS_TIER=premium`, `RATE_LIMIT_ENABLED=false`) and the render worker,
+   `HARNESS_TIER=premium`, `RATE_LIMIT_ENABLED=false`, `ALLOW_PREVIEW_TESSELLATION=true`) and the render worker,
    waiting on `/api/health` for both.
 3. Computes the cache key: the digest of every cartridge directory folded with
    the engine fingerprint (`openscad --version` + `hashFiles` of

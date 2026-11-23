@@ -211,13 +211,17 @@ export default function StudioMainView({ compareMode, comparisonSlots, onAddComp
     ? logs.trim().split('\n').pop() || ''
     : ''
 
-  const comparing = Boolean(compareMode && comparisonSlots && comparisonSlots.length > 0)
-  const stageContent = compareMode && comparisonSlots && comparisonSlots.length > 0 ? (
+  // Compare mode always shows the comparison layout, empty or not: its empty
+  // state is where the first variation is added. It used to mount only once a
+  // slot existed, while the only control that adds one lives inside it.
+  const comparing = Boolean(compareMode)
+  const stageContent = comparing ? (
     <div className="relative h-full">
       <ComparisonView
-        slots={comparisonSlots as never}
+        slots={(comparisonSlots ?? []) as never}
         onRemoveSlot={onRemoveComparisonSlot!}
         onAddCurrent={onAddComparisonSlot!}
+        canAddCurrent={!loading && Array.isArray(parts) && parts.length > 0}
         colors={colors}
         wireframe={wireframe}
         mode={mode}

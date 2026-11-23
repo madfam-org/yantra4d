@@ -172,7 +172,6 @@
   "compare.title": "Vergleich",
   "compare.empty": "Keine Varianten zum Vergleichen",
   "compare.add_current": "Aktuelle hinzufügen",
-  "compare.sync_camera": "Kamera synchronisieren",
   "datasheet.generate": "Datenblatt erstellen",
   "a11y.skip_to_content": "Zum Inhalt springen",
   "shortcuts.title": "Tastaturkürzel",
@@ -598,5 +597,9 @@
   "sweep.error_render": "Die Bilder des Durchlaufs konnten nicht gerendert werden.",
   "sweep.error_no_canvas": "Es gibt keine 3D-Ansicht zum Aufnehmen.",
   "sweep.announce_playing": "{label} wird abgespielt",
-  "sweep.announce_paused": "{label} pausiert"
+  "sweep.announce_paused": "{label} pausiert",
+  "compare.empty_hint": "Füge das aktuelle Modell als erste Variante hinzu. Ändere dann Parameter, rendere und füge erneut hinzu: bis zu vier nebeneinander.",
+  "compare.add_needs_render": "Rendere zuerst das Modell und füge es dann hinzu.",
+  "compare.variation": "Variante {n}",
+  "compare.remove": "{label} entfernen"
 }

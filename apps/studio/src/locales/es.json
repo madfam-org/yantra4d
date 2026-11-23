@@ -181,7 +181,6 @@
   "compare.title": "Comparación",
   "compare.empty": "Sin variaciones para comparar",
   "compare.add_current": "Agregar actual",
-  "compare.sync_camera": "Sincronizar cámara",
   "datasheet.generate": "Generar ficha técnica",
   "a11y.skip_to_content": "Ir al contenido",
   "projects.sort.name_asc": "Nombre (A-Z)",
@@ -598,5 +597,9 @@
   "sweep.error_render": "No se pudieron renderizar los cuadros del barrido.",
   "sweep.error_no_canvas": "No hay una vista 3D que grabar.",
   "sweep.announce_playing": "Reproduciendo {label}",
-  "sweep.announce_paused": "{label} en pausa"
+  "sweep.announce_paused": "{label} en pausa",
+  "compare.empty_hint": "Agrega el modelo actual como primera variación. Luego cambia parámetros, renderiza y agrega otra vez: hasta cuatro lado a lado.",
+  "compare.add_needs_render": "Primero renderiza el modelo y luego agrégalo.",
+  "compare.variation": "Variación {n}",
+  "compare.remove": "Quitar {label}"
 }

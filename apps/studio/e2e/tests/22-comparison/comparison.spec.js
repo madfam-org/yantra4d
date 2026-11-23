@@ -22,50 +22,39 @@ test.describe('Comparison View', () => {
     await expect(compareBtn).toHaveText(/Exit comparison|Exit/)
   })
 
-  test('add current creates a comparison slot', async ({ page }) => {
+  test('entering compare shows how to start, and add current creates the first slot', async ({ page }) => {
+    // Regression: the compare layout used to mount only once a slot existed,
+    // while the only "Add current" control lived inside it, so no slot could
+    // ever be added. This test used to skip itself when the button was absent.
     const sidebar = page.locator('[data-testid="studio-sidebar"]')
     const compareBtn = sidebar.locator('button', { hasText: /Compare/ })
 
-    // Enter compare mode
     await compareBtn.click()
-    await page.waitForTimeout(300)
+    await expect(page.getByText('No variations to compare')).toBeVisible()
 
-    // Click "Add current" button
-    const addBtn = page.locator('button', { hasText: /Add current/ })
-    if (await addBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-      await addBtn.click()
-      await page.waitForTimeout(300)
+    const addBtn = page.getByRole('button', { name: /Add current/ })
+    await expect(addBtn).toBeEnabled({ timeout: 15000 })
+    await addBtn.click()
 
-      // Should show at least one slot with a remove button
-      const removeBtn = page.locator('button[aria-label="Remove slot"]')
-      await expect(removeBtn.first()).toBeVisible({ timeout: 10000 })
-    }
+    await expect(page.getByRole('button', { name: /^Remove Variation/ })).toHaveCount(1)
   })
 
   test('remove slot button works', async ({ page }) => {
     const sidebar = page.locator('[data-testid="studio-sidebar"]')
     const compareBtn = sidebar.locator('button', { hasText: /Compare/ })
 
-    // Enter compare mode and add a slot
     await compareBtn.click()
-    await page.waitForTimeout(300)
+    const addBtn = page.getByRole('button', { name: /Add current/ })
+    await expect(addBtn).toBeEnabled({ timeout: 15000 })
+    await addBtn.click()
 
-    const addBtn = page.locator('button', { hasText: /Add current/ })
-    if (await addBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-      await addBtn.click()
-      await page.waitForTimeout(300)
+    const removeBtn = page.getByRole('button', { name: /^Remove Variation/ })
+    await expect(removeBtn).toHaveCount(1)
+    await removeBtn.click()
 
-      // Remove the slot
-      const removeBtn = page.locator('button[aria-label="Remove slot"]').first()
-      if (await removeBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-        await removeBtn.click()
-        await page.waitForTimeout(300)
-
-        // Slot should be gone — either empty state text or no remove buttons
-        const remaining = page.locator('button[aria-label="Remove slot"]')
-        expect(await remaining.count()).toBe(0)
-      }
-    }
+    // Back to the empty state, ready for a new first variation.
+    await expect(removeBtn).toHaveCount(0)
+    await expect(page.getByText('No variations to compare')).toBeVisible()
   })
 
   test('max 4 slots — add button disabled at capacity', async ({ page }) => {
@@ -87,7 +76,7 @@ test.describe('Comparison View', () => {
     // After 4 slots, the add button should be hidden (component hides it at capacity)
     // ComparisonView hides the "Add current" button when slots.length >= 4
     // Just verify we have at most 4 remove buttons
-    const removeButtons = page.locator('button[aria-label="Remove slot"]')
+    const removeButtons = page.getByRole('button', { name: /^Remove Variation/ })
     expect(await removeButtons.count()).toBeLessThanOrEqual(4)
   })
 

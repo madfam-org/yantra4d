@@ -9,7 +9,9 @@ vi.mock('../viewer/Viewer', () => ({
 
 // Mock useLanguage hook directly
 vi.mock('../../contexts/system/LanguageProvider', () => ({
-  useLanguage: () => ({ t: (key) => key }),
+  useLanguage: () => ({
+    t: (key, params) => (params ? `${key}:${Object.values(params).join(',')}` : key),
+  }),
   LanguageProvider: ({ children }) => children
 }))
 
@@ -72,7 +74,7 @@ describe('ComparisonView', () => {
         onRemoveSlot={mockOnRemoveSlot}
       />
     )
-    const removeBtn = screen.getByLabelText('Remove slot')
+    const removeBtn = screen.getByRole('button', { name: 'compare.remove:Slot 1' })
     fireEvent.click(removeBtn)
     expect(mockOnRemoveSlot).toHaveBeenCalledWith('1')
   })
@@ -91,24 +93,69 @@ describe('ComparisonView', () => {
     expect(mockOnAddCurrent).toHaveBeenCalledTimes(1)
   })
 
-  it('toggles sync camera state', () => {
+  it('explains how to start when empty', () => {
+    renderWithProviders(<ComparisonView slots={[]} onAddCurrent={mockOnAddCurrent} />)
+    expect(screen.getByText('compare.empty_hint')).toBeInTheDocument()
+    expect(screen.queryByText('compare.add_needs_render')).not.toBeInTheDocument()
+  })
+
+  it('disables adding, with a reason, when there is nothing rendered to snapshot', () => {
+    renderWithProviders(<ComparisonView slots={[]} onAddCurrent={mockOnAddCurrent} canAddCurrent={false} />)
+    const add = screen.getByRole('button', { name: /compare.add_current/i })
+    expect(add).toBeDisabled()
+    expect(add).toHaveAttribute('aria-describedby', 'compare-add-needs-render')
+    expect(screen.getByText('compare.add_needs_render')).toHaveAttribute('id', 'compare-add-needs-render')
+    fireEvent.click(add)
+    expect(mockOnAddCurrent).not.toHaveBeenCalled()
+  })
+
+  it('disables the toolbar add button too when nothing is rendered', () => {
     const slots = [{ id: '1', parts: [], params: {}, label: 'Slot 1' }]
-    renderWithProviders(
-      <ComparisonView
-        slots={slots}
-      />
-    )
-    const syncBtn = screen.getByText('compare.sync_camera')
+    renderWithProviders(<ComparisonView slots={slots} onAddCurrent={mockOnAddCurrent} canAddCurrent={false} />)
+    expect(screen.getByRole('button', { name: /compare.add_current/i })).toBeDisabled()
+  })
 
-    // Default is true (bg-primary)
-    expect(syncBtn).toHaveClass('bg-primary')
+  it('offers no camera sync: each slot keeps its own camera (owner ruling 2026-11-22)', () => {
+    const slots = [{ id: '1', parts: [], params: {}, label: 'Slot 1' }, { id: '2', parts: [], params: {}, label: 'Slot 2' }]
+    renderWithProviders(<ComparisonView slots={slots} onAddCurrent={mockOnAddCurrent} />)
+    expect(screen.queryByText(/sync_camera/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /sync/i })).not.toBeInTheDocument()
+  })
 
-    // Click -> false
-    fireEvent.click(syncBtn)
-    expect(syncBtn).toHaveClass('bg-muted')
+  it('puts the name and remove control of each slot in a bar above its viewer, never over it', () => {
+    // They used to float over the viewer's corner, where the viewer's own
+    // controls covered the remove button and took its clicks (e2e, every browser).
+    const slots = [{ id: '1', parts: [], params: {}, label: 'Slot 1' }]
+    renderWithProviders(<ComparisonView slots={slots} onRemoveSlot={mockOnRemoveSlot} />)
+    const slot = screen.getByRole('region', { name: 'Slot 1' })
+    const remove = screen.getByRole('button', { name: 'compare.remove:Slot 1' })
+    const viewer = screen.getByTestId('viewer-mock')
+    expect(slot).toContainElement(remove)
+    // The bar and the viewer are siblings: the button is not inside the viewer's box.
+    expect(viewer.parentElement.contains(remove)).toBe(false)
+    expect(remove.parentElement.compareDocumentPosition(viewer.parentElement) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
 
-    // Click -> true
-    fireEvent.click(syncBtn)
-    expect(syncBtn).toHaveClass('bg-primary')
+  it('names unlabelled slots by position, in the language of the visitor', () => {
+    const slots = [{ id: 'a', parts: [], params: {} }, { id: 'b', parts: [], params: {} }]
+    renderWithProviders(<ComparisonView slots={slots} onRemoveSlot={mockOnRemoveSlot} />)
+    expect(screen.getByText('compare.variation:1')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'compare.remove:compare.variation:2' })).toBeInTheDocument()
+  })
+
+  it('keeps each slot\'s number when an earlier one is removed', () => {
+    // "Variation 1" was removed: the remaining slots keep their own numbers.
+    const slots = [{ id: 'b', n: 2, parts: [], params: {} }, { id: 'c', n: 3, parts: [], params: {} }]
+    renderWithProviders(<ComparisonView slots={slots} onRemoveSlot={mockOnRemoveSlot} />)
+    expect(screen.getByText('compare.variation:2')).toBeInTheDocument()
+    expect(screen.getByText('compare.variation:3')).toBeInTheDocument()
+    expect(screen.queryByText('compare.variation:1')).not.toBeInTheDocument()
+  })
+
+  it('hides the add control at four slots', () => {
+    const slots = [1, 2, 3, 4].map(n => ({ id: String(n), parts: [], params: {}, label: `Slot ${n}` }))
+    renderWithProviders(<ComparisonView slots={slots} onAddCurrent={mockOnAddCurrent} onRemoveSlot={mockOnRemoveSlot} />)
+    expect(screen.queryByRole('button', { name: /compare.add_current/i })).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('comparison-slot')).toHaveLength(4)
   })
 })

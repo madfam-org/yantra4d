@@ -33,7 +33,8 @@ const StorefrontView = lazy(() => import('./components/storefront/StorefrontView
 
 interface ComparisonSlot {
   id: string
-  label: string
+  /** Its number for life: removing "Variation 1" never renames "Variation 2". */
+  n: number
   parts: unknown[]
   params: Record<string, unknown>
 }
@@ -89,7 +90,7 @@ function App() {
     if (comparisonSlots.length >= 4) return
     setComparisonSlots(prev => [...prev, {
       id: crypto.randomUUID(),
-      label: `Variation ${prev.length + 1}`,
+      n: prev.reduce((max, s) => Math.max(max, s.n), 0) + 1,
       parts: [...parts],
       params: { ...params },
     }])

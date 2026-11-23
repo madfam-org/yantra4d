@@ -181,7 +181,6 @@
   "compare.title": "Comparison",
   "compare.empty": "No variations to compare",
   "compare.add_current": "Add current",
-  "compare.sync_camera": "Sync camera",
   "datasheet.generate": "Generate Datasheet",
   "a11y.skip_to_content": "Skip to content",
   "projects.sort.name_asc": "Name (A-Z)",
@@ -598,5 +597,9 @@
   "sweep.error_render": "The sweep's frames could not be rendered.",
   "sweep.error_no_canvas": "There is no 3D view to record.",
   "sweep.announce_playing": "Playing {label}",
-  "sweep.announce_paused": "{label} paused"
+  "sweep.announce_paused": "{label} paused",
+  "compare.empty_hint": "Add the current model as the first variation. Then change parameters, render, and add again: up to four side by side.",
+  "compare.add_needs_render": "Render the model first, then add it.",
+  "compare.variation": "Variation {n}",
+  "compare.remove": "Remove {label}"
 }

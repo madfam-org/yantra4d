@@ -172,7 +172,6 @@
   "compare.title": "Comparação",
   "compare.empty": "Sem variações para comparar",
   "compare.add_current": "Adicionar atual",
-  "compare.sync_camera": "Sincronizar câmera",
   "datasheet.generate": "Gerar ficha técnica",
   "a11y.skip_to_content": "Ir para o conteúdo",
   "shortcuts.title": "Atalhos de Teclado",
@@ -598,5 +597,9 @@
   "sweep.error_render": "Não foi possível renderizar os quadros da varredura.",
   "sweep.error_no_canvas": "Não há visualização 3D para gravar.",
   "sweep.announce_playing": "Reproduzindo {label}",
-  "sweep.announce_paused": "{label} em pausa"
+  "sweep.announce_paused": "{label} em pausa",
+  "compare.empty_hint": "Adicione o modelo atual como a primeira variação. Depois mude os parâmetros, renderize e adicione de novo: até quatro lado a lado.",
+  "compare.add_needs_render": "Renderize o modelo primeiro e depois adicione-o.",
+  "compare.variation": "Variação {n}",
+  "compare.remove": "Remover {label}"
 }

@@ -410,6 +410,18 @@ describe('StudioSidebar', () => {
   })
 })
 
+
+describe('StudioSidebar — compare on a phone', () => {
+  it('the controls sheet offers Compare, as the desktop dock does', async () => {
+    const onToggleCompare = vi.fn()
+    render(<StudioSidebar variant="mobile" compareMode={false} onToggleCompare={onToggleCompare} />)
+    fireEvent.click(screen.getByRole('button', { name: 'btn.open_controls' }))
+    const compare = await screen.findByRole('button', { name: /btn\.compare/ })
+    fireEvent.click(compare)
+    expect(onToggleCompare).toHaveBeenCalledTimes(1)
+  })
+})
+
 // The cartridge's parameter sweeps sit in the Design tab, between the controls
 // and "Works with". Playback is the tier's `animation` feature (tiers.json).
 describe('StudioSidebar — sweeps', () => {

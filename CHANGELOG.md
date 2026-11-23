@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Documentation
+- **Related repositories and contracts.** The README, AGENTS.md and llms.txt link the
+  documents that define each contract on the other side: the keystone's README, graph
+  schema and ASSEMBLIES.md, the solid commons' assemblies README, asset-shells' README
+  and pravara-mes' Sparkplug package. `docs/operations/user-projects-storage.md` notes
+  that the backend pod does not mount its ServiceAccount token.
+- **Programme status.** `ROADMAP.md` gains a dated section, *Digital twins programme:
+  status as of 2026-10-05*: what landed, the open PRs in merge order with their
+  preconditions and whether they deploy, and the next steps.
+
 ### Added
 - **Mesh oracle seam with an optional geom-core backend** (lane G4, 2026-10-18).
   `apps/api/services/engine/mesh_metrics.py` (`MeshOracle`: `TrimeshOracle`,

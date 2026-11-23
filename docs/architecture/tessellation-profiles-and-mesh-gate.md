@@ -44,7 +44,7 @@ The owner's answers to the seven questions in [Rulings requested](#rulings-reque
 |---|---|---|
 | `print` / `preview` profiles (M1, M3) | `apps/api/services/engine/tessellation.py`, `cq_runner.py`, `cadquery_engine.py`, `cq_pool.py`, `render_cache.py`, `render_orchestrator.py`, `apps/worker/render_worker.py` | Built. `print` is the default and calls the exporter exactly as before (byte-identical, `tests/integration/test_tessellation_kernel.py`). `preview` is STL only and honoured only while `ALLOW_PREVIEW_TESSELLATION` is set and `AUTH_ENABLED` is false; any other caller gets 403 `tessellation_not_allowed`. The profile is in the cache key and the artifact name whenever it is not `print`, so print keys and URLs are unchanged. |
 | Models pipeline asks for `preview` (M2) | `scripts/dev/render_commons_models.py --tessellation`, `prerender-commons.yml` input `tessellation` (default `preview`) | Built. The committed landing models were not refreshed in this work. |
-| Preview measured on the whole Commons (M2) | [Preview profile across the Commons](#preview-profile-across-the-commons) | See that section. |
+| Preview measured on the whole Commons (M2) | [Preview profile across the Commons](#preview-profile-across-the-commons) | Done 2026-11-23: 329 of 512 previews fit the gallery budget without decimation, against 221 of 510 at print. |
 | Report-only mesh gate (M4–M7) | `hyperobjects-spec` | Not built yet. |
 | Spec pins moved together | `ci.yml`, `spec-nightly.yml`, Commons `SPEC_PIN` | Not done yet. |
 | Rugged box round by default (M5) | Commons | Not done yet. |
@@ -52,7 +52,40 @@ The owner's answers to the seven questions in [Rulings requested](#rulings-reque
 
 ## Preview profile across the Commons
 
-Not measured yet.
+Measured 2026-11-23 by `prerender-commons.yml` dispatched on the profile branch with
+`tessellation: preview` (run 45116797880), against the print-profile run of 2026-11-22
+(run 45060607409). Same Commons pin (`8317c177`), same CadQuery release, same optimizer.
+Counts are raw triangles of each cartridge's base render (default mode, manifest
+defaults), read from the optimizer's log; "fits" means at or under the 2,500-triangle
+gallery budget, i.e. not decimated.
+
+| | Print | Preview |
+|---|---|---|
+| Base renders produced | 510 of 512 (bevel-gear and bevel-pair timed out at 300 s) | 512 of 512 |
+| Fit the gallery budget without decimation | 221 of 510 | 329 of 512 (327 of the same 510) |
+| Still decimated | 289 | 183 (median 5,380 raw triangles; 84 of them at 5,000 or fewer) |
+| Raw triangles, median / 90th percentile | 2,934 / 18,676 | 1,404 / 8,436 |
+| Raw triangles, all base renders | 5.15 million | 2.86 million |
+| Base renders over the 25,000-triangle lod0 budget | 37 | 15 |
+
+By engine, on the 510 cartridges both runs rendered:
+
+- **CadQuery and graph (490):** 211 fit at print, 319 at preview. 112 that were decimated
+  now fit; 4 that fit no longer do (bollard-cap 2,232 → 23,072, coaster, shoe-tree 116 →
+  6,100, water-meter-lid). 31 grew in all: free-form and revolved parts gain triangles
+  under an absolute bound (body-form 3,218 → 169,022, lingerie-form 3,176 → 146,658,
+  figure-child 2,934 → 82,900). 37 are unchanged (all-planar parts).
+- **OpenSCAD (19) and implicit (1):** unchanged, as expected: their resolution is in the
+  cartridge.
+- **The audit's three parts:** bearing-housing 3,832 → 1,484, electronics-enclosure
+  5,084 → 1,564, thread-capsule 4,548 → 3,510 (the audit measured 1,484, 1,564 and 3,428
+  at this setting).
+
+What this does not show: how the previews look (no pixels compared), and how much of the
+remaining decimation the simplifier does well. The free-form parts that grew are the case
+the proposal warned about; whether to cap them (a looser preview for parts over a size, or
+an angular bound only for free-form faces) is a question for after this trial, not decided
+here. The committed landing models were not refreshed.
 
 ## The problem in three facts
 

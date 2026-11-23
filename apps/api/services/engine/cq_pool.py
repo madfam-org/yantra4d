@@ -39,6 +39,7 @@ from collections.abc import Callable
 from services.engine.engine_guard import worker_only
 from services.engine.render_engine import RENDER_TIMEOUT_S
 from services.engine.render_limits import cpu_limit_seconds, limited_env, render_preexec_fn
+from services.engine.tessellation import PRINT
 
 logger = logging.getLogger(__name__)
 
@@ -325,6 +326,7 @@ class CadQueryPool:
         env: dict | None = None,
         timeout: float | None = None,
         is_cancelled: Callable[[], bool] | None = None,
+        tessellation: str | None = None,
     ) -> tuple[bool, str] | None:
         """Run one render on a warm worker.
 
@@ -343,6 +345,10 @@ class CadQueryPool:
             "params_json": params_json,
             "export_format": export_format,
         }
+        # Only a non-print profile travels: a print job's request stays exactly what it
+        # was, and the worker reads an absent key as print (cq_runner.serve_forever).
+        if tessellation and tessellation != PRINT:
+            request["tessellation"] = tessellation
         started = time.monotonic()
         try:
             success, output = worker.run(request, deadline, is_cancelled)

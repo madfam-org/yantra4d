@@ -29,6 +29,7 @@ from collections import OrderedDict
 import redis as redis_lib
 
 from services.engine.render_revision import cache_revision
+from services.engine.tessellation import key_fields as tessellation_key_fields
 from utils.metrics import CACHE_HITS, CACHE_MISSES
 
 logger = logging.getLogger(__name__)
@@ -175,7 +176,8 @@ class RenderCache:
             return "unknown"
 
     @classmethod
-    def _make_key(cls, project: str, scad_file: str, params: dict, part: str, export_format: str, scad_content_hash: str | None = None) -> str:
+    def _make_key(cls, project: str, scad_file: str, params: dict, part: str, export_format: str,
+                  scad_content_hash: str | None = None, tessellation: str | None = None) -> str:
         raw = json.dumps({
             "project": project,
             "scad_file": scad_file,
@@ -186,6 +188,10 @@ class RenderCache:
             "engine": cls._engine_signature(),
             "revision": cache_revision(),
             **({"scad_hash": scad_content_hash} if scad_content_hash else {}),
+            # The tessellation profile (ruling M3): absent for print, so every print
+            # key is the one it was before profiles existed, and present for any other
+            # profile, so a preview mesh can never answer a print request.
+            **tessellation_key_fields(tessellation),
         }, sort_keys=True)
         return hashlib.sha256(raw.encode()).hexdigest()
 
@@ -217,9 +223,10 @@ class RenderCache:
         except Exception as e:
             _redis_fail("put", e)
 
-    def get(self, project: str, scad_file: str, params: dict, part: str, export_format: str, scad_content_hash: str | None = None) -> dict | None:
+    def get(self, project: str, scad_file: str, params: dict, part: str, export_format: str,
+            scad_content_hash: str | None = None, tessellation: str | None = None) -> dict | None:
         """Return cached entry if valid, else None. Checks L1 then L2."""
-        key = self._make_key(project, scad_file, params, part, export_format, scad_content_hash)
+        key = self._make_key(project, scad_file, params, part, export_format, scad_content_hash, tessellation)
 
         # L1: in-memory
         with self._lock:
@@ -254,7 +261,9 @@ class RenderCache:
         CACHE_MISSES.inc()
         return None
 
-    def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, artifact_key: str, size_bytes: int | None, scad_content_hash: str | None = None, generator_fields: dict | None = None):
+    def put(self, project: str, scad_file: str, params: dict, part: str, export_format: str, artifact_key: str,
+            size_bytes: int | None, scad_content_hash: str | None = None, generator_fields: dict | None = None,
+            tessellation: str | None = None):
         """Record that *artifact_key* satisfies this render.
 
         ``artifact_key`` is a store key (``ArtifactStore``), i.e. the same
@@ -263,7 +272,7 @@ class RenderCache:
         the producer's filesystem. *generator_fields* are the part's GOC-1
         fields (``GENERATOR_FIELDS``), so a hit answers with what a miss does.
         """
-        key = self._make_key(project, scad_file, params, part, export_format, scad_content_hash)
+        key = self._make_key(project, scad_file, params, part, export_format, scad_content_hash, tessellation)
         entry = {"key": artifact_key, "size_bytes": size_bytes, "ts": time.time(),
                  **{k: v for k, v in (generator_fields or {}).items() if k in GENERATOR_FIELDS}}
 

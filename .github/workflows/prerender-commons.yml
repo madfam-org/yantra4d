@@ -60,6 +60,17 @@ on:
           raw render already fits lod1 gets none (the optimizer skips it).
         type: string
         default: all
+      tessellation:
+        description: >-
+          CadQuery tessellation profile the renders ask for. preview (0.02 mm absolute,
+          0.35 rad; owner ruling M2, 2026-11-22) is tessellated for the screen instead of
+          decimated from the print mesh; print is the mesh a person downloads. OpenSCAD
+          and implicit cartridges are the same under both.
+        type: choice
+        options:
+          - preview
+          - print
+        default: preview
 
 permissions:
   contents: write
@@ -159,6 +170,12 @@ jobs:
           # top tier (TOP_TIER, services/core/tier_service.py line 28) and the
           # literal that test_honoured_when_auth_disabled (line 66) pins.
           HARNESS_TIER: "premium"
+          # The models pipeline is the only caller allowed the `preview` tessellation
+          # profile (ruling M3, 2026-11-22). Honoured only while AUTH_ENABLED is
+          # false (services/engine/tessellation.preview_allowed), so it cannot widen
+          # a real deployment; the profile is part of the render cache key, so a
+          # preview mesh is never served as a print file.
+          ALLOW_PREVIEW_TESSELLATION: "true"
           REDIS_URL: redis://localhost:6379
           PROJECTS_DIR: ${{ github.workspace }}/projects
         run: |
@@ -233,11 +250,14 @@ jobs:
         id: key
         env:
           ENGINE_CODE_HASH: ${{ hashFiles('apps/api/requirements.txt', 'packages/commons-sandbox/sandbox.lock.json', 'apps/api/services/engine/**', 'apps/worker/**') }}
+          # Folded into the digest (render_commons_models.engine_fingerprint), so a
+          # print run and a preview run never share raw renders.
+          TESSELLATION: ${{ inputs.tessellation || 'preview' }}
         run: |
           set -euo pipefail
           openscad_version=$(openscad --version 2>&1 | head -n1 | tr -s ' ' '_')
           fingerprint="${openscad_version}|code=${ENGINE_CODE_HASH}"
-          digest=$(python3 scripts/dev/render_commons_models.py --hash-only --engine-fingerprint "$fingerprint")
+          digest=$(python3 scripts/dev/render_commons_models.py --hash-only --engine-fingerprint "$fingerprint" --tessellation "$TESSELLATION")
           echo "fingerprint=$fingerprint" >> "$GITHUB_OUTPUT"
           echo "digest=$digest" >> "$GITHUB_OUTPUT"
           echo "engine fingerprint: $fingerprint"
@@ -267,9 +287,10 @@ jobs:
         env:
           # pull_request = the five-cartridge smoke set; a dispatch names its own.
           SLUGS: ${{ github.event_name == 'pull_request' && 'gridfinity,motor-mount,din-rail-clip,spiral-planter,hook-and-eye' || inputs.slugs }}
+          TESSELLATION: ${{ inputs.tessellation || 'preview' }}
         run: |
           set -uo pipefail
-          args=(--api http://localhost:5000 --jobs 4 --engine-fingerprint "${{ steps.key.outputs.fingerprint }}")
+          args=(--api http://localhost:5000 --jobs 4 --engine-fingerprint "${{ steps.key.outputs.fingerprint }}" --tessellation "$TESSELLATION")
           if [ -n "${SLUGS// /}" ]; then
             # A dispatch naming slugs wants them rendered now, cache or not.
             args+=(--slugs "${SLUGS// /}" --force)

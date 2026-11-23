@@ -667,6 +667,11 @@ function renderProject(p) {
  * cartridge cannot leak here either: an interface count or a standards list is
  * a smaller disclosure than a card, but it is still a disclosure.
  */
+/** Legacy `hyperobject.domain` values and the canonical name each one files under (schema description). */
+const LEGACY_DOMAINS = { consumer: 'consumer-electronics', electronics: 'consumer-electronics', play: 'commercial' };
+/** Values that are not a deployment domain of their own. */
+const NOT_A_DOMAIN = new Set(['hybrid', 'uncategorized']);
+
 function computeStats(ctx, manifests, projects) {
   const engines = new Set();
   const standards = new Set();
@@ -675,9 +680,11 @@ function computeStats(ctx, manifests, projects) {
   let withInterfaces = 0;
   let stepCapable = 0;
   let cernLicensed = 0;
-  // Deployment domains with at least one public cartridge, from the schema's
-  // `hyperobject.domain` vocabulary. 'uncategorized' is the catalog's bucket for
-  // a cartridge that declares none, not a domain.
+  // Deployment domains with at least one public cartridge, counted the way the
+  // schema's `hyperobject.domain` description defines them: the legacy one-offs
+  // fold into their canonical names, and neither 'hybrid' ("spans several
+  // domains with no principal one") nor the catalog's 'uncategorized' bucket is
+  // a domain of its own.
   const domains = new Set();
   // Cartridges that declare at least one parameter sweep (`animations`).
   let sweptCartridges = 0;
@@ -703,7 +710,8 @@ function computeStats(ctx, manifests, projects) {
     const license = ho.commons_license ?? project.attribution?.license ?? '';
     if (license.startsWith('CERN-OHL')) cernLicensed += 1;
 
-    if (typeof ho.domain === 'string' && ho.domain && ho.domain !== 'uncategorized') domains.add(ho.domain);
+    const domain = typeof ho.domain === 'string' ? (LEGACY_DOMAINS[ho.domain] ?? ho.domain) : '';
+    if (domain && !NOT_A_DOMAIN.has(domain)) domains.add(domain);
     if (Array.isArray(manifest.animations) && manifest.animations.length > 0) sweptCartridges += 1;
   }
 

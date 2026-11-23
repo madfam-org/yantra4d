@@ -548,7 +548,7 @@ export const COMMONS_STATS = {
   engines: 4,
   stepCapable: 503,
   cernLicensed: 512,
-  domains: 15,
+  domains: 11,
   sweptCartridges: 20,
   graphEdges: 266,
   graphNodes: 211,

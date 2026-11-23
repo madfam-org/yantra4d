@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import builtins as _builtins
 import os
-from collections.abc import Callable
+import platform
+from collections.abc import Callable, Iterable, Mapping
 
 
 # ── restricted reflection builtins ───────────────────────────────────────────
@@ -80,6 +81,14 @@ def make_restricted_import(product_label: str = "sandboxed") -> Callable:
     cartridges", "CadQuery scripts"); it changes no policy."""
 
     def _restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
+        # A sandboxed script runs as ``__main__`` with no package, so it has no
+        # legitimate relative import. Refuse them: a relative import resolves
+        # against the caller's ``__package__``, not against ``name``, so the
+        # top-package check below could not see what it actually loads.
+        if level:
+            raise ImportError(
+                f"Relative import is not allowed in {product_label}"
+            )
         top = name.split(".")[0]
         if top in BLOCKED_MODULES:
             raise ImportError(f"Import of '{name}' is not allowed in {product_label}")
@@ -92,13 +101,114 @@ def make_restricted_import(product_label: str = "sandboxed") -> Callable:
     return _restricted_import
 
 
-def build_sandbox_builtins(product_label: str = "sandboxed") -> dict:
-    """A fresh copy of SAFE_BUILTINS with the restricted ``__import__`` installed —
+def make_allowlist_import(
+    product_label: str,
+    allowed_imports: Iterable[str],
+    allow: Callable[[str], bool] | None = None,
+) -> Callable:
+    """Return an ``__import__`` replacement that admits only named top-level packages.
+
+    An import is admitted when its top-level package is in ``allowed_imports``, or
+    when ``allow(top)`` returns true (a runner's own rule, e.g. a sibling cartridge
+    on a curated root). Everything else is refused. An admitted import still goes
+    through ``make_restricted_import``, so ``BLOCKED_MODULES`` always wins and a
+    relative import is refused, whatever a caller lists.
+
+    A runner owns its list (it is kernel-specific); this function owns the
+    mechanism, so both runners enforce an allowlist the same way."""
+    allowed = frozenset(allowed_imports)
+    restricted = make_restricted_import(product_label)
+
+    def _allowlist_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if level:
+            # The restricted import refuses it with the shared message.
+            return restricted(name, globals, locals, fromlist, level)
+        top = name.split(".")[0]
+        if top not in BLOCKED_MODULES and (
+            top in allowed or (allow is not None and allow(top))
+        ):
+            return restricted(name, globals, locals, fromlist, level)
+        raise ImportError(f"Import of '{name}' is not allowed in {product_label}")
+
+    return _allowlist_import
+
+
+def build_sandbox_builtins(
+    product_label: str = "sandboxed",
+    allowed_imports: Iterable[str] | None = None,
+    allow: Callable[[str], bool] | None = None,
+) -> dict:
+    """A fresh copy of SAFE_BUILTINS with a guarded ``__import__`` installed —
     ready to drop into an ``exec`` globals as ``__builtins__``. A copy, so a caller
-    (or a script) mutating it cannot poison the shared whitelist."""
+    (or a script) mutating it cannot poison the shared whitelist.
+
+    With ``allowed_imports`` the guard is ``make_allowlist_import`` (only the named
+    packages, plus whatever ``allow`` admits); without it, the denylist guard
+    ``make_restricted_import``. Runners should pass an allowlist."""
     b = dict(SAFE_BUILTINS)
-    b["__import__"] = make_restricted_import(product_label)
+    if allowed_imports is None:
+        b["__import__"] = make_restricted_import(product_label)
+    else:
+        b["__import__"] = make_allowlist_import(product_label, allowed_imports, allow)
     return b
+
+
+# ── the runner subprocess environment ────────────────────────────────────────
+# What a runner subprocess may inherit from its parent, by exact name: the
+# executable search path, locale and time zone, the temp dir, the dynamic linker's
+# search path (a shared-library Python build cannot start without it) and the
+# interpreter's behaviour flags. ``LD_PRELOAD`` and ``PYTHONHOME`` are deliberately
+# not here, and neither is ``PYTHONPATH``: a runner sets the import path it needs.
+CHILD_ENV_NAMES: frozenset[str] = frozenset({
+    "PATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ", "TMPDIR",
+    "LD_LIBRARY_PATH",
+    "PYTHONUNBUFFERED", "PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE",
+})
+
+
+def minimal_child_env(
+    parent_env: Mapping[str, str],
+    extra_names: Iterable[str] = (),
+    extra_prefixes: Iterable[str] = (),
+) -> dict[str, str]:
+    """The subset of ``parent_env`` a runner subprocess may inherit.
+
+    Built from an allowlist, never by copying and deleting: ``CHILD_ENV_NAMES``,
+    plus the runner's ``extra_names`` (exact) and ``extra_prefixes`` (e.g. a
+    kernel's own settings). Application configuration and credentials are
+    therefore never in the child's ``os.environ``, whatever the parent holds."""
+    names = CHILD_ENV_NAMES | frozenset(extra_names)
+    prefixes = tuple(extra_prefixes)
+    return {
+        key: value for key, value in parent_env.items()
+        if key in names or (prefixes and key.startswith(prefixes))
+    }
+
+
+# <linux/prctl.h>
+_PR_GET_DUMPABLE = 3
+_PR_SET_DUMPABLE = 4
+
+
+def set_process_nondumpable() -> bool:
+    """Mark the calling process non-dumpable (Linux ``prctl(PR_SET_DUMPABLE, 0)``).
+
+    A runner's subprocess shares its parent's UID; a non-dumpable parent's
+    ``/proc/<pid>/environ`` and ``/proc/<pid>/mem`` are not readable by it. Call it
+    in every process that starts runner subprocesses. Returns True only when the
+    flag is confirmed set. A no-op returning False off Linux, and it never raises:
+    a hardening step must not stop the process it protects."""
+    if platform.system() != "Linux":
+        return False
+    try:
+        import ctypes  # local: only the parent process ever needs it
+
+        libc = ctypes.CDLL(None, use_errno=True)
+        if libc.prctl(_PR_SET_DUMPABLE, 0, 0, 0, 0) != 0:
+            return False
+        return libc.prctl(_PR_GET_DUMPABLE, 0, 0, 0, 0) == 0
+    except Exception:  # noqa: BLE001 - never raise from a hardening step
+        return False
 
 
 def validate_script_path(script_path: str, allowed_suffixes: set[str]) -> str:

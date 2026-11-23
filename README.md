@@ -215,6 +215,8 @@ docker compose up --build
 ```
 Open [localhost:3000](http://localhost:3000) to enter the Studio.
 
+The compose stack runs with authentication off and renders as the top tier, so every Commons cartridge, CadQuery and graph ones included, renders out of the box. `SELF_HOST_TIER` (default `premium`) sets that tier; `SELF_HOST_TIER=guest docker compose up` shows the free limits instead. Because authentication is off, every port is published on `127.0.0.1` only, so the stack answers this machine alone. To serve it to other people, turn authentication on and put it behind your own proxy first: see [docs/AUTH.md](docs/AUTH.md).
+
 ---
 
 ## 🤝 Community & License

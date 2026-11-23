@@ -6,6 +6,8 @@ import Viewer from '../viewer/Viewer'
 interface ComparisonSlot {
   id: string
   label?: string
+  /** The slot's number, fixed when it is added; the position is the fallback. */
+  n?: number
   parts: unknown[]
   params: Record<string, unknown>
 }
@@ -83,7 +85,7 @@ export default function ComparisonView({ slots, onRemoveSlot, onAddCurrent, canA
 
       <div className={`flex-1 min-h-0 grid ${gridCols} gap-1 p-1`}>
         {slots.map((slot, idx) => {
-          const label = slot.label || t('compare.variation', { n: idx + 1 })
+          const label = slot.label || t('compare.variation', { n: slot.n ?? idx + 1 })
           return (
             // The slot's name and its remove control sit in a bar of their
             // own above the viewer. They used to float over the viewer's

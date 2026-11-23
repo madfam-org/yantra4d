@@ -143,6 +143,15 @@ describe('ComparisonView', () => {
     expect(screen.getByRole('button', { name: 'compare.remove:compare.variation:2' })).toBeInTheDocument()
   })
 
+  it('keeps each slot\'s number when an earlier one is removed', () => {
+    // "Variation 1" was removed: the remaining slots keep their own numbers.
+    const slots = [{ id: 'b', n: 2, parts: [], params: {} }, { id: 'c', n: 3, parts: [], params: {} }]
+    renderWithProviders(<ComparisonView slots={slots} onRemoveSlot={mockOnRemoveSlot} />)
+    expect(screen.getByText('compare.variation:2')).toBeInTheDocument()
+    expect(screen.getByText('compare.variation:3')).toBeInTheDocument()
+    expect(screen.queryByText('compare.variation:1')).not.toBeInTheDocument()
+  })
+
   it('hides the add control at four slots', () => {
     const slots = [1, 2, 3, 4].map(n => ({ id: String(n), parts: [], params: {}, label: `Slot ${n}` }))
     renderWithProviders(<ComparisonView slots={slots} onAddCurrent={mockOnAddCurrent} onRemoveSlot={mockOnRemoveSlot} />)

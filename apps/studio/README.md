@@ -223,10 +223,12 @@ de la configuración por defecto") with the commons pin it was rendered from.
   ([guide](../../docs/guides/landing-models-pipeline.md)):
   `.github/workflows/prerender-commons.yml` renders every public cartridge at
   its first mode with default parameters, and the optimizer writes
-  meshopt-compressed `<slug>.lod1.glb` (≤ 12 KiB, at most 2,500 triangles)
-  plus, for every cartridge whose render lod1 had to decimate, a
-  `<slug>.lod0.glb` (≤ 60 KiB; the render itself when it fits, which is most
-  of them), and `manifest.json` (v2), to `apps/landing/public/models/`,
+  meshopt-compressed `<slug>.lod1.glb` (≤ 12 KiB and 2,500 triangles, except
+  where `meshes.exceptions` in `apps/landing/perf-budgets.json` raises a
+  budget, recorded as `budget` on that manifest entry) plus, for every
+  cartridge whose render had to be decimated to fit lod1, a `<slug>.lod0.glb`
+  (≤ 60 KiB; every triangle of the render when it fits, which is most of
+  them), and `manifest.json` (v2), to `apps/landing/public/models/`,
   served as `yantra4d.com/models/…`. The landing nginx answers
   `/models/manifest.json` and `/models/*.glb` with
   `Access-Control-Allow-Origin` for `https://app.yantra4d.com` and

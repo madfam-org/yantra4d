@@ -657,6 +657,11 @@ function renderProject(p) {
   return `  { ${fields.join(', ')} },`;
 }
 
+/** Legacy `hyperobject.domain` values and the canonical name each one files under (schema description). */
+const LEGACY_DOMAINS = { consumer: 'consumer-electronics', electronics: 'consumer-electronics', play: 'commercial' };
+/** Values that are not a deployment domain of their own. */
+const NOT_A_DOMAIN = new Set(['hybrid', 'uncategorized']);
+
 /**
  * Commons figures the landing quotes, derived from the same manifests as the
  * project list. Hardcoded copy went stale by more than fifteenfold ("21
@@ -667,11 +672,6 @@ function renderProject(p) {
  * cartridge cannot leak here either: an interface count or a standards list is
  * a smaller disclosure than a card, but it is still a disclosure.
  */
-/** Legacy `hyperobject.domain` values and the canonical name each one files under (schema description). */
-const LEGACY_DOMAINS = { consumer: 'consumer-electronics', electronics: 'consumer-electronics', play: 'commercial' };
-/** Values that are not a deployment domain of their own. */
-const NOT_A_DOMAIN = new Set(['hybrid', 'uncategorized']);
-
 function computeStats(ctx, manifests, projects) {
   const engines = new Set();
   const standards = new Set();

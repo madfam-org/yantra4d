@@ -1,7 +1,7 @@
 # Tessellation profiles and a mesh gate for the Commons
 
-> **Status: ruled 2026-11-22 (seven rulings, [below](#rulings-2026-11-22)); being built,
-> step 1 of the rollout only (report-only).** What exists and what does not is in
+> **Status: ruled 2026-11-22 (seven rulings, [below](#rulings-2026-11-22)); step 1 of the
+> rollout (report-only) is built.** What exists and what does not is in
 > [Implementation status](#implementation-status). The proposal text after those two
 > sections is kept as written on 2026-11-22; where a ruling chose differently, a
 > *Ruled* line under the passage says so.
@@ -45,9 +45,9 @@ The owner's answers to the seven questions in [Rulings requested](#rulings-reque
 | `print` / `preview` profiles (M1, M3) | `apps/api/services/engine/tessellation.py`, `cq_runner.py`, `cadquery_engine.py`, `cq_pool.py`, `render_cache.py`, `render_orchestrator.py`, `apps/worker/render_worker.py` | Built. `print` is the default and calls the exporter exactly as before (byte-identical, `tests/integration/test_tessellation_kernel.py`). `preview` is STL only and honoured only while `ALLOW_PREVIEW_TESSELLATION` is set and `AUTH_ENABLED` is false; any other caller gets 403 `tessellation_not_allowed`. The profile is in the cache key and the artifact name whenever it is not `print`, so print keys and URLs are unchanged. |
 | Models pipeline asks for `preview` (M2) | `scripts/dev/render_commons_models.py --tessellation`, `prerender-commons.yml` input `tessellation` (default `preview`) | Built. The committed landing models were not refreshed in this work. |
 | Preview measured on the whole Commons (M2) | [Preview profile across the Commons](#preview-profile-across-the-commons) | Done 2026-11-23: 329 of 512 previews fit the gallery budget without decimation, against 221 of 510 at print. |
-| Report-only mesh gate (M4–M7) | `hyperobjects-spec` | Not built yet. |
-| Spec pins moved together | `ci.yml`, `spec-nightly.yml`, Commons `SPEC_PIN` | Not done yet. |
-| Rugged box round by default (M5) | Commons | Not done yet. |
+| Report-only mesh gate (M4–M7) | `hyperobjects-spec` 0.22.0 (`y4d_spec.mesh_gate`, hyperobjects-spec#89) | Built, report-only (rollout step 1): every finding is a note unless its check is named in `--mesh-strict` / `Y4D_SPEC_MESH_STRICT`; the summary line counts the cartridges that would fail each check. Source lint warns only; the opt-out needs a reason. |
+| Spec pins moved together | `ci.yml`, `spec-nightly.yml`, Commons `SPEC_PIN` | Moved to `c102717d` together: this repository's two pins and the Commons `SPEC_PIN` (solid-hyperobjects#255). The first whole-Commons counts come from the next `spec-nightly.yml` sweep. The `[geometry]` extra still pins CadQuery `<2.8` while production runs 2.8.0 (reported, not changed). |
+| Rugged box round by default (M5) | Commons (solid-hyperobjects#254) | Done: `BoxPolygonStyle` defaults to Curved; the 15 presets that restated the old default moved; Tool Case (Gasket) keeps 8-sided on purpose. |
 | GLB and 3MF tessellation | — | Unchanged on purpose (M1): print GLB still goes through `cascadio` defaults and 3MF through CadQuery's relative tessellation. |
 
 ## Preview profile across the Commons

@@ -2,6 +2,7 @@ import { createContext, useContext, useRef, useState, useEffect } from 'react'
 import { useProjectParams } from '../../hooks/project/useProjectParams'
 import { useProjectActions } from '../../hooks/project/useProjectActions'
 import { useAssemblyGuide } from '../../hooks/editor/useAssemblyGuide'
+import { useSweepPlayer, type SweepPlayer } from '../../hooks/render/useSweepPlayer'
 import { useManifest } from './ManifestProvider'
 import { useLanguage } from '../system/LanguageProvider'
 import SplashScreen from '../../components/feedback/SplashScreen'
@@ -90,6 +91,9 @@ export interface ProjectContextValue {
   optimizationProgress: number
   optimizationLogs: string[]
   handleOptimizeTopology: () => Promise<void>
+
+  // Parameter sweep playback (server-rendered frames shown in the viewer)
+  sweep: SweepPlayer
 
   undoParams: ProjectParamsReturn['undoParams']
   redoParams: ProjectParamsReturn['redoParams']
@@ -197,7 +201,11 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     manifest: projectParams.manifest,
   })
 
-  // 4. Stress estimate: a geometry-derived proxy, not a finite-element solve
+  // 4. Parameter sweep playback. Held here, above the sidebar, so it keeps
+  // playing when the Design tab or the phone's controls sheet unmounts.
+  const sweep = useSweepPlayer(projectSlug)
+
+  // 5. Stress estimate: a geometry-derived proxy, not a finite-element solve
   const [stressData, setStressData] = useState<Record<string, unknown> | null>(null)
   const [stressSimulationActive, setStressSimulationActive] = useState<boolean>(false)
 
@@ -228,7 +236,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     }
   }
 
-  // 5. Physics (PPF Contact Solver). The server refuses with
+  // 6. Physics (PPF Contact Solver). The server refuses with
   // `physics_solver_unavailable` until a solver backend is configured; the
   // control then stays disabled instead of retrying.
   const [physicsJobId, setPhysicsJobId] = useState<string | null>(null)
@@ -297,7 +305,7 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     return () => clearInterval(interval)
   }, [physicsJobId, projectSlug])
 
-  // 6. Heuristic parameter estimate: a deterministic rule, not an optimization proof
+  // 7. Heuristic parameter estimate: a deterministic rule, not an optimization proof
   const [optimizationJobId, setOptimizationJobId] = useState<string | null>(null)
   const [optimizationProgress, setOptimizationProgress] = useState<number>(0)
   const [optimizationLogs, setOptimizationLogs] = useState<string[]>([])
@@ -437,6 +445,9 @@ function ProjectProviderContent({ children }: ProjectProviderProps) {
     optimizationProgress,
     optimizationLogs,
     handleOptimizeTopology,
+
+    // Sweep playback
+    sweep,
 
     // Undo/Redo
     undoParams: projectParams.undoParams,

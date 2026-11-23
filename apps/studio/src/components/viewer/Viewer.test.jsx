@@ -1302,3 +1302,42 @@ describe('Viewer prerendered default preview', () => {
     expect(onGeometryStats).toHaveBeenCalled()
   })
 })
+
+describe('Viewer parameter sweep frames', () => {
+  const props = {
+    parts: [{ type: 'bin', url: '/static/bin.glb' }], colors: { body: '#ff0000' }, wireframe: false, boundingBox: false, loading: false, progress: 0,
+    progressPhase: null, animating: false, setAnimating: vi.fn(), mode: 'bin', params: {},
+    assemblyActive: false, highlightedParts: [], visibleParts: [], headDiffMode: false, headParts: [],
+  }
+  const FRAMES = [
+    { parts: [{ part: 'body', url: '/static/f0_body.glb' }, { part: 'lid', url: '/static/f0_lid.glb' }] },
+    { parts: [{ part: 'body', url: '/static/f1_body.glb' }, { part: 'lid', url: '/static/f1_lid.glb' }] },
+  ]
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseWorkerLoader.mockReturnValue({ geometry: makeFakeGeometry(), scene: null })
+    mockUseTheme.mockReturnValue({ theme: 'light' })
+    mockUseManifest.mockReturnValue(defaultManifestMock)
+  })
+
+  it('mounts every frame once, so playback flips frames instead of reloading them', () => {
+    render(<Viewer {...props} sweepFrames={FRAMES} sweepFrameIndex={1} />)
+    const loaded = mockUseWorkerLoader.mock.calls.map(call => call[0])
+    for (const url of ['/static/f0_body.glb', '/static/f0_lid.glb', '/static/f1_body.glb', '/static/f1_lid.glb']) {
+      expect(loaded).toContain(url)
+    }
+    expect(screen.getByTestId('viewer-root')).toHaveAttribute('data-sweep-frame', '1')
+  })
+
+  it('keeps the configuration mounted underneath, so it is still there when the sweep ends', () => {
+    render(<Viewer {...props} sweepFrames={FRAMES} sweepFrameIndex={0} />)
+    expect(mockUseWorkerLoader.mock.calls.map(call => call[0])).toContain('/static/bin.glb')
+  })
+
+  it('reports no sweep frame when none is shown', () => {
+    render(<Viewer {...props} sweepFrames={null} />)
+    expect(screen.getByTestId('viewer-root')).not.toHaveAttribute('data-sweep-frame')
+    expect(mockUseWorkerLoader.mock.calls.map(call => call[0])).not.toContain('/static/f0_body.glb')
+  })
+})

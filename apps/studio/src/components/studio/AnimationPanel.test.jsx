@@ -1,361 +1,381 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
+import { axe } from '../../test/axe-setup'
+import { toHaveNoViolations } from 'jest-axe'
+import { LanguageProvider } from '../../contexts/system/LanguageProvider'
+import { useSweepPlayer } from '../../hooks/render/useSweepPlayer'
+import AnimationPanel from './AnimationPanel'
 
-// Mock fetch globally
+expect.extend(toHaveNoViolations)
+
+// apiFetch calls the global fetch.
 const mockFetch = vi.fn()
 globalThis.fetch = mockFetch
 
-// Mock the CSS import
-vi.mock('./AnimationPanel.css', () => ({}))
-
-import AnimationPanel from './AnimationPanel'
-
-const MOCK_ANIMATIONS = [
-    {
-        id: 'grow',
-        label: { en: 'Grow' },
-        description: { en: 'Animate height' },
-        frames: 5,
-        duration_ms: 2000,
-        easing: 'ease-in-out',
-    },
-    {
-        id: 'rotate',
-        label: 'Rotate',
-        frames: 10,
-        duration_ms: 3000,
-    },
+const SWEEPS = [
+  { id: 'grow', label: { en: 'Grow', es: 'Crecer' }, frames: 5, duration_ms: 2000, easing: 'ease-in-out', mode: 'default' },
+  { id: 'reach', label: 'Reach', frames: 8, duration_ms: 2400, mode: 'arm' },
 ]
 
+const FRAMES = [
+  { frame_index: 0, parts: [{ part: 'body', url: '/static/f0_body.glb' }] },
+  { frame_index: 1, parts: [{ part: 'body', url: '/static/f1_body.glb' }] },
+]
+
+/** A Response whose body streams the given SSE events. */
+function sseResponse(events) {
+  const encoder = new TextEncoder()
+  let i = 0
+  return {
+    ok: true,
+    status: 200,
+    json: async () => ({}),
+    body: {
+      getReader: () => ({
+        read: async () => {
+          if (i >= events.length) return { done: true, value: undefined }
+          const chunk = `data: ${JSON.stringify(events[i++])}\n\n`
+          return { done: false, value: encoder.encode(chunk) }
+        },
+      }),
+    },
+  }
+}
+
+/** The real player hook behind the panel, with its state published for assertions. */
+function Harness({ sweeps = SWEEPS, canPlay = true, onLocked = () => {}, currentMode = 'default', slug = 'test-project' }) {
+  const player = useSweepPlayer(slug)
+  return (
+    <>
+      <AnimationPanel
+        sweeps={sweeps}
+        player={player}
+        canPlay={canPlay}
+        onLocked={onLocked}
+        labelOf={s => (typeof s.label === 'object' ? s.label.en : s.label)}
+        currentMode={currentMode}
+        modeLabelOf={id => (id === 'arm' ? 'Arm' : id)}
+      />
+      <output data-testid="probe" data-status={player.status} data-index={player.index} data-frames={player.frames.length} />
+    </>
+  )
+}
+
+function renderPanel(props = {}) {
+  return render(
+    <LanguageProvider defaultLanguage="en" storageKey="test-lang-sweep">
+      <Harness {...props} />
+    </LanguageProvider>,
+  )
+}
+
+const probe = () => screen.getByTestId('probe')
+
+async function playToFrames(events = [{ event: 'frame_done', progress: 50 }, { event: 'complete', frames: FRAMES }]) {
+  mockFetch.mockResolvedValueOnce(sseResponse(events))
+  fireEvent.click(screen.getByRole('button', { name: 'Play sweep Grow' }))
+  await waitFor(() => expect(probe()).toHaveAttribute('data-frames', String(FRAMES.length)))
+}
+
 describe('AnimationPanel', () => {
-    const defaultProps = {
-        projectSlug: 'test-project',
-        onLoadFrame: vi.fn(),
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockFetch.mockReset()
+    localStorage.removeItem('test-lang-sweep')
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    globalThis.__resetMediaQueries()
+  })
+
+  // --- What every visitor sees -------------------------------------------
+
+  it('renders nothing when the cartridge declares no sweeps', () => {
+    const { container } = renderPanel({ sweeps: [] })
+    expect(container.querySelector('[data-testid="sweep-panel"]')).toBeNull()
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('lists every declared sweep with its frames and duration', () => {
+    renderPanel()
+    expect(screen.getByRole('heading', { name: 'Sweeps' })).toBeInTheDocument()
+    expect(screen.getByText('Grow')).toBeInTheDocument()
+    expect(screen.getByText('Reach')).toBeInTheDocument()
+    expect(screen.getByText('5 frames · 2 s')).toBeInTheDocument()
+    expect(screen.getByText('8 frames · 2.4 s')).toBeInTheDocument()
+    // The list is read from the manifest: nothing is requested to show it.
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('says which mode a sweep shows when it is not the mode on screen', () => {
+    renderPanel({ currentMode: 'default' })
+    expect(screen.getByText('Shows the Arm mode')).toBeInTheDocument()
+    expect(screen.queryByText('Shows the default mode')).not.toBeInTheDocument()
+  })
+
+  // --- Without playback in the tier ----------------------------------------
+
+  it('without playback, offers the upgrade instead of a request that would be refused', () => {
+    const onLocked = vi.fn()
+    renderPanel({ canPlay: false, onLocked })
+
+    expect(screen.getByText(/is a Pro feature/)).toBeInTheDocument()
+    const locked = screen.getByRole('button', { name: 'Play sweep Grow: Pro feature' })
+    expect(locked).toHaveAttribute('title', 'Pro tier required')
+    expect(screen.queryByRole('button', { name: 'Play sweep Grow' })).not.toBeInTheDocument()
+
+    fireEvent.click(locked)
+    expect(onLocked).toHaveBeenCalledTimes(1)
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(probe()).toHaveAttribute('data-status', 'idle')
+  })
+
+  it('a refusal from the server (403) also offers the upgrade, not an error', async () => {
+    const onLocked = vi.fn()
+    renderPanel({ onLocked })
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 403, json: async () => ({ error: 'Animation rendering requires Pro tier or above.' }) })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play sweep Grow' }))
+
+    await waitFor(() => expect(onLocked).toHaveBeenCalledTimes(1))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(probe()).toHaveAttribute('data-status', 'idle')
+  })
+
+  // --- With playback ---------------------------------------------------------
+
+  it('Play renders the frames on the server and then plays them', async () => {
+    renderPanel()
+    await playToFrames()
+
+    const [url, init] = mockFetch.mock.calls[0]
+    expect(url).toBe('/api/projects/test-project/animations/grow/render')
+    expect(init.method).toBe('POST')
+    expect(probe()).toHaveAttribute('data-status', 'playing')
+    expect(screen.getByText('Frame 1 of 2')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument()
+  })
+
+  it('shows render progress while the frames are rendered', async () => {
+    renderPanel()
+    // The stream reports one frame, then stalls: the panel sits in its rendering state.
+    let release
+    const stalled = new Promise(resolve => { release = resolve })
+    let sent = false
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+      body: {
+        getReader: () => ({
+          read: async () => {
+            if (!sent) {
+              sent = true
+              return { done: false, value: new TextEncoder().encode(`data: ${JSON.stringify({ event: 'frame_done', progress: 40 })}\n\n`) }
+            }
+            await stalled
+            return { done: true, value: undefined }
+          },
+        }),
+      },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Play sweep Grow' }))
+
+    const bar = await screen.findByRole('progressbar', { name: 'Rendering the frames of Grow' })
+    await waitFor(() => expect(bar).toHaveAttribute('aria-valuenow', '40'))
+    expect(screen.getByText('Rendering frames · 40%')).toBeInTheDocument()
+    // Another sweep cannot start meanwhile.
+    expect(screen.getByRole('button', { name: 'Play sweep Reach' })).toBeDisabled()
+    release()
+  })
+
+  it('surfaces a non-OK render response as an error with the server message', async () => {
+    renderPanel()
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({ error: 'Renderer exploded' }) })
+    fireEvent.click(screen.getByRole('button', { name: 'Play sweep Grow' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent("The sweep's frames could not be rendered.")
+    expect(alert).toHaveTextContent('Renderer exploded')
+    expect(probe()).toHaveAttribute('data-status', 'error')
+  })
+
+  it('surfaces an SSE error event as an error', async () => {
+    renderPanel()
+    mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'error', error: 'frame 3 failed' }]))
+    fireEvent.click(screen.getByRole('button', { name: 'Play sweep Grow' }))
+
+    expect(await screen.findByText('frame 3 failed')).toBeInTheDocument()
+    // Dismissing the error returns the row to its Play control.
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
+    expect(screen.getByRole('button', { name: 'Play sweep Grow' })).toBeInTheDocument()
+  })
+
+  it('a stream that completes with no frames is an error, not an empty player', async () => {
+    renderPanel()
+    mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: [] }]))
+    fireEvent.click(screen.getByRole('button', { name: 'Play sweep Grow' }))
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+  })
+
+  it('cancel during a render returns the panel to idle', async () => {
+    renderPanel()
+    // A render that never resolves leaves the panel in its rendering state.
+    mockFetch.mockImplementationOnce(() => new Promise(() => { }))
+    fireEvent.click(screen.getByRole('button', { name: 'Play sweep Grow' }))
+
+    const cancel = await screen.findByRole('button', { name: /cancel/i })
+    fireEvent.click(cancel)
+    await waitFor(() => expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument())
+    expect(probe()).toHaveAttribute('data-status', 'idle')
+    expect(screen.getByRole('button', { name: 'Play sweep Grow' })).toBeEnabled()
+  })
+
+  it('playback advances through the frames and loops', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    renderPanel()
+    await playToFrames()
+    expect(probe()).toHaveAttribute('data-index', '0')
+
+    // Each frame is held for duration / frames: 2000 ms / 2.
+    await act(async () => { await vi.advanceTimersByTimeAsync(1000) })
+    expect(probe()).toHaveAttribute('data-index', '1')
+    await act(async () => { await vi.advanceTimersByTimeAsync(1000) })
+    expect(probe()).toHaveAttribute('data-index', '0')
+  })
+
+  it('pause holds the frame; play continues from it', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    renderPanel()
+    await playToFrames()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pause' }))
+    expect(probe()).toHaveAttribute('data-status', 'paused')
+    await act(async () => { await vi.advanceTimersByTimeAsync(3000) })
+    expect(probe()).toHaveAttribute('data-index', '0')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    expect(probe()).toHaveAttribute('data-status', 'playing')
+    await act(async () => { await vi.advanceTimersByTimeAsync(1000) })
+    expect(probe()).toHaveAttribute('data-index', '1')
+  })
+
+  it('with reduced motion, frames arrive paused and Play runs one pass without looping', async () => {
+    globalThis.__setMediaQuery('(prefers-reduced-motion: reduce)', true)
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    renderPanel()
+    await playToFrames()
+
+    expect(probe()).toHaveAttribute('data-status', 'paused')
+    await act(async () => { await vi.advanceTimersByTimeAsync(3000) })
+    expect(probe()).toHaveAttribute('data-index', '0')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    await act(async () => { await vi.advanceTimersByTimeAsync(1000) })
+    expect(probe()).toHaveAttribute('data-index', '1')
+    // The last frame stops the pass instead of wrapping to the first.
+    await act(async () => { await vi.advanceTimersByTimeAsync(1000) })
+    expect(probe()).toHaveAttribute('data-status', 'paused')
+    expect(probe()).toHaveAttribute('data-index', '1')
+  })
+
+  it('choosing a frame on the scrubber shows it and pauses playback', async () => {
+    renderPanel()
+    await playToFrames()
+
+    const scrubber = screen.getByRole('slider', { name: 'Frame of Grow' })
+    fireEvent.keyDown(scrubber, { key: 'ArrowRight' })
+
+    expect(probe()).toHaveAttribute('data-index', '1')
+    expect(probe()).toHaveAttribute('data-status', 'paused')
+    expect(screen.getByText('Frame 2 of 2')).toBeInTheDocument()
+  })
+
+  it('stop leaves the sweep and returns the row to its Play control', async () => {
+    renderPanel()
+    await playToFrames()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Stop and show my configuration' }))
+    expect(probe()).toHaveAttribute('data-status', 'idle')
+    expect(probe()).toHaveAttribute('data-frames', '0')
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Play sweep Grow' })).toBeInTheDocument()
+  })
+
+  it('a single-frame sweep shows its frame without play controls', async () => {
+    renderPanel()
+    mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: [FRAMES[0]] }]))
+    fireEvent.click(screen.getByRole('button', { name: 'Play sweep Grow' }))
+    await waitFor(() => expect(probe()).toHaveAttribute('data-frames', '1'))
+
+    expect(probe()).toHaveAttribute('data-status', 'paused')
+    expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument()
+  })
+
+  it('WebM export reports when there is no 3D view to record', async () => {
+    renderPanel()
+    await playToFrames()
+
+    // jsdom renders no <canvas>: export must say so rather than throw.
+    fireEvent.click(screen.getByRole('button', { name: /webm/i }))
+    expect(await screen.findByText('There is no 3D view to record.')).toBeInTheDocument()
+  })
+
+  it('WebM export records the viewer canvas through every frame and downloads it', async () => {
+    // jsdom has neither captureStream nor MediaRecorder; both are supplied
+    // here so the export path can run end to end.
+    const root = document.createElement('div')
+    root.setAttribute('data-testid', 'viewer-root')
+    const canvas = document.createElement('canvas')
+    canvas.captureStream = vi.fn(() => ({ getTracks: () => [] }))
+    root.appendChild(canvas)
+    document.body.appendChild(root)
+
+    const started = vi.fn()
+    const stopped = vi.fn()
+    class FakeRecorder {
+      constructor() { this.ondataavailable = null; this.onstop = null }
+      start() { started() }
+      stop() {
+        stopped()
+        this.ondataavailable?.({ data: new Blob(['x']) })
+        this.onstop?.()
+      }
     }
+    FakeRecorder.isTypeSupported = () => true
+    globalThis.MediaRecorder = FakeRecorder
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { })
 
-    beforeEach(() => {
-        vi.clearAllMocks()
-        mockFetch.mockReset()
-    })
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    renderPanel()
+    await playToFrames()
 
-    it('renders null when no animations are available', async () => {
-        mockFetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ animations: [] }),
-        })
+    fireEvent.click(screen.getByRole('button', { name: /webm/i }))
+    expect(started).toHaveBeenCalled()
+    expect(canvas.captureStream).toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: /recording/i })).toBeDisabled()
 
-        const { container } = render(<AnimationPanel {...defaultProps} />)
-        await waitFor(() => {
-            expect(container.innerHTML).toBe('')
-        })
-    })
+    // Past the last frame the recorder stops, which triggers the download.
+    await act(async () => { await vi.advanceTimersByTimeAsync(3000) })
+    expect(stopped).toHaveBeenCalled()
+    expect(clickSpy).toHaveBeenCalled()
+    // Playback resumes as it was.
+    expect(probe()).toHaveAttribute('data-status', 'playing')
 
-    it('renders animation cards when animations exist', async () => {
-        mockFetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ animations: MOCK_ANIMATIONS }),
-        })
+    clickSpy.mockRestore()
+    root.remove()
+    delete globalThis.MediaRecorder
+  })
 
-        render(<AnimationPanel {...defaultProps} />)
+  it('has no axe violations, locked or playing', async () => {
+    const locked = renderPanel({ canPlay: false })
+    expect(await axe(locked.container)).toHaveNoViolations()
+    locked.unmount()
 
-        await waitFor(() => {
-            expect(screen.getByText('Grow')).toBeInTheDocument()
-            expect(screen.getByText('Rotate')).toBeInTheDocument()
-        })
-    })
-
-    it('shows render button when an animation is selected', async () => {
-        mockFetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ animations: MOCK_ANIMATIONS }),
-        })
-
-        render(<AnimationPanel {...defaultProps} />)
-
-        await waitFor(() => {
-            expect(screen.getByText('Grow')).toBeInTheDocument()
-        })
-
-        fireEvent.click(screen.getByText('Grow'))
-        expect(screen.getByText('Render Animation')).toBeInTheDocument()
-    })
-
-    it('shows animation metadata (frames, duration, easing)', async () => {
-        mockFetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ animations: MOCK_ANIMATIONS }),
-        })
-
-        render(<AnimationPanel {...defaultProps} />)
-
-        await waitFor(() => {
-            expect(screen.getByText(/5 frames · 2000ms · ease-in-out/)).toBeInTheDocument()
-        })
-    })
-
-    it('handles description as string', async () => {
-        mockFetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ animations: MOCK_ANIMATIONS }),
-        })
-
-        render(<AnimationPanel {...defaultProps} />)
-
-        await waitFor(() => {
-            expect(screen.getByText('Animate height')).toBeInTheDocument()
-        })
-    })
-
-    it('does not fetch when projectSlug is empty', () => {
-        render(<AnimationPanel projectSlug="" onLoadFrame={vi.fn()} />)
-        expect(mockFetch).not.toHaveBeenCalled()
-    })
-
-    it('handles fetch failure gracefully', async () => {
-        mockFetch.mockResolvedValueOnce({
-            ok: false,
-            json: async () => ({ error: 'Not found' }),
-        })
-
-        const { container } = render(<AnimationPanel {...defaultProps} />)
-        await waitFor(() => {
-            expect(container.innerHTML).toBe('')
-        })
-    })
-
-    it('has proper aria-label on the panel region', async () => {
-        mockFetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ animations: MOCK_ANIMATIONS }),
-        })
-
-        render(<AnimationPanel {...defaultProps} />)
-
-        await waitFor(() => {
-            expect(screen.getByRole('region', { name: 'Animation Panel' })).toBeInTheDocument()
-        })
-    })
-
-    // --- Render, playback, cancel and export ---------------------------------
-    // AnimationPanel sat at 23.8% branch coverage: only the "no animations"
-    // early return was exercised. Everything below the fetch — the SSE render
-    // stream, playback, cancel and WebM export — was untested.
-
-    /** Build a Response whose body streams the given SSE events. */
-    function sseResponse(events) {
-        const encoder = new TextEncoder()
-        let i = 0
-        return {
-            ok: true,
-            status: 200,
-            json: async () => ({}),
-            body: {
-                getReader: () => ({
-                    read: async () => {
-                        if (i >= events.length) return { done: true, value: undefined }
-                        const chunk = `data: ${JSON.stringify(events[i++])}\n\n`
-                        return { done: false, value: encoder.encode(chunk) }
-                    },
-                }),
-            },
-        }
-    }
-
-    const listAnimations = () => ({ ok: true, json: async () => ({ animations: MOCK_ANIMATIONS }) })
-
-    const FRAMES = [
-        { frame_index: 0, parts: [{ url: '/f0.glb' }] },
-        { frame_index: 1, parts: [{ url: '/f1.glb' }] },
-    ]
-
-    async function renderPanelWithAnimations(props = {}) {
-        mockFetch.mockResolvedValueOnce(listAnimations())
-        const utils = render(<AnimationPanel {...defaultProps} {...props} />)
-        await screen.findByText('Grow')
-        return utils
-    }
-
-    it('lists animations from the backend with frame and duration metadata', async () => {
-        await renderPanelWithAnimations()
-        expect(screen.getByText('Grow')).toBeInTheDocument()
-        // The second entry uses a plain string label rather than a locale map.
-        expect(screen.getByText('Rotate')).toBeInTheDocument()
-        expect(screen.getByText('Animate height')).toBeInTheDocument()
-    })
-
-    it('streams a render to completion and reports progress then playback', async () => {
-        const onLoadFrame = vi.fn()
-        await renderPanelWithAnimations({ onLoadFrame })
-        fireEvent.click(screen.getByText('Grow'))
-
-        mockFetch.mockResolvedValueOnce(sseResponse([
-            { event: 'frame_done', progress: 50 },
-            { event: 'complete', frames: FRAMES },
-        ]))
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-
-        // Frames reaching the viewport is the observable outcome of 'complete'.
-        await waitFor(() => expect(onLoadFrame).toHaveBeenCalledWith(['/f0.glb']))
-    })
-
-    it('surfaces a non-OK render response as an error', async () => {
-        await renderPanelWithAnimations()
-        fireEvent.click(screen.getByText('Grow'))
-
-        mockFetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({ error: 'Renderer exploded' }) })
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-
-        expect(await screen.findByText(/Renderer exploded/)).toBeInTheDocument()
-    })
-
-    it('surfaces an SSE error event as an error', async () => {
-        await renderPanelWithAnimations()
-        fireEvent.click(screen.getByText('Grow'))
-
-        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'error', error: 'frame 3 failed' }]))
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-
-        expect(await screen.findByText(/frame 3 failed/)).toBeInTheDocument()
-    })
-
-    it('cancel during a render returns the panel to idle', async () => {
-        await renderPanelWithAnimations()
-        fireEvent.click(screen.getByText('Grow'))
-
-        // A render that never resolves leaves the panel in its 'rendering' state.
-        mockFetch.mockImplementationOnce(() => new Promise(() => { }))
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-
-        const cancel = await screen.findByRole('button', { name: /cancel/i })
-        fireEvent.click(cancel)
-        await waitFor(() =>
-            expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument()
-        )
-    })
-
-    it('WebM export reports when there is no canvas to record', async () => {
-        const onLoadFrame = vi.fn()
-        await renderPanelWithAnimations({ onLoadFrame })
-        fireEvent.click(screen.getByText('Grow'))
-
-        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-        await waitFor(() => expect(onLoadFrame).toHaveBeenCalled())
-
-        // jsdom renders no <canvas>, which is the branch under test: export must
-        // say so rather than throwing on a null element.
-        const exportBtn = await screen.findByRole('button', { name: /webm/i })
-        fireEvent.click(exportBtn)
-        expect(await screen.findByText(/No 3D canvas found/)).toBeInTheDocument()
-    })
-
-    it('playback advances through frames and loads each into the viewport', async () => {
-        vi.useFakeTimers()
-        const onLoadFrame = vi.fn()
-        mockFetch.mockResolvedValueOnce(listAnimations())
-        render(<AnimationPanel {...defaultProps} onLoadFrame={onLoadFrame} />)
-        await vi.waitFor(() => expect(screen.getByText('Grow')).toBeInTheDocument())
-        fireEvent.click(screen.getByText('Grow'))
-
-        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-        await vi.waitFor(() => expect(onLoadFrame).toHaveBeenCalledWith(['/f0.glb']))
-
-        // Playback loops on an interval of duration / frames.length.
-        onLoadFrame.mockClear()
-        await vi.advanceTimersByTimeAsync(2000)
-        expect(onLoadFrame).toHaveBeenCalledWith(['/f1.glb'])
-        vi.useRealTimers()
-    })
-
-    it('WebM export records the canvas and downloads the result', async () => {
-        // jsdom has neither captureStream nor MediaRecorder; both are supplied
-        // here so the export path can run end to end.
-        const canvas = document.createElement('canvas')
-        canvas.captureStream = vi.fn(() => ({ getTracks: () => [] }))
-        document.body.appendChild(canvas)
-
-        const started = vi.fn()
-        const stopped = vi.fn()
-        class FakeRecorder {
-            constructor() { this.ondataavailable = null; this.onstop = null }
-            start() { started() }
-            stop() { stopped(); this.onstop?.() }
-        }
-        FakeRecorder.isTypeSupported = () => true
-        globalThis.MediaRecorder = FakeRecorder
-        const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { })
-        globalThis.URL.createObjectURL = vi.fn(() => 'blob:anim')
-        globalThis.URL.revokeObjectURL = vi.fn()
-
-        vi.useFakeTimers()
-        const onLoadFrame = vi.fn()
-        mockFetch.mockResolvedValueOnce(listAnimations())
-        render(<AnimationPanel {...defaultProps} onLoadFrame={onLoadFrame} />)
-        await vi.waitFor(() => expect(screen.getByText('Grow')).toBeInTheDocument())
-        fireEvent.click(screen.getByText('Grow'))
-
-        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-        await vi.waitFor(() => expect(onLoadFrame).toHaveBeenCalled())
-
-        fireEvent.click(screen.getByRole('button', { name: /webm/i }))
-        expect(started).toHaveBeenCalled()
-
-        // Run past the last frame: the timer stops the recorder, which triggers
-        // the download.
-        await vi.advanceTimersByTimeAsync(5000)
-        expect(stopped).toHaveBeenCalled()
-        expect(clickSpy).toHaveBeenCalled()
-
-        vi.useRealTimers()
-        clickSpy.mockRestore()
-        canvas.remove()
-        delete globalThis.MediaRecorder
-    })
-
-    it('scrubbing to a frame loads that frame into the viewport', async () => {
-        const onLoadFrame = vi.fn()
-        mockFetch.mockResolvedValueOnce(listAnimations())
-        render(<AnimationPanel {...defaultProps} onLoadFrame={onLoadFrame} />)
-        await screen.findByText('Grow')
-        fireEvent.click(screen.getByText('Grow'))
-
-        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-        await waitFor(() => expect(onLoadFrame).toHaveBeenCalled())
-
-        onLoadFrame.mockClear()
-        fireEvent.change(screen.getByLabelText('Animation frame scrubber'), { target: { value: '1' } })
-        expect(onLoadFrame).toHaveBeenCalledWith(['/f1.glb'])
-    })
-
-    it('reset clears the frames and returns the panel to idle', async () => {
-        const onLoadFrame = vi.fn()
-        mockFetch.mockResolvedValueOnce(listAnimations())
-        render(<AnimationPanel {...defaultProps} onLoadFrame={onLoadFrame} />)
-        await screen.findByText('Grow')
-        fireEvent.click(screen.getByText('Grow'))
-
-        mockFetch.mockResolvedValueOnce(sseResponse([{ event: 'complete', frames: FRAMES }]))
-        fireEvent.click(screen.getByRole('button', { name: /render/i }))
-        await screen.findByLabelText('Animation frame scrubber')
-
-        fireEvent.click(screen.getByRole('button', { name: /^Reset$/ }))
-        // With no frames there is nothing to scrub.
-        expect(screen.queryByLabelText('Animation frame scrubber')).not.toBeInTheDocument()
-    })
-
-    it('an animations response with no animations key yields an empty list', async () => {
-        mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) })
-        const { container } = render(<AnimationPanel {...defaultProps} />)
-        await waitFor(() => expect(container.innerHTML).toBe(''))
-    })
-
-    it('a failed animations request yields an empty list rather than throwing', async () => {
-        mockFetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({}) })
-        const { container } = render(<AnimationPanel {...defaultProps} />)
-        await waitFor(() => expect(container.innerHTML).toBe(''))
-    })
+    const playing = renderPanel()
+    await playToFrames()
+    expect(await axe(playing.container)).toHaveNoViolations()
+  })
 })
-

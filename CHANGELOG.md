@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Sprints 13–15
 
+### Phase 7: forward kinematics for the live twin (lane W4-P7VIEW)
+
+- `apps/studio/src/lib/kinematics/`: forward kinematics on the keystone's compiled model
+  (`hyperobjects.assembly-kinematics` 1.0.0), mirroring `y4d_spec.assembly` operation by
+  operation (CPython's compensated `sum`, `math.radians`, the placement walk). It covers
+  joint values (driven, followers), the §9 machine bindings and the placement.
+- Golden parity: `parity.test.ts` reproduces the keystone's pose goldens for A
+  (23 poses), the FPV frame and the kinematic gantry, string for string. The goldens are
+  read from the keystone at the pinned SHA (`Y4D_KEYSTONE_DIR`), which the studio CI job
+  checks out.
+- Pose sources: `PoseSource`, a manual source, and a fetch-based SSE reader for pravara's
+  `pravara.machine-motion/1` stream (Authorization header, seq check, latency stats).
+
 ### Added
 - **Mesh oracle seam with an optional geom-core backend** (lane G4, 2026-10-18).
   `apps/api/services/engine/mesh_metrics.py` (`MeshOracle`: `TrimeshOracle`,

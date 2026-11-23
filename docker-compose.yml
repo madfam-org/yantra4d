@@ -21,7 +21,7 @@ services:
     shm_size: '2gb'
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
     volumes:
       - ./projects:/app/projects:ro
       - user_projects:/app/user-projects
@@ -43,8 +43,9 @@ services:
       # render path. `premium` unlocks the CadQuery and graph engines most Commons
       # cartridges need, and matches what /api/me already reports while auth is
       # off. Honoured only while AUTH_ENABLED is false (docs/AUTH.md, Harness tier).
-      # Set SELF_HOST_TIER=guest to try the free limits. Turn auth on before you
-      # expose this stack beyond your own machine.
+      # Set SELF_HOST_TIER=guest to try the free limits. Every port below is
+      # published on 127.0.0.1 only: an auth-off stack must not be reachable from
+      # other machines. Turn auth on before serving it to anyone else.
       - HARNESS_TIER=${SELF_HOST_TIER:-premium}
       - PYTHONPATH=/app/backend
       - RATE_LIMIT_ENABLED=false
@@ -70,7 +71,7 @@ services:
         VITE_JANUA_CLIENT_ID: ${VITE_JANUA_CLIENT_ID:-yantra4d}
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "127.0.0.1:3000:80"
     depends_on:
       backend:
         condition: service_healthy
@@ -111,7 +112,7 @@ services:
         PUBLIC_STUDIO_URL: http://localhost:3000
     restart: unless-stopped
     ports:
-      - "4321:80"
+      - "127.0.0.1:4321:80"
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/" ]
       interval: 30s
@@ -128,7 +129,7 @@ services:
         VITE_JANUA_CLIENT_ID: ${VITE_JANUA_CLIENT_ID:-yantra4d-admin}
     restart: unless-stopped
     ports:
-      - "3001:80"
+      - "127.0.0.1:3001:80"
     depends_on:
       backend:
         condition: service_healthy

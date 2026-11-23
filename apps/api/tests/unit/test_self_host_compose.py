@@ -33,6 +33,19 @@ def _default_of(value: str) -> str:
     return match.group(1) if match else value
 
 
+def test_compose_publishes_ports_on_loopback_only():
+    """An auth-off stack at the top tier runs any cartridge for whoever reaches it."""
+    compose = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
+    published = [
+        (name, str(port))
+        for name, service in compose["services"].items()
+        for port in service.get("ports", [])
+    ]
+    assert published, "expected the stack to publish at least the Studio and API"
+    for name, port in published:
+        assert port.startswith("127.0.0.1:"), f"{name} publishes {port} on every interface"
+
+
 def test_compose_stack_is_auth_off():
     assert _backend_env()["AUTH_ENABLED"] == "false"
 

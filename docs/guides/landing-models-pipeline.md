@@ -250,8 +250,9 @@ The driver asks for the `print` profile unless told otherwise. To render preview
 the way the workflow does, start the API with `ALLOW_PREVIEW_TESSELLATION=true`
 as well (honoured, like `HARNESS_TIER`, only while `AUTH_ENABLED` is false; any
 other API answers a `preview` request with 403 `tessellation_not_allowed`) and
-pass `--tessellation preview`. The profile is part of the engine fingerprint, so
-a cached `raw/` never mixes the two, and every rendered file's triangle count
+pass `--tessellation preview`. A non-print profile is part of the engine
+fingerprint (print keeps the fingerprint it always had), so a cached `raw/` never
+mixes the two, and every rendered file's triangle count
 goes into `raw/.render-report.json` (`triangles`, `gallery_budget`).
 
 The driver is incremental: `raw/.render-index.json` records, per slug, a hash

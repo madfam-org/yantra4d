@@ -334,8 +334,15 @@ def api_health(api: str) -> dict:
 
 
 def engine_fingerprint(api: str | None, extra: str, tessellation: str = "print") -> str:
-    """What makes a rendered mesh change besides the cartridge: the kernels and the profile."""
-    parts = [f"pipeline=raw-glb-v{INDEX_VERSION}", f"tessellation={tessellation}"]
+    """What makes a rendered mesh change besides the cartridge: the kernels and the profile.
+
+    The profile is named only when it is not ``print``: a print run's fingerprint is
+    the one it had before profiles existed, so a cached ``raw/`` of print renders stays
+    valid, and a preview run can never reuse it.
+    """
+    parts = [f"pipeline=raw-glb-v{INDEX_VERSION}"]
+    if tessellation != "print":
+        parts.append(f"tessellation={tessellation}")
     if api:
         health = api_health(api)
         openscad = (health.get("checks") or {}).get("openscad") or {}

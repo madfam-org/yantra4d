@@ -235,6 +235,8 @@ def test_the_profile_is_part_of_the_engine_fingerprint(tmp_path):
     printed = rcm.engine_fingerprint(None, "x", "print")
     preview = rcm.engine_fingerprint(None, "x", "preview")
     assert printed != preview
+    # a print run keeps the fingerprint it had before profiles, so its cache stays valid
+    assert printed == rcm.engine_fingerprint(None, "x") and "tessellation" not in printed
     (tmp_path / "main.py").write_text("result = None\n")
     assert rcm.cartridge_hash(tmp_path, printed) != rcm.cartridge_hash(tmp_path, preview)
 

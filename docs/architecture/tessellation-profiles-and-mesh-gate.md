@@ -62,7 +62,7 @@ gallery budget, i.e. not decimated.
 | | Print | Preview |
 |---|---|---|
 | Base renders produced | 510 of 512 (bevel-gear and bevel-pair timed out at 300 s) | 512 of 512 |
-| Fit the gallery budget without decimation | 221 of 510 | 329 of 512 (327 of the same 510) |
+| Fit the gallery budget without decimation | 221 of 510 | 329 of 512 (all 329 among the same 510; the two that timed out at print are over budget) |
 | Still decimated | 289 | 183 (median 5,380 raw triangles; 84 of them at 5,000 or fewer) |
 | Raw triangles, median / 90th percentile | 2,934 / 18,676 | 1,404 / 8,436 |
 | Raw triangles, all base renders | 5.15 million | 2.86 million |

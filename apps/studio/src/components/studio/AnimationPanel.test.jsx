@@ -369,6 +369,50 @@ describe('AnimationPanel', () => {
     delete globalThis.MediaRecorder
   })
 
+  it('Stop during a WebM export ends the recorder and its stream, and downloads nothing', async () => {
+    const root = document.createElement('div')
+    root.setAttribute('data-testid', 'viewer-root')
+    const canvas = document.createElement('canvas')
+    const track = { stop: vi.fn() }
+    canvas.captureStream = vi.fn(() => ({ getTracks: () => [track] }))
+    root.appendChild(canvas)
+    document.body.appendChild(root)
+
+    const stopped = vi.fn()
+    class FakeRecorder {
+      constructor() { this.ondataavailable = null; this.onstop = null; this.state = 'inactive' }
+      start() { this.state = 'recording' }
+      stop() {
+        stopped()
+        this.state = 'inactive'
+        this.ondataavailable?.({ data: new Blob(['x']) })
+        this.onstop?.()
+      }
+    }
+    FakeRecorder.isTypeSupported = () => true
+    globalThis.MediaRecorder = FakeRecorder
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { })
+
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    renderPanel()
+    await playToFrames()
+
+    fireEvent.click(screen.getByRole('button', { name: /webm/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'Stop and show my configuration' }))
+
+    expect(stopped).toHaveBeenCalledTimes(1)
+    expect(track.stop).toHaveBeenCalled()
+    // Nothing keeps stepping frames after Stop, and nothing is downloaded.
+    await act(async () => { await vi.advanceTimersByTimeAsync(3000) })
+    expect(stopped).toHaveBeenCalledTimes(1)
+    expect(clickSpy).not.toHaveBeenCalled()
+    expect(probe()).toHaveAttribute('data-status', 'idle')
+
+    clickSpy.mockRestore()
+    root.remove()
+    delete globalThis.MediaRecorder
+  })
+
   it('has no axe violations, locked or playing', async () => {
     const locked = renderPanel({ canPlay: false })
     expect(await axe(locked.container)).toHaveNoViolations()

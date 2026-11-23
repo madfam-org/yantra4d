@@ -151,6 +151,11 @@ export function useSweepPlayer(projectSlug: string | null | undefined): SweepPla
 
   const abortRef = useRef<AbortController | null>(null)
   const exportTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // The export's recorder and the canvas stream it records, so leaving or
+  // stopping mid-export can end both instead of recording for the life of the tab.
+  const recorderRef = useRef<MediaRecorder | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const discardRef = useRef(false)
   // The interval reads the frame on screen from here, so advancing never has
   // to set state from inside another state update.
   const indexRef = useRef(0)
@@ -161,10 +166,28 @@ export function useSweepPlayer(projectSlug: string | null | undefined): SweepPla
     setIndex(next)
   }, [])
 
-  const clearExport = useCallback(() => {
+  const clearExportTimer = useCallback(() => {
     if (exportTimerRef.current) clearInterval(exportTimerRef.current)
     exportTimerRef.current = null
   }, [])
+
+  const releaseStream = useCallback(() => {
+    streamRef.current?.getTracks().forEach(track => track.stop())
+    streamRef.current = null
+  }, [])
+
+  // Abandon an export in progress: no download, and the recorder and its
+  // stream are ended rather than left buffering in the background.
+  const clearExport = useCallback(() => {
+    clearExportTimer()
+    const recorder = recorderRef.current
+    recorderRef.current = null
+    if (recorder && recorder.state !== 'inactive') {
+      discardRef.current = true
+      recorder.stop()
+    }
+    releaseStream()
+  }, [clearExportTimer, releaseStream])
 
   const play = useCallback(async (next: SweepDefinition): Promise<SweepPlayResult> => {
     if (!projectSlug) return 'error'
@@ -253,12 +276,15 @@ export function useSweepPlayer(projectSlug: string | null | undefined): SweepPla
   // Cancelling a render is leaving it: nothing was played yet.
   const cancel = stop
 
+  // While an export steps through the frames, the controls wait: a second
+  // driver of the frame on screen would garble the recording.
   const pause = useCallback(() => {
+    if (exportTimerRef.current) return
     setStatus(current => (current === 'playing' ? 'paused' : current))
   }, [])
 
   const resume = useCallback(() => {
-    if (framesRef.current.length < 2) return
+    if (exportTimerRef.current || framesRef.current.length < 2) return
     // One pass under reduced motion starts again from the first frame.
     if (indexRef.current >= framesRef.current.length - 1) showFrame(0)
     setStatus(current => (current === 'paused' ? 'playing' : current))
@@ -266,7 +292,7 @@ export function useSweepPlayer(projectSlug: string | null | undefined): SweepPla
 
   const seek = useCallback((next: number) => {
     const count = framesRef.current.length
-    if (count === 0) return
+    if (exportTimerRef.current || count === 0) return
     const clamped = Math.min(Math.max(0, Math.round(next)), count - 1)
     // Choosing a frame is taking control of the sweep.
     setStatus(current => (current === 'playing' ? 'paused' : current))
@@ -303,6 +329,8 @@ export function useSweepPlayer(projectSlug: string | null | undefined): SweepPla
     setExporting(true)
 
     const stream = canvas.captureStream(30)
+    streamRef.current = stream
+    discardRef.current = false
     const recorder = new MediaRecorder(stream, {
       mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm',
     })
@@ -311,39 +339,49 @@ export function useSweepPlayer(projectSlug: string | null | undefined): SweepPla
       if (e.data.size > 0) chunks.push(e.data)
     }
     recorder.onstop = () => {
+      stream.getTracks().forEach(track => track.stop())
+      if (streamRef.current === stream) streamRef.current = null
+      if (recorderRef.current === recorder) recorderRef.current = null
+      // Abandoned (Stop, a new sweep, leaving the cartridge): nothing to save.
+      if (discardRef.current) {
+        discardRef.current = false
+        return
+      }
       const blob = new Blob(chunks, { type: 'video/webm' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
       a.download = `${projectSlug ?? 'cartridge'}-sweep-${sweep?.id ?? 'frames'}.webm`
       a.click()
-      URL.revokeObjectURL(url)
+      // Revoking in the same task can cancel the download in some browsers.
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
       setExporting(false)
       setStatus(current => (current === 'paused' && wasPlaying ? 'playing' : current))
     }
+    recorderRef.current = recorder
     recorder.start()
 
     // Step through every frame once, then stop the recorder.
     let frameIdx = 0
     showFrame(0)
-    clearExport()
+    clearExportTimer()
     exportTimerRef.current = setInterval(() => {
       frameIdx += 1
       if (frameIdx >= list.length) {
-        clearExport()
+        clearExportTimer()
         recorder.stop()
         return
       }
       showFrame(frameIdx)
     }, sweepFrameInterval(sweep, list.length))
-  }, [exporting, status, projectSlug, sweep, showFrame, clearExport])
+  }, [exporting, status, projectSlug, sweep, showFrame, clearExportTimer])
 
   // Leaving the cartridge abandons the stream (the server cancels its queued
   // frame parts when the client goes away) and the timers.
   useEffect(() => () => {
     abortRef.current?.abort()
-    if (exportTimerRef.current) clearInterval(exportTimerRef.current)
-  }, [])
+    clearExport()
+  }, [clearExport])
 
   return {
     status, sweep, progress, frames, index, error, exporting, loops,

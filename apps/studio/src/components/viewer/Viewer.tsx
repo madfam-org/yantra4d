@@ -420,9 +420,18 @@ interface ViewerProps {
     prerenderedPreviewUrl?: string | null
     /** The preview could not be loaded; the caller decides what to try next. */
     onPrerenderedPreviewError?: (url: string) => void
+    /**
+     * A parameter sweep's frames (hooks/render/useSweepPlayer). While set, the
+     * frame at `sweepFrameIndex` is shown and the configuration is hidden, not
+     * unmounted, so its geometry and stats are still there when the sweep ends.
+     * Every frame stays mounted, so playback flips visibility instead of
+     * reloading a mesh per frame.
+     */
+    sweepFrames?: Array<{ parts: Array<{ part: string; url: string }> }> | null
+    sweepFrameIndex?: number
 }
 
-const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedPreviewUrl = null, onPrerenderedPreviewError, colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null }, ref) => {
+const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedPreviewUrl = null, onPrerenderedPreviewError, colors, wireframe, boundingBox, loading, progress, progressPhase, animating, setAnimating, mode, params, onGeometryStats, assemblyActive, highlightedParts = [], visibleParts = [], headDiffMode = false, headParts = [], hoveredParam = null, cachedVariants = null, orthoCamera = false, setOrthoCamera, clippingEnabled = false, clippingAxis = 'z', clippingPosition = 0.5, measureMode = false, onMeasure, measurements = [], explodeFactor = 0, lightIntensity = 1.0, environmentPreset = 'city', thicknessData = null, overhangData = null, formatDimension = null, unit = 'mm', stressData = null, sweepFrames = null, sweepFrameIndex = 0 }, ref) => {
     const geometriesRef = React.useRef<Record<string, THREE.BufferGeometry>>({})
     const prevCenterRef = React.useRef<number[] | null>(null)
     const prevMaxDimRef = React.useRef<number | null>(null)
@@ -570,6 +579,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
     const cameraViews = getCameraViews()
     const viewerConfig = getViewerConfig()
     const defaultColor = (viewerConfig.default_color as string) || "#e5e7eb"
+    const sweepActive = Array.isArray(sweepFrames) && sweepFrames.length > 0
     const isoView = cameraViews.find(v => v.id === 'iso') || cameraViews[0]
     const initialCameraPos: [number, number, number] = (isoView?.position || [50, 50, 50]) as [number, number, number]
 
@@ -669,6 +679,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
             // wait on "idle" instead of guessing at the overlay's visibility.
             data-testid="viewer-root"
             data-render-state={loading ? 'rendering' : 'idle'}
+            data-sweep-frame={sweepActive ? sweepFrameIndex : undefined}
             data-render-scale={renderScale}
         >
             <LoadingOverlay loading={loading} progress={progress} progressPhase={progressPhase} t={t} />
@@ -815,6 +826,29 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
                         />
                     )}
 
+                    {sweepActive && (
+                        <group>
+                            {sweepFrames!.map((frame, i) => (
+                                <group key={i} visible={i === sweepFrameIndex}>
+                                    {frame.parts.map((part) => (
+                                        <Suspense key={part.part} fallback={null}>
+                                            <Model
+                                                url={part.url}
+                                                partType={`sweep-${i}-${part.part}`}
+                                                color={colors[part.part] || defaultColor}
+                                                wireframe={wireframe}
+                                                glass={manifest?.parts?.find(p => p.id === part.part)?.glass === true}
+                                                highlightMode="normal"
+                                                isDark={isDark}
+                                            />
+                                        </Suspense>
+                                    ))}
+                                </group>
+                            ))}
+                        </group>
+                    )}
+
+                    <group visible={!sweepActive}>
                     <Suspense fallback={null}>
                         {parts.length > 0 ? (
                             <>
@@ -1020,6 +1054,7 @@ const Viewer = forwardRef<ViewerHandle, ViewerProps>(({ parts = [], prerenderedP
                             </group>
                         ) : null}
                     </Suspense>
+                    </group>
                     <InvalidateOnCommit />
                 </Canvas>
             </ErrorBoundary>

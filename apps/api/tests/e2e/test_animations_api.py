@@ -294,3 +294,66 @@ class TestRenderAnimationOnWorker:
             ("cadquery", "body"), ("cadquery", "lid"), ("cadquery", "body"), ("cadquery", "lid"),
         ]
         assert all(task["engine"] == "cadquery" for task in queue.pushed)
+
+
+# ---------------------------------------------------------------------------
+# Which tier the animation routes seat a caller at. They gate on
+# `effective_tier`, the helper every other tier gate uses, rather than on the
+# bare claim: with the claim alone, local dev (auth off, debug on) was a guest
+# here while /api/me and /api/render seated the same caller at the top tier,
+# so the Studio offered sweep playback and this route refused it. No
+# `resolve_tier` stub in these tests: the point is the real seating.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def unstubbed_app(tmp_path, monkeypatch):
+    from config import Config
+    monkeypatch.setattr(Config, "PROJECTS_DIR", tmp_path)
+    project_dir = tmp_path / "anim-test"
+    project_dir.mkdir()
+    (project_dir / "project.json").write_text(json.dumps(MANIFEST_DATA))
+    (project_dir / "main.scad").write_text("cube(10);")
+
+    from app import create_app
+    flask_app = create_app()
+    flask_app.config["TESTING"] = True
+    return flask_app
+
+
+class TestAnimationTierSeating:
+    def test_local_dev_is_seated_like_api_me(self, unstubbed_app, monkeypatch):
+        """Auth off and debug on: the top tier, as /api/me reports it."""
+        from config import Config
+        monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+        monkeypatch.setattr(Config, "HARNESS_TIER", "")
+        unstubbed_app.debug = True
+        client = unstubbed_app.test_client()
+
+        assert client.get("/api/me").get_json()["limits"]["animation"] is True
+        res = client.get("/api/projects/anim-test/animations")
+        assert res.status_code == 200
+        assert res.get_json()["animations"][0]["id"] == "grow"
+
+    def test_auth_off_without_debug_is_still_a_guest(self, unstubbed_app, monkeypatch):
+        """CI and the test suite run auth off and debug off: still refused."""
+        from config import Config
+        monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+        monkeypatch.setattr(Config, "HARNESS_TIER", "")
+        unstubbed_app.debug = False
+        client = unstubbed_app.test_client()
+
+        assert client.get("/api/projects/anim-test/animations").status_code == 403
+        res = client.post("/api/projects/anim-test/animations/grow/render", json={"parameters": {}})
+        assert res.status_code == 403
+
+    @pytest.mark.parametrize("tier,status", [("essentials", 403), ("pro", 200)])
+    def test_harness_tier_decides_without_debug(self, unstubbed_app, monkeypatch, tier, status):
+        """A harness that names a tier is gated as that tier, both ways."""
+        from config import Config
+        monkeypatch.setattr(Config, "AUTH_ENABLED", False)
+        monkeypatch.setattr(Config, "HARNESS_TIER", tier)
+        unstubbed_app.debug = False
+        client = unstubbed_app.test_client()
+
+        assert client.get("/api/projects/anim-test/animations").status_code == status

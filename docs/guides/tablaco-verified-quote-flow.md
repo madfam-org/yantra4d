@@ -73,8 +73,12 @@ Use Enclii first for production diagnostics and verification. Direct raw infrast
 
 Recommended Enclii-side checks:
 
+- `enclii quote-flow verify` with `--project` set to the private cartridge's
+  slug (as listed in `PRIVATE_PROJECTS`; it is not written in this public
+  repository), `--agent selva` and `--require-market-verified`.
+- The backend pods and the Argo application:
+
 ```text
-enclii quote-flow verify --project <private-slug> --agent selva --require-market-verified
 enclii ops pods diagnose yantra4d-backend -n yantra4d --json
 enclii ops apps status yantra4d -n argocd --json
 ```

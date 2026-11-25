@@ -540,7 +540,23 @@ jobs:
       # ruff is the one CI runs, and scripts/tests/test_ruff_pin.py fails if the
       # two ever disagree. Bump both together.
       - run: pip install "ruff==0.16.5" "pip-audit==2.10.1"
-      - run: pip-audit --desc
+      # pip-audit gets an explicit --cache-dir in a directory this job
+      # creates. Without one, pip-audit 2.10.1 asks platformdirs for its
+      # default cache (~/.cache/pip-audit). platformdirs 4.14.8 (2026-11-20,
+      # an unpinned pip-audit dependency) refuses to create a private user
+      # directory below a world-writable, non-sticky ancestor, and the ARC
+      # runner image's /home/runner is mode 0777 (upstream actions-runner
+      # image), so on a push to main routed to madfam-runners-blue the step
+      # dies with `PermissionError: /home/runner, writable by another user`
+      # before auditing anything. Pull requests run on hosted ubuntu-24.04 and
+      # never see it. An explicit --cache-dir is passed through by pip-audit
+      # without calling platformdirs. XDG_CACHE_HOME would not help:
+      # $RUNNER_TEMP is itself below /home/runner.
+      # scripts/tests/test_pip_audit_cache_dir.py enforces this.
+      - name: Audit backend dependencies
+        run: |
+          install -d -m 700 "$RUNNER_TEMP/pip-audit-cache"
+          pip-audit --desc --cache-dir "$RUNNER_TEMP/pip-audit-cache"
       - run: ruff check .
       # apps/worker was never linted by anything: this job's `ruff check .` runs
       # under `working-directory: apps/api`, and no other job installs ruff, so

@@ -223,7 +223,7 @@ Users can send rendered geometry directly from the Yantra4D Studio to OctoPrint 
 ---
 
 ### Sprint 16 — BOM-to-Cart (ForgeSight Data Intelligence Platform Integration)
-_Integration: **[ForgeSight Data Intelligence Platform](https://forgesight.quest)** — live at `api.forgesight.quest` (Starter tier: 10 calls/hr, benchmarks cached 1hr)._
+_Integration: **[ForgeSight Data Intelligence Platform](https://forgesight.app)** at `api.forgesight.app` (Starter tier: 10 calls/hr, benchmarks cached 1hr). As of 2026-11-26 the `.quest` host is retired, and the `FORGESIGHT_API_URL` default in `apps/api/config.py` still points at it and needs changing._
 
 The BOM API (`routes/bom.py`) and `BomPanel.jsx` already exist, and `supplier_url` is in the manifest schema. Sprint 16 adds the aggregation, pricing, and checkout layers powered by the ForgeSight Data Intelligence Platform.
 

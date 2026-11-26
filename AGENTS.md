@@ -1,6 +1,6 @@
 # Yantra4D Agent Operating Guide
 
-> Last Updated: 2026-09-28
+> Last Updated: 2026-11-26
 
 > [!IMPORTANT]
 > MADFAM-ENCLII-FIRST-LEGACY-RAW v1: This document contains legacy raw infrastructure command examples.
@@ -51,6 +51,33 @@ redirect and should not become the source of truth again.
 Regenerate or repair these files with
 `internal-devops/scripts/sync-agent-docs.py` from the labspace ecosystem.
 
+## Commercial pipeline state (2026-11-26)
+
+What is true for Yantra4D at each stage of MADFAM's commercial pipeline, read
+on `main` and against the public hosts on 2026-11-26:
+
+- **Discovery.** `yantra4d.com` serves `robots.txt`, `sitemap.xml` (8 URLs)
+  and `llms.txt`. No visitor analytics loads on it.
+- **Conversion.** Dhanam's catalogue sells two Yantra4D tiers, Pro and
+  Studio; the landing's pricing section reads the price from that catalogue
+  (`apps/landing/src/components/Pricing.astro`) and links to Dhanam's hosted
+  checkout with the plan ids in the
+  [billing contract](docs/integrations/billing-entitlement-contract.md#2-checkout-url-contract-implemented-in-yantra4d-today).
+  Self-serve payment is not yet enabled: the checkout link opens the MADFAM
+  booking page.
+- **Fulfillment.** Gating reads the `yantra4d_tier` claim; Studio maps to the
+  `premium` tier ([docs/AUTH.md](docs/AUTH.md)). The billing-to-identity
+  update after a purchase is not retried on failure and has not been observed
+  end to end (see "Billing" under Tiered Access Control below).
+- **Customer success.** No feedback, NPS or PMF capture is integrated (see
+  "Pricing & PMF Anchoring" below).
+- **Virality and expansion.** No ecosystem bundle or multi-product plan is
+  sold; `premium` is the Studio tier plus staff and operator grants.
+
+Cross-repo source: the
+[2026-11-26 business pipeline audit](https://github.com/madfam-org/internal-devops/blob/main/audits/2026-11-26-business-pipeline/README.md)
+in `internal-devops` (private). Boundary: [docs/PUBLIC_REPO_BOUNDARY.md](docs/PUBLIC_REPO_BOUNDARY.md).
+
 ---
 
 ## Legacy CLAUDE.md guidance imported on 2026-05-13
@@ -66,7 +93,7 @@ Multi-project manifest-driven Flask + React/Vite platform for parametric OpenSCA
 ## Pricing & PMF Anchoring
 
 - **Pricing source-of-truth**: `internal-devops/decisions/2026-04-25-tulana-ecosystem-pricing.md`. Yantra4D tiers (Tulana v0.1 recommended, MXN/mo): Creator $0 / Pro 599 / Studio 2,999. Confidence: low — needs validation with real users.
-- **PMF measurement**: per RFC 0013, NPS + Sean Ellis + retention via `@madfam/pmf-widget` → Tulana `/v1/pmf/*` endpoints. Composite PMF Score informs price moves + sunset decisions.
+- **PMF measurement**: planned per RFC 0013 (NPS + Sean Ellis + retention via `@madfam/pmf-widget` → Tulana `/v1/pmf/*`). As of 2026-11-26 no widget is integrated in this repo and no NPS or feedback is captured.
 
 ## Architecture
 
@@ -421,7 +448,7 @@ Key files: `apps/api/tiers.json`, `apps/api/middleware/auth.py`, `apps/api/servi
 
 **Note**: Set `AUTH_ENABLED=false` to bypass auth in development (all users get the top `premium` tier).
 
-**Billing**: Tier upgrades via external Dhanam platform (`apps/studio/src/lib/billing.ts` generates checkout URLs, `UpgradeModal.tsx` presents upgrade flow). Tier assignment handled by Dhanam webhooks to Janua auth -- JWT `yantra4d_tier` claim drives backend gating.
+**Billing**: Tier upgrades via external Dhanam platform (`apps/studio/src/lib/billing.ts` generates checkout URLs, `UpgradeModal.tsx` presents upgrade flow). Gating reads the JWT `yantra4d_tier` claim; checkout plan ids are `yantra4d_pro` and `yantra4d_studio` ([billing contract](docs/integrations/billing-entitlement-contract.md)). As of 2026-11-26 self-serve payment is not yet enabled (the checkout link opens the MADFAM booking page), and the billing-to-identity update after a purchase is not retried on failure and has not been observed end to end.
 
 ## User Persistence
 
@@ -540,7 +567,7 @@ Key files: `routes/github.py`, `routes/git_ops.py`, `routes/editor.py`, `service
 | Device capability probe | `services/engine/renderCapability.ts` classifies a device `capable\|limited\|incapable` from static signals (WebAssembly, SIMD, `hardwareConcurrency`, `deviceMemory`, mobile, `crossOriginIsolated`, Save-Data) **plus** a one-shot micro-benchmark run in the worker (instantiate + `$fn=64; cube(10);`), cached in `localStorage` under a versioned key and re-probed after 7 days. A signal the browser withholds reads as **unknown** and neither promotes nor demotes -- the old `navigator.deviceMemory \|\| 4` invented a value for every Firefox and Safari visitor. Thresholds (600 ms / 2500 ms) are calibrated against the shipped `openscad-wasm@0.0.4`: 42 ms median instantiate + 3 ms tiny render on a warm server-class host |
 | Render placement | The **browser is the default**: rendering there is free for us and unmetered for the visitor. `decideRenderPlacement()` (`services/engine/renderPlacement.ts`) is a PURE function with an 11-rule precedence table -- hard rules first (the MODE's engine is `cadquery`/`graph`/`implicit`, manifest `render.server_only`, a bundle with `unsupported` or `unresolved` entries, and an `export_format` the browser kernel cannot emit), then `?render=`/`VITE_RENDER_MODE`, the visitor's `render_placement_preference`, capability tier, this session's browser failures for the slug, the estimate threshold (capable 45 s / limited 15 s), the SOFT `force_backend` hint (only on a `limited` device), and finally **browser**. The old `if (API_BASE) return 'backend'` server pin is GONE: production always sets `VITE_API_BASE`, so every heuristic below it was dead code and every render was billed to us and metered to the visitor. The sticky module-global `_hardwareMode` is gone too -- placement is keyed per slug. Engine is resolved PER MODE by `effectiveModeEngine()`, mirroring `ProjectManifest.mode_engine()`: 8 of the 31 OpenSCAD-capable cartridges are dual-engine (gridfinity is `project.engine: cadquery` with 3 explicit `openscad` modes), and reading the project engine alone would keep every one of those modes on the metered path. **Export format is the fourth HARD rule and it is per REQUEST, not per cartridge**: the worker writes one file, `/output.stl`, and has no converter, so any `export_format` but `stl` pins the server -- above `?render=wasm` and above the visitor's preference, because those choose a placement and cannot make the kernel emit STEP. `useRender` forwards the export panel's format on EVERY render, so without that rule a cartridge set to `step` rendered STL in the browser and `handleDownloadStl` saved it as `.step`; it also skipped both of #87's tier gates, which only sit on the server's generation and retrieval paths |
 | Rate limiting | Backend endpoints are rate-limited via Flask-Limiter (`extensions.py`). Render: per-tier (see tier table above), Estimate: 200/hr, Verify: 50/hr. **Browser renders are never limited** and never show a quota -- limits protect our CPU, and a browser render does not use it; since the browser is the default placement, the common case consumes no quota at all. Projects can declare `guest_render_limit` in `project.json` to override the guest tier limit (e.g., for client demos) |
-| Tier names (`madfam` is an alias, forever) | The top tier is `premium` (ADR-006 D4). `madfam` is a **permanent** alias, not a migration window: Janua's machine-token claim builder still emits the literal `"madfam"` and an operator's `TIER_OVERRIDES` Secret may still say it, so deleting the entry from `LEGACY_TIER_MAP` (`services/core/tier_service.py`) seats every service client in `essentials` — silently, because `resolve_tier` fails closed. Aliases are resolved in `_normalize_tier` only, which every input path funnels through (`yantra4d_tier` claim, `TIER_OVERRIDES` values, both sides of `has_tier`); the deprecation note is logged once per process per alias, not per request. Outputs are always canonical — `/api/me`, `/api/tiers`, `X-RateLimit-Tier`, 403 upsell copy. Never compare a tier string by hand: Python uses `TOP_TIER` / `has_tier`, the Studio uses `tierAtLeast` from `src/lib/tiers.ts`. **The checkout SKU is the deliberate exception**: `plan=yantra4d_madfam` is unchanged because the slug is tulana catalog data, and `billing.ts` maps tier→plan id through an explicit table rather than deriving it (ADR-006 D5: never pass the plan id as the tier) |
+| Tier names (`madfam` is an alias, forever) | The top tier is `premium` (ADR-006 D4). `madfam` is a **permanent** alias, not a migration window: Janua's machine-token claim builder still emits the literal `"madfam"` and an operator's `TIER_OVERRIDES` Secret may still say it, so deleting the entry from `LEGACY_TIER_MAP` (`services/core/tier_service.py`) seats every service client in `essentials` — silently, because `resolve_tier` fails closed. Aliases are resolved in `_normalize_tier` only, which every input path funnels through (`yantra4d_tier` claim, `TIER_OVERRIDES` values, both sides of `has_tier`); the deprecation note is logged once per process per alias, not per request. Outputs are always canonical — `/api/me`, `/api/tiers`, `X-RateLimit-Tier`, 403 upsell copy. Never compare a tier string by hand: Python uses `TOP_TIER` / `has_tier`, the Studio uses `tierAtLeast` from `src/lib/tiers.ts`. **The checkout SKU is the deliberate exception**: the top tier checks out as `plan=yantra4d_studio` (2026-11-26; the old `yantra4d_madfam` id is retired) because the plan id is Dhanam catalogue data, and `billing.ts` maps tier→plan id through an explicit table rather than deriving it (ADR-006 D5: never pass the plan id as the tier) |
 | CSP headers | Production nginx adds Content-Security-Policy; requires `wasm-unsafe-eval` for OpenSCAD WASM |
 | WebSocket channels | `routes/core/websocket.py` registers three flask-sock routes (`/api/ws/render/<session_id>`, `/api/ws/printer/<printer_id>`, `/api/ws/telemetry/<slug>`). **Every channel resolves an identity on the upgrade and authorises the READ** (#98): `render` stays anonymous (ping/pong only), `printer` requires the `pro` tier its HTTP twin `GET /api/printers/<id>/status` requires, and `telemetry` requires a signed-in caller **plus** the private-project gate (`services.core.project_access.project_view_denied_reason`, the response-free sibling of `check_project_access`, so the HTTP and WS answers cannot drift). A refused reader gets one `error` frame and is closed before any payload and without occupying a per-IP connection slot; `AUTH_ENABLED=false` short-circuits both gates exactly as `@require_tier` does. They must stay **read-only** -- the render channel's `cancel` action used to call a cancel-everything orchestrator alias with no auth, no scope check and no rate limit, letting any anonymous client kill every in-flight render on the single backend replica. `cancel` is now always refused and the alias is deleted; `POST /api/render-cancel` is the supported cancel path, and it is scoped -- it cancels only the `request_id`/`job_ids` the caller was handed on its own render stream, with `{all:true}` behind the platform-admin claim (`is_admin`). Flask-Limiter cannot decorate a WS handler (one "request" per socket lifetime), so the guards are a per-IP connection cap (`WS_MAX_CONNECTIONS_PER_IP`) and a per-connection message budget (`WS_MAX_MESSAGES_PER_MINUTE`). `@require_auth`/`@optional_auth` cannot decorate these handlers either -- they return responses and never read the `?token=` query param a browser must use; call `middleware.auth.resolve_ws_claims()` instead. Any new action that mutates state must resolve an identity first. See `docs/AUTH.md` (WebSocket channels) |
 | Bundle splitting | Vite splits vendor chunks (react, three, r3f, radix-ui); `ProjectsView` and `OnboardingWizard` are lazy-loaded |

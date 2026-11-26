@@ -84,19 +84,21 @@ exact URL shape Yantra4D emits and therefore the minimum Dhanam checkout must
 accept:
 
 ```
-{DHANAM_CHECKOUT_URL}?plan=yantra4d_{pro|madfam}&product=yantra4d[&user_id=…][&return_url=…]
+{DHANAM_CHECKOUT_URL}?plan=yantra4d_{pro|studio}&product=yantra4d[&user_id=…][&return_url=…]
 ```
 
 - Base URL: `VITE_DHANAM_CHECKOUT_URL` env at Studio build time, default
   `https://app.dhan.am/checkout` (`billing.ts:11-12`).
-- `plan`: `yantra4d_pro` or `yantra4d_madfam` — literal SKU strings Dhanam
-  must recognize, resolved through the explicit `CHECKOUT_PLAN_IDS` table in
-  `billing.ts`. **The top tier's SKU slug is deliberately unchanged by the
-  `madfam` → `premium` tier rename**: the slug is tulana/dhanam catalog data,
-  not a Yantra4D tier name, and deriving it from the tier would have pointed
+- `plan`: `yantra4d_pro` or `yantra4d_studio` (2026-11-26; the old
+  `yantra4d_madfam` id is retired and has no catalogue entry), resolved
+  through the explicit `CHECKOUT_PLAN_IDS` table in `billing.ts`, which maps
+  the `premium` tier to `yantra4d_studio`. The plan id is Dhanam catalogue
+  data, not a Yantra4D tier name; deriving it from the tier would point
   checkout at a `yantra4d_premium` plan that does not exist.
 - `product`: constant `yantra4d` (`billing.ts:26`).
-- `user_id`: optional (`billing.ts:28`). The live caller passes the Janua
+- `user_id`: optional. Any `user_id` in the link is ignored: Dhanam's
+  checkout drops it and the buyer signs in on the checkout page
+  (2026-11-26). The live caller still passes the Janua
   SDK user id — `getCheckoutUrl('pro', user?.id, returnUrl)` in
   `apps/studio/src/components/auth/UpgradeDialog.tsx:35`, where `user` is a
   `JanuaUser` from `@janua/react-sdk`. **UNKNOWN / to confirm**: whether
@@ -179,11 +181,16 @@ user's hands.
 
 Dhanam:
 
-1. Are `yantra4d_pro` / `yantra4d_madfam` registered as plans/SKUs, and is
+1. Are `yantra4d_pro` / `yantra4d_studio` registered as plans/SKUs, and is
    `product=yantra4d` meaningful to the checkout at `app.dhan.am/checkout`?
+   Answered 2026-11-26: both are purchasable tiers in Dhanam's public
+   catalogue. Self-serve payment is not yet enabled, so the checkout link
+   opens the MADFAM booking page.
 2. The Studio sends `user_id` = `JanuaUser.id` (from `@janua/react-sdk`) —
    is that the identifier Dhanam expects, is it required, and does it map to
-   the JWT `sub` the webhook must target?
+   the JWT `sub` the webhook must target? Answered 2026-11-26: it is not
+   used; Dhanam's checkout drops `user_id` and takes identity from the
+   buyer's Janua sign-in on the checkout page.
 3. Is `return_url` honored post-payment? Any allowlist constraints?
 4. Which lifecycle events are emitted (created, renewed, canceled,
    past_due, refunded, chargeback), with what retry/idempotency semantics?

@@ -78,7 +78,7 @@ def export_step_file():
 | `guest` | 0 | anonymous visitors | — |
 | `essentials` | 1 | signed in, no subscription | `basic` |
 | `pro` | 2 | paid | — |
-| `premium` | 3 | ecosystem bundle / staff | **`madfam`** |
+| `premium` | 3 | paid (sold as Studio, plan `yantra4d_studio`), staff and operator grants; no ecosystem bundle is sold (2026-11-26) | **`madfam`** |
 
 Per [ADR-006](https://github.com/madfam-org/internal-devops/blob/main/decisions/adr-006-entitlement-claim-and-tier-naming.md)
 Decision 4 the top tier is `premium`; `madfam` was a company name doing duty as
@@ -95,9 +95,10 @@ per alias**, not once per request.
 
 Every *output* is canonical: `/api/me` (`tier` and `entitlement.resolved_tier`),
 `X-RateLimit-Tier`, `/api/tiers`, and the 403 upsell copy all say `premium`.
-The one deliberate exception is the **checkout plan id**: the SKU dhanam
-registered is still `yantra4d_madfam`, it lives in tulana's catalog rather than
-in this repo, and `apps/studio/src/lib/billing.ts` maps tier to plan id through
+The one deliberate exception is the **checkout plan id**: the top tier is sold
+as `yantra4d_studio` in Dhanam's catalogue (2026-11-26; the old
+`yantra4d_madfam` id is retired), the plan id lives in that catalogue rather
+than in this repo, and `apps/studio/src/lib/billing.ts` maps tier to plan id through
 an explicit table rather than deriving one from the other (ADR-006 Decision 5 —
 never pass the plan id as the tier).
 

@@ -9,6 +9,11 @@ Compact LLM context index for this repository.
 - `ECOSYSTEM.md` — MADFAM ecosystem and Enclii deployment context when present.
 - `llms-full.txt` — full context map and durable operating contract.
 
+## Commercial pipeline state (2026-11-26)
+
+- Pro and Studio (`yantra4d_pro`, `yantra4d_studio`) are in Dhanam's catalogue and the landing reads their prices from it; self-serve payment is not yet enabled, so the checkout link opens the booking page. The post-purchase tier update is not retried and has not been observed end to end. Detail: [AGENTS.md](AGENTS.md#commercial-pipeline-state-2026-11-26), [billing contract](docs/integrations/billing-entitlement-contract.md).
+- No visitor analytics and no feedback capture is live. Cross-repo source: `internal-devops/audits/2026-11-26-business-pipeline/README.md` (private).
+
 ## Production operations
 
 Routine production operations are Enclii-first. Use Enclii web, API, or CLI
